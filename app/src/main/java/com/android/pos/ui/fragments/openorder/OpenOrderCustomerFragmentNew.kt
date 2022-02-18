@@ -554,6 +554,9 @@ class OpenOrderCustomerFragmentNew : DialogFragment(), View.OnClickListener {
 
                 binding.txtCustomerDetails.setBackgroundColor(resources.getColor(color.btnColor))
                 binding.txtDeliveryAddress.setBackgroundColor(resources.getColor(color.bg_color))
+                binding.txtCustomerDetails.setTextColor(resources.getColor(color.white))
+                binding.txtDeliveryAddress.setTextColor(resources.getColor(color.txtColor))
+
 
             }
             R.id.txtDeliveryAddress -> {
@@ -567,6 +570,9 @@ class OpenOrderCustomerFragmentNew : DialogFragment(), View.OnClickListener {
 
                 binding.txtCustomerDetails.setBackgroundColor(resources.getColor(color.bg_color))
                 binding.txtDeliveryAddress.setBackgroundColor(resources.getColor(color.btnColor))
+
+                binding.txtCustomerDetails.setTextColor(resources.getColor(color.txtColor))
+                binding.txtDeliveryAddress.setTextColor(resources.getColor(color.white))
 
             }
             R.id.imgBack -> {
@@ -625,6 +631,11 @@ class OpenOrderCustomerFragmentNew : DialogFragment(), View.OnClickListener {
                 binding.txtPickup.setBackgroundColor(resources.getColor(color.btnColor))
                 binding.txtDelivery.setBackgroundColor(resources.getColor(color.bg_color))
 
+                binding.txtPickup.setTextColor(resources.getColor(color.white))
+                binding.txtDelivery.setTextColor(resources.getColor(color.txtColor))
+
+
+
             }
             R.id.txtDelivery -> {
                 type = Constants.DELIVERY
@@ -633,6 +644,9 @@ class OpenOrderCustomerFragmentNew : DialogFragment(), View.OnClickListener {
 
                 binding.txtPickup.setBackgroundColor(resources.getColor(color.bg_color))
                 binding.txtDelivery.setBackgroundColor(resources.getColor(color.btnColor))
+
+                binding.txtPickup.setTextColor(resources.getColor(color.txtColor))
+                binding.txtDelivery.setTextColor(resources.getColor(color.white))
             }
             R.id.btnClearCustomer -> {
                 binding.edtFirstName.setText("")

@@ -189,6 +189,7 @@
                     android:layout_gravity="center"
                     android:background="@null"
                     android:inputType="text"
+                    android:textColor="@color/txt_color_blue"
                     android:textSize="@dimen/_5mdpi"
                     android:theme="@style/SpinnerThemeDarkMode" />
 
@@ -229,9 +230,10 @@
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/_14sdp"
                     android:layout_gravity="center"
+                    android:background="@null"
                     android:imeOptions="actionNext"
                     android:inputType="text"
-                    android:background="@null"
+
                     android:overlapAnchor="false"
                     android:spinnerMode="dropdown"
                     android:textSize="@dimen/_5mdpi"

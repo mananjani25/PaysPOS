@@ -46,7 +46,7 @@
     <color name="drawerBack30">#4D292E32</color>
 
 
-    <color name="txtColorGray">#F8F8F8</color>
+    <color name="txtColorGray">#656565</color>
 
     <color name="txtColorItem">#7B7B7B</color>
 
@@ -109,5 +109,6 @@
     <color name="blackA1">#000000</color>
     <color name="menu_item_border">#585858</color>
     <color name="backgroundColor">#2D2D2D</color>//Same in both mode
+
     <color name="strokeColor">#535353</color>
 </resources>

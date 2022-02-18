@@ -55,7 +55,7 @@
                     android:layout_gravity="center"
                     android:layout_marginStart="@dimen/_5sdp"
                     android:gravity="start"
-                    android:textColor="@color/hint_color_"
+                    android:textColor="@color/txtColorGray"
                     android:textSize="@dimen/_5mdpi"
                     tools:text="(200) 300-4000" />
 
@@ -81,7 +81,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="start"
                 android:gravity="start"
-                android:textColor="@color/hint_color_"
+                android:textColor="@color/txtColorGray"
                 android:textSize="@dimen/_5mdpi"
                 tools:text="(200) 300-4000"
                 android:layout_marginTop="@dimen/_3sdp"

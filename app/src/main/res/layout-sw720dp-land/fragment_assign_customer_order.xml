@@ -94,7 +94,6 @@
                 android:layout_height="match_parent"
                 android:layout_marginHorizontal="@dimen/_110sdp"
                 android:layout_marginVertical="@dimen/_10sdp"
-                android:background="@color/bg_color"
                 android:orientation="vertical">
 
                 <androidx.appcompat.widget.AppCompatTextView
@@ -104,7 +103,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:layout_marginBottom="@dimen/_10sdp"
-                    android:background="@drawable/bg_button_border_gray"
+                    android:background="@drawable/btn_background_secondary"
                     android:gravity="center"
                     android:layout_marginTop="@dimen/_10sdp"
                     android:padding="@dimen/_8sdp"

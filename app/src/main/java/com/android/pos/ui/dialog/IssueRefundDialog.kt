@@ -134,13 +134,22 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
                 binding.llRefundAmount.visibility = View.GONE
                 binding.tvRefundItemDetails.visibility = View.VISIBLE
                 binding.tvRefundPaymentDetails.visibility = View.GONE
+                binding.rbItems.background=requireActivity().getDrawable(R.drawable.btn_background_secondary)
+                binding.rbAmount.background=requireActivity().getDrawable(R.drawable.background_square_border_grey)
+
+                binding.rbItems.setTextColor(requireActivity().resources.getColor(R.color.white))
+                binding.rbAmount.setTextColor(requireActivity().resources.getColor(R.color.txtColor))
+
             } else if (checkedId == R.id.rbAmount) {
                 isItem = true
                 binding.llItemList.visibility = View.GONE
                 binding.llRefundAmount.visibility = View.VISIBLE
                 binding.tvRefundPaymentDetails.visibility = View.VISIBLE
                 binding.tvRefundItemDetails.visibility = View.GONE
-
+                binding.rbItems.background=requireActivity().getDrawable(R.drawable.background_square_border_grey)
+                binding.rbAmount.background=requireActivity().getDrawable(R.drawable.btn_background_secondary)
+                binding.rbAmount.setTextColor(requireActivity().resources.getColor(R.color.white))
+                binding.rbItems.setTextColor(requireActivity().resources.getColor(R.color.txtColor))
                 val mData = paymentOrderDetailsResponse.data
 
                 if (mData.order.refund_detail.refunded_amount.equals(0.0)) {
