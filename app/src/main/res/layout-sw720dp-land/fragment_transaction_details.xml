@@ -24,7 +24,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/white"
+            android:background="@color/bg_color"
             android:orientation="horizontal">
 
             <LinearLayout
@@ -83,22 +83,24 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:background="@color/bg_color">
 
             <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_marginRight="@dimen/_5sdp"
-                android:layout_weight="1"
-                android:orientation="vertical">
+                android:layout_weight="1.5"
+                android:orientation="vertical"
+                >
 
                 <androidx.appcompat.widget.AppCompatTextView
                     style="@style/CustomFontSemiBold"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:padding="@dimen/_5sdp"
-                    android:text="@string/tv_order_details"
-                    android:textColor="@color/viewTextColor"
+                    android:text="Order List"
+                    android:textColor="@color/txtColor"
                     android:textSize="@dimen/_6mdpi" />
 
                 <View
@@ -119,7 +121,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="@dimen/_3sdp"
                         android:text="@string/tv_date"
-                        android:textColor="@color/viewTextColor"
+                        android:textColor="@color/txtColor"
                         android:textSize="@dimen/_5mdpi" />
 
                     <androidx.appcompat.widget.AppCompatTextView
@@ -129,7 +131,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="@dimen/_3sdp"
                         android:gravity="end"
-                        android:textColor="@color/viewTextColor"
+                        android:textColor="@color/txtColor"
                         android:textSize="@dimen/_5mdpi" />
                 </LinearLayout>
 
@@ -146,7 +148,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="@dimen/_3sdp"
                         android:text="@string/tv_order_id"
-                        android:textColor="@color/viewTextColor"
+                        android:textColor="@color/txtColor"
                         android:textSize="@dimen/_5mdpi" />
 
                     <androidx.appcompat.widget.AppCompatTextView
@@ -156,7 +158,7 @@
                         android:layout_marginStart="@dimen/_3sdp"
                         android:gravity="end"
                         android:text="@{``+orderDetails.data.order.offline_id}"
-                        android:textColor="@color/viewTextColor"
+                        android:textColor="@color/txtColor"
                         android:textSize="@dimen/_5mdpi" />
                 </LinearLayout>
 
@@ -173,7 +175,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="@dimen/_3sdp"
                         android:text="@string/tv_order_hash"
-                        android:textColor="@color/viewTextColor"
+                        android:textColor="@color/txtColor"
                         android:textSize="@dimen/_5mdpi" />
 
                     <androidx.appcompat.widget.AppCompatTextView
@@ -183,7 +185,7 @@
                         android:layout_marginStart="@dimen/_3sdp"
                         android:gravity="end"
                         android:text="@{``+orderDetails.data.order.id}"
-                        android:textColor="@color/viewTextColor"
+                        android:textColor="@color/txtColor"
                         android:textSize="@dimen/_5mdpi" />
                 </LinearLayout>
 
@@ -200,7 +202,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="@dimen/_3sdp"
                         android:text="@string/tv_status"
-                        android:textColor="@color/viewTextColor"
+                        android:textColor="@color/txtColor"
                         android:textSize="@dimen/_5mdpi" />
 
                     <androidx.appcompat.widget.AppCompatTextView
@@ -228,7 +230,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="@dimen/_3sdp"
                         android:text="@string/tv_note"
-                        android:textColor="@color/viewTextColor"
+                        android:textColor="@color/txtColor"
                         android:textSize="@dimen/_5mdpi" />
 
                     <androidx.appcompat.widget.AppCompatTextView
@@ -238,7 +240,7 @@
                         android:layout_marginStart="@dimen/_3sdp"
                         android:gravity="end"
                         android:text="@{orderDetails.data.order.note}"
-                        android:textColor="@color/viewTextColor"
+                        android:textColor="@color/txtColor"
                         android:textSize="@dimen/_5mdpi" />
                 </LinearLayout>
 
@@ -255,7 +257,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="@dimen/_3sdp"
                         android:text="@string/tv_order_type"
-                        android:textColor="@color/viewTextColor"
+                        android:textColor="@color/txtColor"
                         android:textSize="@dimen/_5mdpi" />
 
                     <androidx.appcompat.widget.AppCompatTextView
@@ -265,7 +267,7 @@
                         android:layout_marginStart="@dimen/_3sdp"
                         android:gravity="end"
                         android:text="@{orderDetails.data.order.order_type}"
-                        android:textColor="@color/viewTextColor"
+                        android:textColor="@color/txtColor"
                         android:textSize="@dimen/_5mdpi" />
                 </LinearLayout>
 
@@ -282,7 +284,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="@dimen/_3sdp"
                         android:text="Team Member Name"
-                        android:textColor="@color/viewTextColor"
+                        android:textColor="@color/txtColor"
                         android:textSize="@dimen/_5mdpi" />
 
                     <androidx.appcompat.widget.AppCompatTextView
@@ -292,7 +294,7 @@
                         android:layout_marginStart="@dimen/_3sdp"
                         android:gravity="end"
                         android:text="@{orderDetails.data.order.employee}"
-                        android:textColor="@color/viewTextColor"
+                        android:textColor="@color/txtColor"
                         android:textSize="@dimen/_5mdpi" />
                 </LinearLayout>
 
@@ -309,7 +311,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="@dimen/_3sdp"
                         android:text="Customer Name"
-                        android:textColor="@color/viewTextColor"
+                        android:textColor="@color/txtColor"
                         android:textSize="@dimen/_5mdpi" />
 
                     <androidx.appcompat.widget.AppCompatTextView
@@ -319,7 +321,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="@dimen/_3sdp"
                         android:gravity="end"
-                        android:textColor="@color/viewTextColor"
+                        android:textColor="@color/txtColor"
                         android:textSize="@dimen/_5mdpi" />
                 </LinearLayout>
 
@@ -342,7 +344,7 @@
                         android:layout_marginTop="@dimen/_5sdp"
                         android:layout_marginBottom="@dimen/_5sdp"
                         android:text="@string/tv_transactions"
-                        android:textColor="@color/viewTextColor"
+                        android:textColor="@color/txtColor"
                         android:textSize="@dimen/_6mdpi" />
 
 
@@ -371,7 +373,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="@dimen/_3sdp"
-                        android:textColor="@color/viewTextColor"
+                        android:textColor="@color/txtColor"
                         android:textSize="@dimen/_5mdpi" />
 
                     <androidx.appcompat.widget.AppCompatTextView
@@ -381,7 +383,7 @@
                         android:layout_marginStart="@dimen/_3sdp"
                         android:gravity="end"
                         android:text="@{orderDetails.data.payment_type}"
-                        android:textColor="@color/viewTextColor"
+                        android:textColor="@color/txtColor"
                         android:textSize="@dimen/_5mdpi" />
                 </LinearLayout>
 
@@ -408,7 +410,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="@dimen/_3sdp"
                         android:text="@{@string/symbole +``+String.format(@string/format,(orderDetails.data.amount + orderDetails.data.tips))}"
-                        android:textColor="@color/viewTextColor"
+                        android:textColor="@color/txtColor"
                         android:textSize="@dimen/_5mdpi" />
 
                 </LinearLayout>
@@ -425,7 +427,7 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_marginStart="@dimen/_5sdp"
-                android:layout_weight="2">
+                android:layout_weight="1.3">
 
 
                 <LinearLayout
@@ -439,7 +441,7 @@
                         android:layout_height="wrap_content"
                         android:padding="@dimen/_5sdp"
                         android:text="@{`Order List ( `+orderDetails.data.order.order_items.size()+` Items )`}"
-                        android:textColor="@color/viewTextColor"
+                        android:textColor="@color/txtColor"
                         android:textSize="@dimen/_6mdpi" />
 
                     <View
@@ -475,7 +477,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginStart="@dimen/_3sdp"
                             android:text="@string/payment_subtotal"
-                            android:textColor="@color/viewTextColor"
+                            android:textColor="@color/txtColor"
                             android:textSize="@dimen/_5mdpi" />
 
                         <androidx.appcompat.widget.AppCompatTextView
@@ -485,7 +487,7 @@
                             android:layout_marginRight="@dimen/_5sdp"
                             android:gravity="end"
                             android:text="@{@string/symbole +``+String.format(@string/format,orderDetails.data.sub_total)}"
-                            android:textColor="@color/viewTextColor"
+                            android:textColor="@color/txtColor"
                             android:textSize="@dimen/_5mdpi" />
                     </LinearLayout>
 
@@ -502,7 +504,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginStart="@dimen/_3sdp"
                             android:text="@string/tv_tax"
-                            android:textColor="@color/viewTextColor"
+                            android:textColor="@color/txtColor"
                             android:textSize="@dimen/_5mdpi" />
 
                         <androidx.appcompat.widget.AppCompatTextView
@@ -512,7 +514,7 @@
                             android:layout_marginRight="@dimen/_5sdp"
                             android:gravity="end"
                             android:text="@{@string/symbole +``+String.format(@string/format,orderDetails.data.tax_amount)}"
-                            android:textColor="@color/viewTextColor"
+                            android:textColor="@color/txtColor"
                             android:textSize="@dimen/_5mdpi" />
                     </LinearLayout>
 
@@ -529,7 +531,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginStart="@dimen/_3sdp"
                             android:text="@string/tv_service_charge"
-                            android:textColor="@color/viewTextColor"
+                            android:textColor="@color/txtColor"
                             android:textSize="@dimen/_5mdpi" />
 
                         <androidx.appcompat.widget.AppCompatTextView
@@ -539,7 +541,7 @@
                             android:layout_marginRight="@dimen/_5sdp"
                             android:gravity="end"
                             android:text="@{@string/symbole +``+String.format(@string/format,orderDetails.data.service_charge_amount)}"
-                            android:textColor="@color/viewTextColor"
+                            android:textColor="@color/txtColor"
                             android:textSize="@dimen/_5mdpi" />
                     </LinearLayout>
 
@@ -558,7 +560,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginStart="@dimen/_3sdp"
                             android:text="@string/cash_discount"
-                            android:textColor="@color/viewTextColor"
+                            android:textColor="@color/txtColor"
                             android:textSize="@dimen/_5mdpi" />
 
                         <androidx.appcompat.widget.AppCompatTextView
@@ -568,7 +570,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginRight="@dimen/_5sdp"
                             android:gravity="end"
-                            android:textColor="@color/viewTextColor"
+                            android:textColor="@color/txtColor"
                             android:textSize="@dimen/_5mdpi" />
                     </LinearLayout>
 
@@ -587,7 +589,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginStart="@dimen/_3sdp"
                             android:text="@string/non_cash_adj"
-                            android:textColor="@color/viewTextColor"
+                            android:textColor="@color/txtColor"
                             android:textSize="@dimen/_5mdpi" />
 
                         <androidx.appcompat.widget.AppCompatTextView
@@ -598,7 +600,7 @@
                             android:layout_marginRight="@dimen/_5sdp"
                             android:gravity="end"
                             android:text="0.0"
-                            android:textColor="@color/viewTextColor"
+                            android:textColor="@color/txtColor"
                             android:textSize="@dimen/_5mdpi" />
                     </LinearLayout>
 
@@ -615,7 +617,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginStart="@dimen/_3sdp"
                             android:text="@string/tv_tips"
-                            android:textColor="@color/viewTextColor"
+                            android:textColor="@color/txtColor"
                             android:textSize="@dimen/_5mdpi" />
 
                         <androidx.appcompat.widget.AppCompatTextView
@@ -625,7 +627,7 @@
                             android:layout_marginRight="@dimen/_5sdp"
                             android:gravity="end"
                             android:text="@{@string/symbole +``+String.format(@string/format,orderDetails.data.tips)}"
-                            android:textColor="@color/viewTextColor"
+                            android:textColor="@color/txtColor"
                             android:textSize="@dimen/_5mdpi" />
                     </LinearLayout>
 
@@ -644,7 +646,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginStart="@dimen/_3sdp"
                             android:text="@string/tv_discount"
-                            android:textColor="@color/viewTextColor"
+                            android:textColor="@color/txtColor"
                             android:textSize="@dimen/_5mdpi" />
 
                         <androidx.appcompat.widget.AppCompatTextView
@@ -674,7 +676,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginStart="@dimen/_3sdp"
                             android:text="@string/tv_loyalty_amount"
-                            android:textColor="@color/viewTextColor"
+                            android:textColor="@color/txtColor"
                             android:textSize="@dimen/_5mdpi" />
 
                         <androidx.appcompat.widget.AppCompatTextView
@@ -684,7 +686,7 @@
                             android:layout_marginRight="@dimen/_5sdp"
                             android:gravity="end"
                             android:text="@{`- `+``+orderDetails.data.showFormattedValue(orderDetails.data.loyalty_amount)}"
-                            android:textColor="@color/viewTextColor"
+                            android:textColor="@color/txtColor"
                             android:textSize="@dimen/_5mdpi" />
                     </LinearLayout>
 
@@ -703,7 +705,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginStart="@dimen/_3sdp"
                             android:text="@string/tv_used_loyalty_points"
-                            android:textColor="@color/viewTextColor"
+                            android:textColor="@color/txtColor"
                             android:textSize="@dimen/_5mdpi" />
 
                         <androidx.appcompat.widget.AppCompatTextView
@@ -713,7 +715,7 @@
                             android:layout_marginRight="@dimen/_5sdp"
                             android:gravity="end"
                             android:text="@{``+orderDetails.data.used_reward_points}"
-                            android:textColor="@color/viewTextColor"
+                            android:textColor="@color/txtColor"
                             android:textSize="@dimen/_5mdpi" />
                     </LinearLayout>
 
@@ -731,7 +733,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginStart="@dimen/_3sdp"
                             android:text="@string/tv_total"
-                            android:textColor="@color/viewTextColor"
+                            android:textColor="@color/txtColor"
                             android:textSize="@dimen/_5mdpi" />
 
                         <androidx.appcompat.widget.AppCompatTextView
@@ -741,7 +743,7 @@
                             android:layout_marginEnd="@dimen/_5sdp"
                             android:gravity="end"
                             android:text="@{@string/symbole +``+String.format(@string/format,(orderDetails.data.amount + orderDetails.data.tips))}"
-                            android:textColor="@color/viewTextColor"
+                            android:textColor="@color/txtColor"
                             android:textSize="@dimen/_5mdpi" />
                     </LinearLayout>
 
@@ -807,7 +809,7 @@
                     android:paddingEnd="@dimen/_15sdp"
                     android:paddingBottom="@dimen/_8sdp"
                     android:text="@string/tv_refund"
-                    android:textColor="@color/black"
+                    android:textColor="@color/txtColor"
                     android:textSize="@dimen/_6mdpi"
                     android:visibility="visible" />
 
@@ -825,7 +827,7 @@
                     android:paddingEnd="@dimen/_15sdp"
                     android:paddingBottom="@dimen/_8sdp"
                     android:text="@string/tv_print_receipt"
-                    android:textColor="@color/black"
+                    android:textColor="@color/txtColor"
                     android:textSize="@dimen/_6mdpi" />
 
                 <androidx.appcompat.widget.AppCompatTextView
@@ -842,7 +844,7 @@
                     android:paddingEnd="@dimen/_15sdp"
                     android:paddingBottom="@dimen/_8sdp"
                     android:text="@string/tv_print_kitchen_receipt"
-                    android:textColor="@color/black"
+                    android:textColor="@color/txtColor"
                     android:textSize="@dimen/_6mdpi"
                     android:visibility="gone" />
 
@@ -860,7 +862,7 @@
                     android:paddingEnd="@dimen/_15sdp"
                     android:paddingBottom="@dimen/_8sdp"
                     android:text="Text Receipt"
-                    android:textColor="@color/black"
+                    android:textColor="@color/txtColor"
                     android:textSize="@dimen/_6mdpi"
                     android:visibility="visible" />
 
@@ -878,7 +880,7 @@
                     android:paddingEnd="@dimen/_15sdp"
                     android:paddingBottom="@dimen/_8sdp"
                     android:text="Email Receipt"
-                    android:textColor="@color/black"
+                    android:textColor="@color/txtColor"
                     android:textSize="@dimen/_6mdpi"
                     android:visibility="visible" />
             </LinearLayout>

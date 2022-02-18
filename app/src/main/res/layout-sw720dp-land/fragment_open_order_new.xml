@@ -30,7 +30,7 @@
                 android:background="?attr/selectableItemBackground"
                 android:padding="@dimen/_6sdp"
                 app:srcCompat="@drawable/ic_cancel_black"
-                app:tint="@color/bg_color" />
+                />
 
             <androidx.appcompat.widget.AppCompatTextView
                 style="@style/CustomFontSemiBold"
@@ -383,7 +383,7 @@
                                 android:gravity="center"
                                 android:padding="@dimen/_5sdp"
                                 android:text="@string/clear"
-                                android:textColor="@color/btnColor"
+                                android:textColor="@color/txtColor"
                                 android:textSize="@dimen/_5mdpi"
                                 app:textAllCaps="false" />
 
@@ -400,7 +400,7 @@
                                 android:gravity="center"
                                 android:padding="@dimen/_5sdp"
                                 android:text="@string/tv_cancel"
-                                android:textColor="@color/btnColor"
+                                android:textColor="@color/txtColor"
                                 android:textSize="@dimen/_5mdpi"
                                 android:visibility="visible"
                                 app:textAllCaps="false" />
@@ -559,7 +559,7 @@
                             android:gravity="center"
                             android:padding="@dimen/_5sdp"
                             android:text="@string/clear"
-                            android:textColor="@color/btnColor"
+                            android:textColor="@color/txtColor"
                             android:textSize="@dimen/_5mdpi"
                             app:textAllCaps="false" />
 
@@ -576,7 +576,7 @@
                             android:gravity="center"
                             android:padding="@dimen/_5sdp"
                             android:text="@string/tv_cancel"
-                            android:textColor="@color/btnColor"
+                            android:textColor="@color/txtColor"
                             android:textSize="@dimen/_5mdpi"
                             android:visibility="visible"
                             app:textAllCaps="false" />

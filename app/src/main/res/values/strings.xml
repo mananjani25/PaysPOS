@@ -465,7 +465,7 @@
     <string name="tv_date_time">Date/Time</string>
     <string name="tv_total_amount">Total Amount</string>
     <string name="tv_tip_amount">Tip Amount</string>
-    <string name="tv_transaction_receipt_id"><![CDATA[Order ID & Receipt ID]]></string>
+    <string name="tv_transaction_receipt_id"><![CDATA[Transactions & Receipt ID]]></string>
     <string name="manual_sale">Manual Sale</string>
     <string name="tv_team_member">Team Member</string>
     <string name="tv_print">Print</string>
@@ -477,6 +477,7 @@
     <string name="custom_item">Custom Item</string>
     <string name="menu">Menu</string>
     <string name="name_phone_email_or_company">Name, Phone, Email or Company</string>
+    <string name="name_phone_email">Name, Phone, Email </string>
     <string name="add_custom_item_name">Add Custom Item Name</string>
     <string name="set_up_item_grid">Set up Item Grid</string>
     <string name="hardware">Hardware</string>

@@ -17,8 +17,8 @@
         android:layout_marginLeft="@dimen/_15sdp"
         android:layout_marginTop="@dimen/_15sdp"
         android:layout_marginRight="@dimen/_15sdp"
-        android:background="@color/white"
         android:orientation="vertical"
+        android:background="@color/bg_color"
         tools:context=".ui.activity.StartActivity">
 
         <androidx.appcompat.widget.LinearLayoutCompat
@@ -54,7 +54,7 @@
                 android:layout_marginBottom="@dimen/_10sdp"
                 android:gravity="center"
                 android:text="@string/select_a_team_member_to_view_details"
-                android:textColor="@color/colorC4"
+                android:textColor="@color/txtColor"
                 android:textSize="@dimen/_7mdpi" />
 
         </androidx.appcompat.widget.LinearLayoutCompat>
@@ -67,7 +67,6 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/white"
                 android:orientation="vertical">
 
                 <RelativeLayout
@@ -78,7 +77,7 @@
                         style="@style/CustomFontSemiBold"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="@dimen/_10sdp"
+                        android:layout_marginBottom="@dimen/_5sdp"
                         android:text="@string/personal_information"
                         android:textAllCaps="true"
                         android:textColor="@color/txtColor"
@@ -97,19 +96,26 @@
 
                 </RelativeLayout>
 
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="0.5dp"
+                    android:background="@color/view" />
+
+
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    android:layout_marginTop="@dimen/_5sdp">
 
                     <androidx.appcompat.widget.AppCompatTextView
                         style="@style/CustomFontSemiBold"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        android:text="Name"
-                        android:textColor="@color/colorB9"
-                        android:textSize="@dimen/_6mdpi" />
+                        android:hint="@string/name"
+                        android:textColorHint="@color/hint_color"
+                        android:textSize="@dimen/_5sdp" />
 
                     <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/txtFirstName"
@@ -117,34 +123,29 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        android:layout_marginTop="@dimen/_3sdp"
                         android:layout_marginBottom="@dimen/_3sdp"
                         android:text="@{model.first_name +' '+model.last_name}"
                         android:textColor="@color/txtColor"
-                        android:textSize="@dimen/_6mdpi"
+                        android:textSize="@dimen/_6sdp"
                         android:maxLength="30"/>
-
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:layout_marginBottom="@dimen/_5sdp"
-                        android:background="@color/txtColorGray" />
 
                 </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    android:layout_marginTop="@dimen/_5sdp">
 
                     <androidx.appcompat.widget.AppCompatTextView
                         style="@style/CustomFontSemiBold"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        android:text="Mobile"
-                        android:textColor="@color/colorB9"
-                        android:textSize="@dimen/_6mdpi" />
+                        android:hint="@string/phone_number"
+                        android:textColorHint="@color/hint_color"
+                        android:textSize="@dimen/_5sdp"
+                        />
 
                     <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/txtPhoneNo"
@@ -152,33 +153,29 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        android:layout_marginTop="@dimen/_3sdp"
                         android:layout_marginBottom="@dimen/_3sdp"
                         android:text=""
                         android:textColor="@color/txt_color_blue"
-                        android:textSize="@dimen/_6mdpi" />
+                        android:textSize="@dimen/_6sdp" />
 
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:layout_marginBottom="@dimen/_5sdp"
-                        android:background="@color/txtColorGray" />
 
                 </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    android:layout_marginTop="@dimen/_5sdp"
+                    >
 
                     <androidx.appcompat.widget.AppCompatTextView
                         style="@style/CustomFontSemiBold"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        android:text="Email"
-                        android:textColor="@color/colorB9"
-                        android:textSize="@dimen/_6mdpi" />
+                        android:hint="@string/tv_email"
+                        android:textColorHint="@color/hint_color"
+                        android:textSize="@dimen/_5sdp" />
 
                     <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/txtEmail"
@@ -186,17 +183,11 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        android:layout_marginTop="@dimen/_3sdp"
                         android:layout_marginBottom="@dimen/_3sdp"
                         android:text="@{model.email}"
                         android:textColor="@color/btnColor"
-                        android:textSize="@dimen/_6mdpi" />
+                        android:textSize="@dimen/_6sdp" />
 
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:layout_marginBottom="@dimen/_5sdp"
-                        android:background="@color/txtColorGray" />
 
                 </LinearLayout>
 
@@ -204,16 +195,17 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    android:layout_marginTop="@dimen/_5sdp">
 
                     <androidx.appcompat.widget.AppCompatTextView
                         style="@style/CustomFontSemiBold"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        android:text="Address"
-                        android:textColor="@color/colorB9"
-                        android:textSize="@dimen/_6mdpi" />
+                        android:hint="@string/tv_address"
+                        android:textColorHint="@color/hint_color"
+                        android:textSize="@dimen/_5sdp" />
 
                     <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/txtAddress"
@@ -221,32 +213,26 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        android:layout_marginTop="@dimen/_3sdp"
-                        android:layout_marginBottom="@dimen/_3sdp"
                         android:textColor="@color/txt_color_blue"
                         android:textSize="@dimen/_6mdpi" />
 
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:layout_marginBottom="@dimen/_5sdp"
-                        android:background="@color/txtColorGray" />
 
                 </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    >
 
                     <androidx.appcompat.widget.AppCompatTextView
                         style="@style/CustomFontSemiBold"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        android:text="Company"
-                        android:textColor="@color/colorB9"
-                        android:textSize="@dimen/_6mdpi" />
+                        android:hint="@string/company"
+                        android:textColorHint="@color/hint_color"
+                        android:textSize="@dimen/_5sdp" />
 
                     <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/txtCompanyName"
@@ -260,27 +246,23 @@
                         android:textColor="@color/txtColor"
                         android:textSize="@dimen/_6mdpi" />
 
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:layout_marginBottom="@dimen/_5sdp"
-                        android:background="@color/txtColorGray" />
 
                 </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    android:layout_marginTop="@dimen/_5sdp">
 
                     <androidx.appcompat.widget.AppCompatTextView
                         style="@style/CustomFontSemiBold"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        android:text="Birthday"
-                        android:textColor="@color/colorB9"
-                        android:textSize="@dimen/_6mdpi" />
+                        android:hint="@string/tv_birthday_"
+                        android:textColorHint="@color/hint_color"
+                        android:textSize="@dimen/_5sdp" />
 
                     <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/txtBirthDate"
@@ -294,11 +276,6 @@
                         android:textColor="@color/txtColor"
                         android:textSize="@dimen/_6mdpi" />
 
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:layout_marginBottom="@dimen/_5sdp"
-                        android:background="@color/txtColorGray" />
 
 
                     <androidx.appcompat.widget.LinearLayoutCompat
@@ -313,9 +290,9 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
-                            android:text="@string/loyalty_points"
-                            android:textColor="@color/colorB9"
-                            android:textSize="@dimen/_6mdpi" />
+                            android:hint="@string/loyalty_points"
+                            android:textColorHint="@color/hint_color"
+                            android:textSize="@dimen/_5sdp" />
 
                         <androidx.appcompat.widget.AppCompatTextView
                             android:id="@+id/txtrewardpoint"
@@ -329,11 +306,6 @@
                             android:textColor="@color/txtColor"
                             android:textSize="@dimen/_6mdpi" />
 
-                        <View
-                            android:layout_width="match_parent"
-                            android:layout_height="1dp"
-                            android:layout_marginBottom="@dimen/_5sdp"
-                            android:background="@color/txtColorGray" />
                     </androidx.appcompat.widget.LinearLayoutCompat>
                 </LinearLayout>
 
@@ -356,7 +328,7 @@
                         android:gravity="center"
                         android:padding="@dimen/_5sdp"
                         android:text="@string/customer_order_history"
-                        android:textColor="@color/viewTextColor"
+                        android:textColor="@color/txtColor"
                         android:textSize="@dimen/_6mdpi" />
 
                     <include

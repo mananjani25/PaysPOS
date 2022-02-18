@@ -133,7 +133,7 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
                 if (customerModel.addresses[i].full_address.isNotEmpty()) {
                     pos = i + 1
                     address =
-                        address + "Address" + pos.toString() + " : " + customerModel.addresses[i].full_address + "\n\n"
+                        address + "Address" + pos.toString() + " : " + customerModel.addresses[i].full_address + "\n"
                 }
 
             }

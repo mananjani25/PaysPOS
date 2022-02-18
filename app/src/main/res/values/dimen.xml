@@ -16,4 +16,21 @@
 
     <dimen name="full_swipe_edge_padding">90dp</dimen>
 
+    <dimen name="button_padding">@dimen/_7sdp</dimen>
+    <dimen name="border_view_padding_x_large">@dimen/_7sdp</dimen>
+    <dimen name="border_view_padding_large">@dimen/_6sdp</dimen>
+    <dimen name="border_view_padding_normal">@dimen/_5sdp</dimen>
+    <dimen name="border_view_padding_small">@dimen/_3sdp</dimen>
+    <dimen name="view_height_normal">@dimen/_1sdp</dimen>
+    <dimen name="view_height_small">0.1dp</dimen>
+    <dimen name="view_height_large">2dp</dimen>
+
+
+    <dimen name="text_size_large">@dimen/_7sdp</dimen>
+    <dimen name="text_size_x_large">@dimen/_8sdp</dimen>
+    <dimen name="text_size_normal">@dimen/_5sdp</dimen>
+    <dimen name="text_size_small">@dimen/_3sdp</dimen>
+
+
+
 </resources>

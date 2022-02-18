@@ -7,51 +7,59 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center"
+
         android:orientation="horizontal">
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/txtOrderId"
             style="@style/HistoryItemText"
             android:textAllCaps="true"
-            tools:text="4708\n(Paid)" />
+            tools:text="4708\n(Paid)"
+            android:background="@drawable/background_square_border_grey"/>
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/txtDateTime"
             style="@style/HistoryItemText"
             android:layout_weight="1.5"
-            tools:text="11/01/2021\n03:00 PM" />
+            tools:text="11/01/2021\n03:00 PM"
+            android:background="@drawable/background_square_border_grey"/>
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/txtOrderDetails"
             style="@style/HistoryItemText"
             android:layout_weight="4"
+            android:background="@drawable/background_square_border_grey"
             tools:text="Haka Nudal * 1, Dry Manchurian * 1" />
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/txtPayType"
             style="@style/HistoryItemText"
             android:gravity="center"
-            tools:text="Cash" />
+            tools:text="Cash"
+            android:background="@drawable/background_square_border_grey"/>
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/txtLoyaltyPoints"
             style="@style/HistoryItemText"
             android:gravity="center"
             android:visibility="gone"
-            tools:text="48" />
+            tools:text="48"
+            android:background="@drawable/background_square_border_grey"/>
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/txtUsedLoyaltyPoints"
             style="@style/HistoryItemText"
             android:gravity="center"
             android:visibility="gone"
-            tools:text="200" />
+            tools:text="200"
+            android:background="@drawable/background_square_border_grey"/>
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/txtReorder"
             style="@style/HistoryItemText"
             android:gravity="center"
             android:text="@string/reorder"
+            android:background="@drawable/background_square_border_grey"
             android:textColor="@color/txt_color_blue" />
 
     </LinearLayout>

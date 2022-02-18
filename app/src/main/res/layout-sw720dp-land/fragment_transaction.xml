@@ -16,7 +16,8 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:background="@color/bg_color">
 
         <include
             android:id="@+id/includeView"
@@ -29,7 +30,7 @@
             android:layout_marginTop="@dimen/_5sdp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="@dimen/_5sdp"
+            android:padding="@dimen/border_view_padding_large"
             android:background="@drawable/background_timesheet"
             android:orientation="horizontal">
 
@@ -41,8 +42,9 @@
                 android:layout_gravity="center"
                 android:gravity="center"
                 android:text="@string/tv_date_time"
-                android:textColor="@color/txtColor"
-                android:textSize="@dimen/_5mdpi" />
+                android:textAllCaps="true"
+                android:textColor="@color/white"
+                android:textSize="@dimen/text_size_normal" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 style="@style/CustomFontMediumStyle"
@@ -52,8 +54,9 @@
                 android:layout_weight="1"
                 android:gravity="center"
                 android:text="@string/tv_order_type"
-                android:textColor="@color/txtColor"
-                android:textSize="@dimen/_5mdpi" />
+                android:textColor="@color/white"
+                android:textSize="@dimen/text_size_normal"
+                android:textAllCaps="true"/>
 
             <androidx.appcompat.widget.AppCompatTextView
                 style="@style/CustomFontMediumStyle"
@@ -63,8 +66,9 @@
                 android:gravity="center"
                 android:text="@string/tv_total_amount"
                 android:layout_gravity="center"
-                android:textColor="@color/txtColor"
-                android:textSize="@dimen/_5mdpi" />
+                android:textColor="@color/white"
+                android:textSize="@dimen/text_size_normal"
+                android:textAllCaps="true"/>
 
             <androidx.appcompat.widget.AppCompatTextView
                 style="@style/CustomFontMediumStyle"
@@ -74,8 +78,9 @@
                 android:layout_gravity="center"
                 android:gravity="center"
                 android:text="@string/tv_tip_amount"
-                android:textColor="@color/txtColor"
-                android:textSize="@dimen/_5mdpi" />
+                android:textColor="@color/white"
+                android:textSize="@dimen/text_size_normal"
+                android:textAllCaps="true"/>
 
             <androidx.appcompat.widget.AppCompatTextView
                 style="@style/CustomFontMediumStyle"
@@ -84,9 +89,10 @@
                 android:layout_weight="1"
                 android:gravity="center"
                 android:layout_gravity="center"
-                android:text="Customer Name"
-                android:textColor="@color/txtColor"
-                android:textSize="@dimen/_5mdpi" />
+                android:text="Customer"
+                android:textColor="@color/white"
+                android:textSize="@dimen/text_size_normal"
+                android:textAllCaps="true"/>
 
             <androidx.appcompat.widget.AppCompatTextView
                 style="@style/CustomFontMediumStyle"
@@ -108,8 +114,9 @@
                 android:gravity="center"
                 android:layout_gravity="center"
                 android:text="Team Member"
-                android:textColor="@color/txtColor"
-                android:textSize="@dimen/_5mdpi" />
+                android:visibility="gone"
+                android:textColor="@color/white"
+                android:textSize="@dimen/text_size_large" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 style="@style/CustomFontMediumStyle"
@@ -119,8 +126,9 @@
                 android:gravity="center"
                 android:layout_gravity="center"
                 android:text="@string/tv_transaction_receipt_id"
-                android:textColor="@color/txtColor"
-                android:textSize="@dimen/_5mdpi" />
+                android:textColor="@color/white"
+                android:textSize="@dimen/text_size_normal"
+                android:textAllCaps="true"/>
 
             <androidx.appcompat.widget.AppCompatTextView
                 style="@style/CustomFontMediumStyle"
@@ -129,9 +137,10 @@
                 android:layout_weight="1"
                 android:layout_gravity="center"
                 android:gravity="center"
+                android:visibility="gone"
                 android:text="@string/tv_terminal_id"
-                android:textColor="@color/txtColor"
-                android:textSize="@dimen/_5mdpi" />
+                android:textColor="@color/white"
+                android:textSize="@dimen/text_size_large" />
 
         </LinearLayout>
 
@@ -144,7 +153,7 @@
             android:visibility="gone"
             android:gravity="center"
             android:textSize="@dimen/_6sdp"
-            android:textColor="@color/black"
+            android:textColor="@color/txtColor"
             android:layout_weight="1" />
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvTeamTimeSheet"
