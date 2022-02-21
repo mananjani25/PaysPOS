@@ -17,7 +17,7 @@
         android:layout_marginLeft="@dimen/_15sdp"
         android:layout_marginTop="@dimen/_15sdp"
         android:layout_marginRight="@dimen/_15sdp"
-        android:background="@color/white"
+        android:background="@color/bg_color"
         android:orientation="vertical"
         tools:context=".ui.activity.StartActivity">
 
@@ -54,7 +54,7 @@
                 android:layout_marginBottom="@dimen/_10sdp"
                 android:gravity="center"
                 android:text="@string/select_a_team_member_to_view_details"
-                android:textColor="@color/colorC4"
+                android:textColor="@color/txtColorGray"
                 android:textSize="@dimen/_6mdpi" />
 
         </androidx.appcompat.widget.LinearLayoutCompat>
@@ -65,33 +65,41 @@
             android:layout_height="match_parent">
 
             <LinearLayout
-                android:background="@color/white"
+                android:background="@color/bg_color"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical">
 
                 <androidx.appcompat.widget.AppCompatTextView
                     style="@style/CustomFontSemiBold"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="@dimen/_10sdp"
-                    android:text="@string/tv_personal_info"
+                    android:layout_marginBottom="@dimen/_5sdp"
+                    android:text="@string/personal_information"
+                    android:textAllCaps="true"
                     android:textColor="@color/txtColor"
-                    android:textSize="@dimen/_7mdpi" />
+                    android:textSize="@dimen/_6mdpi" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="0.5dp"
+                    android:background="@color/view" />
+
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    android:layout_marginTop="@dimen/_15sdp">
 
                     <androidx.appcompat.widget.AppCompatTextView
-                        style="@style/CustomFontRegularStyle"
+                        style="@style/CustomFontMediumStyle"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:text="@string/first_name_normal"
-                        android:textColor="@color/txtColor"
-                        android:textSize="@dimen/_6mdpi" />
+                        android:textColor="@color/txtColorGray"
+                        android:textSize="@dimen/text_size_normal" />
 
                     <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/txtFirstName"
@@ -99,24 +107,17 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        android:layout_marginTop="@dimen/_3sdp"
-                        android:layout_marginBottom="@dimen/_3sdp"
                         android:text="David"
-                        android:textColor="@color/colorB9"
-                        android:textSize="@dimen/_6mdpi" />
-
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:layout_marginBottom="@dimen/_5sdp"
-                        android:background="@color/txtColorGray" />
+                        android:textColor="@color/txtColor"
+                        android:textSize="@dimen/text_size_medium" />
 
                 </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    android:layout_marginTop="@dimen/_10sdp">
 
                     <androidx.appcompat.widget.AppCompatTextView
                         style="@style/CustomFontRegularStyle"
@@ -124,8 +125,8 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:text="@string/last_name_normal"
-                        android:textColor="@color/txtColor"
-                        android:textSize="@dimen/_6mdpi" />
+                        android:textColor="@color/txtColorGray"
+                        android:textSize="@dimen/text_size_normal" />
 
                     <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/txtLastName"
@@ -133,24 +134,19 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        android:layout_marginTop="@dimen/_3sdp"
-                        android:layout_marginBottom="@dimen/_3sdp"
+                        android:layout_marginTop="@dimen/_2ssp"
                         android:text="Miller"
-                        android:textColor="@color/colorB9"
-                        android:textSize="@dimen/_6mdpi" />
+                        android:textColor="@color/txtColor"
+                        android:textSize="@dimen/text_size_medium" />
 
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:layout_marginBottom="@dimen/_5sdp"
-                        android:background="@color/txtColorGray" />
 
                 </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    android:layout_marginTop="@dimen/_10sdp">
 
                     <androidx.appcompat.widget.AppCompatTextView
                         style="@style/CustomFontRegularStyle"
@@ -159,7 +155,7 @@
                         android:layout_gravity="center"
                         android:text="@string/tv_email_address_"
                         android:textColor="@color/txtColor"
-                        android:textSize="@dimen/_6mdpi" />
+                        android:textSize="@dimen/text_size_normal" />
 
                     <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/txtEmail"
@@ -167,24 +163,19 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        android:layout_marginTop="@dimen/_3sdp"
-                        android:layout_marginBottom="@dimen/_3sdp"
+                        android:layout_marginTop="@dimen/_2ssp"
                         android:text="david@gmail.com"
                         android:textColor="@color/btnColor"
-                        android:textSize="@dimen/_6mdpi" />
+                        android:textSize="@dimen/text_size_medium" />
 
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:layout_marginBottom="@dimen/_5sdp"
-                        android:background="@color/txtColorGray" />
 
                 </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    android:layout_marginTop="@dimen/_10sdp">
 
                     <androidx.appcompat.widget.AppCompatTextView
                         style="@style/CustomFontRegularStyle"
@@ -193,7 +184,7 @@
                         android:layout_gravity="center"
                         android:text="@string/_phone"
                         android:textColor="@color/txtColor"
-                        android:textSize="@dimen/_6mdpi" />
+                        android:textSize="@dimen/text_size_normal" />
 
                     <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/txtPhone"
@@ -201,34 +192,45 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        android:layout_marginTop="@dimen/_3sdp"
-                        android:layout_marginBottom="@dimen/_3sdp"
+                        android:layout_marginTop="@dimen/_2ssp"
                         android:text="None"
                         android:textColor="@color/colorB9"
-                        android:textSize="@dimen/_6mdpi" />
+                        android:textSize="@dimen/text_size_medium" />
 
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:layout_marginBottom="@dimen/_10sdp"
-                        android:background="@color/txtColorGray" />
 
                 </LinearLayout>
+
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="@dimen/_15sdp"
+                    android:background="@color/txtColorGray" />
+
 
                 <androidx.appcompat.widget.AppCompatTextView
                     style="@style/CustomFontSemiBold"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="@dimen/_10sdp"
                     android:text="@string/tv_jobs"
+                    android:textAllCaps="true"
                     android:textColor="@color/txtColor"
-                    android:textSize="@dimen/_7mdpi" />
+                    android:textSize="@dimen/text_size_large"
+                    android:layout_marginTop="@dimen/_10sdp"/>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="@dimen/_10sdp"
+                    android:background="@color/txtColorGray" />
+
 
                 <LinearLayout
                     android:visibility="gone"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    android:layout_marginTop="@dimen/_10sdp">
 
                     <androidx.appcompat.widget.AppCompatTextView
                         style="@style/CustomFontRegularStyle"
@@ -236,8 +238,8 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:text="@string/tv_primary_job_title"
-                        android:textColor="@color/black"
-                        android:textSize="@dimen/_6mdpi" />
+                        android:textColor="@color/txtColorGray"
+                        android:textSize="@dimen/text_size_normal" />
 
                     <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/txtJobTitle"
@@ -245,24 +247,24 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        android:layout_marginTop="@dimen/_3sdp"
-                        android:layout_marginBottom="@dimen/_3sdp"
+                        android:layout_marginTop="@dimen/_2ssp"
                         android:text="owner"
-                        android:textColor="@color/colorB9"
+                        android:textColor="@color/txtColor"
                         android:textSize="@dimen/_6mdpi" />
 
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
-                        android:layout_marginBottom="@dimen/_5sdp"
-                        android:background="@color/txtColorGray" />
+                        android:layout_marginTop="@dimen/_10sdp"
+                        android:background="@color/view" />
 
                 </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    android:layout_marginTop="@dimen/_10sdp">
 
                     <androidx.appcompat.widget.AppCompatTextView
                         style="@style/CustomFontRegularStyle"
@@ -270,8 +272,8 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:text="@string/tv_hourly_rate"
-                        android:textColor="@color/black"
-                        android:textSize="@dimen/_6mdpi" />
+                        android:textColor="@color/txtColorGray"
+                        android:textSize="@dimen/text_size_normal" />
 
                     <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/txtHourlyRate"
@@ -279,33 +281,42 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        android:layout_marginTop="@dimen/_3sdp"
-                        android:layout_marginBottom="@dimen/_3sdp"
+                        android:layout_marginTop="@dimen/_2ssp"
                         android:text="None"
-                        android:textColor="@color/colorB9"
-                        android:textSize="@dimen/_6mdpi" />
+                        android:textColor="@color/txtColor"
+                        android:textSize="@dimen/text_size_medium" />
 
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
-                        android:layout_marginBottom="@dimen/_10sdp"
-                        android:background="@color/txtColorGray" />
+                        android:layout_marginTop="@dimen/_10sdp"
+                        android:background="@color/view" />
 
                 </LinearLayout>
+
 
                 <androidx.appcompat.widget.AppCompatTextView
                     style="@style/CustomFontSemiBold"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="@dimen/_10sdp"
                     android:text="@string/tv_access"
-                    android:textColor="@color/black"
+                    android:layout_marginTop="@dimen/_10sdp"
+                    android:textColor="@color/txtColor"
                     android:textSize="@dimen/_7mdpi" />
+
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginTop="@dimen/_10sdp"
+                    android:background="@color/txtColorGray" />
+
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    android:layout_marginTop="@dimen/_10sdp">
 
                     <androidx.appcompat.widget.AppCompatTextView
                         style="@style/CustomFontRegularStyle"
@@ -313,8 +324,8 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:text="Role"
-                        android:textColor="@color/black"
-                        android:textSize="@dimen/_6mdpi" />
+                        android:textColor="@color/txtColorGray"
+                        android:textSize="@dimen/text_size_normal" />
 
                     <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/txtPermissionSet"
@@ -322,24 +333,24 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        android:layout_marginTop="@dimen/_3sdp"
-                        android:layout_marginBottom="@dimen/_3sdp"
+                        android:layout_marginTop="@dimen/_2ssp"
                         tools:text="Owner"
-                        android:textColor="@color/colorB9"
-                        android:textSize="@dimen/_6mdpi" />
+                        android:textColor="@color/txtColor"
+                        android:textSize="@dimen/text_size_medium" />
 
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
-                        android:layout_marginBottom="@dimen/_5sdp"
-                        android:background="@color/txtColorGray" />
+                        android:layout_marginTop="@dimen/_10sdp"
+                        android:background="@color/view" />
 
                 </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    android:layout_marginTop="@dimen/_10sdp">
 
                     <androidx.appcompat.widget.AppCompatTextView
                         style="@style/CustomFontRegularStyle"
@@ -347,7 +358,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:text="@string/tv_personal_passcode"
-                        android:textColor="@color/black"
+                        android:textColor="@color/txtColorGray"
                         android:textSize="@dimen/_6mdpi" />
 
                     <androidx.appcompat.widget.AppCompatTextView
@@ -356,24 +367,24 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        android:layout_marginTop="@dimen/_3sdp"
-                        android:layout_marginBottom="@dimen/_3sdp"
+                        android:layout_marginTop="@dimen/_2ssp"
                         android:text="1234"
-                        android:textColor="@color/colorB9"
-                        android:textSize="@dimen/_6mdpi" />
+                        android:textColor="@color/txtColor"
+                        android:textSize="@dimen/text_size_medium" />
 
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
-                        android:layout_marginBottom="@dimen/_5sdp"
-                        android:background="@color/txtColorGray" />
+                        android:layout_marginTop="@dimen/_10sdp"
+                        android:background="@color/view" />
 
                 </LinearLayout>
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical">
+                    android:orientation="vertical"
+                    android:layout_marginTop="@dimen/_10sdp">
 
                     <androidx.appcompat.widget.AppCompatTextView
                         style="@style/CustomFontRegularStyle"
@@ -381,8 +392,8 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:text="@string/tv_location"
-                        android:textColor="@color/black"
-                        android:textSize="@dimen/_6mdpi" />
+                        android:textColor="@color/txtColorGray"
+                        android:textSize="@dimen/text_size_normal" />
 
                     <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/txtLocation"
@@ -390,17 +401,12 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        android:layout_marginTop="@dimen/_3sdp"
-                        android:layout_marginBottom="@dimen/_3sdp"
+                        android:layout_marginTop="@dimen/_2ssp"
                         android:text="@string/all_current_and_future_locations"
-                        android:textColor="@color/colorB9"
-                        android:textSize="@dimen/_6mdpi" />
+                        android:textColor="@color/txtColor"
+                        android:textSize="@dimen/text_size_medium"
+                        android:layout_marginBottom="@dimen/_10sdp"/>
 
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:layout_marginBottom="@dimen/_5sdp"
-                        android:background="@color/txtColorGray" />
 
                 </LinearLayout>
             </LinearLayout>

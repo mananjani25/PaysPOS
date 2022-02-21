@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/txtColorGray"
+    android:background="@color/grayBackgroundColor"
     tools:ignore="MissingDefaultResource">
 
 
@@ -16,7 +16,7 @@
         android:paddingTop="@dimen/_2sdp"
         android:paddingEnd="@dimen/_5sdp"
         android:paddingBottom="@dimen/_2sdp"
-        android:textColor="@color/black"
+        android:textColor="@color/white"
         android:textSize="@dimen/_5mdpi"
         tools:text="A" />
 
