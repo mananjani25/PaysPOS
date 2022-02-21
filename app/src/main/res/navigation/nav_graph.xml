@@ -1149,7 +1149,7 @@
     <dialog
         android:id="@+id/menuFragment"
         android:name="com.android.pos.ui.fragments.posmenu.MenuFragment"
-        android:label="MenuFragment" >
+        android:label="MenuFragment">
         <action
             android:id="@+id/action_menuFragment_to_settings"
             app:destination="@id/settings"
@@ -1181,7 +1181,7 @@
             app:enterAnim="@anim/nav_default_enter_anim"
             app:popUpToInclusive="true" />
         <action
-                android:id="@+id/action_menuFragment_to_reports"
+            android:id="@+id/action_menuFragment_to_reports"
             app:destination="@id/reports"
             app:enterAnim="@anim/nav_default_enter_anim"
             app:popUpToInclusive="true" />
@@ -1196,5 +1196,10 @@
             app:enterAnim="@anim/nav_default_enter_anim"
             app:popUpToInclusive="true" />
     </dialog>
+    <fragment
+        android:id="@+id/dummyFragment"
+        android:name="com.android.pos.ui.fragments.DummyFragment"
+        android:label="DummyFragment"
+        tools:layout="@layout/fragment_dummy" />
 
 </navigation>

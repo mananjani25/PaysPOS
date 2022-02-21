@@ -29,13 +29,32 @@ class Hardware : Fragment(), HardwareListAdapter.HardwareListner {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setAdapter()
+
+        onClick()
+
+
+    }
+
+    private fun onClick() {
+
         binding.imgBack.setOnClickListener {
             findNavController().navigateUp()
         }
         binding.txtHome.setOnClickListener {
             findNavController().navigate(R.id.action_hardware_to_dashboardCategoryNew)
         }
+        binding.txtPrinter.setOnClickListener {
+            findNavController().navigate(R.id.action_hardware_to_printer)
+
+        }
+        binding.txtScanGun.setOnClickListener {
+            findNavController().navigate(R.id.action_hardware_to_scannerListFragment)
+        }
+        binding.txtPrinterQueue.setOnClickListener {
+            findNavController().navigate(R.id.action_hardware_to_printerQueue)
+        }
+
+
     }
 
     private fun setAdapter() {
@@ -48,7 +67,7 @@ class Hardware : Fragment(), HardwareListAdapter.HardwareListner {
         list.add(HardwareModel(0, Constants.HARDWARE_PRINTER_QUEUE))
         val adapter = HardwareListAdapter(requireContext(), list)
         adapter.setListner(this)
-        binding.rvHardwareList.adapter = adapter
+        //   binding.rvHardwareList.adapter = adapter
 
     }
 
