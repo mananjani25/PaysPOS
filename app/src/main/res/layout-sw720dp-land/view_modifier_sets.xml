@@ -14,18 +14,20 @@
 
     <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent"
+        android:background="@color/bg_color"
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
         <View
+            android:id="@+id/firstview_modifier"
             android:visibility="gone"
             android:layout_width="match_parent"
-            android:layout_height="0.2dp"
-            android:background="@color/view" />
+            android:layout_height="1dp"
+            android:background="@color/cool_grey" />
 
         <androidx.appcompat.widget.LinearLayoutCompat
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="@dimen/_27sdp"
             android:orientation="horizontal"
             android:paddingStart="@dimen/_5sdp"
             android:paddingTop="@dimen/_2sdp"
@@ -34,6 +36,7 @@
 
             <androidx.appcompat.widget.LinearLayoutCompat
                 android:layout_width="0dp"
+                android:layout_gravity="center_vertical"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:orientation="vertical">
@@ -45,7 +48,7 @@
                     android:layout_gravity="center"
                     android:gravity="start"
                     android:text="@{model.name}"
-                    android:textColor="@color/viewTextColor"
+                    android:textColor="@color/txtColor"
                     android:textSize="@dimen/_5mdpi"
                     tools:text="Image one" />
 
@@ -56,7 +59,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:gravity="start"
-                    android:textColor="@color/colorCB"
+                    android:textColor="@color/hint_color"
                     android:textSize="@dimen/_5mdpi"
                     tools:text="Image one" />
 
@@ -83,10 +86,10 @@
 
 
         <View
-            android:visibility="gone"
+            android:visibility="visible"
             android:layout_width="match_parent"
-            android:layout_height="0.3dp"
-            android:background="@color/view" />
+            android:layout_height="1dp"
+            android:background="@color/cool_grey" />
 
     </androidx.appcompat.widget.LinearLayoutCompat>
 </layout>

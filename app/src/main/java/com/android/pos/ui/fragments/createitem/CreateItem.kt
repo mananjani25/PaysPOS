@@ -403,7 +403,7 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback {
 
 
         binding.header.txtSave.text = getString(R.string.save)
-        binding.header.txtTitle.text = getString(R.string.create_item)
+        binding.header.txtTitle.text = getString(R.string.add_new_itemswithoutplus)
 
         if (isEdit) {
 

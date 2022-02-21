@@ -9,12 +9,13 @@
 
     <androidx.appcompat.widget.AppCompatImageView
         android:id="@+id/imgBack"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="@dimen/_20sdp"
+        android:layout_height="@dimen/_20sdp"
         android:layout_centerVertical="true"
         android:layout_gravity="center"
-        android:padding="@dimen/_6sdp"
-        app:srcCompat="@drawable/ic_cancel_white" />
+        android:padding="@dimen/_4sdp"
+        android:layout_marginStart="@dimen/_5sdp"
+        app:srcCompat="@drawable/ic_arrow_back" />
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/txtTitle"

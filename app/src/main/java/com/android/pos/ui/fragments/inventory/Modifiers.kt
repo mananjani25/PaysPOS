@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.R
 import com.android.pos.databinding.FragmentModifiersBinding
+
 import com.android.pos.ui.adapter.ModifierSetsListAdapter
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.ProgressUtils
@@ -58,7 +59,7 @@ class Modifiers : Fragment(), TextWatcher {
 
 
     private fun onClick() {
-        binding.txtCreateModifierSet.setOnClickListener {
+        binding.txtcreatemodifieer.setOnClickListener {
             findNavController().navigate(R.id.action_inventory_to_createIModifierSet)
         }
     }
@@ -79,7 +80,7 @@ class Modifiers : Fragment(), TextWatcher {
 
     private fun modifierSetsObserver() {
 
-        viewModel.modifierSets().observe(viewLifecycleOwner, {
+        viewModel.modifierSets().observe(viewLifecycleOwner) {
 
             it?.let { resource ->
                 when (resource.status) {
@@ -103,7 +104,7 @@ class Modifiers : Fragment(), TextWatcher {
             }
 
 
-        })
+        }
     }
 
     private fun swipeViewSetup() {
