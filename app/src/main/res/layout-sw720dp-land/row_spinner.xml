@@ -10,6 +10,6 @@
     android:paddingTop="@dimen/_3sdp"
     android:paddingEnd="@dimen/_5sdp"
     android:paddingBottom="@dimen/_4sdp"
-    android:textColor="@color/whiteA1"
+    android:textColor="@color/txtColor"
     android:textSize="@dimen/_5mdpi"
     tools:ignore="MissingDefaultResource" />
