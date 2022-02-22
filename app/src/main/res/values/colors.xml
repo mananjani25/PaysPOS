@@ -39,6 +39,7 @@
     <color name="color65">#656565</color>
     <color name="dashBackground">#F3F4F6</color>
     <color name="txt_color_blue">#FF6700</color>
+    <color name="switchThumb">#8b8b8b</color>
 
     <color name="colorDashBack">#F3F4F6</color>
     <color name="drawerBack">#292E32</color>
@@ -114,4 +115,6 @@
     <color name="blackA1">#FFFFFF</color>
     <color name="menu_item_border">#585858</color>
     <color name="backgroundColor">#2D2D2D</color>//Same in both mode
+    <color name="bg_printer_label">#FFFFFF</color>
+    <color name="switchTrackColor">#363636</color>
 </resources>

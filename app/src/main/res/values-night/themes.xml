@@ -1,4 +1,4 @@
-    <resources xmlns:tools="http://schemas.android.com/tools">
+<resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
     <style name="Theme.POSAndroid" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <!-- Primary brand color. -->
@@ -25,6 +25,11 @@
     <style name="CustomFontSemiBold" parent="@android:style/TextAppearance.Medium">
         <item name="android:fontFamily">@font/sf_pro_display_semibold</item>
     </style>
+
+    <style name="CustomFontLight" parent="TextAppearance.AppCompat">
+        <item name="android:fontFamily">@font/sf_pro_display_light</item>
+    </style>
+
     <style name="CustomFontBold" parent="@android:style/TextAppearance.Medium">
         <item name="android:fontFamily">@font/sf_pro_display_bold</item>
     </style>
