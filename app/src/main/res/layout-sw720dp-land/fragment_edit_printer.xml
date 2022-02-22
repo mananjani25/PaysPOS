@@ -18,13 +18,15 @@
                 android:id="@+id/imgClose"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
                 android:layout_gravity="center"
                 android:background="?attr/selectableItemBackground"
-                android:padding="@dimen/_6sdp"
-                android:src="@drawable/ic_cancel_black"
+                android:padding="@dimen/_8sdp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/ic_arrow_back"
+                app:tint="@color/txtColor" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/txtTitle"
@@ -34,8 +36,8 @@
                 android:layout_gravity="center"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:text="@string/edit_printer"
-                android:textColor="@color/viewTextColor"
+                android:text="@string/edit_printers"
+                android:textColor="@color/txtColor"
                 android:textSize="@dimen/_6mdpi"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -45,16 +47,16 @@
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/txtSave"
-                style="@style/CustomFontSemiBold"
+                style="@style/CustomFontHeavy"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="0dp"
                 android:layout_gravity="center"
                 android:background="@color/txt_color_blue"
                 android:gravity="center"
-                android:paddingVertical="@dimen/_6sdp"
                 android:paddingStart="@dimen/_12sdp"
                 android:paddingEnd="@dimen/_12sdp"
                 android:text="@string/save"
+                android:textAllCaps="true"
                 android:textColor="@color/white"
                 android:textSize="@dimen/_7mdpi"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -88,7 +90,7 @@
 
                     <TextView
                         android:id="@+id/txtPrinterNameLabel"
-                        style="@style/CustomFontSemiBold"
+                        style="@style/CustomFontMediumStyle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentStart="true"
@@ -126,7 +128,7 @@
 
                     <TextView
                         android:id="@+id/txtMacAddressLabel"
-                        style="@style/CustomFontSemiBold"
+                        style="@style/CustomFontMediumStyle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentStart="true"
@@ -161,13 +163,13 @@
 
                     <TextView
                         android:id="@+id/txtTypeLabel"
-                        style="@style/CustomFontSemiBold"
+                        style="@style/CustomFontMediumStyle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentStart="true"
                         android:layout_marginStart="@dimen/_5sdp"
-                        android:text="Printer Type"
-                        android:textColor="@color/txtColor"
+                        android:text="Select Printer Type"
+                        android:textColor="@color/txt_color_blue"
                         android:textSize="@dimen/_6mdpi" />
 
                     <TextView
@@ -211,13 +213,13 @@
 
                     <TextView
                         android:id="@+id/txtModelNameLabel"
-                        style="@style/CustomFontSemiBold"
+                        style="@style/CustomFontMediumStyle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignParentStart="true"
                         android:layout_marginStart="@dimen/_5sdp"
                         android:text="Model Name"
-                        android:textColor="@color/txtColor"
+                        android:textColor="@color/txt_color_blue"
                         android:textSize="@dimen/_6mdpi" />
 
                     <TextView
@@ -246,7 +248,7 @@
 
                     <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/txtPrintersLabel"
-                        style="@style/CustomFontBold"
+                        style="@style/CustomFontSemiBold"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
@@ -254,8 +256,9 @@
                         android:gravity="center"
                         android:paddingVertical="@dimen/_5sdp"
                         android:text="Printers"
+                        android:textAllCaps="true"
                         android:textColor="@color/txtColor"
-                        android:textSize="@dimen/_5mdpi" />
+                        android:textSize="@dimen/_6mdpi" />
 
                     <View
                         android:layout_width="1dp"
@@ -264,7 +267,7 @@
 
                     <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/txtTestPrint"
-                        style="@style/CustomFontBold"
+                        style="@style/CustomFontSemiBold"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
@@ -272,8 +275,9 @@
                         android:gravity="start"
                         android:paddingStart="@dimen/_5sdp"
                         android:text="Print Type"
+                        android:textAllCaps="true"
                         android:textColor="@color/txtColor"
-                        android:textSize="@dimen/_5mdpi" />
+                        android:textSize="@dimen/_6mdpi" />
 
                     <View
                         android:layout_width="1dp"
@@ -301,15 +305,16 @@
 
                     <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/txtConnStatus"
-                        style="@style/CustomFontBold"
+                        style="@style/CustomFontSemiBold"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:layout_weight="1"
                         android:gravity="center"
                         android:text="Auto Print"
+                        android:textAllCaps="true"
                         android:textColor="@color/txtColor"
-                        android:textSize="@dimen/_5mdpi" />
+                        android:textSize="@dimen/_6mdpi" />
 
                 </androidx.appcompat.widget.LinearLayoutCompat>
 

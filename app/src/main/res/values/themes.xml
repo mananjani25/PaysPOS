@@ -44,6 +44,11 @@
         <item name="android:fontFamily">@font/sf_pro_display_semibold</item>
     </style>
 
+    <style name="CustomFontHeavy" parent="TextAppearance.AppCompat">
+        <item name="android:fontFamily">@font/sf_pro_display_heavy</item>
+
+    </style>
+
     <style name="CustomFontLight" parent="TextAppearance.AppCompat">
         <item name="android:fontFamily">@font/sf_pro_display_light</item>
     </style>
@@ -98,7 +103,7 @@
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         ...
         <!-- Active thumb color & Active track color(30% transparency) -->
-      <!--  <item name="colorControlActivated">@color/btnColorDark</item>-->
+        <!--  <item name="colorControlActivated">@color/btnColorDark</item>-->
         <item name="trackColorActive">@color/btnColorDark</item>
         <!-- Inactive thumb color -->
         <item name="colorSwitchThumbNormal">@color/boxColor</item>
@@ -110,7 +115,7 @@
     <style name="ThemePrinterSwitch" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="colorControlActivated">@color/btnColor</item>
         <!-- Inactive thumb color -->
-      <!--  <item name="colorSwitchThumbNormal">@color/switchThumb</item>-->
+        <!--  <item name="colorSwitchThumbNormal">@color/switchThumb</item>-->
         <item name="thumbColor">@color/switch_thumb_selector</item>
 
         <!-- Inactive track color(30% transparency) -->

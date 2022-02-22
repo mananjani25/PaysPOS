@@ -58,6 +58,8 @@
             android:layout_gravity="center"
             android:layout_weight="1"
             android:paddingEnd="@dimen/_32sdp"
+            android:scaleX="0.7"
+            android:scaleY="0.8"
             android:showText="false"
             android:thumb="@drawable/custom_thumb_printer_active_switch"
             android:visibility="visible"
