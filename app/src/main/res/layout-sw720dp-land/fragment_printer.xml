@@ -34,7 +34,7 @@
                 android:padding="@dimen/_6sdp"
                 android:src="@drawable/ic_baseline_sync_24"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/txtHome"
+                android:layout_toLeftOf="@+id/txtHome"
                 app:layout_constraintTop_toTopOf="parent"
                 app:tint="@color/txt_color_blue" />
 

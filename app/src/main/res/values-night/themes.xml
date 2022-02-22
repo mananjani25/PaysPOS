@@ -34,5 +34,10 @@
         <item name="android:fontFamily">@font/sf_pro_display_bold</item>
     </style>
 
+    <style name="CustomFontHeavy" parent="TextAppearance.AppCompat">
+        <item name="android:fontFamily">@font/sf_pro_display_heavy</item>
+
+    </style>
+
 
 </resources>
