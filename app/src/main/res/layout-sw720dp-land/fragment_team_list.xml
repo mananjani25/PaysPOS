@@ -38,6 +38,8 @@
                 android:layout_weight="0.25"
                 android:nestedScrollingEnabled="false"
                 android:orientation="vertical"
+                android:background="@color/bg_color"
+
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 tools:listitem="@layout/view_team_item" />
 
