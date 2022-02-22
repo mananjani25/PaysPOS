@@ -138,7 +138,8 @@
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_marginTop">@dimen/_6sdp</item>
-        <item name="android:textColor">@color/viewTextColor</item>
+        <item name="android:textColor">@color/txtColor</item>
+        <item name="android:fontFamily">@font/sf_pro_display_regular</item>
         <item name="android:textSize">@dimen/_6mdpi</item>
     </style>
 </resources>
