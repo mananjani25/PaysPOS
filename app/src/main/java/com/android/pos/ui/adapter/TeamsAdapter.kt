@@ -58,6 +58,7 @@ class TeamsAdapter : SectioningAdapter(), Filterable {
         var personNumberTextView: TextView = itemView.findViewById(R.id.txtNumber)
         var tvInitialName: TextView = itemView.findViewById(R.id.tvInitialName)
         var layout: LinearLayout = itemView.findViewById(R.id.layout)
+        var view: View = itemView.findViewById(R.id.view_line)
 
     }
 
@@ -172,6 +173,8 @@ class TeamsAdapter : SectioningAdapter(), Filterable {
         val person = s.people?.get(itemIndex) as Employee
 
 
+
+
         //ivh.txtId.text = person.id.toString()
 
         ivh.personNumberTextView.text = person.phoneNumber?.let { AlertUtils.usNumberFormat(it) }
@@ -192,17 +195,26 @@ class TeamsAdapter : SectioningAdapter(), Filterable {
 
         ivh.itemView.setTag(R.string.tv_order_id, person)
 
-        ivh.itemView.tag = "normal";
+        ivh.itemView.tag = "normal"
+
+
+        val lastindex= s.people!!.size-1
+
+        if (lastindex==itemIndex)
+            ivh.view.visibility=View.GONE
+        else
+            ivh.view.visibility=View.VISIBLE
+
 
         if (isSelectedPos == person.id) {
-            ivh.layout.background =
-                ContextCompat.getDrawable(ivh.itemView.context, R.color.txt_color_blue)
+            ivh.tvInitialName.background =
+                ivh.itemView.context.getDrawable(R.drawable.bg_circle_orange)
             ivh.personNameTextView.setTextColor(ivh.itemView.context.getColorCompat(R.color.white))
             ivh.personNumberTextView.setTextColor(ivh.itemView.context.getColorCompat(R.color.white))
         } else {
             ivh.personNameTextView.setTextColor(ivh.itemView.context.getColorCompat(R.color.txtColor))
-            ivh.personNumberTextView.setTextColor(ivh.itemView.context.getColorCompat(R.color.colorB9))
-            ivh.layout.background = ContextCompat.getDrawable(ivh.itemView.context, R.color.white)
+            ivh.personNumberTextView.setTextColor(ivh.itemView.context.getColorCompat(R.color.txtColorGray))
+            ivh.tvInitialName.background = ivh.itemView.context.getDrawable(R.drawable.bg_circle_gray)
         }
 
 

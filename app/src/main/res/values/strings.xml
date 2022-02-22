@@ -727,6 +727,8 @@
     <string name="blockchain_point_of_sale">Blockchain Point of Sale</string>
     <string name="qty">Qty</string>
     <string name="each">Each</string>
+    <string name="credit_card_machine">Credit Card Machine</string>
+    <string name="add_job_title">Add job title</string>
 
 
 </resources>

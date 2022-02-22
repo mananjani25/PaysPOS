@@ -44,6 +44,7 @@
     <color name="drawerBack50">#80292E32</color>
     <color name="drawerBack40">#66292E32</color>
     <color name="drawerBack30">#4D292E32</color>
+    <color name="switchThumb">#8b8b8b</color>
 
 
     <color name="txtColorGray">#656565</color>
@@ -109,6 +110,8 @@
     <color name="blackA1">#000000</color>
     <color name="menu_item_border">#585858</color>
     <color name="backgroundColor">#2D2D2D</color>//Same in both mode
+    <color name="bg_printer_label">#585858</color>
 
     <color name="strokeColor">#535353</color>
+    <color name="switchTrackColor">#363636</color>
 </resources>

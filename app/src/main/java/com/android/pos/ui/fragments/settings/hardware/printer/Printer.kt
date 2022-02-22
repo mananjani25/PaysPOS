@@ -313,7 +313,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
               e.printStackTrace()
           }*/
 
-        binding.imgClose.setOnClickListener {
+        binding.imgBack.setOnClickListener {
             val navController = findNavController()
             navController.previousBackStackEntry?.savedStateHandle?.set(
                 com.android.pos.data.remote.Constants.KEY,
@@ -323,7 +323,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
             navController.popBackStack()
         }
 
-        binding.txtSave.setOnClickListener {
+        binding.txtHome.setOnClickListener {
             syncPrinterList(true)
 
         }

@@ -57,11 +57,14 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_weight="1"
-
-            android:paddingEnd="@dimen/_35sdp"
+            android:paddingEnd="@dimen/_32sdp"
             android:showText="false"
+            android:thumb="@drawable/custom_thumb_printer_active_switch"
             android:visibility="visible"
             app:srcCompat="@drawable/ic_arrow_forward"
+            app:thumbTint="@color/switch_thumb_selector"
+            app:track="@drawable/custom_switch_track_printer"
+            app:trackTint="@color/switch_track_tint"
             tools:ignore="UseSwitchCompatOrMaterialXml" />
 
         <androidx.appcompat.widget.LinearLayoutCompat
@@ -78,7 +81,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="@dimen/_2sdp"
                 android:src="@drawable/ic_baseline_edit_24"
-                android:tint="@color/txt_color_blue" />
+                android:tint="@color/txtColor" />
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/imgDelete"
@@ -86,7 +89,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/_2sdp"
                 android:src="@drawable/ic_baseline_delete_24"
-                android:tint="@color/txt_color_blue" />
+                android:tint="@color/txtColor" />
 
         </androidx.appcompat.widget.LinearLayoutCompat>
 

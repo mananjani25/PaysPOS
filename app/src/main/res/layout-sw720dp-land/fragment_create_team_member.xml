@@ -13,8 +13,9 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:background="@color/bg_color">
 
 
         <include
@@ -24,26 +25,26 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="0.5dp"
-            android:background="@color/gray_rect" />
+            android:background="@color/view" />
 
         <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginLeft="@dimen/_50sdp"
             android:layout_marginTop="@dimen/_15sdp"
-            android:layout_marginRight="@dimen/_50sdp"
-            android:layout_marginBottom="@dimen/_15sdp">
+            android:layout_marginHorizontal="@dimen/_70sdp"
+            android:layout_marginBottom="@dimen/_10sdp"
+            >
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/white"
+                android:background="@color/bg_color"
                 android:orientation="vertical">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@color/white"
+                    android:background="@color/bg_color"
                     android:orientation="horizontal">
 
                     <LinearLayout
@@ -60,6 +61,7 @@
                             android:layout_gravity="center"
                             android:layout_marginBottom="@dimen/_3sdp"
                             android:text="@string/first_name"
+                            android:visibility="gone"
                             android:textColor="@color/txtColor"
                             android:textSize="@dimen/_5mdpi" />
 
@@ -68,17 +70,18 @@
                             style="@style/CustomFontSemiBold"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_gravity="center"
-                            android:background="@drawable/edt_border_light_gray"
-                            android:hint="@string/first_name_normal"
+                            android:layout_marginTop="@dimen/_5sdp"
+                            android:background="@drawable/background_square_border_grey"
                             android:imeOptions="actionNext"
-                            android:inputType="textCapWords|textVisiblePassword"
-                            android:padding="@dimen/_5sdp"
+                            android:padding="@dimen/_9sdp"
                             android:maxLength="30"
+                            android:inputType="textCapWords|textVisiblePassword"
+                            android:digits="@string/character_String"
                             android:textColor="@color/txtColor"
-                            android:textColorHint="@color/hint_color_"
+                            android:textColorHint="@color/hintColor"
                             android:textSize="@dimen/_5mdpi"
-                            android:digits="@string/character_String"/>
+                            android:hint="@string/first_name"
+                            />
 
                     </LinearLayout>
 
@@ -87,7 +90,8 @@
                         android:layout_height="wrap_content"
                         android:layout_marginLeft="@dimen/_5sdp"
                         android:layout_weight="1"
-                        android:orientation="vertical">
+                        android:orientation="vertical"
+                        android:layout_marginTop="@dimen/_5sdp">
 
                         <androidx.appcompat.widget.AppCompatTextView
                             style="@style/CustomFontBold"
@@ -96,6 +100,7 @@
                             android:layout_gravity="center"
                             android:layout_marginBottom="@dimen/_3sdp"
                             android:text="@string/last_name_teammember"
+                            android:visibility="gone"
                             android:textColor="@color/txtColor"
                             android:textSize="@dimen/_5mdpi" />
 
@@ -105,20 +110,85 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
-                            android:background="@drawable/edt_border_light_gray"
+                            android:background="@drawable/background_square_border_grey"
                             android:digits="@string/character_String"
-                            android:hint="@string/last_name_normal"
+                            android:hint="@string/last_name_teammember"
                             android:imeOptions="actionNext"
-                            android:padding="@dimen/_5sdp"
+                            android:padding="@dimen/_9sdp"
                             android:textColor="@color/txtColor"
-                            android:textColorHint="@color/hint_color_"
+                            android:textColorHint="@color/hint_color"
                             android:textSize="@dimen/_5mdpi"
                             android:maxLength="30"
+
                             android:inputType="textCapWords|textVisiblePassword"
                             />
 
+
+
                     </LinearLayout>
                 </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_marginTop="@dimen/_10sdp"
+                    >
+
+                    <TextView
+                        style="@style/CustomFontRegularStyle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:hint="@string/_phone_number"
+                        android:textColorHint="@color/hint_color"
+                        android:textSize="@dimen/_5mdpi"
+                        android:visibility="visible" />
+
+                    <androidx.appcompat.widget.LinearLayoutCompat
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/_5sdp"
+                        android:background="@drawable/background_square_border_grey"
+                        android:orientation="vertical"
+                        android:visibility="visible">
+
+                        <Spinner
+                            android:id="@+id/edtCountry"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@null"
+                            android:enabled="false"
+                            android:padding="@dimen/_9sdp"
+                            android:textColor="@color/txt_color_blue"
+                            android:textSize="@dimen/_5mdpi"
+                            android:theme="@style/SpinnerTheme" />
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="0.5dp"
+                            android:background="@color/view" />
+
+                        <com.santalu.maskedittext.MaskEditText
+                            android:id="@+id/edtMobileNumber"
+                            style="@style/CustomFontMediumStyle"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@null"
+                            android:hint="(201) 555-0123"
+                            android:inputType="number"
+                            android:maxLength="20"
+                            android:padding="@dimen/_9sdp"
+                            android:textColor="@color/txtColor"
+                            android:textColorHint="@color/hint_color"
+                            android:textSize="@dimen/_5mdpi"
+                            app:met_mask="(###) ###-####" />
+
+                    </androidx.appcompat.widget.LinearLayoutCompat>
+
+
+                </LinearLayout>
+
+
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -133,6 +203,7 @@
                         android:layout_gravity="center"
                         android:layout_marginBottom="@dimen/_3sdp"
                         android:text="@string/email_address_teammember"
+                        android:visibility="gone"
                         android:textColor="@color/txtColor"
                         android:textSize="@dimen/_5mdpi" />
 
@@ -142,14 +213,14 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        android:background="@drawable/edt_border_light_gray"
+                        android:background="@drawable/background_square_border_grey"
                         android:hint="@string/tv_email"
                         android:imeOptions="actionNext"
                         android:inputType="textVisiblePassword"
-                        android:padding="@dimen/_5sdp"
+                        android:padding="@dimen/_9sdp"
                         android:digits="@string/disable_emoji_string"
-                        android:textColor="@color/txtColor"
-                        android:textColorHint="@color/hint_color_"
+                        android:textColor="@color/btnColor"
+                        android:textColorHint="@color/hintColor"
                         android:textSize="@dimen/_5mdpi" />
 
                     <androidx.appcompat.widget.AppCompatTextView
@@ -158,6 +229,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:gravity="center"
+                        android:visibility="gone"
                         android:padding="@dimen/_8sdp"
                         android:text="@string/tv_info_email"
                         android:textColor="@color/colorCB"
@@ -166,44 +238,11 @@
                 </LinearLayout>
 
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical">
-
-                    <androidx.appcompat.widget.AppCompatTextView
-                        style="@style/CustomFontBold"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_marginBottom="@dimen/_3sdp"
-                        android:text="@string/phone"
-                        android:textColor="@color/txtColor"
-                        android:textSize="@dimen/_5mdpi" />
-
-                    <com.santalu.maskedittext.MaskEditText
-                        android:id="@+id/edtMobileNumber"
-                        style="@style/CustomFontSemiBold"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:background="@drawable/edt_border_light_gray"
-                        android:hint="(201) 555-0123"
-                        android:imeOptions="actionNext"
-                        android:inputType="number"
-                        android:maxLength="20"
-                        android:padding="@dimen/_5sdp"
-                        android:digits="@string/disable_emoji_string"
-                        android:textColor="@color/txtColor"
-                        android:textColorHint="@color/hint_color_"
-                        android:textSize="@dimen/_5mdpi"
-                        app:met_mask="(###) ###-####" />
-
-
-                </LinearLayout>
 
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="0.5dp"
+                    android:visibility="gone"
                     android:layout_marginTop="@dimen/_15sdp"
                     android:background="@color/gray_rect" />
 
@@ -212,13 +251,14 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@color/white"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                    android:layout_marginTop="@dimen/_10sdp">
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
-                        android:visibility="gone">
+                        >
 
                         <androidx.appcompat.widget.AppCompatTextView
                             style="@style/CustomFontSemiBold"
@@ -228,21 +268,27 @@
                             android:layout_weight="1"
                             android:text="@string/tv_primary_job_title"
                             android:textColor="@color/txtColor"
-                            android:textSize="@dimen/_5mdpi" />
+                            android:textSize="@dimen/_5mdpi"
+                            android:visibility="gone"/>
 
-                        <androidx.appcompat.widget.AppCompatTextView
+                        <EditText
                             style="@style/CustomFontSemiBold"
-                            android:layout_width="wrap_content"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
-                            android:text="@string/tv_add_job_title"
-                            android:textColor="@color/cool_grey"
+                            android:background="@drawable/background_square_border_grey"
+                            android:padding="@dimen/_9sdp"
+                            android:inputType="numberDecimal"
+                            android:digits="@string/numbers_digits_string"
+                            android:hint="@string/add_job_title"
+                            android:textColorHint="@color/hint_color"
                             android:textSize="@dimen/_5mdpi" />
 
                         <androidx.appcompat.widget.AppCompatImageView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:padding="@dimen/_5sdp"
+                            android:visibility="gone"
                             android:src="@drawable/ic_arrow_right" />
                     </LinearLayout>
                 </LinearLayout>
@@ -256,7 +302,8 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                    android:layout_marginTop="@dimen/_10sdp">
 
                     <androidx.appcompat.widget.AppCompatTextView
                         style="@style/CustomFontSemiBold"
@@ -266,36 +313,40 @@
                         android:layout_weight="1"
                         android:text="@string/tv_hourly_rate"
                         android:textColor="@color/txtColor"
+                        android:visibility="gone"
                         android:textSize="@dimen/_5mdpi" />
 
                     <androidx.appcompat.widget.AppCompatEditText
                         android:id="@+id/edtHours"
                         style="@style/CustomFontSemiBold"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        android:background="@null"
-                        android:hint="None"
+                        android:background="@drawable/background_square_border_grey"
+                        android:hint="Add Hourly rate"
                         android:imeOptions="actionNext"
                         android:inputType="numberDecimal"
                         android:digits="@string/disable_emoji_string"
-                        android:padding="@dimen/_5sdp"
+                        android:padding="@dimen/_9sdp"
                         android:textColor="@color/txtColor"
-                        android:textColorHint="@color/cool_grey"
-                        android:textSize="@dimen/_5mdpi" />
+                        android:textColorHint="@color/hint_color"
+                        android:textSize="@dimen/_5mdpi"
+                        />
                 </LinearLayout>
 
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="0.5dp"
-                    android:background="@color/gray_rect" />
+                    android:background="@color/gray_rect"
+                    android:visibility="gone"/>
 
                 <LinearLayout
                     android:id="@+id/llPermission"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
-                    tools:ignore="UselessParent">
+                    tools:ignore="UselessParent"
+                    android:layout_marginTop="@dimen/_10sdp">
 
                     <androidx.appcompat.widget.AppCompatTextView
                         style="@style/CustomFontSemiBold"
@@ -304,36 +355,35 @@
                         android:layout_gravity="center"
                         android:layout_weight="1"
                         android:text="@string/tv_permission_set_"
+                        android:visibility="gone"
                         android:textColor="@color/txtColor"
                         android:textSize="@dimen/_5mdpi" />
 
                     <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/txtRoleName"
                         style="@style/CustomFontSemiBold"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
+                        android:padding="@dimen/_9sdp"
+                        android:background="@drawable/background_square_border_grey"
                         android:text="@string/tv_team_permissions"
-                        android:textColor="@color/cool_grey"
+                        android:textColor="@color/btnColor"
                         android:textSize="@dimen/_5mdpi" />
 
-                    <androidx.appcompat.widget.AppCompatImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:padding="@dimen/_5sdp"
-                        android:src="@drawable/ic_arrow_right" />
                 </LinearLayout>
 
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="0.5dp"
-                    android:background="@color/gray_rect" />
+                    android:background="@color/gray_rect"
+                    android:visibility="gone"/>
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                    android:layout_marginTop="@dimen/_10sdp">
 
                     <androidx.appcompat.widget.AppCompatTextView
                         style="@style/CustomFontSemiBold"
@@ -342,31 +392,32 @@
                         android:layout_gravity="center"
                         android:layout_weight="1"
                         android:text="@string/tv_personal_passcode_"
+                        android:visibility="gone"
                         android:textColor="@color/txtColor"
                         android:textSize="@dimen/_5mdpi" />
 
                     <androidx.appcompat.widget.AppCompatEditText
                         android:id="@+id/edtPasscode"
                         style="@style/CustomFontSemiBold"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        android:background="@null"
-                        android:hint="6548"
+                        android:hint="@string/tv_personal_passcode_"
+                        android:background="@drawable/background_square_border_grey"
                         android:digits="@string/numbers_digits_string"
                         android:inputType="number"
                         android:maxLength="4"
-
-                        android:padding="@dimen/_5sdp"
+                        android:padding="@dimen/_9sdp"
 
                         android:textColor="@color/txtColor"
-                        android:textColorHint="@color/cool_grey"
+                        android:textColorHint="@color/hint_color"
                         android:textSize="@dimen/_5mdpi" />
                 </LinearLayout>
 
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="0.5dp"
+                    android:visibility="gone"
                     android:background="@color/gray_rect" />
 
                 <LinearLayout
@@ -405,6 +456,7 @@
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="0.5dp"
+                    android:visibility="gone"
                     android:layout_marginBottom="@dimen/_8sdp"
                     android:background="@color/gray_rect" />
             </LinearLayout>
