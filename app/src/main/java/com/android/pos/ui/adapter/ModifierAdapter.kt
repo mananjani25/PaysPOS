@@ -5,6 +5,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.data.entities.Modifier
 import com.android.pos.databinding.ViewModifiersRemoveBinding
+
 import com.android.pos.utils.EditTextWatcher
 import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.PriceTextWatcher
@@ -41,6 +42,7 @@ class ModifierAdapter(private val isEdit: Boolean) :
                     list[bindingAdapterPosition]._destroy = true
                     deletedList.add(list[bindingAdapterPosition])
                 }
+
                 list.removeAt(bindingAdapterPosition)
                 notifyItemRemoved(bindingAdapterPosition)
 

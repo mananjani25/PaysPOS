@@ -7,6 +7,7 @@
     <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@color/bg_color"
         android:orientation="vertical">
 
         <RelativeLayout
@@ -20,8 +21,8 @@
                 android:layout_centerVertical="true"
                 android:layout_gravity="center"
                 android:padding="@dimen/_5sdp"
-                app:srcCompat="@drawable/ic_cancel_black"
-                app:tint="@color/viewTextColor" />
+                app:srcCompat="@drawable/ic_cancel_white"
+                 />
 
             <androidx.appcompat.widget.AppCompatTextView
                 style="@style/CustomFontSemiBold"
@@ -33,21 +34,20 @@
                 android:layout_gravity="center"
                 android:gravity="center"
                 android:text="Categories"
+                android:textColor="@color/txtColor"
                 android:textSize="@dimen/_7mdpi" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/txtDone"
                 style="@style/CustomFontSemiBold"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="@dimen/_25sdp"
                 android:layout_alignParentEnd="true"
                 android:layout_gravity="center"
                 android:background="@color/btnColor"
                 android:gravity="center"
-                android:paddingStart="@dimen/_25sdp"
-                android:paddingTop="@dimen/_5sdp"
-                android:paddingEnd="@dimen/_25sdp"
-                android:paddingBottom="@dimen/_5sdp"
+                android:paddingHorizontal="@dimen/_25sdp"
+                android:paddingVertical="@dimen/_5sdp"
                 android:text="@string/tv_done"
                 android:textColor="@color/white"
                 android:textSize="@dimen/_7mdpi" />
@@ -56,7 +56,7 @@
 
         <View
             android:layout_width="match_parent"
-            android:layout_height="1dp"
+            android:layout_height="0.5dp"
             android:background="@color/view" />
 
         <androidx.appcompat.widget.AppCompatEditText
@@ -79,17 +79,14 @@
 
         <View
             android:layout_width="match_parent"
-            android:layout_height="1dp"
+            android:layout_height="0.5dp"
             android:background="@color/view" />
 
         <androidx.appcompat.widget.LinearLayoutCompat
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginStart="@dimen/_20sdp"
-            android:layout_marginTop="@dimen/_10sdp"
-            android:layout_marginEnd="@dimen/_20sdp"
-            android:layout_marginBottom="@dimen/_10sdp"
-            android:background="@color/white"
+            android:layout_marginHorizontal="@dimen/_20sdp"
+            android:layout_marginVertical="@dimen/_10sdp"
             android:orientation="vertical">
 
             <ProgressBar
@@ -104,7 +101,7 @@
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rvTaxes"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:orientation="vertical"
                 android:visibility="gone"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"

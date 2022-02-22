@@ -5,12 +5,14 @@ import android.text.SpannableStringBuilder
 import android.text.TextUtils
 import android.text.style.TextAppearanceSpan
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.MainApplication
 import com.android.pos.R
 import com.android.pos.data.entities.TaxData
 import com.android.pos.databinding.ViewTaxBinding
+
 
 class TaxesAdapter(private val isChoose: Boolean) :
     RecyclerView.Adapter<TaxesAdapter.MyViewHolder>() {
@@ -43,6 +45,11 @@ class TaxesAdapter(private val isChoose: Boolean) :
             //discount name and rate
             setupNameAndRate(taxData.name, taxData.showFormattedTaxRate())
 
+            if (absoluteAdapterPosition == 0) {
+                binding.firstViewTax.visibility = View.VISIBLE
+            } else {
+                binding.firstViewTax.visibility = View.GONE
+            }
             //selection option
             if (isChoose) {
                 if (taxData.isChecked == true) {
@@ -56,23 +63,8 @@ class TaxesAdapter(private val isChoose: Boolean) :
         }
 
         private fun setupNameAndRate(name: String?, rate: String?) {
-            val ssName = SpannableStringBuilder("$name")
-            ssName.setSpan(
-                TextAppearanceSpan(MainApplication.getInstance(), R.style.DateStyle),
-                0,
-                ssName.length,
-                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
-            )
-
-            val ssRate = SpannableStringBuilder("$rate")
-            ssRate.setSpan(
-                TextAppearanceSpan(MainApplication.getInstance(), R.style.TimeStyle),
-                0,
-                ssRate.length,
-                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
-            )
-            TextUtils.concat(ssName, "\n", ssRate)
-                .also { binding.txtTitle.text = it }
+            binding.txtTax.text = rate
+            binding.txtTitle.text = name
         }
 
         init {

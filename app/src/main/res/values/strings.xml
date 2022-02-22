@@ -211,6 +211,7 @@
     <string name="tv_add_tax_to_price">Add Tax to Price</string>
     <string name="tv_all_items">All Items</string>
     <string name="tv_add_a_new_tax">Add a New Tax</string>
+    <string name="tv_add_a_new_tax_plus">+ Add a New Tax</string>
     <string name="tv_add_a_new_tip">Add a New Tip</string>
     <string name="tv_entertainment_tip">Entertainment Tip</string>
     <string name="tv_tip_name">Tip Name <font color='#E90C0C'>*</font></string>
@@ -730,6 +731,10 @@
     <string name="credit_card_machine">Credit Card Machine</string>
     <string name="edit_printers">Edit Printers</string>
     <string name="add_job_title">Add job title</string>
+
+    <string name="bold">bold</string>
+    <string name="normal">normal</string>
+    <string name="italic">italic</string>
 
 
 </resources>

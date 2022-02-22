@@ -18,6 +18,7 @@ import com.android.pos.data.remote.Constants.CREATEMODIFIER
 import com.android.pos.data.remote.Constants.CREATEOPTION
 import com.android.pos.data.remote.Constants.KEY
 import com.android.pos.databinding.FragmentInventoryBinding
+
 import com.android.pos.ui.activities.MainActivity
 import com.android.pos.ui.adapter.InventoryAdapter
 import com.android.pos.ui.fragments.settings.discount.DiscountList

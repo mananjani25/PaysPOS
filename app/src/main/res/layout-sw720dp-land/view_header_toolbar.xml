@@ -37,8 +37,6 @@
         android:layout_gravity="center"
         android:background="@color/btnColor"
         android:gravity="center"
-
-
         android:paddingHorizontal="@dimen/_15sdp"
         android:paddingVertical="@dimen/_10sdp"
         android:text="@string/save"

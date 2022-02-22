@@ -1,5 +1,6 @@
 package com.android.pos.ui.fragments.settings
 
+import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -22,6 +23,8 @@ import com.android.pos.data.remote.Constants.PRINTER
 import com.android.pos.data.remote.Constants.SCAN_GUN
 import com.android.pos.data.remote.Constants.TEAM_MEMBER
 import com.android.pos.databinding.FragmentSettingsBinding
+
+
 import com.android.pos.di.RolePermission
 import com.android.pos.ui.activities.MainActivity
 import com.android.pos.ui.adapter.BusinessSettingAdapter
@@ -67,6 +70,7 @@ class Settings : Fragment() {
 
     fun init() {
         binding.txtBusiness.styleBold()
+        binding.txtBusiness.setBackgroundColor(resources.getColor(R.color.btnColor))
         binding.txtHardware.styleNormal()
         binding.txtSecurity.styleNormal()
         binding.txtMarketing.styleNormal()
@@ -199,6 +203,13 @@ class Settings : Fragment() {
     private fun onClick() {
         binding.txtBusiness.setOnClickListener {
             binding.txtBusiness.styleBold()
+            binding.txtBusiness.setBackgroundColor(resources.getColor(R.color.btnColor))
+            binding.txtHardware.setBackgroundColor(resources.getColor(R.color.bg_color))
+            binding.txtSecurity.setBackgroundColor(resources.getColor(R.color.bg_color))
+            binding.txtMarketing.setBackgroundColor(resources.getColor(R.color.bg_color))
+            binding.txtEmployee.setBackgroundColor(resources.getColor(R.color.bg_color))
+            binding.txtReports.setBackgroundColor(resources.getColor(R.color.bg_color))
+
             binding.txtHardware.styleNormal()
             binding.txtSecurity.styleNormal()
             binding.txtMarketing.styleNormal()
@@ -215,6 +226,12 @@ class Settings : Fragment() {
             binding.txtMarketing.styleNormal()
             binding.txtEmployee.styleNormal()
             binding.txtReports.styleNormal()
+            binding.txtBusiness.setBackgroundColor(resources.getColor(R.color.bg_color))
+            binding.txtHardware.setBackgroundColor(resources.getColor(R.color.btnColor))
+            binding.txtSecurity.setBackgroundColor(resources.getColor(R.color.bg_color))
+            binding.txtMarketing.setBackgroundColor(resources.getColor(R.color.bg_color))
+            binding.txtEmployee.setBackgroundColor(resources.getColor(R.color.bg_color))
+            binding.txtReports.setBackgroundColor(resources.getColor(R.color.bg_color))
             binding.rvBusiness.visibility = View.GONE
             val frag: Fragment = Hardware()
             loadFragment(frag)
@@ -229,6 +246,12 @@ class Settings : Fragment() {
             binding.txtMarketing.styleNormal()
             binding.txtEmployee.styleNormal()
             binding.txtReports.styleNormal()
+            binding.txtBusiness.setBackgroundColor(resources.getColor(R.color.bg_color))
+            binding.txtHardware.setBackgroundColor(resources.getColor(R.color.bg_color))
+            binding.txtSecurity.setBackgroundColor(resources.getColor(R.color.btnColor))
+            binding.txtMarketing.setBackgroundColor(resources.getColor(R.color.bg_color))
+            binding.txtEmployee.setBackgroundColor(resources.getColor(R.color.bg_color))
+            binding.txtReports.setBackgroundColor(resources.getColor(R.color.bg_color))
             binding.rvBusiness.visibility = View.GONE
             val frag: Fragment = Security()
             loadFragment(frag)
@@ -242,6 +265,13 @@ class Settings : Fragment() {
             binding.txtMarketing.styleBold()
             binding.txtEmployee.styleNormal()
             binding.txtReports.styleNormal()
+
+            binding.txtBusiness.setBackgroundColor(resources.getColor(R.color.bg_color))
+            binding.txtHardware.setBackgroundColor(resources.getColor(R.color.bg_color))
+            binding.txtSecurity.setBackgroundColor(resources.getColor(R.color.bg_color))
+            binding.txtMarketing.setBackgroundColor(resources.getColor(R.color.btnColor))
+            binding.txtEmployee.setBackgroundColor(resources.getColor(R.color.bg_color))
+            binding.txtReports.setBackgroundColor(resources.getColor(R.color.bg_color))
             binding.rvBusiness.visibility = View.GONE
             val frag: Fragment = Marketing()
             loadFragment(frag)
@@ -255,6 +285,12 @@ class Settings : Fragment() {
             binding.txtMarketing.styleNormal()
             binding.txtEmployee.styleBold()
             binding.txtReports.styleNormal()
+            binding.txtBusiness.setBackgroundColor(resources.getColor(R.color.bg_color))
+            binding.txtHardware.setBackgroundColor(resources.getColor(R.color.bg_color))
+            binding.txtSecurity.setBackgroundColor(resources.getColor(R.color.bg_color))
+            binding.txtMarketing.setBackgroundColor(resources.getColor(R.color.bg_color))
+            binding.txtEmployee.setBackgroundColor(resources.getColor(R.color.btnColor))
+            binding.txtReports.setBackgroundColor(resources.getColor(R.color.bg_color))
             binding.rvBusiness.visibility = View.GONE
             val frag: Fragment = TeamMemberSettings()
             loadFragment(frag)

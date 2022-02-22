@@ -7,6 +7,7 @@
     <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@color/bg_color"
         android:orientation="vertical">
 
         <include
@@ -16,8 +17,8 @@
 
         <View
             android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@color/view" />
+            android:layout_height="0.5dp"
+            android:background="@color/cool_grey" />
 
 
         <RelativeLayout
@@ -27,7 +28,6 @@
             android:layout_marginTop="@dimen/_10sdp"
             android:layout_marginRight="@dimen/_5sdp"
             android:layout_marginBottom="@dimen/_10sdp"
-            android:background="@color/white"
             android:orientation="vertical">
 
 
@@ -55,10 +55,10 @@
                     android:textSize="@dimen/_5mdpi" />
 
                 <ImageView
-                    android:layout_width="@dimen/_7sdp"
-                    android:src="@drawable/caretdown"
+                    android:layout_width="@dimen/_15sdp"
+                    android:src="@drawable/ic_arrow_drop_down"
                     android:layout_gravity="right|center_vertical"
-                    android:layout_height="@dimen/_7sdp" />
+                    android:layout_height="@dimen/_15sdp" />
             </FrameLayout>
 
             <androidx.recyclerview.widget.RecyclerView

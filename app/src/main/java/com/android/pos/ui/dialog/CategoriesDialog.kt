@@ -59,7 +59,7 @@ class CategoriesDialog : DialogFragment(), View.OnClickListener {
 
     private fun categoriesObserver() {
 
-        viewModel.categories.observe(viewLifecycleOwner, {
+        viewModel.categories.observe(viewLifecycleOwner) {
 
             it?.let { resource ->
                 when (resource.status) {
@@ -82,7 +82,7 @@ class CategoriesDialog : DialogFragment(), View.OnClickListener {
             }
 
 
-        })
+        }
     }
 
 

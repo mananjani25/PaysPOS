@@ -4,8 +4,8 @@
 
     <stroke
         android:width="2dp"
-        android:color="@color/background" />
-    <solid android:color="@color/colorF" />
+        android:color="@color/bg_color" />
+    <solid android:color="@color/bg_color" />
 
 
 </shape>

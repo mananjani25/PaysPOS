@@ -156,7 +156,7 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback {
 
     private fun initObservers() {
 
-        viewModel.showProgress.observe(viewLifecycleOwner, { event ->
+        viewModel.showProgress.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
                 if (it) {
                     ProgressUtils.showProgressDialog(requireActivity())
@@ -164,7 +164,7 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback {
                     ProgressUtils.dismissProgressDialog()
                 }
             }
-        })
+        }
 
         getNavigationResultLiveData<ArrayList<OptionSet>>(DIALOG_KEY)?.observe(viewLifecycleOwner) {
             optionSetList = it

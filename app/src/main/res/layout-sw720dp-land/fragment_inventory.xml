@@ -16,12 +16,13 @@
             android:id="@+id/commonToolbar"
             layout="@layout/common_toolbar_copy"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/_30sdp" />
+            android:layout_height="@dimen/_25sdp" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_below="@+id/commonToolbar"
+            android:background="@color/bg_color"
             android:orientation="horizontal"
             android:weightSum="1">
 

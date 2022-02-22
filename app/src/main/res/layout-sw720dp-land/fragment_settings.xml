@@ -6,6 +6,7 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
+        android:background="@color/bg_color"
         android:layout_height="match_parent">
 
         <include
@@ -13,7 +14,6 @@
             layout="@layout/settings_toolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content" />
-
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -39,12 +39,12 @@
                         android:orientation="vertical">
 
                         <TextView
-                            android:background="?attr/selectableItemBackground"
                             android:id="@+id/txtBusiness"
                             style="@style/CustomFontSemiBold"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:padding="@dimen/_7sdp"
+                            android:paddingHorizontal="@dimen/_7sdp"
+                            android:paddingVertical="@dimen/_10sdp"
                             android:text="@string/business"
                             android:textColor="@color/txtColor"
                             android:textSize="@dimen/_5mdpi" />
@@ -53,7 +53,7 @@
                         <View
                             android:layout_width="match_parent"
                             android:layout_height="1dp"
-                            android:background="@color/dividerColor" />
+                            android:background="@color/view" />
 
                         <androidx.recyclerview.widget.RecyclerView
                             android:id="@+id/rvBusiness"
@@ -66,38 +66,41 @@
                             tools:listitem="@layout/view_business_setting" />
 
                         <View
-                            android:visibility="gone"
                             android:layout_width="match_parent"
                             android:layout_height="1dp"
-                            android:background="@color/dividerColor" />
+                            android:background="@color/view"
+                            android:visibility="gone" />
 
 
                         <TextView
-                            android:visibility="gone"
-                            android:background="?attr/selectableItemBackground"
                             android:id="@+id/txtHardware"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
+                            style="@style/CustomFontSemiBold"
                             android:fontFamily="@font/sf_pro_display_regular"
-                            android:padding="@dimen/_7sdp"
+                            android:paddingHorizontal="@dimen/_7sdp"
+                            android:paddingVertical="@dimen/_10sdp"
                             android:text="@string/hardware"
                             android:textColor="@color/txtColor"
                             android:textSize="@dimen/_5mdpi"
-                            android:textStyle="normal" />
+                            android:textStyle="normal"
+                            android:visibility="gone" />
 
                         <View
                             android:layout_width="match_parent"
                             android:layout_height="1dp"
-                            android:background="@color/dividerColor" />
+                            android:visibility="gone"
+                            android:background="@color/view" />
 
 
                         <TextView
-                            android:background="?attr/selectableItemBackground"
                             android:id="@+id/txtSecurity"
+                            style="@style/CustomFontSemiBold"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:fontFamily="@font/sf_pro_display_regular"
-                            android:padding="@dimen/_7sdp"
+                            android:paddingHorizontal="@dimen/_7sdp"
+                            android:paddingVertical="@dimen/_10sdp"
                             android:text="@string/security"
                             android:textColor="@color/txtColor"
                             android:textSize="@dimen/_5mdpi"
@@ -106,35 +109,37 @@
                         <View
                             android:layout_width="match_parent"
                             android:layout_height="1dp"
-                            android:background="@color/dividerColor" />
+                            android:background="@color/view" />
 
                         <TextView
-                            android:visibility="gone"
                             android:id="@+id/txtMarketing"
+                            style="@style/CustomFontSemiBold"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:fontFamily="@font/sf_pro_display_regular"
-                            android:padding="@dimen/_7sdp"
+                            android:paddingHorizontal="@dimen/_7sdp"
+                            android:paddingVertical="@dimen/_10sdp"
                             android:text="@string/marketing"
-                            android:background="?attr/selectableItemBackground"
-
                             android:textColor="@color/txtColor"
+
                             android:textSize="@dimen/_5mdpi"
-                            android:textStyle="normal" />
+                            android:textStyle="normal"
+                            android:visibility="gone" />
 
                         <View
-                            android:visibility="gone"
                             android:layout_width="match_parent"
                             android:layout_height="1dp"
-                            android:background="@color/dividerColor" />
+                            android:background="@color/view"
+                            android:visibility="gone" />
 
                         <TextView
                             android:id="@+id/txtEmployee"
                             android:layout_width="match_parent"
+                            style="@style/CustomFontSemiBold"
                             android:layout_height="wrap_content"
                             android:fontFamily="@font/sf_pro_display_regular"
-                            android:padding="@dimen/_7sdp"
-                            android:background="?attr/selectableItemBackground"
+                            android:paddingHorizontal="@dimen/_7sdp"
+                            android:paddingVertical="@dimen/_10sdp"
                             android:text="@string/team_member"
                             android:textColor="@color/txtColor"
                             android:textSize="@dimen/_5mdpi"
@@ -143,26 +148,27 @@
                         <View
                             android:layout_width="match_parent"
                             android:layout_height="1dp"
-                            android:background="@color/dividerColor" />
+                            android:background="@color/view" />
 
                         <TextView
-                            android:visibility="gone"
                             android:id="@+id/txtReports"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:fontFamily="@font/sf_pro_display_regular"
-                            android:padding="@dimen/_7sdp"
                             android:background="?attr/selectableItemBackground"
+                            android:fontFamily="@font/sf_pro_display_regular"
+                            android:paddingHorizontal="@dimen/_7sdp"
+                            android:paddingVertical="@dimen/_12sdp"
                             android:text="@string/reports"
                             android:textColor="@color/txtColor"
                             android:textSize="@dimen/_5mdpi"
-                            android:textStyle="normal" />
+                            android:textStyle="normal"
+                            android:visibility="gone" />
 
                         <View
-                            android:visibility="gone"
                             android:layout_width="match_parent"
                             android:layout_height="1dp"
-                            android:background="@color/dividerColor" />
+                            android:background="@color/dividerColor"
+                            android:visibility="gone" />
 
 
                     </LinearLayout>
@@ -174,7 +180,7 @@
                 android:id="@+id/viewLine"
                 android:layout_width="1dp"
                 android:layout_height="match_parent"
-                android:background="@color/dividerColor" />
+                android:background="@color/view" />
 
 
             <FrameLayout
@@ -185,6 +191,7 @@
                 android:orientation="vertical" />
 
         </LinearLayout>
+
 
 
     </RelativeLayout>

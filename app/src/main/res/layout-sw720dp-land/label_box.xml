@@ -35,7 +35,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
-        android:background="@drawable/edt_border_light_gray"
+        android:background="@drawable/bg_border"
         android:gravity="center"
         android:padding="@dimen/_2sdp"
         android:text="@string/tap_to_edit"
