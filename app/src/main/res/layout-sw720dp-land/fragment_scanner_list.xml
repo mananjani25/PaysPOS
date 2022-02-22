@@ -29,7 +29,7 @@
                     android:background="?attr/selectableItemBackground"
                     android:padding="@dimen/_6sdp"
                     app:srcCompat="@drawable/ic_arrow_back"
-                    app:tint="@color/viewTextColor" />
+                    app:tint="@color/txtColor" />
 
             </RelativeLayout>
 
@@ -45,25 +45,22 @@
                 android:gravity="center"
                 android:padding="@dimen/_3sdp"
                 android:text="@string/scan_gun"
-                android:textColor="@color/viewTextColor"
+                android:textColor="@color/txtColor"
                 android:textSize="@dimen/_6mdpi" />
 
             <TextView
                 android:id="@+id/txtResetDevice"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
+                android:background="@drawable/save_selector"
                 android:padding="@dimen/_6sdp"
                 android:text="Reset Device"
-                android:textColor="@color/txt_color_blue"
+                android:textColor="@color/txtColor"
                 android:textSize="@dimen/_6mdpi" />
 
         </LinearLayout>
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="0.5dp"
-            android:layout_marginBottom="@dimen/_5sdp"
-            android:background="@color/gray_rect" />
+        <include layout="@layout/divider" />
 
         <androidx.core.widget.NestedScrollView
             android:id="@+id/nsvScanner"
@@ -91,19 +88,22 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:layout_marginTop="@dimen/_6sdp"
                     android:background="@drawable/background_gray_with_border"
                     android:gravity="start"
-                    android:padding="@dimen/_5sdp"
-                    android:text="@string/connected_scanner"
-                    android:textColor="@color/viewTextColor"
+                    android:paddingTop="@dimen/_5sdp"
+                    android:paddingBottom="@dimen/_5sdp"
+                    android:paddingEnd="@dimen/_5sdp"
+                    android:paddingStart="@dimen/_8sdp"
+                    android:text="@string/other_scanners"
+                    android:textColor="@color/txtColor"
                     android:textSize="@dimen/_6mdpi"
                     app:textAllCaps="true" />
 
                 <androidx.recyclerview.widget.RecyclerView
-                    android:id="@+id/rvConnectedScanner"
+                        android:id="@+id/rvConnectedScanner"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:background="@color/txtColor"
                     android:orientation="vertical"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
 
@@ -115,9 +115,12 @@
                     android:layout_gravity="center"
                     android:background="@drawable/background_gray_with_border"
                     android:gravity="start"
-                    android:padding="@dimen/_5sdp"
+                    android:paddingTop="@dimen/_5sdp"
+                    android:paddingBottom="@dimen/_5sdp"
+                    android:paddingEnd="@dimen/_5sdp"
+                    android:paddingStart="@dimen/_8sdp"
                     android:text="@string/other_scanners"
-                    android:textColor="@color/viewTextColor"
+                    android:textColor="@color/txtColor"
                     android:textSize="@dimen/_6mdpi"
                     app:textAllCaps="true" />
 
@@ -126,6 +129,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
+                    android:background="@color/txtColor"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
 
                 <TextView

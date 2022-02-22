@@ -7,7 +7,8 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/white"
+        android:background="@color/bg_color"
+
         android:padding="@dimen/_4sdp">
 
         <androidx.appcompat.widget.AppCompatTextView
@@ -15,7 +16,9 @@
             style="@style/HistoryItemText"
             android:layout_width="0dp"
             android:layout_marginEnd="@dimen/_4sdp"
-            android:background="@color/white"
+            android:background="@color/bg_color"
+            android:textSize="@dimen/_5mdpi"
+            android:textColor="@color/txtColor"
             android:textAllCaps="true"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@id/txtDisConnect"
@@ -30,7 +33,8 @@
             android:layout_height="wrap_content"
             android:padding="@dimen/_4sdp"
             android:text="@string/disconnect"
-            android:textColor="@color/txt_color_blue"
+            android:background="@drawable/save_selector"
+            android:textColor="@color/txtColor"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
