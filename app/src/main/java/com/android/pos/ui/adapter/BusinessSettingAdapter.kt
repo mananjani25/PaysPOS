@@ -1,9 +1,11 @@
 package com.android.pos.ui.adapter
 
 import android.content.Context
+import android.graphics.Typeface
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.android.pos.R
 import com.android.pos.data.model.BusinessSettingModel
 import com.android.pos.databinding.ViewBusinessSettingBinding
 

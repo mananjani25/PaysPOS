@@ -8,17 +8,15 @@
     <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@color/bg_color"
         android:orientation="vertical">
 
 
         <androidx.appcompat.widget.LinearLayoutCompat
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/_50sdp"
-            android:layout_marginTop="@dimen/_5sdp"
-            android:layout_marginEnd="@dimen/_50sdp"
-            android:layout_marginBottom="@dimen/_5sdp"
-            android:background="@color/white"
+            android:layout_marginHorizontal="@dimen/_50sdp"
+            android:layout_marginVertical="@dimen/_5sdp"
             android:orientation="vertical">
 
             <androidx.appcompat.widget.AppCompatTextView
@@ -29,11 +27,12 @@
                 android:layout_gravity="center"
                 android:layout_marginTop="@dimen/_30sdp"
                 android:layout_marginBottom="@dimen/_5sdp"
-                android:background="@drawable/bg_button_border_gray"
+                android:background="@color/btnColor"
                 android:gravity="center"
-                android:padding="@dimen/_5sdp"
-                android:text="@string/tv_add_a_new_tax"
-                android:textColor="@color/btnColor"
+                android:paddingHorizontal="@dimen/_5sdp"
+                android:paddingVertical="@dimen/_7sdp"
+                android:text="@string/tv_add_a_new_tax_plus"
+                android:textColor="@color/white"
                 android:textSize="@dimen/_5mdpi"
                 app:textAllCaps="false" />
 
@@ -46,7 +45,7 @@
                 android:gravity="center"
                 android:padding="@dimen/_5sdp"
                 android:text="@string/tax_rates_can_be_applied_to_specific_items_and_will_be_automatically_calculated_at_purchase"
-                android:textColor="@color/colorCB"
+                android:textColor="@color/view"
                 android:textSize="@dimen/_5mdpi"
                 app:textAllCaps="false" />
 
