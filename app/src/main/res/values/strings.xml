@@ -211,7 +211,6 @@
     <string name="tv_add_tax_to_price">Add Tax to Price</string>
     <string name="tv_all_items">All Items</string>
     <string name="tv_add_a_new_tax">Add a New Tax</string>
-    <string name="tv_add_a_new_tax_plus">+ Add a New Tax</string>
     <string name="tv_add_a_new_tip">Add a New Tip</string>
     <string name="tv_entertainment_tip">Entertainment Tip</string>
     <string name="tv_tip_name">Tip Name <font color='#E90C0C'>*</font></string>
@@ -234,6 +233,7 @@
     <string name="tv_kitchen_receipt_preview">KITCHEN RECEIPT PREVIEW</string>
     <string name="tv_paid_unpaid">PAID/UNPAID</string>
     <string name="tv_printer_kitchen">PRINTER : KITCHEN</string>
+    <string name="tv_kitchen_receipt">Kitchen Receipt</string>
     <string name="select_category">Select Category <font color='#E90C0C'>*</font></string>
     <string name="taxes">Taxes</string>
     <string name="tv_show_order_id_at_the_top">SHOW ORDER ID AT THE TOP</string>
@@ -276,6 +276,7 @@
     <string name="tv_custom_note">Custom Note</string>
     <string name="tv_join_us">Join us for Lunch Wed – Fri 12:00 – 2:30 PM</string>
     <string name="tv_customer_receipt_preview">CUSTOMER RECEIPT PREVIEW</string>
+    <string name="tv_customer_receipt">Customer Receipt</string>
     <string name="tv_food_cafe">Food Cafe</string>
     <string name="tv_sub_total">Sub Total</string>
     <string name="tv_refund_amount">Refund Amount</string>
@@ -729,12 +730,10 @@
     <string name="qty">Qty</string>
     <string name="each">Each</string>
     <string name="credit_card_machine">Credit Card Machine</string>
-    <string name="edit_printers">Edit Printers</string>
     <string name="add_job_title">Add job title</string>
-
-    <string name="bold">bold</string>
-    <string name="normal">normal</string>
-    <string name="italic">italic</string>
+    <string name="edit_printers">Edit printers</string>
+    <string name="tv_add_a_new_tax_plus">+ Add a new tax</string>
 
 
 </resources>
+

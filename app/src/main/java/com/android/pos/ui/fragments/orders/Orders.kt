@@ -136,7 +136,7 @@ class Orders : Fragment() {
 
     private fun getOrderCountsObserver(startDate: String?, endDate: String?) {
         try {
-            viewModel.orderCounts(startDate,endDate).observe(viewLifecycleOwner, {
+            viewModel.orderCounts(startDate,endDate).observe(viewLifecycleOwner) {
                 it?.let { resource ->
                     when (resource.status) {
                         Status.SUCCESS -> {
@@ -157,7 +157,7 @@ class Orders : Fragment() {
                         }
                     }
                 }
-            })
+            }
 
         }catch (e:Exception){
             e.printStackTrace()
@@ -231,30 +231,30 @@ class Orders : Fragment() {
         val list: ArrayList<InventoryItemModel> = arrayListOf()
         when (pos) {
             0 -> {
-                list.add(InventoryItemModel(0, "Active Orders ($activeOrdersCount)", true))
-                list.add(InventoryItemModel(0, "Upcoming Orders ($upcomingOrdersCount)"))
-                list.add(InventoryItemModel(0, "Completed ($completedOrdersCount)"))
-                list.add(InventoryItemModel(0, "Cancelled Orders ($cancelledOrdersCount)"))
+                list.add(InventoryItemModel(0, "Active Orders ",activeOrdersCount, true))
+                list.add(InventoryItemModel(0, "Upcoming Orders ",upcomingOrdersCount))
+                list.add(InventoryItemModel(0, "Completed ",completedOrdersCount))
+                list.add(InventoryItemModel(0, "Cancelled Orders ",cancelledOrdersCount))
             }
             1 -> {
-                list.add(InventoryItemModel(0, "Active Orders ($activeOrdersCount)"))
-                list.add(InventoryItemModel(0, "Upcoming Orders ($upcomingOrdersCount)", true))
-                list.add(InventoryItemModel(0, "Completed ($completedOrdersCount)"))
-                list.add(InventoryItemModel(0, "Cancelled Orders ($cancelledOrdersCount)"))
+                list.add(InventoryItemModel(0, "Active Orders ",activeOrdersCount))
+                list.add(InventoryItemModel(0, "Upcoming Orders ",upcomingOrdersCount, true))
+                list.add(InventoryItemModel(0, "Completed ",completedOrdersCount))
+                list.add(InventoryItemModel(0, "Cancelled Orders ",cancelledOrdersCount))
 
             }
             2 -> {
-                list.add(InventoryItemModel(0, "Active Orders ($activeOrdersCount)"))
-                list.add(InventoryItemModel(0, "Upcoming Orders ($upcomingOrdersCount)"))
-                list.add(InventoryItemModel(0, "Completed ($completedOrdersCount)", true))
-                list.add(InventoryItemModel(0, "Cancelled Orders ($cancelledOrdersCount)"))
+                list.add(InventoryItemModel(0, "Active Orders ",activeOrdersCount))
+                list.add(InventoryItemModel(0, "Upcoming Orders ",upcomingOrdersCount))
+                list.add(InventoryItemModel(0, "Completed ",completedOrdersCount ,true))
+                list.add(InventoryItemModel(0, "Cancelled Orders ",cancelledOrdersCount))
 
             }
             3 -> {
-                list.add(InventoryItemModel(0, "Active Orders ($activeOrdersCount)"))
-                list.add(InventoryItemModel(0, "Upcoming Orders ($upcomingOrdersCount)"))
-                list.add(InventoryItemModel(0, "Completed ($completedOrdersCount)"))
-                list.add(InventoryItemModel(0, "Cancelled Orders ($cancelledOrdersCount)", true))
+                list.add(InventoryItemModel(0, "Active Orders ",activeOrdersCount))
+                list.add(InventoryItemModel(0, "Upcoming Orders ",upcomingOrdersCount))
+                list.add(InventoryItemModel(0, "Completed ",completedOrdersCount))
+                list.add(InventoryItemModel(0, "Cancelled Orders ",cancelledOrdersCount, true))
 
             }
         }
