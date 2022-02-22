@@ -14,16 +14,16 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        >
 
         <LinearLayout
             android:id="@+id/llMainLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/white"
+            android:background="@color/backgroundColor"
             android:orientation="horizontal"
-            android:paddingTop="@dimen/_5sdp"
-            android:paddingBottom="@dimen/_5sdp">
+            android:paddingVertical="@dimen/_7sdp">
 
             <androidx.appcompat.widget.LinearLayoutCompat
                 android:layout_width="0dp"
@@ -49,20 +49,46 @@
                     android:id="@+id/imgIndicator"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    app:srcCompat="@drawable/ic_arrow_down" />
+                    app:srcCompat="@drawable/ic_arrow_down"
+                    app:tint="@color/drawable_ic_color"
+                    android:layout_marginLeft="@dimen/_5sdp"
+                    />
             </androidx.appcompat.widget.LinearLayoutCompat>
 
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/tvDate"
-                style="@style/CustomFontMediumStyle"
+
+            <androidx.appcompat.widget.LinearLayoutCompat
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
                 android:layout_weight="1"
-                android:gravity="center"
-                android:textColor="@color/txtColor"
-                android:textSize="@dimen/_5mdpi"
-                tools:text="@string/tv_date_time" />
+                android:orientation="vertical">
+
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tvDate"
+                    style="@style/CustomFontMediumStyle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:textColor="@color/txtColor"
+                    android:textSize="@dimen/_5mdpi"
+                    tools:text="@string/tv_date_time" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tvtime"
+                    style="@style/CustomFontMediumStyle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:textColor="@color/txtColor"
+                    android:textSize="@dimen/_5mdpi"
+                    tools:text="@string/tv_date_time" />
+
+            </androidx.appcompat.widget.LinearLayoutCompat>
+
 
 
             <androidx.appcompat.widget.AppCompatTextView
@@ -180,11 +206,11 @@
                     android:layout_marginRight="@dimen/_5sdp"
                     android:layout_marginBottom="@dimen/_10sdp"
                     android:layout_weight="1"
-                    android:background="@drawable/bg_button_border_gray"
+                    android:background="@drawable/background_square_border_grey"
                     android:gravity="center"
-                    android:padding="@dimen/_5sdp"
+                    android:padding="@dimen/_10sdp"
                     android:text="@string/tv_cancel_order"
-                    android:textColor="@color/btnColor"
+                    android:textColor="@color/txtColor"
                     android:textSize="@dimen/_5mdpi"
                     app:textAllCaps="false" />
 
@@ -199,11 +225,11 @@
                     android:layout_marginRight="@dimen/_5sdp"
                     android:layout_marginBottom="@dimen/_10sdp"
                     android:layout_weight="1"
-                    android:background="@drawable/bg_button_border_gray"
+                    android:background="@drawable/background_square_border_grey"
                     android:gravity="center"
-                    android:padding="@dimen/_5sdp"
+                    android:padding="@dimen/_10sdp"
                     android:text="@string/tv_edit_order"
-                    android:textColor="@color/btnColor"
+                    android:textColor="@color/txtColor"
                     android:textSize="@dimen/_5mdpi"
                     app:textAllCaps="false" />
 
@@ -216,11 +242,28 @@
                     android:layout_marginLeft="@dimen/_5sdp"
                     android:layout_marginRight="@dimen/_5sdp"
                     android:layout_weight="1"
-                    android:background="@drawable/btn_hover_active_order"
+                    android:background="@drawable/background_square_border_grey"
                     android:gravity="center"
-                    android:padding="@dimen/_5sdp"
-                    android:text="@string/tv_print_receipt"
-                    android:textColor="@color/btnColor"
+                    android:padding="@dimen/_10sdp"
+                    android:text="@string/tv_kitchen_receipt"
+                    android:textColor="@color/txtColor"
+                    android:textSize="@dimen/_5mdpi"
+                    app:textAllCaps="false" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/txtCustomerReceipt"
+                    style="@style/CustomFontBold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginLeft="@dimen/_5sdp"
+                    android:layout_marginRight="@dimen/_5sdp"
+                    android:layout_weight="1"
+                    android:background="@drawable/background_square_border_grey"
+                    android:gravity="center"
+                    android:padding="@dimen/_10sdp"
+                    android:text="@string/tv_customer_receipt"
+                    android:textColor="@color/txtColor"
                     android:textSize="@dimen/_5mdpi"
                     app:textAllCaps="false" />
 
@@ -233,11 +276,11 @@
                     android:layout_marginLeft="@dimen/_5sdp"
                     android:layout_marginRight="@dimen/_5sdp"
                     android:layout_weight="1"
-                    android:background="@drawable/bg_button_border_gray"
+                    android:background="@drawable/background_square_border_grey"
                     android:gravity="center"
-                    android:padding="@dimen/_5sdp"
+                    android:padding="@dimen/_10sdp"
                     android:text="@string/tv_pay_now"
-                    android:textColor="@color/btnColor"
+                    android:textColor="@color/txtColor"
                     android:textSize="@dimen/_5mdpi"
                     app:textAllCaps="false" />
 

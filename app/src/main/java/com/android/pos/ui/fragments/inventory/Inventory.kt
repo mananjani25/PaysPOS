@@ -1,3 +1,4 @@
+
 package com.android.pos.ui.fragments.inventory
 
 import android.os.Bundle
@@ -18,7 +19,6 @@ import com.android.pos.data.remote.Constants.CREATEMODIFIER
 import com.android.pos.data.remote.Constants.CREATEOPTION
 import com.android.pos.data.remote.Constants.KEY
 import com.android.pos.databinding.FragmentInventoryBinding
-
 import com.android.pos.ui.activities.MainActivity
 import com.android.pos.ui.adapter.InventoryAdapter
 import com.android.pos.ui.fragments.settings.discount.DiscountList
@@ -61,10 +61,10 @@ class Inventory : Fragment() {
                         changePosition(2)
                         setAdapter(2)
                     }
-                  /*  CREATEDISCOUNT -> {
-                        changePosition(3)
-                        setAdapter(3)
-                    }*/
+                    /*  CREATEDISCOUNT -> {
+                          changePosition(3)
+                          setAdapter(3)
+                      }*/
                     CREATEOPTION -> {
                         changePosition(3)
                         setAdapter(3)
@@ -113,13 +113,13 @@ class Inventory : Fragment() {
                 binding.commonToolbar.txtSubTitle.text =
                     resources.getString(R.string.modifiers_title)
             }
-           /* 3 -> {
-                val discount: Fragment = DiscountList()
-                loadFragment(discount)
-                binding.commonToolbar.txtSetItem.visibility = View.VISIBLE
-                binding.commonToolbar.txtSubTitle.text = "Discounts"
+            /* 3 -> {
+                 val discount: Fragment = DiscountList()
+                 loadFragment(discount)
+                 binding.commonToolbar.txtSetItem.visibility = View.VISIBLE
+                 binding.commonToolbar.txtSubTitle.text = "Discounts"
 
-            }*/
+             }*/
             3 -> {
                 val option: Fragment = Options()
                 loadFragment(option)
@@ -156,105 +156,105 @@ class Inventory : Fragment() {
         val list: ArrayList<InventoryItemModel> = arrayListOf()
         when (pos) {
             0 -> {
-                list.add(InventoryItemModel(0, resources.getString(R.string.items_title), true))
-                list.add(InventoryItemModel(0, resources.getString(R.string.categories_title)))
-                list.add(InventoryItemModel(0, resources.getString(R.string.modifiers_title)))
+                list.add(InventoryItemModel(0, resources.getString(R.string.items_title), 0,true))
+                list.add(InventoryItemModel(0, resources.getString(R.string.categories_title),0))
+                list.add(InventoryItemModel(0, resources.getString(R.string.modifiers_title),0))
                 //list.add(InventoryItemModel(0, "Discounts"))
-                list.add(InventoryItemModel(0, resources.getString(R.string.options_title)))
+                list.add(InventoryItemModel(0, resources.getString(R.string.options_title),0))
                 list.add(
                     InventoryItemModel(
                         0,
                         resources.getString(R.string.hidden_categories_title)
-                    )
+                        ,0)
                 )
-                list.add(InventoryItemModel(0, resources.getString(R.string.hidden_items_title)))
+                list.add(InventoryItemModel(0, resources.getString(R.string.hidden_items_title),0))
             }
             1 -> {
-                list.add(InventoryItemModel(0, resources.getString(R.string.items_title)))
+                list.add(InventoryItemModel(0, resources.getString(R.string.items_title),0))
                 list.add(
                     InventoryItemModel(
                         0,
                         resources.getString(R.string.categories_title),
-                        true
+                        0,true
                     )
                 )
-                list.add(InventoryItemModel(0, resources.getString(R.string.modifiers_title)))
+                list.add(InventoryItemModel(0, resources.getString(R.string.modifiers_title),0))
                 // list.add(InventoryItemModel(0, "Discounts"))
-                list.add(InventoryItemModel(0, resources.getString(R.string.options_title)))
+                list.add(InventoryItemModel(0, resources.getString(R.string.options_title),0))
                 list.add(
                     InventoryItemModel(
                         0,
                         resources.getString(R.string.hidden_categories_title)
-                    )
+                        ,0)
                 )
-                list.add(InventoryItemModel(0, resources.getString(R.string.hidden_items_title)))
+                list.add(InventoryItemModel(0, resources.getString(R.string.hidden_items_title),0))
 
             }
             2 -> {
-                list.add(InventoryItemModel(0, resources.getString(R.string.items_title)))
-                list.add(InventoryItemModel(0, resources.getString(R.string.categories_title)))
-                list.add(InventoryItemModel(0, resources.getString(R.string.modifiers_title), true))
+                list.add(InventoryItemModel(0, resources.getString(R.string.items_title),0))
+                list.add(InventoryItemModel(0, resources.getString(R.string.categories_title),0))
+                list.add(InventoryItemModel(0, resources.getString(R.string.modifiers_title), 0,true))
                 //  list.add(InventoryItemModel(0, "Discounts"))
-                list.add(InventoryItemModel(0, resources.getString(R.string.options_title)))
+                list.add(InventoryItemModel(0, resources.getString(R.string.options_title),0))
                 list.add(
                     InventoryItemModel(
                         0,
                         resources.getString(R.string.hidden_categories_title)
-                    )
+                        ,0)
                 )
-                list.add(InventoryItemModel(0, resources.getString(R.string.hidden_items_title)))
+                list.add(InventoryItemModel(0, resources.getString(R.string.hidden_items_title),0))
 
             }
             3 -> {
-                list.add(InventoryItemModel(0, resources.getString(R.string.items_title)))
-                list.add(InventoryItemModel(0, resources.getString(R.string.categories_title)))
-                list.add(InventoryItemModel(0, resources.getString(R.string.modifiers_title)))
+                list.add(InventoryItemModel(0, resources.getString(R.string.items_title),0))
+                list.add(InventoryItemModel(0, resources.getString(R.string.categories_title),0))
+                list.add(InventoryItemModel(0, resources.getString(R.string.modifiers_title),0))
                 // list.add(InventoryItemModel(0, "Discounts", true))
-                list.add(InventoryItemModel(0, resources.getString(R.string.options_title), true))
+                list.add(InventoryItemModel(0, resources.getString(R.string.options_title), 0,true))
                 list.add(
                     InventoryItemModel(
                         0,
                         resources.getString(R.string.hidden_categories_title)
-                    )
+                        ,0)
                 )
-                list.add(InventoryItemModel(0, resources.getString(R.string.hidden_items_title)))
+                list.add(InventoryItemModel(0, resources.getString(R.string.hidden_items_title),0))
 
             }
 
             4 -> {
-                list.add(InventoryItemModel(0, resources.getString(R.string.items_title)))
-                list.add(InventoryItemModel(0, resources.getString(R.string.categories_title)))
-                list.add(InventoryItemModel(0, resources.getString(R.string.modifiers_title)))
+                list.add(InventoryItemModel(0, resources.getString(R.string.items_title),0))
+                list.add(InventoryItemModel(0, resources.getString(R.string.categories_title),0))
+                list.add(InventoryItemModel(0, resources.getString(R.string.modifiers_title),0))
                 //list.add(InventoryItemModel(0, "Discounts"))
-                list.add(InventoryItemModel(0, resources.getString(R.string.options_title)))
+                list.add(InventoryItemModel(0, resources.getString(R.string.options_title),0))
                 list.add(
                     InventoryItemModel(
                         0,
                         resources.getString(R.string.hidden_categories_title),
-                        true
+                        0,true
                     )
                 )
-                list.add(InventoryItemModel(0, resources.getString(R.string.hidden_items_title)))
+                list.add(InventoryItemModel(0, resources.getString(R.string.hidden_items_title),0))
 
             }
 
             5 -> {
-                list.add(InventoryItemModel(0, resources.getString(R.string.items_title)))
-                list.add(InventoryItemModel(0, resources.getString(R.string.categories_title)))
-                list.add(InventoryItemModel(0, resources.getString(R.string.modifiers_title)))
+                list.add(InventoryItemModel(0, resources.getString(R.string.items_title),0))
+                list.add(InventoryItemModel(0, resources.getString(R.string.categories_title),0))
+                list.add(InventoryItemModel(0, resources.getString(R.string.modifiers_title),0))
                 //list.add(InventoryItemModel(0, "Discounts"))
-                list.add(InventoryItemModel(0, resources.getString(R.string.options_title)))
+                list.add(InventoryItemModel(0, resources.getString(R.string.options_title),0))
                 list.add(
                     InventoryItemModel(
                         0,
                         resources.getString(R.string.hidden_categories_title)
-                    )
+                        ,0)
                 )
                 list.add(
                     InventoryItemModel(
                         0,
                         resources.getString(R.string.hidden_items_title),
-                        true
+                        0,true
                     )
                 )
 

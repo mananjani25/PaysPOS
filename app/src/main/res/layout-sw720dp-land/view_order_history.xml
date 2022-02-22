@@ -15,6 +15,7 @@
             style="@style/HistoryItemText"
             android:textAllCaps="true"
             tools:text="4708\n(Paid)"
+            android:textColor="@color/txtColor"
             android:background="@drawable/background_square_border_grey"/>
 
         <androidx.appcompat.widget.AppCompatTextView
@@ -22,6 +23,7 @@
             style="@style/HistoryItemText"
             android:layout_weight="1.5"
             tools:text="11/01/2021\n03:00 PM"
+            android:textColor="@color/txtColor"
             android:background="@drawable/background_square_border_grey"/>
 
         <androidx.appcompat.widget.AppCompatTextView

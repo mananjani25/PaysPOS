@@ -16,12 +16,17 @@
         android:orientation="vertical"
         android:layout_height="wrap_content">
 
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:background="@color/view"/>
+
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/white"
+            android:background="@color/backgroundColor"
             android:orientation="horizontal"
-            android:padding="@dimen/_5sdp">
+            android:padding="@dimen/_10sdp">
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/txtItemName"
@@ -32,7 +37,7 @@
                 android:gravity="center"
                 android:layout_gravity="center"
                 android:text="@{model.itemName}"
-                android:textColor="@color/txtColor"
+                android:textColor="@color/white"
                 android:textSize="@dimen/_5mdpi"
                 tools:text="Item Name" />
 
@@ -45,7 +50,7 @@
                 android:gravity="center"
                 android:layout_gravity="center"
                 android:text="@{@string/cross+``+model.quantity}"
-                android:textColor="@color/txtColor"
+                android:textColor="@color/white"
                 android:textSize="@dimen/_5mdpi"
                 tools:text="X 1" />
 
@@ -58,7 +63,7 @@
                 android:gravity="center"
                 android:layout_gravity="center"
                 android:text="@{@string/symbole +``+String.format(@string/format,model.price)}"
-                android:textColor="@color/txtColor"
+                android:textColor="@color/white"
                 android:textSize="@dimen/_5mdpi"
                 tools:text="$12.00" />
 
@@ -71,7 +76,7 @@
                 android:layout_weight="1"
                 android:gravity="center"
                 android:text="@{@string/symbole +``+String.format(@string/format,model.totalPrice)}"
-                android:textColor="@color/txtColor"
+                android:textColor="@color/white"
                 android:textSize="@dimen/_5mdpi"
                 tools:text="$12.00" />
 
@@ -83,7 +88,7 @@
                 android:layout_gravity="center"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:textColor="@color/txtColor"
+                android:textColor="@color/white"
                 android:textSize="@dimen/_5mdpi"
                 tools:text="Terminal Name" />
 
@@ -95,11 +100,15 @@
                 android:layout_gravity="center"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:textColor="@color/txtColor"
+                android:textColor="@color/white"
                 android:textSize="@dimen/_5mdpi"
                 tools:text="Terminal Name" />
 
         </LinearLayout>
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:background="@color/view"/>
 
        <!-- <include layout="@layout/divider" />-->
 
