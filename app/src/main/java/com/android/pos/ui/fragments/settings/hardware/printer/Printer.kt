@@ -134,29 +134,29 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
     }
 
 
-        private fun getOrderTypes() {
-            viewModel.orderTypes.observe(viewLifecycleOwner, {
-                when (it.status) {
-                    Status.LOADING -> {
-                        ProgressUtils.showProgressDialog(requireActivity())
-                    }
-                    Status.ERROR -> {
-                        ProgressUtils.dismissProgressDialog()
-                    }
-                    Status.SUCCESS -> {
-                        ProgressUtils.dismissProgressDialog()
-                        if (it.data != null) {
-                            orderTypeList.clear()
-                            orderTypeList = arrayListOf()
-                            orderTypeList.addAll(it.data.toCollection(ArrayList()))
-
-                        }
-
-
-                    }
+    private fun getOrderTypes() {
+        viewModel.orderTypes.observe(viewLifecycleOwner, {
+            when (it.status) {
+                Status.LOADING -> {
+                    ProgressUtils.showProgressDialog(requireActivity())
                 }
-            })
-        }
+                Status.ERROR -> {
+                    ProgressUtils.dismissProgressDialog()
+                }
+                Status.SUCCESS -> {
+                    ProgressUtils.dismissProgressDialog()
+                    if (it.data != null) {
+                        orderTypeList.clear()
+                        orderTypeList = arrayListOf()
+                        orderTypeList.addAll(it.data.toCollection(ArrayList()))
+
+                    }
+
+
+                }
+            }
+        })
+    }
 
     private fun getPrinterList() {
 
@@ -324,7 +324,8 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
         }
 
         binding.txtHome.setOnClickListener {
-            syncPrinterList(true)
+            findNavController().navigate(R.id.action_printer_to_dashboardCategoryNew)
+            // syncPrinterList(true)
 
         }
 

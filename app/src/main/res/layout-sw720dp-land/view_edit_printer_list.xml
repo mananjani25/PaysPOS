@@ -14,7 +14,8 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/background_edit_printer_label"
+        android:background="@drawable/background_light_edit_printer"
+
         android:orientation="horizontal"
         android:weightSum="5">
 
@@ -33,7 +34,7 @@
         <View
             android:layout_width="1dp"
             android:layout_height="match_parent"
-            android:background="@color/colorNewBorder" />
+            android:background="@color/strokeColor" />
 
         <LinearLayout
             android:id="@+id/constraintCustomer"
@@ -61,7 +62,7 @@
                 android:id="@+id/viewLine"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:background="@color/colorNewBorder"
+                android:background="@color/strokeColor"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -70,7 +71,6 @@
                 style="@style/CustomFontMediumStyle"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/_20sdp"
-                android:layout_gravity="center"
                 android:layout_marginStart="@dimen/_5sdp"
                 android:gravity="start"
                 android:paddingVertical="@dimen/_5sdp"
@@ -84,14 +84,15 @@
 
             <View
                 android:layout_width="match_parent"
-                android:layout_height="1dp" />
+                android:layout_height="1dp"
+                android:background="@color/strokeColor" />
 
         </LinearLayout>
 
         <View
             android:layout_width="1dp"
             android:layout_height="match_parent"
-            android:background="@color/colorNewBorder" />
+            android:background="@color/strokeColor" />
 
         <!--<androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="0dp"
@@ -136,7 +137,7 @@
             android:id="@+id/viewLine3"
             android:layout_width="1dp"
             android:layout_height="match_parent"
-            android:background="@color/colorNewBorder"
+            android:background="@color/strokeColor"
             android:visibility="gone" />
 
         <LinearLayout
@@ -175,7 +176,7 @@
                 android:id="@+id/viewLine2"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:background="@color/colorNewBorder"
+                android:background="@color/strokeColor"
                 app:layout_constraintTop_toBottomOf="@+id/chBoxCustomerManual2" />
 
 
@@ -185,13 +186,13 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:scaleY="0.8"
                 android:layout_weight="1"
+                android:scaleX="0.7"
+                android:scaleY="0.8"
                 android:showText="false"
                 android:thumb="@drawable/custom_thumb_printer_active_switch"
                 android:visibility="visible"
                 app:thumbTint="@color/switch_thumb_selector"
-                android:scaleX="0.7"
                 app:track="@drawable/custom_switch_track_printer"
                 app:trackTint="@color/switch_track_tint"
                 tools:ignore="UseSwitchCompatOrMaterialXml" />
@@ -206,7 +207,8 @@
 
             <View
                 android:layout_width="match_parent"
-                android:layout_height="1dp" />
+                android:layout_height="1dp"
+                android:background="@color/strokeColor" />
 
 
         </LinearLayout>

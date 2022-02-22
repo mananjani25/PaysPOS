@@ -117,4 +117,5 @@
     <color name="backgroundColor">#2D2D2D</color>//Same in both mode
     <color name="bg_printer_label">#FFFFFF</color>
     <color name="switchTrackColor">#363636</color>
+    <color name="bgEditPrinter">#18181A</color>
 </resources>

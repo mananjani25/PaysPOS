@@ -867,6 +867,11 @@
             android:id="@+id/action_printer_to_printerTypeSelection"
             app:destination="@id/printerTypeSelection"
             app:enterAnim="@anim/nav_default_enter_anim" />
+        <action
+            android:id="@+id/action_printer_to_dashboardCategoryNew"
+            app:destination="@id/dashboardCategoryNew"
+            app:popUpTo="@id/printer"
+            app:popUpToInclusive="true" />
     </fragment>
     <fragment
         android:id="@+id/transactionDetailsFragment"
