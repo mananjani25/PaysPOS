@@ -14,7 +14,7 @@
         android:id="@+id/layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/white"
+        android:background="@color/bg_color"
         android:orientation="vertical">
 
 
@@ -22,7 +22,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:padding="@dimen/_3sdp">
+
+            android:padding="@dimen/_5sdp">
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -32,16 +33,16 @@
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/tvInitialName"
-                    style="@style/CustomFontBold"
+                    style="@style/CustomFontMediumStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:background="@drawable/bg_circle_name"
+                    android:background="@drawable/bg_circle_gray"
                     android:gravity="center"
-                    android:padding="@dimen/_4sdp"
+                    android:padding="@dimen/_5sdp"
                     android:textAllCaps="true"
-                    android:textColor="@color/btnColor"
-                    android:textSize="@dimen/_5mdpi" />
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/_7sdp" />
             </LinearLayout>
 
             <LinearLayout
@@ -62,7 +63,7 @@
                     android:paddingEnd="@dimen/_5sdp"
                     android:singleLine="true"
                     android:textColor="@color/txtColor"
-                    android:textSize="@dimen/_5mdpi" />
+                    android:textSize="@dimen/text_size_medium" />
 
                 <TextView
                     android:id="@+id/txtNumber"
@@ -74,19 +75,19 @@
                     android:paddingStart="@dimen/_5sdp"
                     android:paddingEnd="@dimen/_5sdp"
                     android:singleLine="true"
-                    android:textColor="@color/colorB9"
-                    android:textSize="@dimen/_5mdpi" />
+                    android:textColor="@color/txtColorGray"
+                    android:textSize="@dimen/text_size_normal" />
             </LinearLayout>
 
         </LinearLayout>
 
         <View
+            android:id="@+id/view_line"
             android:layout_width="match_parent"
             android:layout_height="0.5dp"
             android:layout_gravity="bottom"
-            android:layout_marginStart="@dimen/_10sdp"
-            android:layout_marginEnd="@dimen/_10sdp"
-            android:background="@color/gray_border_1" />
+            android:layout_marginStart="@dimen/_8sdp"
+            android:background="@color/view" />
 
     </LinearLayout>
 </layout>

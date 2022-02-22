@@ -1,10 +1,14 @@
 package com.android.pos.ui.fragments.team
 
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
+import android.widget.TextView
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -35,6 +39,7 @@ class CreateTeamMember : Fragment() {
     var items: ArrayList<String> = arrayListOf()
     var itemsIds: ArrayList<Int> = arrayListOf()
     private lateinit var binding: FragmentCreateTeamMemberBinding
+    private var country = arrayOf("United States", "Canada")
 
     @Inject
     lateinit var prefProvider: PrefProvider
@@ -91,7 +96,7 @@ class CreateTeamMember : Fragment() {
         }
 
         binding.edtHours.addTextChangedListener(AmountWatcher(binding.edtHours))
-
+        setPhoneCountry()
         setupSnackbar()
         observeShowProgress()
         navigate()
@@ -212,4 +217,37 @@ class CreateTeamMember : Fragment() {
             }
         })
     }
+
+    private fun setPhoneCountry() {
+        val adapter =
+            ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, country)
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+
+        binding.edtCountry.adapter = adapter
+        binding.edtCountry.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(
+                parent: AdapterView<*>?,
+                view: View?,
+                position: Int,
+                id: Long
+            ) {
+
+                if (Build.VERSION.SDK_INT < 23) {
+                    (parent?.getChildAt(0) as TextView).setTextAppearance(
+                        view?.context,
+                        com.android.pos.R.style.SpinnerTheme
+                    )
+                } else {
+                    (parent?.getChildAt(0) as TextView).setTextAppearance(R.style.SpinnerTheme); }
+
+
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+
+            }
+
+        }
+    }
+
 }
