@@ -14,18 +14,17 @@
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/white"
+        android:background="@color/bg_color"
         android:orientation="vertical">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@color/white"
             android:orientation="vertical">
 
             <include
                 android:id="@+id/header"
-                layout="@layout/view_header_toolbar" />
+                layout="@layout/view_header_toolbar_inventory" />
 
             <View
                 android:layout_width="match_parent"
@@ -46,13 +45,13 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/_10sdp"
-                    android:background="@drawable/edt_border_light_gray"
+                    android:background="@drawable/bg_border"
                     android:digits="@string/disable_emoji_string"
                     android:hint="@string/modifier_set_name"
                     android:inputType="textVisiblePassword"
                     android:padding="@dimen/_5sdp"
                     android:text="@={createModifierViewModel.modifierDetails.modifierName}"
-                    android:textColor="@color/black"
+                    android:textColor="@color/txtColor"
                     android:textColorHint="@color/hintColor"
                     android:textSize="@dimen/_5mdpi" />
 
@@ -65,7 +64,7 @@
                     android:gravity="center"
                     android:padding="@dimen/_5sdp"
                     android:text="@string/to_set_pre_selected_modifiers_or_update_the_minimum_maximum_number_of_modifiers_that_can_be_applied_visit_your_dashboard_if_you_modify_this_set_in_point_of_sale_it_will_only_apply_the_basic_settings_below"
-                    android:textColor="@color/colorCB"
+                    android:textColor="@color/view"
                     android:textSize="@dimen/_5mdpi"
                     app:textAllCaps="false" />
 
@@ -91,7 +90,7 @@
                         android:layout_weight="1"
                         android:gravity="start"
                         android:text="@string/apply_set"
-                        android:textColor="@color/viewTextColor"
+                        android:textColor="@color/txtColor"
                         android:textSize="@dimen/_5mdpi" />
 
                     <androidx.appcompat.widget.AppCompatTextView
@@ -175,7 +174,7 @@
                             android:inputType="textVisiblePassword"
                             android:padding="@dimen/_5sdp"
                             android:textColor="@color/txtColor"
-                            android:textColorHint="@color/colorC5"
+                            android:textColorHint="@color/hintColor"
                             android:textSize="@dimen/_5mdpi" />
 
                         <androidx.appcompat.widget.AppCompatEditText

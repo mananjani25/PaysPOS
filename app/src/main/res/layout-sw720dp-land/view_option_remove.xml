@@ -47,7 +47,7 @@
                 android:background="@null"
                 android:gravity="start"
                 android:padding="@dimen/_4sdp"
-                android:textColor="@color/viewTextColor"
+                android:textColor="@color/txtColor"
                 android:textSize="@dimen/_5mdpi"
                 tools:text="Modifier one" />
 
@@ -64,7 +64,7 @@
                 android:inputType="numberDecimal"
                 android:padding="@dimen/_3sdp"
                 android:textColor="@color/txtColor"
-                android:textColorHint="@color/colorC5"
+                android:textColorHint="@color/hintColor"
                 android:textSize="@dimen/_6mdpi"
                 android:visibility="gone" />
 

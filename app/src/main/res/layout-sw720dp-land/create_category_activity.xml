@@ -14,27 +14,22 @@
     <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@color/bg_color"
         android:orientation="vertical">
 
         <include
             android:id="@+id/header"
-            layout="@layout/view_header_toolbar" />
+            layout="@layout/view_header_toolbar_inventory" />
 
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="@color/view" />
 
-        <androidx.core.widget.NestedScrollView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:background="@color/white"
-            android:orientation="vertical">
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:background="@color/white"
                 android:orientation="vertical">
 
                 <include android:id="@+id/ilImage" layout="@layout/label_box" />
@@ -47,14 +42,14 @@
                     android:layout_marginTop="@dimen/_10sdp"
                     android:layout_marginEnd="@dimen/_50sdp"
                     android:layout_marginBottom="@dimen/_10sdp"
-                    android:background="@drawable/edt_border_light_gray"
+                    android:background="@drawable/bg_border"
                     android:hint="@string/add_category_name"
                     android:imeOptions="actionDone"
                     android:padding="@dimen/_5sdp"
                     android:singleLine="true"
                     android:inputType="textVisiblePassword"
                     android:text="@={createCategoryViewModel.categoryDetails.name}"
-                    android:textColor="@color/black"
+                    android:textColor="@color/txtColor"
                     android:textColorHint="@color/hintColor"
                     android:textSize="@dimen/_6mdpi"
                     android:digits="@string/disable_emoji_string"/>
@@ -85,7 +80,7 @@
                     tools:listitem="@layout/view_assign_item_to_category" />
 
             </LinearLayout>
-        </androidx.core.widget.NestedScrollView>
+
 
     </androidx.appcompat.widget.LinearLayoutCompat>
 

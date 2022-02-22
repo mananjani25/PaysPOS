@@ -7,6 +7,7 @@
     <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@color/bg_color"
         android:orientation="vertical">
 
         <RelativeLayout
@@ -16,14 +17,13 @@
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/imgBack"
-                android:background="?attr/selectableItemBackground"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
                 android:layout_gravity="center"
                 android:padding="@dimen/_6sdp"
-                app:srcCompat="@drawable/ic_cancel_black"
-                app:tint="@color/viewTextColor" />
+                app:srcCompat="@drawable/ic_cancel_white"
+                 />
 
             <androidx.appcompat.widget.AppCompatTextView
                 style="@style/CustomFontSemiBold"
@@ -32,6 +32,7 @@
                 android:layout_centerInParent="true"
                 android:layout_gravity="center"
                 android:gravity="center"
+                android:textColor="@color/txtColor"
                 android:text="@string/add_variation"
                 android:textSize="@dimen/_7mdpi" />
 
@@ -39,7 +40,7 @@
                 android:id="@+id/txtDone"
                 style="@style/CustomFontSemiBold"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="@dimen/_25sdp"
                 android:layout_alignParentEnd="true"
                 android:layout_gravity="center"
                 android:background="@color/btnColor"
@@ -54,7 +55,7 @@
 
             <View
                 android:layout_width="match_parent"
-                android:layout_height="1dp"
+                android:layout_height="0.5dp"
                 android:layout_below="@+id/txtDone"
                 android:background="@color/view" />
 
@@ -97,7 +98,7 @@
                             android:layout_weight="1"
                             android:padding="@dimen/_5sdp"
                             android:text="@string/tv_variation_name_mand"
-                            android:textColor="@color/viewTextColor"
+                            android:textColor="@color/txtColor"
                             android:textSize="@dimen/_5mdpi" />
 
                         <androidx.appcompat.widget.AppCompatEditText
@@ -112,7 +113,7 @@
                             android:imeOptions="actionNext"
                             android:inputType="textVisiblePassword"
                             android:padding="@dimen/_5sdp"
-                            android:textColor="@color/black"
+                            android:textColor="@color/txtColor"
                             android:textColorHint="@color/hintColor"
                             android:textSize="@dimen/_5mdpi" />
                     </LinearLayout>
@@ -125,7 +126,6 @@
                     android:layout_marginLeft="@dimen/_25sdp"
                     android:layout_marginRight="@dimen/_25sdp"
                     android:layout_marginBottom="@dimen/_25sdp"
-                    android:background="@drawable/background_tab_vertical"
                     android:orientation="vertical"
                     android:padding="@dimen/_10sdp"
                     android:visibility="visible">
@@ -148,7 +148,7 @@
                             android:layout_weight="1"
                             android:padding="@dimen/_5sdp"
                             android:text="@string/tv_unit"
-                            android:textColor="@color/viewTextColor"
+                            android:textColor="@color/txtColor"
                             android:textSize="@dimen/_5mdpi" />
 
                         <FrameLayout
@@ -171,10 +171,10 @@
                                 android:textSize="@dimen/_5mdpi" />
 
                             <ImageView
-                                android:layout_width="@dimen/_7sdp"
-                                android:src="@drawable/caretdown"
+                                android:layout_width="@dimen/_15sdp"
+                                android:src="@drawable/ic_arrow_drop_down"
                                 android:layout_gravity="right|center_vertical"
-                                android:layout_height="@dimen/_7sdp" />
+                                android:layout_height="@dimen/_15sdp" />
                         </FrameLayout>
                     </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -198,7 +198,7 @@
                             android:layout_weight="1"
                             android:padding="@dimen/_5sdp"
                             android:text="@string/price"
-                            android:textColor="@color/viewTextColor"
+                            android:textColor="@color/txtColor"
                             android:textSize="@dimen/_5mdpi" />
 
                         <androidx.appcompat.widget.AppCompatEditText
@@ -214,7 +214,7 @@
                             android:imeOptions="actionNext"
                             android:inputType="numberDecimal"
                             android:padding="@dimen/_5sdp"
-                            android:textColor="@color/black"
+                            android:textColor="@color/txtColor"
                             android:textColorHint="@color/hintColor"
                             android:textSize="@dimen/_5mdpi"
                             android:digits="0123456789"/>
@@ -238,7 +238,7 @@
                             android:layout_weight="1"
                             android:padding="@dimen/_5sdp"
                             android:text="@string/sku"
-                            android:textColor="@color/viewTextColor"
+                            android:textColor="@color/txtColor"
                             android:textSize="@dimen/_5mdpi" />
 
                         <androidx.appcompat.widget.AppCompatEditText
@@ -254,7 +254,7 @@
                             android:imeOptions="actionNext"
                             android:inputType="textVisiblePassword"
                             android:padding="@dimen/_5sdp"
-                            android:textColor="@color/black"
+                            android:textColor="@color/txtColor"
                             android:textColorHint="@color/hintColor"
                             android:textSize="@dimen/_5mdpi"
                             android:digits="@string/disable_emoji_string" />
@@ -280,7 +280,7 @@
                             android:padding="@dimen/_5sdp"
                             android:text="@string/stock"
                             android:maxLength="5"
-                            android:textColor="@color/viewTextColor"
+                            android:textColor="@color/txtColor"
                             android:textSize="@dimen/_5mdpi" />
 
                         <androidx.appcompat.widget.AppCompatEditText
@@ -296,7 +296,7 @@
                             android:imeOptions="actionNext"
                             android:inputType="number"
                             android:padding="@dimen/_5sdp"
-                            android:textColor="@color/black"
+                            android:textColor="@color/txtColor"
                             android:textColorHint="@color/hintColor"
                             android:textSize="@dimen/_5mdpi"
                             android:digits="0123456789"/>

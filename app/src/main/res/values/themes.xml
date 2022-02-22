@@ -45,12 +45,6 @@
     </style>
 
 
-    <style name="InventoryField_Style_withborder" parent="TextAppearance.AppCompat">
-        <item name="android:fontFamily">@font/sf_pro_display_semibold</item>
-        <item name="textSize">@dimen/_12sdp</item>
-        <item name="android:layout_gravity">center_vertical</item>
-    </style>
-
 
     <style name="CustomFontBold" parent="TextAppearance.AppCompat">
         <item name="android:fontFamily">@font/sf_pro_display_bold</item>

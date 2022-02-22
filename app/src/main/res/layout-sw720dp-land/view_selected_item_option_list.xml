@@ -21,7 +21,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:background="@drawable/bg_option"
+            android:background="@drawable/bg_border"
             android:orientation="horizontal"
             android:padding="@dimen/_5sdp">
 
@@ -32,7 +32,7 @@
                 android:layout_gravity="center"
                 android:gravity="start"
                 android:text="@{model.name}"
-                android:textColor="@color/viewTextColor"
+                android:textColor="@color/txtColor"
                 android:textSize="@dimen/_5mdpi"
                 tools:text="Image one" />
 
@@ -41,11 +41,11 @@
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/imgDeleteOptions"
             android:layout_width="wrap_content"
+            android:layout_gravity="center"
             android:layout_height="wrap_content"
             android:layout_marginLeft="@dimen/_5sdp"
-            android:background="?attr/selectableItemBackground"
-            app:srcCompat="@drawable/ic_cancel_black"
-            app:tint="@color/viewTextColor" />
+            app:srcCompat="@drawable/ic_cancel_white"
+            />
 
     </androidx.appcompat.widget.LinearLayoutCompat>
 </layout>

@@ -16,6 +16,7 @@ import com.android.pos.data.entities.OptionSet
 import com.android.pos.data.remote.Constants.DIALOG_KEY
 import com.android.pos.data.remote.Constants.DIALOG_KEY_OPTIONS
 import com.android.pos.databinding.FragmentItemOptionsListBinding
+
 import com.android.pos.ui.adapter.SelectedOptionSetNameAdapter
 import com.android.pos.ui.fragments.inventory.OptionSetViewModel
 import com.android.pos.utils.ProgressUtils

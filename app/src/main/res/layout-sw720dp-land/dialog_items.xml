@@ -7,6 +7,7 @@
     <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:background="@color/bg_color"
         android:orientation="vertical">
 
         <RelativeLayout
@@ -20,8 +21,8 @@
                 android:layout_centerVertical="true"
                 android:layout_gravity="center"
                 android:padding="@dimen/_6sdp"
-                app:srcCompat="@drawable/ic_cancel_black"
-                app:tint="@color/viewTextColor" />
+                app:srcCompat="@drawable/ic_cancel_white"
+                 />
 
             <androidx.appcompat.widget.AppCompatTextView
                 style="@style/CustomFontSemiBold"
@@ -38,7 +39,7 @@
                 android:id="@+id/txtDone"
                 style="@style/CustomFontSemiBold"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="@dimen/_25sdp"
                 android:layout_alignParentEnd="true"
                 android:layout_gravity="center"
                 android:background="@color/btnColor"
@@ -70,7 +71,7 @@
             android:imeOptions="actionDone"
             android:inputType="textVisiblePassword"
             android:padding="@dimen/_5sdp"
-            android:textColor="@color/black"
+            android:textColor="@color/txtColor"
             android:textColorHint="@color/hintColor"
             android:textSize="@dimen/_6mdpi"
             android:visibility="gone" />
@@ -87,7 +88,7 @@
             android:layout_marginTop="@dimen/_10sdp"
             android:layout_marginEnd="@dimen/_20sdp"
             android:layout_marginBottom="@dimen/_10sdp"
-            android:background="@color/white"
+
             android:orientation="vertical">
 
             <LinearLayout

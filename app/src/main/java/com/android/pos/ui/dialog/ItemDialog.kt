@@ -13,6 +13,7 @@ import com.android.pos.R
 import com.android.pos.data.entities.TbItem
 import com.android.pos.data.remote.Constants.DIALOG_KEY
 import com.android.pos.databinding.DialogItemsBinding
+
 import com.android.pos.ui.adapter.ItemListAdapter
 import com.android.pos.ui.fragments.inventory.ItemsViewModel
 import com.android.pos.utils.extensions.setNavigationResult
