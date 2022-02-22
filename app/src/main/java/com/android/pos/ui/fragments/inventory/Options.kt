@@ -51,7 +51,7 @@ class Options : Fragment(), TextWatcher {
         observeShowProgress()
         deleteObserve()
 
-        binding.txtCreateOption.setOnClickListener {
+        binding.txtcreateoption.setOnClickListener {
             findNavController().navigate(R.id.action_inventory_to_createOption)
         }
     }
@@ -70,7 +70,7 @@ class Options : Fragment(), TextWatcher {
 
     private fun optionSetObserver() {
 
-        viewModel.optionSets().observe(viewLifecycleOwner, {
+        viewModel.optionSets().observe(viewLifecycleOwner) {
 
             it?.let { resource ->
                 when (resource.status) {
@@ -94,7 +94,7 @@ class Options : Fragment(), TextWatcher {
             }
 
 
-        })
+        }
     }
 
     private fun swipeViewSetup() {

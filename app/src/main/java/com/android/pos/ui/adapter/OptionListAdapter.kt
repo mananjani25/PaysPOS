@@ -1,6 +1,7 @@
 package com.android.pos.ui.adapter
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import android.widget.Filter
 import android.widget.Filterable
@@ -20,6 +21,11 @@ class OptionListAdapter :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(item: OptionSet) {
             binding.model = item
+            if(absoluteAdapterPosition==0){
+                binding.firstviewOption.visibility = View.VISIBLE
+            }else{
+                binding.firstviewOption.visibility = View.GONE
+            }
             binding.executePendingBindings()
         }
     }

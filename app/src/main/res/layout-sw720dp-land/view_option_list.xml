@@ -13,18 +13,21 @@
 
     <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent"
+        android:background="@color/bg_color"
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
         <View
+            android:id="@+id/firstview_option"
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:visibility="gone"
-            android:background="@color/view" />
+            android:background="@color/cool_grey" />
 
         <androidx.appcompat.widget.LinearLayoutCompat
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_height="@dimen/_27sdp"
             android:orientation="horizontal">
 
 
@@ -63,10 +66,10 @@
         </androidx.appcompat.widget.LinearLayoutCompat>
 
         <View
-            android:visibility="gone"
+            android:visibility="visible"
             android:layout_width="match_parent"
-            android:layout_height="0.3dp"
-            android:background="@color/view" />
+            android:layout_height="1dp"
+            android:background="@color/cool_grey" />
 
 
     </androidx.appcompat.widget.LinearLayoutCompat>

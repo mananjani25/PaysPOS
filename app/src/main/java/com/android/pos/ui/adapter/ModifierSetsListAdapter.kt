@@ -23,7 +23,11 @@ class ModifierSetsListAdapter(val isCreateItem: Boolean) :
             binding.model = item
             binding.executePendingBindings()
 
-
+            if(absoluteAdapterPosition==0){
+                binding.firstviewModifier.visibility = View.VISIBLE
+            }else{
+                binding.firstviewModifier.visibility = View.GONE
+            }
             if (isCreateItem) {
                 binding.imgCheck.visibility = View.VISIBLE
                 binding.imgReorder.visibility = View.GONE
