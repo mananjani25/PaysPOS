@@ -50,7 +50,7 @@ class OpenOrderAdapter(val context: Context) :
                         context
                     )
 
-                binding.tvDate.text=item.futureDeliveryTime
+                binding.tvtime.text=item.futureDeliveryTime
             } else {
 
             }

@@ -60,32 +60,33 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+
                 android:orientation="vertical">
 
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/tvDate"
                     style="@style/CustomFontMediumStyle"
-                    android:layout_width="0dp"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_weight="1"
-                    android:gravity="center"
                     android:textColor="@color/txtColor"
                     android:textSize="@dimen/_5mdpi"
-                    tools:text="@string/tv_date_time" />
+                    tools:text="@string/tv_date_time"
+                    android:layout_gravity="center_horizontal"
+                    android:gravity="center_horizontal"/>
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/tvtime"
                     style="@style/CustomFontMediumStyle"
-                    android:layout_width="0dp"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_weight="1"
-                    android:gravity="center"
                     android:textColor="@color/txtColor"
                     android:textSize="@dimen/_5mdpi"
-                    tools:text="@string/tv_date_time" />
+                    tools:text="@string/tv_date_time"
+                    android:visibility="visible"
+                    android:layout_gravity="center_horizontal"
+                    android:gravity="center_horizontal"
+                    android:layout_marginRight="@dimen/_4sdp"/>
 
             </androidx.appcompat.widget.LinearLayoutCompat>
 
