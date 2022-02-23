@@ -94,7 +94,7 @@
             android:layout_width="match_parent"
             android:layout_height="0.5dp"
             android:layout_marginBottom="@dimen/_5sdp"
-            android:background="@color/gray_rect" />
+            android:background="@color/view" />
 
 
         <LinearLayout
@@ -103,25 +103,27 @@
             android:layout_gravity="center"
             android:layout_marginBottom="@dimen/_5sdp"
             android:gravity="start"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:weightSum="8"
+            android:layout_marginHorizontal="@dimen/_5sdp"
+            >
 
             <androidx.appcompat.widget.LinearLayoutCompat
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="@dimen/_10sdp"
                 android:gravity="center"
-                android:orientation="vertical">
+                android:orientation="horizontal"
+                android:layout_weight="2">
 
                 <androidx.appcompat.widget.AppCompatTextView
                     style="@style/CustomFontSemiBold"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_marginBottom="@dimen/_3sdp"
-                    android:gravity="center"
+                    android:layout_gravity="center_vertical"
+                    android:gravity="center_vertical"
                     android:text="@string/start_date_amp_time"
                     android:textColor="@color/txtColor"
-                    android:textSize="@dimen/_5mdpi" />
+                    android:textSize="@dimen/text_size_medium" />
 
                 <LinearLayout
                     android:layout_width="wrap_content"
@@ -130,17 +132,17 @@
                     android:onClick="@{() -> viewModel.datePicker(true)}"
                     android:orientation="horizontal"
                     android:paddingStart="@dimen/_5sdp"
-                    android:paddingTop="@dimen/_3sdp"
                     android:paddingEnd="@dimen/_5sdp"
-                    android:paddingBottom="@dimen/_3sdp">
+                    android:layout_marginStart="@dimen/_5sdp"
+                    android:paddingVertical="@dimen/_5sdp"
+                    >
 
                     <ImageView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:layout_marginEnd="@dimen/_5sdp"
-                        app:srcCompat="@drawable/calendar"
-                        app:tint="@color/color65"
+                        app:srcCompat="@drawable/ic_calendar"
                         tools:ignore="ContentDescription" />
 
                     <androidx.appcompat.widget.AppCompatTextView
@@ -160,39 +162,39 @@
             <androidx.appcompat.widget.LinearLayoutCompat
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="@dimen/_10sdp"
                 android:gravity="center"
-                android:orientation="vertical">
+                android:orientation="horizontal"
+                android:layout_marginStart="@dimen/_5sdp"
+                android:layout_weight="2"
+                >
 
                 <androidx.appcompat.widget.AppCompatTextView
                     style="@style/CustomFontSemiBold"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:layout_marginBottom="@dimen/_3sdp"
                     android:gravity="center"
                     android:text="@string/end_date_amp_time"
                     android:textColor="@color/txtColor"
-                    android:textSize="@dimen/_5mdpi" />
+                    android:textSize="@dimen/text_size_medium" />
 
                 <LinearLayout
                     android:layout_width="wrap_content"
-
                     android:layout_height="wrap_content"
                     android:background="@drawable/background_square_border_grey"
                     android:onClick="@{() -> viewModel.datePicker(false)}"
                     android:orientation="horizontal"
                     android:paddingStart="@dimen/_5sdp"
-                    android:paddingTop="@dimen/_3sdp"
                     android:paddingEnd="@dimen/_5sdp"
-                    android:paddingBottom="@dimen/_3sdp">
+                    android:paddingVertical="@dimen/_5sdp"
+                    android:layout_marginStart="@dimen/_5sdp">
 
                     <ImageView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:layout_marginEnd="@dimen/_5sdp"
-                        app:srcCompat="@drawable/calendar"
+                        app:srcCompat="@drawable/ic_calendar"
                         app:tint="@color/color65"
                         tools:ignore="ContentDescription" />
 
@@ -212,33 +214,40 @@
 
             <androidx.appcompat.widget.LinearLayoutCompat
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="@dimen/_10sdp"
+                android:layout_height="match_parent"
                 android:gravity="center"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:layout_weight="1"
+                android:layout_marginStart="@dimen/_5sdp"
+                android:background="@drawable/background_square_border_grey"
 
-                <androidx.appcompat.widget.AppCompatTextView
-                    style="@style/CustomFontSemiBold"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_marginBottom="@dimen/_3sdp"
-                    android:gravity="center"
-                    android:text="@string/terminal"
-                    android:textColor="@color/txtColor"
-                    android:textSize="@dimen/_5mdpi" />
+                >
+
 
                 <RelativeLayout
                     android:layout_width="@dimen/_60sdp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:background="@drawable/bg_border"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                    >
+                    <androidx.appcompat.widget.AppCompatTextView
+                        style="@style/CustomFontSemiBold"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_gravity="center_vertical"
+                        android:gravity="center_vertical"
+                        android:text="@string/all_terminals"
+                        android:paddingLeft="@dimen/_3sdp"
+                        android:textColor="@color/txtColor"
+                        android:textSize="@dimen/_5mdpi"
+                        android:visibility="gone"
+                        />
 
                     <Spinner
                         android:id="@+id/spTerminals"
                         android:layout_width="match_parent"
-                        android:layout_height="@dimen/_13sdp"
+                        android:layout_height="@dimen/_20sdp"
                         android:layout_gravity="center"
                         android:background="@null"
                         android:imeOptions="actionNext"
@@ -254,89 +263,80 @@
                         android:layout_alignParentEnd="true"
                         android:layout_centerVertical="true"
                         android:layout_gravity="center"
-                        app:srcCompat="@drawable/ic_arrow_drop_down" />
+                        android:paddingRight="@dimen/_3sdp"
+                        android:layout_marginRight="@dimen/_3sdp"
+                        app:srcCompat="@drawable/ic_down_solid_arrow_universal" />
                 </RelativeLayout>
             </androidx.appcompat.widget.LinearLayoutCompat>
 
             <androidx.appcompat.widget.LinearLayoutCompat
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="@dimen/_10sdp"
                 android:gravity="center"
-                android:orientation="vertical">
+                android:background="@drawable/background_square_border_grey"
+                android:orientation="horizontal"
+                android:layout_weight="1"
+                android:layout_marginStart="@dimen/_5sdp"
+
+                android:paddingVertical="@dimen/_5sdp">
 
                 <androidx.appcompat.widget.AppCompatTextView
                     style="@style/CustomFontSemiBold"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:layout_marginBottom="@dimen/_3sdp"
                     android:gravity="center"
-                    android:text="Cash Drawer AMT"
+                    android:paddingLeft="@dimen/_3sdp"
+                    android:text="Cash Drawer AMT:"
                     android:textColor="@color/txtColor"
                     android:textSize="@dimen/_5mdpi" />
 
-                <androidx.appcompat.widget.LinearLayoutCompat
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/txtCashDrawerAmount"
+                    style="@style/CustomFontSemiBold"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:background="@drawable/background_square_border_grey"
-                    android:orientation="horizontal"
-                    android:paddingHorizontal="@dimen/_4sdp"
-                    android:paddingVertical="@dimen/_3sdp">
+                    android:text="@{@string/symbole+String.format(@string/format,cashLogModel.totalLeftAmountInDrawer)}"
+                    android:textColor="@color/btnColor"
+                    android:textSize="@dimen/_5mdpi"
+                    android:layout_marginRight="@dimen/_2sdp"/>
 
-                    <androidx.appcompat.widget.AppCompatTextView
-                        android:id="@+id/txtCashDrawerAmount"
-                        style="@style/CustomFontSemiBold"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_marginStart="@dimen/_1sdp"
-                        android:text="@{@string/symbole +` `+String.format(@string/format,cashLogModel.totalLeftAmountInDrawer)}"
-                        android:textColor="@color/btnColor"
-                        android:textSize="@dimen/_5mdpi" />
 
-                </androidx.appcompat.widget.LinearLayoutCompat>
             </androidx.appcompat.widget.LinearLayoutCompat>
 
 
             <androidx.appcompat.widget.LinearLayoutCompat
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="@dimen/_10sdp"
                 android:gravity="center"
-                android:orientation="vertical">
+                android:orientation="horizontal"
+                android:paddingVertical="@dimen/_5sdp"
+                android:background="@drawable/background_square_border_grey"
+                android:layout_weight="1"
+                android:paddingHorizontal="@dimen/_2sdp"
+                android:layout_marginStart="@dimen/_5sdp"
+                >
                 <androidx.appcompat.widget.AppCompatTextView
                     style="@style/CustomFontSemiBold"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:layout_marginBottom="@dimen/_3sdp"
                     android:gravity="center"
-                    android:text="Cash Out AMT"
+                    android:text="Cash Out AMT:"
                     android:textColor="@color/txtColor"
-                    android:textSize="@dimen/_5mdpi" />
-                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:textSize="@dimen/_5mdpi"
+                    />
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/txt"
+                    style="@style/CustomFontSemiBold"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:background="@drawable/background_square_border_grey"
-                    android:orientation="horizontal"
-                    android:paddingHorizontal="@dimen/_4sdp"
-                    android:paddingVertical="@dimen/_3sdp">
-
-                    <androidx.appcompat.widget.AppCompatTextView
-                        android:id="@+id/txt"
-                        style="@style/CustomFontSemiBold"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_marginStart="@dimen/_1sdp"
-                        android:text="@{@string/symbole +` `+String.format(@string/format,cashLogModel.totalCashOut)}"
-                        android:textColor="@color/colorE90"
-                        android:textSize="@dimen/_5mdpi" />
-
-                </androidx.appcompat.widget.LinearLayoutCompat>
+                    android:text="@{@string/symbole+String.format(@string/format,cashLogModel.totalCashOut)}"
+                    android:textColor="@color/btnColor"
+                    android:textSize="@dimen/_5mdpi"
+                    android:layout_marginRight="@dimen/_2sdp"/>
             </androidx.appcompat.widget.LinearLayoutCompat>
 
 
@@ -344,102 +344,92 @@
             <androidx.appcompat.widget.LinearLayoutCompat
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginHorizontal="@dimen/_10sdp"
                 android:gravity="center"
-                android:orientation="vertical">
+                android:orientation="horizontal"
+                android:paddingVertical="@dimen/_5sdp"
+                android:background="@drawable/background_square_border_grey"
+                android:layout_weight="1"
+                android:paddingHorizontal="@dimen/_2sdp"
+                android:layout_marginStart="@dimen/_5sdp"
+                >
                 <androidx.appcompat.widget.AppCompatTextView
                     style="@style/CustomFontSemiBold"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:layout_marginBottom="@dimen/_3sdp"
                     android:gravity="center"
                     android:text="Cash In AMT"
                     android:textColor="@color/txtColor"
                     android:textSize="@dimen/_5mdpi" />
-                <androidx.appcompat.widget.LinearLayoutCompat
+                <androidx.appcompat.widget.AppCompatTextView
+                    style="@style/CustomFontSemiBold"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:background="@drawable/background_square_border_grey"
-                    android:orientation="horizontal"
-                    android:paddingHorizontal="@dimen/_4sdp"
-                    android:paddingVertical="@dimen/_3sdp">
-                    <androidx.appcompat.widget.AppCompatTextView
-                        style="@style/CustomFontSemiBold"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_marginStart="@dimen/_1sdp"
-                        android:text="@{@string/symbole +` `+String.format(@string/format,cashLogModel.totalCashIn)}"
-                        android:textColor="@color/color0A"
-                        android:textSize="@dimen/_5mdpi" />
-
-                </androidx.appcompat.widget.LinearLayoutCompat>
+                    android:text="@{@string/symbole+String.format(@string/format,cashLogModel.totalCashIn)}"
+                    android:textColor="@color/btnColor"
+                    android:textSize="@dimen/_5mdpi"
+                    android:layout_marginRight="@dimen/_2sdp"/>
             </androidx.appcompat.widget.LinearLayoutCompat>
 
 
 
         </LinearLayout>
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="0.5dp"
-            android:layout_marginBottom="@dimen/_5sdp"
-            android:background="@color/gray_rect" />
+
 
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/background_timesheet"
+            android:background="@color/backgroundColor"
             android:orientation="horizontal"
-            android:paddingTop="@dimen/_5sdp"
-            android:paddingBottom="@dimen/_5sdp">
+            android:paddingVertical="@dimen/_7sdp"
+            >
 
 
             <androidx.appcompat.widget.AppCompatTextView
-                style="@style/CustomFontMediumStyle"
+                style="@style/CustomFontBold"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center"
                 android:layout_marginStart="@dimen/_5sdp"
                 android:text="@string/tv_order_id"
-                android:textColor="@color/txtColor"
-                android:textSize="@dimen/_5mdpi" />
+                android:textColor="@color/white"
+                android:textSize="@dimen/text_size_medium" />
 
             <androidx.appcompat.widget.AppCompatTextView
-                style="@style/CustomFontMediumStyle"
+                style="@style/CustomFontBold"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
 
                 android:layout_weight="1"
                 android:gravity="center"
                 android:text="@string/tv_date_time"
-                android:textColor="@color/txtColor"
-                android:textSize="@dimen/_5mdpi" />
+                android:textColor="@color/white"
+                android:textSize="@dimen/text_size_medium" />
 
             <androidx.appcompat.widget.AppCompatTextView
-                style="@style/CustomFontMediumStyle"
+                style="@style/CustomFontBold"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/_5sdp"
                 android:layout_weight="1"
                 android:gravity="center"
                 android:text="@string/tv_total_amount"
-                android:textColor="@color/txtColor"
-                android:textSize="@dimen/_5mdpi" />
+                android:textColor="@color/white"
+                android:textSize="@dimen/text_size_medium" />
 
             <androidx.appcompat.widget.AppCompatTextView
-                style="@style/CustomFontMediumStyle"
+                style="@style/CustomFontBold"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center"
                 android:text="@string/tv_order_type"
-                android:textColor="@color/txtColor"
-                android:textSize="@dimen/_5mdpi" />
+                android:textColor="@color/white"
+                android:textSize="@dimen/text_size_medium" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 style="@style/CustomFontMediumStyle"
@@ -449,8 +439,9 @@
                 android:layout_weight="1"
                 android:gravity="center"
                 android:text="@string/event_type"
-                android:textColor="@color/txtColor"
-                android:textSize="@dimen/_5mdpi" />
+                android:textColor="@color/white"
+                android:visibility="gone"
+                android:textSize="@dimen/text_size_medium" />
 
 
             <androidx.appcompat.widget.AppCompatTextView
@@ -460,30 +451,31 @@
                 android:layout_weight="1"
                 android:gravity="center"
                 android:text="@string/employee_name"
-                android:textColor="@color/txtColor"
+                android:textColor="@color/white"
                 android:textSize="@dimen/_5mdpi"
                 android:visibility="gone" />
 
 
             <androidx.appcompat.widget.AppCompatTextView
-                style="@style/CustomFontMediumStyle"
+                style="@style/CustomFontBold"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center"
                 android:text="@string/tv_terminal_id"
-                android:textColor="@color/txtColor"
-                android:textSize="@dimen/_5mdpi" />
+                android:textColor="@color/white"
+                android:textSize="@dimen/text_size_medium"
+                android:visibility="gone"/>
 
             <androidx.appcompat.widget.AppCompatTextView
-                style="@style/CustomFontMediumStyle"
+                style="@style/CustomFontBold"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1.5"
                 android:gravity="center"
                 android:text="@string/reason"
-                android:textColor="@color/txtColor"
-                android:textSize="@dimen/_5mdpi" />
+                android:textColor="@color/white"
+                android:textSize="@dimen/text_size_medium" />
 
         </LinearLayout>
 

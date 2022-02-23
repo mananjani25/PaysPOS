@@ -25,7 +25,7 @@
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/txtOrderId"
-                style="@style/CustomFontMediumStyle"
+                style="@style/CustomFontSemiBold"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -33,21 +33,48 @@
                 android:layout_marginStart="@dimen/_5sdp"
                 android:text="@string/tv_order_type"
                 android:textColor="@color/btnColor"
-                android:textSize="@dimen/_5mdpi" />
+                android:textSize="@dimen/text_size_medium" />
 
 
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/txtDateTime"
-                style="@style/CustomFontMediumStyle"
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:gravity="center"
-                android:textColor="@color/txtColor"
-                android:textSize="@dimen/_5mdpi" />
+                android:gravity="center_horizontal"
+                android:layout_gravity="center_horizontal"
+                >
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/txtDateTime"
+                    style="@style/CustomFontSemiBold"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/txtColor"
+                    android:gravity="center"
+                    android:textSize="@dimen/text_size_medium"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"/>
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/txtTime"
+                    style="@style/CustomFontSemiBold"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/hint_color"
+                    android:textSize="@dimen/text_size_medium"
+                    android:layout_marginLeft="@dimen/_28sdp"
+                    app:layout_constraintRight_toRightOf="@+id/txtDateTime"
+                    app:layout_constraintLeft_toLeftOf="@+id/txtDateTime"
+                    app:layout_constraintTop_toBottomOf="@+id/txtDateTime"/>
+
+
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
 
             <androidx.appcompat.widget.AppCompatTextView
-                style="@style/CustomFontMediumStyle"
+                style="@style/CustomFontSemiBold"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/_5sdp"
@@ -55,23 +82,43 @@
                 android:gravity="center"
                 android:text="@{@string/symbole +``+String.format(@string/format,viewModel.amount)}"
                 android:textColor="@color/txtColor"
-                android:textSize="@dimen/_5mdpi"
+                android:textSize="@dimen/text_size_medium"
                 tools:text="@string/tv_total_amount" />
 
-            <androidx.appcompat.widget.AppCompatTextView
-                style="@style/CustomFontMediumStyle"
+            <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:orientation="vertical"
                 android:layout_weight="1"
-                android:gravity="center"
-                android:text="@{viewModel.orderTypeName}"
-                android:textColor="@color/btnColor"
-                android:textSize="@dimen/_5mdpi"
-                tools:text="@string/tv_order_type" />
+                android:gravity="center">
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    style="@style/CustomFontSemiBold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+
+                    android:text="@{viewModel.orderTypeName}"
+                    android:textColor="@color/txtColor"
+                    android:textSize="@dimen/text_size_medium"
+                    tools:text="@string/tv_order_type" />
+
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    style="@style/CustomFontBold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@{viewModel.employeeName}"
+                    android:textColor="@color/hint_color"
+                    android:textSize="@dimen/text_size_medium"
+                    tools:text="@string/employee_name"
+                    android:layout_marginLeft="@dimen/_5sdp"/>
+
+            </LinearLayout>
+
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/txtEvent"
-                style="@style/CustomFontMediumStyle"
+                style="@style/CustomFontSemiBold"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/_5sdp"
@@ -79,12 +126,13 @@
                 android:gravity="center"
                 android:textColor="@color/txtColor"
                 android:textAllCaps="false"
-                android:textSize="@dimen/_5mdpi"
-                tools:text="@string/event_type" />
+                android:textSize="@dimen/text_size_medium"
+                tools:text="@string/event_type"
+                android:visibility="gone"/>
 
 
             <androidx.appcompat.widget.AppCompatTextView
-                style="@style/CustomFontMediumStyle"
+                style="@style/CustomFontBold"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -92,31 +140,32 @@
                 android:visibility="gone"
                 android:text="@{viewModel.employeeName}"
                 android:textColor="@color/txtColor"
-                android:textSize="@dimen/_5mdpi"
+                android:textSize="@dimen/text_size_medium"
                 tools:text="@string/employee_name" />
 
 
             <androidx.appcompat.widget.AppCompatTextView
-                style="@style/CustomFontMediumStyle"
+                style="@style/CustomFontBold"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center"
                 android:text="@{viewModel.terminalName}"
                 android:textColor="@color/txtColor"
-                android:textSize="@dimen/_5mdpi"
-                tools:text="@string/tv_terminal_id" />
+                android:textSize="@dimen/text_size_medium"
+                tools:text="@string/tv_terminal_id"
+                android:visibility="gone"/>
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/txt_reason"
-                style="@style/CustomFontMediumStyle"
+                style="@style/CustomFontSemiBold"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1.5"
                 android:gravity="center"
                 android:text=""
                 android:textColor="@color/txtColor"
-                android:textSize="@dimen/_5mdpi"
+                android:textSize="@dimen/text_size_medium"
                 tools:text="" />
 
         </LinearLayout>
