@@ -34,7 +34,7 @@
                 android:paddingVertical="@dimen/_7sdp"
                 android:text="@string/tv_add_a_new_tip_plus"
                 android:textColor="@color/white"
-                android:textSize="@dimen/_5mdpi"
+                android:textSize="@dimen/_7mdpi"
                 app:textAllCaps="false" />
 
 

@@ -10,10 +10,14 @@
         android:layout_marginStart="@dimen/_50sdp"
         android:layout_marginTop="@dimen/_20sdp"
         android:layout_marginEnd="@dimen/_50sdp"
+        android:background="@color/bg_color"
         android:layout_marginBottom="@dimen/_10sdp"
-        android:background="@color/white"
         android:orientation="vertical">
 
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/view" />
 
         <androidx.appcompat.widget.LinearLayoutCompat
 
@@ -22,7 +26,7 @@
             android:orientation="horizontal">
 
             <TextView
-                style="@style/CustomFontSemiBold"
+                style="@style/CustomFontRegularStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
@@ -30,18 +34,28 @@
                 android:gravity="start"
                 android:padding="@dimen/_5sdp"
                 android:text="@string/lock_screen_after_each_transaction"
-                android:textColor="@color/viewTextColor"
-                android:textSize="@dimen/_5mdpi" />
+                android:textColor="@color/txtColor"
+                android:textSize="@dimen/_6mdpi" />
 
-            <androidx.appcompat.widget.SwitchCompat
-                android:layout_width="wrap_content"
+            <com.google.android.material.switchmaterial.SwitchMaterial
+                android:id="@+id/swtOrderId"
+                style="@style/AppTheme"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
                 android:layout_gravity="center"
-                android:checked="true"
-                android:padding="@dimen/_5sdp"
-                app:thumbTint="@color/btnColor"
-                app:trackTint="@color/colorE2" />
+                android:layout_weight="1"
+                android:paddingEnd="@dimen/_32sdp"
+                android:scaleX="0.7"
+                android:scaleY="0.8"
+                android:showText="false"
+                android:thumb="@drawable/custom_thumb_printer_active_switch"
+                android:visibility="visible"
+                app:srcCompat="@drawable/ic_arrow_forward"
+                app:thumbTint="@color/switch_thumb_selector"
+                app:track="@drawable/custom_switch_track_printer"
+                app:trackTint="@color/switch_track_tint"
+                tools:ignore="UseSwitchCompatOrMaterialXml" />
+
         </androidx.appcompat.widget.LinearLayoutCompat>
 
         <View

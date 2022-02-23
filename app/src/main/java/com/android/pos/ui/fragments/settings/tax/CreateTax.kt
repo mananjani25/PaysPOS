@@ -56,10 +56,10 @@ class CreateTax : Fragment() {
 
 
         isEdit = arguments?.getBoolean("isEdit")!!
-        binding.tvSymbolPer.visibility = View.VISIBLE
+
 
         binding.header.txtSave.text = getString(R.string.save)
-        binding.header.txtTitle.text = getString(R.string.tv_new_tax)
+        binding.header.txtTitle.text = getString(R.string.tv_new_tax_add)
 
         if (isEdit) {
             taxData = arguments?.getParcelable("taxObject")!!
@@ -82,13 +82,9 @@ class CreateTax : Fragment() {
             if (taxData.taxType == getString(R.string.disc_percentage)) {
                 binding.swtTaxType.isChecked = true
                 binding.swtTaxType.text = getString(R.string.disc_percentage)
-                binding.tvSymbolPer.visibility = View.VISIBLE
-                binding.tvSymbolDollar.visibility = View.GONE
             } else {
                 binding.swtTaxType.isChecked = false
                 binding.swtTaxType.text = getString(R.string.dollar_amount)
-                binding.tvSymbolDollar.visibility = View.VISIBLE
-                binding.tvSymbolPer.visibility = View.GONE
             }
         }
 
@@ -204,13 +200,9 @@ class CreateTax : Fragment() {
     fun taxType(isChecked: Boolean) {
         if (isChecked) {
             binding.swtTaxType.text = getString(R.string.disc_percentage)
-            binding.tvSymbolPer.visibility = View.VISIBLE
-            binding.tvSymbolDollar.visibility = View.GONE
             viewModel.discountType(getString(R.string.disc_percentage))
         } else {
             binding.swtTaxType.text = getString(R.string.dollar_amount)
-            binding.tvSymbolDollar.visibility = View.VISIBLE
-            binding.tvSymbolPer.visibility = View.GONE
             viewModel.discountType(getString(R.string.dollar_amount))
         }
     }
