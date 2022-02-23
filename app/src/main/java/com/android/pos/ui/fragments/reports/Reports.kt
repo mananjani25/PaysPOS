@@ -85,38 +85,38 @@ class Reports : Fragment() {
             0 -> {
                 binding.commonToolbar.txtSubTitle.setText("Current Drawer")
                 binding.txtCurrentDrawer.setTextColor(requireContext().resources.getColor(R.color.white))
-                binding.txtCurrentDrawer.setBackgroundColor(requireContext().resources.getColor(R.color.drawerBack))
+                binding.txtCurrentDrawer.setBackgroundColor(requireContext().resources.getColor(R.color.btnColor))
 
                 binding.txtSales.setTextColor(requireContext().resources.getColor(R.color.txtColor))
-                binding.txtSales.setBackgroundColor(requireContext().resources.getColor(R.color.white))
+                binding.txtSales.setBackgroundColor(requireContext().resources.getColor(R.color.bg_color))
 
                 binding.txtShiftReport.setTextColor(requireContext().resources.getColor(R.color.txtColor))
-                binding.txtShiftReport.setBackgroundColor(requireContext().resources.getColor(R.color.white))
+                binding.txtShiftReport.setBackgroundColor(requireContext().resources.getColor(R.color.bg_color))
             }
             1 -> {
 
                 binding.commonToolbar.txtSubTitle.setText("Sales Report")
                 binding.txtCurrentDrawer.setTextColor(requireContext().resources.getColor(R.color.txtColor))
-                binding.txtCurrentDrawer.setBackgroundColor(requireContext().resources.getColor(R.color.white))
+                binding.txtCurrentDrawer.setBackgroundColor(requireContext().resources.getColor(R.color.bg_color))
 
                 binding.txtSales.setTextColor(requireContext().resources.getColor(R.color.white))
-                binding.txtSales.setBackgroundColor(requireContext().resources.getColor(R.color.drawerBack))
+                binding.txtSales.setBackgroundColor(requireContext().resources.getColor(R.color.btnColor))
 
                 binding.txtShiftReport.setTextColor(requireContext().resources.getColor(R.color.txtColor))
-                binding.txtShiftReport.setBackgroundColor(requireContext().resources.getColor(R.color.white))
+                binding.txtShiftReport.setBackgroundColor(requireContext().resources.getColor(R.color.bg_color))
 
             }
             2 -> {
 
                 binding.commonToolbar.txtSubTitle.setText("Shift Report")
                 binding.txtCurrentDrawer.setTextColor(requireContext().resources.getColor(R.color.txtColor))
-                binding.txtCurrentDrawer.setBackgroundColor(requireContext().resources.getColor(R.color.white))
+                binding.txtCurrentDrawer.setBackgroundColor(requireContext().resources.getColor(R.color.bg_color))
 
                 binding.txtSales.setTextColor(requireContext().resources.getColor(R.color.txtColor))
-                binding.txtSales.setBackgroundColor(requireContext().resources.getColor(R.color.white))
+                binding.txtSales.setBackgroundColor(requireContext().resources.getColor(R.color.bg_color))
 
                 binding.txtShiftReport.setTextColor(requireContext().resources.getColor(R.color.white))
-                binding.txtShiftReport.setBackgroundColor(requireContext().resources.getColor(R.color.drawerBack))
+                binding.txtShiftReport.setBackgroundColor(requireContext().resources.getColor(R.color.btnColor))
 
 
             }

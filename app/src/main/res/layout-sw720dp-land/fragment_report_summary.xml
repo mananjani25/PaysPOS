@@ -15,7 +15,8 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_marginBottom="@dimen/_10sdp"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:background="@color/bg_color">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -36,7 +37,7 @@
                     android:background="?attr/selectableItemBackground"
                     android:padding="@dimen/_6sdp"
                     app:srcCompat="@drawable/ic_arrow_back"
-                    app:tint="@color/viewTextColor" />
+                    />
 
             </RelativeLayout>
 
@@ -52,7 +53,7 @@
                 android:gravity="center"
                 android:padding="@dimen/_3sdp"
                 android:text="@string/report_summary"
-                android:textColor="@color/viewTextColor"
+                android:textColor="@color/txtColor"
                 android:textSize="@dimen/_6mdpi" />
 
             <TextView
@@ -83,7 +84,7 @@
             android:layout_width="match_parent"
             android:layout_height="0.5dp"
             android:layout_marginBottom="@dimen/_5sdp"
-            android:background="@color/gray_rect" />
+            android:background="@color/view" />
 
 
         <LinearLayout
@@ -103,7 +104,7 @@
                 android:layout_marginRight="@dimen/_5sdp"
                 android:text="@string/start_date_amp_time"
                 android:textColor="@color/txtColor"
-                android:textSize="@dimen/_5mdpi" />
+                android:textSize="@dimen/text_size_medium" />
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -111,19 +112,15 @@
                 android:background="@drawable/background_square_border_grey"
                 android:onClick="@{() -> viewModel.datePicker(true)}"
                 android:orientation="horizontal"
-                android:paddingStart="@dimen/_5sdp"
-                android:paddingTop="@dimen/_3sdp"
+                android:padding="@dimen/_5sdp">
 
-                android:paddingEnd="@dimen/_10sdp"
-                android:paddingBottom="@dimen/_3sdp">
 
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:layout_marginEnd="@dimen/_5sdp"
-                    app:srcCompat="@drawable/calendar"
-                    app:tint="@color/color65"
+                    app:srcCompat="@drawable/ic_calendar"
                     tools:ignore="ContentDescription" />
 
                 <androidx.appcompat.widget.AppCompatTextView
@@ -157,18 +154,14 @@
                 android:background="@drawable/background_square_border_grey"
                 android:onClick="@{() -> viewModel.datePicker(false)}"
                 android:orientation="horizontal"
-                android:paddingStart="@dimen/_5sdp"
-                android:paddingTop="@dimen/_3sdp"
-                android:paddingEnd="@dimen/_10sdp"
-                android:paddingBottom="@dimen/_3sdp">
+               android:padding="@dimen/_5sdp">
 
                 <ImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:layout_marginEnd="@dimen/_5sdp"
-                    app:srcCompat="@drawable/calendar"
-                    app:tint="@color/color65"
+                    app:srcCompat="@drawable/ic_calendar"
                     tools:ignore="ContentDescription" />
 
                 <androidx.appcompat.widget.AppCompatTextView
@@ -187,7 +180,8 @@
                 android:layout_width="@dimen/_80sdp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/_5sdp"
-                android:background="@drawable/bg_border"
+                android:padding="5dp"
+                android:background="@drawable/background_square_border_grey"
                 android:orientation="horizontal">
 
                 <Spinner
@@ -289,7 +283,7 @@
             android:layout_width="match_parent"
             android:layout_height="0.5dp"
             android:layout_marginBottom="@dimen/_5sdp"
-            android:background="@color/gray_rect" />
+            android:background="@color/view" />
 
         <androidx.core.widget.NestedScrollView
             android:id="@+id/nsvReport"

@@ -313,7 +313,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         binding.txtChangeAmount.text =
                             MethodUtils.roundOffAmount(paidAmount - WholetotalPrice) + " Change"
                         binding.txtPaymentAmount.text =
-                            "Out of " + MethodUtils.roundOffAmount(paidAmount + tipAmount)
+                            "will remain Out of " + MethodUtils.roundOffAmount(paidAmount + tipAmount)
 
                     } else {
                         changeAmtGlobal = MethodUtils.roundOffAmountDouble(0.0).toDouble()
@@ -327,7 +327,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         binding.txtChangeAmount.text =
                             MethodUtils.roundOffAmount(splitChange) + " Change"
                         binding.txtPaymentAmount.text =
-                            "Out of " + MethodUtils.roundOffAmount((paidAmount + tipAmount))
+                            "will remain Out of " + MethodUtils.roundOffAmount((paidAmount + tipAmount))
                     } else {
 
                         val changeValue = (paidAmount - dis_charge_value) - remainingAmount
@@ -338,7 +338,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                 MethodUtils.roundOffAmount(changeValue) + " Change"
                         }
                         binding.txtPaymentAmount.text =
-                            "Out of " + MethodUtils.roundOffAmount((paidAmount + tipAmount))
+                            "will remain  Out of " + MethodUtils.roundOffAmount((paidAmount + tipAmount))
                     }
                 } else {
                     if (isCustomCash && splitChange != 0.0) {
@@ -346,10 +346,10 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         binding.txtChangeAmount.text =
                             MethodUtils.roundOffAmount(splitChange) + " Change"
                         binding.txtPaymentAmount.text =
-                            "Out of " + MethodUtils.roundOffAmount((paidAmount + tipAmount))
+                            "will remain Out of " + MethodUtils.roundOffAmount((paidAmount + tipAmount))
                     } else {
                         binding.txtPaymentAmount.text =
-                            "Out of " + MethodUtils.roundOffAmount(paidAmount + tipAmount)
+                            "will remain Out of " + MethodUtils.roundOffAmount(paidAmount + tipAmount)
                     }
                 }
             } else {
@@ -381,7 +381,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 }
 
                 binding.txtPaymentAmount.text =
-                    "Out of " + MethodUtils.roundOffAmount(paidAmount + tipAmount)
+                    "will remain Out of " + MethodUtils.roundOffAmount(paidAmount + tipAmount)
 
 
             }
@@ -416,7 +416,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         binding.txtChangeAmount.text =
                             MethodUtils.roundOffAmount(splitChange) + " Change"
                         binding.txtPaymentAmount.text =
-                            "Out of " + MethodUtils.roundOffAmount((paidAmount + tipAmount))
+                            "will remain Out of " + MethodUtils.roundOffAmount((paidAmount + tipAmount))
                     } else {
                         var temp_Change =
                             MethodUtils.roundOffAmountDouble((paidAmount - dis_charge_value) - remainingAmount)
@@ -427,7 +427,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                 MethodUtils.roundOffAmount((paidAmount - dis_charge_value) - remainingAmount) + " Change"
                         }
                         binding.txtPaymentAmount.text =
-                            "Out of " + MethodUtils.roundOffAmount((paidAmount + tipAmount))
+                            "will remain Out of " + MethodUtils.roundOffAmount((paidAmount + tipAmount))
                     }
 
                 } else {
@@ -436,10 +436,10 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         binding.txtChangeAmount.text =
                             MethodUtils.roundOffAmount(splitChange) + " Change"
                         binding.txtPaymentAmount.text =
-                            "Out of " + MethodUtils.roundOffAmount((paidAmount + tipAmount))
+                            "will remain Out of " + MethodUtils.roundOffAmount((paidAmount + tipAmount))
                     } else {
                         binding.txtPaymentAmount.text =
-                            "Out of " + MethodUtils.roundOffAmount(paidAmount + tipAmount)
+                            "will remain Out of " + MethodUtils.roundOffAmount(paidAmount + tipAmount)
                     }
                 }
             } else {
@@ -482,7 +482,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 }
 
                 binding.txtPaymentAmount.text =
-                    "Out of " + MethodUtils.roundOffAmount(paidAmount)
+                    "will remain Out of " + MethodUtils.roundOffAmount(paidAmount)
 
 
             }

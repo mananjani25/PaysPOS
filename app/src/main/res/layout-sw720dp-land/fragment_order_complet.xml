@@ -14,7 +14,7 @@
     <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/white"
+        android:background="@color/bg_color"
         android:orientation="vertical">
 
         <RelativeLayout
@@ -38,6 +38,7 @@
                 style="@style/CustomFontBold"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
                 android:layout_gravity="center"
                 android:padding="@dimen/_6sdp"
@@ -83,6 +84,7 @@
                 android:layout_gravity="center"
                 android:padding="@dimen/_6sdp"
                 android:text="@string/add_customer"
+                android:visibility="gone"
                 android:textColor="@color/btnColorDark_"
                 android:textSize="@dimen/_6sdp" />
 
@@ -110,9 +112,10 @@
                 android:padding="@dimen/_10sdp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.499"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0">
+                app:layout_constraintVertical_bias="0.0">
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/txtChangeAmount"
@@ -122,7 +125,7 @@
                     android:layout_marginTop="@dimen/_10sdp"
                     android:gravity="center"
                     android:text="No Change"
-                    android:textColor="@color/drawerBack"
+                    android:textColor="@color/txtColor"
                     android:textSize="@dimen/_12mdpi" />
 
                 <androidx.appcompat.widget.AppCompatTextView
@@ -310,7 +313,7 @@
                         android:gravity="center"
                         android:padding="@dimen/_5sdp"
                         android:text="@string/how_would_the_customer_like_their_receipt"
-                        android:textColor="@color/txtColor"
+                        android:textColor="@color/light_gray"
                         android:textSize="@dimen/_10mdpi" />
 
                     <androidx.appcompat.widget.LinearLayoutCompat
@@ -326,15 +329,15 @@
                             android:layout_height="wrap_content"
                             android:layout_margin="@dimen/_3sdp"
                             android:layout_weight="1"
-                            android:background="@color/btnColorDark_"
+                            android:background="@drawable/background_square_border_grey"
                             android:clickable="true"
                             android:focusable="true"
                             android:foreground="?attr/selectableItemBackground"
                             android:gravity="center"
-                            android:minWidth="@dimen/_120sdp"
-                            android:padding="@dimen/_5sdp"
+                            android:minWidth="@dimen/_80sdp"
                             android:text="@string/print"
-                            android:textColor="@color/white"
+                            android:padding="@dimen/_12sdp"
+                            android:textColor="@color/txtColor"
                             android:textSize="@dimen/_7mdpi" />
 
                         <androidx.appcompat.widget.AppCompatTextView
@@ -344,21 +347,13 @@
                             android:layout_height="wrap_content"
                             android:layout_margin="@dimen/_3sdp"
                             android:layout_weight="1"
-                            android:background="@color/btnColorDark_"
+                            android:background="@drawable/background_square_border_grey"
                             android:gravity="center"
-                            android:minWidth="@dimen/_120sdp"
-                            android:padding="@dimen/_5sdp"
+                            android:minWidth="@dimen/_80sdp"
+                            android:padding="@dimen/_12sdp"
                             android:text="@string/tv_email"
-                            android:textColor="@color/white"
+                            android:textColor="@color/txtColor"
                             android:textSize="@dimen/_7mdpi" />
-
-                    </androidx.appcompat.widget.LinearLayoutCompat>
-
-                    <androidx.appcompat.widget.LinearLayoutCompat
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:orientation="horizontal">
 
                         <androidx.appcompat.widget.AppCompatTextView
                             android:id="@+id/llMessage"
@@ -367,12 +362,12 @@
                             android:layout_height="wrap_content"
                             android:layout_margin="@dimen/_3sdp"
                             android:layout_weight="1"
-                            android:background="@color/btnColorDark_"
+                            android:background="@drawable/background_square_border_grey"
                             android:gravity="center"
-                            android:minWidth="@dimen/_120sdp"
-                            android:padding="@dimen/_5sdp"
+                            android:minWidth="@dimen/_80sdp"
+                            android:padding="@dimen/_12sdp"
                             android:text="@string/text_message"
-                            android:textColor="@color/white"
+                            android:textColor="@color/txtColor"
                             android:textSize="@dimen/_7mdpi" />
 
                         <androidx.appcompat.widget.AppCompatTextView
@@ -382,12 +377,12 @@
                             android:layout_height="wrap_content"
                             android:layout_margin="@dimen/_3sdp"
                             android:layout_weight="1"
-                            android:background="@color/btnColorDark_"
+                            android:background="@drawable/background_square_border_grey"
                             android:gravity="center"
-                            android:minWidth="@dimen/_120sdp"
-                            android:padding="@dimen/_5sdp"
+                            android:minWidth="@dimen/_80sdp"
+                            android:padding="@dimen/_12sdp"
                             android:text="@string/no_receipt"
-                            android:textColor="@color/white"
+                            android:textColor="@color/txtColor"
                             android:textSize="@dimen/_7mdpi" />
 
                     </androidx.appcompat.widget.LinearLayoutCompat>
@@ -397,6 +392,17 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:orientation="horizontal">
+
+
+
+                    </androidx.appcompat.widget.LinearLayoutCompat>
+
+                    <androidx.appcompat.widget.LinearLayoutCompat
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:orientation="horizontal"
+                        android:visibility="gone">
 
                         <androidx.appcompat.widget.AppCompatTextView
                             android:id="@+id/llHome"
