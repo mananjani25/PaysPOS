@@ -20,6 +20,7 @@
     <color name="txtColor">#FFFFFF</color>
     <!--<color name="hintColor">#C5C5C6</color>-->
     <color name="hintColor">#656565</color>
+    <color name="searchHintColor">#C4C4C4</color>
     <color name="viewTextColor">#111214</color>
     <color name="gray_border">#F4F4F8</color>
     <color name="gray_rect">#E6E5E8</color>
