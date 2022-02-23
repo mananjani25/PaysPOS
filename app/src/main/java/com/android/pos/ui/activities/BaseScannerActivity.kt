@@ -5,16 +5,21 @@ import android.content.*
 import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.graphics.Point
-import android.os.*
+import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.os.Message
 import android.util.DisplayMetrics
 import android.util.Log
-import android.view.*
+import android.view.Display
+import android.view.WindowManager
 import android.widget.FrameLayout
 import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.android.pos.MainApplication
+import com.android.pos.R
 import com.android.pos.di.BarcodePrefProvider
 import com.android.pos.utils.executeAsyncTask
 import com.android.pos.utils.scanner.barcode.GenerateBarcode128B
@@ -23,7 +28,6 @@ import com.google.gson.Gson
 import com.zebra.scannercontrol.*
 import com.zebra.scannercontrol.DCSSDKDefs.*
 import dagger.hilt.android.AndroidEntryPoint
-import java.util.*
 import javax.inject.Inject
 
 
@@ -110,6 +114,7 @@ open class BaseScannerActivity : AppCompatActivity(), ScannerAppEngine, IDcsSdkA
         val data2encode = (3.toChar()) + "92"
         val barcode = GenerateBarcode128B(data2encode)
         val barCodeView = com.android.pos.utils.scanner.barcode.BarCodeView(this, barcode)
+        barCodeView.setBackgroundColor(resources.getColor(R.color.txtColor))
         val display: Display? = windowManager?.defaultDisplay
         val size = Point()
         display?.getSize(size)
@@ -1233,10 +1238,10 @@ open class BaseScannerActivity : AppCompatActivity(), ScannerAppEngine, IDcsSdkA
         val address = bluetoothAdapter.address
         Log.e("!_@_ MAC :", address.toString())*/
         // return "E0:D0:83:0B:B9:7A"
-          return "0C:25:76:B4:0B:93"
-        // return "0c:25:76:b4:0b:95" // Sunmi Bluetooth MAC Address
+       // return "0C:25:76:B4:0B:93"
+         return "0c:25:76:b4:0b:95" // Sunmi Bluetooth MAC Address
         //0c:25:76:b4:0b:95
-      //  return "0c:25:76:b4:0b:95"
+        //  return "0c:25:76:b4:0b:95"
     }
 
 

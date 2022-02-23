@@ -29,7 +29,7 @@
                     android:background="?attr/selectableItemBackground"
                     android:padding="@dimen/_6sdp"
                     app:srcCompat="@drawable/ic_arrow_back"
-                    app:tint="@color/viewTextColor" />
+                    app:tint="@color/txtColor" />
 
             </RelativeLayout>
 
@@ -45,16 +45,12 @@
                 android:gravity="center"
                 android:padding="@dimen/_3sdp"
                 android:text="Reset Scan Gun"
-                android:textColor="@color/viewTextColor"
+                android:textColor="@color/txtColor"
                 android:textSize="@dimen/_6mdpi" />
 
         </LinearLayout>
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="0.5dp"
-            android:layout_marginBottom="@dimen/_5sdp"
-            android:background="@color/gray_rect" />
+        <include layout="@layout/divider" />
 
         <androidx.core.widget.NestedScrollView
             android:id="@+id/nsvScanner"
@@ -95,6 +91,7 @@
                         android:id="@+id/flBarCodeReset"
                         android:layout_width="wrap_content"
                         android:layout_height="@dimen/_40sdp"
+                        android:background="@color/bg_color"
                         android:layout_gravity="center"
                         android:layout_marginTop="@dimen/_10sdp"
                         android:layout_marginBottom="@dimen/_25sdp"

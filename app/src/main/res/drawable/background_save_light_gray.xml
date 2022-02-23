@@ -2,8 +2,9 @@
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
     android:shape="rectangle">
 
-    <solid android:color="@color/colorM5" />
     <stroke
         android:width="0.5dp"
-        android:color="@color/colorNewBorder" />
+        android:color="@color/menu_item_border" />
+    <solid android:color="@color/switchTrackColor"/>
+
 </shape>

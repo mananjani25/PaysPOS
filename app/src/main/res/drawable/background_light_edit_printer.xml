@@ -2,8 +2,9 @@
 <shape xmlns:android="http://schemas.android.com/apk/res/android"
     android:shape="rectangle">
 
-    <solid android:color="@color/colorM5" />
+    <solid android:color="@color/bgEditPrinter" />
     <stroke
         android:width="0.5dp"
-        android:color="@color/colorNewBorder" />
+        android:color="@color/strokeColor" />
+
 </shape>

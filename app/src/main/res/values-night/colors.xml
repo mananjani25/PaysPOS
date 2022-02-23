@@ -114,4 +114,5 @@
 
     <color name="strokeColor">#535353</color>
     <color name="switchTrackColor">#363636</color>
+    <color name="bgEditPrinter">#18181A</color>
 </resources>

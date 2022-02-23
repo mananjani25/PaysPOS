@@ -51,7 +51,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="0dp"
                 android:layout_gravity="center"
-                android:background="@color/txt_color_blue"
+                android:background="@drawable/save_selector"
                 android:gravity="center"
                 android:paddingStart="@dimen/_12sdp"
                 android:paddingEnd="@dimen/_12sdp"
@@ -193,8 +193,7 @@
                         android:layout_alignParentEnd="true"
                         android:layout_centerVertical="true"
                         android:layout_gravity="center"
-                        android:layout_marginEnd="@dimen/_5sdp"
-                        android:padding="@dimen/_5sdp"
+                        android:layout_marginEnd="@dimen/_10sdp"
                         android:spinnerMode="dropdown"
                         android:textColor="@color/color96"
                         android:textSize="@dimen/_5mdpi" />
@@ -242,7 +241,7 @@
                     android:layout_marginStart="@dimen/_65sdp"
                     android:layout_marginTop="@dimen/_8sdp"
                     android:layout_marginEnd="@dimen/_65sdp"
-                    android:background="@drawable/background_edit_printer_label"
+                    android:background="@drawable/background_light_edit_printer"
                     android:orientation="horizontal"
                     android:weightSum="5">
 
@@ -263,7 +262,7 @@
                     <View
                         android:layout_width="1dp"
                         android:layout_height="match_parent"
-                        android:background="@color/colorNewBorder" />
+                        android:background="@color/strokeColor" />
 
                     <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/txtTestPrint"
@@ -301,7 +300,7 @@
                     <View
                         android:layout_width="1dp"
                         android:layout_height="match_parent"
-                        android:background="@color/colorNewBorder" />
+                        android:background="@color/strokeColor" />
 
                     <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/txtConnStatus"
@@ -323,6 +322,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/_65sdp"
+                    android:background="@color/bg_color"
                     android:layout_marginEnd="@dimen/_65sdp"
                     android:layout_marginBottom="@dimen/_10sdp"
                     android:orientation="vertical"
