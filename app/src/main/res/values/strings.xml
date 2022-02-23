@@ -733,6 +733,7 @@
     <string name="add_job_title">Add job title</string>
     <string name="edit_printers">Edit printers</string>
     <string name="tv_add_a_new_tax_plus">+ Add a new tax</string>
+    <string name="all_terminals">All Terminals</string>
 
 
 </resources>

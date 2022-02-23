@@ -30,7 +30,7 @@
             android:layout_marginTop="@dimen/_5sdp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="@dimen/border_view_padding_large"
+            android:padding="@dimen/_7sdp"
             android:background="@color/backgroundColor"
             android:orientation="horizontal">
 
