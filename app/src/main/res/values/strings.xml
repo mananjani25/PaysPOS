@@ -212,6 +212,7 @@
     <string name="tv_all_items">All Items</string>
     <string name="tv_add_a_new_tax">Add a New Tax</string>
     <string name="tv_add_a_new_tip">Add a New Tip</string>
+    <string name="tv_add_a_new_tip_plus">+ Add a New Tip</string>
     <string name="tv_entertainment_tip">Entertainment Tip</string>
     <string name="tv_tip_name">Tip Name <font color='#E90C0C'>*</font></string>
     <string name="tv_entertainment">Entertainment</string>

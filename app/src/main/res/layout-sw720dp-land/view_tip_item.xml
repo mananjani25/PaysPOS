@@ -32,7 +32,6 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
-
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/imgCheckBox"
                 android:layout_width="wrap_content"
@@ -64,7 +63,7 @@
                 android:gravity="start"
                 android:padding="@dimen/_5sdp"
                 android:text="@{String.format(@string/format,tipModel.rate)+``+@string/percentage_symbol}"
-                android:textColor="@color/color96"
+                android:textColor="@color/btnColor"
                 android:textSize="@dimen/_5mdpi" />
 
             <androidx.appcompat.widget.AppCompatImageView
@@ -72,8 +71,9 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginStart="@dimen/_5sdp"
+                android:padding="@dimen/_2sdp"
                 android:layout_marginEnd="@dimen/_10sdp"
-                app:srcCompat="@drawable/ic_arrow_forward" />
+                app:srcCompat="@drawable/ic_play" />
         </androidx.appcompat.widget.LinearLayoutCompat>
 
         <View
