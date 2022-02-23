@@ -5,6 +5,7 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -47,7 +48,9 @@ class OpenOrderAdapter(val context: Context) :
                     TimeFormatUtils.convertDateFormatForOpenOrder(
                         item.futureDeliveryDate!!,
                         context
-                    ) + "\n" + item.futureDeliveryTime
+                    )
+
+                binding.tvtime.text=item.futureDeliveryTime
             } else {
 
             }
@@ -91,21 +94,21 @@ class OpenOrderAdapter(val context: Context) :
 
             if (!item.isCheck) {
 
-                binding.llMainLayout.setBackgroundColor(binding.root.resources.getColor(R.color.white))
-                binding.tvDate.setTextColor(binding.root.resources.getColor(R.color.black))
-                binding.tvOrderType.setTextColor(binding.root.resources.getColor(R.color.black))
-                binding.tvTotalAmount.setTextColor(binding.root.resources.getColor(R.color.black))
-                binding.tvTotalTips.setTextColor(binding.root.resources.getColor(R.color.black))
-                binding.txtCustomerName.setTextColor(binding.root.resources.getColor(R.color.black))
-                binding.tvOrderID.setTextColor(binding.root.resources.getColor(R.color.black))
-                binding.tvDeliveryStatus.setTextColor(binding.root.resources.getColor(R.color.black))
-                binding.tvTeamMember.setTextColor(binding.root.resources.getColor(R.color.black))
+                binding.llMainLayout.setBackgroundColor(binding.root.resources.getColor(R.color.bg_color))
+                binding.tvDate.setTextColor(binding.root.resources.getColor(R.color.txtColor))
+                binding.tvOrderType.setTextColor(binding.root.resources.getColor(R.color.txtColor))
+                binding.tvTotalAmount.setTextColor(binding.root.resources.getColor(R.color.txtColor))
+                binding.tvTotalTips.setTextColor(binding.root.resources.getColor(R.color.txtColor))
+                binding.txtCustomerName.setTextColor(binding.root.resources.getColor(R.color.txtColor))
+                binding.tvOrderID.setTextColor(binding.root.resources.getColor(R.color.txtColor))
+                binding.tvDeliveryStatus.setTextColor(binding.root.resources.getColor(R.color.txtColor))
+                binding.tvTeamMember.setTextColor(binding.root.resources.getColor(R.color.txtColor))
                 binding.llShowLayout.visibility = View.GONE
-                binding.imgIndicator.setImageDrawable(binding.root.resources.getDrawable(R.drawable.ic_arrow_down))
-
+                binding.imgIndicator.setImageDrawable(binding.root.resources.getDrawable(R.drawable.ic_down_solid_arrow))
+                binding.imgIndicator.setColorFilter(ContextCompat.getColor(context,R.color.drawable_ic_color))
             } else {
 
-                binding.llMainLayout.setBackgroundColor(binding.root.resources.getColor(R.color.black))
+                binding.llMainLayout.background=itemView.context.getDrawable(R.drawable.button_selected)
                 binding.tvDate.setTextColor(binding.root.resources.getColor(R.color.white))
                 binding.tvOrderType.setTextColor(binding.root.resources.getColor(R.color.white))
                 binding.tvTotalAmount.setTextColor(binding.root.resources.getColor(R.color.white))
@@ -115,7 +118,9 @@ class OpenOrderAdapter(val context: Context) :
                 binding.tvDeliveryStatus.setTextColor(binding.root.resources.getColor(R.color.white))
                 binding.tvTeamMember.setTextColor(binding.root.resources.getColor(R.color.white))
                 binding.llShowLayout.visibility = View.VISIBLE
-                binding.imgIndicator.setImageDrawable(binding.root.resources.getDrawable(R.drawable.ic_arrow_up))
+                binding.imgIndicator.setImageDrawable(binding.root.resources.getDrawable(R.drawable.ic_solid_up_arrow))
+                binding.imgIndicator.setColorFilter(ContextCompat.getColor(context,R.color.white))
+
             }
         }
 
@@ -138,10 +143,22 @@ class OpenOrderAdapter(val context: Context) :
             }
 
             binding.txtCancelOrder.setOnClickListener {
+                binding.txtCancelOrder.background=itemView.context.getDrawable(R.drawable.button_selected)
+                binding.txtEditOrder.background=itemView.context.getDrawable(R.drawable.background_square_border_grey)
+                binding.txtPrintReceipt.background=itemView.context.getDrawable(R.drawable.background_square_border_grey)
+                binding.txtCustomerReceipt.background=itemView.context.getDrawable(R.drawable.background_square_border_grey)
+                binding.txtPayNow.background=itemView.context.getDrawable(R.drawable.background_square_border_grey)
                 mCallback?.onItemClickListener(it, bindingAdapterPosition, "")
             }
 
             binding.txtPrintReceipt.setOnClickListener {
+
+                binding.txtCancelOrder.background=itemView.context.getDrawable(R.drawable.background_square_border_grey)
+                binding.txtEditOrder.background=itemView.context.getDrawable(R.drawable.background_square_border_grey)
+                binding.txtPrintReceipt.background=itemView.context.getDrawable(R.drawable.button_selected)
+                binding.txtCustomerReceipt.background=itemView.context.getDrawable(R.drawable.background_square_border_grey)
+                binding.txtPayNow.background=itemView.context.getDrawable(R.drawable.background_square_border_grey)
+
                 if (orderList[bindingAdapterPosition].paymentStatus == "Paid") {
                     mCallback?.onItemClickListener(it, bindingAdapterPosition, PRINT_PAID)
                 } else {
@@ -150,11 +167,34 @@ class OpenOrderAdapter(val context: Context) :
             }
 
             binding.txtEditOrder.setOnClickListener {
+                binding.txtCancelOrder.background=itemView.context.getDrawable(R.drawable.background_square_border_grey)
+                binding.txtEditOrder.background=itemView.context.getDrawable(R.drawable.button_selected)
+                binding.txtPrintReceipt.background=itemView.context.getDrawable(R.drawable.background_square_border_grey)
+                binding.txtCustomerReceipt.background=itemView.context.getDrawable(R.drawable.background_square_border_grey)
+                binding.txtPayNow.background=itemView.context.getDrawable(R.drawable.background_square_border_grey)
                 mCallback?.onItemClickListener(it, bindingAdapterPosition, "UPDATE")
             }
 
             binding.txtPayNow.setOnClickListener {
+                binding.txtCancelOrder.background=itemView.context.getDrawable(R.drawable.background_square_border_grey)
+                binding.txtEditOrder.background=itemView.context.getDrawable(R.drawable.background_square_border_grey)
+                binding.txtPrintReceipt.background=itemView.context.getDrawable(R.drawable.background_square_border_grey)
+                binding.txtCustomerReceipt.background=itemView.context.getDrawable(R.drawable.background_square_border_grey)
+                binding.txtPayNow.background=itemView.context.getDrawable(R.drawable.button_selected)
                 mCallback?.onItemClickListener(it, bindingAdapterPosition, "PAY")
+            }
+            binding.txtCustomerReceipt.setOnClickListener {
+                binding.txtCancelOrder.background=itemView.context.getDrawable(R.drawable.background_square_border_grey)
+                binding.txtEditOrder.background=itemView.context.getDrawable(R.drawable.background_square_border_grey)
+                binding.txtPrintReceipt.background=itemView.context.getDrawable(R.drawable.background_square_border_grey)
+                binding.txtCustomerReceipt.background=itemView.context.getDrawable(R.drawable.button_selected)
+                binding.txtPayNow.background=itemView.context.getDrawable(R.drawable.background_square_border_grey)
+                if (orderList[bindingAdapterPosition].paymentStatus == "Paid") {
+                    mCallback?.onItemClickListener(it, bindingAdapterPosition, PRINT_PAID)
+                } else {
+                    mCallback?.onItemClickListener(it, bindingAdapterPosition, PRINT_UNPAID)
+                }
+
             }
         }
     }

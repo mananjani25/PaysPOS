@@ -209,7 +209,7 @@ class ActiveOrderFragment(var param1: String, var startDateTime: String?,var end
 
     private fun observeShowProgress() {
 
-        viewModel.showProgress.observe(viewLifecycleOwner, { event ->
+        viewModel.showProgress.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
                 if (it) {
                     ProgressUtils.showProgressDialog(requireActivity())
@@ -217,9 +217,9 @@ class ActiveOrderFragment(var param1: String, var startDateTime: String?,var end
                     ProgressUtils.dismissProgressDialog()
                 }
             }
-        })
+        }
 
-        viewModel.data.observe(viewLifecycleOwner, { event ->
+        viewModel.data.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let { baseResponse ->
                 activity?.let {
                     AlertUtils.showCustomAlertWithListenerWithOK(
@@ -235,7 +235,7 @@ class ActiveOrderFragment(var param1: String, var startDateTime: String?,var end
                     }
                 }
             }
-        })
+        }
     }
 
     private fun setupAdapter() {
@@ -257,7 +257,7 @@ class ActiveOrderFragment(var param1: String, var startDateTime: String?,var end
             param1,
             viewModel.startDate.value.toString(),
             viewModel.endDate.value.toString()
-        ).observe(viewLifecycleOwner, { it ->
+        ).observe(viewLifecycleOwner) { it ->
 
             it?.let { resource ->
                 when (resource.status) {
@@ -266,12 +266,12 @@ class ActiveOrderFragment(var param1: String, var startDateTime: String?,var end
                         resource.data?.let {
                             if (it.data.orders.isNotEmpty()) {
                                 binding.rvOpenOrder.visibility = View.VISIBLE
-                                binding.txtNodata.visibility = View.GONE
+                                binding.llNoData.visibility = View.GONE
                                 val data = it.data.orders
                                 adapter.add(data)
                                 Log.e("DATA", data.size.toString())
                             } else {
-                                binding.txtNodata.visibility = View.VISIBLE
+                                binding.llNoData.visibility = View.VISIBLE
                                 binding.txtNodata.text = it.message
                                 binding.rvOpenOrder.visibility = View.GONE
 
@@ -298,7 +298,7 @@ class ActiveOrderFragment(var param1: String, var startDateTime: String?,var end
                     }
                 }
             }
-        })
+        }
 
     }
 

@@ -14,15 +14,21 @@
     <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_marginBottom="@dimen/_10sdp"
         android:orientation="vertical">
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:background="@color/view"
+            android:visibility="gone"/>
+
 
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:gravity="center"
             android:layout_marginVertical="@dimen/_5sdp"
+            android:gravity="center"
             android:orientation="horizontal">
 
             <androidx.appcompat.widget.AppCompatTextView
@@ -34,7 +40,7 @@
                 android:layout_marginRight="@dimen/_5sdp"
                 android:text="@string/start_date_amp_time"
                 android:textColor="@color/txtColor"
-                android:textSize="@dimen/_5mdpi" />
+                android:textSize="@dimen/text_size_medium" />
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -52,8 +58,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:layout_marginEnd="@dimen/_5sdp"
-                    app:srcCompat="@drawable/calendar"
-                    app:tint="@color/color65"
+                    app:srcCompat="@drawable/ic_calendar"
                     tools:ignore="ContentDescription" />
 
                 <androidx.appcompat.widget.AppCompatTextView
@@ -65,7 +70,7 @@
                     android:gravity="center"
                     android:text="@{viewModel.startDate}"
                     android:textColor="@color/txtColor"
-                    android:textSize="@dimen/_5mdpi"
+                    android:textSize="@dimen/text_size_medium"
                     tools:text="2021-08-10" />
             </LinearLayout>
 
@@ -78,7 +83,7 @@
                 android:layout_marginEnd="@dimen/_5sdp"
                 android:text="@string/end_date_amp_time"
                 android:textColor="@color/txtColor"
-                android:textSize="@dimen/_5mdpi" />
+                android:textSize="@dimen/text_size_medium" />
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -96,8 +101,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:layout_marginEnd="@dimen/_5sdp"
-                    app:srcCompat="@drawable/calendar"
-                    app:tint="@color/color65"
+                    app:srcCompat="@drawable/ic_calendar"
                     tools:ignore="ContentDescription" />
 
                 <androidx.appcompat.widget.AppCompatTextView
@@ -108,21 +112,19 @@
                     android:layout_gravity="center"
                     android:text="@{viewModel.endDate}"
                     android:textColor="@color/txtColor"
-                    android:textSize="@dimen/_5mdpi"
+                    android:textSize="@dimen/text_size_medium"
                     tools:text="2021-08-10" />
             </LinearLayout>
 
         </LinearLayout>
 
 
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/background_timesheet"
+            android:background="@color/backgroundColor"
             android:orientation="horizontal"
-            android:paddingTop="@dimen/_5sdp"
-            android:paddingBottom="@dimen/_5sdp">
+           android:paddingVertical="@dimen/_10sdp">
 
             <androidx.appcompat.widget.AppCompatTextView
                 style="@style/CustomFontMediumStyle"
@@ -132,8 +134,8 @@
                 android:layout_weight="1"
                 android:gravity="center"
                 android:text="@string/tv_order_id"
-                android:textColor="@color/txtColor"
-                android:textSize="@dimen/_5mdpi" />
+                android:textColor="@color/white"
+                android:textSize="@dimen/text_size_medium" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 style="@style/CustomFontMediumStyle"
@@ -143,8 +145,8 @@
                 android:layout_weight="1"
                 android:gravity="center"
                 android:text="@string/tv_date_time"
-                android:textColor="@color/txtColor"
-                android:textSize="@dimen/_5mdpi" />
+                android:textColor="@color/white"
+                android:textSize="@dimen/text_size_medium" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 style="@style/CustomFontMediumStyle"
@@ -154,8 +156,8 @@
                 android:layout_weight="1"
                 android:gravity="center"
                 android:text="@string/payment_status"
-                android:textColor="@color/txtColor"
-                android:textSize="@dimen/_5mdpi" />
+                android:textColor="@color/white"
+                android:textSize="@dimen/text_size_medium" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 style="@style/CustomFontMediumStyle"
@@ -165,8 +167,8 @@
                 android:layout_weight="2"
                 android:gravity="center"
                 android:text="@string/tv_order_type"
-                android:textColor="@color/txtColor"
-                android:textSize="@dimen/_5mdpi"
+                android:textColor="@color/white"
+                android:textSize="@dimen/text_size_medium"
                 android:visibility="gone" />
 
             <androidx.appcompat.widget.AppCompatTextView
@@ -177,8 +179,8 @@
                 android:layout_weight="1"
                 android:gravity="center"
                 android:text="@string/tv_total_amount"
-                android:textColor="@color/txtColor"
-                android:textSize="@dimen/_5mdpi" />
+                android:textColor="@color/white"
+                android:textSize="@dimen/text_size_medium" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 style="@style/CustomFontMediumStyle"
@@ -188,8 +190,8 @@
                 android:layout_weight="1"
                 android:gravity="center"
                 android:text="@string/tv_tip_amount"
-                android:textColor="@color/txtColor"
-                android:textSize="@dimen/_5mdpi"
+                android:textColor="@color/white"
+                android:textSize="@dimen/text_size_medium"
                 android:visibility="gone" />
 
             <androidx.appcompat.widget.AppCompatTextView
@@ -200,8 +202,8 @@
                 android:layout_weight="1"
                 android:gravity="center"
                 android:text="@string/tv_customer_name"
-                android:textColor="@color/txtColor"
-                android:textSize="@dimen/_5mdpi" />
+                android:textColor="@color/white"
+                android:textSize="@dimen/text_size_medium" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 style="@style/CustomFontMediumStyle"
@@ -211,22 +213,56 @@
                 android:layout_weight="1"
                 android:gravity="center"
                 android:text="@string/tv_team_member"
-                android:textColor="@color/txtColor"
-                android:textSize="@dimen/_5mdpi" />
+                android:textColor="@color/white"
+                android:textSize="@dimen/text_size_medium" />
 
         </LinearLayout>
 
-
-        <TextView
-            android:id="@+id/txt_nodata"
+        <View
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:text=""
-            android:visibility="gone"
+            android:layout_height="0.5dp"
+            android:background="@color/view"
+            android:visibility="gone"/>
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:id="@+id/ll_no_data"
+            android:layout_gravity="center"
             android:gravity="center"
-            android:textSize="@dimen/_6sdp"
-            android:textColor="@color/black"
-            />
+            android:layout_marginTop="@dimen/_70sdp">
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:layout_width="@dimen/_35sdp"
+                android:layout_height="@dimen/_35sdp"
+                android:src="@drawable/ic_empty_orders" />
+
+            <TextView
+                android:id="@+id/txt_nodata"
+                style="@style/CustomFontBold"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text=""
+                android:layout_marginTop="@dimen/_5sdp"
+                android:textColor="@color/txtColor"
+                android:textSize="@dimen/_6sdp"
+                android:visibility="visible" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text="Incoming order will appear here."
+                android:textColor="@color/txtColorGray"
+                android:textSize="@dimen/_6sdp"
+                android:layout_marginTop="@dimen/_3sdp"
+                android:visibility="visible" />
+
+        </LinearLayout>
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvOpenOrder"
             android:layout_width="match_parent"
