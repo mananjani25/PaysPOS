@@ -29,8 +29,8 @@
 
             <LinearLayout
                 android:layout_width="0dp"
-                android:layout_weight="1"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:orientation="vertical">
 
 
@@ -41,9 +41,9 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:gravity="center"
-                    tools:text="@string/date"
                     android:textColor="@color/txtColor"
-                    android:textSize="@dimen/text_size_large" />
+                    android:textSize="@dimen/text_size_large"
+                    tools:text="@string/date" />
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/tvTime"
@@ -51,11 +51,11 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:gravity="center"
-                    tools:text="@string/date"
                     android:layout_marginTop="@dimen/_2sdp"
+                    android:gravity="center"
                     android:textColor="@color/hint_color"
-                    android:textSize="@dimen/text_size_normal" />
+                    android:textSize="@dimen/text_size_normal"
+                    tools:text="@string/date" />
 
             </LinearLayout>
 
@@ -67,10 +67,10 @@
                 android:layout_gravity="center"
                 android:layout_weight="1"
                 android:gravity="center"
-                tools:text="@string/date"
                 android:text="@{itemSheetModel.orderDetails.orderTypeName}"
                 android:textColor="@color/txtColor"
-                android:textSize="@dimen/text_size_large" />
+                android:textSize="@dimen/text_size_large"
+                tools:text="@string/date" />
 
             <LinearLayout
                 android:layout_width="0dp"
@@ -81,16 +81,16 @@
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/tvTotalAmount"
-                    tools:text="$0.00"
                     style="@style/CustomFontMediumStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:gravity="center"
-
                     android:text="@{@string/symbole +` `+String.format(@string/format,itemSheetModel.totalAmount) +`\n`+itemSheetModel.paymentType}"
+
                     android:textColor="@color/txtColor"
-                    android:textSize="@dimen/text_size_large" />
+                    android:textSize="@dimen/text_size_large"
+                    tools:text="$0.00" />
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/tvRefundedAmount"
@@ -99,9 +99,9 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:gravity="center"
-                    tools:text="$0.00"
                     android:textColor="@color/colorRed"
-                    android:textSize="@dimen/_5mdpi" />
+                    android:textSize="@dimen/_5mdpi"
+                    tools:text="$0.00" />
 
             </LinearLayout>
 
@@ -114,10 +114,10 @@
                 android:layout_weight="1"
                 android:gravity="center"
                 android:padding="@dimen/_5sdp"
-                tools:text="$0.00"
                 android:text="@{@string/symbole +` `+String.format(@string/format,itemSheetModel.tips)}"
                 android:textColor="@color/btnColor"
-                android:textSize="@dimen/text_size_large" />
+                android:textSize="@dimen/text_size_large"
+                tools:text="$0.00" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/txtCustomerName"
@@ -131,18 +131,18 @@
                 android:textSize="@dimen/text_size_large"
                 tools:text="John Smith" />
 
-                <androidx.appcompat.widget.AppCompatTextView
-                    style="@style/CustomFontMediumStyle"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_weight="1"
-                    android:gravity="center"
-                    android:visibility="gone"
-                    android:text="@{itemSheetModel.employeeRoleName}"
-                    android:textColor="@color/txtColor"
-                    android:textSize="@dimen/_5mdpi"
-                    tools:text="John Smith" />
+            <androidx.appcompat.widget.AppCompatTextView
+                style="@style/CustomFontMediumStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="@{itemSheetModel.employeeRoleName}"
+                android:textColor="@color/txtColor"
+                android:textSize="@dimen/_5mdpi"
+                android:visibility="gone"
+                tools:text="John Smith" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 style="@style/CustomFontMediumStyle"
@@ -151,10 +151,10 @@
                 android:layout_gravity="center"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:visibility="gone"
                 android:text="@{itemSheetModel.employeeName}"
                 android:textColor="@color/txtColor"
                 android:textSize="@dimen/text_size_large"
+                android:visibility="gone"
                 tools:text="John Smith" />
 
             <LinearLayout
@@ -171,11 +171,11 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:gravity="center"
-                    tools:text="AXDAWEDWD"
                     android:text="@{``+itemSheetModel.orderId}"
-
                     android:textColor="@color/btnColor"
-                    android:textSize="@dimen/text_size_large" />
+
+                    android:textSize="@dimen/text_size_large"
+                    tools:text="AXDAWEDWD" />
 
                 <androidx.appcompat.widget.AppCompatTextView
                     style="@style/CustomFontMediumStyle"
@@ -184,9 +184,9 @@
                     android:layout_gravity="center"
                     android:gravity="center"
                     android:text="@{`#`+itemSheetModel.orderDetails.receiptId}"
-                    tools:text="$AAAAAAA"
                     android:textColor="@color/txtColor"
-                    android:textSize="@dimen/_5mdpi" />
+                    android:textSize="@dimen/_5mdpi"
+                    tools:text="$AAAAAAA" />
 
             </LinearLayout>
 
@@ -197,11 +197,11 @@
                 android:layout_gravity="center"
                 android:layout_weight="1"
                 android:gravity="center"
-                tools:text="terminal name"
-                android:visibility="gone"
                 android:text="@{itemSheetModel.terminalName}"
                 android:textColor="@color/txtColor"
-                android:textSize="@dimen/text_size_large" />
+                android:textSize="@dimen/text_size_large"
+                android:visibility="gone"
+                tools:text="terminal name" />
 
         </LinearLayout>
 

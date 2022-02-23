@@ -64,15 +64,33 @@
                 android:textSize="@dimen/_7mdpi"
                 android:visibility="gone" />
 
+            <androidx.appcompat.widget.AppCompatEditText
+                android:id="@+id/edtSearch"
+                style="@style/CustomFontRegularStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/_20sdp"
+                android:layout_toStartOf="@+id/txtHome"
+                android:background="@null"
+                android:drawableStart="@drawable/ic_search"
+                android:drawablePadding="@dimen/_10sdp"
+                android:hint="SEARCH"
+                android:imeOptions="actionDone"
+                android:inputType="text"
+                android:padding="@dimen/_5sdp"
+                android:textColor="@color/txtColor"
+                android:textColorHint="@color/hintColor"
+                android:textSize="@dimen/_5mdpi" />
+
+
             <TextView
                 android:id="@+id/txtHome"
                 style="@style/CustomFontBold"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
+                android:background="?attr/selectableItemBackground"
                 android:padding="@dimen/_6sdp"
                 android:text="@string/tv_home"
-                android:background="?attr/selectableItemBackground"
                 android:textColor="@color/txt_color_blue"
                 android:textSize="@dimen/_6mdpi"
                 android:visibility="visible" />
@@ -109,7 +127,7 @@
                 android:background="@drawable/background_square_border_grey"
                 android:onClick="@{() -> includeLayoutViewModel.datePicker(true)}"
                 android:orientation="horizontal"
-               android:padding="@dimen/border_view_padding_normal">
+                android:padding="@dimen/border_view_padding_normal">
 
                 <ImageView
                     android:layout_width="wrap_content"
@@ -149,8 +167,7 @@
                 android:background="@drawable/background_square_border_grey"
                 android:onClick="@{() -> includeLayoutViewModel.datePicker(false)}"
                 android:orientation="horizontal"
-                android:padding="@dimen/border_view_padding_normal"
-                >
+                android:padding="@dimen/border_view_padding_normal">
 
                 <ImageView
                     android:layout_width="wrap_content"

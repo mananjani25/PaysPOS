@@ -44,7 +44,7 @@
                 android:text="@string/tv_date_time"
                 android:textAllCaps="true"
                 android:textColor="@color/white"
-                android:textSize="@dimen/text_size_normal" />
+                android:textSize="@dimen/text_size_medium" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 style="@style/CustomFontMediumStyle"
@@ -55,7 +55,7 @@
                 android:gravity="center"
                 android:text="@string/tv_order_type"
                 android:textColor="@color/white"
-                android:textSize="@dimen/text_size_normal"
+                android:textSize="@dimen/text_size_medium"
                 android:textAllCaps="true"/>
 
             <androidx.appcompat.widget.AppCompatTextView
@@ -67,7 +67,7 @@
                 android:text="@string/tv_total_amount"
                 android:layout_gravity="center"
                 android:textColor="@color/white"
-                android:textSize="@dimen/text_size_normal"
+                android:textSize="@dimen/text_size_medium"
                 android:textAllCaps="true"/>
 
             <androidx.appcompat.widget.AppCompatTextView
@@ -79,7 +79,7 @@
                 android:gravity="center"
                 android:text="@string/tv_tip_amount"
                 android:textColor="@color/white"
-                android:textSize="@dimen/text_size_normal"
+                android:textSize="@dimen/text_size_medium"
                 android:textAllCaps="true"/>
 
             <androidx.appcompat.widget.AppCompatTextView
@@ -91,7 +91,7 @@
                 android:layout_gravity="center"
                 android:text="Customer"
                 android:textColor="@color/white"
-                android:textSize="@dimen/text_size_normal"
+                android:textSize="@dimen/text_size_medium"
                 android:textAllCaps="true"/>
 
             <androidx.appcompat.widget.AppCompatTextView
@@ -127,7 +127,7 @@
                 android:layout_gravity="center"
                 android:text="@string/tv_transaction_receipt_id"
                 android:textColor="@color/white"
-                android:textSize="@dimen/text_size_normal"
+                android:textSize="@dimen/text_size_medium"
                 android:textAllCaps="true"/>
 
             <androidx.appcompat.widget.AppCompatTextView
