@@ -14,13 +14,12 @@
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/white"
+        android:background="@color/bg_color"
         android:orientation="vertical">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@color/white"
             android:orientation="vertical">
 
             <include
@@ -40,118 +39,57 @@
                 android:layout_marginEnd="@dimen/_50sdp"
                 android:layout_marginBottom="@dimen/_10sdp"
                 android:orientation="vertical">
-
                 <androidx.appcompat.widget.LinearLayoutCompat
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/_10sdp"
-                    android:background="@drawable/edt_border_light_gray"
-                    android:orientation="vertical">
+                    android:layout_marginTop="@dimen/_5sdp"
+                    android:background="@drawable/border_with_field"
+                    android:orientation="horizontal">
 
-                    <androidx.appcompat.widget.LinearLayoutCompat
+                    <androidx.appcompat.widget.AppCompatEditText
+
+                        style="@style/CustomFontSemiBold"
                         android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal">
+                        android:layout_height="@dimen/_25sdp"
+                        android:background="@null"
+                        android:digits="@string/disable_emoji_string"
+                        android:hint="@string/tv_tip_name"
+                        android:imeOptions="actionNext"
+                        android:inputType="textVisiblePassword"
+                        android:paddingStart="@dimen/_10sdp"
+                        android:text="@={viewModel.createTipDetails.name}"
+                        android:textColor="@color/txtColor"
+                        android:textColorHint="@color/hintColor"
+                        android:textSize="@dimen/_6mdpi" />
 
-                        <androidx.appcompat.widget.AppCompatTextView
-                            style="@style/CustomFontSemiBold"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center"
-                            android:padding="@dimen/_5sdp"
-                            android:text="@string/tv_tip_name"
-                            android:textColor="@color/viewTextColor"
-                            android:textSize="@dimen/_5mdpi" />
+                </androidx.appcompat.widget.LinearLayoutCompat>
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_5sdp"
+                    android:background="@drawable/border_with_field"
+                    android:orientation="horizontal">
 
-                        <androidx.appcompat.widget.AppCompatEditText
-                            style="@style/CustomFontSemiBold"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:background="@null"
-                            android:gravity="end"
-                            android:digits="@string/disable_emoji_string"
-                            android:hint="Tip Name"
-                            android:imeOptions="actionNext"
-                            android:inputType="textVisiblePassword"
-                            android:padding="@dimen/_5sdp"
-                            android:text="@={viewModel.createTipDetails.name}"
-                            android:textColor="@color/black"
-                            android:textColorHint="@color/hintColor"
-                            android:textSize="@dimen/_5mdpi" />
-
-                    </androidx.appcompat.widget.LinearLayoutCompat>
-
-                    <View
+                    <androidx.appcompat.widget.AppCompatEditText
+                        android:id="@+id/edt_tip"
+                        style="@style/CustomFontSemiBold"
                         android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:background="@color/view" />
-
-                    <androidx.appcompat.widget.LinearLayoutCompat
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="horizontal">
-
-                        <androidx.appcompat.widget.AppCompatTextView
-                            style="@style/CustomFontSemiBold"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center"
-                            android:padding="@dimen/_5sdp"
-                            android:text="@string/tip_percentage"
-                            android:textColor="@color/viewTextColor"
-                            android:textSize="@dimen/_5mdpi" />
-
-                        <androidx.appcompat.widget.AppCompatEditText
-                            style="@style/CustomFontSemiBold"
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:background="@null"
-                            android:gravity="end"
-                            android:digits="@string/disable_emoji_string"
-                            android:imeOptions="actionDone"
-                            android:inputType="numberDecimal"
-                            android:paddingStart="@dimen/_20sdp"
-                            android:paddingTop="@dimen/_5sdp"
-                            android:paddingBottom="@dimen/_5sdp"
-                            android:text="@={``+viewModel.createTipDetails.rate}"
-                            android:textColor="@color/black"
-                            android:textColorHint="@color/hintColor"
-                            android:textSize="@dimen/_5mdpi" />
-
-                        <TextView
-                            android:id="@+id/tvSymbolPer"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginLeft="@dimen/_5sdp"
-                            android:layout_marginRight="@dimen/_5sdp"
-                            android:fontFamily="@font/sf_pro_display_semibold"
-                            android:text="@string/percentage_symbol"
-                            android:textColor="@color/viewTextColor"
-                            android:textSize="@dimen/_5mdpi"
-                            android:visibility="visible" />
-
-                    </androidx.appcompat.widget.LinearLayoutCompat>
-
+                        android:layout_height="@dimen/_25sdp"
+                        android:background="@null"
+                        android:digits="@string/disable_emoji_string"
+                        android:hint="@string/percentage_withsymbol"
+                        android:imeOptions="actionNext"
+                        android:inputType="textVisiblePassword"
+                        android:paddingStart="@dimen/_10sdp"
+                        android:text=""
+                        android:textColor="@color/txtColor"
+                        android:textColorHint="@color/hintColor"
+                        android:textSize="@dimen/_6mdpi" />
 
                 </androidx.appcompat.widget.LinearLayoutCompat>
 
-                <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/txtSignIn"
-                    style="@style/CustomFontBold"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_marginTop="@dimen/_10sdp"
-                    android:background="@drawable/background_button_tip"
-                    android:gravity="center"
-                    android:minWidth="@dimen/_300sdp"
-                    android:padding="@dimen/_5sdp"
-                    android:text="@string/remove_tip"
-                    android:textColor="@color/btnColor"
-                    android:textSize="@dimen/_5mdpi"
-                    android:visibility="gone" />
+
+
 
             </androidx.appcompat.widget.LinearLayoutCompat>
 

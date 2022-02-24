@@ -60,15 +60,11 @@ class CreateTipsViewModel @Inject constructor(
         this.isEdit = isEdit
     }
 
-    fun submit() {
+    fun submit(rate_double: Double) {
         val value = createTipDetails.value
         if (TextUtils.isEmpty(value?.name?.trim())) {
             _snackbarText.value = Event(R.string.tip_name_validate)
-        } else if (TextUtils.isEmpty(
-                value?.rate?.toString()?.trim()
-            )
-            || value?.rate == 0.0
-        ) {
+        } else if (rate_double == 0.0) {
             _snackbarText.value = Event(R.string.tip_rate_validate)
         } else {
             _showProgress.value = Event(true)
@@ -77,14 +73,14 @@ class CreateTipsViewModel @Inject constructor(
                 tipData = CreateTipRequestModel().apply {
                     id = tipId
                     name = value!!.name
-                    rate = value.rate
+                    rate = rate_double
                     isActive = _isActive
                     locationId = prefProvider.getValueInt(LOCATION_ID, -1)
                 }
             } else {
                 tipData = CreateTipRequestModel().apply {
                     name = value!!.name
-                    rate = value.rate
+                    rate = rate_double
                     locationId = prefProvider.getValueInt(LOCATION_ID, -1)
                 }
             }
