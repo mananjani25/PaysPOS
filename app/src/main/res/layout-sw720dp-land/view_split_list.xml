@@ -59,11 +59,11 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
+                android:layout_marginHorizontal="@dimen/_5sdp"
                 android:layout_toEndOf="@+id/txtSplitAmountLabel"
                 android:gravity="start"
-                android:layout_marginHorizontal="@dimen/_5sdp"
                 android:singleLine="true"
-                android:textColor="@color/colorGreen"
+                android:textColor="@color/btnColor"
                 android:textSize="@dimen/_6mdpi"
                 tools:text="$100.00" />
 
@@ -84,11 +84,11 @@
                 style="@style/CustomFontMediumStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
                 android:gravity="start"
                 android:singleLine="true"
                 android:textColor="@color/txtColor"
                 android:textSize="@dimen/_5mdpi"
-                android:layout_centerVertical="true"
                 tools:text="Remaining Amount " />
 
             <androidx.appcompat.widget.AppCompatTextView
@@ -96,10 +96,10 @@
                 style="@style/CustomFontSemiBold"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
                 android:layout_toEndOf="@+id/txtRemainingAmountLabel"
                 android:gravity="start"
                 android:singleLine="true"
-                android:layout_centerVertical="true"
                 android:textColor="@color/txtColor"
                 android:textSize="@dimen/_6mdpi"
                 tools:text="$100.00" />
