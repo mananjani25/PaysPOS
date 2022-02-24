@@ -187,6 +187,7 @@
     <string name="service_charge_name">Service Charge Name <font color='#E90C0C'>*</font></string>
     <string name="service_charge">Service Charge</string>
     <string name="percentage">Percentage <font color='#E90C0C'>*</font></string>
+    <string name="percentage_withsymbol">Percentage % <font color='#E90C0C'>*</font></string>
     <string name="tip_percentage">Tip Percentage <font color='#E90C0C'>*</font></string>
     <string name="tax_rate">Tax Rate <font color='#E90C0C'>*</font></string>
     <string name="create_note">Create Note</string>

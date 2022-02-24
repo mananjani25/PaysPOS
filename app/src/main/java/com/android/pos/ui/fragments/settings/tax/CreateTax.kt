@@ -71,7 +71,7 @@ class CreateTax : Fragment() {
 
             binding.itemsCount.text = "" + taxData.itemIds.size + " Items"
             binding.tvItemPricing.text = taxData.itemPricing
-
+            binding.edtAmount.setText(viewModel.createTaxDetails.value?.rate.toString())
             binding.swtEnableTax.isChecked = taxData.isDefault
             binding.swtCustomAmount.isChecked = taxData.isCustomAmount
             viewModel.isEditData(isEdit, taxData.id)
@@ -102,8 +102,8 @@ class CreateTax : Fragment() {
             override fun afterTextChanged(s: Editable?) {
                 if (binding.swtTaxType.text == "Percentage") {
                     val temp_rate = s.toString()
-                    if(temp_rate.isNotEmpty()){
-                        if (temp_rate.toInt() > 100) {
+                    if (temp_rate.isNotEmpty()) {
+                        if (temp_rate.toFloat() > 100) {
                             AlertUtils.showCustomAlertWithListenerWithOK(
                                 requireContext(),
                                 "Please Enter Percentage less than or Equal to 100"
@@ -123,9 +123,9 @@ class CreateTax : Fragment() {
 
         binding.header.txtSave.setOnClickListener {
 
-            var rate = binding.edtAmount.toString()
-            var rate_double= 0.0
-            if(rate.isNotEmpty()){
+            var rate = binding.edtAmount.text.toString()
+            var rate_double = 0.0
+            if (rate.isNotEmpty()) {
                 rate_double = MethodUtils.roundOffAmountDouble(rate.toDouble())
             }
             viewModel.submit(rate_double)
@@ -235,16 +235,18 @@ class CreateTax : Fragment() {
     fun taxType(isChecked: Boolean) {
         if (isChecked) {
             binding.swtTaxType.text = getString(R.string.disc_percentage)
+            binding.edtAmount.setText("")
             viewModel.discountType(getString(R.string.disc_percentage))
         } else {
             binding.swtTaxType.text = getString(R.string.dollar_amount)
+            binding.edtAmount.setText("")
             viewModel.discountType(getString(R.string.dollar_amount))
         }
     }
 
     private fun observeShowProgress() {
 
-        viewModel.showProgress.observe(viewLifecycleOwner, { event ->
+        viewModel.showProgress.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
                 if (it) {
                     ProgressUtils.showProgressDialog(requireActivity())
@@ -252,7 +254,7 @@ class CreateTax : Fragment() {
                     ProgressUtils.dismissProgressDialog()
                 }
             }
-        })
+        }
     }
 
     private fun navigate() {

@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+
     android:orientation="vertical"
     tools:ignore="MissingDefaultResource">
 
@@ -14,17 +15,18 @@
         android:layout_height="wrap_content"
         android:padding="@dimen/_5sdp"
         android:text="@string/tv_customer_receipt_preview"
-        android:textColor="@color/viewTextColor"
+        android:textColor="@color/txtColor"
         android:textSize="@dimen/_6mdpi" />
 
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
+
         android:layout_height="match_parent">
 
         <androidx.appcompat.widget.LinearLayoutCompat
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/edt_border_light_gray"
+            android:background="@drawable/border_with_square_outlinne"
             android:orientation="vertical"
             android:padding="@dimen/_5sdp">
 
@@ -47,7 +49,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:text="@string/tv_food_cafe"
-                    android:textColor="@color/viewTextColor"
+                    android:textColor="@color/txtColor"
                     android:textSize="@dimen/_7mdpi" />
 
                 <androidx.appcompat.widget.AppCompatTextView
@@ -57,7 +59,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:text="7450 DW 51 FH AT,Suite 503"
-                    android:textColor="@color/viewTextColor"
+                    android:textColor="@color/txtColor"
                     android:textSize="@dimen/_6mdpi" />
 
                 <androidx.appcompat.widget.AppCompatTextView
@@ -68,7 +70,7 @@
                     android:layout_marginTop="@dimen/_5sdp"
                     android:gravity="center"
                     android:text="(635) 987-3354"
-                    android:textColor="@color/viewTextColor"
+                    android:textColor="@color/txtColor"
                     android:textSize="@dimen/_7mdpi" />
 
                 <androidx.appcompat.widget.AppCompatTextView
@@ -79,7 +81,7 @@
                     android:layout_marginBottom="@dimen/_3sdp"
                     android:gravity="center"
                     android:text="www.foodcourt.com"
-                    android:textColor="@color/viewTextColor"
+                    android:textColor="@color/txtColor"
                     android:textSize="@dimen/_6mdpi" />
 
                 <androidx.appcompat.widget.AppCompatTextView
@@ -89,7 +91,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:text="Open Order"
-                    android:textColor="@color/viewTextColor"
+                    android:textColor="@color/txtColor"
                     android:textSize="@dimen/_7mdpi" />
             </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -109,7 +111,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="@dimen/_3sdp"
                     android:text="Order ID: ORD564454"
-                    android:textColor="@color/viewTextColor"
+                    android:textColor="@color/txtColor"
                     android:textSize="@dimen/_6mdpi" />
 
                 <androidx.appcompat.widget.AppCompatTextView
@@ -121,7 +123,7 @@
                     android:layout_marginLeft="@dimen/_3sdp"
                     android:gravity="end"
                     android:text="Receipt ID: REC87564454"
-                    android:textColor="@color/viewTextColor"
+                    android:textColor="@color/txtColor"
                     android:textSize="@dimen/_6mdpi" />
             </LinearLayout>
 
@@ -139,7 +141,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="@dimen/_3sdp"
                     android:text="Employee: David Miller"
-                    android:textColor="@color/viewTextColor"
+                    android:textColor="@color/txtColor"
                     android:textSize="@dimen/_6mdpi" />
 
 
@@ -155,7 +157,7 @@
                 android:gravity="start"
                 android:paddingLeft="@dimen/_3sdp"
                 android:text="Order Time: Apr-29-2021 07:15 PM"
-                android:textColor="@color/viewTextColor"
+                android:textColor="@color/txtColor"
                 android:textSize="@dimen/_6mdpi" />
 
             <androidx.appcompat.widget.AppCompatTextView
@@ -168,7 +170,7 @@
                 android:gravity="start"
                 android:paddingLeft="@dimen/_3sdp"
                 android:text="Print Time: Apr-29-2021 10:17 PM"
-                android:textColor="@color/viewTextColor"
+                android:textColor="@color/txtColor"
                 android:textSize="@dimen/_6mdpi" />
 
             <View
@@ -197,7 +199,7 @@
                         android:layout_height="wrap_content"
                         android:padding="@dimen/_5sdp"
                         android:text="1x Chicken Meals"
-                        android:textColor="@color/viewTextColor"
+                        android:textColor="@color/txtColor"
                         android:textSize="@dimen/_6mdpi" />
 
                     <androidx.appcompat.widget.AppCompatTextView
@@ -209,7 +211,7 @@
                         android:gravity="end"
                         android:padding="@dimen/_5sdp"
                         android:text="$9.99"
-                        android:textColor="@color/viewTextColor"
+                        android:textColor="@color/txtColor"
                         android:textSize="@dimen/_6mdpi" />
 
                     <View
@@ -232,7 +234,7 @@
                         android:layout_marginLeft="@dimen/_20sdp"
                         android:padding="@dimen/_5sdp"
                         android:text="Extra Spycies"
-                        android:textColor="@color/viewTextColor"
+                        android:textColor="@color/txtColor"
                         android:textSize="@dimen/_6mdpi" />
 
                     <androidx.appcompat.widget.AppCompatTextView
@@ -243,7 +245,7 @@
                         android:gravity="end"
                         android:padding="@dimen/_5sdp"
                         android:text="$1.99"
-                        android:textColor="@color/viewTextColor"
+                        android:textColor="@color/txtColor"
                         android:textSize="@dimen/_6mdpi" />
 
                 </LinearLayout>
@@ -263,7 +265,7 @@
                         android:layout_marginLeft="@dimen/_20sdp"
                         android:padding="@dimen/_5sdp"
                         android:text="Extra Spycies"
-                        android:textColor="@color/viewTextColor"
+                        android:textColor="@color/txtColor"
                         android:textSize="@dimen/_6mdpi" />
 
                     <androidx.appcompat.widget.AppCompatTextView
@@ -274,7 +276,7 @@
                         android:gravity="end"
                         android:padding="@dimen/_5sdp"
                         android:text="$1.99"
-                        android:textColor="@color/viewTextColor"
+                        android:textColor="@color/txtColor"
                         android:textSize="@dimen/_6mdpi" />
 
                 </LinearLayout>
@@ -294,7 +296,7 @@
                         android:layout_marginLeft="@dimen/_20sdp"
                         android:padding="@dimen/_5sdp"
                         android:text="Extra Spycies"
-                        android:textColor="@color/viewTextColor"
+                        android:textColor="@color/txtColor"
                         android:textSize="@dimen/_6mdpi" />
 
                     <androidx.appcompat.widget.AppCompatTextView
@@ -305,7 +307,7 @@
                         android:gravity="end"
                         android:padding="@dimen/_5sdp"
                         android:text="$1.99"
-                        android:textColor="@color/viewTextColor"
+                        android:textColor="@color/txtColor"
                         android:textSize="@dimen/_6mdpi" />
 
                 </LinearLayout>
@@ -335,7 +337,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/tv_sub_total"
-                    android:textColor="@color/viewTextColor"
+                    android:textColor="@color/txtColor"
                     android:textSize="@dimen/_6mdpi" />
 
                 <androidx.appcompat.widget.AppCompatTextView
@@ -346,7 +348,7 @@
                     android:layout_gravity="end"
                     android:gravity="end"
                     android:text="$9.99"
-                    android:textColor="@color/viewTextColor"
+                    android:textColor="@color/txtColor"
                     android:textSize="@dimen/_6mdpi" />
             </LinearLayout>
 
@@ -364,7 +366,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/tv_refund_amount"
-                    android:textColor="@color/viewTextColor"
+                    android:textColor="@color/txtColor"
                     android:textSize="@dimen/_6mdpi" />
 
                 <androidx.appcompat.widget.AppCompatTextView
@@ -375,7 +377,7 @@
                     android:layout_gravity="end"
                     android:gravity="end"
                     android:text="$2.99"
-                    android:textColor="@color/viewTextColor"
+                    android:textColor="@color/txtColor"
                     android:textSize="@dimen/_6mdpi" />
             </LinearLayout>
 
@@ -393,7 +395,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/tv_service_charge"
-                    android:textColor="@color/viewTextColor"
+                    android:textColor="@color/txtColor"
                     android:textSize="@dimen/_6mdpi" />
 
                 <androidx.appcompat.widget.AppCompatTextView
@@ -404,7 +406,7 @@
                     android:layout_gravity="end"
                     android:gravity="end"
                     android:text="$9.99"
-                    android:textColor="@color/viewTextColor"
+                    android:textColor="@color/txtColor"
                     android:textSize="@dimen/_6mdpi" />
             </LinearLayout>
 
@@ -421,7 +423,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/tv_total_discount"
-                    android:textColor="@color/viewTextColor"
+                    android:textColor="@color/txtColor"
                     android:textSize="@dimen/_6mdpi" />
 
                 <androidx.appcompat.widget.AppCompatTextView
@@ -432,7 +434,7 @@
                     android:layout_gravity="end"
                     android:gravity="end"
                     android:text="$9.99"
-                    android:textColor="@color/viewTextColor"
+                    android:textColor="@color/txtColor"
                     android:textSize="@dimen/_6mdpi" />
             </LinearLayout>
 
@@ -449,7 +451,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/tv_cash_discount"
-                    android:textColor="@color/viewTextColor"
+                    android:textColor="@color/txtColor"
                     android:textSize="@dimen/_6mdpi" />
 
                 <androidx.appcompat.widget.AppCompatTextView
@@ -460,7 +462,7 @@
                     android:layout_gravity="end"
                     android:gravity="end"
                     android:text="$9.99"
-                    android:textColor="@color/viewTextColor"
+                    android:textColor="@color/txtColor"
                     android:textSize="@dimen/_6mdpi" />
             </LinearLayout>
 
@@ -477,7 +479,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/tv_total_price"
-                    android:textColor="@color/viewTextColor"
+                    android:textColor="@color/txtColor"
                     android:textSize="@dimen/_6mdpi" />
 
                 <androidx.appcompat.widget.AppCompatTextView
@@ -488,7 +490,7 @@
                     android:layout_gravity="end"
                     android:gravity="end"
                     android:text="$9.99"
-                    android:textColor="@color/viewTextColor"
+                    android:textColor="@color/txtColor"
                     android:textSize="@dimen/_6mdpi" />
             </LinearLayout>
 
@@ -505,7 +507,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/tv_change_amount"
-                    android:textColor="@color/viewTextColor"
+                    android:textColor="@color/txtColor"
                     android:textSize="@dimen/_6mdpi" />
 
                 <androidx.appcompat.widget.AppCompatTextView
@@ -516,7 +518,7 @@
                     android:layout_gravity="end"
                     android:gravity="end"
                     android:text="$9.99"
-                    android:textColor="@color/viewTextColor"
+                    android:textColor="@color/txtColor"
                     android:textSize="@dimen/_6mdpi" />
             </LinearLayout>
 
@@ -530,7 +532,7 @@
                 android:layout_marginRight="@dimen/_7sdp"
                 android:layout_marginBottom="@dimen/_5sdp"
                 android:text="@string/tv_additional_tips"
-                android:textColor="@color/viewTextColor"
+                android:textColor="@color/txtColor"
                 android:textSize="@dimen/_7mdpi" />
 
             <View
@@ -554,7 +556,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="@dimen/_3sdp"
                     android:text="Entertainment(4.00%)"
-                    android:textColor="@color/viewTextColor"
+                    android:textColor="@color/txtColor"
                     android:textSize="@dimen/_6mdpi" />
 
                 <androidx.appcompat.widget.AppCompatTextView
@@ -566,7 +568,7 @@
                     android:layout_marginLeft="@dimen/_3sdp"
                     android:gravity="end"
                     android:text="$9.99"
-                    android:textColor="@color/viewTextColor"
+                    android:textColor="@color/txtColor"
                     android:textSize="@dimen/_6mdpi" />
             </LinearLayout>
 
@@ -585,7 +587,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="@dimen/_3sdp"
                     android:text="Name"
-                    android:textColor="@color/viewTextColor"
+                    android:textColor="@color/txtColor"
                     android:textSize="@dimen/_6mdpi" />
 
                 <androidx.appcompat.widget.AppCompatTextView
@@ -597,7 +599,7 @@
                     android:layout_marginLeft="@dimen/_3sdp"
                     android:gravity="end"
                     android:text="$9.99"
-                    android:textColor="@color/viewTextColor"
+                    android:textColor="@color/txtColor"
                     android:textSize="@dimen/_6mdpi" />
             </LinearLayout>
 
@@ -616,7 +618,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="@dimen/_3sdp"
                     android:text="@string/tv_tips"
-                    android:textColor="@color/viewTextColor"
+                    android:textColor="@color/txtColor"
                     android:textSize="@dimen/_6mdpi" />
 
                 <androidx.appcompat.widget.AppCompatTextView
@@ -628,7 +630,7 @@
                     android:layout_marginLeft="@dimen/_3sdp"
                     android:gravity="end"
                     android:text="$9.99"
-                    android:textColor="@color/viewTextColor"
+                    android:textColor="@color/txtColor"
                     android:textSize="@dimen/_6mdpi" />
             </LinearLayout>
 
@@ -646,7 +648,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="@dimen/_3sdp"
                     android:text="@string/tv_total"
-                    android:textColor="@color/viewTextColor"
+                    android:textColor="@color/txtColor"
                     android:textSize="@dimen/_6mdpi" />
 
                 <androidx.appcompat.widget.AppCompatTextView
@@ -658,7 +660,7 @@
                     android:layout_marginLeft="@dimen/_3sdp"
                     android:gravity="end"
                     android:text="$9.99"
-                    android:textColor="@color/viewTextColor"
+                    android:textColor="@color/txtColor"
                     android:textSize="@dimen/_6mdpi" />
             </LinearLayout>
 
@@ -676,7 +678,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="@dimen/_3sdp"
                     android:text="@string/tv_transaction_id"
-                    android:textColor="@color/viewTextColor"
+                    android:textColor="@color/txtColor"
                     android:textSize="@dimen/_6mdpi" />
 
                 <androidx.appcompat.widget.AppCompatTextView
@@ -688,7 +690,7 @@
                     android:layout_marginLeft="@dimen/_3sdp"
                     android:gravity="end"
                     android:text="$9.99"
-                    android:textColor="@color/viewTextColor"
+                    android:textColor="@color/txtColor"
                     android:textSize="@dimen/_6mdpi" />
             </LinearLayout>
 
@@ -706,7 +708,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="@dimen/_3sdp"
                     android:text="@string/tv_transaction_type"
-                    android:textColor="@color/viewTextColor"
+                    android:textColor="@color/txtColor"
                     android:textSize="@dimen/_6mdpi" />
 
                 <androidx.appcompat.widget.AppCompatTextView
@@ -718,7 +720,7 @@
                     android:layout_marginLeft="@dimen/_3sdp"
                     android:gravity="end"
                     android:text="$9.99"
-                    android:textColor="@color/viewTextColor"
+                    android:textColor="@color/txtColor"
                     android:textSize="@dimen/_6mdpi" />
             </LinearLayout>
 
@@ -732,7 +734,7 @@
                 android:layout_marginRight="@dimen/_7sdp"
                 android:layout_marginBottom="@dimen/_5sdp"
                 android:text="@string/tv_customer_details"
-                android:textColor="@color/viewTextColor"
+                android:textColor="@color/txtColor"
                 android:textSize="@dimen/_7mdpi" />
 
             <View
@@ -755,7 +757,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="David Miller"
-                    android:textColor="@color/viewTextColor"
+                    android:textColor="@color/txtColor"
                     android:textSize="@dimen/_7mdpi" />
 
                 <androidx.appcompat.widget.AppCompatTextView
@@ -765,7 +767,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="end"
                     android:text="(635) 987-3354"
-                    android:textColor="@color/viewTextColor"
+                    android:textColor="@color/txtColor"
                     android:textSize="@dimen/_6mdpi" />
 
                 <androidx.appcompat.widget.AppCompatTextView
@@ -774,7 +776,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="7450 DW 51 FH AT,Suite 503"
-                    android:textColor="@color/viewTextColor"
+                    android:textColor="@color/txtColor"
                     android:textSize="@dimen/_6mdpi" />
             </LinearLayout>
 
@@ -794,7 +796,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:text="@string/tv_order_note"
-                    android:textColor="@color/viewTextColor"
+                    android:textColor="@color/txtColor"
                     android:textSize="@dimen/_7mdpi" />
 
                 <androidx.appcompat.widget.AppCompatTextView
@@ -804,7 +806,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:text="Sugar Free,No herbs &amp; Spices"
-                    android:textColor="@color/viewTextColor"
+                    android:textColor="@color/txtColor"
                     android:textSize="@dimen/_6mdpi" />
 
                 <androidx.appcompat.widget.AppCompatImageView
@@ -824,7 +826,7 @@
                     android:layout_height="wrap_content"
                     android:gravity="center"
                     android:text="www.smartpos.com"
-                    android:textColor="@color/viewTextColor"
+                    android:textColor="@color/txtColor"
                     android:textSize="@dimen/_6mdpi"
                     android:visibility="gone" />
             </LinearLayout>

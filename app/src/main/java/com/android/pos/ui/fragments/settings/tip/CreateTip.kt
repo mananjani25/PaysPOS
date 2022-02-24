@@ -1,6 +1,8 @@
 package com.android.pos.ui.fragments.settings.tip
 
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -14,6 +16,7 @@ import com.android.pos.data.remote.Constants.CREATE_TIP
 import com.android.pos.data.remote.Constants.KEY
 import com.android.pos.databinding.DialogAddNewTipBinding
 import com.android.pos.utils.AlertUtils
+import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.extensions.liveSnackBar
 import com.google.android.material.snackbar.Snackbar
@@ -45,9 +48,11 @@ class CreateTip : Fragment() {
             binding.header.txtSave.text = getString(R.string.update)
             binding.header.txtTitle.text = getString(R.string.update_tip)
 
+
             tipData = arguments?.getParcelable("tipObject")!!
 
             viewModel.setTipData(tipData)
+            binding.edtTip.setText(tipData.rate.toString())
             viewModel.isEditData(isEdit, tipData.id)
         }
 
@@ -64,9 +69,37 @@ class CreateTip : Fragment() {
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
 
         binding.header.txtSave.setOnClickListener {
-            viewModel.submit()
+            var rate = binding.edtTip.text.toString()
+            var rate_double = 0.0
+            if (rate.isNotEmpty()) {
+                rate_double = MethodUtils.roundOffAmountDouble(rate.toDouble())
+            }
+            viewModel.submit(rate_double)
         }
+        binding.edtTip.addTextChangedListener(object :TextWatcher{
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
 
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+                val temp_rate = s.toString()
+                if (temp_rate.isNotEmpty()) {
+                    if (temp_rate.toFloat() > 100) {
+                        AlertUtils.showCustomAlertWithListenerWithOK(
+                            requireContext(),
+                            "Please Enter Percentage less than or Equal to 100"
+                        ) { _, _ ->
+                            binding.edtTip.setText("")
+                        }
+                    }
+                }
+            }
+
+        })
         return binding.root
     }
 
