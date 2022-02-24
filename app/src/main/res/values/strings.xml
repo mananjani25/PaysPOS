@@ -654,11 +654,14 @@
     <string name="reorder">Reorder</string>
     <string name="pay_type">Amount &amp; Pay Type</string>
     <string name="enroll_to_loyalty">Enroll to Loyalty Program</string>
-    <string name="loyalty_name">Loyalty Name <font color='#E90C0C'>*</font></string>
-    <string name="loyalty_value">LOYALTY VALUE <font color='#E90C0C'>*</font></string>
+    <string name="loyalty_name">Loyalty Name</string>
+    <string name="loyalty_name_">Loyalty Name <font color='#E90C0C'>*</font></string>
+    <string name="loyalty_value_">LOYALTY VALUE <font color='#E90C0C'>*</font></string>
+    <string name="loyalty_value">LOYALTY VALUE</string>
     <string name="percentage_value">Percentage Value</string>
     <string name="amount_value">Amount Value</string>
-    <string name="loyalty_target">Loyalty Target<font color='#E90C0C'>*</font></string>
+    <string name="loyalty_target_">Loyalty Target<font color='#E90C0C'>*</font></string>
+    <string name="loyalty_target">Loyalty Target</string>
     <string name="number_of_points_required_to_get_the_reward">(Number of points required to get the reward)</string>
     <string name="error_loyalty_name_blank">Please Enter Loyalty Name</string>
     <string name="error_loyalty_point_blank">Please Enter Loyalty Target</string>
@@ -666,6 +669,7 @@
     <string name="create_tip">Create Tip</string>
     <string name="update_tip">Update Tip</string>
     <string name="create_loyalty_point">Create Loyalty Point</string>
+    <string name="add_loyalty_point">Add Loyalty Point</string>
     <string name="update_loyalty_point">Update Loyalty Point</string>
     <string name="tip_after_split_alert">If you will split the bill, then your added tip will be removed, Are you sure you want to split the bill?</string>
     <string name="qty_validation">Quantity not available</string>
@@ -743,6 +747,7 @@
     <string name="all_terminals">All Terminals</string>
     <string name="please_enter_customer_email_address">Please enter customer\'s email address</string>
     <string name="please_enter_customer_contact_number">Please enter customer\'s contact number</string>
+    <string name="fixed_value">Fixed Value</string>
 
 
 </resources>
