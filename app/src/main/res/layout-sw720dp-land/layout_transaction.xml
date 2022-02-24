@@ -51,7 +51,7 @@
                 android:gravity="center"
                 android:text="@string/tv_home"
                 android:textColor="@color/txtColor"
-                android:textSize="@dimen/_6mdpi" />
+                android:textSize="@dimen/_txtTitle" />
 
             <TextView
                 android:id="@+id/txtEmail"
@@ -64,32 +64,53 @@
                 android:textSize="@dimen/_7mdpi"
                 android:visibility="gone" />
 
+            <androidx.appcompat.widget.AppCompatEditText
+                android:id="@+id/edtSearch"
+                style="@style/CustomFontRegularStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/_18sdp"
+                android:layout_centerVertical="true"
+                android:layout_toStartOf="@+id/txtHome"
+                android:background="@null"
+                android:drawableStart="@drawable/search_icon_small"
+                android:drawablePadding="@dimen/_5sdp"
+                android:gravity="center"
+                android:hint="SEARCH"
+                android:imeOptions="actionDone"
+                android:inputType="text"
+                android:padding="@dimen/_5sdp"
+                android:textColor="@color/txtColor"
+                android:textColorHint="@color/searchHintColor"
+                android:textSize="@dimen/_5mdpi" />
+
+
             <TextView
                 android:id="@+id/txtHome"
                 style="@style/CustomFontBold"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:background="?attr/selectableItemBackground"
                 android:padding="@dimen/_6sdp"
                 android:text="@string/tv_home"
-                android:background="?attr/selectableItemBackground"
+                android:textAllCaps="true"
                 android:textColor="@color/txt_color_blue"
                 android:textSize="@dimen/_6mdpi"
                 android:visibility="visible" />
         </RelativeLayout>
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/_1sdp"
-            android:layout_marginBottom="@dimen/_5sdp"
-            android:background="@color/view" />
+        <include layout="@layout/divider" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
+            android:layout_marginTop="@dimen/_5sdp"
             android:layout_marginBottom="@dimen/_5sdp"
-            android:gravity="start"
+
+            android:gravity="start|center"
+
             android:orientation="horizontal">
 
             <androidx.appcompat.widget.AppCompatTextView
@@ -101,15 +122,16 @@
                 android:layout_marginRight="@dimen/_5sdp"
                 android:text="@string/tv_start_date"
                 android:textColor="@color/txtColor"
-                android:textSize="@dimen/_7sdp" />
+                android:textSize="@dimen/_6mdpi" />
 
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@drawable/background_square_border_grey"
+
+                android:background="@drawable/background_transaction_labels"
                 android:onClick="@{() -> includeLayoutViewModel.datePicker(true)}"
                 android:orientation="horizontal"
-               android:padding="@dimen/border_view_padding_normal">
+                android:padding="@dimen/border_view_padding_normal">
 
                 <ImageView
                     android:layout_width="wrap_content"
@@ -141,16 +163,15 @@
                 android:layout_marginEnd="@dimen/_5sdp"
                 android:text="@string/tv_end_date"
                 android:textColor="@color/txtColor"
-                android:textSize="@dimen/_7sdp" />
+                android:textSize="@dimen/_6mdpi" />
 
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:background="@drawable/background_square_border_grey"
+                android:background="@drawable/background_transaction_labels"
                 android:onClick="@{() -> includeLayoutViewModel.datePicker(false)}"
                 android:orientation="horizontal"
-                android:padding="@dimen/border_view_padding_normal"
-                >
+                android:padding="@dimen/border_view_padding_normal">
 
                 <ImageView
                     android:layout_width="wrap_content"
@@ -176,7 +197,7 @@
                 android:layout_width="@dimen/_80sdp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/_5sdp"
-                android:background="@drawable/background_square_border_grey"
+                android:background="@drawable/background_transaction_labels"
                 android:orientation="horizontal"
                 android:padding="@dimen/_3sdp">
 
@@ -201,11 +222,7 @@
             </RelativeLayout>
         </LinearLayout>
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="0.5dp"
-            android:layout_marginBottom="@dimen/_5sdp"
-            android:background="@color/view" />
+        <include layout="@layout/divider" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -219,7 +236,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/_5sdp"
                 android:layout_weight="1"
-                android:background="@drawable/background_square_border_grey"
+                android:background="@drawable/background_transaction_labels"
                 android:orientation="horizontal"
                 android:padding="@dimen/border_view_padding_normal">
 
@@ -234,7 +251,7 @@
 
                     android:overlapAnchor="false"
                     android:spinnerMode="dropdown"
-                    android:textSize="@dimen/_5mdpi"
+                    android:textSize="@dimen/_8sdp"
                     android:theme="@style/SpinnerThemeDarkMode"
                     tools:ignore="NestedWeights" />
 
@@ -283,7 +300,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/_5sdp"
                 android:layout_weight="1"
-                android:background="@drawable/background_square_border_grey"
+                android:background="@drawable/background_transaction_labels"
                 android:orientation="horizontal"
                 android:padding="@dimen/border_view_padding_normal">
 
@@ -315,7 +332,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/_5sdp"
                 android:layout_weight="1"
-                android:background="@drawable/background_square_border_grey"
+                android:background="@drawable/background_transaction_labels"
                 android:orientation="horizontal"
                 android:padding="@dimen/border_view_padding_normal">
 
@@ -348,7 +365,7 @@
                 android:layout_marginStart="@dimen/_5sdp"
                 android:layout_marginEnd="@dimen/_5sdp"
                 android:layout_weight="1"
-                android:background="@drawable/background_square_border_grey"
+                android:background="@drawable/background_transaction_labels"
                 android:orientation="horizontal"
                 android:padding="@dimen/border_view_padding_normal">
 

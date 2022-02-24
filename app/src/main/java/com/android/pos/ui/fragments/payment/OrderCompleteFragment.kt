@@ -590,7 +590,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 MethodUtils.hideKeyboard(requireActivity())
             }
             R.id.llEmail -> {
-
+                binding.llPrint.background=resources.getDrawable(R.drawable.button_hover_blue)
+                binding.llPrint.setTextColor(resources.getColor(R.color.white))
                 type = "Email"
 
                 binding.llSendReceipt.visibility = View.VISIBLE
@@ -609,6 +610,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             }
             R.id.llPrint -> {
                 //removeCustomer()
+                binding.llPrint.background=resources.getDrawable(R.drawable.button_selected)
+                binding.llPrint.setTextColor(resources.getColor(R.color.white))
                 if (isDineIn) {
                     Log.e(TAG, "receiptModel:  ${Gson().toJson(receiptModel)}")
                     customerPrintWholeOrder()

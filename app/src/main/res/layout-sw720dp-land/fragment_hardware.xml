@@ -35,7 +35,7 @@
                 android:padding="@dimen/_5mdpi"
                 android:text="@string/hardware"
                 android:textColor="@color/txtColor"
-                android:textSize="@dimen/_6mdpi"
+                android:textSize="@dimen/_txtTitle"
                 android:visibility="visible" />
 
             <androidx.appcompat.widget.AppCompatTextView
