@@ -147,6 +147,7 @@ class SingleTeamMemberTimeSheetFragment : Fragment() {
         viewModel.timeSheetDetails.observe(viewLifecycleOwner, { event ->
             event.getContentIfNotHandled()?.let { timeSheet ->
                 binding.rvSingleTimeSheet.visibility = View.VISIBLE
+                binding.includeView.spinnerLayoutTimesheet.visibility = View.GONE
                 teamMemberTimeSheetAdapter.teamTimesheetDetailsList(
                     timeSheet.data
                 )

@@ -7,6 +7,7 @@ import com.android.pos.data.entities.ModulePermission
 import com.android.pos.data.model.PermissionModuleListModel
 import com.android.pos.data.model.responseModel.GetTeamRoleModule
 import com.android.pos.databinding.ViewModuleSelectedItem1Binding
+
 import com.android.pos.ui.fragments.settings.teamrole.UserAccessPermissionViewModel
 
 class SelectedPermissionModuleAdapter(val viewModelAccess: UserAccessPermissionViewModel) :

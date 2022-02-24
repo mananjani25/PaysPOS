@@ -7,6 +7,7 @@
 
     <LinearLayout
         android:layout_width="match_parent"
+        android:background="@color/bg_color"
         android:layout_height="match_parent"
         android:orientation="vertical">
 
@@ -21,8 +22,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:padding="@dimen/_6sdp"
-                android:background="?attr/selectableItemBackground"
-                android:src="@drawable/ic_cancel_black" />
+                android:src="@drawable/ic_arrow_back" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/txtTitle"
@@ -34,7 +34,7 @@
                 android:gravity="center"
                 android:padding="@dimen/_3sdp"
                 android:text="@string/tv_user_access_permission"
-                android:textColor="@color/viewTextColor"
+                android:textColor="@color/txtColor"
                 android:textSize="@dimen/_7mdpi" />
 
             <TextView
@@ -45,25 +45,23 @@
                 android:layout_marginEnd="@dimen/_5sdp"
                 android:padding="@dimen/_6sdp"
                 android:text="@string/tv_home"
-                android:background="?attr/selectableItemBackground"
-                android:textColor="@color/txt_color_blue"
+                android:textColor="@color/btnColor"
                 android:textSize="@dimen/_7mdpi" />
         </LinearLayout>
 
         <View
             android:layout_width="match_parent"
             android:layout_height="0.5dp"
-            android:layout_marginBottom="@dimen/_5sdp"
-            android:background="@color/gray_rect" />
+
+            android:background="@color/view" />
 
         <androidx.appcompat.widget.LinearLayoutCompat
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginStart="@dimen/_50sdp"
-            android:layout_marginTop="@dimen/_5sdp"
             android:layout_marginEnd="@dimen/_50sdp"
             android:layout_marginBottom="@dimen/_5sdp"
-            android:background="@color/white"
+
             android:orientation="vertical">
 
             <androidx.appcompat.widget.AppCompatTextView
@@ -74,12 +72,13 @@
                 android:layout_gravity="center"
                 android:layout_marginTop="@dimen/_30sdp"
                 android:layout_marginBottom="@dimen/_5sdp"
-                android:background="@drawable/bg_button_border_gray"
+                android:background="@color/btnColor"
                 android:gravity="center"
-                android:padding="@dimen/_5sdp"
+                android:paddingVertical="@dimen/_7sdp"
+                android:paddingHorizontal="@dimen/_5sdp"
                 android:text="@string/tv_add_new_role"
-                android:textColor="@color/btnColor"
-                android:textSize="@dimen/_6mdpi"
+                android:textColor="@color/white"
+                android:textSize="@dimen/_7mdpi"
                 app:textAllCaps="false" />
 
             <androidx.appcompat.widget.AppCompatTextView
@@ -90,7 +89,7 @@
                 android:layout_marginTop="@dimen/_5sdp"
                 android:layout_marginBottom="@dimen/_5sdp"
                 android:text="@string/tv_employee_role_list"
-                android:textColor="@color/black"
+                android:textColor="@color/txtColor"
                 android:textSize="@dimen/_6mdpi"
                 app:textAllCaps="false" />
 
