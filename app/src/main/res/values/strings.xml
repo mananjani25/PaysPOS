@@ -199,6 +199,7 @@
     <string name="tax_rates_can_be_applied_to_specific_items_and_will_be_automatically_calculated_at_purchase">Tax rates can be applied to specific items and will be automatically calculated at purchase.</string>
     <string name="service_charge_can_be_applied_to_specific_items_and_will_be_automatically_calculated_at_purchase">Service charge can be applied to specific items and will be automatically calculated at purchase.</string>
     <string name="create_discount">Create Discount</string>
+    <string name="add_new_discount">Add New Discount</string>
     <string name="update_discount">Update Discount</string>
     <string name="discount_name">Discount Name</string>
     <string name="discount_name_">Discount Name<font color='#E90C0C'>*</font></string>
