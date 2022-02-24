@@ -91,7 +91,7 @@
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
-                    android:background="@color/gray_rect" />
+                    android:background="@color/cool_grey" />
 
                 <androidx.appcompat.widget.LinearLayoutCompat
                     android:layout_width="match_parent"
@@ -111,7 +111,7 @@
                         android:imeOptions="actionNext"
                         android:inputType="textVisiblePassword"
                         android:paddingStart="@dimen/_10sdp"
-                        android:text=""
+                        android:text="@={viewModel.createTaxDetails.name}"
                         android:textColor="@color/txtColor"
                         android:textColorHint="@color/hintColor"
                         android:textSize="@dimen/_6mdpi" />
@@ -135,15 +135,14 @@
                             android:id="@+id/edtAmount"
                             style="@style/CustomFontSemiBold"
                             android:layout_width="match_parent"
-
                             android:layout_height="@dimen/_25sdp"
                             android:background="@null"
                             android:digits="@string/disable_emoji_string"
                             android:hint="@string/add_tax__percentage"
                             android:imeOptions="actionNext"
-                            android:inputType="textVisiblePassword"
+                            android:inputType="number"
                             android:paddingStart="@dimen/_10sdp"
-                            android:text=""
+                            android:text="@={``+ viewModel.createTaxDetails.rate}"
                             android:textColor="@color/txtColor"
                             android:textColorHint="@color/hintColor"
                             android:textSize="@dimen/_6mdpi" />
@@ -219,7 +218,7 @@
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
-                    android:background="@color/view" />
+                    android:background="@color/cool_grey" />
 
 
                 <androidx.appcompat.widget.LinearLayoutCompat
@@ -246,7 +245,7 @@
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
-                    android:background="@color/view" />
+                    android:background="@color/cool_grey" />
 
                 <androidx.appcompat.widget.LinearLayoutCompat
                     android:layout_width="match_parent"
@@ -282,7 +281,7 @@
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
-                    android:background="@color/view" />
+                    android:background="@color/cool_grey" />
 
                 <androidx.appcompat.widget.LinearLayoutCompat
                     android:id="@+id/llAllItemsDialog"
@@ -326,7 +325,7 @@
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
-                    android:background="@color/view" />
+                    android:background="@color/cool_grey" />
 
 
             </androidx.appcompat.widget.LinearLayoutCompat>

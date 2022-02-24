@@ -1,12 +1,15 @@
 package com.android.pos.ui.fragments.settings.tax
 
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.widget.AppCompatImageView
+import androidx.core.widget.addTextChangedListener
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -88,6 +91,30 @@ class CreateTax : Fragment() {
             }
         }
 
+        binding.edtAmount.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+                if (binding.swtTaxType.text == "Percentage") {
+                    val temp_rate = s.toString()
+                    if (temp_rate.toInt() > 100) {
+                        AlertUtils.showCustomAlertWithListenerWithOK(
+                            requireContext(),
+                            "Please Enter Percentage less than or Equal to 100"
+                        ) { _, _ ->
+                            binding.edtAmount.setText("")
+                        }
+                    }
+                }
+            }
+
+        })
         setupSnackbar()
         observeShowProgress()
         navigate()
