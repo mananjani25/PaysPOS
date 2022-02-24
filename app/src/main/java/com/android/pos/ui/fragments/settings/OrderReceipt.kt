@@ -10,6 +10,7 @@ import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.databinding.FragmentOrderReceiptSettingsBinding
 
+
 class OrderReceipt : Fragment() {
 
     private lateinit var binding: FragmentOrderReceiptSettingsBinding

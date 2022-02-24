@@ -243,20 +243,24 @@ class PrinterQueue : Fragment(), StatusChangeEventListener, BatteryStatusChangeE
 
         }
 
-        requireActivity().runOnUiThread {
-            if (printerQueuelist.isNotEmpty()) {
+        try {
+            requireActivity().runOnUiThread {
+                if (printerQueuelist.isNotEmpty()) {
 
-                adapter.clearList()
-                binding.rvPrinterQueueList.adapter = adapter
+                    adapter.clearList()
+                    binding.rvPrinterQueueList.adapter = adapter
 
-                adapter.setList(printerQueuelist)
-                adapter.notifyDataSetChanged()
+                    adapter.setList(printerQueuelist)
+                    adapter.notifyDataSetChanged()
 
 
-            } else {
-                adapter.clearList()
-                isPrintRunning = false
+                } else {
+                    adapter.clearList()
+                    isPrintRunning = false
+                }
             }
+        } catch (e: Exception) {
+            e.printStackTrace()
         }
 
 

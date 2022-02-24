@@ -118,6 +118,7 @@
     <color name="bg_printer_label">#FFFFFF</color>
     <color name="switchTrackColor">#363636</color>
     <color name="bgEditPrinter">#18181A</color>
+    <color name="searchHintColor">#C4C4C4</color>
     <color name="light_gray">#A9A9A9</color>
 
 </resources>

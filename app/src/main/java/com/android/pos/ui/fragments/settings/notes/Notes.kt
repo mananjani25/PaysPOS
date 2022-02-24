@@ -12,6 +12,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.R
 import com.android.pos.data.model.responseModel.NoteResponse
 import com.android.pos.databinding.FragmentNotesBinding
+
 import com.android.pos.ui.adapter.NotesListAdapter
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.ProgressUtils

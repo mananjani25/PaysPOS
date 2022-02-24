@@ -29,7 +29,7 @@
                     android:layout_height="wrap_content"
                     android:text="Three layer ice cream"
                     android:textColor="@color/white"
-                    android:textSize="@dimen/text_size_medium" />
+                    android:textSize="@dimen/_7mdpi" />
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/tvModifierName"
@@ -37,7 +37,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:textColor="@color/txtColorGray"
-                    android:textSize="@dimen/text_size_medium" />
+                    android:textSize="@dimen/_7mdpi" />
 
 
             </LinearLayout>
@@ -52,7 +52,7 @@
                 android:gravity="end"
                 android:layout_marginRight="@dimen/_3sdp"
                 android:textColor="@color/white"
-                android:textSize="@dimen/text_size_medium"
+                android:textSize="@dimen/_7mdpi"
                 android:layout_weight="1"/>
 
             <androidx.appcompat.widget.AppCompatTextView
@@ -65,7 +65,7 @@
                 android:gravity="end"
                 android:text="$3.50"
                 android:textColor="@color/white"
-                android:textSize="@dimen/text_size_medium"
+                android:textSize="@dimen/_7mdpi"
                 tools:text="$20.00" />
 
             <androidx.appcompat.widget.AppCompatTextView

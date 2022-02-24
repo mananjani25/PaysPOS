@@ -68,7 +68,8 @@
                 android:fontFamily="@font/sf_pro_display_medium"
                 android:gravity="center"
                 android:textColor="@color/txtColor"
-                android:textSize="@dimen/_6mdpi"
+                android:textSize="@dimen/_7mdpi"
+                android:layout_marginLeft="@dimen/_30sdp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/txtHome"
                 app:layout_constraintStart_toStartOf="parent"
@@ -98,6 +99,7 @@
                 android:text="@string/tv_home"
                 android:textColor="@color/txt_color_blue"
                 android:textSize="@dimen/_6mdpi"
+                android:textAllCaps="true"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/imgOptionMenuContainer"
                 app:layout_constraintTop_toTopOf="parent" />

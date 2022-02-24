@@ -19,7 +19,8 @@
         android:id="@+id/linearCompact"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:background="@color/bg_color">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -40,7 +41,7 @@
                     android:layout_gravity="center"
                     android:background="?attr/selectableItemBackground"
                     android:padding="@dimen/_6sdp"
-                    app:srcCompat="@drawable/ic_cancel_black" />
+                    app:srcCompat="@drawable/ic_arrow_back" />
 
                 <TextView
                     style="@style/CustomFontBold"
@@ -52,7 +53,7 @@
                     android:gravity="center"
                     android:text="@{`Order `+orderDetails.data.order.offline_id}"
                     android:textColor="@color/txtColor"
-                    android:textSize="@dimen/text_size_large"
+                    android:textSize="@dimen/_txtTitle"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@+id/txtHome"
                     app:layout_constraintStart_toStartOf="parent"
@@ -128,7 +129,7 @@
                             android:gravity="start"
                             android:text="@string/item_name"
                             android:textColor="@color/white"
-                            android:textSize="@dimen/_6mdpi" />
+                            android:textSize="@dimen/_7mdpi" />
 
 
                         <androidx.appcompat.widget.AppCompatTextView
@@ -139,7 +140,7 @@
                             android:gravity="end"
                             android:text="@string/qty"
                             android:textColor="@color/white"
-                            android:textSize="@dimen/_6mdpi" />
+                            android:textSize="@dimen/_7mdpi" />
 
                         <androidx.appcompat.widget.AppCompatTextView
                             style="@style/CustomFontRegularStyle"
@@ -149,7 +150,7 @@
                             android:gravity="end"
                             android:text="@string/each"
                             android:textColor="@color/white"
-                            android:textSize="@dimen/_6mdpi" />
+                            android:textSize="@dimen/_7mdpi" />
 
 
                         <androidx.appcompat.widget.AppCompatTextView
@@ -160,7 +161,7 @@
                             android:gravity="end"
                             android:text="@string/tv_total"
                             android:textColor="@color/white"
-                            android:textSize="@dimen/_6mdpi" />
+                            android:textSize="@dimen/_7mdpi" />
 
 
                     </androidx.appcompat.widget.LinearLayoutCompat>

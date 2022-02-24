@@ -162,6 +162,8 @@
     <string name="add_new_items">+ Add New Item</string>
     <string name="add_new_itemswithoutplus">Add New Item</string>
     <string name="add_new_itemswithstar">Add New Item <font color='#E90C0C'>*</font></string>
+    <string name="add_tax_name">Add Tax Name</string>
+    <string name="add_tax__percentage">Add Tax Percentages (%)</string>
     <string name="search_categories">Search Categories</string>
     <string name="create_category">Create Category</string>
     <string name="update_category">Update Category</string>
@@ -179,6 +181,7 @@
     <string name="tv_add_item">Add Item</string>
     <string name="tv_add_create_another"><![CDATA[Add & Create Another]]></string>
     <string name="add_service_charge">Add Service Charge</string>
+    <string name="add_service_charge_plus">+ Add Service Charge</string>
     <string name="update_service_charge">Update Service Charge</string>
     <string name="enable_service_charge">Enable Service Charge</string>
     <string name="service_charge_name">Service Charge Name <font color='#E90C0C'>*</font></string>
@@ -191,6 +194,8 @@
     <string name="note_title">Note Title <font color='#E90C0C'>*</font></string>
     <string name="create">Create</string>
     <string name="create_notes">Create Notes</string>
+    <string name="create_notes_plus">+ Add New Note</string>
+    <string name="tv_addnew_discount_plus">+ Add New Discount</string>
     <string name="tax_rates_can_be_applied_to_specific_items_and_will_be_automatically_calculated_at_purchase">Tax rates can be applied to specific items and will be automatically calculated at purchase.</string>
     <string name="service_charge_can_be_applied_to_specific_items_and_will_be_automatically_calculated_at_purchase">Service charge can be applied to specific items and will be automatically calculated at purchase.</string>
     <string name="create_discount">Create Discount</string>
@@ -201,6 +206,7 @@
     <string name="leave_the_discount_amount_blank_to_enter_at_the_time_of_sale_n_discount_are_applied_to_the_ticket_before_tax_is_calculated">Leave the discount amount blank to enter at the time of sale.<br />Discount are applied to the ticket before tax is calculated.</string>
     <string name="this_should_only_be_used_for_manufacture_discount_and_instant_rebates_learn_more">This should only be used for manufacture discount and instant rebates. <b>Learn More.</b></string>
     <string name="tv_new_tax">New Tax</string>
+    <string name="tv_new_tax_add">Add New Tax</string>
     <string name="tv_update_tax">Update Tax</string>
     <string name="tv_enable_default_tax">Enable Default Tax</string>
     <string name="tv_sales_tax">Sales Tax</string>
@@ -212,6 +218,7 @@
     <string name="tv_all_items">All Items</string>
     <string name="tv_add_a_new_tax">Add a New Tax</string>
     <string name="tv_add_a_new_tip">Add a New Tip</string>
+    <string name="tv_add_a_new_tip_plus">+ Add a New Tip</string>
     <string name="tv_entertainment_tip">Entertainment Tip</string>
     <string name="tv_tip_name">Tip Name <font color='#E90C0C'>*</font></string>
     <string name="tv_entertainment">Entertainment</string>

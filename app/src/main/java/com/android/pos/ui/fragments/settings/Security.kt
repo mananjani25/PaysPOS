@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.android.pos.databinding.FragmentSecurityBinding
 
+
 class Security : Fragment() {
     private lateinit var binding: FragmentSecurityBinding
     override fun onCreateView(
