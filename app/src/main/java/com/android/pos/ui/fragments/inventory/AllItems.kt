@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.R
 import com.android.pos.data.entities.TbItem
 import com.android.pos.databinding.FragmentItemsBinding
+
 import com.android.pos.ui.adapter.ItemListAdapter
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.ProgressUtils
@@ -35,7 +36,7 @@ class AllItems : Fragment() {
     private var deletePos: Int = -1
     private var deleteObj: TbItem? = null
     private lateinit var adapter: ItemListAdapter
-    private lateinit var binding: FragmentItemsBinding
+    private lateinit var binding: com.android.pos.databinding.FragmentItemsBinding
     private val viewModel by viewModels<ItemsViewModel>()
 
     var dragFrom = -1
