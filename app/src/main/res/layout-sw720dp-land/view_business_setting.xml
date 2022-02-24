@@ -19,7 +19,7 @@
             android:id="@+id/linear_business_items"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@{model.selected ? @color/bg_color:@color/strokeColor}"
+            android:background="@{model.selected ? @color/bg_color:@color/backgroundColor}"
             android:orientation="horizontal"
             android:paddingVertical="@dimen/_2sdp">
 
@@ -48,6 +48,6 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="@color/cool_grey" />
+            android:background="@color/view" />
     </androidx.appcompat.widget.LinearLayoutCompat>
 </layout>

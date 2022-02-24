@@ -9,7 +9,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.widget.AppCompatImageView
-import androidx.core.widget.addTextChangedListener
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -23,9 +22,9 @@ import com.android.pos.data.remote.Constants.DIALOG_KEY
 import com.android.pos.data.remote.Constants.DIALOG_KEY_TAX
 import com.android.pos.data.remote.Constants.INCLUDE_TAX
 import com.android.pos.data.remote.Constants.KEY
-import com.android.pos.data.remote.Constants.SETTING_KEY
 import com.android.pos.databinding.DialogCreateNewTaxBinding
 import com.android.pos.utils.AlertUtils
+import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.extensions.getNavigationResultLiveData
 import com.android.pos.utils.extensions.liveSnackBar
@@ -103,14 +102,17 @@ class CreateTax : Fragment() {
             override fun afterTextChanged(s: Editable?) {
                 if (binding.swtTaxType.text == "Percentage") {
                     val temp_rate = s.toString()
-                    if (temp_rate.toInt() > 100) {
-                        AlertUtils.showCustomAlertWithListenerWithOK(
-                            requireContext(),
-                            "Please Enter Percentage less than or Equal to 100"
-                        ) { _, _ ->
-                            binding.edtAmount.setText("")
+                    if(temp_rate.isNotEmpty()){
+                        if (temp_rate.toInt() > 100) {
+                            AlertUtils.showCustomAlertWithListenerWithOK(
+                                requireContext(),
+                                "Please Enter Percentage less than or Equal to 100"
+                            ) { _, _ ->
+                                binding.edtAmount.setText("")
+                            }
                         }
                     }
+
                 }
             }
 
@@ -120,7 +122,13 @@ class CreateTax : Fragment() {
         navigate()
 
         binding.header.txtSave.setOnClickListener {
-            viewModel.submit()
+
+            var rate = binding.edtAmount.toString()
+            var rate_double= 0.0
+            if(rate.isNotEmpty()){
+                rate_double = MethodUtils.roundOffAmountDouble(rate.toDouble())
+            }
+            viewModel.submit(rate_double)
         }
 
         val callback: OnBackPressedCallback =

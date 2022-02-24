@@ -142,7 +142,6 @@
                             android:imeOptions="actionNext"
                             android:inputType="number"
                             android:paddingStart="@dimen/_10sdp"
-                            android:text="@={``+ viewModel.createTaxDetails.rate}"
                             android:textColor="@color/txtColor"
                             android:textColorHint="@color/hintColor"
                             android:textSize="@dimen/_6mdpi" />
