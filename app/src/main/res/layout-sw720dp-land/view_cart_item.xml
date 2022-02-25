@@ -43,7 +43,7 @@
                         android:layout_gravity="start"
                         android:gravity="start"
                         android:text="@{model.name}"
-                        android:textColor="@color/drawerBack"
+                        android:textColor="@color/txtColor"
                         android:textSize="@dimen/_5mdpi"
                         tools:text="Item" />
 
@@ -72,7 +72,7 @@
                     android:layout_weight="1.3"
                     android:maxLines="1"
                     android:text="@{`x `+model.itemQuantity}"
-                    android:textColor="@color/color88"
+                    android:textColor="@color/hint_color"
                     android:textSize="@dimen/_5mdpi"
                     tools:text="x 10"
                     android:gravity="end"
@@ -94,7 +94,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="end"
                         android:gravity="end"
-                        android:textColor="@color/drawerBack"
+                        android:textColor="@color/txtColor"
                         android:textSize="@dimen/_5sdp"
                         tools:text="$20.00" />
 
@@ -107,7 +107,7 @@
                         android:layout_marginTop="@dimen/_2sdp"
                         android:gravity="start"
                         android:visibility="gone"
-                        android:textColor="@color/colorRed"
+                        android:textColor="@color/btnColor"
                         android:textSize="@dimen/_5mdpi"
                         tools:text="" />
 

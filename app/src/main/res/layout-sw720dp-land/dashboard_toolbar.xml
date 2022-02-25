@@ -8,7 +8,7 @@
         android:id="@+id/relParent"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/white"
+        android:background="@color/bg_color"
         android:orientation="horizontal">
 
         <androidx.appcompat.widget.LinearLayoutCompat
@@ -95,7 +95,7 @@
                 android:imeOptions="actionDone"
                 android:inputType="text"
                 android:textColor="@color/black"
-                android:textColorHint="@color/colorC4"
+                android:textColorHint="@color/hint_color"
                 android:textSize="@dimen/_5mdpi" />
 
 

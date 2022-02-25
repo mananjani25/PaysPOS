@@ -91,7 +91,7 @@
                 android:layout_marginRight="@dimen/_5sdp"
                 android:text="@string/start_date_amp_time"
                 android:textColor="@color/txtColor"
-                android:textSize="@dimen/_5mdpi" />
+                android:textSize="@dimen/_6mdpi" />
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -134,7 +134,7 @@
                 android:layout_marginRight="@dimen/_5sdp"
                 android:text="@string/end_date_amp_time"
                 android:textColor="@color/txtColor"
-                android:textSize="@dimen/_5mdpi" />
+                android:textSize="@dimen/_6mdpi" />
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -174,7 +174,7 @@
                 android:layout_height="match_parent"
                 android:layout_gravity="center_vertical"
                 android:layout_marginStart="@dimen/_5sdp"
-                android:background="@drawable/border_with_field"
+                android:background="@drawable/background_square_border_grey"
                 android:orientation="horizontal">
 
 
@@ -203,7 +203,7 @@
                 android:layout_height="match_parent"
                 android:layout_marginLeft="@dimen/_10sdp"
                 android:layout_marginRight="@dimen/_10sdp"
-                android:background="@drawable/border_with_field"
+                android:background="@drawable/background_square_border_grey"
                 android:drawableStart="@drawable/ic_search"
                 android:drawablePadding="@dimen/_5sdp"
                 android:hint="@string/search_name"

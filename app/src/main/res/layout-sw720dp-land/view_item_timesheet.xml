@@ -57,7 +57,7 @@
                 android:layout_weight="1"
                 android:gravity="center"
                 android:text="@{itemSheetModel.totalWage}"
-                android:textColor="@color/txtColor"
+                android:textColor="@color/btnColor"
                 android:textSize="@dimen/_5mdpi" />
 
             <androidx.appcompat.widget.AppCompatTextView

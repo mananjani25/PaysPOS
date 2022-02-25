@@ -15,7 +15,7 @@
             android:id="@+id/llCartMenu"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/color"
+            android:background="@color/bg_color"
             android:orientation="horizontal">
 
             <androidx.appcompat.widget.AppCompatTextView

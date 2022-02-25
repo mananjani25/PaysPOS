@@ -1354,79 +1354,79 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
     private fun setVenueData() {
         viewModel.venueDataLocal().observe(
-            viewLifecycleOwner,
-            {
-                when (it.status) {
-                    Status.SUCCESS -> {
+            viewLifecycleOwner
+        ) {
+            when (it.status) {
+                Status.SUCCESS -> {
 
-                        val tbCategory = it.data
-                        if (tbCategory != null) {
+                    val tbCategory = it.data
+                    if (tbCategory != null) {
 
-                            categoryList1 = tbCategory as MutableList<CategoryWithInventory>
+                        categoryList1 = tbCategory as MutableList<CategoryWithInventory>
 
-                            tabList.clear()
-                            for (i in 0 until categoryList1.size) {
+                        tabList.clear()
+                        for (i in 0 until categoryList1.size) {
 
-                                if (i == 0) {
-                                    tabList.add(
-                                        CategoryTabModel(
-                                            categoryList1[i].category.id,
-                                            categoryList1[i].category.name ?: "",
-                                            true,
-                                            0
-                                        )
+                            if (i == 0) {
+                                tabList.add(
+                                    CategoryTabModel(
+                                        categoryList1[i].category.id,
+                                        categoryList1[i].category.name ?: "",
+                                        true,
+                                        0
                                     )
-                                } else {
-                                    tabList.add(
-                                        CategoryTabModel(
-                                            categoryList1[i].category.id,
-                                            categoryList1[i].category.name ?: "",
-                                            false,
-                                            0
-                                        )
-                                    )
-                                }
-                            }
-
-                            if (categoryList1.isNotEmpty()) {
-
-                                categoryTabAdapter1?.addAll(tabList)
-
-                                itemList1.clear()
-                                itemList1.add(
-                                    0,
-                                    TbItem()
                                 )
-                                categoryList1[0].inventoryLists?.filter {
-                                    it!!.isHide
-                                }?.let { it1 ->
-                                    itemList1.addAll(it1)
-                                }
-
-                                searchCategory()
-                                categoryItemAdapter1?.addAll(itemList1)
-
+                            } else {
+                                tabList.add(
+                                    CategoryTabModel(
+                                        categoryList1[i].category.id,
+                                        categoryList1[i].category.name ?: "",
+                                        false,
+                                        0
+                                    )
+                                )
                             }
-
                         }
 
-                        ProgressUtils.dismissProgressDialog()
+                        if (categoryList1.isNotEmpty()) {
 
-                        if (!prefProvider.getValue(LAYOUT_ORIENTATION,"").isNullOrEmpty()){
-                            if (prefProvider.getValue(LAYOUT_ORIENTATION, "") == "0")
-                                horizontalTabList()
-                            else
-                                verticalTabList()
+                            categoryTabAdapter1?.addAll(tabList)
+
+                            itemList1.clear()
+                            itemList1.add(
+                                0,
+                                TbItem()
+                            )
+                            categoryList1[0].inventoryLists?.filter {
+                                it!!.isHide
+                            }?.let { it1 ->
+                                itemList1.addAll(it1)
+                            }
+
+                            searchCategory()
+                            categoryItemAdapter1?.addAll(itemList1)
+
                         }
 
                     }
-                    Status.ERROR ->
-                        ProgressUtils.dismissProgressDialog()
 
-                    Status.LOADING -> ProgressUtils.showProgressDialog(requireActivity())
+                    ProgressUtils.dismissProgressDialog()
+
+                    if (!prefProvider.getValue(LAYOUT_ORIENTATION, "").isNullOrEmpty()) {
+                        if (prefProvider.getValue(LAYOUT_ORIENTATION, "") == "0")
+                            horizontalTabList()
+                        else
+                            verticalTabList()
+                    }
 
                 }
-            })
+                Status.ERROR ->
+                    ProgressUtils.dismissProgressDialog()
+
+                Status.LOADING -> ProgressUtils.showProgressDialog(requireActivity())
+
+            }
+        }
 
     }
 
