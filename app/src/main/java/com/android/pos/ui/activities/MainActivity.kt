@@ -2,8 +2,7 @@ package com.android.pos.ui.activities
 
 import android.Manifest
 import android.app.Dialog
-import android.content.ClipData
-import android.content.Intent
+import android.content.*
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
@@ -32,6 +31,7 @@ import com.android.pos.databinding.ParentActivityBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.di.RolePermission
 import com.android.pos.ui.fragments.settings.hardware.Hardware
+import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.FileUtils
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.extensions.alert
@@ -64,13 +64,46 @@ class MainActivity : BaseScannerActivity() {
     @Inject
     lateinit var repo: UserRepository
     private lateinit var mFirebaseAnalytics: FirebaseAnalytics
+    var broadcastReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            AlertUtils.showCustomAlertWithYesNoListener(
+                applicationContext,
+                "you are clocked out in different System.\n you want to clock out forcefully in your System."
+            ) { _, _ ->
+                clockoutFromSystem()
+            }
+        }
 
+    }
+    private fun clockoutFromSystem() {
+        prefProvider.setValueInt(Constants.EMPLOYEE_ID, 0)
+        prefProvider.setValue(Constants.EMPLOYEE_NAME, "")
+        prefProvider.setValue(
+            Constants.EMPLOYEE_ROLE,
+            ""
+        )
+        prefProvider.setValueInt(
+            Constants.EMPLOYEE_ROLE_ID,
+            0
+        )
+        prefProvider.setValue(Constants.PASSCODE, "")
+        var bundle: Bundle = Bundle()
+        bundle.putBoolean("isSwap", true)
+        bundle.putBoolean("isDashboard", false)
+        bundle.putBoolean("isExit", true)
+        navController?.navigate(R.id.action_global_login, bundle)
+
+
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        unregisterReceiver(broadcastReceiver)
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
-
-
-
+        registerReceiver(broadcastReceiver, IntentFilter(Constants.SEND_CLOCKOUT_NOTIFICATION))
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
             window.statusBarColor = getColor(R.color.txtColorGray)

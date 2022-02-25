@@ -3,7 +3,7 @@
     <string name="PREF_BARCODE_SCANNER">BarcodeScannerPrefs</string>
     <string name="tv_pos">POS</string>
     <string name="tv_Info">Enterprise Cloud Point of Sale</string>
-    <string name="tv_hint_email">Email Address<font color='#E90C0C'>*</font></string>
+    <string name="tv_hint_email">Email Address <font color='#E90C0C'>*</font></string>
     <string name="tv_hint_email_">Email Address</string>
     <string name="tv_hint_password">Password <font color='#E90C0C'>*</font></string>
     <string name="tv_login">Login</string>

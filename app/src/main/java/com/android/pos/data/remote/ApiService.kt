@@ -109,7 +109,10 @@ interface ApiService {
     suspend fun userLogIn(@FieldMap options: HashMap<String, String>): LogInResponse
 
     @GET(LOGIN_TERMINAL)
-    suspend fun getDefaultTerminal(@Query("uniq_id") uniq_id: String?): TerminalResponse
+    suspend fun getDefaultTerminal(
+        @Query("uniq_id") uniq_id: String?,
+        @Query("device_token") device_token: String
+    ): TerminalResponse
 
 
     @FormUrlEncoded

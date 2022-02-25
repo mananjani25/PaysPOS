@@ -45,7 +45,7 @@ class LoginViewModel @Inject constructor(
     val showProgress: LiveData<Event<Boolean>> = _showProgress
 
 
-    fun submit() {
+    fun submit(device_token: String) {
 
         if (TextUtils.isEmpty(loginDetails.value?.emailAddress?.trim())) {
             _snackbarText.value = Event(R.string.email_validate)
@@ -84,7 +84,7 @@ class LoginViewModel @Inject constructor(
                                     }
                                 }
 
-                                defaultTerminalCall()
+                                defaultTerminalCall(device_token)
 
 
                             } else {
@@ -111,14 +111,16 @@ class LoginViewModel @Inject constructor(
 
     }
 
-    private suspend fun defaultTerminalCall() {
+    private suspend fun defaultTerminalCall(device_token: String) {
 
         Log.e(TERMINAL_ID, prefProvider.getValue(Constants.UNIQUE_ID, ""))
-
+//        qwerty123
+//        d219617861d4ce4b
+        var unique_id = prefProvider.getValue(Constants.UNIQUE_ID, "")
         viewModelScope.launch {
             delay(1000)
             val defaultTerminal =
-                userRepository.getDefaultTerminal("qwerty123")
+                userRepository.getDefaultTerminal(unique_id, device_token)
             when (defaultTerminal.status) {
                 Status.SUCCESS -> {
 

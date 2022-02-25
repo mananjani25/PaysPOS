@@ -40,6 +40,7 @@ class Passcode : Fragment() {
     var isDashboard: Boolean = false
     var isClockOut: Boolean = false
     var isSwap: Boolean = false
+    var isExit: Boolean = false
     var validationmsg: String = ""
     var selectedList: ArrayList<TextView> = arrayListOf()
 
@@ -55,7 +56,7 @@ class Passcode : Fragment() {
         val callback: OnBackPressedCallback =
             object : OnBackPressedCallback(true /* enabled by default */) {
                 override fun handleOnBackPressed() {
-                    if (isSwap || isDashboard) {
+                    if ((isSwap || isDashboard) && !isExit) {
                         findNavController().navigateUp()
                     } else {
                         (requireActivity() as MainActivity).finish()
@@ -70,6 +71,7 @@ class Passcode : Fragment() {
         binding.passcodeViewModel = viewModel
         isDashboard = arguments?.getBoolean("isDashboard")!!
         isSwap = arguments?.getBoolean("isSwap")!!
+        isExit = arguments?.getBoolean("isExit")!!
 
         if (isSwap) {
             binding.tvWelcomeTag.text = getString(R.string.tv_clock_in)
@@ -317,7 +319,7 @@ class Passcode : Fragment() {
 
         })
         binding.Cancel.setOnClickListener {
-            if (isSwap || isDashboard) {
+            if ((isSwap || isDashboard) && !isExit) {
                 findNavController().navigateUp()
             } else {
                 (requireActivity() as MainActivity).finish()
