@@ -29,7 +29,7 @@
 
             <include
                 android:id="@+id/header"
-                layout="@layout/view_header_toolbar" />
+                layout="@layout/gray_button_toolbar" />
 
             <View
                 android:layout_width="match_parent"
@@ -101,7 +101,9 @@
                     <androidx.appcompat.widget.LinearLayoutCompat
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal">
+                        android:orientation="horizontal"
+
+                        android:background="@drawable/background_square_border_grey">
 
                         <androidx.appcompat.widget.AppCompatTextView
                             style="@style/CustomFontSemiBold"
@@ -109,23 +111,23 @@
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
                             android:layout_weight="1"
-                            android:padding="@dimen/_5sdp"
+                            android:padding="@dimen/_9sdp"
                             android:text="@string/service_charge_name"
                             android:textColor="@color/txtColor"
-                            android:textSize="@dimen/_5mdpi" />
+                            android:textSize="@dimen/text_size_medium" />
 
                         <androidx.appcompat.widget.AppCompatEditText
                             style="@style/CustomFontSemiBold"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_weight="1"
+                            android:layout_weight="0.2"
                             android:background="@null"
                             android:gravity="end"
                             android:digits="@string/disable_emoji_string"
                             android:hint="@string/service_charge"
                             android:imeOptions="actionNext"
                             android:inputType="textVisiblePassword"
-                            android:padding="@dimen/_5sdp"
+                            android:padding="@dimen/_9sdp"
                             android:text="@={viewModel.createServiceChargeDetails.name}"
                             android:textColor="@color/txtColor"
                             android:textColorHint="@color/hintColor"
@@ -141,7 +143,8 @@
                     <androidx.appcompat.widget.LinearLayoutCompat
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal">
+                        android:orientation="horizontal"
+                        android:background="@drawable/background_square_border_grey">
 
                         <androidx.appcompat.widget.AppCompatTextView
                             style="@style/CustomFontSemiBold"
@@ -149,24 +152,22 @@
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
                             android:layout_weight="1"
-                            android:padding="@dimen/_5sdp"
+                            android:padding="@dimen/_9sdp"
                             android:text="@string/percentage"
                             android:textColor="@color/txtColor"
-                            android:textSize="@dimen/_5mdpi" />
+                            android:textSize="@dimen/text_size_medium" />
 
                         <androidx.appcompat.widget.AppCompatEditText
                             style="@style/CustomFontSemiBold"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
-                            android:layout_weight="1"
+                            android:layout_weight="0.2"
                             android:background="@null"
                             android:gravity="end"
                             android:digits="@string/disable_emoji_string"
                             android:imeOptions="actionDone"
                             android:inputType="numberDecimal"
-                            android:paddingStart="@dimen/_20sdp"
-                            android:paddingTop="@dimen/_5sdp"
-                            android:paddingBottom="@dimen/_5sdp"
+                            android:padding="@dimen/_9sdp"
                             android:text="@={``+viewModel.createServiceChargeDetails.percentage}"
                             android:textColor="@color/txtColor"
                             android:textColorHint="@color/hintColor"
@@ -176,7 +177,6 @@
                             android:id="@+id/tvSymbolPer"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginLeft="@dimen/_5sdp"
                             android:layout_marginRight="@dimen/_5sdp"
                             android:fontFamily="@font/sf_pro_display_semibold"
                             android:text="@string/percentage_symbol"

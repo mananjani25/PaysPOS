@@ -32,7 +32,7 @@
                 android:layout_weight="9.5"
                 android:padding="@dimen/_5sdp"
                 android:text="@{model.title}"
-                android:textColor="@{model.selected ? @color/btnColor:@color/txtColor}"
+                android:textColor="@{model.selected ? @color/btnColor:@color/white}"
                 android:textSize="@{model.selected ? @dimen/_6mdpi:@dimen/_5mdpi}"
                  />
 
@@ -42,7 +42,7 @@
                 android:layout_gravity="center_vertical"
                 android:layout_weight="0.6"
                 android:padding="@dimen/_3sdp"
-                android:src="@drawable/ic_play" />
+                android:src="@drawable/ic_play"/>
         </LinearLayout>
 
         <View

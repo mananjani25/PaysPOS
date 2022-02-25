@@ -191,6 +191,7 @@
     <string name="tip_percentage">Tip Percentage <font color='#E90C0C'>*</font></string>
     <string name="tax_rate">Tax Rate <font color='#E90C0C'>*</font></string>
     <string name="create_note">Create Note</string>
+    <string name="add_new_note">Add New Note</string>
     <string name="update_note">Update Note</string>
     <string name="note_title">Note Title <font color='#E90C0C'>*</font></string>
     <string name="create">Create</string>

@@ -42,12 +42,12 @@ class CreateDiscount : Fragment() {
         isEdit = arguments?.getBoolean("isEdit")!!
         binding.tvSymbolPer.visibility = View.VISIBLE
 
-        binding.txtSave.text = getString(R.string.save)
-        binding.txtTitle.text = getString(R.string.add_new_discount)
+        binding.header.txtSave.text = getString(R.string.save)
+        binding.header.txtTitle.text = getString(R.string.add_new_discount)
 
         if (isEdit) {
-            binding.txtSave.text = getString(R.string.update)
-            binding.txtTitle.text = getString(R.string.update_discount)
+            binding.header.txtSave.text = getString(R.string.update)
+            binding.header.txtTitle.text = getString(R.string.update_discount)
             discountData = arguments?.getParcelable("discountObject")!!
 
             viewModel.setDiscountData(discountData)
@@ -91,11 +91,11 @@ class CreateDiscount : Fragment() {
     }
 
     private fun onCLick() {
-        binding.imgBack.setOnClickListener {
+        binding.header.imgBack.setOnClickListener {
             backPressManage()
         }
 
-        binding.txtSave.setOnClickListener {
+        binding.header.txtSave.setOnClickListener {
             viewModel.submit()
         }
     }
