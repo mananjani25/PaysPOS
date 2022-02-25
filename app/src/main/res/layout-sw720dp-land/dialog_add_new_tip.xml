@@ -39,22 +39,23 @@
                 android:layout_marginEnd="@dimen/_50sdp"
                 android:layout_marginBottom="@dimen/_10sdp"
                 android:orientation="vertical">
+
                 <androidx.appcompat.widget.LinearLayoutCompat
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/_5sdp"
-                    android:background="@drawable/border_with_field"
+                    android:background="@drawable/background_square_border_grey"
                     android:orientation="horizontal">
 
                     <androidx.appcompat.widget.AppCompatEditText
 
                         style="@style/CustomFontSemiBold"
                         android:layout_width="match_parent"
-                        android:layout_height="@dimen/_25sdp"
+                        android:layout_height="wrap_content"
                         android:background="@null"
                         android:digits="@string/disable_emoji_string"
                         android:hint="@string/tv_tip_name"
                         android:imeOptions="actionNext"
+                        android:padding="@dimen/_9sdp"
                         android:inputType="textVisiblePassword"
                         android:paddingStart="@dimen/_10sdp"
                         android:text="@={viewModel.createTipDetails.name}"
@@ -63,21 +64,23 @@
                         android:textSize="@dimen/_6mdpi" />
 
                 </androidx.appcompat.widget.LinearLayoutCompat>
+
                 <androidx.appcompat.widget.LinearLayoutCompat
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/_5sdp"
-                    android:background="@drawable/border_with_field"
+                    android:background="@drawable/background_square_border_grey"
                     android:orientation="horizontal">
 
                     <androidx.appcompat.widget.AppCompatEditText
                         android:id="@+id/edt_tip"
                         style="@style/CustomFontSemiBold"
                         android:layout_width="match_parent"
-                        android:layout_height="@dimen/_25sdp"
+                        android:layout_height="wrap_content"
                         android:background="@null"
+                        android:padding="@dimen/_9sdp"
                         android:digits="@string/disable_emoji_string"
-                        android:hint="@string/percentage_withsymbol"
+                        android:hint="Add Tip(%)"
                         android:imeOptions="actionNext"
                         android:inputType="textVisiblePassword"
                         android:paddingStart="@dimen/_10sdp"
@@ -87,8 +90,6 @@
                         android:textSize="@dimen/_6mdpi" />
 
                 </androidx.appcompat.widget.LinearLayoutCompat>
-
-
 
 
             </androidx.appcompat.widget.LinearLayoutCompat>

@@ -33,7 +33,9 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:background="@color/cool_grey" />
+                android:background="@color/view" />
+
+
 
             <androidx.appcompat.widget.LinearLayoutCompat
                 android:layout_width="match_parent"
@@ -43,6 +45,10 @@
                 android:layout_marginEnd="@dimen/_50sdp"
                 android:layout_marginBottom="@dimen/_10sdp"
                 android:orientation="vertical">
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/view" />
 
 
 
@@ -63,19 +69,18 @@
                         android:padding="@dimen/_5sdp"
                         android:text="@string/tv_enable_default_tax"
                         android:textColor="@color/txtColor"
-                        android:textSize="@dimen/_5mdpi" />
+                        android:textSize="@dimen/_7sdp" />
 
 
                     <com.google.android.material.switchmaterial.SwitchMaterial
                         android:id="@+id/swtEnableTax"
                         style="@style/AppTheme"
-                        android:layout_width="0dp"
+                        android:layout_width="@dimen/_20sdp"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        android:layout_weight="1"
-                        android:paddingEnd="@dimen/_32sdp"
-                        android:scaleX="0.7"
-                        android:scaleY="0.8"
+                        android:scaleX="1.5"
+                        android:scaleY="1.5"
+                        android:layout_marginRight="@dimen/_15sdp"
                         android:onCheckedChanged="@{(button, bool)-> createTaxFragment.enableTax(bool)}"
                         android:showText="false"
                         android:thumb="@drawable/custom_thumb_printer_active_switch"
@@ -91,20 +96,21 @@
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
-                    android:background="@color/cool_grey" />
+                    android:background="@color/view" />
 
                 <androidx.appcompat.widget.LinearLayoutCompat
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/_5sdp"
-                    android:background="@drawable/border_with_field"
+                    android:background="@drawable/background_square_border_grey"
                     android:orientation="horizontal">
 
                     <androidx.appcompat.widget.AppCompatEditText
                         android:id="@+id/etName"
                         style="@style/CustomFontSemiBold"
                         android:layout_width="match_parent"
-                        android:layout_height="@dimen/_25sdp"
+                        android:layout_height="wrap_content"
+                        android:padding="@dimen/_9sdp"
                         android:background="@null"
                         android:digits="@string/disable_emoji_string"
                         android:hint="@string/add_tax_name"
@@ -123,7 +129,7 @@
                     android:layout_gravity="center_vertical"
                     android:gravity="center_vertical"
                     android:layout_marginTop="@dimen/_10sdp"
-                    android:background="@drawable/border_with_field"
+                    android:background="@drawable/background_square_border_grey"
                     android:orientation="horizontal">
                     <androidx.appcompat.widget.LinearLayoutCompat
                         android:layout_width="0dp"
@@ -135,7 +141,8 @@
                             android:id="@+id/edtAmount"
                             style="@style/CustomFontSemiBold"
                             android:layout_width="match_parent"
-                            android:layout_height="@dimen/_25sdp"
+                            android:layout_height="wrap_content"
+                            android:padding="@dimen/_9sdp"
                             android:background="@null"
                             android:digits="@string/disable_emoji_string"
                             android:hint="@string/add_tax__percentage"
@@ -151,16 +158,18 @@
                     <com.google.android.material.switchmaterial.SwitchMaterial
                         android:id="@+id/swtTaxType"
                         style="@style/AppTheme"
-                        android:layout_width="0dp"
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        android:layout_weight="1.5"
-                        android:scaleX="0.7"
-                        android:scaleY="0.8"
+                        android:scaleX="1.5"
+                        android:scaleY="1.5"
                         android:textSize="@dimen/_5sdp"
                         android:text="Percentage"
+                        android:layout_marginRight="@dimen/_17sdp"
                         android:gravity="center_vertical"
                         android:checked="true"
+                        android:textColor="@color/txtColor"
+
                         android:onCheckedChanged="@{(button, bool)-> createTaxFragment.taxType(bool)}"
                         android:showText="true"
                         android:thumb="@drawable/custom_thumb_printer_active_switch"
@@ -214,10 +223,6 @@
                         app:srcCompat="@drawable/ic_play" />
                 </androidx.appcompat.widget.LinearLayoutCompat>
 
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:background="@color/cool_grey" />
 
 
                 <androidx.appcompat.widget.LinearLayoutCompat
@@ -238,13 +243,13 @@
                         android:padding="@dimen/_5sdp"
                         android:text="@string/tv_apply_tax_to"
                         android:textColor="@color/txtColor"
-                        android:textSize="@dimen/_5mdpi" />
+                        android:textSize="@dimen/_7mdpi" />
                 </androidx.appcompat.widget.LinearLayoutCompat>
 
                 <View
                     android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:background="@color/cool_grey" />
+                    android:layout_height="0.5dp"
+                    android:background="@color/view" />
 
                 <androidx.appcompat.widget.LinearLayoutCompat
                     android:layout_width="match_parent"
@@ -280,7 +285,7 @@
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
-                    android:background="@color/cool_grey" />
+                    android:background="@color/view" />
 
                 <androidx.appcompat.widget.LinearLayoutCompat
                     android:id="@+id/llAllItemsDialog"
@@ -324,7 +329,7 @@
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
-                    android:background="@color/cool_grey" />
+                    android:background="@color/view" />
 
 
             </androidx.appcompat.widget.LinearLayoutCompat>

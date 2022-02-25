@@ -41,7 +41,7 @@
         android:paddingVertical="@dimen/_10sdp"
         android:text="@string/save"
         android:textColor="@color/white"
-        android:textSize="@dimen/_6mdpi" />
+        android:textSize="@dimen/_8sdp" />
 
 </RelativeLayout>
 

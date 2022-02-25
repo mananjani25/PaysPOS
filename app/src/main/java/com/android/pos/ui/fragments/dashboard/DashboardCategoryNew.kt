@@ -1412,10 +1412,12 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
                         ProgressUtils.dismissProgressDialog()
 
-                        if (prefProvider.getValue(LAYOUT_ORIENTATION, "") == "0")
-                            horizontalTabList()
-                        else
-                            verticalTabList()
+                        if (!prefProvider.getValue(LAYOUT_ORIENTATION,"").isNullOrEmpty()){
+                            if (prefProvider.getValue(LAYOUT_ORIENTATION, "") == "0")
+                                horizontalTabList()
+                            else
+                                verticalTabList()
+                        }
 
                     }
                     Status.ERROR ->
