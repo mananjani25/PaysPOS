@@ -9,6 +9,7 @@
 
     <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent"
+        android:background="@color/bg_color"
         android:layout_height="match_parent"
         android:orientation="vertical">
 
@@ -22,9 +23,8 @@
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
                 android:layout_gravity="center"
-                android:background="?attr/selectableItemBackground"
                 android:padding="@dimen/_6sdp"
-                app:srcCompat="@drawable/ic_cancel_black" />
+                app:srcCompat="@drawable/ic_arrow_back" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/txtAmount"

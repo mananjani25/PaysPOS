@@ -27,7 +27,7 @@
                 android:visibility="gone"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:background="@color/cool_grey" />
+                android:background="@color/view" />
 
             <androidx.appcompat.widget.LinearLayoutCompat
                 android:layout_width="match_parent"
@@ -84,7 +84,7 @@
                 android:visibility="visible"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:background="@color/cool_grey" />
+                android:background="@color/view" />
 
         </androidx.appcompat.widget.LinearLayoutCompat>
 

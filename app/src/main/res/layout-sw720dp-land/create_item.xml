@@ -102,7 +102,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:layout_marginVertical="@dimen/_5sdp"
-                    android:background="@drawable/border_with_field"
+                    android:background="@drawable/background_square_border_grey"
                     android:gravity="center_vertical">
 
                     <androidx.appcompat.widget.AppCompatEditText
@@ -127,7 +127,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:layout_marginVertical="@dimen/_5sdp"
-                    android:background="@drawable/border_with_field"
+                    android:background="@drawable/background_square_border_grey"
                     android:gravity="center_vertical"
                     android:visibility="gone">
 
@@ -152,7 +152,7 @@
                     android:layout_height="match_parent"
                     android:layout_gravity="center_vertical"
                     android:layout_marginVertical="@dimen/_5sdp"
-                    android:background="@drawable/border_with_field"
+                    android:background="@drawable/background_square_border_grey"
                     android:gravity="center_vertical"
                     android:orientation="horizontal">
 
@@ -201,7 +201,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:layout_marginVertical="@dimen/_5sdp"
-                    android:background="@drawable/border_with_field"
+                    android:background="@drawable/background_square_border_grey"
                     android:gravity="center_vertical"
                     android:orientation="horizontal">
 
@@ -377,7 +377,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
                         android:layout_marginVertical="@dimen/_5sdp"
-                        android:background="@drawable/border_with_field"
+                        android:background="@drawable/background_square_border_grey"
                         android:gravity="center_vertical">
 
                         <androidx.appcompat.widget.AppCompatEditText
@@ -409,7 +409,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
                         android:layout_marginVertical="@dimen/_5sdp"
-                        android:background="@drawable/border_with_field"
+                        android:background="@drawable/background_square_border_grey"
                         android:gravity="center_vertical">
 
                         <androidx.appcompat.widget.AppCompatEditText
@@ -441,7 +441,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
                         android:layout_marginVertical="@dimen/_5sdp"
-                        android:background="@drawable/border_with_field"
+                        android:background="@drawable/background_square_border_grey"
                         android:gravity="center_vertical">
 
                         <androidx.appcompat.widget.AppCompatEditText
@@ -589,7 +589,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
                 android:layout_marginVertical="@dimen/_5sdp"
-                android:background="@drawable/border_with_field"
+                android:background="@drawable/background_square_border_grey"
                 android:gravity="center_vertical">
                 <androidx.appcompat.widget.AppCompatEditText
                     android:id="@+id/etDesc"

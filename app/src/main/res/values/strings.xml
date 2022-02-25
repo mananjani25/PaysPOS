@@ -643,6 +643,7 @@
     <string name="items_">Items</string>
     <string name="orders">Orders</string>
     <string name="refunds">Refunds</string>
+    <string name="forgot_password_title">Forgot Password</string>
     <string name="refund">Refund</string>
     <string name="title">Title</string>
     <string name="details">Details</string>

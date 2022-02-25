@@ -41,7 +41,7 @@
                 android:id="@+id/viewLine"
                 android:layout_width="1dp"
                 android:layout_height="match_parent"
-                android:background="@color/cool_grey"
+                android:background="@color/view"
                 android:visibility="gone"/>
 
 

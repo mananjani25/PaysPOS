@@ -1,6 +1,7 @@
 package com.android.pos.ui.adapter
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.data.entities.Modifier
@@ -25,7 +26,11 @@ class OptionAdapter(private val isEdit: Boolean) :
             binding.model = item
             binding.executePendingBindings()
 
-
+            if(bindingAdapterPosition==0){
+                binding.firstViewOoption.visibility= View.VISIBLE
+            }else{
+                binding.firstViewOoption.visibility= View.GONE
+            }
             binding.edtName.addTextChangedListener(EditTextWatcherOption(binding.edtName, item))
             binding.llParent.requestFocus()
             binding.edtName.setText(item.name)

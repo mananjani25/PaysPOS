@@ -671,10 +671,10 @@ class PosRepository @Inject constructor(
             )
 
 
-    fun getEmployeeEmail() =
+    fun getEmployeeEmail(selectedTerminalId: Int) =
         performGetOperationDatabase(databaseQuery = {
             appDatabase.employeeDao()
-                .employeeById(prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0))
+                .employeeById(selectedTerminalId)
         })
 
     fun getTerminalListDatabse() =
