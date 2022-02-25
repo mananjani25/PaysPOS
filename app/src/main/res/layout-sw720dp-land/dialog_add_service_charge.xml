@@ -18,13 +18,13 @@
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/white"
+        android:background="@color/bg_color"
         android:orientation="vertical">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@color/white"
+            android:background="@color/bg_color"
             android:orientation="vertical">
 
             <include
@@ -111,7 +111,7 @@
                             android:layout_weight="1"
                             android:padding="@dimen/_5sdp"
                             android:text="@string/service_charge_name"
-                            android:textColor="@color/viewTextColor"
+                            android:textColor="@color/txtColor"
                             android:textSize="@dimen/_5mdpi" />
 
                         <androidx.appcompat.widget.AppCompatEditText
@@ -127,7 +127,7 @@
                             android:inputType="textVisiblePassword"
                             android:padding="@dimen/_5sdp"
                             android:text="@={viewModel.createServiceChargeDetails.name}"
-                            android:textColor="@color/black"
+                            android:textColor="@color/txtColor"
                             android:textColorHint="@color/hintColor"
                             android:textSize="@dimen/_5mdpi" />
 
@@ -151,7 +151,7 @@
                             android:layout_weight="1"
                             android:padding="@dimen/_5sdp"
                             android:text="@string/percentage"
-                            android:textColor="@color/viewTextColor"
+                            android:textColor="@color/txtColor"
                             android:textSize="@dimen/_5mdpi" />
 
                         <androidx.appcompat.widget.AppCompatEditText
@@ -168,7 +168,7 @@
                             android:paddingTop="@dimen/_5sdp"
                             android:paddingBottom="@dimen/_5sdp"
                             android:text="@={``+viewModel.createServiceChargeDetails.percentage}"
-                            android:textColor="@color/black"
+                            android:textColor="@color/txtColor"
                             android:textColorHint="@color/hintColor"
                             android:textSize="@dimen/_5mdpi" />
 
@@ -180,7 +180,7 @@
                             android:layout_marginRight="@dimen/_5sdp"
                             android:fontFamily="@font/sf_pro_display_semibold"
                             android:text="@string/percentage_symbol"
-                            android:textColor="@color/viewTextColor"
+                            android:textColor="@color/txtColor"
                             android:textSize="@dimen/_5mdpi"
                             android:visibility="visible" />
 

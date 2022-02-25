@@ -25,7 +25,9 @@
 
             <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:background="@color/btnColor"
+                android:padding="@dimen/_5sdp">
 
                 <androidx.appcompat.widget.AppCompatImageView
                     android:id="@+id/imgBack"
@@ -50,7 +52,7 @@
                     android:padding="@dimen/_6sdp"
                     android:text="@string/tv_home"
                     android:textAllCaps="true"
-                    android:textColor="@color/btnColorDark_"
+                    android:textColor="@color/white"
                     android:textSize="@dimen/_6sdp"
                     android:visibility="visible" />
 
@@ -61,8 +63,10 @@
                     android:layout_height="wrap_content"
                     android:layout_centerInParent="true"
                     android:layout_gravity="center"
+                    android:drawableLeft="@drawable/ic_success"
+                    android:drawablePadding="@dimen/_10sdp"
                     android:gravity="center"
-                    android:textColor="@color/purple_500"
+                    android:textColor="@color/white"
                     android:textSize="@dimen/_8mdpi"
                     tools:text="" />
 
