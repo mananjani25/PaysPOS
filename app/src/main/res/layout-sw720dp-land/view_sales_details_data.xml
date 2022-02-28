@@ -25,8 +25,7 @@
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/txtAmtAllocated"
             style="@style/ReportItemText"
-
-            android:text="@{@string/symbole +``+String.format(@string/format,model.amount)}"
+            android:text="@{@string/symbole +``+String.format(@string/format,model.tip)}"
             tools:text="Amount Allocated" />
 
         <androidx.appcompat.widget.AppCompatTextView

@@ -409,6 +409,10 @@ class PaymentViewModel @Inject constructor(
         orderAttributeRequestModel.date = TimeFormatUtils.getCurrentDate()
         if (future_delivery_date.isNotEmpty())
             orderAttributeRequestModel.futureDeliveryDate = future_delivery_date
+
+        if (future_delivery_time.isNotEmpty())
+            orderAttributeRequestModel.futureDeliveryTime = future_delivery_time
+
         if (cartModel.openOrderType.isNotEmpty() && cartModel.openOrderType != null) {
             orderAttributeRequestModel.deliveryType = cartModel.openOrderType
         }
@@ -677,6 +681,10 @@ class PaymentViewModel @Inject constructor(
         orderAttributeRequestModel.date = TimeFormatUtils.getCurrentDate()
         if (future_delivery_date.isNotEmpty())
             orderAttributeRequestModel.futureDeliveryDate = future_delivery_date
+
+        if (future_delivery_time.isNotEmpty())
+            orderAttributeRequestModel.futureDeliveryTime = future_delivery_time
+
         if (cartModel.openOrderType.isNotEmpty() && cartModel.openOrderType != null) {
             orderAttributeRequestModel.deliveryType = cartModel.openOrderType
         }
