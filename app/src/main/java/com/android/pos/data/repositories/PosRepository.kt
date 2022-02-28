@@ -520,12 +520,12 @@ class PosRepository @Inject constructor(
         apiHelperNew.reOrderItemCall(id, oldPos, newPos)
 
 
-    fun getCartList(orderType: String): LiveData<List<CartModel>> {
-        return appDatabase.cartDao().allItem(orderType)
+    fun getCartList(orderType: String,employee_Id:Int): LiveData<List<CartModel>> {
+        return appDatabase.cartDao().allItem(orderType,employee_Id)
     }
 
-    fun getManualSaleList(): LiveData<List<CartModel>> {
-        return appDatabase.cartDao().manualItem
+    fun getManualSaleList(employee_id:Int): LiveData<List<CartModel>> {
+        return appDatabase.cartDao().manualItem(employee_id)
     }
 
     fun getManualCategoryId(): LiveData<TbCategory> {
@@ -537,13 +537,13 @@ class PosRepository @Inject constructor(
         appDatabase.cartDao().add(cartModel)
     }
 
-    suspend fun deleteCart() {
+    suspend fun deleteCart(employee_id: Int) {
 
-        appDatabase.cartDao().delete()
+        appDatabase.cartDao().delete(employee_id)
     }
 
-    suspend fun deleteManualSaleCart() {
-        appDatabase.cartDao().deleteManualSale()
+    suspend fun deleteManualSaleCart(employee_id: Int) {
+        appDatabase.cartDao().deleteManualSale(employee_id)
     }
 
     suspend fun updateModifierSort(allCategories: ArrayList<ModifierSet>) {

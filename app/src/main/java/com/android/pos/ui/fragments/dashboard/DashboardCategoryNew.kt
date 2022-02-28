@@ -60,6 +60,7 @@ import com.android.pos.data.remote.Constants.DINE_INGUEST_SELECTED
 import com.android.pos.data.remote.Constants.DINE_IN_LIST_EDIT
 import com.android.pos.data.remote.Constants.DINE_IN_STATUS
 import com.android.pos.data.remote.Constants.DINE_IN_UPDATE
+import com.android.pos.data.remote.Constants.EMPLOYEE_ID
 import com.android.pos.data.remote.Constants.EMPLOYEE_NAME
 import com.android.pos.data.remote.Constants.EMPLOYEE_ROLE
 import com.android.pos.data.remote.Constants.HORIZONTAL
@@ -658,7 +659,8 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
     private fun addObserver() {
 
-        viewModel.mAllWords(prefProvider.getValue(ORDER_TYPE, "")).observe(
+        viewModel.mAllWords(prefProvider.getValue(ORDER_TYPE, ""),prefProvider.getValueInt(
+            EMPLOYEE_ID,0)).observe(
             requireActivity(), nameObserver
         )
 
@@ -666,7 +668,8 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
     private fun removeObserver() {
 
-        viewModel.mAllWords(prefProvider.getValue(ORDER_TYPE, "")).removeObserver(nameObserver)
+        viewModel.mAllWords(prefProvider.getValue(ORDER_TYPE, ""),prefProvider.getValueInt(
+            EMPLOYEE_ID,0)).removeObserver(nameObserver)
         //  addObserver()
     }
 
