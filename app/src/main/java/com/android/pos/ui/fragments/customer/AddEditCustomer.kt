@@ -155,7 +155,7 @@ class AddEditCustomer : Fragment() {
         binding.chkIsLoyalty.setOnClickListener {
             viewModel.enroll_to_loyalty.value = binding.chkIsLoyalty.isChecked
         }
-        binding.header.txtTitle.text = getString(com.android.pos.R.string.create_customer)
+        binding.header.txtTitle.text = getString(com.android.pos.R.string.add_new_customer)
         binding.header.txtSave.text = getString(com.android.pos.R.string.save)
         if (isEdit) {
             binding.header.txtTitle.text = getString(com.android.pos.R.string.update_customer)
@@ -163,8 +163,8 @@ class AddEditCustomer : Fragment() {
 
             val editModel: TbCustomer? =
                 requireArguments().getParcelable<TbCustomer>(
-                    "dataModel"
-                )
+            "dataModel"
+            )
 
             if (editModel?.id != null) {
                 viewModel.isEditData(isEdit, editModel?.id!!)
