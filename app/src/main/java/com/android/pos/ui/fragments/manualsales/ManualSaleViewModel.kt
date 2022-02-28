@@ -31,7 +31,7 @@ class ManualSaleViewModel @Inject constructor(
     private val TAG = "ManualSaleViewModel"
 
     val serviceCharge = posRepository.serviceChargeList()
-    val cartList = posRepository.getManualSaleList()
+
     val returnedVal = posRepository.getManualCategoryId()
     val activeLoyaltyProgramLiveData = posRepository.getActiveLoyaltyProgramFromDb()
 
@@ -46,7 +46,12 @@ class ManualSaleViewModel @Inject constructor(
     var redeemLoyaltyInfo: RedeemLoyaltyInfo = RedeemLoyaltyInfo()
 
     init {
-        deleteCart()
+        deleteCart(prefProvider.getValueInt(Constants.EMPLOYEE_ID,0))
+    }
+
+
+    public fun cartList(employee_id: Int): LiveData<List<CartModel>> {
+        return posRepository.getManualSaleList(employee_id)
     }
 
     private fun addCart(cartModel: CartModel) {
@@ -55,7 +60,8 @@ class ManualSaleViewModel @Inject constructor(
         }
     }
 
-    fun deleteCart() {
+
+    fun deleteCart(employee_id: Int) {
         viewModelScope.launch {
             totalPrice = 0.0
             subTotalPrice = 0.0
@@ -63,7 +69,7 @@ class ManualSaleViewModel @Inject constructor(
             totalDiscount = 0.0
             totalServiceCharge = 0.0
             totalCount = 0
-            posRepository.deleteManualSaleCart()
+            posRepository.deleteManualSaleCart(employee_id)
 
 
         }
@@ -128,12 +134,12 @@ class ManualSaleViewModel @Inject constructor(
 
                 if (list.isEmpty()) {
                     // delete carts
-                    deleteCart()
+                    deleteCart(prefProvider.getValueInt(Constants.EMPLOYEE_ID,0))
                 }
             } else {
 
                 if (type == DELETE) {
-                    deleteCart()
+                    deleteCart(prefProvider.getValueInt(Constants.EMPLOYEE_ID,0))
                 } else {
                     val cartModel = cartList?.get(0)
                     cartModel?.items = listOf(item)

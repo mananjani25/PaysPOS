@@ -27,6 +27,7 @@ import com.android.pos.data.entities.*
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.ADD
 import com.android.pos.data.remote.Constants.CUSTOMER_NAME
+import com.android.pos.data.remote.Constants.EMPLOYEE_ID
 import com.android.pos.data.remote.Constants.KEY
 import com.android.pos.data.remote.Constants.LOYALTY_ADDED
 import com.android.pos.data.remote.Constants.MANUALSALE
@@ -152,56 +153,57 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
 
     private fun getManualCategoryId() {
 
-        viewModel.returnedVal.observe(viewLifecycleOwner, {
+        viewModel.returnedVal.observe(viewLifecycleOwner) {
 
             if (it != null) {
                 manualCategoryId = it.id
                 manualItemId = it.item_ids[0]
             }
 
-        })
+        }
     }
 
     private fun getLoyaltyPrograms() {
         Log.e("Loyalty", "getLoyaltyPrograms called..")
         viewModel.activeLoyaltyProgram = prefProvider.getActiveLoyaltyData()
-        viewModel.activeLoyaltyProgramLiveData.observe(requireActivity(), {
+        viewModel.activeLoyaltyProgramLiveData.observe(requireActivity()) {
             if (it.data != null) {
                 Log.e("Loyalty", "getLoyaltyPrograms fetched..")
                 prefProvider.saveActiveLoyaltyData(it.data)
                 viewModel.activeLoyaltyProgram = it.data
             }
-        })
+        }
     }
 
     private fun getCartList() {
 
         if (isAdded)
-            viewModel.cartList.observe(requireActivity(), {
-                cartList = it
-                Log.e(TAG, "cartListBeforeTax  ${Gson().toJson(cartList)}")
-                if (cartList?.isNotEmpty()!!) {
-                    cartList?.get(0)?.items?.forEach {
-                        it.taxes = taxList
+            viewModel.cartList(prefProvider.getValueInt(EMPLOYEE_ID, 0))
+                .observe(requireActivity()) {
+                    cartList = it
+                    Log.e(TAG, "cartListBeforeTax  ${Gson().toJson(cartList)}")
+                    if (cartList?.isNotEmpty()!!) {
+                        cartList?.get(0)?.items?.forEach {
+                            it.taxes = taxList
+                        }
+                        cartAdapter.setList(cartList?.get(0)?.items)
+
+                        viewModel.itemCalculation(
+                            cartList?.get(0)?.items,
+                            binding.txtTotalAmount
+                        )
+                    } else {
+
+                        cartAdapter.clearList()
+
+                        viewModel.itemCalculation(
+                            null,
+                            binding.txtTotalAmount
+                        )
                     }
-                    cartAdapter.setList(cartList?.get(0)?.items)
 
-                    viewModel.itemCalculation(
-                        cartList?.get(0)?.items,
-                        binding.txtTotalAmount
-                    )
-                } else {
 
-                    cartAdapter.clearList()
-
-                    viewModel.itemCalculation(
-                        null,
-                        binding.txtTotalAmount
-                    )
                 }
-
-
-            })
     }
 
     private fun getServiceCharge() {
@@ -331,10 +333,13 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
 
                     dashboardViewModel.addCart(mainCartList[0])
 
-                    viewModel.deleteCart()
+                    viewModel.deleteCart(prefProvider.getValueInt(EMPLOYEE_ID,0))
 
                     dashboardViewModel.mAllWords(
-                        prefProvider.getValue(Constants.ORDER_TYPE, "").toString()
+                        prefProvider.getValue(Constants.ORDER_TYPE, "").toString(),
+                        prefProvider.getValueInt(
+                            Constants.EMPLOYEE_ID, 0
+                        )
                     ).removeObserver(nameObserver)
 
                     if (isPayClicked && viewModel.totalPrice != 0.0) {
@@ -400,7 +405,10 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
         binding.txtSave.setOnClickListener {
             if (cartList?.isNotEmpty() == true) {
                 dashboardViewModel.mAllWords(
-                    prefProvider.getValue(Constants.ORDER_TYPE, "").toString()
+                    prefProvider.getValue(Constants.ORDER_TYPE, "").toString(),
+                    prefProvider.getValueInt(
+                        Constants.EMPLOYEE_ID, 0
+                    )
                 ).observe(
                     viewLifecycleOwner, nameObserver
                 )
@@ -418,7 +426,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                     getString(R.string.delete_items_message)
                 ) {
                     positiveButton(getString(R.string.tv_delete)) {
-                        viewModel.deleteCart()
+                        viewModel.deleteCart(prefProvider.getValueInt(EMPLOYEE_ID,0))
                         prefProvider.setValueInt(Constants.CUSTOMER_ID, -1)
                         binding.txtTotalAmount.text = "$0.00"
 
@@ -437,7 +445,10 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
         binding.layoutMenu.txtProducts.setOnClickListener {
             if (cartList?.isNotEmpty() == true) {
                 dashboardViewModel.mAllWords(
-                    prefProvider.getValue(Constants.ORDER_TYPE, "").toString()
+                    prefProvider.getValue(Constants.ORDER_TYPE, "").toString(),
+                    prefProvider.getValueInt(
+                        Constants.EMPLOYEE_ID, 0
+                    )
                 ).observe(
                     viewLifecycleOwner, nameObserver
                 )
@@ -514,7 +525,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
             ) {
                 positiveButton(getString(R.string.tv_delete)) {
                     // Do positive stuff here
-                    viewModel.deleteCart()
+                    viewModel.deleteCart(prefProvider.getValueInt(EMPLOYEE_ID,0))
                     binding.txtTotalAmount.setText("$0.00")
                     //resetCart()
                     dialogMenu()

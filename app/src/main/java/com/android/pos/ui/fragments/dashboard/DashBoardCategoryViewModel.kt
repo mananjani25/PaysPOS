@@ -25,6 +25,7 @@ import com.android.pos.data.remote.Constants.DELETE
 import com.android.pos.data.remote.Constants.DINE_IN
 import com.android.pos.data.remote.Constants.DINE_IN_LIST_EDIT
 import com.android.pos.data.remote.Constants.DINE_IN_UPDATE
+import com.android.pos.data.remote.Constants.EMPLOYEE_ID
 import com.android.pos.data.remote.Constants.IS_PRINTER_QUEUE_ENABLE
 import com.android.pos.data.remote.Constants.SYSTEM_TIMEZONE
 import com.android.pos.data.remote.Constants.UPDATE
@@ -138,8 +139,8 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     fun getItemByProductCode(productCode: String) = posRepository.getItemByProductCode(productCode)
 
-    fun mAllWords(orderType: String): LiveData<List<CartModel>> {
-        return posRepository.getCartList(orderType)
+    fun mAllWords(orderType: String,employee_Id:Int): LiveData<List<CartModel>> {
+        return posRepository.getCartList(orderType,employee_Id)
     }
 
     var serviceChargesList: List<TbServiceCharge> = emptyList()
@@ -165,7 +166,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     fun deleteCart() {
         viewModelScope.launch {
-            posRepository.deleteCart()
+            posRepository.deleteCart(prefProvider.getValueInt(EMPLOYEE_ID,0))
             destroyedList.clear()
         }
     }

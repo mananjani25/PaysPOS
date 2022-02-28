@@ -20,7 +20,6 @@ import com.android.pos.utils.statusUtils.Resource
 import com.android.pos.utils.statusUtils.Status
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
-import retrofit2.Response
 import javax.inject.Inject
 
 
@@ -169,7 +168,7 @@ class OrderCompleteViewModel @Inject constructor(
 
     fun deleteCart() {
         viewModelScope.launch {
-            posRepository.deleteCart()
+            posRepository.deleteCart(prefProvider.getValueInt(Constants.EMPLOYEE_ID,0))
         }
     }
 
