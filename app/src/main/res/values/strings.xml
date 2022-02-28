@@ -753,6 +753,7 @@
     <string name="fixed_value">Fixed Value</string>
     <string name="time_tracking">Time Tracking</string>
     <string name="team_member_time_tracking">Team member time tracking</string>
+    <string name="logout">Logout</string>
 
 
 </resources>

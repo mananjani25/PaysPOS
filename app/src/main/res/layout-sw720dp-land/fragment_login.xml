@@ -53,7 +53,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:background="@drawable/border_with_square_outlinne"
-                    android:minWidth="@dimen/_200sdp"
+                    android:minWidth="@dimen/_250sdp"
                     android:orientation="vertical">
 
                     <androidx.appcompat.widget.AppCompatEditText
@@ -66,7 +66,7 @@
                         android:hint="@string/tv_hint_email"
                         android:imeOptions="actionNext"
                         android:inputType="textEmailAddress"
-                        android:padding="@dimen/_5sdp"
+                        android:padding="@dimen/_9sdp"
                         android:text="@={loginViewModel.loginDetails.emailAddress}"
                         android:textColor="@color/txtColor"
                         android:textColorHint="@color/hintColor"
@@ -78,7 +78,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/_5sdp"
-                    android:background="@drawable/border_with_square_outlinne"
+                    android:background="@drawable/background_square_border_grey"
                     android:minWidth="@dimen/_200sdp"
                     android:orientation="horizontal">
 
@@ -93,10 +93,10 @@
                         android:hint="@string/tv_hint_password"
                         android:imeOptions="actionDone"
                         android:inputType="textPassword"
-                        android:padding="@dimen/_5sdp"
+                        android:padding="@dimen/_9sdp"
                         android:text="@={loginViewModel.loginDetails.password}"
                         android:textColor="@color/txtColor"
-                        android:textColorHint="@color/hint_color_"
+                        android:textColorHint="@color/hintColor"
                         android:textSize="@dimen/_6mdpi" />
 
                     <TextView
@@ -123,8 +123,8 @@
                 android:layout_marginTop="@dimen/_10sdp"
                 android:background="@color/btnColor"
                 android:gravity="center"
-                android:minWidth="@dimen/_200sdp"
-                android:padding="@dimen/_5sdp"
+                android:minWidth="@dimen/_250sdp"
+                android:padding="@dimen/_9sdp"
                 android:text="@string/tv_login"
                 android:textColor="@color/white"
                 android:textSize="@dimen/_7mdpi" />

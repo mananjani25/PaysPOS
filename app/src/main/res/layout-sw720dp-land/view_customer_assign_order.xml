@@ -32,6 +32,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
+                android:layout_gravity="center_vertical"
+                android:gravity="center_vertical"
                 android:paddingEnd="@dimen/_3sdp">
 
                 <androidx.appcompat.widget.AppCompatTextView
@@ -55,7 +57,7 @@
                     android:layout_gravity="center"
                     android:layout_marginStart="@dimen/_5sdp"
                     android:gravity="start"
-                    android:textColor="@color/txtColorGray"
+                    android:textColor="@color/txtColor"
                     android:textSize="@dimen/_5mdpi"
                     tools:text="(200) 300-4000" />
 
@@ -79,9 +81,9 @@
                 style="@style/CustomFontSemiBold"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="start"
-                android:gravity="start"
-                android:textColor="@color/txtColorGray"
+                android:layout_gravity="start|center_vertical"
+                android:gravity="start|center_vertical"
+                android:textColor="@color/hint_color"
                 android:textSize="@dimen/_5mdpi"
                 tools:text="(200) 300-4000"
                 android:layout_marginTop="@dimen/_3sdp"
