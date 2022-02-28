@@ -20,7 +20,7 @@
             <RelativeLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="0.25"
+                android:layout_weight="0.28"
                 android:orientation="horizontal">
 
                 <ImageView
@@ -29,21 +29,23 @@
                     android:layout_height="wrap_content"
                     android:layout_alignParentStart="true"
                     android:layout_centerVertical="true"
+                    android:layout_marginStart="@dimen/_5sdp"
                     android:padding="@dimen/_6sdp"
                     android:src="@drawable/ic_baseline_menu" />
 
 
                 <TextView
                     android:id="@+id/txtTitle"
-                    style="@style/CustomFontMediumStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerInParent="true"
                     android:layout_gravity="center"
                     android:layout_marginStart="@dimen/_30sdp"
-                    android:text="Team"
+                    android:fontFamily="@font/sf_pro_display_medium"
+                    android:text="Setup"
                     android:textColor="@color/txtColor"
-                    android:textSize="@dimen/_8mdpi" />
+                    android:textSize="@dimen/_6mdpi" />
+
 
                 <ImageView
                     android:id="@+id/imgOptionMenu"
@@ -69,47 +71,48 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_gravity="center"
-                android:layout_weight="0.75"
+                android:layout_weight="0.72"
                 android:orientation="horizontal">
 
                 <TextView
                     android:id="@+id/txtSubTitle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/_30sdp"
                     android:fontFamily="@font/sf_pro_display_medium"
                     android:gravity="center"
                     android:textColor="@color/txtColor"
-                    android:textSize="@dimen/_8mdpi"
+                    android:textSize="@dimen/_7mdpi"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@+id/txtHome"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    tools:text="David Miller" />
+                    app:layout_constraintTop_toTopOf="parent" />
 
                 <ImageView
                     android:id="@+id/imgOptionMenuContainer"
                     android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/_20sdp"
                     android:layout_marginEnd="@dimen/_5sdp"
-                    android:visibility="gone"
+                    android:contentDescription="@string/menu"
                     android:src="@drawable/ic_dot_menu"
+                    android:visibility="gone"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:tint="@color/viewTextColor" />
+                    app:layout_constraintTop_toTopOf="parent" />
+
 
                 <TextView
                     android:id="@+id/txtHome"
-                    style="@style/CustomFontSemiBold"
                     android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:gravity="center"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/_10sdp"
+                    android:fontFamily="@font/sf_pro_display_semibold"
+                    android:padding="@dimen/_6sdp"
                     android:text="@string/tv_home"
-                    android:background="?attr/selectableItemBackground"
-                    android:paddingStart="@dimen/_10sdp"
-                    android:paddingEnd="@dimen/_10sdp"
+                    android:textAllCaps="true"
                     android:textColor="@color/txt_color_blue"
-                    android:textSize="@dimen/_8mdpi"
+                    android:textSize="@dimen/_6mdpi"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@+id/imgOptionMenuContainer"
                     app:layout_constraintTop_toTopOf="parent" />
@@ -152,7 +155,7 @@
 
         <View
             android:layout_width="match_parent"
-            android:layout_height="0.5dp"
+            android:layout_height="1dp"
             android:background="@color/view" />
 
     </androidx.appcompat.widget.LinearLayoutCompat>

@@ -35,7 +35,7 @@
                 android:id="@+id/rvEmployeeList"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="0.25"
+                android:layout_weight="0.28"
                 android:nestedScrollingEnabled="false"
                 android:orientation="vertical"
                 android:background="@color/bg_color"
@@ -53,7 +53,7 @@
                 android:id="@+id/frameContainer"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
-                android:layout_weight="0.75" />
+                android:layout_weight="0.72" />
         </LinearLayout>
     </RelativeLayout>
 
