@@ -6,7 +6,8 @@
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="@color/bg_color">
 
         <androidx.appcompat.widget.LinearLayoutCompat
             android:layout_width="match_parent"
@@ -15,7 +16,7 @@
 
             <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="@dimen/_25sdp">
 
                 <androidx.appcompat.widget.AppCompatImageView
                     android:id="@+id/imgBack"
@@ -32,31 +33,14 @@
                     style="@style/CustomFontSemiBold"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_centerHorizontal="true"
-                    android:layout_centerVertical="true"
+                    android:layout_centerInParent="true"
                     android:layout_gravity="center"
                     android:gravity="center"
                     android:padding="@dimen/_5sdp"
                     android:text="@string/add_discount"
                     android:textColor="@color/txtColor"
-                    android:textSize="@dimen/_6mdpi" />
+                    android:textSize="@dimen/_7mdpi" />
 
-                <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/txtSave"
-                    style="@style/CustomFontSemiBold"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentEnd="true"
-                    android:layout_gravity="center"
-                    android:background="@color/btnColor"
-                    android:gravity="center"
-                    android:paddingStart="@dimen/_15sdp"
-                    android:paddingTop="@dimen/_7sdp"
-                    android:paddingEnd="@dimen/_15sdp"
-                    android:paddingBottom="@dimen/_7sdp"
-                    android:text="Add"
-                    android:textColor="@color/white"
-                    android:textSize="@dimen/_6mdpi" />
             </RelativeLayout>
 
             <include layout="@layout/divider" />
@@ -67,13 +51,13 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:padding="@dimen/_10sdp"
-                android:paddingStart="@dimen/_30sdp"
-                android:paddingEnd="@dimen/_30sdp"
+                android:paddingStart="@dimen/_10sdp"
+                android:paddingEnd="@dimen/_10sdp"
                 android:visibility="visible">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="@dimen/_25sdp"
                     android:layout_marginBottom="@dimen/_2sdp"
                     android:background="@drawable/background_square_border_grey"
                     android:padding="@dimen/_5sdp">
@@ -85,7 +69,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="@dimen/_10sdp"
                         android:text="$"
-                        android:textColor="@color/txtColor"
+                        android:textColor="@color/btnColor"
                         android:textSize="@dimen/_6mdpi"
                         app:layout_constraintBottom_toBottomOf="@+id/edtAmount"
                         app:layout_constraintEnd_toStartOf="@+id/edtAmount"
@@ -103,7 +87,7 @@
                         android:enabled="false"
                         android:digits="@string/disable_emoji_string"
                         android:hint="0.00"
-                        android:textColor="@color/txtColor"
+                        android:textColor="@color/btnColor"
                         android:textColorHint="@color/hintColor"
                         android:textSize="@dimen/_6mdpi"
                         app:layout_constraintBottom_toBottomOf="parent"
@@ -119,9 +103,9 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="%"
-                        android:textColor="@color/txtColor"
+                        android:textColor="@color/btnColor"
                         android:textSize="@dimen/_6mdpi"
-                        android:visibility="gone"
+                        android:visibility="visible"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toStartOf="@+id/linearLayout"
                         app:layout_constraintHorizontal_bias="0.015"
@@ -133,6 +117,7 @@
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
 
+
                 <include
                     android:id="@+id/llKeypad"
                     layout="@layout/layout_discount_keypad"
@@ -140,17 +125,38 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/_2sdp" />
 
+<!--
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/txtClear"
+                        style="@style/CustomFontRegularStyle"
+                        android:layout_width="0dp"
+                        android:layout_height="@dimen/_25sdp"
+                        android:layout_weight="1"
+                        android:background="@drawable/background_square_border_grey"
+                        android:gravity="center"
+                        android:padding="@dimen/_5sdp"
+                        android:text="@string/clear"
+                        android:textColor="@color/txtColor"
+                        android:textSize="@dimen/_6mdpi"
+                        />
+
+
+                </androidx.appcompat.widget.LinearLayoutCompat>
+-->
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rvDiscountList"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/_10sdp"
                     android:layout_marginTop="@dimen/_10sdp"
-                    android:layout_marginEnd="@dimen/_10sdp"
                     app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
                     app:spanCount="3"
                     tools:itemCount="3"
+                    android:visibility="visible"
                     tools:listitem="@layout/view_dialog_discount_list" />
 
                 <androidx.appcompat.widget.LinearLayoutCompat
@@ -319,8 +325,23 @@
 
                 </androidx.appcompat.widget.LinearLayoutCompat>
 
+
                 <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/txtClear"
+                    android:id="@+id/txtSave"
+                    style="@style/CustomFontBold"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/_25sdp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_gravity="center"
+                    android:background="@color/btnColor"
+                    android:gravity="center"
+                    android:text="Continue"
+                    android:layout_marginTop="@dimen/_10sdp"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/_7mdpi" />
+
+
+                <androidx.appcompat.widget.AppCompatTextView
                     style="@style/CustomFontBold"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
@@ -333,6 +354,7 @@
                     android:gravity="center"
                     android:padding="@dimen/_5sdp"
                     android:text="Clear"
+                    android:visibility="gone"
                     android:textColor="@color/btnColorDark_"
                     android:textSize="@dimen/_5mdpi" />
 

@@ -193,10 +193,11 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
         binding.txtPer.visibility = View.GONE
         selectedCurrency = AMOUNT
         binding.txtCurrencyDollar.background =
-            requireContext().resources.getDrawable(R.drawable.background_discount_selected)
+            requireContext().resources.getDrawable(R.drawable.button_selected)
         binding.txtCurrencyPercentage.background =
-            requireContext().resources.getDrawable(R.drawable.background_discount_unselected)
-
+            requireContext().resources.getDrawable(R.drawable.background_square_border_grey)
+        binding.txtCurrencyDollar.setTextColor(requireActivity().resources.getColor(R.color.white))
+        binding.txtCurrencyPercentage.setTextColor(requireActivity().resources.getColor(R.color.txtColor))
         binding.edtAmount.setText(binding.edtAmount.text.toString().trim())
     }
 
@@ -206,10 +207,11 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
         binding.txtCurrency.visibility = View.GONE
         binding.txtPer.visibility = View.VISIBLE
         binding.txtCurrencyDollar.background =
-            requireContext().resources.getDrawable(R.drawable.background_discount_unselected)
+            requireContext().resources.getDrawable(R.drawable.background_square_border_grey)
         binding.txtCurrencyPercentage.background =
-            requireContext().resources.getDrawable(R.drawable.background_discount_selected)
-
+            requireContext().resources.getDrawable(R.drawable.button_selected)
+        binding.txtCurrencyDollar.setTextColor(requireActivity().resources.getColor(R.color.txtColor))
+        binding.txtCurrencyPercentage.setTextColor(requireActivity().resources.getColor(R.color.white))
         binding.edtAmount.setText(binding.edtAmount.text.toString().trim())
 
     }
@@ -300,7 +302,7 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
 
     private fun setupData() {
 
-        binding.txtClear.setOnClickListener {
+        binding.llKeypad.txtClear.setOnClickListener {
 
             binding.edtAmount.setText("0.00")
 

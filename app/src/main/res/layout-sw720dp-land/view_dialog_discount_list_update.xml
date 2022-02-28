@@ -17,7 +17,7 @@
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/_10sdp"
         android:layout_marginBottom="@dimen/_10sdp"
-        android:background="@drawable/background_drawer_button"
+        android:background="@drawable/background_square_border_grey"
         android:orientation="vertical"
         android:padding="@dimen/_5sdp">
 
