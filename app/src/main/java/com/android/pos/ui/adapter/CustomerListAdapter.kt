@@ -67,11 +67,11 @@ class CustomerListAdapter(
                 )
             ) {
                 binding.txtName.text =
-                    mModel.first_name + " " + mModel.last_name
+                    mModel.first_name?.substring(0, 1)?.uppercase() + mModel.first_name?.substring(1) + " " + mModel.last_name
 
             } else {
                 binding.txtName.text =
-                    mModel.first_name
+                    mModel.first_name?.substring(0, 1)?.uppercase() + mModel.first_name?.substring(1)
             }
 
 
