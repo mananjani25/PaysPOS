@@ -1208,7 +1208,7 @@
         tools:layout="@layout/fragment_dummy" />
     <fragment
         android:id="@+id/dashboardCategoryBoldPOS"
-        android:name="com.android.pos.ui.fragments.dashboard.DashboardCategoryBoldPOS"
+        android:name="com.android.pos.ui.fragments.dashboard.bolddashboard.DashboardCategoryBoldPOS"
         android:label="DashboardCategoryBoldPOS" />
 
 </navigation>

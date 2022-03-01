@@ -9,7 +9,7 @@
         android:layout_height="wrap_content"
         android:background="@color/bg_color"
         android:orientation="horizontal"
-        android:paddingVertical="@dimen/_3sdp">
+        android:paddingVertical="@dimen/_4sdp">
 
         <androidx.appcompat.widget.LinearLayoutCompat
             android:id="@+id/linearFirst"
@@ -70,18 +70,41 @@
 
         </androidx.appcompat.widget.LinearLayoutCompat>
 
+
         <androidx.appcompat.widget.LinearLayoutCompat
             android:id="@+id/linearSecond"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true">
 
+            <androidx.appcompat.widget.AppCompatEditText
+                android:id="@+id/edtSearch"
+                style="@style/CustomFontRegularStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/_18sdp"
+                android:layout_centerVertical="true"
+                android:layout_gravity="center"
+                android:layout_marginEnd="@dimen/_30sdp"
+                android:layout_toStartOf="@+id/linearSecond"
+                android:layout_toEndOf="@+id/linearFirst"
+                android:background="@null"
+                android:drawableStart="@drawable/search_icon_small"
+                android:drawablePadding="@dimen/_5sdp"
+                android:gravity="center"
+                android:hint="SEARCH"
+                android:imeOptions="actionDone"
+                android:inputType="text"
+                android:padding="@dimen/_5sdp"
+                android:textColor="@color/txtColor"
+                android:textColorHint="@color/searchHintColor"
+                android:textSize="@dimen/_6mdpi" />
+
             <TextView
                 style="@style/CustomFontBold"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_marginEnd="@dimen/_10sdp"
+                android:layout_marginEnd="@dimen/_15sdp"
                 android:text="OPEN ORDERS"
                 android:textAllCaps="true"
                 android:textColor="@color/btnColor"
@@ -111,9 +134,9 @@
             <View
                 android:layout_width="0.5dp"
                 android:layout_height="match_parent"
-                android:layout_marginVertical="@dimen/_4sdp"
-                android:layout_marginStart="@dimen/_4sdp"
-                android:layout_marginEnd="@dimen/_4sdp"
+                android:layout_marginVertical="@dimen/_5sdp"
+                android:layout_marginStart="@dimen/_6sdp"
+                android:layout_marginEnd="@dimen/_6sdp"
                 android:background="@color/txtColor" />
 
             <ImageView

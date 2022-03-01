@@ -50,6 +50,7 @@
 
     <color name="txtColorGray">#656565</color>
 
+    
     <color name="txtColorItem">#7B7B7B</color>
 
     <color name="drawerItemUnselected">#8D8D8D</color>
@@ -117,4 +118,5 @@
     <color name="switchTrackColor">#363636</color>
     <color name="bgEditPrinter">#18181A</color>
     <color name="light_gray">#A9A9A9</color>
+    <color name="dark_gray">#8F8F8F</color>
 </resources>

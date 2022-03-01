@@ -1,10 +1,11 @@
-package com.android.pos.ui.fragments.dashboard
+package com.android.pos.ui.fragments.dashboard.bolddashboard
 
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
 import com.android.pos.databinding.FragmentDashboardCategoryBoldPosBinding
 
 class DashboardCategoryBoldPOS : Fragment() {
@@ -24,8 +25,14 @@ class DashboardCategoryBoldPOS : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         onClick()
+        loadCartFragment(CartFragment())
 
 
+    }
+
+    private fun loadCartFragment(frag:Fragment){
+        val fm:FragmentManager = requireActivity().supportFragmentManager
+        fm.beginTransaction().replace(binding.frameLayoutCart.id,frag).commit()
     }
 
     private fun onClick() {

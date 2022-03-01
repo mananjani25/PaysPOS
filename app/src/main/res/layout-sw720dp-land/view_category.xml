@@ -27,7 +27,7 @@
                 android:id="@+id/firstview_category"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:background="@color/cool_grey"
+                android:background="@color/view"
                 android:visibility="gone" />
 
             <androidx.appcompat.widget.LinearLayoutCompat
@@ -64,7 +64,7 @@
 
                 android:layout_width="match_parent"
                 android:layout_height="1dp"
-                android:background="@color/cool_grey"
+                android:background="@color/view"
                 android:visibility="visible" />
         </androidx.appcompat.widget.LinearLayoutCompat>
     </androidx.appcompat.widget.LinearLayoutCompat>
