@@ -31,6 +31,8 @@ data class Item(
     val quantity: Int,
     @SerializedName("sku")
     val sku: String?,
+    @SerializedName("desc")
+    val desc: String?,
     @SerializedName("sort")
     val sort: Int,
     @SerializedName("original_image_url")

@@ -84,6 +84,7 @@ class TbItem : Parcelable {
         taxes = item.taxes
         modifier_set_ids = item.modifierSetIds
         variationsAttributes = item.variations
+        shortDescription = item.desc?: ""
         return this
     }
 }
