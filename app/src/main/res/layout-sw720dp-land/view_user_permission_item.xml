@@ -37,13 +37,13 @@
                 android:gravity="start"
                 android:padding="@dimen/_5sdp"
                 android:text="@{permissionListModel.name}"
-                android:textColor="@color/color65"
+                android:textColor="@color/txtColor"
                 android:textSize="@dimen/_6mdpi" />
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/imgArrow"
                 android:layout_width="wrap_content"
-                app:srcCompat="@drawable/ic_arrow_forward"
+                app:srcCompat="@drawable/ic_play"
                 android:layout_gravity="center"
                 android:visibility="gone"
                 android:layout_marginEnd="@dimen/_10sdp"

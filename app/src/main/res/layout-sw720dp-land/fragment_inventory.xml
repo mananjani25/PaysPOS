@@ -30,7 +30,7 @@
                 android:id="@+id/recyclerViewItemsList"
                 android:layout_width="0sp"
                 android:layout_height="match_parent"
-                android:layout_weight="0.25"
+                android:layout_weight="0.28"
                 android:orientation="vertical"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 tools:itemCount="5"
@@ -41,15 +41,15 @@
                 android:id="@+id/viewLine"
                 android:layout_width="1dp"
                 android:layout_height="match_parent"
-                android:background="@color/cool_grey"
-                android:visibility="gone"/>
+                android:background="@color/view"
+                android:visibility="visible"/>
 
 
             <FrameLayout
                 android:id="@+id/frameLayout"
                 android:layout_width="0sp"
                 android:layout_height="match_parent"
-                android:layout_weight="0.75"
+                android:layout_weight="0.72"
                 android:orientation="vertical" />
         </LinearLayout>
 

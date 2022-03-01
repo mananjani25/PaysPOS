@@ -87,13 +87,11 @@ class CreateTaxViewModel @Inject constructor(
         this.taxTypeViewModel = taxType
     }
 
-    fun submit() {
+    fun submit(rates: Double) {
         val value = createTaxDetails.value
         if (TextUtils.isEmpty(value?.name?.trim())) {
             _snackbarText.value = Event(R.string.tax_name_validate)
-        } else if (TextUtils.isEmpty(
-                value?.rate?.toString()?.trim()
-            ) || value?.rate == 0.0 || value?.rate == 0.00
+        } else if (rates == 0.0 || rates== 0.00
         ) {
             _snackbarText.value = Event(R.string.tax_rate_validate)
         } /*else if (TextUtils.isEmpty(itemPricingViewModel.trim())) {
@@ -105,7 +103,7 @@ class CreateTaxViewModel @Inject constructor(
             taxData = CreateTaxRequestModel().apply {
                 if (isEdit) id = taxId
                 name = value!!.name
-                rate = value.rate
+                rate = rates
                 isDefault = enableTaxViewModel
                 isCustomAmount = customAmountViewModel
                 itemIds = itemIdsViewModel

@@ -312,7 +312,7 @@ class TeamMemberTimeSheetFragment : Fragment(), AdapterView.OnItemSelectedListen
     }
 
     private fun getEmployeesTimeSheetObserver() {
-        viewModel.data.observe(viewLifecycleOwner, { event ->
+        viewModel.data.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let { timeSheet ->
                 binding.rvTeamTimeSheet.visibility = View.VISIBLE
                 teamMemberTimeSheetAdapter.teamTimesheetList(
@@ -325,7 +325,7 @@ class TeamMemberTimeSheetFragment : Fragment(), AdapterView.OnItemSelectedListen
                     "All Employees Total Wages : " + timeSheet.employeeTotalWage
 
             }
-        })
+        }
 
     }
 

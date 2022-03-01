@@ -14,6 +14,7 @@ import com.android.pos.data.entities.Employee
 import com.android.pos.data.entities.ModulePermission
 import com.android.pos.data.entities.TeamRole
 import com.android.pos.databinding.FragmentUserAccessPermissionBinding
+
 import com.android.pos.di.RolePermission
 import com.android.pos.ui.adapter.*
 import com.android.pos.utils.AlertUtils

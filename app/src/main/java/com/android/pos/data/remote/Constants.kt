@@ -482,6 +482,9 @@ object Constants {
     const val TOTAL_PRICE_ACTUAL = "totalPriceActual"
     const val TOTAL_SERVICE_CHARGE_ACTUAL = "totalServiceChargeactual"
 
+    // broadcast
+    const val SEND_CLOCKOUT_NOTIFICATION = "send_clockout_notification"
+
 
     // dinein
     const val CASH_DISCOUNT_SURCHARGE_DINEIN = "cashDiscountSurcharge_dinein"

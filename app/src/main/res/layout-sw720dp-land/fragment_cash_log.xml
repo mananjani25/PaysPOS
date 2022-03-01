@@ -34,17 +34,17 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
-
                 <ImageView
                     android:id="@+id/imgDrawer"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentStart="true"
                     android:layout_centerVertical="true"
-                    android:contentDescription="@string/menu"
+                    android:layout_marginStart="@dimen/_5sdp"
                     android:padding="@dimen/_6sdp"
-                    android:background="?attr/selectableItemBackground"
                     android:src="@drawable/ic_baseline_menu" />
+
+
 
 
             </RelativeLayout>
@@ -61,8 +61,8 @@
                 android:gravity="center"
                 android:padding="@dimen/_3sdp"
                 android:text="Cash Log"
-                android:textColor="@color/viewTextColor"
-                android:textSize="@dimen/_6mdpi" />
+                android:textColor="@color/txtColor"
+                android:textSize="@dimen/_7mdpi" />
 
 
             <TextView
@@ -83,16 +83,17 @@
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="@dimen/_10sdp"
                 android:layout_gravity="center"
-                android:padding="@dimen/_3sdp"
+                android:padding="@dimen/_6sdp"
                 android:text="@string/tv_home"
+                android:textAllCaps="true"
                 android:textColor="@color/txt_color_blue"
-                android:textSize="@dimen/_7mdpi"
+                android:textSize="@dimen/_6mdpi"
                 android:visibility="visible" />
         </LinearLayout>
 
         <View
             android:layout_width="match_parent"
-            android:layout_height="0.5dp"
+            android:layout_height="1dp"
             android:layout_marginBottom="@dimen/_5sdp"
             android:background="@color/view" />
 
@@ -485,7 +486,7 @@
             android:layout_height="0dp"
             android:layout_weight="1"
             android:gravity="center"
-            android:textColor="@color/black"
+            android:textColor="@color/txtColor"
             android:textSize="@dimen/_6sdp"
             android:visibility="gone" />
 

@@ -14,7 +14,7 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:orientation="vertical">
 
         <LinearLayout
@@ -28,8 +28,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:padding="@dimen/_6sdp"
-                android:background="?attr/selectableItemBackground"
-                android:src="@drawable/ic_cancel_black" />
+                android:src="@drawable/ic_arrow_back" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/txtTitle"
@@ -40,7 +39,7 @@
                 android:layout_weight="1"
                 android:gravity="center"
                 android:text="@string/tv_team_member_timesheet"
-                android:textColor="@color/viewTextColor"
+                android:textColor="@color/txtColor"
                 android:textSize="@dimen/_6mdpi" />
 
             <TextView
@@ -50,7 +49,7 @@
                 android:layout_height="match_parent"
                 android:layout_gravity="center"
                 android:gravity="center"
-                android:background="?attr/selectableItemBackground"
+                android:textColor="@color/txtColor"
                 android:padding="@dimen/_6sdp"
                 android:text="@string/tv_print"
                 android:textSize="@dimen/_6mdpi" />
@@ -65,7 +64,7 @@
                 android:gravity="center"
                 android:padding="@dimen/_6sdp"
                 android:text="@string/tv_home"
-                android:background="?attr/selectableItemBackground"
+                android:textAllCaps="true"
                 android:textColor="@color/txt_color_blue"
                 android:textSize="@dimen/_6mdpi" />
         </LinearLayout>
@@ -74,7 +73,7 @@
             android:layout_width="match_parent"
             android:layout_height="0.5dp"
             android:layout_marginBottom="@dimen/_5sdp"
-            android:background="@color/gray_rect" />
+            android:background="@color/view" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -92,7 +91,7 @@
                 android:layout_marginRight="@dimen/_5sdp"
                 android:text="@string/start_date_amp_time"
                 android:textColor="@color/txtColor"
-                android:textSize="@dimen/_5mdpi" />
+                android:textSize="@dimen/_6mdpi" />
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -110,8 +109,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:layout_marginRight="@dimen/_5sdp"
-                    app:srcCompat="@drawable/calendar"
-                    app:tint="@color/color65"
+                    app:srcCompat="@drawable/ic_calendar"
                     tools:ignore="ContentDescription" />
 
                 <androidx.appcompat.widget.AppCompatTextView
@@ -136,7 +134,7 @@
                 android:layout_marginRight="@dimen/_5sdp"
                 android:text="@string/end_date_amp_time"
                 android:textColor="@color/txtColor"
-                android:textSize="@dimen/_5mdpi" />
+                android:textSize="@dimen/_6mdpi" />
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -154,8 +152,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:layout_marginRight="@dimen/_5sdp"
-                    app:srcCompat="@drawable/calendar"
-                    app:tint="@color/color65"
+                    app:srcCompat="@drawable/ic_calendar"
                     tools:ignore="ContentDescription" />
 
                 <androidx.appcompat.widget.AppCompatTextView
@@ -170,24 +167,40 @@
                     tools:text="2021-08-10" />
             </LinearLayout>
 
-            <Spinner
-                android:id="@+id/spRoles"
-                android:layout_width="@dimen/_80sdp"
-                android:layout_height="@dimen/_14sdp"
-                android:layout_gravity="center"
-                android:layout_marginStart="@dimen/_5sdp"
-                android:background="@drawable/bg_spinner"
-                android:imeOptions="actionNext"
-                android:inputType="text"
-                android:overlapAnchor="false"
-                android:spinnerMode="dropdown"
-                android:textSize="@dimen/_5mdpi" />
 
+            <FrameLayout
+                android:id="@+id/spinner_layout_timesheet"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_gravity="center_vertical"
+                android:layout_marginStart="@dimen/_5sdp"
+                android:background="@drawable/background_square_border_grey"
+                android:orientation="horizontal">
+
+
+                <Spinner
+                    android:id="@+id/spRoles"
+                    android:layout_width="@dimen/_80sdp"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    android:background="@null"
+                    android:imeOptions="actionNext"
+                    android:inputType="text"
+                    android:overlapAnchor="false"
+                    android:spinnerMode="dropdown"
+                    android:textSize="@dimen/_5mdpi" />
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/_15sdp"
+                    android:layout_gravity="right|center_vertical"
+                    android:src="@drawable/ic_arrow_drop_down" />
+            </FrameLayout>
             <androidx.appcompat.widget.AppCompatEditText
                 android:id="@+id/edtSearch"
                 style="@style/CustomFontSemiBold"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_marginLeft="@dimen/_10sdp"
                 android:layout_marginRight="@dimen/_10sdp"
                 android:background="@drawable/background_square_border_grey"
@@ -201,8 +214,8 @@
                 android:padding="@dimen/_2sdp"
                 android:paddingStart="@dimen/_5sdp"
                 android:paddingEnd="@dimen/_5sdp"
-                android:textColor="@color/black"
-                android:textColorHint="@color/drawerBack50"
+                android:textColor="@color/txtColor"
+                android:textColorHint="@color/hintColor"
                 android:textSize="@dimen/_5mdpi" />
         </LinearLayout>
 

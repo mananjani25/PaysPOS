@@ -69,7 +69,7 @@
 
             <androidx.appcompat.widget.AppCompatEditText
                 android:id="@+id/etSearch"
-                style="@style/CustomFontRegularStyle"
+                style="@style/CustomFontBold"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@null"
@@ -77,12 +77,12 @@
                 android:drawablePadding="@dimen/_10sdp"
                 android:hint="@string/search_customer"
                 android:imeOptions="actionDone"
-                android:inputType="text"
+                android:inputType="textVisiblePassword"
                 android:padding="@dimen/_10sdp"
-                android:textColor="@color/black"
-                android:layout_marginHorizontal="@dimen/_110sdp"
+                android:textColor="@color/txtColor"
+                android:layout_marginHorizontal="@dimen/_100sdp"
                 android:textColorHint="@color/hintColor"
-                android:textSize="@dimen/_5mdpi" />
+                android:textSize="@dimen/_6mdpi" />
 
             <View
                 android:layout_width="match_parent"

@@ -9,7 +9,7 @@
         android:id="@+id/constraintParent"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/colorDashBack">
+        android:background="@color/bg_color">
 
         <include
             android:id="@+id/layoutMenu"
@@ -35,7 +35,7 @@
             style="@style/MyTabLayout"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:background="@color/white"
+            android:background="@color/bg_color"
             android:orientation="horizontal"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             app:layout_constraintEnd_toStartOf="@+id/linearMenu"
@@ -94,7 +94,7 @@
             android:id="@+id/rvPagerCategory"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:background="@color/white90"
+            android:background="@color/bg_color"
             android:orientation="vertical"
             android:padding="@dimen/_5sdp"
             app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"

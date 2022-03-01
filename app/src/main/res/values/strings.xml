@@ -3,7 +3,7 @@
     <string name="PREF_BARCODE_SCANNER">BarcodeScannerPrefs</string>
     <string name="tv_pos">POS</string>
     <string name="tv_Info">Enterprise Cloud Point of Sale</string>
-    <string name="tv_hint_email">Email Address<font color='#E90C0C'>*</font></string>
+    <string name="tv_hint_email">Email Address <font color='#E90C0C'>*</font></string>
     <string name="tv_hint_email_">Email Address</string>
     <string name="tv_hint_password">Password <font color='#E90C0C'>*</font></string>
     <string name="tv_login">Login</string>
@@ -187,9 +187,11 @@
     <string name="service_charge_name">Service Charge Name <font color='#E90C0C'>*</font></string>
     <string name="service_charge">Service Charge</string>
     <string name="percentage">Percentage <font color='#E90C0C'>*</font></string>
+    <string name="percentage_withsymbol">Percentage % <font color='#E90C0C'>*</font></string>
     <string name="tip_percentage">Tip Percentage <font color='#E90C0C'>*</font></string>
     <string name="tax_rate">Tax Rate <font color='#E90C0C'>*</font></string>
     <string name="create_note">Create Note</string>
+    <string name="add_new_note">Add New Note</string>
     <string name="update_note">Update Note</string>
     <string name="note_title">Note Title <font color='#E90C0C'>*</font></string>
     <string name="create">Create</string>
@@ -199,6 +201,7 @@
     <string name="tax_rates_can_be_applied_to_specific_items_and_will_be_automatically_calculated_at_purchase">Tax rates can be applied to specific items and will be automatically calculated at purchase.</string>
     <string name="service_charge_can_be_applied_to_specific_items_and_will_be_automatically_calculated_at_purchase">Service charge can be applied to specific items and will be automatically calculated at purchase.</string>
     <string name="create_discount">Create Discount</string>
+    <string name="add_new_discount">Add New Discount</string>
     <string name="update_discount">Update Discount</string>
     <string name="discount_name">Discount Name</string>
     <string name="discount_name_">Discount Name<font color='#E90C0C'>*</font></string>
@@ -307,7 +310,6 @@
     <string name="loyalty_points">Loyalty Points</string>
     <string name="redeemed_loyalty_points">Redeemed Loyalty Points</string>
     <string name="user_access_permission">User Access Permission</string>
-    <string name="time_tracking">Time Tracking</string>
     <string name="all_current_and_future_locations">All current and future locations</string>
     <string name="_4_team_members_that_you_manage_at_business_one">4 team members that you manage at Business One</string>
     <string name="select_a_team_member_to_view_details">Select a team member to view details</string>
@@ -413,7 +415,7 @@
     <string name="pay_total">Pay Total</string>
     <string name="pay_now">Pay Now</string>
     <string name="tv_user_access_permission">User Access Permission</string>
-    <string name="tv_add_new_role">Add New Role</string>
+    <string name="tv_add_new_role">+ Add New Role</string>
     <string name="tv_employee_role_list">Employee Role List</string>
     <string name="tv_assign_permission">Assign Permission</string>
     <string name="tv_assign_role">Assign Role</string>
@@ -641,6 +643,7 @@
     <string name="items_">Items</string>
     <string name="orders">Orders</string>
     <string name="refunds">Refunds</string>
+    <string name="forgot_password_title">Forgot Password</string>
     <string name="refund">Refund</string>
     <string name="title">Title</string>
     <string name="details">Details</string>
@@ -654,11 +657,14 @@
     <string name="reorder">Reorder</string>
     <string name="pay_type">Amount &amp; Pay Type</string>
     <string name="enroll_to_loyalty">Enroll to Loyalty Program</string>
-    <string name="loyalty_name">Loyalty Name <font color='#E90C0C'>*</font></string>
-    <string name="loyalty_value">LOYALTY VALUE <font color='#E90C0C'>*</font></string>
+    <string name="loyalty_name">Loyalty Name</string>
+    <string name="loyalty_name_">Loyalty Name <font color='#E90C0C'>*</font></string>
+    <string name="loyalty_value_">LOYALTY VALUE <font color='#E90C0C'>*</font></string>
+    <string name="loyalty_value">LOYALTY VALUE</string>
     <string name="percentage_value">Percentage Value</string>
     <string name="amount_value">Amount Value</string>
-    <string name="loyalty_target">Loyalty Target<font color='#E90C0C'>*</font></string>
+    <string name="loyalty_target_">Loyalty Target<font color='#E90C0C'>*</font></string>
+    <string name="loyalty_target">Loyalty Target</string>
     <string name="number_of_points_required_to_get_the_reward">(Number of points required to get the reward)</string>
     <string name="error_loyalty_name_blank">Please Enter Loyalty Name</string>
     <string name="error_loyalty_point_blank">Please Enter Loyalty Target</string>
@@ -666,6 +672,7 @@
     <string name="create_tip">Create Tip</string>
     <string name="update_tip">Update Tip</string>
     <string name="create_loyalty_point">Create Loyalty Point</string>
+    <string name="add_loyalty_point">Add Loyalty Point</string>
     <string name="update_loyalty_point">Update Loyalty Point</string>
     <string name="tip_after_split_alert">If you will split the bill, then your added tip will be removed, Are you sure you want to split the bill?</string>
     <string name="qty_validation">Quantity not available</string>
@@ -741,6 +748,12 @@
     <string name="edit_printers">Edit printers</string>
     <string name="tv_add_a_new_tax_plus">+ Add a new tax</string>
     <string name="all_terminals">All Terminals</string>
+    <string name="please_enter_customer_email_address">Please enter customer\'s email address</string>
+    <string name="please_enter_customer_contact_number">Please enter customer\'s contact number</string>
+    <string name="fixed_value">Fixed Value</string>
+    <string name="time_tracking">Time Tracking</string>
+    <string name="team_member_time_tracking">Team member time tracking</string>
+    <string name="logout">Logout</string>
     <string name="current_order">Current Order</string>
     <string name="add_customer2">+ Add Customer</string>
 

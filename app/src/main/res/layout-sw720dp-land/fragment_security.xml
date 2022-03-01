@@ -23,7 +23,9 @@
 
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:paddingVertical="@dimen/_5sdp"
+            >
 
             <TextView
                 style="@style/CustomFontRegularStyle"
@@ -40,14 +42,15 @@
             <com.google.android.material.switchmaterial.SwitchMaterial
                 android:id="@+id/swtOrderId"
                 style="@style/AppTheme"
-                android:layout_width="0dp"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
+                android:layout_gravity="center_vertical"
+                android:gravity="center"
                 android:layout_weight="1"
-                android:paddingEnd="@dimen/_32sdp"
-                android:scaleX="0.7"
-                android:scaleY="0.8"
+                android:scaleX="1"
+                android:scaleY="1.2"
                 android:showText="false"
+
                 android:thumb="@drawable/custom_thumb_printer_active_switch"
                 android:visibility="visible"
                 app:srcCompat="@drawable/ic_arrow_forward"

@@ -103,10 +103,14 @@ class AssignCustomerToOrderAdapter :
                     ssPoint.length,
                     Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
                 )
-                TextUtils.concat(ssName, "  ", ssPoint)
+                TextUtils.concat(
+                    ssName.substring(0, 1).uppercase() + ssName.substring(1),
+                    "  ",
+                    ssPoint
+                )
                     .also { binding.txtName.text = it }
             } else {
-                TextUtils.concat(ssName)
+                TextUtils.concat(ssName.substring(0, 1).uppercase() + ssName.substring(1))
                     .also { binding.txtName.text = it }
             }
 

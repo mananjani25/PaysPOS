@@ -109,7 +109,7 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
         binding.txtEmail.setOnClickListener {
 
 
-            viewModel.getEmployeeEmail.observe(viewLifecycleOwner) {
+            viewModel.getEmployeeEmail(viewModel.selectedTerminalId.toInt()).observe(viewLifecycleOwner) {
 
                 if (it.status == Status.SUCCESS) {
                     val bundle = Bundle()

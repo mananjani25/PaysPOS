@@ -43,7 +43,7 @@ class CreateDiscount : Fragment() {
         binding.tvSymbolPer.visibility = View.VISIBLE
 
         binding.header.txtSave.text = getString(R.string.save)
-        binding.header.txtTitle.text = getString(R.string.create_discount)
+        binding.header.txtTitle.text = getString(R.string.add_new_discount)
 
         if (isEdit) {
             binding.header.txtSave.text = getString(R.string.update)

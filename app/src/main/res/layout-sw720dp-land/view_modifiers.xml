@@ -14,10 +14,12 @@
 
     <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent"
+        android:background="@color/bg_color"
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
         <View
+            android:id="@+id/first_view_modifierr"
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="@color/view"
@@ -60,9 +62,9 @@
         </androidx.appcompat.widget.LinearLayoutCompat>
 
         <View
-            android:visibility="gone"
+            android:visibility="visible"
             android:layout_width="match_parent"
-            android:layout_height="0.3dp"
+            android:layout_height="1dp"
             android:background="@color/view" />
 
     </androidx.appcompat.widget.LinearLayoutCompat>

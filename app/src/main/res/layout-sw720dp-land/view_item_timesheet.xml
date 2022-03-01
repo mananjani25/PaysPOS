@@ -17,8 +17,8 @@
 
     <LinearLayout
         android:layout_width="match_parent"
+        android:background="@color/bg_color"
         android:layout_height="wrap_content"
-        android:background="?attr/selectableItemBackground"
         android:onClick="@{() -> viewModel.singleMemberTimeSheet(itemSheetModel)}"
         android:orientation="vertical">
 
@@ -57,7 +57,7 @@
                 android:layout_weight="1"
                 android:gravity="center"
                 android:text="@{itemSheetModel.totalWage}"
-                android:textColor="@color/txtColor"
+                android:textColor="@color/btnColor"
                 android:textSize="@dimen/_5mdpi" />
 
             <androidx.appcompat.widget.AppCompatTextView

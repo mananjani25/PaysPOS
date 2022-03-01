@@ -18,13 +18,13 @@
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/white"
+        android:background="@color/bg_color"
         android:orientation="vertical">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@color/white"
+            android:background="@color/bg_color"
             android:orientation="vertical">
 
             <include
@@ -49,18 +49,18 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/_20sdp"
-                    android:background="@drawable/background_white_with_border"
+                    android:background="@drawable/background_square_border_grey"
                     android:hint="@string/loyalty_name"
                     android:imeOptions="actionNext"
                     android:inputType="textCapWords|textVisiblePassword"
-                    android:padding="@dimen/_5sdp"
+                    android:padding="@dimen/_7sdp"
                     android:text="@={viewModel.loyaltyName}"
-                    android:textColor="@color/black"
+                    android:textColor="@color/txtColor"
                     android:textColorHint="@color/hintColor"
-                    android:textSize="@dimen/_5mdpi" />
+                    android:textSize="@dimen/text_size_medium" />
 
                 <TextView
-                    style="@style/CustomFontSemiBold"
+                    style="@style/CustomFontRegularStyle"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/_10sdp"
@@ -68,19 +68,58 @@
                     android:paddingBottom="@dimen/_5sdp"
                     android:text="@string/loyalty_value"
                     android:textAllCaps="true"
-                    android:textColor="@color/black"
+                    android:textColor="@color/txtColor"
                     android:textColorHint="@color/hintColor"
-                    android:textSize="@dimen/_5mdpi" />
+                    android:textSize="@dimen/text_size_normal"
+                    android:paddingStart="@dimen/_7sdp"/>
 
                 <View
                     android:layout_width="match_parent"
-                    android:layout_height="1dp"
+                    android:layout_height="0.5dp"
                     android:background="@color/view" />
+
+
+                <CheckBox
+                    style="@style/CustomFontRegularStyle"
+                    android:id="@+id/swtCreateLoyalty"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/fixed_value"
+                    android:textColor="@color/txtColor"
+                    android:paddingStart="@dimen/_5sdp"
+                    android:textSize="@dimen/text_size_normal"
+                    android:layout_marginTop="@dimen/_5sdp"
+
+                    />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="0.5dp"
+                    android:background="@color/view"
+                    />
+
+                <CheckBox
+                    style="@style/CustomFontRegularStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/percentage_value"
+                    android:textColor="@color/txtColor"
+                    android:paddingStart="@dimen/_5sdp"
+                    android:textSize="@dimen/text_size_normal"
+                    android:layout_marginTop="@dimen/_5sdp"
+                    />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="0.5dp"
+                    android:background="@color/view"
+                    />
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                    android:layout_marginTop="@dimen/_5sdp">
 
                     <LinearLayout
                         android:layout_width="0dp"
@@ -117,33 +156,21 @@
                             android:hint="0%"
                             android:imeOptions="actionNext"
                             android:inputType="numberDecimal"
-                            android:paddingStart="@dimen/_5sdp"
                             android:paddingTop="@dimen/_5sdp"
                             android:paddingBottom="@dimen/_5sdp"
                             android:text="@={``+viewModel.loyaltyAmount}"
-                            android:textColor="@color/black"
+                            android:textColor="@color/txtColor"
                             android:textColorHint="@color/hintColor"
                             android:textSize="@dimen/_5mdpi" />
 
                     </LinearLayout>
 
-                    <androidx.appcompat.widget.SwitchCompat
-                        android:id="@+id/swtCreateLoyalty"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="end"
-                        android:checked="true"
-                        android:onCheckedChanged="@{(button, bool)-> createLoyaltyFragment.discountType(bool)}"
-                        android:padding="@dimen/_5sdp"
-                        android:text="@string/percentage_value"
-                        android:textSize="@dimen/_6mdpi"
-                        app:theme="@style/AppTheme" />
                 </LinearLayout>
 
 
                 <View
                     android:layout_width="match_parent"
-                    android:layout_height="1dp"
+                    android:layout_height="0.5dp"
                     android:background="@color/view" />
 
                 <TextView
@@ -158,25 +185,27 @@
                     android:text="@string/loyalty_target"
                     android:textColor="@color/black"
                     android:textColorHint="@color/hintColor"
-                    android:textSize="@dimen/_5mdpi" />
+                    android:textSize="@dimen/_5mdpi"
+                    android:visibility="gone"/>
 
                 <androidx.appcompat.widget.AppCompatEditText
                     style="@style/CustomFontSemiBold"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/background_white_with_border"
+                    android:background="@drawable/background_square_border_grey"
                     android:hint="@string/loyalty_target"
                     android:imeOptions="actionNext"
                     android:inputType="number"
-                    android:padding="@dimen/_5sdp"
+                    android:padding="@dimen/_7sdp"
                     android:text="@={``+viewModel.loyaltyTarget}"
-                    android:textColor="@color/black"
+                    android:textColor="@color/txtColor"
                     android:textColorHint="@color/hintColor"
-                    android:textSize="@dimen/_5mdpi" />
+                    android:textSize="@dimen/text_size_medium"
+                    android:layout_marginTop="@dimen/_10sdp"/>
 
                 <androidx.appcompat.widget.AppCompatTextView
                     style="@style/CustomFontRegularStyle"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:layout_marginBottom="@dimen/_20sdp"
@@ -184,9 +213,10 @@
                     android:paddingTop="@dimen/_3sdp"
                     android:paddingBottom="@dimen/_3sdp"
                     android:text="@string/number_of_points_required_to_get_the_reward"
-                    android:textColor="@color/black"
+                    android:textColor="@color/hint_color"
                     android:textSize="@dimen/_5mdpi"
-                    app:textAllCaps="false" />
+                    app:textAllCaps="false"
+                    android:layout_marginTop="@dimen/_5sdp"/>
 
             </androidx.appcompat.widget.LinearLayoutCompat>
 

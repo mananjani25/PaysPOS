@@ -18,8 +18,10 @@
         android:orientation="vertical">
 
         <View
+            android:id="@+id/first_view_create_modifier"
             android:layout_width="match_parent"
             android:layout_height="1dp"
+            android:visibility="gone"
             android:background="@color/view" />
 
         <androidx.appcompat.widget.LinearLayoutCompat
@@ -78,7 +80,7 @@
 
         <View
             android:layout_width="match_parent"
-            android:layout_height="0.3dp"
+            android:layout_height="1dp"
             android:background="@color/view" />
 
     </androidx.appcompat.widget.LinearLayoutCompat>

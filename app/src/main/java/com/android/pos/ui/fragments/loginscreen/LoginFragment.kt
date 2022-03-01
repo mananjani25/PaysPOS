@@ -36,6 +36,8 @@ class LoginFragment : Fragment() {
 
     private val viewModel by viewModels<LoginViewModel>()
 
+    var device_token: String = ""
+
     @Inject
     lateinit var prefProvider: PrefProvider
 
@@ -50,7 +52,12 @@ class LoginFragment : Fragment() {
             if (!prefProvider.getValueboolean(IS_CLOCKOUT, false)) {
                 findNavController().navigate(R.id.action_login_to_passcode)
             } else {
-                findNavController().navigate(R.id.action_login_to_dashboardCategory)
+                if(prefProvider.getValueboolean("clockOutFromNoti",false)){
+                    findNavController().navigate(R.id.action_login_to_passcode,arguments)
+                }else{
+                    findNavController().navigate(R.id.action_login_to_dashboardCategory)
+                }
+
             }
 
         }
@@ -77,7 +84,7 @@ class LoginFragment : Fragment() {
         }
 
         binding.terminalId.text = getDeviceId()
-        firebaseToken()
+
         prefProvider.setValue(Constants.UNIQUE_ID, binding.terminalId.text.toString().trim())
 
         return binding.root
@@ -92,9 +99,9 @@ class LoginFragment : Fragment() {
             }
 
             // Get new FCM registration token
-            val token = task.result
-
-            Log.e("FirebaseMessaging Token", token)
+            device_token = task.result
+            prefProvider.setValue("device_token", device_token)
+            Log.d("FirebaseMessaging Token", device_token)
         })
     }
 
@@ -110,15 +117,15 @@ class LoginFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-//
-//        binding.txtSignIn.setOnClickListener {
-//            findNavController().navigate(R.id.action_login_to_scheduledShifts)
-//        }
+        firebaseToken()
+        binding.txtSignIn.setOnClickListener {
+            viewModel.submit(device_token)
+        }
     }
 
     private fun observeShowProgress() {
 
-        viewModel.showProgress.observe(viewLifecycleOwner, { event ->
+        viewModel.showProgress.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
                 if (it) {
                     ProgressUtils.showProgressDialog(requireActivity())
@@ -126,19 +133,19 @@ class LoginFragment : Fragment() {
                     ProgressUtils.dismissProgressDialog()
                 }
             }
-        })
+        }
 
     }
 
     private fun navigate() {
 
-        viewModel.data.observe(viewLifecycleOwner, { event ->
+        viewModel.data.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
                 if (it) {
                     findNavController().navigate(R.id.action_login_to_passcode)
                 }
             }
-        })
+        }
 
     }
 

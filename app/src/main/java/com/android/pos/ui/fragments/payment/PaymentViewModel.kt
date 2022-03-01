@@ -122,7 +122,7 @@ class PaymentViewModel @Inject constructor(
                                 if (orderRequestModel.order.openOrderType == Constants.OPEN_ORDER
                                     || orderRequestModel.order.openOrderType == Constants.OPEN_ORDER_
                                 ) {
-                                    posRepository.deleteCart()
+                                    posRepository.deleteCart(prefProvider.getValueInt(Constants.EMPLOYEE_ID,0))
                                 }
 
                                 if (onlySave) {
@@ -211,7 +211,7 @@ class PaymentViewModel @Inject constructor(
                         if (response?.status == 200) {
 
                             if (splitValue != -1) {
-                                posRepository.deleteCart()
+                                posRepository.deleteCart(prefProvider.getValueInt(Constants.EMPLOYEE_ID,0))
                             }
                             resource.data?.let { createOrderResponse ->
                                 if (createOrderResponse.data.order.payments.isNotEmpty()) {
@@ -409,6 +409,10 @@ class PaymentViewModel @Inject constructor(
         orderAttributeRequestModel.date = TimeFormatUtils.getCurrentDate()
         if (future_delivery_date.isNotEmpty())
             orderAttributeRequestModel.futureDeliveryDate = future_delivery_date
+
+        if (future_delivery_time.isNotEmpty())
+            orderAttributeRequestModel.futureDeliveryTime = future_delivery_time
+
         if (cartModel.openOrderType.isNotEmpty() && cartModel.openOrderType != null) {
             orderAttributeRequestModel.deliveryType = cartModel.openOrderType
         }
@@ -677,6 +681,10 @@ class PaymentViewModel @Inject constructor(
         orderAttributeRequestModel.date = TimeFormatUtils.getCurrentDate()
         if (future_delivery_date.isNotEmpty())
             orderAttributeRequestModel.futureDeliveryDate = future_delivery_date
+
+        if (future_delivery_time.isNotEmpty())
+            orderAttributeRequestModel.futureDeliveryTime = future_delivery_time
+
         if (cartModel.openOrderType.isNotEmpty() && cartModel.openOrderType != null) {
             orderAttributeRequestModel.deliveryType = cartModel.openOrderType
         }

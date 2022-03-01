@@ -42,7 +42,7 @@ class CreateNote : Fragment() {
         isEdit = arguments?.getBoolean("isEdit")!!
 
         binding.header.txtSave.text = getString(R.string.save)
-        binding.header.txtTitle.text = getString(R.string.create_note)
+        binding.header.txtTitle.text = getString(R.string.add_new_note)
 
         if (isEdit) {
             binding.header.txtSave.text = getString(R.string.update)

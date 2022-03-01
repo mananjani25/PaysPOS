@@ -1,6 +1,8 @@
 package com.android.pos.ui.fragments.settings.tax
 
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -20,9 +22,9 @@ import com.android.pos.data.remote.Constants.DIALOG_KEY
 import com.android.pos.data.remote.Constants.DIALOG_KEY_TAX
 import com.android.pos.data.remote.Constants.INCLUDE_TAX
 import com.android.pos.data.remote.Constants.KEY
-import com.android.pos.data.remote.Constants.SETTING_KEY
 import com.android.pos.databinding.DialogCreateNewTaxBinding
 import com.android.pos.utils.AlertUtils
+import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.extensions.getNavigationResultLiveData
 import com.android.pos.utils.extensions.liveSnackBar
@@ -69,7 +71,7 @@ class CreateTax : Fragment() {
 
             binding.itemsCount.text = "" + taxData.itemIds.size + " Items"
             binding.tvItemPricing.text = taxData.itemPricing
-
+            binding.edtAmount.setText(viewModel.createTaxDetails.value?.rate.toString())
             binding.swtEnableTax.isChecked = taxData.isDefault
             binding.swtCustomAmount.isChecked = taxData.isCustomAmount
             viewModel.isEditData(isEdit, taxData.id)
@@ -88,12 +90,45 @@ class CreateTax : Fragment() {
             }
         }
 
+        binding.edtAmount.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+                if (binding.swtTaxType.text == "Percentage") {
+                    val temp_rate = s.toString()
+                    if (temp_rate.isNotEmpty()) {
+                        if (temp_rate.toFloat() > 100) {
+                            AlertUtils.showCustomAlertWithListenerWithOK(
+                                requireContext(),
+                                "Please Enter Percentage less than or Equal to 100"
+                            ) { _, _ ->
+                                binding.edtAmount.setText("")
+                            }
+                        }
+                    }
+
+                }
+            }
+
+        })
         setupSnackbar()
         observeShowProgress()
         navigate()
 
         binding.header.txtSave.setOnClickListener {
-            viewModel.submit()
+
+            var rate = binding.edtAmount.text.toString()
+            var rate_double = 0.0
+            if (rate.isNotEmpty()) {
+                rate_double = MethodUtils.roundOffAmountDouble(rate.toDouble())
+            }
+            viewModel.submit(rate_double)
         }
 
         val callback: OnBackPressedCallback =
@@ -200,16 +235,18 @@ class CreateTax : Fragment() {
     fun taxType(isChecked: Boolean) {
         if (isChecked) {
             binding.swtTaxType.text = getString(R.string.disc_percentage)
+            binding.edtAmount.setText("")
             viewModel.discountType(getString(R.string.disc_percentage))
         } else {
             binding.swtTaxType.text = getString(R.string.dollar_amount)
+            binding.edtAmount.setText("")
             viewModel.discountType(getString(R.string.dollar_amount))
         }
     }
 
     private fun observeShowProgress() {
 
-        viewModel.showProgress.observe(viewLifecycleOwner, { event ->
+        viewModel.showProgress.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
                 if (it) {
                     ProgressUtils.showProgressDialog(requireActivity())
@@ -217,7 +254,7 @@ class CreateTax : Fragment() {
                     ProgressUtils.dismissProgressDialog()
                 }
             }
-        })
+        }
     }
 
     private fun navigate() {

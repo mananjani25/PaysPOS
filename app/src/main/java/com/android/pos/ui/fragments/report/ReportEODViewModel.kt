@@ -5,15 +5,15 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.android.pos.data.entities.Employee
 import com.android.pos.data.model.responseModel.EodReportResponse
 import com.android.pos.data.model.responseModel.report.Terminal
 import com.android.pos.data.remote.Constants
-import com.android.pos.data.remote.Constants.EMPLOYEE_ID
-import com.android.pos.data.remote.Constants.LOCATION_ID
 import com.android.pos.data.remote.Constants.TERMINAL_ID
 import com.android.pos.data.repositories.PosRepository
 import com.android.pos.di.PrefProvider
 import com.android.pos.utils.Event
+import com.android.pos.utils.statusUtils.Resource
 import com.android.pos.utils.statusUtils.Status
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -45,7 +45,10 @@ class ReportEODViewModel @Inject constructor(
 
     val getTerminalListDatabse = posRepository.getTerminalListDatabse()
 
-    val getEmployeeEmail = posRepository.getEmployeeEmail()
+    fun getEmployeeEmail(emp_id:Int): LiveData<Resource<Employee>> {
+        return posRepository.getEmployeeEmail(emp_id)
+    }
+
 
     val employeeData = posRepository.getEmployeeListLocationWiseDatabse(locationId)
 
@@ -53,7 +56,7 @@ class ReportEODViewModel @Inject constructor(
     val startDate = MutableLiveData<String>()
 
     val endDate = MutableLiveData<String>()
-    var selectedTerminalId = ""
+    var selectedTerminalId = "0"
     val terminalTitle = Terminal("Terminal", -9.9)
 
     fun employeeId(): Int {
@@ -64,15 +67,15 @@ class ReportEODViewModel @Inject constructor(
         val myFormat = "MM/dd/yyyy" //In which you need put here
         val sdf = SimpleDateFormat(myFormat, Locale.getDefault())
 
-
         startDate.value = sdf.format(myCalendar.time) + " " + SimpleDateFormat(
             "hh:mm a",
             Locale.getDefault()
-        ).format(Date(System.currentTimeMillis() - 60000 * 30))
+        ).format(Date())
         endDate.value = sdf.format(myCalendar.time) + " " + SimpleDateFormat(
             "hh:mm a",
             Locale.getDefault()
-        ).format(Date())
+        ).format(Date(System.currentTimeMillis() + 300000))
+
 
     }
 

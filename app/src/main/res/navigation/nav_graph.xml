@@ -416,6 +416,11 @@
             app:destination="@id/reports"
             app:enterAnim="@anim/nav_default_enter_anim" />
         <action
+            android:id="@+id/action_dashboardCategoryNew_to_loginsfragment"
+            app:destination="@id/login"
+            app:enterAnim="@anim/nav_default_enter_anim" />
+
+        <action
             android:id="@+id/action_dashboardCategoryNew_to_customer"
             app:destination="@id/customer"
             app:enterAnim="@anim/nav_default_enter_anim" />

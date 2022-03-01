@@ -17,6 +17,7 @@
         android:orientation="vertical">
 
         <View
+            android:id="@+id/firstview_category"
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:background="@color/view" />
@@ -74,7 +75,7 @@
 
         <View
             android:layout_width="match_parent"
-            android:layout_height="0.3dp"
+            android:layout_height="1dp"
             android:background="@color/view" />
 
     </androidx.appcompat.widget.LinearLayoutCompat>

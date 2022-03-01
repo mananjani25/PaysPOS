@@ -2,6 +2,7 @@ package com.android.pos.ui.adapter
 
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.R
@@ -20,7 +21,11 @@ class CategoryListItemAdapter :
         fun bind(item: TbItem) {
             binding.model = item
             binding.executePendingBindings()
-
+            if(bindingAdapterPosition==0){
+                binding.firstviewCategory.visibility = View.VISIBLE
+            }else{
+                binding.firstviewCategory.visibility = View.GONE
+            }
             if (item.isChecked) {
                 binding.imgCheck.setImageResource(R.drawable.ic_outline_radio_button_checked)
             } else {

@@ -22,7 +22,7 @@
             android:gravity="start"
             android:padding="@dimen/_5sdp"
             android:text="@string/tv_show_order_print_time"
-            android:textColor="@color/viewTextColor"
+            android:textColor="@color/txtColor"
             android:textSize="@dimen/_6mdpi" />
     </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -45,19 +45,26 @@
             android:gravity="start"
             android:padding="@dimen/_5sdp"
             android:text="@string/tv_order_time"
-            android:textColor="@color/viewTextColor"
+            android:textColor="@color/txtColor"
             android:textSize="@dimen/_6mdpi" />
-
-        <androidx.appcompat.widget.SwitchCompat
+        <com.google.android.material.switchmaterial.SwitchMaterial
             android:id="@+id/swtOrderTime"
+            style="@style/AppTheme"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
             android:layout_gravity="center"
-            android:checked="true"
-            android:padding="@dimen/_5sdp"
+            android:scaleX="0.7"
+            android:scaleY="0.8"
+            android:showText="false"
+            android:thumb="@drawable/custom_thumb_printer_active_switch"
+            android:visibility="visible"
             app:srcCompat="@drawable/ic_arrow_forward"
-            app:theme="@style/AppTheme" />
+            app:thumbTint="@color/switch_thumb_selector"
+            app:track="@drawable/custom_switch_track_printer"
+            app:trackTint="@color/switch_track_tint"
+            tools:ignore="UseSwitchCompatOrMaterialXml" />
+
+
     </androidx.appcompat.widget.LinearLayoutCompat>
 
     <View
@@ -79,19 +86,26 @@
             android:gravity="start"
             android:padding="@dimen/_5sdp"
             android:text="@string/tv_print_time"
-            android:textColor="@color/viewTextColor"
+            android:textColor="@color/txtColor"
             android:textSize="@dimen/_6mdpi" />
-
-        <androidx.appcompat.widget.SwitchCompat
+        <com.google.android.material.switchmaterial.SwitchMaterial
             android:id="@+id/swtPrintTime"
+            style="@style/AppTheme"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
             android:layout_gravity="center"
-            android:checked="true"
-            android:padding="@dimen/_5sdp"
+            android:scaleX="0.7"
+            android:scaleY="0.8"
+            android:showText="false"
+            android:thumb="@drawable/custom_thumb_printer_active_switch"
+            android:visibility="visible"
             app:srcCompat="@drawable/ic_arrow_forward"
-            app:theme="@style/AppTheme" />
+            app:thumbTint="@color/switch_thumb_selector"
+            app:track="@drawable/custom_switch_track_printer"
+            app:trackTint="@color/switch_track_tint"
+            tools:ignore="UseSwitchCompatOrMaterialXml" />
+
+
     </androidx.appcompat.widget.LinearLayoutCompat>
 
     <View
@@ -114,7 +128,7 @@
             android:gravity="start"
             android:padding="@dimen/_5sdp"
             android:text="@string/tv_show_refund_text_amount"
-            android:textColor="@color/viewTextColor"
+            android:textColor="@color/txtColor"
             android:textSize="@dimen/_6mdpi" />
     </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -138,19 +152,25 @@
             android:gravity="start"
             android:padding="@dimen/_5sdp"
             android:text="@string/tv_refund_text_amount"
-            android:textColor="@color/viewTextColor"
+            android:textColor="@color/txtColor"
             android:textSize="@dimen/_6mdpi" />
-
-        <androidx.appcompat.widget.SwitchCompat
+        <com.google.android.material.switchmaterial.SwitchMaterial
             android:id="@+id/swtRfundAmt"
+            style="@style/AppTheme"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
             android:layout_gravity="center"
-            android:checked="true"
-            android:padding="@dimen/_5sdp"
+            android:scaleX="0.7"
+            android:scaleY="0.8"
+            android:showText="false"
+            android:thumb="@drawable/custom_thumb_printer_active_switch"
+            android:visibility="visible"
             app:srcCompat="@drawable/ic_arrow_forward"
-            app:theme="@style/AppTheme" />
+            app:thumbTint="@color/switch_thumb_selector"
+            app:track="@drawable/custom_switch_track_printer"
+            app:trackTint="@color/switch_track_tint"
+            tools:ignore="UseSwitchCompatOrMaterialXml" />
+        
     </androidx.appcompat.widget.LinearLayoutCompat>
 
     <View
@@ -173,7 +193,7 @@
             android:gravity="start"
             android:padding="@dimen/_5sdp"
             android:text="@string/tv_show_venue_information"
-            android:textColor="@color/viewTextColor"
+            android:textColor="@color/txtColor"
             android:textSize="@dimen/_6mdpi" />
     </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -196,19 +216,25 @@
             android:gravity="start"
             android:padding="@dimen/_5sdp"
             android:text="@string/tv_logo"
-            android:textColor="@color/viewTextColor"
+            android:textColor="@color/txtColor"
             android:textSize="@dimen/_6mdpi" />
-
-        <androidx.appcompat.widget.SwitchCompat
+        <com.google.android.material.switchmaterial.SwitchMaterial
             android:id="@+id/swtLogo"
+            style="@style/AppTheme"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
             android:layout_gravity="center"
-            android:checked="true"
-            android:padding="@dimen/_5sdp"
+            android:scaleX="0.7"
+            android:scaleY="0.8"
+            android:showText="false"
+            android:thumb="@drawable/custom_thumb_printer_active_switch"
+            android:visibility="visible"
             app:srcCompat="@drawable/ic_arrow_forward"
-            app:theme="@style/AppTheme" />
+            app:thumbTint="@color/switch_thumb_selector"
+            app:track="@drawable/custom_switch_track_printer"
+            app:trackTint="@color/switch_track_tint"
+            tools:ignore="UseSwitchCompatOrMaterialXml" />
+
     </androidx.appcompat.widget.LinearLayoutCompat>
 
     <View
@@ -233,19 +259,25 @@
 
             android:padding="@dimen/_5sdp"
             android:text="@string/tv_photo"
-            android:textColor="@color/viewTextColor"
+            android:textColor="@color/txtColor"
             android:textSize="@dimen/_6mdpi" />
-
-        <androidx.appcompat.widget.SwitchCompat
+        <com.google.android.material.switchmaterial.SwitchMaterial
             android:id="@+id/swtPhoto"
+            style="@style/AppTheme"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
             android:layout_gravity="center"
-            android:checked="true"
-            android:padding="@dimen/_5sdp"
+            android:scaleX="0.7"
+            android:scaleY="0.8"
+            android:showText="false"
+            android:thumb="@drawable/custom_thumb_printer_active_switch"
+            android:visibility="visible"
             app:srcCompat="@drawable/ic_arrow_forward"
-            app:theme="@style/AppTheme" />
+            app:thumbTint="@color/switch_thumb_selector"
+            app:track="@drawable/custom_switch_track_printer"
+            app:trackTint="@color/switch_track_tint"
+            tools:ignore="UseSwitchCompatOrMaterialXml" />
+
     </androidx.appcompat.widget.LinearLayoutCompat>
 
     <View
@@ -267,19 +299,25 @@
             android:gravity="start"
             android:padding="@dimen/_5sdp"
             android:text="@string/website"
-            android:textColor="@color/viewTextColor"
+            android:textColor="@color/txtColor"
             android:textSize="@dimen/_6mdpi" />
-
-        <androidx.appcompat.widget.SwitchCompat
+        <com.google.android.material.switchmaterial.SwitchMaterial
             android:id="@+id/swtWebAddress"
+            style="@style/AppTheme"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
             android:layout_gravity="center"
-            android:checked="true"
-            android:padding="@dimen/_5sdp"
+            android:scaleX="0.7"
+            android:scaleY="0.8"
+            android:showText="false"
+            android:thumb="@drawable/custom_thumb_printer_active_switch"
+            android:visibility="visible"
             app:srcCompat="@drawable/ic_arrow_forward"
-            app:theme="@style/AppTheme" />
+            app:thumbTint="@color/switch_thumb_selector"
+            app:track="@drawable/custom_switch_track_printer"
+            app:trackTint="@color/switch_track_tint"
+            tools:ignore="UseSwitchCompatOrMaterialXml" />
+
     </androidx.appcompat.widget.LinearLayoutCompat>
 
     <View
@@ -301,19 +339,25 @@
             android:gravity="start"
             android:padding="@dimen/_5sdp"
             android:text="@string/tv_address"
-            android:textColor="@color/viewTextColor"
+            android:textColor="@color/txtColor"
             android:textSize="@dimen/_6mdpi" />
-
-        <androidx.appcompat.widget.SwitchCompat
+        <com.google.android.material.switchmaterial.SwitchMaterial
             android:id="@+id/swtAddress"
+            style="@style/AppTheme"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
             android:layout_gravity="center"
-            android:checked="true"
-            android:padding="@dimen/_5sdp"
+            android:scaleX="0.7"
+            android:scaleY="0.8"
+            android:showText="false"
+            android:thumb="@drawable/custom_thumb_printer_active_switch"
+            android:visibility="visible"
             app:srcCompat="@drawable/ic_arrow_forward"
-            app:theme="@style/AppTheme" />
+            app:thumbTint="@color/switch_thumb_selector"
+            app:track="@drawable/custom_switch_track_printer"
+            app:trackTint="@color/switch_track_tint"
+            tools:ignore="UseSwitchCompatOrMaterialXml" />
+
     </androidx.appcompat.widget.LinearLayoutCompat>
 
     <View
@@ -342,7 +386,7 @@
             android:gravity="start"
             android:padding="@dimen/_5sdp"
             android:text="@string/tv_show_customer_information"
-            android:textColor="@color/viewTextColor"
+            android:textColor="@color/txtColor"
             android:textSize="@dimen/_6mdpi" />
     </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -365,19 +409,25 @@
             android:gravity="start"
             android:padding="@dimen/_5sdp"
             android:text="@string/tv_name"
-            android:textColor="@color/viewTextColor"
+            android:textColor="@color/txtColor"
             android:textSize="@dimen/_6mdpi" />
-
-        <androidx.appcompat.widget.SwitchCompat
+        <com.google.android.material.switchmaterial.SwitchMaterial
             android:id="@+id/swtName"
+            style="@style/AppTheme"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
             android:layout_gravity="center"
-            android:checked="true"
-            android:padding="@dimen/_5sdp"
+            android:scaleX="0.7"
+            android:scaleY="0.8"
+            android:showText="false"
+            android:thumb="@drawable/custom_thumb_printer_active_switch"
+            android:visibility="visible"
             app:srcCompat="@drawable/ic_arrow_forward"
-            app:theme="@style/AppTheme" />
+            app:thumbTint="@color/switch_thumb_selector"
+            app:track="@drawable/custom_switch_track_printer"
+            app:trackTint="@color/switch_track_tint"
+            tools:ignore="UseSwitchCompatOrMaterialXml" />
+
     </androidx.appcompat.widget.LinearLayoutCompat>
 
     <View
@@ -399,19 +449,25 @@
             android:gravity="start"
             android:padding="@dimen/_5sdp"
             android:text="@string/tv_phone"
-            android:textColor="@color/viewTextColor"
+            android:textColor="@color/txtColor"
             android:textSize="@dimen/_6mdpi" />
-
-        <androidx.appcompat.widget.SwitchCompat
+        <com.google.android.material.switchmaterial.SwitchMaterial
             android:id="@+id/swtPhone"
+            style="@style/AppTheme"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
             android:layout_gravity="center"
-            android:checked="true"
-            android:padding="@dimen/_5sdp"
+            android:scaleX="0.7"
+            android:scaleY="0.8"
+            android:showText="false"
+            android:thumb="@drawable/custom_thumb_printer_active_switch"
+            android:visibility="visible"
             app:srcCompat="@drawable/ic_arrow_forward"
-            app:theme="@style/AppTheme" />
+            app:thumbTint="@color/switch_thumb_selector"
+            app:track="@drawable/custom_switch_track_printer"
+            app:trackTint="@color/switch_track_tint"
+            tools:ignore="UseSwitchCompatOrMaterialXml" />
+
     </androidx.appcompat.widget.LinearLayoutCompat>
 
     <View
@@ -433,19 +489,25 @@
             android:gravity="start"
             android:padding="@dimen/_5sdp"
             android:text="@string/tv_address"
-            android:textColor="@color/viewTextColor"
+            android:textColor="@color/txtColor"
             android:textSize="@dimen/_6mdpi" />
-
-        <androidx.appcompat.widget.SwitchCompat
+        <com.google.android.material.switchmaterial.SwitchMaterial
             android:id="@+id/swtCustAddress"
+            style="@style/AppTheme"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
             android:layout_gravity="center"
-            android:checked="true"
-            android:padding="@dimen/_5sdp"
+            android:scaleX="0.7"
+            android:scaleY="0.8"
+            android:showText="false"
+            android:thumb="@drawable/custom_thumb_printer_active_switch"
+            android:visibility="visible"
             app:srcCompat="@drawable/ic_arrow_forward"
-            app:theme="@style/AppTheme" />
+            app:thumbTint="@color/switch_thumb_selector"
+            app:track="@drawable/custom_switch_track_printer"
+            app:trackTint="@color/switch_track_tint"
+            tools:ignore="UseSwitchCompatOrMaterialXml" />
+
     </androidx.appcompat.widget.LinearLayoutCompat>
 
 
@@ -469,7 +531,7 @@
             android:gravity="start"
             android:padding="@dimen/_5sdp"
             android:text="@string/tv_show_tip_suggestion"
-            android:textColor="@color/viewTextColor"
+            android:textColor="@color/txtColor"
             android:textSize="@dimen/_6mdpi" />
     </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -492,19 +554,25 @@
             android:gravity="start"
             android:padding="@dimen/_5sdp"
             android:text="@string/tv_tip_suggestion"
-            android:textColor="@color/viewTextColor"
+            android:textColor="@color/txtColor"
             android:textSize="@dimen/_6mdpi" />
-
-        <androidx.appcompat.widget.SwitchCompat
+        <com.google.android.material.switchmaterial.SwitchMaterial
             android:id="@+id/swtTipSuggestion"
+            style="@style/AppTheme"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
             android:layout_gravity="center"
-            android:checked="true"
-            android:padding="@dimen/_5sdp"
+            android:scaleX="0.7"
+            android:scaleY="0.8"
+            android:showText="false"
+            android:thumb="@drawable/custom_thumb_printer_active_switch"
+            android:visibility="visible"
             app:srcCompat="@drawable/ic_arrow_forward"
-            app:theme="@style/AppTheme" />
+            app:thumbTint="@color/switch_thumb_selector"
+            app:track="@drawable/custom_switch_track_printer"
+            app:trackTint="@color/switch_track_tint"
+            tools:ignore="UseSwitchCompatOrMaterialXml" />
+
     </androidx.appcompat.widget.LinearLayoutCompat>
 
     <View
@@ -532,7 +600,7 @@
             android:gravity="start"
             android:padding="@dimen/_5sdp"
             android:text="@string/tv_show_tip_line_for_cash"
-            android:textColor="@color/viewTextColor"
+            android:textColor="@color/txtColor"
             android:textSize="@dimen/_6mdpi" />
     </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -555,19 +623,25 @@
             android:gravity="start"
             android:padding="@dimen/_5sdp"
             android:text="@string/tv_tip_line_for_cash"
-            android:textColor="@color/viewTextColor"
+            android:textColor="@color/txtColor"
             android:textSize="@dimen/_6mdpi" />
-
-        <androidx.appcompat.widget.SwitchCompat
+        <com.google.android.material.switchmaterial.SwitchMaterial
             android:id="@+id/swtTipCash"
+            style="@style/AppTheme"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
             android:layout_gravity="center"
-            android:checked="true"
-            android:padding="@dimen/_5sdp"
+            android:scaleX="0.7"
+            android:scaleY="0.8"
+            android:showText="false"
+            android:thumb="@drawable/custom_thumb_printer_active_switch"
+            android:visibility="visible"
             app:srcCompat="@drawable/ic_arrow_forward"
-            app:theme="@style/AppTheme" />
+            app:thumbTint="@color/switch_thumb_selector"
+            app:track="@drawable/custom_switch_track_printer"
+            app:trackTint="@color/switch_track_tint"
+            tools:ignore="UseSwitchCompatOrMaterialXml" />
+
     </androidx.appcompat.widget.LinearLayoutCompat>
 
     <View
@@ -595,7 +669,7 @@
             android:gravity="start"
             android:padding="@dimen/_5sdp"
             android:text="@string/tv_show_qr_code"
-            android:textColor="@color/viewTextColor"
+            android:textColor="@color/txtColor"
             android:textSize="@dimen/_6mdpi" />
     </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -618,20 +692,24 @@
             android:gravity="start"
             android:padding="@dimen/_5sdp"
             android:text="@string/tv_qr_code"
-            android:textColor="@color/viewTextColor"
+            android:textColor="@color/txtColor"
             android:textSize="@dimen/_6mdpi" />
-
-        <androidx.appcompat.widget.SwitchCompat
+        <com.google.android.material.switchmaterial.SwitchMaterial
             android:id="@+id/swtQrCode"
+            style="@style/AppTheme"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
             android:layout_gravity="center"
-            android:checked="true"
-            android:padding="@dimen/_5sdp"
-
-            app:theme="@style/AppTheme"
-             />
+            android:scaleX="0.7"
+            android:scaleY="0.8"
+            android:showText="false"
+            android:thumb="@drawable/custom_thumb_printer_active_switch"
+            android:visibility="visible"
+            app:srcCompat="@drawable/ic_arrow_forward"
+            app:thumbTint="@color/switch_thumb_selector"
+            app:track="@drawable/custom_switch_track_printer"
+            app:trackTint="@color/switch_track_tint"
+            tools:ignore="UseSwitchCompatOrMaterialXml" />
     </androidx.appcompat.widget.LinearLayoutCompat>
 
     <View
@@ -660,7 +738,7 @@
             android:gravity="start"
             android:padding="@dimen/_5sdp"
             android:text="@string/tv_show_custom_note"
-            android:textColor="@color/viewTextColor"
+            android:textColor="@color/txtColor"
             android:textSize="@dimen/_6mdpi" />
     </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -685,19 +763,25 @@
             android:gravity="start"
             android:padding="@dimen/_5sdp"
             android:text="@string/tv_custom_note"
-            android:textColor="@color/viewTextColor"
+            android:textColor="@color/txtColor"
             android:textSize="@dimen/_6mdpi" />
-
-        <androidx.appcompat.widget.SwitchCompat
+        <com.google.android.material.switchmaterial.SwitchMaterial
             android:id="@+id/swtCustomNote"
+            style="@style/AppTheme"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
             android:layout_gravity="center"
-            android:checked="true"
-            android:padding="@dimen/_5sdp"
+            android:scaleX="0.7"
+            android:scaleY="0.8"
+            android:showText="false"
+            android:thumb="@drawable/custom_thumb_printer_active_switch"
+            android:visibility="visible"
             app:srcCompat="@drawable/ic_arrow_forward"
-            app:theme="@style/AppTheme" />
+            app:thumbTint="@color/switch_thumb_selector"
+            app:track="@drawable/custom_switch_track_printer"
+            app:trackTint="@color/switch_track_tint"
+            tools:ignore="UseSwitchCompatOrMaterialXml" />
+
     </androidx.appcompat.widget.LinearLayoutCompat>
 
     <View
@@ -721,7 +805,7 @@
             android:gravity="start"
             android:padding="@dimen/_5sdp"
             android:text="@string/tv_join_us"
-            android:textColor="@color/viewTextColor"
+            android:textColor="@color/txtColor"
             android:textSize="@dimen/_6mdpi" />
 
         <androidx.appcompat.widget.AppCompatImageView

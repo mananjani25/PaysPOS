@@ -494,7 +494,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             if (isSpilt) {
                 binding.txtAddCustomer.visibility = View.GONE
             } else {
-                binding.txtAddCustomer.visibility = View.VISIBLE
+                binding.txtAddCustomer.visibility = View.GONE
             }
         }
 
@@ -576,6 +576,19 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 moveToCheckOut()
             }
             R.id.llMessage -> {
+
+                binding.llNoReceipt.background=resources.getDrawable(R.drawable.background_square_border_grey)
+                binding.llNoReceipt.setTextColor(resources.getColor(R.color.txtColor))
+
+                binding.llEmail.background=resources.getDrawable(R.drawable.background_square_border_grey)
+                binding.llEmail.setTextColor(resources.getColor(R.color.txtColor))
+
+                binding.llMessage.background=resources.getDrawable(R.drawable.button_selected)
+                binding.llMessage.setTextColor(resources.getColor(R.color.white))
+
+                binding.llPrint.background=resources.getDrawable(R.drawable.background_square_border_grey)
+                binding.llPrint.setTextColor(resources.getColor(R.color.txtColor))
+
                 type = "Message"
                 binding.linerContent.visibility = View.VISIBLE
                 binding.llSendReceipt.visibility = View.VISIBLE
@@ -587,9 +600,21 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 binding.txtAddCustomer.visibility = View.GONE
                 binding.constraintSplit.visibility = View.GONE
                 binding.viewSplitLine.visibility = View.GONE
+                binding.tvMessage.setText(getString(R.string.please_enter_customer_contact_number))
                 MethodUtils.hideKeyboard(requireActivity())
             }
             R.id.llEmail -> {
+                binding.llNoReceipt.background=resources.getDrawable(R.drawable.background_square_border_grey)
+                binding.llNoReceipt.setTextColor(resources.getColor(R.color.txtColor))
+
+                binding.llEmail.background=resources.getDrawable(R.drawable.button_selected)
+                binding.llEmail.setTextColor(resources.getColor(R.color.white))
+
+                binding.llMessage.background=resources.getDrawable(R.drawable.background_square_border_grey)
+                binding.llMessage.setTextColor(resources.getColor(R.color.txtColor))
+
+                binding.llPrint.background=resources.getDrawable(R.drawable.background_square_border_grey)
+                binding.llPrint.setTextColor(resources.getColor(R.color.txtColor))
 
                 type = "Email"
 
@@ -601,14 +626,37 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 binding.txtHome.visibility = View.GONE
                 binding.txtAddCustomer.visibility = View.GONE
                 binding.llOptions.visibility = View.GONE
+                binding.tvMessage.setText(getString(R.string.please_enter_customer_email_address))
                 MethodUtils.hideKeyboard(requireActivity())
             }
             R.id.llNoReceipt -> {
+                binding.llNoReceipt.background=resources.getDrawable(R.drawable.button_selected)
+                binding.llNoReceipt.setTextColor(resources.getColor(R.color.white))
 
+                binding.llEmail.background=resources.getDrawable(R.drawable.background_square_border_grey)
+                binding.llEmail.setTextColor(resources.getColor(R.color.txtColor))
+
+                binding.llMessage.background=resources.getDrawable(R.drawable.background_square_border_grey)
+                binding.llMessage.setTextColor(resources.getColor(R.color.txtColor))
+
+                binding.llPrint.background=resources.getDrawable(R.drawable.background_square_border_grey)
+                binding.llPrint.setTextColor(resources.getColor(R.color.txtColor))
                 moveToDashboard()
             }
             R.id.llPrint -> {
                 //removeCustomer()
+                binding.llPrint.background=resources.getDrawable(R.drawable.button_selected)
+                binding.llPrint.setTextColor(resources.getColor(R.color.white))
+
+                binding.llEmail.background=resources.getDrawable(R.drawable.background_square_border_grey)
+                binding.llEmail.setTextColor(resources.getColor(R.color.txtColor))
+
+                binding.llMessage.background=resources.getDrawable(R.drawable.background_square_border_grey)
+                binding.llMessage.setTextColor(resources.getColor(R.color.txtColor))
+
+                binding.llNoReceipt.background=resources.getDrawable(R.drawable.background_square_border_grey)
+                binding.llNoReceipt.setTextColor(resources.getColor(R.color.txtColor))
+
                 if (isDineIn) {
                     Log.e(TAG, "receiptModel:  ${Gson().toJson(receiptModel)}")
                     customerPrintWholeOrder()
@@ -4875,7 +4923,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         binding.llSendReceipt.visibility = View.GONE
         binding.imgBack.visibility = View.GONE
         binding.txtHome.visibility = View.VISIBLE
-        binding.txtAddCustomer.visibility = View.VISIBLE
+        binding.txtAddCustomer.visibility = View.GONE
         binding.llOptions.visibility = View.VISIBLE
     }
 

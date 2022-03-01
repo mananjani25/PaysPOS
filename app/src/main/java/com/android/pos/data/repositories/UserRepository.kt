@@ -11,8 +11,8 @@ class UserRepository @Inject constructor(
 
     suspend fun userLogIn(data: HashMap<String, String>) = apiHelperNew.userLogIn(data)
 
-    suspend fun getDefaultTerminal(uniq_id: String) =
-        apiHelperNew.getDefaultTerminal(uniq_id)
+    suspend fun getDefaultTerminal(uniq_id: String,device_token:String) =
+        apiHelperNew.getDefaultTerminal(uniq_id,device_token)
 
     suspend fun employeeClockIn(data: HashMap<String, String>) = apiHelperNew.employeeClockIn(data)
 

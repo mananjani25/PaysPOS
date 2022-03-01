@@ -37,7 +37,7 @@
             android:padding="@dimen/_9sdp"
             android:theme="@style/SpinnerTheme" />
 
-        <AutoCompleteTextView
+        <androidx.appcompat.widget.AppCompatAutoCompleteTextView
             android:id="@+id/edtStreet"
             style="@style/CustomFontMediumStyle"
             android:layout_width="match_parent"
