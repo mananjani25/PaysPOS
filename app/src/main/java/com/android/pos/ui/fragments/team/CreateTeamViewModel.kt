@@ -30,7 +30,7 @@ class CreateTeamViewModel @Inject constructor(
 
     private lateinit var createEmployeeData: CreateEmployeeRequestModel
 
-    val locationId = prefProvider.getValueInt(LOCATION_ID, 0)
+    var locationId = 0
     private var taxId: Int = -1
     private var roleId: Int = -1
 
@@ -112,7 +112,7 @@ class CreateTeamViewModel @Inject constructor(
                 lastName = value?.lastName
                 phoneNumber = value?.phoneNumber?.replace(("[\\D]").toRegex(), "")!!
                 email = value?.email!!
-                locationId = prefProvider.getValueInt(LOCATION_ID, -1)
+                locationId = locationId
                 passcode = value?.passcode.toString()
                 isActive = true
                 team_role_id = roleId
