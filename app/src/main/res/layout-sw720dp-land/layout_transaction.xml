@@ -104,11 +104,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_marginTop="@dimen/_5sdp"
-            android:layout_marginBottom="@dimen/_5sdp"
-
+            android:layout_marginVertical="@dimen/_3sdp"
             android:gravity="start|center"
-
             android:orientation="horizontal">
 
             <androidx.appcompat.widget.AppCompatTextView
@@ -120,7 +117,7 @@
                 android:layout_marginRight="@dimen/_5sdp"
                 android:text="@string/tv_start_date"
                 android:textColor="@color/txtColor"
-                android:textSize="@dimen/_6mdpi" />
+                android:textSize="@dimen/text_size_medium" />
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -148,7 +145,7 @@
                     android:gravity="center"
                     android:text="@{includeLayoutViewModel.startDate}"
                     android:textColor="@color/txtColor"
-                    android:textSize="@dimen/_7sdp"
+                    android:textSize="@dimen/_5sdp"
                     tools:text="2021-08-10" />
             </LinearLayout>
 
@@ -187,22 +184,22 @@
                     android:layout_gravity="center"
                     android:text="@{includeLayoutViewModel.endDate}"
                     android:textColor="@color/txtColor"
-                    android:textSize="@dimen/_7sdp"
+                    android:textSize="@dimen/_5sdp"
                     tools:text="2021-08-10" />
             </LinearLayout>
 
             <RelativeLayout
                 android:layout_width="@dimen/_80sdp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_marginStart="@dimen/_5sdp"
                 android:background="@drawable/background_transaction_labels"
                 android:orientation="horizontal"
-                android:padding="@dimen/_3sdp">
+                >
 
                 <Spinner
                     android:id="@+id/spTerminals"
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/_14sdp"
+                    android:layout_height="match_parent"
                     android:layout_gravity="center"
                     android:background="@null"
                     android:inputType="text"
@@ -212,7 +209,7 @@
 
                 <androidx.appcompat.widget.AppCompatImageView
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_alignParentEnd="true"
                     android:layout_centerVertical="true"
                     android:layout_gravity="center"
@@ -225,37 +222,32 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/_5sdp"
+            android:layout_marginVertical="@dimen/_3sdp"
             android:baselineAligned="false"
             android:orientation="horizontal">
 
             <RelativeLayout
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="@dimen/_16sdp"
                 android:layout_marginStart="@dimen/_5sdp"
                 android:layout_weight="1"
                 android:background="@drawable/background_transaction_labels"
                 android:orientation="horizontal"
-                android:padding="@dimen/border_view_padding_normal">
+                >
 
                 <Spinner
                     android:id="@+id/spOrders"
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/_14sdp"
+                    android:layout_height="match_parent"
                     android:layout_gravity="center"
                     android:background="@null"
-                    android:imeOptions="actionNext"
-                    android:inputType="text"
-
-                    android:overlapAnchor="false"
                     android:spinnerMode="dropdown"
-                    android:textSize="@dimen/_8sdp"
-                    android:theme="@style/SpinnerThemeDarkMode"
-                    tools:ignore="NestedWeights" />
+                    android:textSize="@dimen/_5mdpi"
+                    android:theme="@style/SpinnerThemeDarkMode" />
 
                 <androidx.appcompat.widget.AppCompatImageView
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:layout_alignParentEnd="true"
                     android:layout_centerVertical="true"
                     android:layout_gravity="center"
@@ -264,7 +256,7 @@
 
             <RelativeLayout
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="@dimen/_20sdp"
                 android:layout_marginStart="@dimen/_5sdp"
                 android:layout_weight="1"
                 android:background="@drawable/bg_border"
@@ -274,7 +266,7 @@
                 <Spinner
                     android:id="@+id/spTipTypes"
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/_14sdp"
+                    android:layout_height="match_parent"
                     android:layout_gravity="center"
                     android:background="@null"
                     android:imeOptions="actionNext"
@@ -295,17 +287,17 @@
 
             <RelativeLayout
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="@dimen/_16sdp"
                 android:layout_marginStart="@dimen/_5sdp"
                 android:layout_weight="1"
                 android:background="@drawable/background_transaction_labels"
                 android:orientation="horizontal"
-                android:padding="@dimen/border_view_padding_normal">
+                >
 
                 <Spinner
                     android:id="@+id/spTransactionTypes"
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/_14sdp"
+                    android:layout_height="match_parent"
                     android:layout_gravity="center"
                     android:background="@null"
                     android:imeOptions="actionNext"
@@ -327,17 +319,17 @@
 
             <RelativeLayout
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="@dimen/_16sdp"
                 android:layout_marginStart="@dimen/_5sdp"
                 android:layout_weight="1"
                 android:background="@drawable/background_transaction_labels"
                 android:orientation="horizontal"
-                android:padding="@dimen/border_view_padding_normal">
+                >
 
                 <Spinner
                     android:id="@+id/spRoles"
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/_14sdp"
+                    android:layout_height="match_parent"
                     android:layout_gravity="center"
                     android:background="@null"
                     android:imeOptions="actionNext"
@@ -359,18 +351,18 @@
 
             <RelativeLayout
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="@dimen/_16sdp"
                 android:layout_marginStart="@dimen/_5sdp"
                 android:layout_marginEnd="@dimen/_5sdp"
                 android:layout_weight="1"
                 android:background="@drawable/background_transaction_labels"
                 android:orientation="horizontal"
-                android:padding="@dimen/border_view_padding_normal">
+                >
 
                 <Spinner
                     android:id="@+id/spEmployees"
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/_14sdp"
+                    android:layout_height="match_parent"
                     android:layout_gravity="center"
                     android:background="@null"
                     android:imeOptions="actionNext"
