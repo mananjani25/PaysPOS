@@ -142,4 +142,6 @@
         <item name="android:fontFamily">@font/sf_pro_display_regular</item>
         <item name="android:textSize">@dimen/_6mdpi</item>
     </style>
+
+
 </resources>

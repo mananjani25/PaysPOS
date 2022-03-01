@@ -12,8 +12,8 @@ class CategoryAdapter(
     val context: Context,
     var list: ArrayList<CategoryTabModel>,
     val listner: CategoryTabAdapter1.TabListner
-) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+) : RecyclerView.Adapter<CategoryAdapter.MyViewHolder>() {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
         return MyViewHolder(
             ViewBoldCategoryBinding.inflate(
                 LayoutInflater.from(parent.context),
@@ -25,10 +25,18 @@ class CategoryAdapter(
 
     inner class MyViewHolder(private val binding: ViewBoldCategoryBinding) :
         RecyclerView.ViewHolder(binding.root) {
+        fun bind(model: CategoryTabModel) {
+            binding.txtCategoryName.isSelected = model.isSelected
+            binding.txtCategoryName.setText(model.title)
+
+
+        }
 
     }
 
-    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
+        holder.bind(list.get(position))
+
 
     }
 

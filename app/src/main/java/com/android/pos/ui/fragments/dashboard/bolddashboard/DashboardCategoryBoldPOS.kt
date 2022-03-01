@@ -26,8 +26,14 @@ class DashboardCategoryBoldPOS : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         onClick()
         loadCartFragment(CartFragment())
+        loadCategoryFragment(CategoryFragment())
 
 
+    }
+
+    private fun loadCategoryFragment(fragment:Fragment){
+        val fm:FragmentManager = requireActivity().supportFragmentManager
+        fm.beginTransaction().replace(binding.frameLayout.id,fragment).commit()
     }
 
     private fun loadCartFragment(frag:Fragment){
