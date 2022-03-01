@@ -36,5 +36,9 @@
     <dimen name="text_size_normal">@dimen/_5sdp</dimen>
     <dimen name="text_size_small">@dimen/_3sdp</dimen>
 
+    <dimen name="box_size">@dimen/_25sdp</dimen>
+    <dimen name="btn_size">@dimen/_25sdp</dimen>
+
+
 
 </resources>
