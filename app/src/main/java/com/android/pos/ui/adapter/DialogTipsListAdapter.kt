@@ -7,7 +7,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.R
 import com.android.pos.data.model.responseModel.GetTipReponse
 import com.android.pos.data.model.responseModel.NoteResponse
-import com.android.pos.databinding.ViewDialogDiscountListBinding
 import com.android.pos.databinding.ViewDialogTipsListBinding
 
 class DialogTipsListAdapter : RecyclerView.Adapter<DialogTipsListAdapter.MyViewHolder>() {
@@ -19,14 +18,14 @@ class DialogTipsListAdapter : RecyclerView.Adapter<DialogTipsListAdapter.MyViewH
         fun bind(model: GetTipReponse.Data, position: Int) {
             if (selectedPosition == position) {
                 binding.linearParent.background =
-                    binding.root.context.getDrawable(R.drawable.background_txt_color)
+                    binding.root.context.getDrawable(R.drawable.button_selected)
                 binding.txtValue.setTextColor(binding.root.context.resources.getColor(R.color.white))
                 binding.txtName.setTextColor(binding.root.context.resources.getColor(R.color.white))
 
 
             } else {
                 binding.linearParent.background =
-                    binding.root.context.getDrawable(R.drawable.background_drawer_button)
+                    binding.root.context.getDrawable(R.drawable.background_square_border_grey)
                 binding.txtValue.setTextColor(binding.root.context.resources.getColor(R.color.txtColor))
                 binding.txtName.setTextColor(binding.root.context.resources.getColor(R.color.txtColor))
             }

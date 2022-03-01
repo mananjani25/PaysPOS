@@ -79,16 +79,12 @@
                     android:layout_marginRight="@dimen/_30sdp"
                     android:orientation="vertical">
 
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:layout_below="@+id/txtDone"
-                        android:background="@color/view" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal">
+                        android:orientation="horizontal"
+                        android:background="@drawable/background_square_border_grey">
 
                         <androidx.appcompat.widget.AppCompatTextView
                             style="@style/CustomFontSemiBold"
@@ -97,6 +93,7 @@
                             android:layout_gravity="center"
                             android:layout_weight="1"
                             android:padding="@dimen/_5sdp"
+                            android:visibility="gone"
                             android:text="@string/tv_variation_name_mand"
                             android:textColor="@color/txtColor"
                             android:textSize="@dimen/_5mdpi" />
@@ -104,15 +101,15 @@
                         <androidx.appcompat.widget.AppCompatEditText
                             android:id="@+id/etVariationsName"
                             style="@style/CustomFontSemiBold"
-                            android:layout_width="wrap_content"
+                            android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_gravity="end"
+                            android:layout_gravity="center_vertical"
                             android:background="@null"
-                            android:gravity="end"
-                            android:hint="Variation Name"
+                            android:gravity="start"
+                            android:padding="@dimen/_9sdp"
+                            android:hint="@string/tv_variation_name"
                             android:imeOptions="actionNext"
                             android:inputType="textVisiblePassword"
-                            android:padding="@dimen/_5sdp"
                             android:textColor="@color/txtColor"
                             android:textColorHint="@color/hintColor"
                             android:textSize="@dimen/_5mdpi" />
@@ -123,22 +120,19 @@
                 <androidx.appcompat.widget.LinearLayoutCompat
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="@dimen/_25sdp"
-                    android:layout_marginRight="@dimen/_25sdp"
+                    android:layout_marginLeft="@dimen/_20sdp"
+                    android:layout_marginRight="@dimen/_20sdp"
                     android:layout_marginBottom="@dimen/_25sdp"
                     android:orientation="vertical"
                     android:padding="@dimen/_10sdp"
                     android:visibility="visible">
 
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:background="@color/view" />
 
                     <androidx.appcompat.widget.LinearLayoutCompat
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal">
+                        android:orientation="horizontal"
+                        android:background="@drawable/background_square_border_grey">
 
                         <androidx.appcompat.widget.AppCompatTextView
                             style="@style/CustomFontSemiBold"
@@ -146,7 +140,7 @@
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
                             android:layout_weight="1"
-                            android:padding="@dimen/_5sdp"
+                            android:padding="@dimen/_9sdp"
                             android:text="@string/tv_unit"
                             android:textColor="@color/txtColor"
                             android:textSize="@dimen/_5mdpi" />
@@ -155,7 +149,7 @@
                             android:layout_width="@dimen/_80sdp"
                             android:orientation="horizontal"
                             android:layout_gravity="center_vertical"
-                            android:background="@drawable/bg_spinner"
+                            android:background="@drawable/background_square_border_grey"
                             android:layout_height="@dimen/_14sdp">
 
                             <Spinner
@@ -168,6 +162,7 @@
                                 android:background="@null"
                                 android:overlapAnchor="false"
                                 android:spinnerMode="dropdown"
+
                                 android:textSize="@dimen/_5mdpi" />
 
                             <ImageView
@@ -178,17 +173,15 @@
                         </FrameLayout>
                     </androidx.appcompat.widget.LinearLayoutCompat>
 
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:background="@color/view" />
 
 
                     <androidx.appcompat.widget.LinearLayoutCompat
                         android:id="@+id/llPrice"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal">
+                        android:orientation="horizontal"
+                        android:layout_marginTop="@dimen/_10sdp"
+                        android:background="@drawable/background_square_border_grey">
 
                         <androidx.appcompat.widget.AppCompatTextView
                             style="@style/CustomFontSemiBold"
@@ -196,7 +189,7 @@
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
                             android:layout_weight="1"
-                            android:padding="@dimen/_5sdp"
+                            android:padding="@dimen/_9sdp"
                             android:text="@string/price"
                             android:textColor="@color/txtColor"
                             android:textSize="@dimen/_5mdpi" />
@@ -213,7 +206,7 @@
                             android:maxLength="11"
                             android:imeOptions="actionNext"
                             android:inputType="numberDecimal"
-                            android:padding="@dimen/_5sdp"
+                            android:padding="@dimen/_9sdp"
                             android:textColor="@color/txtColor"
                             android:textColorHint="@color/hintColor"
                             android:textSize="@dimen/_5mdpi"
@@ -221,22 +214,20 @@
 
                     </androidx.appcompat.widget.LinearLayoutCompat>
 
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:background="@color/view" />
 
                     <androidx.appcompat.widget.LinearLayoutCompat
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal">
+                        android:orientation="horizontal"
+                        android:layout_marginTop="@dimen/_10sdp"
+                        android:background="@drawable/background_square_border_grey">
 
                         <androidx.appcompat.widget.AppCompatTextView
                             style="@style/CustomFontSemiBold"
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:padding="@dimen/_5sdp"
+                            android:padding="@dimen/_9sdp"
                             android:text="@string/sku"
                             android:textColor="@color/txtColor"
                             android:textSize="@dimen/_5mdpi" />
@@ -253,7 +244,7 @@
                             android:maxLength="200"
                             android:imeOptions="actionNext"
                             android:inputType="textVisiblePassword"
-                            android:padding="@dimen/_5sdp"
+                            android:padding="@dimen/_9sdp"
                             android:textColor="@color/txtColor"
                             android:textColorHint="@color/hintColor"
                             android:textSize="@dimen/_5mdpi"
@@ -261,15 +252,13 @@
 
                     </androidx.appcompat.widget.LinearLayoutCompat>
 
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:background="@color/view" />
 
                     <androidx.appcompat.widget.LinearLayoutCompat
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal">
+                        android:orientation="horizontal"
+                        android:layout_marginTop="@dimen/_10sdp"
+                        android:background="@drawable/background_square_border_grey">
 
                         <androidx.appcompat.widget.AppCompatTextView
                             style="@style/CustomFontSemiBold"
@@ -277,7 +266,7 @@
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
                             android:layout_weight="1"
-                            android:padding="@dimen/_5sdp"
+                            android:padding="@dimen/_9sdp"
                             android:text="@string/stock"
                             android:maxLength="5"
                             android:textColor="@color/txtColor"
@@ -295,7 +284,7 @@
                             android:maxLength="5"
                             android:imeOptions="actionNext"
                             android:inputType="number"
-                            android:padding="@dimen/_5sdp"
+                            android:padding="@dimen/_9sdp"
                             android:textColor="@color/txtColor"
                             android:textColorHint="@color/hintColor"
                             android:textSize="@dimen/_5mdpi"
@@ -303,10 +292,6 @@
 
                     </androidx.appcompat.widget.LinearLayoutCompat>
 
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:background="@color/view" />
 
                 </androidx.appcompat.widget.LinearLayoutCompat>
             </LinearLayout>

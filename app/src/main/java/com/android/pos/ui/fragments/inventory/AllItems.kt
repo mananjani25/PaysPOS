@@ -36,7 +36,7 @@ class AllItems : Fragment() {
     private var deletePos: Int = -1
     private var deleteObj: TbItem? = null
     private lateinit var adapter: ItemListAdapter
-    private lateinit var binding: com.android.pos.databinding.FragmentItemsBinding
+    private lateinit var binding: FragmentItemsBinding
     private val viewModel by viewModels<ItemsViewModel>()
 
     var dragFrom = -1
@@ -231,7 +231,7 @@ class AllItems : Fragment() {
 
     private fun itemsObserver() {
 
-        viewModel._getItems().observe(viewLifecycleOwner, {
+        viewModel._getItems().observe(viewLifecycleOwner) {
 
             it?.let { resource ->
                 when (resource.status) {
@@ -255,7 +255,7 @@ class AllItems : Fragment() {
             }
 
 
-        })
+        }
     }
 
     private fun deleteObserver() {

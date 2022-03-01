@@ -32,7 +32,7 @@
             android:paddingEnd="@dimen/_1sdp"
             android:paddingBottom="@dimen/_5sdp"
             android:text="@{model.title}"
-            android:textColor="@{model.isSelected ? @color/drawerBack : @color/drawerBack40}"
+            android:textColor="@{model.isSelected ? @color/txt_color_blue : @color/txtColor}"
             android:textSize="@dimen/_5mdpi" />
 
         <View

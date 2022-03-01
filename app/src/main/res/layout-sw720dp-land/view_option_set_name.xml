@@ -22,7 +22,6 @@
     <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/bg_color"
         android:layout_marginBottom="@dimen/_10sdp"
         android:orientation="vertical">
 
@@ -35,7 +34,6 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:background="@drawable/background_sales_charge"
                 android:orientation="vertical">
 
 
@@ -51,7 +49,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:layout_weight="1"
-                        android:background="@drawable/background_sales_charge"
+                        android:background="@drawable/background_square_border_grey"
                         android:gravity="start"
                         android:padding="@dimen/_5sdp"
                         android:text="@{optionSetListModel.name+` Options`}"
@@ -64,9 +62,10 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/bg_option"
+                    android:background="@drawable/background_square_border_grey"
                     android:orientation="horizontal"
-                    android:padding="@dimen/_5sdp">
+                    android:padding="@dimen/_5sdp"
+                    android:layout_marginTop="@dimen/_10sdp">
 
                     <androidx.appcompat.widget.AppCompatTextView
                         style="@style/CustomFontMediumStyle"
@@ -110,6 +109,7 @@
             android:id="@+id/rvOptionList"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_marginTop="@dimen/_10sdp"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
     </androidx.appcompat.widget.LinearLayoutCompat>
 </layout>

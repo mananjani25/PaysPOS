@@ -6,7 +6,8 @@
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:background="@color/bg_color">
 
         <androidx.appcompat.widget.LinearLayoutCompat
             android:layout_width="match_parent"
@@ -42,7 +43,6 @@
                     android:textSize="@dimen/_6mdpi" />
 
                 <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/txtSave"
                     style="@style/CustomFontSemiBold"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -55,6 +55,7 @@
                     android:paddingEnd="@dimen/_15sdp"
                     android:paddingBottom="@dimen/_7sdp"
                     android:text="Add"
+                    android:visibility="gone"
                     android:textColor="@color/white"
                     android:textSize="@dimen/_6mdpi" />
             </RelativeLayout>
@@ -142,30 +143,29 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginEnd="@dimen/_2sdp"
-                            android:background="@drawable/background_discount_unselected"
                             android:paddingVertical="@dimen/_4sdp"
                             android:paddingStart="@dimen/_7sdp"
                             android:paddingEnd="@dimen/_7sdp"
-                            android:text="%" />
+                            android:text="%"
+                            android:background="@drawable/background_square_border_grey"
+                            android:textColor="@color/txtColor"/>
 
                         <TextView
                             android:id="@+id/txtCurrencyDollar"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="@dimen/_2sdp"
-                            android:background="@drawable/background_discount_selected"
                             android:paddingVertical="@dimen/_4sdp"
                             android:paddingStart="@dimen/_7sdp"
                             android:paddingEnd="@dimen/_7sdp"
-                            android:text="$" />
+                            android:text="$"
+                            android:background="@drawable/background_square_border_grey"
+                            android:textColor="@color/txtColor"/>
 
 
                     </LinearLayout>
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
-
-
-
 
                 <include
                     android:id="@+id/llKeypad"
@@ -179,9 +179,7 @@
                     android:id="@+id/rvDiscountList"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/_10sdp"
                     android:layout_marginTop="@dimen/_10sdp"
-                    android:layout_marginEnd="@dimen/_10sdp"
                     tools:itemCount="3"
                     tools:listitem="@layout/view_dialog_discount_list" />
 
@@ -352,38 +350,35 @@
                 </androidx.appcompat.widget.LinearLayoutCompat>
 
                 <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/txtClear"
+                    android:id="@+id/txtSave"
                     style="@style/CustomFontBold"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="@dimen/_25sdp"
                     android:layout_gravity="center"
-                    android:layout_marginStart="@dimen/_10sdp"
                     android:layout_marginTop="@dimen/_10sdp"
-                    android:layout_marginEnd="@dimen/_10sdp"
                     android:layout_weight="1"
-                    android:background="@drawable/background_drawer_button"
+                    android:background="@drawable/button_selected"
                     android:gravity="center"
                     android:padding="@dimen/_5sdp"
-                    android:text="Clear"
-                    android:textColor="@color/btnColorDark_"
-                    android:textSize="@dimen/_5mdpi" />
+                    android:text="Add"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/_5mdpi"
+                    android:visibility="visible"/>
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/txtRemoveDiscount"
                     style="@style/CustomFontBold"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="@dimen/_25sdp"
                     android:layout_gravity="center"
-                    android:layout_marginStart="@dimen/_10sdp"
                     android:layout_marginTop="@dimen/_10sdp"
-                    android:layout_marginEnd="@dimen/_10sdp"
                     android:layout_weight="1"
-                    android:background="@drawable/background_drawer_button"
+                    android:background="@color/btnColor"
                     android:gravity="center"
-                    android:visibility="gone"
+                    android:visibility="visible"
                     android:padding="@dimen/_5sdp"
                     android:text="@string/remove_discount"
-                    android:textColor="@color/btnColorDark_"
+                    android:textColor="@color/white"
                     android:textSize="@dimen/_5mdpi" />
 
             </androidx.appcompat.widget.LinearLayoutCompat>

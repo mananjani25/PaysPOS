@@ -159,7 +159,7 @@ class AddTipsDialog : DialogFragment(), DialogTipsListAdapter.DiscountInterface,
 
     private fun setupData() {
 
-        binding.txtClear.setOnClickListener {
+        binding.llKeypad.txtClear.setOnClickListener {
 
             binding.edtAmount.setText("0.00")
 
