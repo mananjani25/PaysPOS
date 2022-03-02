@@ -18,6 +18,15 @@ class ItemModifierAdapter(private val maxAllowed: Int, private val minRequired: 
         fun bind(item: Modifier) {
             binding.model = item
             binding.executePendingBindings()
+            if (list[position].isChecked) {
+                binding.llMain.setBackgroundResource(R.drawable.bg_squre_modifier_choose)
+                binding.edtName.setTextColor(binding.root.context.resources.getColor(R.color.white))
+                binding.edtPrice.setTextColor(binding.root.context.resources.getColor(R.color.white))
+            } else {
+                binding.llMain.setBackgroundResource(R.drawable.bg_squre_modifier)
+                binding.edtName.setTextColor(binding.root.context.resources.getColor(R.color.txtColor))
+                binding.edtPrice.setTextColor(binding.root.context.resources.getColor(R.color.txtColor))
+            }
         }
 
         init {

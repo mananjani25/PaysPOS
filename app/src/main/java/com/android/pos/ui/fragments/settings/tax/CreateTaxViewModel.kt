@@ -43,7 +43,7 @@ class CreateTaxViewModel @Inject constructor(
 
     private var isEdit: Boolean = false
 
-    private var enableTaxViewModel: Boolean = false
+    private var enableTaxViewModel: Boolean = true
     private var customAmountViewModel: Boolean = false
     private var taxTypeViewModel: String = "Percentage"
     private var itemIdsViewModel = ArrayList<Int>()
@@ -60,7 +60,7 @@ class CreateTaxViewModel @Inject constructor(
     fun setTaxData(taxData: TaxData) {
         createTaxDetails.value?.name = taxData.name!!
         createTaxDetails.value?.rate = taxData.rate
-        enableTaxViewModel = taxData.isDefault
+        enableTaxViewModel = enableTaxViewModel
         customAmountViewModel = taxData.isCustomAmount
         taxTypeViewModel = taxData.taxType.toString()
 

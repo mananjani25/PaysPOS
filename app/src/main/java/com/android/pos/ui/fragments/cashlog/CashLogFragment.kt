@@ -54,13 +54,14 @@ class CashLogFragment : Fragment(), AdapterView.OnItemSelectedListener {
     ): View? {
         binding = FragmentCashLogBinding.inflate(inflater, container, false)
         binding.viewModel = viewModel
+        viewModel.setCurrentDate(myCalendar)
         binding.lifecycleOwner = this
         return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        viewModel.setCurrentDate(myCalendar)
+
         viewModel.setNumerFormat()
         setupData()
         startDatePickerObserver()

@@ -20,6 +20,7 @@
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/_2sdp"
         android:orientation="horizontal"
+        android:background="@drawable/border_with_square_outlinne"
         android:padding="@dimen/_2sdp">
 
         <androidx.appcompat.widget.AppCompatTextView
