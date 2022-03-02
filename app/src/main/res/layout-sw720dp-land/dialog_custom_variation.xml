@@ -202,7 +202,7 @@
                             android:layout_gravity="end"
                             android:background="@null"
                             android:gravity="end"
-                            android:hint="$0.0"
+                            android:hint="$0.00"
                             android:maxLength="11"
                             android:imeOptions="actionNext"
                             android:inputType="numberDecimal"

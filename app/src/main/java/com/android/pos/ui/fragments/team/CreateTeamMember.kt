@@ -75,7 +75,7 @@ class CreateTeamMember : Fragment() {
             employeeModel!!.teamRoleId?.let { viewModel.setRoleId(it) }
             viewModel.setTaxData(employeeModel!!)
             viewModel.isEditData(true, employeeModel!!.id)
-
+            viewModel.locationId = employeeModel!!.locationId
 
             employeeModel?.teamRoleId?.let { viewModel.roleNameById(it) }
                 ?.observe(
@@ -136,8 +136,6 @@ class CreateTeamMember : Fragment() {
             }
 
             viewModel.createTaxDetails.value?.hourly_wages = hours
-            viewModel.createTaxDetails.value?.locationId =
-                prefProvider.getValueInt(Constants.TERMINAL_ID, -1)
 
             viewModel.submit()
         }
@@ -224,6 +222,7 @@ class CreateTeamMember : Fragment() {
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
 
         binding.edtCountry.adapter = adapter
+
         binding.edtCountry.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(
                 parent: AdapterView<*>?,
@@ -237,7 +236,10 @@ class CreateTeamMember : Fragment() {
                         view?.context,
                         com.android.pos.R.style.SpinnerTheme
                     )
+                    viewModel.locationId = position
                 } else {
+
+                    viewModel.locationId = position
                     (parent?.getChildAt(0) as TextView).setTextAppearance(R.style.SpinnerTheme); }
 
 
@@ -248,6 +250,7 @@ class CreateTeamMember : Fragment() {
             }
 
         }
+        binding.edtCountry.setSelection(viewModel!!.locationId)
     }
 
 }

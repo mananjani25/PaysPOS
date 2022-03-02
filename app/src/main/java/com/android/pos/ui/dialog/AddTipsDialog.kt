@@ -168,7 +168,6 @@ class AddTipsDialog : DialogFragment(), DialogTipsListAdapter.DiscountInterface,
         }
         binding.imgBack.setOnClickListener {
             findNavController().navigateUp()
-
         }
 
         binding.txtSave.setOnClickListener {
