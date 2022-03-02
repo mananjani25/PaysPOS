@@ -34,6 +34,7 @@
             android:padding="@dimen/_4sdp"
             android:text="@{variationModel.name}"
             android:textSize="@dimen/_5mdpi"
+            android:textColor="@color/txtColor"
             tools:text="Modifier one" />
 
         <androidx.appcompat.widget.AppCompatTextView
@@ -45,6 +46,8 @@
             android:background="@null"
             android:gravity="start"
             android:hint="@string/_0_00"
+            android:textColorHint="@color/hint_color"
+            android:textColor="@color/txtColor"
             android:inputType="numberDecimal"
             android:padding="@dimen/_3sdp"
             android:textSize="@dimen/_5mdpi" />

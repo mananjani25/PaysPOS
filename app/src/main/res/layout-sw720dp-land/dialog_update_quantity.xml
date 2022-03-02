@@ -7,13 +7,13 @@
     <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/white"
+        android:background="@color/bg_color"
         android:minWidth="@dimen/_250sdp"
         android:orientation="vertical">
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="@dimen/_25sdp">
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/imgBack"
@@ -24,7 +24,7 @@
                 android:background="?attr/selectableItemBackground"
                 android:padding="@dimen/_4sdp"
                 app:srcCompat="@drawable/ic_cancel_black"
-                app:tint="@color/viewTextColor" />
+                app:tint="@color/txtColor" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/txtTitle"
@@ -36,13 +36,13 @@
                 android:gravity="center"
                 android:text="@string/create_item"
                 android:textColor="@color/txtColor"
-                android:textSize="@dimen/_6mdpi" />
+                android:textSize="@dimen/_7mdpi" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/txtSave"
                 style="@style/CustomFontSemiBold"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_alignParentEnd="true"
                 android:layout_gravity="center"
                 android:background="@color/btnColor"
@@ -73,7 +73,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="vertical"
-                android:padding="@dimen/_20sdp">
+                android:paddingVertical="@dimen/_10sdp"
+                android:paddingHorizontal="@dimen/_20sdp">
 
 
                 <androidx.appcompat.widget.AppCompatTextView
@@ -84,7 +85,7 @@
                     android:layout_gravity="center"
                     android:layout_marginTop="@dimen/_5sdp"
                     android:paddingBottom="@dimen/_5sdp"
-                    android:textColor="@color/viewTextColor"
+                    android:textColor="@color/txtColor"
                     android:textSize="@dimen/_5mdpi"
                     app:textAllCaps="true" />
 
@@ -95,14 +96,14 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="top"
                     android:layout_marginTop="@dimen/_3sdp"
-                    android:background="@drawable/edt_border_light_gray"
+                    android:background="@drawable/background_square_border_grey"
                     android:ellipsize="end"
                     android:gravity="top"
                     android:inputType="textMultiLine"
                     android:minLines="1"
-                    android:padding="@dimen/_5sdp"
+                    android:padding="@dimen/_9sdp"
                     android:singleLine="true"
-                    android:textColor="@color/black"
+                    android:textColor="@color/txtColor"
                     android:textColorHint="@color/hintColor"
                     android:textSize="@dimen/_5ssp" />
 
@@ -130,7 +131,7 @@
                     android:layout_marginTop="@dimen/_5sdp"
                     android:paddingBottom="@dimen/_5sdp"
                     android:text="@string/quantity"
-                    android:textColor="@color/viewTextColor"
+                    android:textColor="@color/txtColor"
                     android:textSize="@dimen/_5mdpi"
                     app:textAllCaps="true" />
 
@@ -170,7 +171,7 @@
                         android:maxLength="5"
                         android:padding="@dimen/_5sdp"
                         android:text="1"
-                        android:textColor="@color/viewTextColor"
+                        android:textColor="@color/txtColor"
                         android:textSize="@dimen/_6mdpi" />
 
                     <androidx.appcompat.widget.LinearLayoutCompat
@@ -199,7 +200,7 @@
                     android:layout_marginTop="@dimen/_10sdp"
                     android:paddingBottom="@dimen/_5sdp"
                     android:text="@string/notes"
-                    android:textColor="@color/viewTextColor"
+                    android:textColor="@color/txtColor"
                     android:textSize="@dimen/_5mdpi"
                     app:textAllCaps="true" />
 
@@ -209,13 +210,14 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="top"
-                    android:background="@drawable/edt_border_light_gray"
+                    android:background="@drawable/background_square_border_grey"
                     android:gravity="top"
                     android:hint="@string/add_note"
-                    android:inputType="textMultiLine"
+                    android:inputType="textVisiblePassword|textMultiLine"
                     android:minLines="3"
                     android:padding="@dimen/_5sdp"
-                    android:textColor="@color/black"
+
+                    android:textColor="@color/txtColor"
                     android:textColorHint="@color/hintColor"
                     android:textSize="@dimen/_6ssp" />
 
@@ -235,11 +237,11 @@
                         android:layout_gravity="center"
                         android:layout_marginEnd="@dimen/_5sdp"
                         android:layout_weight="1"
-                        android:background="@drawable/bg_button_border_gray"
+                        android:background="@drawable/button_selected"
                         android:gravity="center"
                         android:padding="@dimen/_5sdp"
                         android:text="@string/remove_item"
-                        android:textColor="@color/btnColor"
+                        android:textColor="@color/white"
                         android:textSize="@dimen/_6mdpi"
                         app:textAllCaps="false" />
 
@@ -252,11 +254,11 @@
                         android:layout_gravity="center"
                         android:layout_marginStart="@dimen/_5sdp"
                         android:layout_weight="1"
-                        android:background="@drawable/bg_button_border_gray"
+                        android:background="@drawable/button_selected"
                         android:gravity="center"
                         android:padding="@dimen/_5sdp"
                         android:text="@string/add_discount"
-                        android:textColor="@color/btnColor"
+                        android:textColor="@color/white"
                         android:textSize="@dimen/_6mdpi"
                         android:visibility="visible"
                         app:textAllCaps="false" />
