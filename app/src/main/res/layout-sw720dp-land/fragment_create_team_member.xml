@@ -157,11 +157,14 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:background="@null"
-                            android:enabled="false"
+                            android:enabled="true"
+
+                            android:popupElevation="@dimen/_5sdp"
+                            android:splitMotionEvents="true"
+                            android:spinnerMode="dropdown"
                             android:padding="@dimen/_9sdp"
-                            android:textColor="@color/txt_color_blue"
-                            android:textSize="@dimen/_5mdpi"
-                            android:theme="@style/SpinnerTheme" />
+
+                             />
 
                         <View
                             android:layout_width="match_parent"

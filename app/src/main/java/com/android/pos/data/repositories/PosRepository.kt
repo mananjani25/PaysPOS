@@ -220,6 +220,8 @@ class PosRepository @Inject constructor(
     fun modifierSetsList() =
         performGetOperationDatabase(databaseQuery = { appDatabase.modifierSetDao().all })
 
+    fun getAllCountryList() = appDatabase.countryListDao().all
+
     fun modifierSets() =
         performGetOperation(databaseQuery = { appDatabase.modifierSetDao().all },
             networkCall = { apiHelperNew.getModifierSetCall() },
@@ -299,6 +301,10 @@ class PosRepository @Inject constructor(
 
     suspend fun addOrderType(OrderTypeList: List<TbOrderType>) {
         appDatabase.orderTypeDao().addAll(OrderTypeList)
+    }
+
+    suspend fun addAllCountryList(countryList: List<TbCountryList>) {
+        appDatabase.countryListDao().addAll(countryList)
     }
 
     fun getCurrentUserTeamRoleFromDb() = performGetOperationDatabase(databaseQuery = {
@@ -520,11 +526,11 @@ class PosRepository @Inject constructor(
         apiHelperNew.reOrderItemCall(id, oldPos, newPos)
 
 
-    fun getCartList(orderType: String,employee_Id:Int): LiveData<List<CartModel>> {
-        return appDatabase.cartDao().allItem(orderType,employee_Id)
+    fun getCartList(orderType: String, employee_Id: Int): LiveData<List<CartModel>> {
+        return appDatabase.cartDao().allItem(orderType, employee_Id)
     }
 
-    fun getManualSaleList(employee_id:Int): LiveData<List<CartModel>> {
+    fun getManualSaleList(employee_id: Int): LiveData<List<CartModel>> {
         return appDatabase.cartDao().manualItem(employee_id)
     }
 
@@ -693,9 +699,17 @@ class PosRepository @Inject constructor(
     }
 
 
-    fun getOpenOrders(paymentStatus: String, startDate: String, endDate: String): LiveData<Resource<OpenOrderResponse>> =
+    fun getOpenOrders(
+        paymentStatus: String,
+        startDate: String,
+        endDate: String
+    ): LiveData<Resource<OpenOrderResponse>> =
         performGetOperationNew(networkCall = {
-            if (paymentStatus == "Upcoming") apiHelperNew.getUpcomingOpenOrders() else apiHelperNew.getOpenOrders(paymentStatus,startDate,endDate)
+            if (paymentStatus == "Upcoming") apiHelperNew.getUpcomingOpenOrders() else apiHelperNew.getOpenOrders(
+                paymentStatus,
+                startDate,
+                endDate
+            )
         })
 
 
@@ -799,6 +813,6 @@ class PosRepository @Inject constructor(
     }
 
     fun orderCounts(startDate: String?, endDate: String?) =
-        performGetOperationNew(networkCall = { apiHelperNew.orderCounts(startDate,endDate) })
+        performGetOperationNew(networkCall = { apiHelperNew.orderCounts(startDate, endDate) })
 }
 

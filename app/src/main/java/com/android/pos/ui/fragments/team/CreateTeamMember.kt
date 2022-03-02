@@ -7,7 +7,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
-import android.widget.ArrayAdapter
 import android.widget.TextView
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
@@ -15,10 +14,12 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.data.entities.Employee
+import com.android.pos.data.entities.TbCountryList
 import com.android.pos.data.entities.TeamRole
-import com.android.pos.data.remote.Constants
 import com.android.pos.databinding.FragmentCreateTeamMemberBinding
+
 import com.android.pos.di.PrefProvider
+import com.android.pos.ui.adapter.SpinnerCustomAdapter
 import com.android.pos.utils.*
 import com.android.pos.utils.extensions.liveSnackBar
 import com.android.pos.utils.extensions.showAlert
@@ -39,7 +40,8 @@ class CreateTeamMember : Fragment() {
     var items: ArrayList<String> = arrayListOf()
     var itemsIds: ArrayList<Int> = arrayListOf()
     private lateinit var binding: FragmentCreateTeamMemberBinding
-    private var country = arrayOf("United States", "Canada")
+    private var country = arrayListOf<TbCountryList>()
+
 
     @Inject
     lateinit var prefProvider: PrefProvider
@@ -91,12 +93,10 @@ class CreateTeamMember : Fragment() {
             binding.edtEmail.setText(employeeModel!!.email)
             binding.edtMobileNumber.setText(employeeModel!!.phoneNumber)
             binding.edtPasscode.setText(employeeModel!!.passcode)
-
-
         }
 
         binding.edtHours.addTextChangedListener(AmountWatcher(binding.edtHours))
-        setPhoneCountry()
+
         setupSnackbar()
         observeShowProgress()
         navigate()
@@ -145,6 +145,12 @@ class CreateTeamMember : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        viewModel.coutrylist.observe(viewLifecycleOwner) {
+            country = it as ArrayList<TbCountryList>
+            setPhoneCountry(country)
+            Log.d("yash", "observeShowProgress: " + it[0].name)
+            Log.d("yash", "observeShowProgress: " + it[1].name)
+        }
     }
 
     private fun observeShowProgress() {
@@ -216,11 +222,8 @@ class CreateTeamMember : Fragment() {
         })
     }
 
-    private fun setPhoneCountry() {
-        val adapter =
-            ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, country)
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-
+    private fun setPhoneCountry(countryList: ArrayList<TbCountryList>) {
+        var adapter = SpinnerCustomAdapter(requireContext(), countrylist = countryList)
         binding.edtCountry.adapter = adapter
 
         binding.edtCountry.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
@@ -230,19 +233,7 @@ class CreateTeamMember : Fragment() {
                 position: Int,
                 id: Long
             ) {
-
-                if (Build.VERSION.SDK_INT < 23) {
-                    (parent?.getChildAt(0) as TextView).setTextAppearance(
-                        view?.context,
-                        com.android.pos.R.style.SpinnerTheme
-                    )
-                    viewModel.locationId = position
-                } else {
-
-                    viewModel.locationId = position
-                    (parent?.getChildAt(0) as TextView).setTextAppearance(R.style.SpinnerTheme); }
-
-
+                viewModel.isCountryChanged(countryList[position].id)
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {
@@ -250,7 +241,19 @@ class CreateTeamMember : Fragment() {
             }
 
         }
-        binding.edtCountry.setSelection(viewModel!!.locationId)
+        if(employeeModel!=null){
+            countryList.forEachIndexed() { index, item ->
+                if (employeeModel?.phone_country.equals(item.name)) {
+                    viewModel.isCountryChanged(item.id)
+                    binding.edtCountry.setSelection(index)
+                }
+            }
+        }else{
+            viewModel.isCountryChanged(0)
+            binding.edtCountry.setSelection(0)
+        }
+
+
     }
 
 }

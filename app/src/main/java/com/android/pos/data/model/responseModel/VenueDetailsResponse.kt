@@ -72,6 +72,8 @@ data class VenueDetailsResponse(
         val teamRoles: List<TeamRole>,
         @SerializedName("employee")
         val employee: List<Employee>,
+        @SerializedName("phone_country")
+        val phoneCountrylist: List<TbCountryList>,
         @SerializedName("order_types")
         val orderTypes: List<TbOrderType>,
 

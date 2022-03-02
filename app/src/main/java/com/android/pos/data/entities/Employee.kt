@@ -20,6 +20,8 @@ data class Employee(
     val isActive: Boolean,
     @SerializedName("last_name")
     val lastName: String?,
+    @SerializedName("phone_country")
+    val phone_country: String?,
     @SerializedName("location_id")
     val locationId: Int,
     @SerializedName("name")
