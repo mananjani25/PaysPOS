@@ -69,6 +69,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginStart="@dimen/_10sdp"
                         android:text="$"
+                        android:visibility="gone"
                         android:textColor="@color/btnColor"
                         android:textSize="@dimen/_6mdpi"
                         app:layout_constraintBottom_toBottomOf="@+id/edtAmount"

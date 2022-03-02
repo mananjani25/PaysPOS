@@ -54,16 +54,16 @@ class CreateLoyaltyFragment : Fragment() {
 
             viewModel.setLoyaltyData(loyaltyProgramsModel)
 
-            binding.swtCreateLoyalty.isChecked =
-                loyaltyProgramsModel?.rewardType == getString(R.string.percentage_symbol)
+            binding.cbPercentageValue.isChecked = loyaltyProgramsModel?.rewardType == getString(R.string.percentage_symbol)
 
         } else {
             binding.header.txtSave.text = getString(R.string.save)
             binding.header.txtTitle.text = getString(R.string.create_loyalty_point)
 
-            binding.swtCreateLoyalty.isChecked = true
+            binding.cbPercentageValue.isChecked = true
+            binding.swtFixedValue.isChecked = false
         }
-        discountType(binding.swtCreateLoyalty.isChecked)
+        discountType(binding.swtFixedValue.isChecked)
 
     }
 
@@ -107,12 +107,12 @@ class CreateLoyaltyFragment : Fragment() {
 
     fun discountType(isChecked: Boolean) {
         if (isChecked) {
-            binding.swtCreateLoyalty.text = getString(R.string.percentage_value)
+            binding.cbPercentageValue.text = getString(R.string.percentage_value)
             viewModel.loyaltyPointType = getString(R.string.percentage_symbol)
             binding.tvSymbolPer.visibility = View.VISIBLE
             binding.tvSymbolDollar.visibility = View.GONE
         } else {
-            binding.swtCreateLoyalty.text = getString(R.string.amount_value)
+            binding.swtFixedValue.text = getString(R.string.fixed_value)
             viewModel.loyaltyPointType = getString(R.string.dollar_symbol)
             binding.tvSymbolDollar.visibility = View.VISIBLE
             binding.tvSymbolPer.visibility = View.GONE

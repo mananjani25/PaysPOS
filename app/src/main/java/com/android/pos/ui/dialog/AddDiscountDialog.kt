@@ -191,27 +191,26 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
         }
 
         binding.llKeypad.txt10.setOnClickListener {
-            val price=binding.llKeypad.txt10.text.toString().trim().substring(0,binding.llKeypad.txt10.text.toString().length-1).toDouble()
+
             binding.edtAmount.removeTextChangedListener(this)
-            binding.edtAmount.setText(MethodUtils.roundOffAmountString(price))
+            binding.edtAmount.setText(MethodUtils.roundOffAmountString(10.0))
         }
         binding.llKeypad.txt20.setOnClickListener {
-            val price=binding.llKeypad.txt20.text.toString().trim().substring(0,binding.llKeypad.txt20.text.toString().length-1).toDouble()
+
             binding.edtAmount.removeTextChangedListener(this)
-            binding.edtAmount.setText(MethodUtils.roundOffAmountString(price))
+            binding.edtAmount.setText(MethodUtils.roundOffAmountString(20.0))
         }
         binding.llKeypad.txt30.setOnClickListener {
-            val price=binding.llKeypad.txt30.text.toString().trim().substring(0,binding.llKeypad.txt30.text.toString().length-1).toDouble()
             binding.edtAmount.removeTextChangedListener(this)
-            binding.edtAmount.setText(MethodUtils.roundOffAmountString(price))
+            binding.edtAmount.setText(MethodUtils.roundOffAmountString(30.0))
         }
     }
 
     @SuppressLint("UseCompatLoadingForDrawables")
     private fun amountView() {
-        binding.llKeypad.txt10.text="10$"
-        binding.llKeypad.txt20.text="20$"
-        binding.llKeypad.txt30.text="30$"
+        binding.llKeypad.txt10.text="$10"
+        binding.llKeypad.txt20.text="$20"
+        binding.llKeypad.txt30.text="$30"
         binding.txtCurrency.visibility = View.VISIBLE
         binding.txtPer.visibility = View.GONE
         selectedCurrency = AMOUNT

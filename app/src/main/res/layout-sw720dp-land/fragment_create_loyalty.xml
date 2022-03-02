@@ -53,25 +53,25 @@
                     android:hint="@string/loyalty_name"
                     android:imeOptions="actionNext"
                     android:inputType="textCapWords|textVisiblePassword"
-                    android:padding="@dimen/_7sdp"
+                    android:padding="@dimen/_9sdp"
                     android:text="@={viewModel.loyaltyName}"
                     android:textColor="@color/txtColor"
                     android:textColorHint="@color/hintColor"
-                    android:textSize="@dimen/text_size_medium" />
+                    android:textSize="@dimen/_7mdpi" />
 
                 <TextView
                     style="@style/CustomFontRegularStyle"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/_10sdp"
+                    android:paddingStart="@dimen/_2sdp"
                     android:paddingTop="@dimen/_5sdp"
                     android:paddingBottom="@dimen/_5sdp"
                     android:text="@string/loyalty_value"
                     android:textAllCaps="true"
                     android:textColor="@color/txtColor"
                     android:textColorHint="@color/hintColor"
-                    android:textSize="@dimen/text_size_normal"
-                    android:paddingStart="@dimen/_7sdp"/>
+                    android:textSize="@dimen/_7mdpi" />
 
                 <View
                     android:layout_width="match_parent"
@@ -80,51 +80,57 @@
 
 
                 <CheckBox
+                    android:id="@+id/swtFixedValue"
                     style="@style/CustomFontRegularStyle"
-                    android:id="@+id/swtCreateLoyalty"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_5sdp"
+                    android:paddingStart="@dimen/_5sdp"
                     android:text="@string/fixed_value"
                     android:textColor="@color/txtColor"
-                    android:paddingStart="@dimen/_5sdp"
-                    android:textSize="@dimen/text_size_normal"
-                    android:layout_marginTop="@dimen/_5sdp"
+                    android:textSize="@dimen/_7mdpi"
 
                     />
 
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="0.5dp"
-                    android:background="@color/view"
-                    />
+                    android:layout_marginTop="@dimen/_5sdp"
+
+                    android:background="@color/view" />
 
                 <CheckBox
+                    android:id="@+id/cbPercentageValue"
                     style="@style/CustomFontRegularStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_5sdp"
+                    android:paddingStart="@dimen/_5sdp"
+
                     android:text="@string/percentage_value"
                     android:textColor="@color/txtColor"
-                    android:paddingStart="@dimen/_5sdp"
-                    android:textSize="@dimen/text_size_normal"
-                    android:layout_marginTop="@dimen/_5sdp"
+                    android:textSize="@dimen/_7mdpi"
                     />
 
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="0.5dp"
-                    android:background="@color/view"
-                    />
+                    android:layout_marginTop="@dimen/_5sdp"
+
+                    android:background="@color/view" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:layout_marginTop="@dimen/_5sdp">
+                    android:layout_marginTop="@dimen/_5sdp"
+                    android:orientation="horizontal">
 
                     <LinearLayout
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_weight="1">
+                        android:layout_weight="1"
+                        android:background="@drawable/background_square_border_grey"
+                        >
 
                         <TextView
                             android:id="@+id/tvSymbolDollar"
@@ -133,9 +139,11 @@
                             android:layout_marginLeft="@dimen/_3sdp"
                             android:fontFamily="@font/sf_pro_display_semibold"
                             android:text="@string/symbole"
-                            android:textColor="@color/viewTextColor"
-                            android:textSize="@dimen/_5mdpi"
-                            android:visibility="gone" />
+                            android:textSize="@dimen/_7mdpi"
+                            android:visibility="gone"
+                            android:paddingLeft="@dimen/_7sdp"
+                            android:paddingVertical="@dimen/_9sdp"
+                            />
 
                         <TextView
                             android:id="@+id/tvSymbolPer"
@@ -144,9 +152,9 @@
                             android:layout_marginLeft="@dimen/_5sdp"
                             android:fontFamily="@font/sf_pro_display_semibold"
                             android:text="@string/percentage_symbol"
-                            android:textColor="@color/viewTextColor"
-                            android:textSize="@dimen/_5mdpi"
-                            android:visibility="gone" />
+                            android:textSize="@dimen/_7mdpi"
+                            android:paddingLeft="@dimen/_7sdp"
+                            android:paddingVertical="@dimen/_9sdp"/>
 
                         <androidx.appcompat.widget.AppCompatEditText
                             style="@style/CustomFontSemiBold"
@@ -161,7 +169,8 @@
                             android:text="@={``+viewModel.loyaltyAmount}"
                             android:textColor="@color/txtColor"
                             android:textColorHint="@color/hintColor"
-                            android:textSize="@dimen/_5mdpi" />
+                            android:textSize="@dimen/_7mdpi"
+                            />
 
                     </LinearLayout>
 
@@ -179,35 +188,36 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/_10sdp"
                     android:hint="@string/loyalty_target"
-                    android:textAllCaps="true"
                     android:paddingTop="@dimen/_5sdp"
                     android:paddingBottom="@dimen/_5sdp"
                     android:text="@string/loyalty_target"
+                    android:textAllCaps="true"
                     android:textColor="@color/black"
                     android:textColorHint="@color/hintColor"
                     android:textSize="@dimen/_5mdpi"
-                    android:visibility="gone"/>
+                    android:visibility="gone" />
 
                 <androidx.appcompat.widget.AppCompatEditText
                     style="@style/CustomFontSemiBold"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_10sdp"
                     android:background="@drawable/background_square_border_grey"
                     android:hint="@string/loyalty_target"
                     android:imeOptions="actionNext"
                     android:inputType="number"
-                    android:padding="@dimen/_7sdp"
+                    android:padding="@dimen/_9sdp"
                     android:text="@={``+viewModel.loyaltyTarget}"
                     android:textColor="@color/txtColor"
                     android:textColorHint="@color/hintColor"
-                    android:textSize="@dimen/text_size_medium"
-                    android:layout_marginTop="@dimen/_10sdp"/>
+                    android:textSize="@dimen/text_size_medium" />
 
                 <androidx.appcompat.widget.AppCompatTextView
                     style="@style/CustomFontRegularStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
+                    android:layout_marginTop="@dimen/_5sdp"
                     android:layout_marginBottom="@dimen/_20sdp"
                     android:gravity="start"
                     android:paddingTop="@dimen/_3sdp"
@@ -215,8 +225,7 @@
                     android:text="@string/number_of_points_required_to_get_the_reward"
                     android:textColor="@color/hint_color"
                     android:textSize="@dimen/_5mdpi"
-                    app:textAllCaps="false"
-                    android:layout_marginTop="@dimen/_5sdp"/>
+                    app:textAllCaps="false" />
 
             </androidx.appcompat.widget.LinearLayoutCompat>
 
