@@ -21,6 +21,13 @@ class CategoryTabAdapter(var list: ArrayList<CategoryTabModel>) :
 
     }
 
+    fun addList(tmpList: ArrayList<CategoryTabModel>) {
+        list.clear()
+        list = arrayListOf()
+        list.addAll(tmpList)
+        notifyDataSetChanged()
+    }
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MyViewHolder {
         return MyViewHolder(
             ViewCategoryTablayoutBinding.inflate(

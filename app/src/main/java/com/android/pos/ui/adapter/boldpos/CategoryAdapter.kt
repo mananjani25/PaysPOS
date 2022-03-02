@@ -29,6 +29,19 @@ class CategoryAdapter(
             binding.txtCategoryName.isSelected = model.isSelected
             binding.txtCategoryName.setText(model.title)
 
+            binding.txtCategoryName.setOnClickListener {
+                list.forEachIndexed { index, categoryTabModel ->
+                    if (index == bindingAdapterPosition){
+                        categoryTabModel.isSelected = true
+                    }
+                    else{
+                        categoryTabModel.isSelected = false
+                    }
+
+                }
+                notifyDataSetChanged()
+            }
+
 
         }
 

@@ -6,11 +6,15 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.activityViewModels
 import com.android.pos.databinding.FragmentDashboardCategoryBoldPosBinding
+import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class DashboardCategoryBoldPOS : Fragment() {
     private lateinit var binding: FragmentDashboardCategoryBoldPosBinding
-
+    private val viewModel by activityViewModels<DashBoardCategoryViewModel>()
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -31,14 +35,14 @@ class DashboardCategoryBoldPOS : Fragment() {
 
     }
 
-    private fun loadCategoryFragment(fragment:Fragment){
-        val fm:FragmentManager = requireActivity().supportFragmentManager
-        fm.beginTransaction().replace(binding.frameLayout.id,fragment).commit()
+    private fun loadCategoryFragment(fragment: Fragment) {
+        val fm: FragmentManager = requireActivity().supportFragmentManager
+        fm.beginTransaction().replace(binding.frameLayout.id, fragment).commit()
     }
 
-    private fun loadCartFragment(frag:Fragment){
-        val fm:FragmentManager = requireActivity().supportFragmentManager
-        fm.beginTransaction().replace(binding.frameLayoutCart.id,frag).commit()
+    private fun loadCartFragment(frag: Fragment) {
+        val fm: FragmentManager = requireActivity().supportFragmentManager
+        fm.beginTransaction().replace(binding.frameLayoutCart.id, frag).commit()
     }
 
     private fun onClick() {
@@ -54,6 +58,10 @@ class DashboardCategoryBoldPOS : Fragment() {
 
         binding.layoutHeader.txtTransaction.setOnClickListener {
 
+        }
+
+        binding.layoutHeader.imgSync.setOnClickListener {
+            viewModel.syncInventoryModule()
         }
     }
 

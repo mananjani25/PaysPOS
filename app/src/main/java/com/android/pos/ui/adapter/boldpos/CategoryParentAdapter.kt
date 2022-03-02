@@ -27,6 +27,13 @@ class CategoryParentAdapter(
 
     }
 
+    fun addList(tmpList: ArrayList<CategoryParentModel>) {
+        list.clear()
+        list = arrayListOf()
+        list.addAll(tmpList)
+        notifyDataSetChanged()
+    }
+
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
