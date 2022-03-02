@@ -545,6 +545,7 @@
     <string name="tv_exchange_refund">Exchange Refund</string>
     <string name="tv_date">Date</string>
     <string name="company">Company</string>
+    <string name="company_name">Company Name</string>
     <string name="tv_options">Add Options</string>
     <string name="tv_options_update">Update Options</string>
     <string name="tv_roles">Roles</string>

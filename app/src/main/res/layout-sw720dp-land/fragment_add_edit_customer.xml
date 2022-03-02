@@ -82,7 +82,7 @@
                             android:text="@={viewModel.addCustomerDetails.data.first_name}"
                             android:textColor="@color/txtColor"
                             android:textColorHint="@color/hintColor"
-                            android:textSize="@dimen/_5mdpi"
+                            android:textSize="@dimen/_7mdpi"
                             android:hint="@string/first_name"/>
                     </LinearLayout>
 
@@ -117,7 +117,7 @@
                             android:text="@={viewModel.addCustomerDetails.data.last_name}"
                             android:textColor="@color/txtColor"
                             android:textColorHint="@color/hintColor"
-                            android:textSize="@dimen/_5mdpi"
+                            android:textSize="@dimen/_7mdpi"
                             android:hint="@string/last_name_"
                             android:maxLength="30"/>
                     </LinearLayout>
@@ -174,7 +174,7 @@
                         android:text="@={viewModel.phoneNo}"
                         android:textColor="@color/txtColor"
                         android:textColorHint="@color/hint_color_"
-                        android:textSize="@dimen/_5mdpi"
+                        android:textSize="@dimen/_7mdpi"
                         app:met_mask="(###) ###-####" />
 
                 </androidx.appcompat.widget.LinearLayoutCompat>
@@ -204,8 +204,8 @@
                     android:inputType="textVisiblePassword"
                     android:padding="@dimen/_9sdp"
                     android:text="@={viewModel.addCustomerDetails.data.email}"
-                    android:textColor="@color/txtColor"
-                    android:textSize="@dimen/_5mdpi"
+                    android:textColor="@color/btnColor"
+                    android:textSize="@dimen/_7mdpi"
                     android:textColorHint="@color/hintColor"
                     android:hint="@string/tv_email_address_"/>
 
@@ -463,9 +463,9 @@
                     android:padding="@dimen/_9sdp"
                     android:text="@={viewModel.addCustomerDetails.data.company}"
                     android:textColor="@color/txtColor"
-                    android:textSize="@dimen/_5mdpi"
+                    android:textSize="@dimen/_7mdpi"
                     android:textColorHint="@color/hintColor"
-                    android:hint="@string/company"/>
+                    android:hint="@string/company_name"/>
 
                 <TextView
                     style="@style/CustomFontSemiBold"
@@ -494,7 +494,7 @@
                     android:text=""
                     android:textColorHint="@color/hintColor"
                     android:textColor="@color/txtColor"
-                    android:textSize="@dimen/_5mdpi" />
+                    android:textSize="@dimen/_7mdpi" />
 
 
                 <androidx.appcompat.widget.LinearLayoutCompat

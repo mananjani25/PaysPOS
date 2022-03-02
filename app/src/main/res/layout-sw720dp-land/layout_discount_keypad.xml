@@ -58,7 +58,7 @@
             android:layout_marginHorizontal="@dimen/_5sdp"/>
 
         <androidx.appcompat.widget.AppCompatTextView
-            android:id="@+id/txtSave"
+            android:id="@+id/txt10"
             style="@style/CustomFontBold"
             android:layout_width="0dp"
             android:layout_weight="1"
@@ -129,6 +129,7 @@
 
         <androidx.appcompat.widget.AppCompatTextView
             style="@style/CustomFontBold"
+            android:id="@+id/txt20"
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="@dimen/_25sdp"
@@ -197,6 +198,7 @@
 
         <androidx.appcompat.widget.AppCompatTextView
             style="@style/CustomFontBold"
+            android:id="@+id/txt30"
             android:layout_width="0dp"
             android:layout_weight="1"
             android:layout_height="@dimen/_25sdp"

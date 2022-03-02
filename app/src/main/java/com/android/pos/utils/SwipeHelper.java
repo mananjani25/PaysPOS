@@ -248,7 +248,7 @@ public abstract class SwipeHelper extends ItemTouchHelper.SimpleCallback {
             c.drawRect(rect, p);
 
             // Draw Text
-            p.setColor(Color.WHITE);
+            p.setColor(Color.BLACK);
 //            ResourcesCompat.getFont(context, R.font.sf_pro_display_regular)
 
             Typeface currentTypeFace = p.getTypeface();

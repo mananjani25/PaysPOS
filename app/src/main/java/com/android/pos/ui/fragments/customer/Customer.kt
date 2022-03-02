@@ -48,6 +48,7 @@ class Customer : Fragment() {
     private var isLoading = false
     private var isLastPage = false
     private var firstDetailLoad = false
+    private var deletedPos:Int?=null
 
     val data = LinkedHashMap<String, String>()
     override fun onCreateView(
@@ -111,7 +112,7 @@ class Customer : Fragment() {
 
         })
 
-        viewModel._customerListResponse.observe(viewLifecycleOwner, { event ->
+        viewModel._customerListResponse.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let { customerList ->
                 var data: ArrayList<TbCustomer>
                 if (customerList.isNotEmpty()) {
@@ -121,7 +122,7 @@ class Customer : Fragment() {
                     customerAdapter.setList(data)
                     try {
                         if (!firstDetailLoad) {
-                            if(data.isNotEmpty()){
+                            if (data.isNotEmpty()) {
                                 loadFragment(data[0])
                             }
                         }
@@ -132,64 +133,11 @@ class Customer : Fragment() {
                 }
 
             }
-        })
+        }
 
         return binding.root
     }
 
-    private fun setUpRecyclerView() {
-
-
-        customerAdapter = CustomerListAdapter(object :
-            CustomerListAdapter.CustomerInteface {
-            override fun onCustomerSelect(
-                pos: Int,
-                model: TbCustomer
-            ) {
-
-                binding.layoutTool.txtSubTitle.setText(model.first_name + " " + model.last_name)
-                loadFragment(model)
-            }
-
-        })
-
-        binding.rvEmployeeList.adapter = customerAdapter
-
-
-        object : SwipeHelper(activity, binding.rvEmployeeList) {
-            override fun instantiateUnderlayButton(
-                viewHolder: RecyclerView.ViewHolder?,
-                underlayButtons: MutableList<UnderlayButton>
-            ) {
-                underlayButtons.add(UnderlayButton(
-                    "Delete",
-                    0,
-                    Color.parseColor("#FF3C30")
-                ) { pos ->
-                    alert(
-                        getString(R.string.app_name),
-                        getString(R.string.delete_customer_message)
-                    ) {
-                        positiveButton(getString(R.string.tv_delete)) {
-                            customerAdapter.getList()[pos].id?.let { viewModel.delete(it) }
-
-                        }
-                        negativeButton(R.string.tv_cancel) {
-                            // Do negative stuff here
-                        }
-                    }
-
-
-
-
-                    Log.e(TAG, "posClicked  ${pos}")
-                })
-
-
-            }
-
-        }
-    }
 
     private fun loadCustomerLocalList(currentpage: Int) {
         data["page"] = currentpage.toString()
@@ -197,7 +145,10 @@ class Customer : Fragment() {
         if (currentpage == 1) {
             firstDetailLoad = false
         }
-        viewModel.customerList(data).observe(viewLifecycleOwner, {
+        viewModel.customerList(data).observe(viewLifecycleOwner
+
+
+        ) {
             it?.let { resource ->
                 when (resource.status) {
                     Status.SUCCESS -> {
@@ -243,9 +194,6 @@ class Customer : Fragment() {
 
 
         }
-
-
-        )
 
     }
 
@@ -356,20 +304,99 @@ class Customer : Fragment() {
     }
 
     private fun observeCustomerDelete() {
-        viewModel.data.observe(viewLifecycleOwner, { event ->
+        viewModel.data.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
+
+               // customerAdapter.getList()[pos]
+
+
+
+                if (customerAdapter.getList().size-1!=deletedPos){
+                    if (customerAdapter.getList().lastIndex==deletedPos){
+                        val model= deletedPos?.minus(1)?.let { it1 -> customerAdapter.getList().get(it1) } as TbCustomer
+                        binding.layoutTool.txtSubTitle.setText(model?.first_name + " " + model?.last_name)
+                        loadFragment(model)
+                    }
+                    else{
+                        val model= deletedPos?.plus(1)?.let { it1 -> customerAdapter.getList().get(it1) } as TbCustomer
+                        binding.layoutTool.txtSubTitle.setText(model?.first_name + " " + model?.last_name)
+                        loadFragment(model)
+                    }
+
+                }
+                else{
+                    val model= deletedPos?.minus(1)?.let { it1 -> customerAdapter.getList().get(it1) } as TbCustomer
+                    binding.layoutTool.txtSubTitle.setText(model?.first_name + " " + model?.last_name)
+                    loadFragment(model)
+                }
+
+
                 AlertUtils.showCustomAlertWithListenerWithOK(
                     requireContext(),
                     it.message
                 ) { _, _ ->
-
 
                 }
 
 
             }
 
+        }
+    }
+
+    private fun setUpRecyclerView() {
+
+
+        customerAdapter = CustomerListAdapter(object :
+            CustomerListAdapter.CustomerInteface {
+            override fun onCustomerSelect(
+                pos: Int,
+                model: TbCustomer
+            ) {
+
+                binding.layoutTool.txtSubTitle.setText(model.first_name + " " + model.last_name)
+                loadFragment(model)
+            }
+
         })
+
+        binding.rvEmployeeList.adapter = customerAdapter
+
+
+        object : SwipeHelper(activity, binding.rvEmployeeList) {
+            override fun instantiateUnderlayButton(
+                viewHolder: RecyclerView.ViewHolder?,
+                underlayButtons: MutableList<UnderlayButton>
+            ) {
+                underlayButtons.add(UnderlayButton(
+                    "Delete",
+                    0,
+                    Color.parseColor("#FFFFFF")
+                ) { pos ->
+                    deletedPos=pos
+                    alert(
+                        getString(R.string.app_name),
+                        getString(R.string.delete_customer_message)
+                    ) {
+                        positiveButton(getString(R.string.tv_delete)) {
+                            customerAdapter.getList()[pos].id?.let { viewModel.delete(it) }
+
+                        }
+                        negativeButton(R.string.tv_cancel) {
+                            // Do negative stuff here
+                        }
+                    }
+
+
+
+
+                    Log.e(TAG, "posClicked  ${pos}")
+                })
+
+
+            }
+
+        }
     }
 
 

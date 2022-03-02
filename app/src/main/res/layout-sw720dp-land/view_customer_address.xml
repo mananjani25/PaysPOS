@@ -52,7 +52,7 @@
 
             android:textColor="@color/txtColor"
             android:textColorHint="@color/hintColor"
-            android:textSize="@dimen/_5mdpi" />
+            android:textSize="@dimen/_7mdpi" />
 
         <EditText
             android:id="@+id/edtSuite"
@@ -65,7 +65,9 @@
             android:inputType="textVisiblePassword"
             android:padding="@dimen/_9sdp"
             android:textColor="@color/txtColor"
-            android:textSize="@dimen/_5mdpi"
+            android:textSize="@dimen/_7mdpi"
+            android:textColorHint="@color/hint_color"
+            android:hint="@string/apt_suite"
             android:digits="@string/disable_emoji_string"/>
 
         <LinearLayout
@@ -88,7 +90,9 @@
                 android:padding="@dimen/_9sdp"
                 android:digits="@string/disable_emoji_string"
                 android:textColor="@color/txtColor"
-                android:textSize="@dimen/_5mdpi" />
+                android:textSize="@dimen/_7mdpi"
+                android:hint="@string/city"
+                android:textColorHint="@color/hint_color"/>
 
             <EditText
                 android:id="@+id/edtState"
@@ -101,7 +105,9 @@
                 android:padding="@dimen/_9sdp"
                 android:digits="@string/disable_emoji_string"
                 android:textColor="@color/txtColor"
-                android:textSize="@dimen/_5mdpi" />
+                android:textSize="@dimen/_7mdpi"
+                android:hint="@string/state"
+                android:textColorHint="@color/hint_color"/>
 
             <EditText
                 android:id="@+id/edtZip"
@@ -114,7 +120,9 @@
                 android:padding="@dimen/_9sdp"
                 android:digits="@string/disable_emoji_string"
                 android:textColor="@color/txtColor"
-                android:textSize="@dimen/_5mdpi" />
+                android:textSize="@dimen/_7mdpi"
+                android:hint="@string/zip"
+                android:textColorHint="@color/hint_color"/>
 
 
         </LinearLayout>

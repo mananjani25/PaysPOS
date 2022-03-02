@@ -361,6 +361,9 @@
                     android:gravity="center"
                     android:padding="@dimen/_5sdp"
                     android:text="Add"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:enabled="true"
                     android:textColor="@color/white"
                     android:textSize="@dimen/_5mdpi"
                     android:visibility="visible"/>
