@@ -6,10 +6,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Filter
 import android.widget.Filterable
+import android.widget.RadioGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.R
 import com.android.pos.data.entities.TbCategory
 import com.android.pos.databinding.ViewCategoryBinding
+import com.android.pos.generated.callback.OnCheckedChangeListener
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -25,33 +27,25 @@ class CategoriesListAdapter(private val isChoose: Boolean) :
         fun bind(item: TbCategory) {
             binding.model = item
             binding.executePendingBindings()
-            if(absoluteAdapterPosition==0){
+            if (absoluteAdapterPosition == 0) {
                 binding.firstviewCategory.visibility = View.VISIBLE
-            }else{
+            } else {
                 binding.firstviewCategory.visibility = View.GONE
             }
             if (isChoose) {
-                if (mpos == bindingAdapterPosition) {
-                    binding.imageCheck.setImageResource(R.drawable.ic_outline_radio_button_checked)
-                } else {
-                    binding.imageCheck.setImageResource(R.drawable.ic_uncheck_circle)
-                }
+                binding.radioChecked.isChecked = mpos == absoluteAdapterPosition
+                binding.radioChecked.visibility = View.VISIBLE
+                binding.imageCheck.visibility = View.GONE
             } else {
-                binding.imageCheck.setImageResource(R.drawable.ic_baseline_menu)
+                binding.radioChecked.visibility = View.GONE
+                binding.imageCheck.visibility = View.VISIBLE
+            }
+            binding.radioChecked.setOnClickListener {
+                mpos = absoluteAdapterPosition
+                notifyDataSetChanged()
             }
         }
 
-        init {
-
-
-            binding.imageCheck.setOnClickListener {
-                if (isChoose) {
-                    mpos = bindingAdapterPosition
-                    notifyDataSetChanged()
-                }
-            }
-
-        }
 
     }
 

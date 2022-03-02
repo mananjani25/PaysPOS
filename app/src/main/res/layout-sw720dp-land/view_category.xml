@@ -48,6 +48,23 @@
                     android:textColor="@color/txtColor"
                     android:textSize="@dimen/_5mdpi" />
 
+                <RadioGroup
+                    android:id="@+id/radio_group"
+                    android:layout_width="wrap_content"
+                    android:layout_marginStart="@dimen/_5sdp"
+                    android:layout_marginEnd="@dimen/_10sdp"
+                    android:layout_gravity="center"
+                    android:layout_height="wrap_content">
+                <RadioButton
+                    android:background="@drawable/round_radio_button"
+                    android:id="@+id/radio_checked"
+                    android:layout_width="wrap_content"
+                    android:visibility="visible"
+                    android:checked="false"
+                    android:button="@android:color/transparent"
+                    android:layout_height="wrap_content">
+                </RadioButton>
+                </RadioGroup>
                 <androidx.appcompat.widget.AppCompatImageView
                     android:id="@+id/imageCheck"
                     android:layout_width="wrap_content"
@@ -55,6 +72,7 @@
                     android:layout_gravity="center"
                     android:layout_marginStart="@dimen/_5sdp"
                     android:layout_marginEnd="@dimen/_10sdp"
+                    android:visibility="gone"
                     app:srcCompat="@drawable/ic_baseline_menu" />
 
 
