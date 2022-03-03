@@ -11,21 +11,32 @@ import com.android.pos.ui.adapter.CategoryTabAdapter1
 class CategoryParentAdapter(
     val context: Context,
     var list: ArrayList<CategoryParentModel>,
-    val listner: CategoryTabAdapter1.TabListner
-) : RecyclerView.Adapter<CategoryParentAdapter.MyViewHolder>(), CategoryTabAdapter1.TabListner {
+    val listner: CategoryParentListner
+) : RecyclerView.Adapter<CategoryParentAdapter.MyViewHolder>() {
+    private val TAG = "CategoryParentAdapter"
 
     inner class MyViewHolder(private val binding: ViewParentCategoryBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(model: CategoryParentModel) {
 
             binding.rvCategory.adapter =
-                CategoryAdapter(binding.root.context, model.list, this@CategoryParentAdapter)
+                CategoryAdapter(
+                    binding.root.context,
+                    model.list,
+                    object : CategoryTabAdapter1.TabListner {
+                        override fun onTabSelected(pos: Int) {
+                            listner.onCategorySelected(bindingAdapterPosition, pos)
+                        }
+
+                    })
             binding.rvCategory.isNestedScrollingEnabled = false
+
 
         }
 
 
     }
+
 
     fun addList(tmpList: ArrayList<CategoryParentModel>) {
         list.clear()
@@ -33,6 +44,11 @@ class CategoryParentAdapter(
         list.addAll(tmpList)
         notifyDataSetChanged()
     }
+
+    fun getList(): List<CategoryParentModel> {
+        return list
+    }
+
 
     override fun onCreateViewHolder(
         parent: ViewGroup,
@@ -55,7 +71,14 @@ class CategoryParentAdapter(
         return list.size
     }
 
-    override fun onTabSelected(pos: Int) {
+    /*  override fun onTabSelected(pos: Int) {
+          Log.e(TAG, "onTabSelected  ${pos}")
+          listner.onCategorySelected()
 
+      }*/
+
+    interface CategoryParentListner {
+        fun onCategorySelected(parentPosition: Int, childPosition: Int)
     }
+
 }

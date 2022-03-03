@@ -1,5 +1,5 @@
 package com.android.pos.data.model
 
 data class CategoryParentModel(
-    val list: ArrayList<CategoryTabModel>
+    var list: ArrayList<CategoryTabModel> = arrayListOf()
 )
