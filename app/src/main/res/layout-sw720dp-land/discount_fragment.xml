@@ -29,7 +29,7 @@
                 android:layout_gravity="center"
                 android:layout_marginTop="@dimen/_30sdp"
                 android:layout_marginBottom="@dimen/_10sdp"
-                android:background="@color/btnColor"
+                android:background="@drawable/button_action_hover"
                 android:gravity="center"
                 android:paddingVertical="@dimen/_7sdp"
                 android:paddingHorizontal="@dimen/_5sdp"
