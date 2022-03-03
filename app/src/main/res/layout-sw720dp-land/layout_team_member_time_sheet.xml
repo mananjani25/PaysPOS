@@ -52,6 +52,7 @@
                 android:textColor="@color/txtColor"
                 android:padding="@dimen/_6sdp"
                 android:text="@string/tv_print"
+                android:textAllCaps="true"
                 android:textSize="@dimen/_6mdpi" />
 
             <TextView
