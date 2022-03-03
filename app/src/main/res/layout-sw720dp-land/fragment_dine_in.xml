@@ -60,19 +60,46 @@
             android:layout_below="@+id/llHome"
             android:background="@color/view" />
 
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/rvFloorName"
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:id="@+id/llinear_floorplan"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="@dimen/btn_size"
             android:layout_below="@+id/view1"
-            android:orientation="horizontal"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+            android:background="@drawable/background_square_border_grey"
+            >
+
+            <ImageView
+                android:id="@+id/previous_img"
+                android:layout_width="@dimen/_15sdp"
+                android:layout_height="@dimen/_15sdp"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_arrow_left">
+
+            </ImageView>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvFloorName"
+                android:layout_width="0dp"
+                android:layout_height="@dimen/btn_size"
+                android:layout_weight="9"
+                android:paddingBottom="0.5dp"
+                android:orientation="horizontal"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+
+            <ImageView
+                android:id="@+id/next_img"
+                android:layout_width="@dimen/_15sdp"
+                android:layout_height="@dimen/_15sdp"
+                android:layout_gravity="center"
+                android:padding="@dimen/_3sdp"
+                android:src="@drawable/ic_arrow_right" />
+        </androidx.appcompat.widget.LinearLayoutCompat>
 
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
             android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
             android:layout_marginEnd="@dimen/_2sdp"
             android:layout_marginBottom="@dimen/_2sdp">
 
@@ -108,18 +135,14 @@
                 android:textSize="@dimen/_5mdpi" />
         </LinearLayout>
 
-        <View
-            android:id="@+id/view2"
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_below="@+id/rvFloorName"
-            android:background="@color/view" />
 
         <FrameLayout
             android:id="@+id/flFloorPlan"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_below="@+id/view2">
+            android:layout_below="@+id/llinear_floorplan"
+            android:layout_marginHorizontal="@dimen/_20sdp"
+            android:layout_marginTop="@dimen/_10sdp">
 
         </FrameLayout>
 
@@ -136,8 +159,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:orientation="horizontal"
-            android:visibility="gone"
-            >
+            android:visibility="gone">
 
             <TextView
                 android:id="@+id/tvTransaction"

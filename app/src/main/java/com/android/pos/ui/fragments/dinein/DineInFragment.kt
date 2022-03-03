@@ -1,5 +1,6 @@
 package com.android.pos.ui.fragments.dinein
 
+import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -108,6 +109,20 @@ class DineInFragment : Fragment() {
         binding.rvFloorName.layoutManager =
             LinearLayoutManager(requireActivity(), LinearLayoutManager.HORIZONTAL, false)
         binding.rvFloorName.adapter = dineInFloorNameListAdapter
+        binding.previousImg.setOnClickListener {
+            var firstvisiiblleItem =
+                (binding.rvFloorName.layoutManager as LinearLayoutManager).findFirstVisibleItemPosition()
+            if (firstvisiiblleItem > 0) {
+                binding.rvFloorName.smoothScrollToPosition(firstvisiiblleItem - 1)
+            }
+        }
+        binding.nextImg.setOnClickListener {
+            var firstvisiiblleItem =
+                (binding.rvFloorName.layoutManager as LinearLayoutManager).findLastVisibleItemPosition()
+            if (firstvisiiblleItem < dineInFloorNameListAdapter.itemCount - 1) {
+                binding.rvFloorName.smoothScrollToPosition(firstvisiiblleItem + 1)
+            }
+        }
 
     }
 
@@ -226,6 +241,10 @@ class DineInFragment : Fragment() {
                         val tvTableNumber: AppCompatTextView =
                             inflatedViewSquare.findViewById(R.id.tvTableNumber)
 
+
+                        tvNoOFChairs.setTextColor(Color.WHITE)
+                        tvTableName.setTextColor(Color.WHITE)
+                        tvTableNumber.setTextColor(Color.WHITE)
                         if (dineInFloorTablesList[i].parentTable) {
                             var tableNo: String =
                                 dineInFloorTablesList[i].tableNumber.toString()
@@ -311,7 +330,9 @@ class DineInFragment : Fragment() {
 
                         val tvTableNumber: AppCompatTextView =
                             inflatedViewRound.findViewById(R.id.tvTableNumber)
-
+                        tvNoOFChairs.setTextColor(Color.WHITE)
+                        tvTableName.setTextColor(Color.WHITE)
+                        tvTableNumber.setTextColor(Color.WHITE)
                         if (dineInFloorTablesList[i].parentTable) {
                             var tableNo: String =
                                 dineInFloorTablesList[i].tableNumber.toString()

@@ -18,14 +18,15 @@
 
     <androidx.appcompat.widget.LinearLayoutCompat
         android:id="@+id/llItemName"
-        android:layout_width="@dimen/_150sdp"
-        android:layout_height="wrap_content"
+        android:layout_width="@dimen/_170sdp"
+        android:gravity="center_vertical"
+        android:layout_height="@dimen/btn_size"
         android:orientation="vertical">
 
 
         <androidx.appcompat.widget.LinearLayoutCompat
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:layout_gravity="center"
             android:gravity="center"
             android:orientation="horizontal">
@@ -33,14 +34,15 @@
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tvFloorName"
                 style="@style/CustomFontSemiBold"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 android:layout_gravity="center"
-                android:layout_marginStart="@dimen/_5sdp"
                 android:padding="@dimen/_5sdp"
+                android:textAllCaps="true"
+                android:gravity="center"
                 android:text="@{dineInModel.name}"
-                android:textColor="@color/viewTextColor"
-                android:textSize="@dimen/_5mdpi" />
+                android:textColor="@color/txtColor"
+                android:textSize="@dimen/_7mdpi" />
         </androidx.appcompat.widget.LinearLayoutCompat>
 
     </androidx.appcompat.widget.LinearLayoutCompat>

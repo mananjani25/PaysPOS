@@ -51,12 +51,12 @@ class DineInFloorNameListAdapter(val viewModel: DineInViewModel) :
 
 
             if (mpos == bindingAdapterPosition) {
-                binding.llItemName.setBackgroundResource(R.drawable.bg_squre_modifier_choose)
+                binding.llItemName.setBackgroundColor(binding.root.context.resources.getColor(R.color.btnColor))
                 binding.tvFloorName.setTextColor(binding.root.context.resources.getColor(R.color.white))
 
             } else {
-                binding.llItemName.setBackgroundResource(R.drawable.bg_squre_modifier)
-                binding.tvFloorName.setTextColor(binding.root.context.resources.getColor(R.color.viewTextColor))
+                binding.llItemName.setBackgroundColor(binding.root.context.resources.getColor(R.color.bg_color))
+                binding.tvFloorName.setTextColor(binding.root.context.resources.getColor(R.color.txtColor))
             }
         }
 

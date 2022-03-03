@@ -12,6 +12,7 @@
         android:layout_height="match_parent"
         android:background="@drawable/bg_circle_name"
         android:gravity="center"
+        android:layout_margin="@dimen/_5sdp"
         android:orientation="horizontal">
 
         <LinearLayout
