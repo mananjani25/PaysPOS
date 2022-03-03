@@ -3,6 +3,7 @@ package com.android.pos.ui.fragments.cashlog
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.os.Bundle
+import android.provider.SyncStateContract
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -17,7 +18,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.android.pos.R
 import com.android.pos.data.model.responseModel.CashLogResponse
 import com.android.pos.data.model.responseModel.VenueDetailsResponse
+import com.android.pos.data.remote.Constants
 import com.android.pos.databinding.FragmentCashLogBinding
+import com.android.pos.di.PrefProvider
 import com.android.pos.ui.activities.MainActivity
 import com.android.pos.ui.adapter.CashLogAdapter
 import com.android.pos.utils.AlertUtils
@@ -27,6 +30,7 @@ import com.android.pos.utils.statusUtils.Status
 import dagger.hilt.android.AndroidEntryPoint
 import java.text.SimpleDateFormat
 import java.util.*
+import javax.inject.Inject
 import kotlin.math.abs
 
 @AndroidEntryPoint
@@ -43,6 +47,8 @@ class CashLogFragment : Fragment(), AdapterView.OnItemSelectedListener {
     private lateinit var endTime: TimePickerDialog.OnTimeSetListener
     private lateinit var terminalListGlobal: ArrayList<VenueDetailsResponse.Data.Terminal>
 
+    @Inject
+    lateinit var prefProvider: PrefProvider
     val myCalendar = Calendar.getInstance()
     val myCalendar1 = Calendar.getInstance()
     val myCalendar2 = Calendar.getInstance()
@@ -246,7 +252,7 @@ class CashLogFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
 
     private fun startDatePickerObserver() {
-        viewModel.startDateSelection.observe(requireActivity(), { event ->
+        viewModel.startDateSelection.observe(requireActivity()) { event ->
             event.getContentIfNotHandled()?.let {
 
                 DatePickerDialog(
@@ -257,11 +263,11 @@ class CashLogFragment : Fragment(), AdapterView.OnItemSelectedListener {
                 ).show()
             }
 
-        })
+        }
     }
 
     private fun endDatePickerObserver() {
-        viewModel.endDateSelection.observe(requireActivity(), { event ->
+        viewModel.endDateSelection.observe(requireActivity()) { event ->
             event.getContentIfNotHandled()?.let {
 
                 DatePickerDialog(
@@ -271,12 +277,12 @@ class CashLogFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
                 ).show()
             }
-        })
+        }
     }
 
     private fun observeShowProgress() {
 
-        viewModel.showProgress.observe(viewLifecycleOwner, { event ->
+        viewModel.showProgress.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
                 if (it) {
                     ProgressUtils.showProgressDialog(requireActivity())
@@ -284,13 +290,13 @@ class CashLogFragment : Fragment(), AdapterView.OnItemSelectedListener {
                     ProgressUtils.dismissProgressDialog()
                 }
             }
-        })
+        }
 
     }
 
     private fun navigate() {
 
-        viewModel.data.observe(viewLifecycleOwner, { event ->
+        viewModel.data.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
                 if (it.data.cashes.isNotEmpty()) {
                     binding.txtNodata.visibility = View.GONE
@@ -301,17 +307,19 @@ class CashLogFragment : Fragment(), AdapterView.OnItemSelectedListener {
                 } else {
                     binding.rvOpenOrder.visibility = View.GONE
                     binding.txtNodata.visibility = View.VISIBLE
+                    cashLogResponse = it.data
+                    binding.cashLogModel = cashLogResponse
                     binding.txtNodata.text = it.message
                 }
 
             }
-        })
+        }
 
     }
 
     private fun loadTerminals() {
 
-        viewModel.getTerminalListDatabse.observe(viewLifecycleOwner, {
+        viewModel.getTerminalListDatabse.observe(viewLifecycleOwner) {
             it?.let { resource ->
                 when (resource.status) {
                     Status.SUCCESS -> {
@@ -336,12 +344,12 @@ class CashLogFragment : Fragment(), AdapterView.OnItemSelectedListener {
                     }
                 }
             }
-        })
+        }
     }
 
-    private fun getTerminalId(position: Int): Int? {
+    private fun getTerminalId(position: Int): Int {
         if (this::terminalListGlobal.isInitialized) {
-            return terminalListGlobal?.get(position)?.id
+            return terminalListGlobal.get(position).id
         } else {
             return -1
         }
@@ -356,7 +364,11 @@ class CashLogFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
         spinnerAdapter.setDropDownViewResource(R.layout.row_spinner)
         binding.spTerminals.adapter = spinnerAdapter
-
+        terminalListGlobal.forEachIndexed { index, item ->
+            if (item.id == prefProvider.getValueInt(Constants.TERMINAL_ID, 0)) {
+                binding.spTerminals.setSelection(index)
+            }
+        }
     }
 
     override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {

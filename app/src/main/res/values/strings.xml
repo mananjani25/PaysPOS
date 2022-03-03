@@ -123,7 +123,7 @@
     <string name="tv_personal_passcode">Passcode</string>
     <string name="tv_personal_passcode_">Passcode<font color='#E90C0C'>*</font></string>
     <string name="tv_location">Location</string>
-    <string name="tv_create_team_member">Create Team Member</string>
+    <string name="tv_create_team_member">Add Team Member</string>
     <string name="tv_update_team_member">Update Team Member</string>
     <string name="tv_info_email">Adding an email will invite this team member to create their login for POS.</string>
     <string name="tv_add_job_title">Add Job Title</string>
@@ -429,6 +429,7 @@
     <string name="tv_role">Role</string>
     <string name="tv_team_member_with_role">Team Members with Role</string>
     <string name="tv_permission">Permission</string>
+    <string name="tv_email_star">Email <font color='#E90C0C'>*</font></string>
     <string name="tv_email">Email</string>
     <string name="tv_add_new_role_name">Add Role Name</string>
     <string name="role_name">Role Name</string>
@@ -755,6 +756,9 @@
     <string name="time_tracking">Time Tracking</string>
     <string name="team_member_time_tracking">Team member time tracking</string>
     <string name="logout">Logout</string>
+    <string name="permission_set">Permission Set</string>
+    <string name="personal_passcode">Personal Passcode</string>
+    <string name="team_permission">Team Permission <font color='#E90C0C'>*</font></string>
 
 
 </resources>

@@ -207,14 +207,17 @@ class TeamsAdapter : SectioningAdapter(), Filterable {
 
 
         if (isSelectedPos == person.id) {
-            ivh.tvInitialName.background =
-                ivh.itemView.context.getDrawable(R.drawable.bg_circle_orange)
+            ivh.layout.setBackgroundColor(ivh.itemView.context.getColorCompat(R.color.btnColor))
+            ivh.tvInitialName.background = ivh.itemView.context.getDrawable(R.drawable.bg_circle_orange)
+            ivh.tvInitialName.setTextColor(ivh.itemView.context.getColorCompat(R.color.btnColor))
             ivh.personNameTextView.setTextColor(ivh.itemView.context.getColorCompat(R.color.white))
-            ivh.personNumberTextView.setTextColor(ivh.itemView.context.getColorCompat(R.color.white))
+            ivh.personNumberTextView.setTextColor(ivh.itemView.context.getColorCompat(R.color.txtColor))
         } else {
+            ivh.layout.setBackgroundColor(ivh.itemView.context.getColorCompat(R.color.bg_color))
             ivh.personNameTextView.setTextColor(ivh.itemView.context.getColorCompat(R.color.txtColor))
             ivh.personNumberTextView.setTextColor(ivh.itemView.context.getColorCompat(R.color.txtColorGray))
             ivh.tvInitialName.background = ivh.itemView.context.getDrawable(R.drawable.bg_circle_gray)
+            ivh.tvInitialName.setTextColor(ivh.itemView.context.getColorCompat(R.color.txtColor))
         }
 
 
