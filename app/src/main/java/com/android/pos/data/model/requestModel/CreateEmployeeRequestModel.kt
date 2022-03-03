@@ -15,6 +15,8 @@ data class CreateEmployeeRequestModel(
     var email: String = "",
     @SerializedName("location_id")
     var locationId: Int = 0,
+    @SerializedName("phone_country")
+    var phone_country: Int?=null,
     @SerializedName("passcode")
     var passcode: String = "",
     @SerializedName("is_active")

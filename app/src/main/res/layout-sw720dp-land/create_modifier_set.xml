@@ -171,7 +171,7 @@
                             android:layout_marginStart="@dimen/_5sdp"
                             android:layout_weight="1"
                             android:background="@null"
-                            android:digits="abcdefghijklmnopqrstuvwxyzABCDEFGHHIJKLMNOPQURSTUVWXYZ"
+                            android:digits="1234567890-_+=/.,!@#~`$%^*()|\;'[]{}?abcdefghijklmnopqrstuvwxyzABCDEFGHHIJKLMNOPQURSTUVWXYZ"
                             android:gravity="start"
                             android:hint="@string/modifier"
                             android:inputType="text"
