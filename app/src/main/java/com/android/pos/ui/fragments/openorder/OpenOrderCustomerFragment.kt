@@ -221,10 +221,10 @@ class OpenOrderCustomerFragment : Fragment(), View.OnClickListener {
                 binding.scrollViewCustomer.visibility = View.VISIBLE
                 binding.llDeliveryAddress.visibility = View.GONE
                 binding.llBillingAddress.visibility = View.GONE
-                binding.viewCustomer.setBackgroundResource(color.txt_color_blue)
+                binding.viewCustomer.background=resources.getDrawable(R.drawable.button_action_hover)
                 binding.viewDelivery.setBackgroundResource(0)
                 binding.viewBilling.setBackgroundResource(0)
-                binding.txtCustomerDetails.setTextColor(resources.getColor(color.txt_color_blue))
+                binding.txtCustomerDetails.background=resources.getDrawable(R.drawable.button_action_hover)
                 binding.txtDeliveryAddress.setTextColor(resources.getColor(color.drawerBack50))
                 binding.txtBillingAddress.setTextColor(resources.getColor(color.drawerBack50))
 
@@ -235,10 +235,10 @@ class OpenOrderCustomerFragment : Fragment(), View.OnClickListener {
                 binding.llBillingAddress.visibility = View.GONE
                 binding.llSearch.visibility = View.GONE
                 binding.txtCustomerDetails.setTextColor(resources.getColor(color.drawerBack50))
-                binding.txtDeliveryAddress.setTextColor(resources.getColor(color.txt_color_blue))
+                binding.txtDeliveryAddress.background=resources.getDrawable(R.drawable.button_action_hover)
                 binding.txtBillingAddress.setTextColor(resources.getColor(color.drawerBack50))
                 binding.viewCustomer.setBackgroundResource(0)
-                binding.viewDelivery.setBackgroundResource(color.txt_color_blue)
+                binding.viewDelivery.background=resources.getDrawable(R.drawable.button_action_hover)
                 binding.viewBilling.setBackgroundResource(0)
 
             }
@@ -249,10 +249,10 @@ class OpenOrderCustomerFragment : Fragment(), View.OnClickListener {
                 binding.llBillingAddress.visibility = View.VISIBLE
                 binding.txtCustomerDetails.setTextColor(resources.getColor(color.drawerBack50))
                 binding.txtDeliveryAddress.setTextColor(resources.getColor(color.drawerBack50))
-                binding.txtBillingAddress.setTextColor(resources.getColor(color.txt_color_blue))
+                binding.txtBillingAddress.background=resources.getDrawable(R.drawable.button_action_hover)
                 binding.viewCustomer.setBackgroundResource(0)
                 binding.viewDelivery.setBackgroundResource(0)
-                binding.viewBilling.setBackgroundResource(color.txt_color_blue)
+                binding.viewBilling.background=resources.getDrawable(R.drawable.button_action_hover)
 
             }
             R.id.imgBack -> {
