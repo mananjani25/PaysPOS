@@ -16,7 +16,6 @@
     <color name="hint_color">#656565</color>
     <color name="btnColorDark">#FF6700</color>
     <color name="btnColor">#FF6700</color>
-    <color name="dark_btn_Color">#D55E10</color>
     <color name="view">#535353</color>
     <color name="boxColor">#9FA2A9</color>
     <color name="txtColor">#292E32</color>
@@ -121,5 +120,6 @@
     <color name="bgEditPrinter">#18181A</color>
     <color name="searchHintColor">#C4C4C4</color>
     <color name="light_gray">#A9A9A9</color>
+    <color name="dark_btn_Color">#A84C0F</color>
 
 </resources>

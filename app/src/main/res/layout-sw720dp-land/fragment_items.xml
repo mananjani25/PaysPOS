@@ -57,7 +57,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/_25sdp"
                 android:layout_gravity="center"
-                android:background="@color/btnColor"
+                android:background="@drawable/button_action_hover"
                 android:gravity="center"
                 android:layout_marginVertical="@dimen/_10sdp"
                 android:text="@string/add_new_items"

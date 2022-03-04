@@ -117,4 +117,5 @@
     <color name="switchTrackColor">#363636</color>
     <color name="bgEditPrinter">#18181A</color>
     <color name="light_gray">#A9A9A9</color>
+    <color name="dark_btn_Color">#A84C0F</color>
 </resources>

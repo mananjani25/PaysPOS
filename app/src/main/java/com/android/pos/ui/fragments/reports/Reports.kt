@@ -85,7 +85,7 @@ class Reports : Fragment() {
             0 -> {
                 binding.commonToolbar.txtSubTitle.setText("Current Drawer")
                 binding.txtCurrentDrawer.setTextColor(requireContext().resources.getColor(R.color.white))
-                binding.txtCurrentDrawer.setBackgroundColor(requireContext().resources.getColor(R.color.btnColor))
+                binding.txtCurrentDrawer.background=requireContext().resources.getDrawable(R.drawable.button_action_hover)
 
                 binding.txtSales.setTextColor(requireContext().resources.getColor(R.color.txtColor))
                 binding.txtSales.setBackgroundColor(requireContext().resources.getColor(R.color.bg_color))
@@ -100,7 +100,7 @@ class Reports : Fragment() {
                 binding.txtCurrentDrawer.setBackgroundColor(requireContext().resources.getColor(R.color.bg_color))
 
                 binding.txtSales.setTextColor(requireContext().resources.getColor(R.color.white))
-                binding.txtSales.setBackgroundColor(requireContext().resources.getColor(R.color.btnColor))
+                binding.txtSales.background=requireContext().resources.getDrawable(R.drawable.button_action_hover)
 
                 binding.txtShiftReport.setTextColor(requireContext().resources.getColor(R.color.txtColor))
                 binding.txtShiftReport.setBackgroundColor(requireContext().resources.getColor(R.color.bg_color))
@@ -116,7 +116,7 @@ class Reports : Fragment() {
                 binding.txtSales.setBackgroundColor(requireContext().resources.getColor(R.color.bg_color))
 
                 binding.txtShiftReport.setTextColor(requireContext().resources.getColor(R.color.white))
-                binding.txtShiftReport.setBackgroundColor(requireContext().resources.getColor(R.color.btnColor))
+                binding.txtShiftReport.background=requireContext().resources.getDrawable(R.drawable.button_action_hover)
 
 
             }
