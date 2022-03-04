@@ -136,7 +136,7 @@ class CategoryFragment : Fragment(), CategoryTabAdapter1.TabListner,
                             Log.e(TAG, "listlist:  ${Gson().toJson(list)}")
                             categoryParentAdapter.addList(list)
                             itemAdapter.addList(itemList1)
-                            if (list.isNotEmpty()){
+                            if (list.isNotEmpty()) {
                                 binding.rvCategoryParent.scrollToPosition(0)
                             }
 
