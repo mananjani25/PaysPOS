@@ -38,6 +38,7 @@
 
     <dimen name="box_size">@dimen/_25sdp</dimen>
     <dimen name="btn_size">@dimen/_25sdp</dimen>
+    <dimen name="header_title_size">@dimen/_7mdpi</dimen>
 
 
 
