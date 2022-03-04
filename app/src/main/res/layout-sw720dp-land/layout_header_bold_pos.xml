@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="MissingDefaultResource">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/bg_color"
+        android:orientation="horizontal"
+        android:paddingVertical="@dimen/_4sdp">
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:id="@+id/linearFirst"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+            <ImageView
+                android:id="@+id/imgDrawer"
+                android:layout_width="@dimen/_25sdp"
+                android:layout_height="@dimen/_17sdp"
+                android:layout_gravity="center"
+                android:background="?attr/selectableItemBackground"
+                android:paddingStart="@dimen/_8sdp"
+                android:paddingTop="@dimen/_6sdp"
+                android:paddingEnd="@dimen/_6sdp"
+                android:paddingBottom="@dimen/_6sdp"
+                android:src="@drawable/ic_menu_drawer" />
+
+            <TextView
+                android:id="@+id/txtKeypad"
+                style="@style/CustomFontRegularStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:background="?attr/selectableItemBackground"
+                android:padding="@dimen/_5sdp"
+                android:text="KEYPAD"
+                android:textAllCaps="true"
+                android:textColor="@color/txtColor"
+                android:textSize="@dimen/_6mdpi" />
+
+            <TextView
+                android:id="@+id/txtDineIn"
+                style="@style/CustomFontRegularStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:background="?attr/selectableItemBackground"
+                android:padding="@dimen/_5sdp"
+                android:text="DINE IN"
+                android:textAllCaps="true"
+                android:textColor="@color/txtColor"
+                android:textSize="@dimen/_6mdpi" />
+
+            <TextView
+                android:id="@+id/txtTransaction"
+                style="@style/CustomFontRegularStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:background="?attr/selectableItemBackground"
+                android:padding="@dimen/_5sdp"
+                android:text="TRANSACTIONS"
+                android:textAllCaps="true"
+                android:textColor="@color/txtColor"
+                android:textSize="@dimen/_6mdpi" />
+
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:id="@+id/linearSecond"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true">
+
+            <ImageView
+                android:id="@+id/imgSync"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:layout_marginEnd="@dimen/_15sdp"
+                android:layout_toStartOf="@+id/imgSearch"
+                android:background="?attr/selectableItemBackground"
+                android:contentDescription="@string/search"
+                android:padding="@dimen/_5sdp"
+                android:src="@drawable/ic_sync"
+                app:tint="@color/txtColor" />
+
+            <androidx.appcompat.widget.AppCompatEditText
+                android:id="@+id/edtSearch"
+                style="@style/CustomFontRegularStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/_18sdp"
+                android:layout_centerVertical="true"
+                android:layout_gravity="center"
+                android:layout_marginEnd="@dimen/_30sdp"
+                android:layout_toStartOf="@+id/linearSecond"
+                android:layout_toEndOf="@+id/linearFirst"
+                android:background="@null"
+                android:drawableStart="@drawable/search_icon_small"
+                android:drawablePadding="@dimen/_5sdp"
+                android:ellipsize="end"
+                android:gravity="center"
+                android:hint="SEARCH"
+                android:imeOptions="actionDone"
+                android:inputType="text"
+                android:lines="1"
+                android:maxWidth="@dimen/_80sdp"
+                android:maxLines="1"
+                android:padding="@dimen/_5sdp"
+                android:textColor="@color/txtColor"
+                android:textColorHint="@color/searchHintColor"
+                android:textSize="@dimen/_6mdpi" />
+
+            <TextView
+                style="@style/CustomFontBold"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginEnd="@dimen/_15sdp"
+                android:text="OPEN ORDERS"
+                android:textAllCaps="true"
+                android:textColor="@color/btnColor"
+                android:textSize="@dimen/_6mdpi" />
+
+
+            <ImageView
+                android:id="@+id/imgswitch"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/_18sdp"
+                android:layout_centerVertical="true"
+                android:layout_marginRight="@dimen/_2sdp"
+                android:contentDescription="@string/clock"
+                android:paddingVertical="@dimen/_5sdp"
+                android:src="@drawable/switch_user"
+                app:tint="@color/txtColor" />
+
+            <TextView
+                android:id="@+id/txtUserName"
+                style="@style/CustomFontMediumStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="ELEANOR RUSSELL"
+                android:textSize="@dimen/_6mdpi" />
+
+            <View
+                android:layout_width="0.5dp"
+                android:layout_height="match_parent"
+                android:layout_marginVertical="@dimen/_5sdp"
+                android:layout_marginStart="@dimen/_6sdp"
+                android:layout_marginEnd="@dimen/_6sdp"
+                android:background="@color/txtColor" />
+
+            <ImageView
+                android:layout_width="@dimen/_10sdp"
+                android:layout_height="@dimen/_12sdp"
+                android:layout_gravity="center"
+                android:layout_marginEnd="@dimen/_5sdp"
+                android:padding="@dimen/_2sdp"
+                android:src="@drawable/ic_lock"
+                app:tint="@color/txtColor" />
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+    </RelativeLayout>
+</layout>

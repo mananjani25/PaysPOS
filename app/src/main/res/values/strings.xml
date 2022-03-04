@@ -759,6 +759,8 @@
     <string name="permission_set">Permission Set</string>
     <string name="personal_passcode">Personal Passcode</string>
     <string name="team_permission">Team Permission <font color='#E90C0C'>*</font></string>
+    <string name="current_order">Current Order</string>
+    <string name="add_customer2">+ Add Customer</string>
 
 
 </resources>

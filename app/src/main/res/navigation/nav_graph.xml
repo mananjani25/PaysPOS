@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/login">
+    app:startDestination="@id/dummyFragment">
 
 
     <fragment
@@ -1211,5 +1211,10 @@
         android:name="com.android.pos.ui.fragments.DummyFragment"
         android:label="DummyFragment"
         tools:layout="@layout/fragment_dummy" />
+    <fragment
+        android:id="@+id/dashboardCategoryBoldPOS"
+        android:name="com.android.pos.ui.fragments.dashboard.bolddashboard.DashboardCategoryBoldPOS"
+        android:label="DashboardCategoryBoldPOS" />
+
 
 </navigation>

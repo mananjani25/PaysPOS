@@ -13,7 +13,6 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
 import android.view.*
-import android.view.ViewGroup
 import android.widget.*
 import androidx.activity.OnBackPressedCallback
 import androidx.appcompat.widget.AppCompatEditText
@@ -62,7 +61,6 @@ import com.android.pos.data.remote.Constants.DINE_IN_STATUS
 import com.android.pos.data.remote.Constants.DINE_IN_UPDATE
 import com.android.pos.data.remote.Constants.EMPLOYEE_ID
 import com.android.pos.data.remote.Constants.EMPLOYEE_NAME
-import com.android.pos.data.remote.Constants.EMPLOYEE_ROLE
 import com.android.pos.data.remote.Constants.HORIZONTAL
 import com.android.pos.data.remote.Constants.IS_NEXT_AMOUNT
 import com.android.pos.data.remote.Constants.IS_ORDER_UPDATE
@@ -659,8 +657,11 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
     private fun addObserver() {
 
-        viewModel.mAllWords(prefProvider.getValue(ORDER_TYPE, ""),prefProvider.getValueInt(
-            EMPLOYEE_ID,0)).observe(
+        viewModel.mAllWords(
+            prefProvider.getValue(ORDER_TYPE, ""), prefProvider.getValueInt(
+                EMPLOYEE_ID, 0
+            )
+        ).observe(
             requireActivity(), nameObserver
         )
 
@@ -668,8 +669,11 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
     private fun removeObserver() {
 
-        viewModel.mAllWords(prefProvider.getValue(ORDER_TYPE, ""),prefProvider.getValueInt(
-            EMPLOYEE_ID,0)).removeObserver(nameObserver)
+        viewModel.mAllWords(
+            prefProvider.getValue(ORDER_TYPE, ""), prefProvider.getValueInt(
+                EMPLOYEE_ID, 0
+            )
+        ).removeObserver(nameObserver)
         //  addObserver()
     }
 

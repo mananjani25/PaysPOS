@@ -1,0 +1,462 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="MissingDefaultResource">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/bg_color"
+        android:orientation="vertical">
+
+
+        <RelativeLayout
+            android:id="@+id/relHeader"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true">
+
+            <TextView
+                style="@style/CustomFontSemiBold"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:padding="@dimen/_6sdp"
+                android:text="@string/current_order"
+                android:textColor="@color/txtColor"
+                android:textSize="@dimen/_6mdpi" />
+
+            <TextView
+                android:id="@+id/txtAddCustomer"
+                style="@style/CustomFontSemiBold"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:gravity="end"
+                android:padding="@dimen/_6sdp"
+                android:text="@string/add_customer2"
+                android:textColor="@color/btnColor"
+                android:textSize="@dimen/_6mdpi" />
+
+        </RelativeLayout>
+
+        <include
+            android:id="@+id/viewDivider"
+            layout="@layout/divider"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_below="@+id/relHeader" />
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/linearBottom"
+            android:layout_below="@+id/viewDivider"
+            android:background="@color/backgroundColor"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:padding="@dimen/_6sdp"
+                android:weightSum="3.7">
+
+                <TextView
+                    style="@style/CustomFontSemiBold"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2"
+                    android:text="Item Name"
+                    android:textColor="@color/txtColor"
+                    android:textSize="@dimen/_5mdpi" />
+
+                <TextView
+                    style="@style/CustomFontSemiBold"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="start"
+                    android:layout_weight="0.5"
+                    android:gravity="start"
+                    android:text="Qty"
+                    android:textColor="@color/txtColor"
+                    android:textSize="@dimen/_5mdpi" />
+
+                <TextView
+                    style="@style/CustomFontSemiBold"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end"
+                    android:layout_weight="0.5"
+                    android:gravity="end"
+                    android:text="Each"
+                    android:textColor="@color/txtColor"
+                    android:textSize="@dimen/_5mdpi" />
+
+                <TextView
+                    style="@style/CustomFontSemiBold"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end"
+                    android:layout_weight="0.7"
+                    android:gravity="end"
+                    android:text="Total"
+                    android:textColor="@color/txtColor"
+                    android:textSize="@dimen/_5mdpi" />
+
+
+            </LinearLayout>
+
+            <include layout="@layout/divider" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvCartList"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:id="@+id/linearBottom"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_marginBottom="@dimen/_5sdp">
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+
+                android:orientation="vertical">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="200dp"
+                    android:orientation="horizontal"
+                    android:weightSum="2">
+
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_alignParentStart="true"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/_3sdp"
+                            android:orientation="horizontal"
+                            android:padding="@dimen/_2sdp">
+
+                            <androidx.appcompat.widget.AppCompatTextView
+                                style="@style/CustomFontMediumStyle"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentStart="true"
+                                android:layout_marginStart="@dimen/_3sdp"
+                                android:text="@string/payment_subtotal"
+                                android:textColor="@color/dark_gray"
+                                android:textSize="@dimen/_6mdpi" />
+
+                            <androidx.appcompat.widget.AppCompatTextView
+                                style="@style/CustomFontSemiBold"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentEnd="true"
+                                android:layout_gravity="end"
+                                android:layout_marginEnd="@dimen/_3sdp"
+                                android:gravity="end"
+                                android:text="$0.00"
+                                android:textColor="@color/txtColor"
+                                android:textSize="@dimen/text_size_medium" />
+                        </RelativeLayout>
+
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/_3sdp"
+                            android:orientation="horizontal"
+                            android:padding="@dimen/_2sdp">
+
+                            <androidx.appcompat.widget.AppCompatTextView
+                                style="@style/CustomFontMediumStyle"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="@dimen/_3sdp"
+                                android:text="@string/tv_tax"
+                                android:textColor="@color/dark_gray"
+                                android:textSize="@dimen/_6mdpi" />
+
+                            <androidx.appcompat.widget.AppCompatTextView
+                                style="@style/CustomFontSemiBold"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentEnd="true"
+                                android:layout_gravity="end"
+                                android:layout_marginEnd="@dimen/_3sdp"
+                                android:gravity="end"
+                                android:paddingStart="@dimen/_5sdp"
+                                android:text="$0.00"
+                                android:textColor="@color/txtColor"
+                                android:textSize="@dimen/text_size_medium" />
+                        </RelativeLayout>
+
+
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/_3sdp"
+                            android:orientation="horizontal"
+                            android:padding="@dimen/_2sdp">
+
+                            <androidx.appcompat.widget.AppCompatTextView
+                                style="@style/CustomFontMediumStyle"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentStart="true"
+                                android:layout_marginStart="@dimen/_3sdp"
+                                android:text="Tip (%)"
+                                android:textColor="@color/dark_gray"
+                                android:textSize="@dimen/_6mdpi" />
+
+                            <androidx.appcompat.widget.AppCompatTextView
+                                style="@style/CustomFontSemiBold"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentEnd="true"
+                                android:layout_marginEnd="@dimen/_3sdp"
+                                android:gravity="end"
+                                android:text="$0.00"
+                                android:textColor="@color/txtColor"
+                                android:textSize="@dimen/text_size_medium" />
+                        </RelativeLayout>
+
+
+                    </LinearLayout>
+
+
+                    <View
+                        android:layout_width="1dp"
+                        android:layout_height="wrap_content"
+                        android:layout_centerHorizontal="true"
+                        android:layout_marginBottom="@dimen/_10sdp"
+                        android:background="@color/grayBackgroundColor" />
+
+                    <androidx.appcompat.widget.LinearLayoutCompat
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_alignParentEnd="true"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/_3sdp"
+                            android:orientation="horizontal"
+                            android:padding="@dimen/_2sdp">
+
+                            <androidx.appcompat.widget.AppCompatTextView
+                                style="@style/CustomFontMediumStyle"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentStart="true"
+                                android:layout_marginStart="@dimen/_3sdp"
+                                android:text="Discount"
+                                android:textColor="@color/dark_gray"
+                                android:textSize="@dimen/_6mdpi" />
+
+                            <androidx.appcompat.widget.AppCompatTextView
+                                style="@style/CustomFontSemiBold"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentEnd="true"
+                                android:layout_marginRight="@dimen/_5sdp"
+                                android:gravity="end"
+                                android:text="$0.00"
+                                android:textColor="@color/txtColor"
+                                android:textSize="@dimen/text_size_medium" />
+                        </RelativeLayout>
+
+
+                        <RelativeLayout
+                            android:id="@+id/linear_cash_Discount"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/_3sdp"
+                            android:orientation="horizontal"
+                            android:padding="@dimen/_2sdp"
+                            android:visibility="visible">
+
+                            <androidx.appcompat.widget.AppCompatTextView
+                                style="@style/CustomFontMediumStyle"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentStart="true"
+                                android:layout_marginStart="@dimen/_3sdp"
+                                android:text="Balance Due"
+                                android:textColor="@color/dark_gray"
+                                android:textSize="@dimen/_6mdpi" />
+
+                            <androidx.appcompat.widget.AppCompatTextView
+                                android:id="@+id/txt_cashAmounntDiscount"
+                                style="@style/CustomFontSemiBold"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentEnd="true"
+                                android:layout_marginRight="@dimen/_5sdp"
+                                android:gravity="end"
+                                android:text="$0.00"
+                                android:textColor="@color/btnColorDark"
+                                android:textSize="@dimen/text_size_medium" />
+                        </RelativeLayout>
+
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/_3sdp"
+                            android:layout_marginBottom="@dimen/_10sdp"
+                            android:orientation="horizontal"
+                            android:padding="@dimen/_2sdp">
+
+                            <androidx.appcompat.widget.AppCompatTextView
+                                style="@style/CustomFontMediumStyle"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentStart="true"
+                                android:layout_marginStart="@dimen/_3sdp"
+                                android:text="@string/tv_total"
+                                android:textColor="@color/txtColor"
+                                android:textSize="@dimen/_6mdpi" />
+
+                            <androidx.appcompat.widget.AppCompatTextView
+                                style="@style/CustomFontBold"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentEnd="true"
+                                android:layout_marginEnd="@dimen/_5sdp"
+                                android:gravity="end"
+                                android:text="$0.00"
+                                android:textColor="@color/txtColor"
+                                android:textSize="@dimen/text_size_medium" />
+                        </RelativeLayout>
+
+                        <RelativeLayout
+                            android:id="@+id/llDiscount"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/_3sdp"
+                            android:orientation="horizontal"
+                            android:padding="@dimen/_2sdp"
+                            android:visibility="gone">
+
+                            <androidx.appcompat.widget.AppCompatTextView
+                                style="@style/CustomFontMediumStyle"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentStart="true"
+                                android:layout_marginStart="@dimen/_3sdp"
+                                android:text="@string/tv_discount"
+                                android:textColor="@color/txtColor"
+                                android:textSize="@dimen/_6mdpi" />
+
+                            <androidx.appcompat.widget.AppCompatTextView
+                                android:id="@+id/txt_discount"
+                                style="@style/CustomFontSemiBold"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentEnd="true"
+                                android:layout_marginRight="@dimen/_5sdp"
+                                android:gravity="end"
+                                android:text=""
+                                android:textColor="@color/colorRed"
+                                android:textSize="@dimen/text_size_medium" />
+                        </RelativeLayout>
+
+
+                        <LinearLayout
+                            android:id="@+id/liinear_noncashAdj"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/_3sdp"
+                            android:orientation="horizontal"
+                            android:padding="@dimen/_2sdp"
+                            android:visibility="gone">
+
+                            <androidx.appcompat.widget.AppCompatTextView
+                                style="@style/CustomFontMediumStyle"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="@dimen/_3sdp"
+                                android:text="@string/non_cash_adj"
+                                android:textColor="@color/txtColor"
+                                android:textSize="@dimen/_6mdpi" />
+
+                            <androidx.appcompat.widget.AppCompatTextView
+                                android:id="@+id/txt_NonCashAdjamount"
+                                style="@style/CustomFontSemiBold"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginRight="@dimen/_5sdp"
+                                android:gravity="end"
+                                android:text="0.0"
+                                android:textColor="@color/txtColor"
+                                android:textSize="@dimen/_5mdpi" />
+                        </LinearLayout>
+
+
+                    </androidx.appcompat.widget.LinearLayoutCompat>
+
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:weightSum="2">
+
+                    <TextView
+                        style="@style/CustomFontSemiBold"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/_4sdp"
+                        android:layout_marginEnd="@dimen/_2sdp"
+                        android:layout_weight="1"
+                        android:background="@color/backgroundColor"
+                        android:gravity="center"
+                        android:padding="@dimen/_5sdp"
+                        android:text="@string/save"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/_7mdpi" />
+
+                    <TextView
+                        style="@style/CustomFontBold"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/_2sdp"
+                        android:layout_marginEnd="@dimen/_4sdp"
+                        android:layout_weight="1"
+                        android:background="@color/btnColorDark"
+                        android:gravity="center"
+                        android:padding="@dimen/_5sdp"
+                        android:text="Pay $0.00"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/_7mdpi" />
+                </LinearLayout>
+
+
+            </LinearLayout>
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+    </RelativeLayout>
+</layout>
