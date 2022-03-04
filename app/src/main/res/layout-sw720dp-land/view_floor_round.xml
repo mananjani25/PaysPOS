@@ -9,10 +9,11 @@
     <LinearLayout
         android:id="@+id/llMainParentRound"
         android:layout_width="match_parent"
+        android:layout_margin="@dimen/_5sdp"
         android:layout_height="match_parent"
         android:background="@drawable/bg_circle_name"
         android:gravity="center"
-        android:layout_margin="@dimen/_5sdp"
+
         android:orientation="horizontal">
 
         <LinearLayout
@@ -27,7 +28,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Table 2"
-                android:textColor="@color/black"
+                android:textColor="@color/white"
                 android:textSize="@dimen/_5mdpi" />
 
             <LinearLayout

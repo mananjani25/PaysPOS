@@ -14,119 +14,79 @@
             android:layout_width="@dimen/_10sdp"
             android:layout_height="@dimen/_10sdp"
             android:layout_gravity="end"
-            android:layout_marginTop="@dimen/_5sdp"
+            android:layout_marginVertical="@dimen/_5sdp"
             android:src="@drawable/ic_baseline_delete_24"
             android:visibility="gone"
             app:tint="@color/txt_color_blue" />
 
-        <RelativeLayout
+        <androidx.appcompat.widget.LinearLayoutCompat
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/_5sdp"
-            android:layout_weight="1"
-            android:background="@drawable/background_merge_table_item">
+            android:background="@drawable/border_with_square_outlinne"
+            android:orientation="vertical">
 
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/txtFloorPlanLabel"
-                style="@style/CustomFontSemiBold"
-                android:layout_width="wrap_content"
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_alignParentStart="true"
-                android:layout_centerInParent="true"
-                android:layout_gravity="center"
-                android:layout_marginStart="@dimen/_5sdp"
-                android:gravity="center"
-                android:padding="@dimen/_5sdp"
-                android:text="Select Floor Plan"
-                android:textColor="@color/txtColor"
-                android:textSize="@dimen/_5mdpi" />
+                android:layout_marginVertical="@dimen/_5sdp"
+                android:orientation="horizontal">
 
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_centerVertical="true"
-                android:paddingVertical="@dimen/_2sdp">
-
-                <Spinner
-                    android:id="@+id/spnFloorName"
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/txtFloorPlanLabel"
                     style="@style/CustomFontSemiBold"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_marginStart="@dimen/_5sdp"
-                    android:background="@null"
-                    android:gravity="start"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginLeft="@dimen/_5sdp"
+                    android:layout_weight="9.5"
+                    android:gravity="center_vertical"
                     android:padding="@dimen/_5sdp"
-                    android:spinnerMode="dialog"
-                    android:textColor="@color/color96"
+                    android:text="Select Floor Plan"
+                    android:textColor="@color/txtColor"
                     android:textSize="@dimen/_5mdpi" />
 
                 <androidx.appcompat.widget.AppCompatImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_marginStart="@dimen/_5sdp"
-                    android:layout_marginEnd="@dimen/_5sdp"
-                    app:srcCompat="@drawable/ic_arrow_forward" />
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="0.5"
+                    android:padding="@dimen/_3sdp"
+                    android:src="@drawable/ic_arrow_drop_down" />
+            </androidx.appcompat.widget.LinearLayoutCompat>
 
-            </LinearLayout>
-        </RelativeLayout>
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/view" />
 
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/_5sdp"
-            android:layout_weight="1"
-            android:background="@drawable/background_merge_table_item">
-
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/txtPrimaryLabel"
-                style="@style/CustomFontSemiBold"
-                android:layout_width="wrap_content"
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_alignParentStart="true"
-                android:layout_centerInParent="true"
-                android:layout_gravity="center"
-                android:layout_marginStart="@dimen/_5sdp"
-                android:gravity="center"
-                android:padding="@dimen/_5sdp"
-                android:text="Select Table to Merge"
-                android:textColor="@color/txtColor"
-                android:textSize="@dimen/_5mdpi" />
+                android:layout_marginVertical="@dimen/_5sdp"
+                android:orientation="horizontal">
 
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_centerVertical="true"
-                android:paddingVertical="@dimen/_2sdp">
-
-                <Spinner
-                    android:id="@+id/spnTable"
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/txtselectprimarytable"
                     style="@style/CustomFontSemiBold"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_marginStart="@dimen/_5sdp"
-                    android:background="@null"
-                    android:gravity="start"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginLeft="@dimen/_5sdp"
+                    android:layout_weight="9.5"
+                    android:gravity="center_vertical"
                     android:padding="@dimen/_5sdp"
-                    android:spinnerMode="dialog"
-                    android:textColor="@color/color96"
+                    android:text="Select Table to Merge"
+                    android:textColor="@color/txtColor"
                     android:textSize="@dimen/_5mdpi" />
 
                 <androidx.appcompat.widget.AppCompatImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_marginStart="@dimen/_5sdp"
-                    android:layout_marginEnd="@dimen/_5sdp"
-                    app:srcCompat="@drawable/ic_arrow_forward" />
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="0.5"
+                    android:padding="@dimen/_3sdp"
+                    android:src="@drawable/ic_arrow_drop_down" />
+            </androidx.appcompat.widget.LinearLayoutCompat>
 
-            </LinearLayout>
-        </RelativeLayout>
-
+        </androidx.appcompat.widget.LinearLayoutCompat>
 
     </androidx.appcompat.widget.LinearLayoutCompat>
 </layout>

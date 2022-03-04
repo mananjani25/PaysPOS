@@ -9,64 +9,19 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <LinearLayout
-            android:id="@+id/llHome"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@color/white"
-            android:orientation="horizontal"
-            android:padding="@dimen/_5sdp">
 
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:orientation="horizontal">
+        <include
+            android:id="@+id/layout_header"
+            layout="@layout/layout_header_boldpos_dineinfragment" />
 
-                <TextView
-                    android:id="@+id/txtHome"
-                    style="@style/CustomFontSemiBold"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentStart="true"
-                    android:layout_centerVertical="true"
-                    android:layout_marginEnd="@dimen/_10sdp"
-                    android:background="?attr/selectableItemBackground"
-                    android:padding="@dimen/_5sdp"
-                    android:text="Home"
-                    android:textColor="@color/txt_color_blue"
-                    android:textSize="@dimen/_5mdpi" />
-
-                <ImageView
-                    android:id="@+id/imgMergeTable"
-                    android:layout_width="@dimen/_25sdp"
-                    android:layout_height="@dimen/_11sdp"
-                    android:layout_alignParentEnd="true"
-                    android:layout_centerVertical="true"
-                    android:layout_marginEnd="@dimen/_8sdp"
-                    android:padding="@dimen/_2sdp"
-                    android:src="@drawable/ic_merge_new" />
-
-
-            </RelativeLayout>
-
-
-        </LinearLayout>
-
-        <View
-            android:id="@+id/view1"
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_below="@+id/llHome"
-            android:background="@color/view" />
 
         <androidx.appcompat.widget.LinearLayoutCompat
             android:id="@+id/llinear_floorplan"
             android:layout_width="match_parent"
             android:layout_height="@dimen/btn_size"
-            android:layout_below="@+id/view1"
-            android:background="@drawable/background_square_border_grey"
-            >
+            android:layout_below="@+id/layout_header"
+            android:layout_marginTop="0.5dp"
+            android:background="@drawable/background_square_border_grey">
 
             <ImageView
                 android:id="@+id/previous_img"
@@ -82,8 +37,9 @@
                 android:layout_width="0dp"
                 android:layout_height="@dimen/btn_size"
                 android:layout_weight="9"
-                android:paddingBottom="0.5dp"
                 android:orientation="horizontal"
+                android:paddingVertical="0.5dp"
+
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
 
             <ImageView
@@ -146,60 +102,6 @@
 
         </FrameLayout>
 
-        <View
-            android:id="@+id/view3"
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_below="@+id/flFloorPlan"
-            android:background="@color/view" />
-
-        <LinearLayout
-            android:id="@+id/llOtherMenus"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:orientation="horizontal"
-            android:visibility="gone">
-
-            <TextView
-                android:id="@+id/tvTransaction"
-                style="@style/CustomFontSemiBold"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:padding="@dimen/_5sdp"
-                android:text="@string/tv_transactions"
-                android:textColor="@color/black"
-                android:textSize="@dimen/_5mdpi" />
-
-            <View
-                android:id="@+id/view5"
-                android:layout_width="1dp"
-                android:layout_height="match_parent"
-                android:background="@color/view" />
-
-            <TextView
-                android:id="@+id/tvOrders"
-                style="@style/CustomFontSemiBold"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:padding="@dimen/_5sdp"
-                android:text="@string/tv_orders"
-                android:textColor="@color/black"
-                android:textSize="@dimen/_5mdpi" />
-
-        </LinearLayout>
-
-        <View
-            android:id="@+id/view4"
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_below="@+id/llOtherMenus"
-            android:layout_marginBottom="@dimen/_3sdp"
-            android:background="@color/view" />
     </RelativeLayout>
 
 </layout>

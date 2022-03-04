@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/dummyFragment">
+    app:startDestination="@id/login">
 
 
     <fragment
@@ -966,8 +966,8 @@
             app:popUpTo="@id/dineInFragment"
             app:popUpToInclusive="false" />
         <action
-            android:id="@+id/action_dineInFragment_to_mergeTableDialog"
-            app:destination="@id/mergeTableDialog"
+            android:id="@+id/action_dineInFragment_to_mergetablefragment"
+            app:destination="@id/mergetablefragment"
             app:enterAnim="@anim/nav_default_enter_anim" />
     </fragment>
     <fragment
@@ -1085,10 +1085,20 @@
             android:defaultValue="false"
             app:argType="boolean" />
     </fragment>
-    <dialog
-        android:id="@+id/mergeTableDialog"
-        android:name="com.android.pos.ui.dialog.MergeTableDialog"
-        android:label="MergeTableDialog" />
+    <fragment
+        android:id="@+id/mergetablefragment"
+        android:name="com.android.pos.ui.fragments.dinein.MergeTableFragment"
+        android:label="MergeTableFragemennt" >
+        <action
+            android:id="@+id/action_mergetablefragment_to_transactionlistfragment"
+            app:destination="@id/transactionFragment" />
+        <action
+            android:id="@+id/action_mergetablefragment_to_dashborardCategoryNew"
+            app:destination="@id/dashboardCategoryNew" />
+        <action
+            android:id="@+id/action_mergetablefragment_to_posmenu"
+            app:destination="@id/menuPOS" />
+    </fragment>
     <fragment
         android:id="@+id/printerQueue"
         android:name="com.android.pos.ui.fragments.settings.hardware.printerqueue.PrinterQueue"

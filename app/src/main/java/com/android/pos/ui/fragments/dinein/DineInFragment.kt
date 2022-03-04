@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.LinearLayout
 import androidx.appcompat.widget.AppCompatTextView
+import androidx.core.widget.TextViewCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
@@ -73,19 +74,18 @@ class DineInFragment : Fragment() {
         setUpRecyclerView()
         prefProvider.setValueboolean(DINE_IN_STATUS, false)
 
+        TextViewCompat.setTextAppearance(binding.layoutHeader.txtMerge,R.style.CustomFontRegularStyle)
+        TextViewCompat.setTextAppearance(binding.layoutHeader.txtDineinordere,R.style.CustomFontBold)
+        binding.layoutHeader.txtMerge.setTextColor(resources.getColor(R.color.txtColor))
+        binding.layoutHeader.txtDineinordere.setTextColor(resources.getColor(R.color.btnColor))
 
-        binding.tvTransaction.setOnClickListener {
+        binding.layoutHeader.txtTransaction.setOnClickListener {
             findNavController().navigate(R.id.action_dineInFragment_to_transactionFragment)
         }
 
-        binding.tvOrders.setOnClickListener {
-            findNavController().navigate(R.id.action_dineInFragment_to_orders)
-        }
 
-        binding.imgMergeTable.setOnClickListener {
+        binding.layoutHeader.txtMerge.setOnClickListener {
             loadFloorPlanDetails()
-
-
         }
 
 
@@ -96,10 +96,16 @@ class DineInFragment : Fragment() {
             setFloorPlan(dineInFloorTablesList)
         }
 
-        binding.txtHome.setOnClickListener {
+        binding.layoutHeader.txthome.setOnClickListener {
             findNavController().popBackStack(R.id.dashboardCategoryNew, false)
         }
+        binding.layoutHeader.imgDrawer.setOnClickListener {
+            findNavController().popBackStack(
+                R.id.menuPOS,
+                false
+            )
 
+        }
         return binding.root
     }
 
@@ -158,7 +164,7 @@ class DineInFragment : Fragment() {
     }
 
     private fun loadFloorPlanDetails() {
-        viewModel.getFloorPlanDetails.observe(viewLifecycleOwner, {
+        viewModel.getFloorPlanDetails.observe(viewLifecycleOwner) {
             it?.let { resource ->
                 when (resource.status) {
                     Status.SUCCESS -> {
@@ -184,7 +190,7 @@ class DineInFragment : Fragment() {
                                 )
                             )
                             findNavController().navigate(
-                                R.id.action_dineInFragment_to_mergeTableDialog,
+                                R.id.action_dineInFragment_to_mergetablefragment,
                                 bundle
                             )
 
@@ -209,7 +215,7 @@ class DineInFragment : Fragment() {
                     }
                 }
             }
-        })
+        }
 
     }
 
@@ -296,10 +302,10 @@ class DineInFragment : Fragment() {
 
                         if (dineInFloorTablesList[i].status == OCCUPIED || dineInFloorTablesList[i].status == MERGEDANDOCCUPIED) {
                             llMainParentSquare.background =
-                                resources.getDrawable(R.drawable.background_drawer_button_green)
+                                resources.getDrawable(R.drawable.background_occupied_table)
                         } else {
                             llMainParentSquare.background =
-                                resources.getDrawable(R.drawable.background_drawer_button)
+                                resources.getDrawable(R.drawable.background_free_table)
                         }
 
 
@@ -389,7 +395,7 @@ class DineInFragment : Fragment() {
 
                         } else {
                             llMainParentRound.background =
-                                resources.getDrawable(R.drawable.bg_circle_name)
+                                resources.getDrawable(R.drawable.background_round_free_table)
                         }
                         binding.flFloorPlan.addView(llMainParentRound, paramsRound)
 
