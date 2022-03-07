@@ -22,12 +22,13 @@ import com.android.pos.ui.adapter.boldpos.CategoryTabAdapter
 import com.android.pos.ui.adapter.boldpos.ItemAdapter
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.android.pos.utils.ProgressUtils
+import com.android.pos.utils.callback.ItemListner
 import com.android.pos.utils.statusUtils.Status
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class CategoryFragment : Fragment(), CategoryTabAdapter1.TabListner,
+class CategoryFragment(val listner: ItemListner) : Fragment(), CategoryTabAdapter1.TabListner,
     CategoryItemAdapter1.CategoryItemList, CategoryParentAdapter.CategoryParentListner {
     private var categoryList1: ArrayList<CategoryWithInventory> = arrayListOf()
     private lateinit var binding: FragmentCategoryBinding
@@ -39,7 +40,18 @@ class CategoryFragment : Fragment(), CategoryTabAdapter1.TabListner,
     private var allItems: ArrayList<TbItem?> = arrayListOf()
     private var tabList: ArrayList<CategoryTabModel> = arrayListOf()
     var list: ArrayList<CategoryParentModel> = arrayListOf()
+    lateinit var itemListner: ItemListner
     private val TAG = "CategoryFragment"
+
+    companion object {
+        fun newInstance(callback: ItemListner): CategoryFragment {
+            val fragment = CategoryFragment(callback)
+            return fragment
+
+        }
+
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -199,6 +211,10 @@ class CategoryFragment : Fragment(), CategoryTabAdapter1.TabListner,
 
 
     override fun onClick(item: TbItem) {
+        Log.e(TAG, "selectedItem:  ${Gson().toJson(item)}")
+        listner.onItemSelected(item)
+
+
 
     }
 

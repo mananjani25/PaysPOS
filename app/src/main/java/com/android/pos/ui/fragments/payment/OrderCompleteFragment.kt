@@ -577,16 +577,19 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             }
             R.id.llMessage -> {
 
-                binding.llNoReceipt.background=resources.getDrawable(R.drawable.background_square_border_grey)
+                binding.llNoReceipt.background =
+                    resources.getDrawable(R.drawable.background_square_border_grey)
                 binding.llNoReceipt.setTextColor(resources.getColor(R.color.txtColor))
 
-                binding.llEmail.background=resources.getDrawable(R.drawable.background_square_border_grey)
+                binding.llEmail.background =
+                    resources.getDrawable(R.drawable.background_square_border_grey)
                 binding.llEmail.setTextColor(resources.getColor(R.color.txtColor))
 
-                binding.llMessage.background=resources.getDrawable(R.drawable.button_selected)
+                binding.llMessage.background = resources.getDrawable(R.drawable.button_selected)
                 binding.llMessage.setTextColor(resources.getColor(R.color.white))
 
-                binding.llPrint.background=resources.getDrawable(R.drawable.background_square_border_grey)
+                binding.llPrint.background =
+                    resources.getDrawable(R.drawable.background_square_border_grey)
                 binding.llPrint.setTextColor(resources.getColor(R.color.txtColor))
 
                 type = "Message"
@@ -604,16 +607,19 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 MethodUtils.hideKeyboard(requireActivity())
             }
             R.id.llEmail -> {
-                binding.llNoReceipt.background=resources.getDrawable(R.drawable.background_square_border_grey)
+                binding.llNoReceipt.background =
+                    resources.getDrawable(R.drawable.background_square_border_grey)
                 binding.llNoReceipt.setTextColor(resources.getColor(R.color.txtColor))
 
-                binding.llEmail.background=resources.getDrawable(R.drawable.button_selected)
+                binding.llEmail.background = resources.getDrawable(R.drawable.button_selected)
                 binding.llEmail.setTextColor(resources.getColor(R.color.white))
 
-                binding.llMessage.background=resources.getDrawable(R.drawable.background_square_border_grey)
+                binding.llMessage.background =
+                    resources.getDrawable(R.drawable.background_square_border_grey)
                 binding.llMessage.setTextColor(resources.getColor(R.color.txtColor))
 
-                binding.llPrint.background=resources.getDrawable(R.drawable.background_square_border_grey)
+                binding.llPrint.background =
+                    resources.getDrawable(R.drawable.background_square_border_grey)
                 binding.llPrint.setTextColor(resources.getColor(R.color.txtColor))
 
                 type = "Email"
@@ -630,31 +636,37 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 MethodUtils.hideKeyboard(requireActivity())
             }
             R.id.llNoReceipt -> {
-                binding.llNoReceipt.background=resources.getDrawable(R.drawable.button_selected)
+                binding.llNoReceipt.background = resources.getDrawable(R.drawable.button_selected)
                 binding.llNoReceipt.setTextColor(resources.getColor(R.color.white))
 
-                binding.llEmail.background=resources.getDrawable(R.drawable.background_square_border_grey)
+                binding.llEmail.background =
+                    resources.getDrawable(R.drawable.background_square_border_grey)
                 binding.llEmail.setTextColor(resources.getColor(R.color.txtColor))
 
-                binding.llMessage.background=resources.getDrawable(R.drawable.background_square_border_grey)
+                binding.llMessage.background =
+                    resources.getDrawable(R.drawable.background_square_border_grey)
                 binding.llMessage.setTextColor(resources.getColor(R.color.txtColor))
 
-                binding.llPrint.background=resources.getDrawable(R.drawable.background_square_border_grey)
+                binding.llPrint.background =
+                    resources.getDrawable(R.drawable.background_square_border_grey)
                 binding.llPrint.setTextColor(resources.getColor(R.color.txtColor))
                 moveToDashboard()
             }
             R.id.llPrint -> {
                 //removeCustomer()
-                binding.llPrint.background=resources.getDrawable(R.drawable.button_selected)
+                binding.llPrint.background = resources.getDrawable(R.drawable.button_selected)
                 binding.llPrint.setTextColor(resources.getColor(R.color.white))
 
-                binding.llEmail.background=resources.getDrawable(R.drawable.background_square_border_grey)
+                binding.llEmail.background =
+                    resources.getDrawable(R.drawable.background_square_border_grey)
                 binding.llEmail.setTextColor(resources.getColor(R.color.txtColor))
 
-                binding.llMessage.background=resources.getDrawable(R.drawable.background_square_border_grey)
+                binding.llMessage.background =
+                    resources.getDrawable(R.drawable.background_square_border_grey)
                 binding.llMessage.setTextColor(resources.getColor(R.color.txtColor))
 
-                binding.llNoReceipt.background=resources.getDrawable(R.drawable.background_square_border_grey)
+                binding.llNoReceipt.background =
+                    resources.getDrawable(R.drawable.background_square_border_grey)
                 binding.llNoReceipt.setTextColor(resources.getColor(R.color.txtColor))
 
                 if (isDineIn) {
@@ -1890,7 +1902,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
 
             try {
-                builder.addPulse(Printer.DRAWER_HIGH,Printer.PULSE_100)
+                builder.addPulse(Printer.DRAWER_HIGH, Printer.PULSE_100)
                 PrinterClass.getPrinter()?.sendData(
                     builder,
                     PrinterClass.BLUETOOTH_TIMEOUT, status, battery
@@ -2986,22 +2998,22 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             try {
 
 
-                builder.addPulse(Printer.DRAWER_HIGH,Printer.PULSE_100)
+                builder.addPulse(Printer.DRAWER_HIGH, Printer.PULSE_100)
 
-                    PrinterClass.getPrinter()?.sendData(
-                        builder,
-                        if (customerReceiptPrinters.name.substring(0, 6).toString()
-                                .lowercase() == "TM-m30".lowercase() || customerReceiptPrinters.name.substring(
-                                0,
-                                6
-                            ).toString().lowercase() == "TM-m10".lowercase()
-                        ) {
-                            PrinterClass.BLUETOOTH_TIMEOUT
-                        } else {
-                            PrinterClass.SEND_TIMEOUT
+                PrinterClass.getPrinter()?.sendData(
+                    builder,
+                    if (customerReceiptPrinters.name.substring(0, 6).toString()
+                            .lowercase() == "TM-m30".lowercase() || customerReceiptPrinters.name.substring(
+                            0,
+                            6
+                        ).toString().lowercase() == "TM-m10".lowercase()
+                    ) {
+                        PrinterClass.BLUETOOTH_TIMEOUT
+                    } else {
+                        PrinterClass.SEND_TIMEOUT
 
-                        }, status, battery
-                    )
+                    }, status, battery
+                )
 
                 PrinterClass.closePrinter()
 
@@ -3426,7 +3438,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 builder.addFeedLine(1)
                 builder.addTextAlign(Builder.ALIGN_CENTER)
 
-               /* var bitmap = getBitmapFromURL(prefProvider.getValue(VENUE_LOGO, ""))*/
+                /* var bitmap = getBitmapFromURL(prefProvider.getValue(VENUE_LOGO, ""))*/
 
                 val decodedString: ByteArray = android.util.Base64.decode(
                     prefProvider.getValue(VENUE_LOGO, ""),
@@ -4447,7 +4459,6 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             }
 
             builder.addFeedLine(2)
-
             builder.addCut(Builder.CUT_FEED)
 
             val status = IntArray(1)
@@ -4456,7 +4467,10 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
 
             try {
-                builder.addPulse(com.epson.epos2.printer.Printer.DRAWER_HIGH,com.epson.epos2.printer.Printer.PULSE_100)
+                builder.addPulse(
+                    com.epson.epos2.printer.Printer.DRAWER_HIGH,
+                    com.epson.epos2.printer.Printer.PULSE_100
+                )
                 PrinterClass.getPrinter()?.sendData(
                     builder,
                     BLUETOOTH_TIMEOUT, status, battery

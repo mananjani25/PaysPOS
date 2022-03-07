@@ -1,20 +1,25 @@
 package com.android.pos.ui.fragments.dashboard.bolddashboard
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.activityViewModels
+import com.android.pos.data.entities.TbItem
 import com.android.pos.databinding.FragmentDashboardCategoryBoldPosBinding
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
+import com.android.pos.utils.callback.ItemListner
+import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class DashboardCategoryBoldPOS : Fragment() {
+class DashboardCategoryBoldPOS : Fragment(), ItemListner {
     private lateinit var binding: FragmentDashboardCategoryBoldPosBinding
     private val viewModel by activityViewModels<DashBoardCategoryViewModel>()
+    private val TAG = "DashboardCategoryBold"
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -30,7 +35,7 @@ class DashboardCategoryBoldPOS : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         onClick()
         loadCartFragment(CartFragment())
-        loadCategoryFragment(CategoryFragment())
+        loadCategoryFragment(CategoryFragment(this))
 
 
     }
@@ -63,6 +68,13 @@ class DashboardCategoryBoldPOS : Fragment() {
         binding.layoutHeader.imgSync.setOnClickListener {
             viewModel.syncInventoryModule()
         }
+    }
+
+    override fun onItemSelected(item: TbItem) {
+        Log.e(TAG, "getitem:  ${Gson().toJson(item)}")
+        val fragment = AddItemFragment.newInstance(item)
+        loadCategoryFragment(fragment)
+
     }
 
 }

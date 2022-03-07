@@ -30,6 +30,9 @@ class VariationListAdapter(val viewModel: CreateItemViewModel) :
 
     override fun onBindViewHolder(holder: VariationListAdapter.MyViewHolder, position: Int) {
 
+        val itemBinding = holder.noteItemBinding
+        itemBinding.txtVariation.setText("" + variationList[position])
+
     }
 
     override fun getItemCount(): Int {
