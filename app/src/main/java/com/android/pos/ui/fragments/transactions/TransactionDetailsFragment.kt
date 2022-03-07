@@ -179,7 +179,7 @@ class TransactionDetailsFragment : Fragment() {
     @SuppressLint("SetTextI18n")
     private fun navigate() {
         ProgressUtils.showProgressDialog(requireActivity())
-        viewModel.dataPayment.observe(viewLifecycleOwner, { event ->
+        viewModel.dataPayment.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
                 orderIDglobal = it.data.order.id
 
@@ -189,6 +189,11 @@ class TransactionDetailsFragment : Fragment() {
                     isSplitPayment = true
                 }
 
+
+                if (it.data.order.note.isNotEmpty()) {
+                    binding.llNotes.visibility = View.VISIBLE
+                    binding.tvNote.text=it.data.order.note
+                }
                 binding.tvDate.text =
                     convertCurrentDate(
                         it.data.order.created_at,
@@ -198,14 +203,16 @@ class TransactionDetailsFragment : Fragment() {
                         context
                     )
 
-                binding.tvTransactionDate.text =
+                binding.tvTransactionTime.text =
                     convertCurrentTime(
                         it.data.order.created_at,
                         context
-                    ) + "\n" + convertCurrentDate(
-                        it.data.order.created_at,
-                        context
                     )
+
+                binding.tvTransactionDate.text = convertCurrentDate(
+                    it.data.order.created_at,
+                    context
+                )
 
                 if (it.data.order.customer != null) {
                     binding.tvCustomerName.text =
@@ -309,7 +316,7 @@ class TransactionDetailsFragment : Fragment() {
 
                 ProgressUtils.dismissProgressDialog()
             }
-        })
+        }
 
     }
 
