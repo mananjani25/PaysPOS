@@ -194,7 +194,7 @@
                         android:layout_gravity="center"
                         android:layout_marginTop="@dimen/_2ssp"
                         android:text="None"
-                        android:textColor="@color/colorB9"
+                        android:textColor="@color/btnColor"
                         android:textSize="@dimen/text_size_medium" />
 
 
@@ -213,16 +213,11 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="@string/tv_jobs"
-                    android:textAllCaps="true"
+
                     android:textColor="@color/txtColor"
                     android:textSize="@dimen/text_size_large"
                     android:layout_marginTop="@dimen/_10sdp"/>
 
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_marginTop="@dimen/_10sdp"
-                    android:background="@color/txtColorGray" />
 
 
                 <LinearLayout
@@ -305,11 +300,6 @@
                     android:textSize="@dimen/_7mdpi" />
 
 
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_marginTop="@dimen/_10sdp"
-                    android:background="@color/txtColorGray" />
 
 
                 <LinearLayout
@@ -323,7 +313,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        android:text="Role"
+                        android:text="@string/permission_set"
                         android:textColor="@color/txtColorGray"
                         android:textSize="@dimen/text_size_normal" />
 
@@ -357,7 +347,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        android:text="@string/tv_personal_passcode"
+                        android:text="@string/personal_passcode"
                         android:textColor="@color/txtColorGray"
                         android:textSize="@dimen/_6mdpi" />
 

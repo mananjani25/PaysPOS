@@ -74,8 +74,8 @@ class VariationDashboardListAdapter :
 
             } else {
                 binding.llItemName.setBackgroundResource(R.drawable.bg_squre_modifier)
-                binding.edtName.setTextColor(binding.root.context.resources.getColor(R.color.viewTextColor))
-                binding.edtPrice.setTextColor(binding.root.context.resources.getColor(R.color.viewTextColor))
+                binding.edtName.setTextColor(binding.root.context.resources.getColor(R.color.txtColor))
+                binding.edtPrice.setTextColor(binding.root.context.resources.getColor(R.color.txtColor))
             }
         }
 

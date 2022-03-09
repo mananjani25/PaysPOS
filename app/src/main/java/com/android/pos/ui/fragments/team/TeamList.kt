@@ -90,7 +90,7 @@ class TeamList : Fragment(), CustomCallback, OperationCallback {
 
     private fun deleteEmployee() {
 
-        viewModel.data.observe(viewLifecycleOwner, { event ->
+        viewModel.data.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
 
                 AlertUtils.showCustomAlert(requireActivity(), it.message)
@@ -103,7 +103,7 @@ class TeamList : Fragment(), CustomCallback, OperationCallback {
                 }
 
             }
-        })
+        }
     }
 
     private fun setupStickyLayout() {
@@ -254,6 +254,9 @@ class TeamList : Fragment(), CustomCallback, OperationCallback {
             }
 
             empObject = data
+        }else{
+            binding.layoutTool.txtEdit.visibility = View.GONE
+            binding.layoutTool.txtSubTitle.text =""
         }
 
         val teamDetails = TeamDetails()

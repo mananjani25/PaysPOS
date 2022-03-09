@@ -123,7 +123,7 @@
     <string name="tv_personal_passcode">Passcode</string>
     <string name="tv_personal_passcode_">Passcode<font color='#E90C0C'>*</font></string>
     <string name="tv_location">Location</string>
-    <string name="tv_create_team_member">Create Team Member</string>
+    <string name="tv_create_team_member">Add Team Member</string>
     <string name="tv_update_team_member">Update Team Member</string>
     <string name="tv_info_email">Adding an email will invite this team member to create their login for POS.</string>
     <string name="tv_add_job_title">Add Job Title</string>
@@ -207,7 +207,7 @@
     <string name="discount_name_">Discount Name<font color='#E90C0C'>*</font></string>
     <string name="apply_discount_after_taxes">Apply discount after taxes</string>
     <string name="leave_the_discount_amount_blank_to_enter_at_the_time_of_sale_n_discount_are_applied_to_the_ticket_before_tax_is_calculated">Leave the discount amount blank to enter at the time of sale.<br />Discount are applied to the ticket before tax is calculated.</string>
-    <string name="this_should_only_be_used_for_manufacture_discount_and_instant_rebates_learn_more">This should only be used for manufacture discount and instant rebates. <b>Learn More.</b></string>
+    <string name="this_should_only_be_used_for_manufacture_discount_and_instant_rebates_learn_more">This should only be used for manufacture discount and instant rebates.</string>
     <string name="tv_new_tax">New Tax</string>
     <string name="tv_new_tax_add">Add New Tax</string>
     <string name="tv_update_tax">Update Tax</string>
@@ -382,7 +382,7 @@
     <string name="tv_ok">OK</string>
 
     <!--<string name="api_key">AIzaSyC1x5a06yKDyurLe3vASM_UCFZc0iT4Jfw</string>-->
-    <string name="api_key">AIzaSyCe3O7fGVp5fTEMU5PHDKFjKrzJJYVsCV4</string>
+    <string name="api_key">AIzaSyB9yopEFzuOa1t7i4tj3gWkWaUz_b2hcU8</string>
     <string name="tv_team_member_timesheet">Team Member TimeSheet</string>
     <string name="tv_start_date">Start Date</string>
     <string name="tv_end_date">End Date</string>
@@ -429,6 +429,7 @@
     <string name="tv_role">Role</string>
     <string name="tv_team_member_with_role">Team Members with Role</string>
     <string name="tv_permission">Permission</string>
+    <string name="tv_email_star">Email <font color='#E90C0C'>*</font></string>
     <string name="tv_email">Email</string>
     <string name="tv_add_new_role_name">Add Role Name</string>
     <string name="role_name">Role Name</string>
@@ -545,6 +546,7 @@
     <string name="tv_exchange_refund">Exchange Refund</string>
     <string name="tv_date">Date</string>
     <string name="company">Company</string>
+    <string name="company_name">Company Name</string>
     <string name="tv_options">Add Options</string>
     <string name="tv_options_update">Update Options</string>
     <string name="tv_roles">Roles</string>
@@ -701,7 +703,7 @@
     <string name="printer_queue_list">Printer Queue List</string>
     <string name="delete">Delete</string>
     <string name="delete_all">Delete all</string>
-    <string name="printer_queue_tag">When the orders are remains for printing and Printer Queue stops working then please check printers connections.Once everything will get settled,Please press Refresh button from top right corner.Swipe right to left delete printer queue list.</string>
+    <string name="printer_queue_tag">When the orders are remains for printing and Printer Queue stops working then please check printers connections.Once everything will get settled,\nPlease press Refresh button from top right corner.Swipe right to left delete printer queue list.</string>
 
     <string name="scan_gun">Scan Gun</string>
 
@@ -746,14 +748,17 @@
     <string name="credit_card_machine">Credit Card Machine</string>
     <string name="add_job_title">Add job title</string>
     <string name="edit_printers">Edit printers</string>
-    <string name="tv_add_a_new_tax_plus">+ Add a new tax</string>
+    <string name="tv_add_a_new_tax_plus">+ Add a New Tax</string>
     <string name="all_terminals">All Terminals</string>
     <string name="please_enter_customer_email_address">Please enter customer\'s email address</string>
     <string name="please_enter_customer_contact_number">Please enter customer\'s contact number</string>
     <string name="fixed_value">Fixed Value</string>
     <string name="time_tracking">Time Tracking</string>
-    <string name="team_member_time_tracking">Team member time tracking</string>
+    <string name="team_member_time_tracking">Team member Time Tracking</string>
     <string name="logout">Logout</string>
+    <string name="permission_set">Permission Set</string>
+    <string name="personal_passcode">Personal Passcode</string>
+    <string name="team_permission">Team Permission <font color='#E90C0C'>*</font></string>
     <string name="current_order">Current Order</string>
     <string name="add_customer2">+ Add Customer</string>
 

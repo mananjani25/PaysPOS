@@ -58,7 +58,7 @@
             android:id="@+id/llOrderMenu"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/txtColor"
+            android:background="@drawable/background_square_border_grey"
             android:gravity="center"
             android:orientation="vertical"
             android:visibility="gone">
@@ -75,7 +75,7 @@
                 android:paddingEnd="@dimen/_5sdp"
                 android:paddingBottom="@dimen/_3sdp"
                 android:text="@string/add_discount"
-                android:textColor="@color/white"
+                android:textColor="@color/txtColor"
                 android:textSize="@dimen/_5mdpi" />
 
             <View
@@ -95,7 +95,7 @@
                 android:paddingEnd="@dimen/_5sdp"
                 android:paddingBottom="@dimen/_5sdp"
                 android:text="@string/clear_items"
-                android:textColor="@color/white"
+                android:textColor="@color/txtColor"
                 android:textSize="@dimen/_5mdpi" />
 
             <View
@@ -112,7 +112,7 @@
             android:layout_width="match_parent"
 
             android:layout_height="wrap_content"
-            android:background="@drawable/background_button_menu"
+            android:background="@drawable/background_square_border_grey"
             android:orientation="horizontal"
             android:paddingTop="@dimen/_1sdp"
             android:paddingBottom="@dimen/_1sdp">
@@ -223,7 +223,7 @@
             android:visibility="gone"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/background_button_menu"
+            android:background="@drawable/background_square_border_grey"
             android:orientation="horizontal"
             android:paddingStart="@dimen/_3sdp"
             android:paddingTop="@dimen/_5sdp"
@@ -323,7 +323,7 @@
                 android:layout_height="match_parent"
                 android:layout_gravity="center"
                 android:layout_marginStart="@dimen/_5sdp"
-                android:background="@drawable/background_button_menu"
+                android:background="@drawable/background_square_border_grey"
                 android:gravity="center"
                 android:orientation="horizontal">
 

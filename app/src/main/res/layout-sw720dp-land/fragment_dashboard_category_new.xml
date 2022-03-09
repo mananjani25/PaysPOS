@@ -60,7 +60,7 @@
             android:layout_width="@dimen/_150sdp"
             android:layout_height="0dp"
             android:layout_marginBottom="@dimen/_17sdp"
-            android:background="@drawable/background_button_menu"
+            android:background="@drawable/bg_border"
             android:orientation="vertical"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"

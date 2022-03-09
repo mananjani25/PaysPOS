@@ -54,7 +54,7 @@
                 android:text="@{Integer.toString(model.count)}"
                 android:textColor="@{model.selected ? @color/white : @color/txtColor}"
                 android:textSize="@dimen/text_size_medium"
-                android:visibility="gone"
+                android:visibility="visible"
                 android:layout_weight="0.8"
                 />
 

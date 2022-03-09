@@ -579,6 +579,7 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
                                         -1,
                                         false,
                                         "",
+                                        "",
                                         -1,
                                         "All Team Members",
                                         "",

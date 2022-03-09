@@ -30,7 +30,7 @@
                 android:layout_gravity="start"
                 android:gravity="center"
                 android:text="@{model.name}"
-                android:textColor="@color/viewTextColor"
+                android:textColor="@color/txtColor"
                 android:textSize="@dimen/_5mdpi"
                 tools:text="Image one" />
 
@@ -42,7 +42,7 @@
                 android:layout_gravity="start"
                 android:layout_marginStart="@dimen/_3sdp"
                 android:gravity="center"
-                android:textColor="@color/viewTextColor"
+                android:textColor="@color/txtColor"
                 android:textSize="@dimen/_5mdpi"
                 tools:text="Image one" />
         </androidx.appcompat.widget.LinearLayoutCompat>

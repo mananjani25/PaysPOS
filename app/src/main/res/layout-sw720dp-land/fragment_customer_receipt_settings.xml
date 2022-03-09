@@ -40,7 +40,7 @@
                 android:layout_height="@dimen/_27sdp"
                 android:layout_gravity="center"
                 android:layout_weight="0.1"
-                android:background="@color/btnColor"
+                android:background="@drawable/button_action_hover"
                 android:gravity="center"
                 android:padding="@dimen/_6sdp"
                 android:text="@string/save"

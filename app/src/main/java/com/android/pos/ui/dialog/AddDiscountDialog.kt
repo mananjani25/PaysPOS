@@ -171,6 +171,8 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
                 discountAdapter.clearSelectedItem()
                 selectedListPos = -1
             }
+
+
         }
         binding.txtCurrencyDollar.setOnClickListener {
 
@@ -179,16 +181,36 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
                 discountAdapter.clearSelectedItem()
                 selectedListPos = -1
             }
+
+
         }
 
         binding.txtRemoveDiscount.setOnClickListener {
 
             removeDiscount()
         }
+
+        binding.llKeypad.txt10.setOnClickListener {
+
+            binding.edtAmount.removeTextChangedListener(this)
+            binding.edtAmount.setText(MethodUtils.roundOffAmountString(10.0))
+        }
+        binding.llKeypad.txt20.setOnClickListener {
+
+            binding.edtAmount.removeTextChangedListener(this)
+            binding.edtAmount.setText(MethodUtils.roundOffAmountString(20.0))
+        }
+        binding.llKeypad.txt30.setOnClickListener {
+            binding.edtAmount.removeTextChangedListener(this)
+            binding.edtAmount.setText(MethodUtils.roundOffAmountString(30.0))
+        }
     }
 
     @SuppressLint("UseCompatLoadingForDrawables")
     private fun amountView() {
+        binding.llKeypad.txt10.text="$10"
+        binding.llKeypad.txt20.text="$20"
+        binding.llKeypad.txt30.text="$30"
         binding.txtCurrency.visibility = View.VISIBLE
         binding.txtPer.visibility = View.GONE
         selectedCurrency = AMOUNT
@@ -199,10 +221,15 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
         binding.txtCurrencyDollar.setTextColor(requireActivity().resources.getColor(R.color.white))
         binding.txtCurrencyPercentage.setTextColor(requireActivity().resources.getColor(R.color.txtColor))
         binding.edtAmount.setText(binding.edtAmount.text.toString().trim())
+
+
     }
 
     @SuppressLint("UseCompatLoadingForDrawables")
     private fun percentageView() {
+        binding.llKeypad.txt10.text="10%"
+        binding.llKeypad.txt20.text="20%"
+        binding.llKeypad.txt30.text="30%"
         selectedCurrency = PERCENTAGE
         binding.txtCurrency.visibility = View.GONE
         binding.txtPer.visibility = View.VISIBLE
@@ -213,6 +240,8 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
         binding.txtCurrencyDollar.setTextColor(requireActivity().resources.getColor(R.color.txtColor))
         binding.txtCurrencyPercentage.setTextColor(requireActivity().resources.getColor(R.color.white))
         binding.edtAmount.setText(binding.edtAmount.text.toString().trim())
+
+
 
     }
 
@@ -466,7 +495,7 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
                 if (percentage <= totalOrderPrice) {
                     setData(model, pos)
                 } else {
-                    displayError("Discount amount should less then item amount.")
+                    displayError("Discount amount should be less then item amount.")
 
                 }
 
@@ -476,7 +505,7 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
                     setData(model, pos)
 
                 } else {
-                    displayError("Discount amount should less then total amount.")
+                    displayError("Discount amount should be less then total amount.")
 
                 }
             }

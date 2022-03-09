@@ -1,13 +1,16 @@
 package com.android.pos.ui.fragments.team
 
-import android.os.Build
+import android.app.AlertDialog
+import android.graphics.Color
+import android.graphics.Typeface
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
-import android.widget.ArrayAdapter
+import android.widget.ListView
 import android.widget.TextView
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
@@ -15,10 +18,11 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.data.entities.Employee
+import com.android.pos.data.entities.TbCountryList
 import com.android.pos.data.entities.TeamRole
-import com.android.pos.data.remote.Constants
 import com.android.pos.databinding.FragmentCreateTeamMemberBinding
 import com.android.pos.di.PrefProvider
+import com.android.pos.ui.adapter.SpinnerCustomAdapter
 import com.android.pos.utils.*
 import com.android.pos.utils.extensions.liveSnackBar
 import com.android.pos.utils.extensions.showAlert
@@ -39,7 +43,9 @@ class CreateTeamMember : Fragment() {
     var items: ArrayList<String> = arrayListOf()
     var itemsIds: ArrayList<Int> = arrayListOf()
     private lateinit var binding: FragmentCreateTeamMemberBinding
-    private var country = arrayOf("United States", "Canada")
+    private var country = arrayListOf<TbCountryList>()
+    private var country_name = arrayListOf<String>()
+
 
     @Inject
     lateinit var prefProvider: PrefProvider
@@ -75,14 +81,14 @@ class CreateTeamMember : Fragment() {
             employeeModel!!.teamRoleId?.let { viewModel.setRoleId(it) }
             viewModel.setTaxData(employeeModel!!)
             viewModel.isEditData(true, employeeModel!!.id)
-
+            viewModel.locationId = employeeModel!!.locationId
 
             employeeModel?.teamRoleId?.let { viewModel.roleNameById(it) }
                 ?.observe(
-                    viewLifecycleOwner,
-                    {
-                        binding.txtRoleName.text = it.data?.name
-                    })
+                    viewLifecycleOwner
+                ) {
+                    binding.txtRoleName.text = it.data?.name
+                }
 
             MethodUtils.setPriceEditText(binding.edtHours, employeeModel!!.hourlyWages)
 
@@ -91,32 +97,63 @@ class CreateTeamMember : Fragment() {
             binding.edtEmail.setText(employeeModel!!.email)
             binding.edtMobileNumber.setText(employeeModel!!.phoneNumber)
             binding.edtPasscode.setText(employeeModel!!.passcode)
-
-
         }
 
         binding.edtHours.addTextChangedListener(AmountWatcher(binding.edtHours))
-        setPhoneCountry()
+
         setupSnackbar()
         observeShowProgress()
         navigate()
         getRoleListObserver()
 
-        binding.llPermission.setOnClickListener {
-
-            MaterialAlertDialogBuilder(it.context, R.style.MaterialAlertDialogText)
-                .setTitle("Choose Role")
-                .setSingleChoiceItems(
-                    items.toArray(arrayOfNulls<CharSequence>(items.size)),
-                    selectedPos
-                ) { dialogInterface, i ->
-
-                    dialogInterface.dismiss()
-                    selectedPos = i
-                    viewModel.setRoleId(itemsIds[i])
-                    binding.txtRoleName.text = items[i]
+        binding.llCountry.setOnClickListener {
+            val textView = TextView(context)
+            textView.text = "Choose Country"
+            textView.setPadding(20, 20, 20, 20)
+            textView.setTypeface(Typeface.DEFAULT_BOLD);
+            textView.textSize = 20f
+            textView.setBackgroundColor(resources.getColor(R.color.btnColor))
+            textView.setTextColor(Color.WHITE)
+            val builder = AlertDialog.Builder(requireContext(), R.style.CustomDialogTheme)
+            builder.setCustomTitle(textView)
+            builder.setItems(
+                country_name.toArray(arrayOfNulls<String>(country_name.size))
+            ) { dialog, which ->
+                dialog.dismiss()
+                selectedPos = which
+                country.forEachIndexed { index, item ->
+                    if (item.name == country_name[selectedPos]) {
+                        viewModel.isCountryChanged(item.id)
+                        Log.d("yash", "onCreateView: " + item.id)
+                        Log.d("yashh", "onCreateView: " + item.name)
+                    }
                 }
-                .show()
+                binding.txtCountrName.text = country_name[selectedPos]
+            }
+            val alertDialog: AlertDialog = builder.create()
+            alertDialog.show()
+
+        }
+        binding.llPermission.setOnClickListener {
+            val textView = TextView(context)
+            textView.text = "Choose Role"
+            textView.setPadding(20, 20, 20, 20)
+            textView.setTypeface(Typeface.DEFAULT_BOLD);
+            textView.textSize = 20f
+            textView.setBackgroundColor(resources.getColor(R.color.btnColor))
+            textView.setTextColor(Color.WHITE)
+            val builder = AlertDialog.Builder(requireContext(), R.style.CustomDialogTheme)
+            builder.setCustomTitle(textView)
+            builder.setItems(
+                items.toArray(arrayOfNulls<CharSequence>(items.size))
+            ) { dialog, which ->
+                dialog.dismiss()
+                selectedPos = which
+                viewModel.setRoleId(itemsIds[which])
+                binding.txtRoleName.text = items[which]
+            }
+            val alertDialog: AlertDialog = builder.create()
+            alertDialog.show()
         }
 
         binding.header.txtSave.setOnClickListener {
@@ -136,8 +173,6 @@ class CreateTeamMember : Fragment() {
             }
 
             viewModel.createTaxDetails.value?.hourly_wages = hours
-            viewModel.createTaxDetails.value?.locationId =
-                prefProvider.getValueInt(Constants.TERMINAL_ID, -1)
 
             viewModel.submit()
         }
@@ -147,11 +182,35 @@ class CreateTeamMember : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        viewModel.coutrylist.observe(viewLifecycleOwner) {
+            country = it as ArrayList<TbCountryList>
+            country.forEach { it1 ->
+                country_name.add(it1.name)
+            }
+            if (employeeModel != null) {
+                country_name.forEachIndexed { index, item ->
+                    if (item == employeeModel!!.phone_country) {
+                        viewModel.isCountryChanged(country[index].id)
+                        binding.txtCountrName.text = country_name[index].toString()
+                    }
+
+                }
+            } else {
+                viewModel.isCountryChanged(country[0].id)
+                binding.txtCountrName.text = country_name[0].toString()
+            }
+
+
+//            setPhoneCountry(country)
+
+            Log.d("yash", "observeShowProgress: " + it[0].name)
+            Log.d("yash", "observeShowProgress: " + it[1].name)
+        }
     }
 
     private fun observeShowProgress() {
 
-        viewModel.showProgress.observe(viewLifecycleOwner, { event ->
+        viewModel.showProgress.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
                 if (it) {
                     ProgressUtils.showProgressDialog(requireActivity())
@@ -159,14 +218,14 @@ class CreateTeamMember : Fragment() {
                     ProgressUtils.dismissProgressDialog()
                 }
             }
-        })
+        }
 
     }
 
 
     private fun navigate() {
 
-        viewModel.data.observe(viewLifecycleOwner, { event ->
+        viewModel.data.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let { baseResponse ->
                 activity?.let {
                     AlertUtils.showCustomAlertWithListenerWithOK(
@@ -176,7 +235,7 @@ class CreateTeamMember : Fragment() {
                     }
                 }
             }
-        })
+        }
 
     }
 
@@ -186,7 +245,7 @@ class CreateTeamMember : Fragment() {
     }
 
     private fun getRoleListObserver() {
-        viewModel.roleList.observe(viewLifecycleOwner, {
+        viewModel.roleList.observe(viewLifecycleOwner) {
             it?.let { resource ->
                 when (resource.status) {
                     Status.SUCCESS -> {
@@ -215,39 +274,8 @@ class CreateTeamMember : Fragment() {
                     }
                 }
             }
-        })
-    }
-
-    private fun setPhoneCountry() {
-        val adapter =
-            ArrayAdapter(requireContext(), android.R.layout.simple_spinner_item, country)
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-
-        binding.edtCountry.adapter = adapter
-        binding.edtCountry.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
-            override fun onItemSelected(
-                parent: AdapterView<*>?,
-                view: View?,
-                position: Int,
-                id: Long
-            ) {
-
-                if (Build.VERSION.SDK_INT < 23) {
-                    (parent?.getChildAt(0) as TextView).setTextAppearance(
-                        view?.context,
-                        com.android.pos.R.style.SpinnerTheme
-                    )
-                } else {
-                    (parent?.getChildAt(0) as TextView).setTextAppearance(R.style.SpinnerTheme); }
-
-
-            }
-
-            override fun onNothingSelected(parent: AdapterView<*>?) {
-
-            }
-
         }
     }
+
 
 }

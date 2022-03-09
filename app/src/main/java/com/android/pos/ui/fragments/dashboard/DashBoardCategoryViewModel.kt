@@ -1685,6 +1685,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 rolePermission.findCurrentUserRoleAndSave(it.data.teamRoles)
                                 posRepository.deleteOrderTypeFromDb()
                                 posRepository.addOrderType(it.data.orderTypes)
+                                posRepository.addAllCountryList(it.data.phoneCountrylist)
                                 _callCashDiscount.value = Event(true)
 
                             }

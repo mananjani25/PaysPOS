@@ -103,7 +103,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:layout_marginBottom="@dimen/_10sdp"
-                    android:background="@drawable/btn_background_secondary"
+                    android:background="@drawable/button_action_hover"
                     android:gravity="center"
                     android:layout_marginTop="@dimen/_10sdp"
                     android:padding="@dimen/_8sdp"

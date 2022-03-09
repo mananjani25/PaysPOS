@@ -5,7 +5,7 @@
     <stroke
         android:width="0.5dp"
         android:color="@color/colorNewBorder" />
-    <solid android:color="@color/txtColor" />
+    <solid android:color="@color/btnColor" />
 
 
 </shape>

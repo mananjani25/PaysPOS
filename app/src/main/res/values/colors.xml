@@ -121,5 +121,6 @@
     <color name="searchHintColor">#C4C4C4</color>
     <color name="light_gray">#A9A9A9</color>
     <color name="dark_gray">#8F8F8F</color>
+    <color name="dark_btn_Color">#A84C0F</color>
 
 </resources>

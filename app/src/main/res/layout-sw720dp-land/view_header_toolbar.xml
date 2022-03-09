@@ -35,7 +35,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_gravity="center"
-        android:background="@color/btnColor"
+        android:background="@drawable/button_action_hover"
         android:gravity="center"
         android:paddingHorizontal="@dimen/_15sdp"
         android:paddingVertical="@dimen/_10sdp"

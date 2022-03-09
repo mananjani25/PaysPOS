@@ -12,12 +12,11 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/view"
+            android:background="@color/backgroundColor"
 
             android:orientation="horizontal"
-            android:paddingVertical="@dimen/_7sdp"
-            android:paddingStart="@dimen/_10sdp"
-            android:paddingEnd="@dimen/_10sdp">
+            android:paddingVertical="@dimen/_9sdp"
+            android:paddingHorizontal="@dimen/_10sdp">
 
             <TextView
                 style="@style/CustomFontRegularStyle"
@@ -27,8 +26,9 @@
                 android:layout_weight="1"
                 android:gravity="start"
                 android:text="ID"
-                android:textColor="@color/txtColor"
-                android:textSize="@dimen/_5mdpi" />
+                android:textAllCaps="true"
+                android:textColor="@color/white"
+                android:textSize="@dimen/_7mdpi" />
 
             <TextView
                 style="@style/CustomFontRegularStyle"
@@ -38,8 +38,10 @@
                 android:layout_weight="1"
                 android:gravity="center"
                 android:text="Order ID"
-                android:textColor="@color/txtColor"
-                android:textSize="@dimen/_5mdpi" />
+                android:textAllCaps="true"
+
+                android:textColor="@color/white"
+                android:textSize="@dimen/_7mdpi" />
 
             <TextView
                 style="@style/CustomFontRegularStyle"
@@ -49,8 +51,10 @@
                 android:layout_weight="1"
                 android:gravity="center"
                 android:text="Order Type"
-                android:textColor="@color/txtColor"
-                android:textSize="@dimen/_5mdpi" />
+                android:textColor="@color/white"
+                android:textAllCaps="true"
+
+                android:textSize="@dimen/_7mdpi" />
 
             <TextView
                 style="@style/CustomFontRegularStyle"
@@ -60,8 +64,10 @@
                 android:layout_weight="1"
                 android:gravity="center"
                 android:text="Total Amount"
-                android:textColor="@color/txtColor"
-                android:textSize="@dimen/_5mdpi" />
+                android:textColor="@color/white"
+                android:textAllCaps="true"
+
+                android:textSize="@dimen/_7mdpi" />
 
             <TextView
                 style="@style/CustomFontRegularStyle"
@@ -71,8 +77,10 @@
                 android:layout_weight="1"
                 android:gravity="center"
                 android:text="Terminal Name"
-                android:textColor="@color/txtColor"
-                android:textSize="@dimen/_5mdpi" />
+                android:textColor="@color/white"
+                android:textAllCaps="true"
+
+                android:textSize="@dimen/_7mdpi" />
 
             <TextView
                 style="@style/CustomFontRegularStyle"
@@ -82,8 +90,10 @@
                 android:layout_weight="1"
                 android:gravity="center"
                 android:text="Status"
-                android:textColor="@color/txtColor"
-                android:textSize="@dimen/_5mdpi" />
+                android:textColor="@color/white"
+                android:textAllCaps="true"
+
+                android:textSize="@dimen/_7mdpi" />
 
         </LinearLayout>
 

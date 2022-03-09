@@ -34,7 +34,7 @@
             android:title="Inventory" />
         <item
             android:id="@+id/menuSettings"
-            android:title="Settings" />
+            android:title="Setup" />
         <item
             android:id="@+id/menuSupport"
             android:title="Support" />

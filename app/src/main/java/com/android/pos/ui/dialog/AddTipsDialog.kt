@@ -70,6 +70,22 @@ class AddTipsDialog : DialogFragment(), DialogTipsListAdapter.DiscountInterface,
 
             // removeDiscount()
         }
+
+        binding.llKeypad.txt10.setOnClickListener {
+            val price=binding.llKeypad.txt10.text.toString().trim().substring(0,binding.llKeypad.txt10.text.toString().length-1).toDouble()
+            binding.edtAmount.removeTextChangedListener(this)
+            binding.edtAmount.setText(MethodUtils.roundOffAmountString(price))
+        }
+        binding.llKeypad.txt20.setOnClickListener {
+            val price=binding.llKeypad.txt20.text.toString().trim().substring(0,binding.llKeypad.txt20.text.toString().length-1).toDouble()
+            binding.edtAmount.removeTextChangedListener(this)
+            binding.edtAmount.setText(MethodUtils.roundOffAmountString(price))
+        }
+        binding.llKeypad.txt30.setOnClickListener {
+            val price=binding.llKeypad.txt30.text.toString().trim().substring(0,binding.llKeypad.txt30.text.toString().length-1).toDouble()
+            binding.edtAmount.removeTextChangedListener(this)
+            binding.edtAmount.setText(MethodUtils.roundOffAmountString(price))
+        }
     }
 
 
@@ -168,7 +184,6 @@ class AddTipsDialog : DialogFragment(), DialogTipsListAdapter.DiscountInterface,
         }
         binding.imgBack.setOnClickListener {
             findNavController().navigateUp()
-
         }
 
         binding.txtSave.setOnClickListener {

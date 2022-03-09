@@ -30,7 +30,8 @@ class CreateTeamViewModel @Inject constructor(
 
     private lateinit var createEmployeeData: CreateEmployeeRequestModel
 
-    val locationId = prefProvider.getValueInt(LOCATION_ID, 0)
+    var locationId = prefProvider.getValueInt(LOCATION_ID, -1)
+    var phone_country_temp = -1
     private var taxId: Int = -1
     private var roleId: Int = -1
 
@@ -52,7 +53,7 @@ class CreateTeamViewModel @Inject constructor(
 
     fun roleNameById(taxId: Int) = taxServiceChargeRepository.getCurrentUserTeamRoleFromDb(taxId)
 
-
+    val coutrylist = posRepository.getAllCountryList()
     fun setTaxData(employeeModel: Employee) {
 
         createTaxDetails.value?.firstName = employeeModel.firstName
@@ -60,7 +61,7 @@ class CreateTeamViewModel @Inject constructor(
         createTaxDetails.value?.email = employeeModel.email ?: ""
         createTaxDetails.value?.phoneNumber =
             employeeModel.phoneNumber.toString()
-        createTaxDetails.value?.locationId = employeeModel.locationId
+        createTaxDetails.value?.locationId = prefProvider.getValueInt(LOCATION_ID, -1)
         createTaxDetails.value?.passcode = employeeModel.passcode ?: ""
         createTaxDetails.value?.isActive = employeeModel.isActive
         createTaxDetails.value?.hourly_wages = employeeModel.hourlyWages
@@ -75,6 +76,9 @@ class CreateTeamViewModel @Inject constructor(
         this.isEdit = isEdit
     }
 
+    fun isCountryChanged(position: Int) {
+        this.phone_country_temp = position
+    }
 
     fun submit() {
 
@@ -113,7 +117,8 @@ class CreateTeamViewModel @Inject constructor(
                 phoneNumber = value?.phoneNumber?.replace(("[\\D]").toRegex(), "")!!
                 email = value?.email!!
                 locationId = prefProvider.getValueInt(LOCATION_ID, -1)
-                passcode = value?.passcode.toString()
+                phone_country = phone_country_temp
+                passcode = value.passcode.toString()
                 isActive = true
                 team_role_id = roleId
                 hourly_wages = value.hourly_wages
