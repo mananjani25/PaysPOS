@@ -15,6 +15,7 @@ import com.android.pos.data.model.MergeFloorModel
 import com.android.pos.data.model.MergeTableListModel
 import com.android.pos.data.model.MergeTableModel
 import com.android.pos.databinding.ViewMergeTableListBinding
+import com.android.pos.utils.AlertUtils
 
 
 class MergeTableFloorSelectAdapter :
@@ -22,7 +23,10 @@ class MergeTableFloorSelectAdapter :
 
     private var floorPlanID: ArrayList<Int> = arrayListOf()
     private var floorplanHashMap: HashMap<MergeFloorModel, ArrayList<MergeTableModel>> = hashMapOf()
-
+    private var floorplanSecondaryId: Int = 0
+    private var tableId: Int = 0
+    private var selectedFloorTable: ArrayList<MergeTableListModel> =
+        arrayListOf<MergeTableListModel>()
 
     @SuppressLint("NotifyDataSetChanged")
     fun setList(
@@ -32,6 +36,31 @@ class MergeTableFloorSelectAdapter :
         this.floorPlanID = list
         this.floorplanHashMap = floorplanHashMap
         notifyDataSetChanged()
+    }
+
+    fun addFloorPlanTableId(floorplanId: Int, tableId: Int) {
+        selectedFloorTable.forEachIndexed { index, item ->
+            if (item.selectedFloorPlanId == floorplanId) {
+                selectedFloorTable[index].selectedTableId = tableId
+                return
+            }
+        }
+        selectedFloorTable.add(
+            MergeTableListModel(
+                arrayListOf(),
+                arrayListOf(),
+                tableId,
+                null,
+                floorplanId,
+                null,
+                null,
+                null
+            )
+        )
+    }
+
+    fun getFloorPlanTableIDs(): ArrayList<MergeTableListModel> {
+        return selectedFloorTable
     }
 
     inner class ViewHolder(val binding: ViewMergeTableListBinding) :
@@ -68,9 +97,9 @@ class MergeTableFloorSelectAdapter :
                     binding.txtFloorPlanLabel.text = floorplandefault[which]
                     tabledefault = arrayListOf()
                     floorplanHashMap.forEach {
-
                         if (it.key.name == floorplandefault[which]) {
                             Log.d("yash", "setData: key " + it.key.name)
+                            floorplanSecondaryId = it.key.id
                             floorplanHashMap[it.key]?.forEach {
                                 tabledefault.add(it.name)
                             }
@@ -85,24 +114,43 @@ class MergeTableFloorSelectAdapter :
 
             }
             binding.txtselectprimarytable.setOnClickListener {
-                val textView = TextView(binding.root.context)
-                textView.text = "Select Table to Merge"
-                textView.setPadding(20, 20, 20, 20)
-                textView.setTypeface(Typeface.DEFAULT_BOLD);
-                textView.textSize = 20f
-                textView.setBackgroundColor(binding.root.context.resources.getColor(R.color.btnColor))
-                textView.setTextColor(Color.WHITE)
-                val builder = AlertDialog.Builder(binding.root.context, R.style.CustomDialogTheme)
-                builder.setCustomTitle(textView)
-                builder.setItems(
-                    tabledefault.toArray(arrayOfNulls<String>(tabledefault.size))
-                ) { dialog, which ->
-                    dialog.dismiss()
-                    binding.txtselectprimarytable.text = tabledefault[which]
-                    Log.d("yash", "setData: " + tabledefault[which])
+                if (floorplanSecondaryId != 0) {
+
+                    val textView = TextView(binding.root.context)
+                    textView.text = "Select Table to Merge"
+                    textView.setPadding(20, 20, 20, 20)
+                    textView.setTypeface(Typeface.DEFAULT_BOLD);
+                    textView.textSize = 20f
+                    textView.setBackgroundColor(binding.root.context.resources.getColor(R.color.btnColor))
+                    textView.setTextColor(Color.WHITE)
+                    val builder =
+                        AlertDialog.Builder(binding.root.context, R.style.CustomDialogTheme)
+                    builder.setCustomTitle(textView)
+                    builder.setItems(
+                        tabledefault.toArray(arrayOfNulls<String>(tabledefault.size))
+                    ) { dialog, which ->
+                        dialog.dismiss()
+                        floorplanHashMap.forEach {
+                            if (it.key.id == floorplanSecondaryId) {
+                                tableId = floorplanHashMap[it.key]?.get(which)?.id ?: 0
+                                addFloorPlanTableId(floorplanSecondaryId, tableId)
+                                Log.d("yash", "setData: secondary floorID " + tableId)
+                                Log.d("yash", "setData: secondary tableID " + floorplanSecondaryId)
+                            }
+                        }
+                        binding.txtselectprimarytable.text = tabledefault[which]
+                        Log.d("yash", "setData: " + tabledefault[which])
+                    }
+                    val alertDialog: AlertDialog = builder.create()
+                    alertDialog.show()
+                } else {
+                    AlertUtils.showCustomAlertWithListenerWithOK(
+                        binding.root.context,
+                        "Please Select Floor."
+                    ) { _, _ ->
+
+                    }
                 }
-                val alertDialog: AlertDialog = builder.create()
-                alertDialog.show()
 
             }
 

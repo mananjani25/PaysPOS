@@ -3,6 +3,7 @@ package com.android.pos.ui.fragments.dinein
 import android.app.AlertDialog
 import android.graphics.Color
 import android.graphics.Typeface
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.*
@@ -28,13 +29,15 @@ import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.ProgressUtils
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.*
+import java.util.stream.Collector
+import java.util.stream.Collectors
 import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 
 @AndroidEntryPoint
 class MergeTableFragment : Fragment() {
     private lateinit var binding: DialogMergeTableSelectionBinding
-    private val list: ArrayList<MergeTableListModel> = arrayListOf()
+    private var list: ArrayList<MergeTableListModel> = arrayListOf()
     private lateinit var adapter: MergeTableFloorSelectAdapter
     private var listFloorPlan: ArrayList<GetFloorPlanDetailResponse.Data>? = null
     private lateinit var tableAdapter: ArrayAdapter<MergeTableModel>
@@ -42,6 +45,10 @@ class MergeTableFragment : Fragment() {
     var count = 0
     private var floorPlanID: ArrayList<Int> = arrayListOf()
     private var floorplanHashMap: HashMap<MergeFloorModel, ArrayList<MergeTableModel>> = hashMapOf()
+
+
+    private var primaryFloorplanId = 0
+    private var primarytableId = 0
     private val viewModel by viewModels<DineInViewModel>()
     private val TAG = "MergeTableDialog"
     private var tableSelectedPos: Int = 0
@@ -176,6 +183,7 @@ class MergeTableFragment : Fragment() {
                 floorplanHashMap.forEach {
 
                     if (it.key.name == floorplandefault[which]) {
+                        primaryFloorplanId = it.key.id
                         Log.d("yash", "setData: key " + it.key.name)
                         floorplanHashMap[it.key]?.forEach {
                             tabledefault.add(it.name)
@@ -191,39 +199,93 @@ class MergeTableFragment : Fragment() {
 
         }
         binding.txtselectprimarytable.setOnClickListener {
-            val textView = TextView(context)
-            textView.text = "Select Primary Table"
-            textView.setPadding(20, 20, 20, 20)
-            textView.setTypeface(Typeface.DEFAULT_BOLD);
-            textView.textSize = 20f
-            textView.setBackgroundColor(resources.getColor(R.color.btnColor))
-            textView.setTextColor(Color.WHITE)
-            val builder = AlertDialog.Builder(requireContext(), R.style.CustomDialogTheme)
-            builder.setCustomTitle(textView)
-            builder.setItems(
-                tabledefault.toArray(arrayOfNulls<String>(tabledefault.size))
-            ) { dialog, which ->
-                dialog.dismiss()
-                binding.txtselectprimarytable.text = tabledefault[which]
-                Log.d(TAG, "setData: " + tabledefault[which])
+            if (primaryFloorplanId != 0) {
+                val textView = TextView(context)
+                textView.text = "Select Primary Table"
+                textView.setPadding(20, 20, 20, 20)
+                textView.setTypeface(Typeface.DEFAULT_BOLD);
+                textView.textSize = 20f
+                textView.setBackgroundColor(resources.getColor(R.color.btnColor))
+                textView.setTextColor(Color.WHITE)
+                val builder = AlertDialog.Builder(requireContext(), R.style.CustomDialogTheme)
+                builder.setCustomTitle(textView)
+                builder.setItems(
+                    tabledefault.toArray(arrayOfNulls<String>(tabledefault.size))
+                ) { dialog, which ->
+                    dialog.dismiss()
+                    floorplanHashMap.forEach {
+                        if (it.key.id == primaryFloorplanId) {
+                            primarytableId = floorplanHashMap[it.key]?.get(which)?.id ?: 0
+                            Log.d("yash", "setData: primary floorID " + primaryFloorplanId)
+                            Log.d("yash", "setData: primary tableID " + primarytableId)
+                        }
+                    }
+                    binding.txtselectprimarytable.text = tabledefault[which]
+                    Log.d(TAG, "setData: " + tabledefault[which])
+                }
+                val alertDialog: AlertDialog = builder.create()
+                alertDialog.show()
+            } else {
+                AlertUtils.showCustomAlertWithListenerWithOK(
+                    requireContext(),
+                    "Please Select Floor."
+                ) { _, _ ->
+
+                }
             }
-            val alertDialog: AlertDialog = builder.create()
-            alertDialog.show()
 
         }
 
 
         adapter = MergeTableFloorSelectAdapter()
         binding.rvTableList.adapter = adapter
-        adapter.setList(floorPlanID,floorplanHashMap)
+        adapter.setList(floorPlanID, floorplanHashMap)
     }
 
     private fun onClick() {
 
         binding.txtaddmore.setOnClickListener {
             floorPlanID.add(count++)
-            adapter.setList(floorPlanID,floorplanHashMap)
+            adapter.setList(floorPlanID, floorplanHashMap)
 //            adapter.addItem(MergeTableListModel(listTable, listFloor))
+        }
+
+
+        binding.save.setOnClickListener {
+             var listtemp: ArrayList<MergeTableListModel> = arrayListOf()
+            list = ArrayList()
+            list.add(
+                MergeTableListModel(
+                    arrayListOf(),
+                    arrayListOf(),
+                    primarytableId,
+                    null,
+                    primaryFloorplanId,
+                    null,
+                    null,
+                    null
+                )
+            )
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                list.addAll(
+                    adapter.getFloorPlanTableIDs().stream().distinct().collect(Collectors.toList())
+                )
+                listtemp.addAll(adapter.getFloorPlanTableIDs().stream().distinct().collect(Collectors.toList()))
+            }
+            Log.d(TAG, "onClick: " + listtemp.size)
+            var childTableList: ArrayList<String> = arrayListOf()
+            listtemp.forEach {
+                childTableList.add(it.selectedTableId.toString())
+            }
+            if (childTableList.contains(primarytableId.toString())) {
+                AlertUtils.showCustomAlertWithListenerWithOK(
+                    requireContext(),
+                    "Same Table Can't be Merged."
+                ) { _, _ ->
+
+                }
+            }
+//            viewModel.mergeTable(primarytableId)
         }
 //        binding.save.setOnClickListener {
 //            var listSecondary = adapter.getList()
