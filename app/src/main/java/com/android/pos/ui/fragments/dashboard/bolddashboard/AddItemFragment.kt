@@ -45,17 +45,22 @@ class AddItemFragment(val listner: ItemListner) : Fragment() {
 
     private fun onClick() {
         binding.imgMinus.setOnClickListener {
+            if (qty == 1) {
+                qty = 1
+            } else {
+                qty -= 1
+            }
 
+            binding.txtQuantity.setText("" + qty)
 
         }
         binding.imgPlus.setOnClickListener {
-            qty += qty
-            binding.txtQuantity.setText(""+qty)
-
-
+            qty += 1
+            binding.txtQuantity.setText("" + qty)
         }
-        binding.txtCancel.setOnClickListener {
 
+        binding.txtCancel.setOnClickListener {
+            listner.onCancelItemSelected()
         }
 
     }

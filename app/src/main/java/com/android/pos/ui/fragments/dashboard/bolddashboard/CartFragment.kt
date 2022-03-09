@@ -6,9 +6,11 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.android.pos.databinding.FragmentCartBinding
+import com.android.pos.ui.adapter.boldpos.CartAdapter
 
 class CartFragment : Fragment() {
     private lateinit var binding: FragmentCartBinding
+    private lateinit var cartAdapter:CartAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -22,6 +24,11 @@ class CartFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        setCartAdapter()
 
+    }
+
+    private fun setCartAdapter() {
+        cartAdapter = CartAdapter()
     }
 }
