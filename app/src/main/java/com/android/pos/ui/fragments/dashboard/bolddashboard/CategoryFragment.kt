@@ -120,12 +120,6 @@ class CategoryFragment(val listner: ItemListner) : Fragment(), CategoryTabAdapte
                                 categoryList1[i].inventoryLists?.forEach {
                                     allItems.add(it)
                                 }
-
-
-
-
-
-                                Log.e(TAG, "tabListSize  ${tmpTabList.size}")
                                 if ((tmpTabList.size == 8) or (tabList.size > 8 && tabList.size == categoryList1.size)) {
                                     var model = CategoryParentModel()
                                     model.list.addAll(tmpTabList)
@@ -145,7 +139,7 @@ class CategoryFragment(val listner: ItemListner) : Fragment(), CategoryTabAdapte
                             }?.let { it1 ->
                                 itemList1.addAll(it1)
                             }
-                            Log.e(TAG, "listlist:  ${Gson().toJson(list)}")
+
                             categoryParentAdapter.addList(list)
                             itemAdapter.addList(itemList1)
                             if (list.isNotEmpty()) {
@@ -183,7 +177,6 @@ class CategoryFragment(val listner: ItemListner) : Fragment(), CategoryTabAdapte
 
 
     private fun setAdapter() {
-
         var list: ArrayList<CategoryParentModel> = arrayListOf()
         var listCategories: ArrayList<CategoryTabModel> = arrayListOf()
         for (i in 0 until 8) {
@@ -213,7 +206,6 @@ class CategoryFragment(val listner: ItemListner) : Fragment(), CategoryTabAdapte
     override fun onClick(item: TbItem) {
         Log.e(TAG, "selectedItem:  ${Gson().toJson(item)}")
         listner.onItemSelected(item)
-
 
 
     }

@@ -72,8 +72,12 @@ class DashboardCategoryBoldPOS : Fragment(), ItemListner {
 
     override fun onItemSelected(item: TbItem) {
         Log.e(TAG, "getitem:  ${Gson().toJson(item)}")
-        val fragment = AddItemFragment.newInstance(item)
+        val fragment = AddItemFragment.newInstance(item,this)
         loadCategoryFragment(fragment)
+
+    }
+
+    override fun onCancelItemSelected() {
 
     }
 

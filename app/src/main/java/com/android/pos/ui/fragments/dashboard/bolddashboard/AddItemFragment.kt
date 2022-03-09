@@ -12,9 +12,10 @@ import com.android.pos.utils.callback.ItemListner
 class AddItemFragment(val listner: ItemListner) : Fragment() {
     private var item: TbItem? = null
     private lateinit var binding: FragmentAddItemBinding
+    private var qty = 1
 
     companion object {
-        fun newInstance(item: TbItem,callback: ItemListner): AddItemFragment {
+        fun newInstance(item: TbItem, callback: ItemListner): AddItemFragment {
             val bundle: Bundle = Bundle()
             bundle.putParcelable("item", item)
             val frag = AddItemFragment(callback)
@@ -45,8 +46,12 @@ class AddItemFragment(val listner: ItemListner) : Fragment() {
     private fun onClick() {
         binding.imgMinus.setOnClickListener {
 
+
         }
         binding.imgPlus.setOnClickListener {
+            qty += qty
+            binding.txtQuantity.setText(""+qty)
+
 
         }
         binding.txtCancel.setOnClickListener {
