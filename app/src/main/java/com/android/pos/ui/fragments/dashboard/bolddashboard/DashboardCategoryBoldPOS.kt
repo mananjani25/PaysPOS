@@ -2,6 +2,7 @@ package com.android.pos.ui.fragments.dashboard.bolddashboard
 
 import android.graphics.Typeface
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,6 +16,7 @@ import com.android.pos.databinding.FragmentDashboardCategoryBoldPosBinding
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.android.pos.ui.fragments.manualsales.ManualSaleBoldPOS.KeyPadManualSaleFragment
 import com.android.pos.utils.callback.ItemListner
+import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -105,7 +107,7 @@ class DashboardCategoryBoldPOS : Fragment(), ItemListner {
 
     override fun onItemSelected(item: TbItem) {
         Log.e(TAG, "getitem:  ${Gson().toJson(item)}")
-        val fragment = AddItemFragment.newInstance(item, this)
+
         val fragment = AddItemFragment.newInstance(item, this)
         loadCategoryFragment(fragment)
     }
