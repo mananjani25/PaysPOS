@@ -44,21 +44,16 @@ class CartFragment : Fragment() {
     }
 
     private fun addObserver() {
+
         viewModel.mAllWords(
-            TAKEOUT, prefProvider.getValueInt(
-                com.android.pos.data.remote.Constants.EMPLOYEE_ID, 0
-            )
-        ).observe(viewLifecycleOwner, {
-            Log.e(TAG, "ObservorItemAdded")
+            TAKEOUT, 0
+        ).observe(requireActivity(), {
             if (it.isNotEmpty()) {
+                Log.e(TAG,"listSize  ${it.size}")
 
                 var tbItems: ArrayList<TbItem> = arrayListOf()
-                it.forEach {
-
-
-                }
-
-
+                it[0].items?.toCollection(arrayListOf())?.let { it1 -> tbItems.addAll(it1) }
+                cartAdapter.setList(tbItems)
             }
 
         })

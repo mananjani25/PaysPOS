@@ -60,6 +60,11 @@ class DashboardCategoryBoldPOS : Fragment(), ItemListner {
     }
 
     private fun onClick() {
+
+        binding.layoutHeader.txtTransaction.setOnClickListener {
+            viewModel.deleteCart()
+
+        }
         binding.layoutHeader.txtDineIn.setOnClickListener {
 
         }
@@ -114,6 +119,10 @@ class DashboardCategoryBoldPOS : Fragment(), ItemListner {
 
     override fun onCancelItemSelected() {
         loadCategoryFragment(CategoryFragment(this))
+
+    }
+
+    private fun addItemsToCart(item: TbItem) {
 
     }
 
