@@ -56,16 +56,19 @@
                 app:met_mask="####  ####  ####  ####" />
 
 
-            <androidx.appcompat.widget.AppCompatTextView
+            <com.santalu.maskedittext.MaskEditText
                 style="@style/CustomFontBold"
-
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="MM/YY"
-                android:textColor="@color/hint_color"
+                android:hint="12/24"
+                android:background="@null"
+                android:textColor="@color/btnColor"
+                android:textColorHint="@color/hint_color"
                 android:layout_gravity="center_vertical"
                 android:layout_marginLeft="@dimen/_5sdp"
-                android:textSize="@dimen/_6mdpi"/>
+                android:textSize="@dimen/_6mdpi"
+                app:met_mask="##/##"/>
 
 
             <androidx.appcompat.widget.AppCompatEditText
