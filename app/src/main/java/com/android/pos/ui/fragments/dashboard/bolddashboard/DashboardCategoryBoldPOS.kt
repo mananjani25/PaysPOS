@@ -17,6 +17,7 @@ import dagger.hilt.android.AndroidEntryPoint
 class DashboardCategoryBoldPOS : Fragment(), ItemListner {
     private lateinit var binding: FragmentDashboardCategoryBoldPosBinding
     private val viewModel by activityViewModels<DashBoardCategoryViewModel>()
+
     private val TAG = "DashboardCategoryBold"
     override fun onCreateView(
         inflater: LayoutInflater,
