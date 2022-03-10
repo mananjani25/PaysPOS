@@ -9,6 +9,7 @@ import android.widget.RelativeLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.activityViewModels
+import com.android.pos.data.remote.Constants.TAKEOUT
 import com.android.pos.databinding.FragmentCartBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.adapter.boldpos.CartAdapter
@@ -18,9 +19,9 @@ import javax.inject.Inject
 
 class CartFragment() : Fragment() {
     private lateinit var binding: FragmentCartBinding
-    var fragmentId:Int?=null
-    var checkoutHeaderId:Int=0
-    var dashboardHeaderId:Int=0
+    var fragmentId: Int? = null
+    var checkoutHeaderId: Int = 0
+    var dashboardHeaderId: Int = 0
     private lateinit var cartAdapter: CartAdapter
 
     private val viewModel by activityViewModels<DashBoardCategoryViewModel>()
@@ -35,11 +36,11 @@ class CartFragment() : Fragment() {
     ): View? {
         binding = FragmentCartBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = this
-        Log.e("bundleData",arguments.toString())
+        Log.e("bundleData", arguments.toString())
 
-        fragmentId=arguments?.getInt("fragmentId")
-        checkoutHeaderId=arguments?.getInt("checkoutHeaderId")!!
-        dashboardHeaderId= arguments?.getInt("dashboardHeaderId")!!
+        fragmentId = arguments?.getInt("fragmentId")
+        checkoutHeaderId = arguments?.getInt("checkoutHeaderId")!!
+        dashboardHeaderId = arguments?.getInt("dashboardHeaderId")!!
         return binding.root
     }
 
@@ -58,36 +59,49 @@ class CartFragment() : Fragment() {
             TAKEOUT, 0
         ).observe(requireActivity(), {
             if (it.isNotEmpty()) {
-                Log.e(TAG,"listSize  ${it.size}")
+                Log.e(TAG, "listSize  ${it.size}")
 
+            }
+        })
     }
 
-    private fun initListeners() {
+    fun initListeners() {
         binding.tvPayNow.setOnClickListener {
-            val checkoutHeader: RelativeLayout = activity?.findViewById(checkoutHeaderId) as RelativeLayout
-            checkoutHeader.visibility=View.VISIBLE
+            val checkoutHeader: RelativeLayout =
+                activity?.findViewById(checkoutHeaderId) as RelativeLayout
+            checkoutHeader.visibility = View.VISIBLE
 
-            val dashboardHeader: RelativeLayout = activity?.findViewById(dashboardHeaderId) as RelativeLayout
-            dashboardHeader.visibility=View.GONE
+            val dashboardHeader: RelativeLayout =
+                activity?.findViewById(dashboardHeaderId) as RelativeLayout
+            dashboardHeader.visibility = View.GONE
             loadCategoryFragment(CheckoutDetailsFragmentNew())
         }
     }
 
     private fun loadCategoryFragment(fragment: Fragment) {
         val fm: FragmentManager = requireActivity().supportFragmentManager
-        val bundle=Bundle().apply {
+        val bundle = Bundle().apply {
             fragmentId?.let { putInt("fragmentId", it) }
         }
-        fragment.arguments=bundle
+        fragment.arguments = bundle
         fragmentId?.let { fm.beginTransaction().replace(it, fragment).commit() }
-                var tbItems: ArrayList<TbItem> = arrayListOf()
-                it[0].items?.toCollection(arrayListOf())?.let { it1 -> tbItems.addAll(it1) }
-                cartAdapter.setList(tbItems)
-            }
-
-        })
-
     }
+
+    /*   fun loadCategoryFragment(fragment: Fragment) {
+          val fm: FragmentManager = requireActivity().supportFragmentManager
+          val bundle=Bundle().apply {
+              fragmentId?.let { putInt("fragmentId", it) }
+          }
+          fragment.arguments=bundle
+          fragmentId?.let { fm.beginTransaction().replace(it, fragment).commit() }
+                  var tbItems: ArrayList<TbItem> = arrayListOf()
+                  it[0].items?.toCollection(arrayListOf())?.let { it1 -> tbItems.addAll(it1) }
+                  cartAdapter.setList(tbItems)
+              }
+
+          }*/
+
+
     private fun setCartAdapter() {
         cartAdapter = CartAdapter()
     }
