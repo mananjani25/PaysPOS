@@ -19,6 +19,9 @@ data class OrderCancelRequest(
         @SerializedName("cancel_order_reason")
         val cancel_order_reason: String,
         @SerializedName("cancel_order_reason_id")
-        val cancel_order_reason_id: Int?
-    ):Parcelable
+        val cancel_order_reason_id: Int?,
+        @SerializedName("cancel_by_employee_id")
+        val cancel_by_employee_id: Int?
+
+        ) : Parcelable
 }
