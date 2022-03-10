@@ -39,12 +39,6 @@ class MergeTableFloorSelectAdapter :
     }
 
     fun addFloorPlanTableId(floorplanId: Int, tableId: Int) {
-        selectedFloorTable.forEachIndexed { index, item ->
-            if (item.selectedFloorPlanId == floorplanId) {
-                selectedFloorTable[index].selectedTableId = tableId
-                return
-            }
-        }
         selectedFloorTable.add(
             MergeTableListModel(
                 arrayListOf(),
@@ -72,14 +66,21 @@ class MergeTableFloorSelectAdapter :
             } else {
                 binding.imgDelete.visibility = View.GONE
             }
+
+
+        }
+
+        init {
             var floorplandefault: ArrayList<String> = arrayListOf()
             var tabledefault: ArrayList<String> = arrayListOf()
 
             floorplanHashMap.forEach {
                 floorplandefault.add(it.key.name)
             }
-
             binding.txtFloorPlanLabel.setOnClickListener {
+                if (absoluteAdapterPosition >= 0 && absoluteAdapterPosition < selectedFloorTable.size) {
+                    selectedFloorTable.removeAt(absoluteAdapterPosition)
+                }
                 binding.txtselectprimarytable.text = "Select Table to Merge"
                 val textView = TextView(binding.root.context)
                 textView.text = "Select Floor Plan"
@@ -98,7 +99,6 @@ class MergeTableFloorSelectAdapter :
                     tabledefault = arrayListOf()
                     floorplanHashMap.forEach {
                         if (it.key.name == floorplandefault[which]) {
-                            Log.d("yash", "setData: key " + it.key.name)
                             floorplanSecondaryId = it.key.id
                             floorplanHashMap[it.key]?.forEach {
                                 tabledefault.add(it.name)
@@ -107,7 +107,6 @@ class MergeTableFloorSelectAdapter :
                     }
 
                     dialog.dismiss()
-                    Log.d("yash", "setData: " + floorplandefault[which])
                 }
                 val alertDialog: AlertDialog = builder.create()
                 alertDialog.show()
@@ -115,7 +114,6 @@ class MergeTableFloorSelectAdapter :
             }
             binding.txtselectprimarytable.setOnClickListener {
                 if (floorplanSecondaryId != 0) {
-
                     val textView = TextView(binding.root.context)
                     textView.text = "Select Table to Merge"
                     textView.setPadding(20, 20, 20, 20)
@@ -134,12 +132,9 @@ class MergeTableFloorSelectAdapter :
                             if (it.key.id == floorplanSecondaryId) {
                                 tableId = floorplanHashMap[it.key]?.get(which)?.id ?: 0
                                 addFloorPlanTableId(floorplanSecondaryId, tableId)
-                                Log.d("yash", "setData: secondary floorID " + tableId)
-                                Log.d("yash", "setData: secondary tableID " + floorplanSecondaryId)
                             }
                         }
                         binding.txtselectprimarytable.text = tabledefault[which]
-                        Log.d("yash", "setData: " + tabledefault[which])
                     }
                     val alertDialog: AlertDialog = builder.create()
                     alertDialog.show()
@@ -154,9 +149,6 @@ class MergeTableFloorSelectAdapter :
 
             }
 
-        }
-
-        init {
             binding.imgDelete.setOnClickListener {
                 if (absoluteAdapterPosition != 0) {
                     floorPlanID.removeAt(absoluteAdapterPosition)
@@ -167,6 +159,18 @@ class MergeTableFloorSelectAdapter :
 
 
         }
+    }
+
+
+    fun checkTableIsAdded() {
+        var floorplanSelected: ArrayList<Int> = arrayListOf()
+        var tableSelected: ArrayList<Int> = arrayListOf()
+        for (i in selectedFloorTable.indices) {
+            selectedFloorTable[i].selectedFloorPlanId?.let { floorplanSelected.add(it) }
+            selectedFloorTable[i].selectedTableId?.let { tableSelected.add(it) }
+        }
+
+
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {

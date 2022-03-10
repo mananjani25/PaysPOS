@@ -184,7 +184,6 @@ class MergeTableFragment : Fragment() {
 
                     if (it.key.name == floorplandefault[which]) {
                         primaryFloorplanId = it.key.id
-                        Log.d("yash", "setData: key " + it.key.name)
                         floorplanHashMap[it.key]?.forEach {
                             tabledefault.add(it.name)
                         }
@@ -192,7 +191,7 @@ class MergeTableFragment : Fragment() {
                 }
 
                 dialog.dismiss()
-                Log.d(TAG, "setData: " + floorplandefault[which])
+
             }
             val alertDialog: AlertDialog = builder.create()
             alertDialog.show()
@@ -216,12 +215,10 @@ class MergeTableFragment : Fragment() {
                     floorplanHashMap.forEach {
                         if (it.key.id == primaryFloorplanId) {
                             primarytableId = floorplanHashMap[it.key]?.get(which)?.id ?: 0
-                            Log.d("yash", "setData: primary floorID " + primaryFloorplanId)
-                            Log.d("yash", "setData: primary tableID " + primarytableId)
                         }
                     }
                     binding.txtselectprimarytable.text = tabledefault[which]
-                    Log.d(TAG, "setData: " + tabledefault[which])
+
                 }
                 val alertDialog: AlertDialog = builder.create()
                 alertDialog.show()
@@ -252,7 +249,7 @@ class MergeTableFragment : Fragment() {
 
 
         binding.save.setOnClickListener {
-             var listtemp: ArrayList<MergeTableListModel> = arrayListOf()
+            var listtemp: ArrayList<MergeTableListModel> = arrayListOf()
             list = ArrayList()
             list.add(
                 MergeTableListModel(
@@ -270,13 +267,18 @@ class MergeTableFragment : Fragment() {
                 list.addAll(
                     adapter.getFloorPlanTableIDs().stream().distinct().collect(Collectors.toList())
                 )
-                listtemp.addAll(adapter.getFloorPlanTableIDs().stream().distinct().collect(Collectors.toList()))
+                listtemp.addAll(
+                    adapter.getFloorPlanTableIDs().stream().distinct().collect(Collectors.toList())
+                )
             }
-            Log.d(TAG, "onClick: " + listtemp.size)
+
             var childTableList: ArrayList<String> = arrayListOf()
             listtemp.forEach {
                 childTableList.add(it.selectedTableId.toString())
             }
+            Log.d("yash", "primaryTable : " + primarytableId)
+            Log.d("yash", "secondaryTableList : " + childTableList)
+
             if (childTableList.contains(primarytableId.toString())) {
                 AlertUtils.showCustomAlertWithListenerWithOK(
                     requireContext(),
