@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.activityViewModels
+import com.android.pos.R
 import com.android.pos.data.entities.TbItem
 import com.android.pos.databinding.FragmentSplitCustomAmountBinding
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
@@ -43,6 +44,10 @@ class SplitCustomAmountFragment() : Fragment(), ItemListner {
 
 
     private fun onClick() {
+        binding.tvFullAmount.setOnClickListener {
+
+            binding.tv2ways.setBackgroundDrawable(resources.getDrawable(R.drawable.button_selected))
+        }
     }
 
     override fun onItemSelected(item: TbItem) {
