@@ -82,7 +82,7 @@
 
                 <RelativeLayout
 
-                    android:layout_width="wrap_content"
+                    android:layout_width="@dimen/_40sdp"
                     android:layout_height="@dimen/_24sdp"
                     android:background="@drawable/background_light_edit_printer">
 
@@ -91,10 +91,11 @@
                         style="@style/CustomFontBold"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_centerVertical="true"
-                        android:layout_marginStart="@dimen/_2sdp"
-                        android:layout_marginEnd="@dimen/_2sdp"
-                        android:padding="@dimen/_7sdp"
+                        android:layout_centerInParent="true"
+                        android:paddingStart="@dimen/_12sdp"
+                        android:paddingTop="@dimen/_7sdp"
+                        android:paddingEnd="@dimen/_12sdp"
+                        android:paddingBottom="@dimen/_7sdp"
                         android:text="1"
                         android:textColor="@color/txtColor"
                         android:textSize="@dimen/_7mdpi" />

@@ -7,7 +7,10 @@ import android.graphics.BitmapFactory
 import android.util.Base64
 import android.util.Log
 import androidx.appcompat.widget.AppCompatTextView
-import androidx.lifecycle.*
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.android.pos.data.db.AppDatabase
 import com.android.pos.data.entities.*
 import com.android.pos.data.model.DineInModel
@@ -41,7 +44,10 @@ import com.android.pos.utils.TimeFormatUtils
 import com.android.pos.utils.statusUtils.Resource
 import com.android.pos.utils.statusUtils.Status
 import com.google.gson.Gson
-import com.squareup.okhttp.*
+import com.squareup.okhttp.Callback
+import com.squareup.okhttp.OkHttpClient
+import com.squareup.okhttp.Request
+import com.squareup.okhttp.Response
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import java.io.ByteArrayOutputStream
@@ -51,8 +57,7 @@ import java.net.HttpURLConnection
 import java.net.URL
 import java.util.*
 import javax.inject.Inject
-import kotlin.collections.ArrayList
-import kotlin.collections.HashMap
+import kotlin.collections.set
 
 
 @HiltViewModel
@@ -82,6 +87,8 @@ class DashBoardCategoryViewModel @Inject constructor(
     var paymentType: String = "cash"
     var destroyedList: ArrayList<TbItem> = arrayListOf()
     var isOrderUpdate: Boolean = false
+
+    var viewModelcartList: ArrayList<CartModel> = arrayListOf()
 
     private val _updateOrder = MutableLiveData<Event<Any?>>()
     val updateOrder: LiveData<Event<Any?>> = _updateOrder
@@ -139,8 +146,19 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     fun getItemByProductCode(productCode: String) = posRepository.getItemByProductCode(productCode)
 
-    fun mAllWords(orderType: String,employee_Id:Int): LiveData<List<CartModel>> {
-        return posRepository.getCartList(orderType,employee_Id)
+/*
+    fun getCartList(orderType:String,employee_Id: Int) : List<CartModel>{
+        viewModelcartList.clear()
+        viewModelcartList = arrayListOf()
+
+        posRepository.getCartList(orderType,employee_Id)
+    }
+
+*/
+    fun mAllWords(orderType: String, employee_Id: Int): LiveData<List<CartModel>> {
+
+        return posRepository.getCartList(orderType, employee_Id)
+
     }
 
     var serviceChargesList: List<TbServiceCharge> = emptyList()
@@ -166,7 +184,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     fun deleteCart() {
         viewModelScope.launch {
-            posRepository.deleteCart(prefProvider.getValueInt(EMPLOYEE_ID,0))
+            posRepository.deleteCart(prefProvider.getValueInt(EMPLOYEE_ID, 0))
             destroyedList.clear()
         }
     }
@@ -1635,15 +1653,15 @@ class DashBoardCategoryViewModel @Inject constructor(
                                    } catch (e: Exception) {
                                        e.printStackTrace()
                                    }
-   */
+   *//*
                                 if (it.data.logo != null && it.data.logo.logoUrl.isNotEmpty()) {
 
                                     downaloadVenueImage(it.data.logo.logoUrl)
-                                    /*   prefProvider.setValue(
+                                    *//*   prefProvider.setValue(
                                            VENUE_LOGO,
                                            it.data.logo.logoUrl
-                                       )*/
-                                }
+                                       )*//*
+                                }*/
                                 prefProvider.setValue(BUSINESS_NAME, it.data.businessName)
                                 prefProvider.setValue(SYSTEM_TIMEZONE, it.data.timeZone)
                                 prefProvider.setValue(BUSINESS_PHONE_NO, it.data.phoneNumber)
