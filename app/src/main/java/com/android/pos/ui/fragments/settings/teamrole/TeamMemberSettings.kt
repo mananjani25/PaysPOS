@@ -7,15 +7,19 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
+import com.android.pos.data.remote.Constants.TIME_TRACKER_ENABLED
 import com.android.pos.databinding.FragmentEmployeeBinding
+import com.android.pos.di.PrefProvider
 
 import com.android.pos.di.RolePermission
+import com.android.pos.utils.Pref
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class TeamMemberSettings : Fragment() {
     private lateinit var binding: FragmentEmployeeBinding
+    lateinit var prefProvider: PrefProvider
 
     @Inject
     lateinit var rolePermission: RolePermission
@@ -32,6 +36,19 @@ class TeamMemberSettings : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        prefProvider = PrefProvider(requireContext())
+
+
+        if (prefProvider.getValueboolean(TIME_TRACKER_ENABLED, false)) {
+            binding.timeTracker.isChecked = true
+        }
+        binding.timeTracker.setOnClickListener {
+            if (binding.timeTracker.isChecked) {
+                prefProvider.setValueboolean(TIME_TRACKER_ENABLED, true)
+            } else {
+                prefProvider.setValueboolean(TIME_TRACKER_ENABLED, false)
+            }
+        }
 
         binding.llTimeTracking.setOnClickListener {
             if (rolePermission.hasEmployeeTimesheetPermission(binding.root)) {
