@@ -59,7 +59,7 @@ class CategoriesDialog : DialogFragment(), View.OnClickListener {
 
     private fun categoriesObserver() {
 
-        viewModel.categories.observe(viewLifecycleOwner) {
+        viewModel.categoriesAll.observe(viewLifecycleOwner) {
 
             it?.let { resource ->
                 when (resource.status) {
@@ -67,8 +67,10 @@ class CategoriesDialog : DialogFragment(), View.OnClickListener {
                         binding.rvCategoriesList.visibility = View.VISIBLE
                         binding.progressCircular.visibility = View.GONE
 
+
                         it.data?.let { it1 -> adapter.add(it1) }
-                        adapter.setPos(selectedId)
+                        if (selectedId != -2)
+                            adapter.setPos(selectedId)
                     }
                     Status.ERROR -> {
                         binding.rvCategoriesList.visibility = View.GONE

@@ -305,6 +305,10 @@ class MethodUtils {
         fun errorLog(tag: String, message: String) {
             Log.e(tag, message)
         }
+
+        fun percentageCalculation(price: Double, rate: Double): Double {
+            return (price * rate) / 100
+        }
     }
 
 

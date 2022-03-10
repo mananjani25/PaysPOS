@@ -174,6 +174,9 @@ class PosRepository @Inject constructor(
         appDatabase.optionSetDao().addAll(mData.optionSets)
     }
 
+    fun getCategoryListAll() =
+        performGetOperationDatabase(databaseQuery = { appDatabase.categoryDao().all() })
+
     fun getCategoryList() =
         performGetOperation(databaseQuery = { appDatabase.categoryDao().all() },
             networkCall = { apiHelperNew.getCategories() },
