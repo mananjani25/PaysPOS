@@ -1214,7 +1214,21 @@
     <fragment
         android:id="@+id/dashboardCategoryBoldPOS"
         android:name="com.android.pos.ui.fragments.dashboard.bolddashboard.DashboardCategoryBoldPOS"
-        android:label="DashboardCategoryBoldPOS" />
+        android:label="DashboardCategoryBoldPOS" >
+
+        <action
+            android:id="@+id/action_dashboardCategoryBoldPOS_to_checkoutDetailsFragment"
+            app:destination="@id/checkoutDetailsFragment" />
+
+
+    </fragment>
+
+    <fragment
+        android:id="@+id/checkoutDetailsFragment"
+        android:name="com.android.pos.ui.fragments.checkout.CheckoutDetailsFragment"
+        android:label="CheckoutDetails">
+
+    </fragment>
 
 
 </navigation>

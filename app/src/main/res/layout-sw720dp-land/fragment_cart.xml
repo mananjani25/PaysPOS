@@ -439,6 +439,7 @@
                         android:textSize="@dimen/_7mdpi" />
 
                     <TextView
+                        android:id="@+id/tvPayNow"
                         style="@style/CustomFontBold"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"

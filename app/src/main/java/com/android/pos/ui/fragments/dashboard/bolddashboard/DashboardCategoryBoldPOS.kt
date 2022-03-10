@@ -12,7 +12,7 @@ import androidx.fragment.app.activityViewModels
 import com.android.pos.R
 import com.android.pos.data.entities.TbItem
 import com.android.pos.databinding.FragmentDashboardCategoryBoldPosBinding
-
+import com.android.pos.ui.fragments.checkout.CheckoutDetailsFragmentNew
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.android.pos.ui.fragments.manualsales.ManualSaleBoldPOS.KeyPadManualSaleFragment
 import com.android.pos.utils.callback.ItemListner
@@ -23,7 +23,6 @@ import dagger.hilt.android.AndroidEntryPoint
 class DashboardCategoryBoldPOS : Fragment(), ItemListner {
     private lateinit var binding: FragmentDashboardCategoryBoldPosBinding
     private val viewModel by activityViewModels<DashBoardCategoryViewModel>()
-
     private val TAG = "DashboardCategoryBold"
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -42,6 +41,7 @@ class DashboardCategoryBoldPOS : Fragment(), ItemListner {
         loadCartFragment(CartFragment())
         loadCategoryFragment(CategoryFragment(this))
 
+
     }
 
     private fun loadCategoryFragment(fragment: Fragment) {
@@ -51,6 +51,12 @@ class DashboardCategoryBoldPOS : Fragment(), ItemListner {
 
     private fun loadCartFragment(frag: Fragment) {
         val fm: FragmentManager = requireActivity().supportFragmentManager
+        val result = Bundle().apply {
+            putInt("fragmentId", binding.frameLayout.id)
+            putInt("checkoutHeaderId", binding.layoutHeaderCheckout.rlRoot.id)
+            putInt("dashboardHeaderId", binding.layoutHeader.rlRoot.id)
+        }
+        frag.arguments = result
         fm.beginTransaction().replace(binding.frameLayoutCart.id, frag).commit()
     }
 
@@ -74,6 +80,16 @@ class DashboardCategoryBoldPOS : Fragment(), ItemListner {
 
         binding.layoutHeader.txtTransaction.setOnClickListener {
 
+        }
+        binding.layoutHeader.ivLock.setOnClickListener {
+            binding.layoutHeaderCheckout.rlRoot.visibility=View.VISIBLE
+            binding.layoutHeader.rlRoot.visibility=View.GONE
+            loadCategoryFragment(CheckoutDetailsFragmentNew())
+        }
+        binding.layoutHeaderCheckout.imgDrawer.setOnClickListener {
+            binding.layoutHeaderCheckout.rlRoot.visibility=View.GONE
+            binding.layoutHeader.rlRoot.visibility=View.VISIBLE
+            loadCategoryFragment(CategoryFragment(this))
         }
 
         binding.layoutHeader.imgSync.setOnClickListener {
@@ -112,13 +128,12 @@ class DashboardCategoryBoldPOS : Fragment(), ItemListner {
 
     override fun onItemSelected(item: TbItem) {
         Log.e(TAG, "getitem:  ${Gson().toJson(item)}")
-
-        val fragment = AddItemFragment.newInstance(item, this)
+        val fragment = AddItemFragment.newInstance(item,this)
         loadCategoryFragment(fragment)
+
     }
 
     override fun onCancelItemSelected() {
-        loadCategoryFragment(CategoryFragment(this))
 
     }
 
