@@ -9,6 +9,7 @@ import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.activityViewModels
 import com.android.pos.data.entities.TbItem
 import com.android.pos.databinding.FragmentCheckoutDetailsNewBinding
+import com.android.pos.databinding.FragmentManualCardEntryBinding
 import com.android.pos.ui.adapter.PaymentTypePagerAdapter
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.android.pos.utils.callback.ItemListner
@@ -16,8 +17,8 @@ import com.google.android.material.tabs.TabLayout
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class CheckoutDetailsFragmentNew : Fragment(), ItemListner {
-    private lateinit var binding: FragmentCheckoutDetailsNewBinding
+class ManualCardEntryFragment : Fragment(), ItemListner {
+    private lateinit var binding: FragmentManualCardEntryBinding
     private val viewModel by activityViewModels<DashBoardCategoryViewModel>()
     private val TAG = "DashboardCategoryBold"
     override fun onCreateView(
@@ -26,7 +27,7 @@ class CheckoutDetailsFragmentNew : Fragment(), ItemListner {
         savedInstanceState: Bundle?
     ): View? {
 
-        binding = FragmentCheckoutDetailsNewBinding.inflate(inflater, container, false)
+        binding = FragmentManualCardEntryBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = this
         return binding.root
     }
@@ -34,41 +35,8 @@ class CheckoutDetailsFragmentNew : Fragment(), ItemListner {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         onClick()
-        setPagerAdapter()
-        //loadCartFragment(CartFragment())
-        //loadCategoryFragment(SplitCustomAmountFragment())
-
-
     }
 
-    private fun setPagerAdapter() {
-        binding.tabLayout.addTab(binding.tabLayout.newTab().setText("Pay Full Amount"))
-        binding.tabLayout.addTab(binding.tabLayout.newTab().setText("Split Custom Amount"))
-        binding.tabLayout.tabGravity = TabLayout.GRAVITY_FILL
-
-        val bundle=Bundle().apply {
-            putInt("frameLayoutId",binding.frameLayoutId.id)
-            putInt("llRoot",binding.llRoot.id)
-        }
-        val adapter= PaymentTypePagerAdapter(requireContext(),childFragmentManager,binding.tabLayout.tabCount,bundle)
-        binding.frameLayout.adapter = adapter
-        binding.frameLayout.addOnPageChangeListener( TabLayout.TabLayoutOnPageChangeListener(binding.tabLayout))
-
-        binding.tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener{
-
-            override fun onTabSelected(tab: TabLayout.Tab?) {
-
-                binding.frameLayout.currentItem= tab?.position!!
-
-            }
-
-            override fun onTabUnselected(tab: TabLayout.Tab?) {
-            }
-
-            override fun onTabReselected(tab: TabLayout.Tab?) {
-            }
-        })
-    }
 
 
 

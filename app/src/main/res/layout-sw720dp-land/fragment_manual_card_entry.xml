@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    tools:ignore="MissingDefaultResource">
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/bg_color"
+        android:orientation="vertical">
+
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_10sdp"
+            android:text="Manual Card Entry"
+            android:textSize="@dimen/_8mdpi"
+            android:textColor="@color/txtColor"
+            android:layout_gravity="center_horizontal"
+            />
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="@dimen/_10sdp"
+            android:padding="@dimen/_9sdp"
+            android:weightSum="4"
+            android:layout_marginHorizontal="@dimen/_10sdp"
+            android:background="@drawable/background_square_border_grey">
+
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:src="@drawable/ic_manual_card"/>
+
+
+            <com.santalu.maskedittext.MaskEditText
+                android:id="@+id/edtMobileNumber"
+                style="@style/CustomFontBold"
+                android:layout_width="0dp"
+                android:layout_weight="4"
+                android:layout_height="wrap_content"
+                android:background="@null"
+                android:hint="1234  5678  XXXX  1121"
+                android:inputType="number"
+                android:maxLength="20"
+                android:textColor="@color/btnColor"
+                android:textColorHint="@color/hint_color"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="@dimen/_10sdp"
+                android:textSize="@dimen/_7mdpi"
+                app:met_mask="####  ####  ####  ####" />
+
+
+            <androidx.appcompat.widget.AppCompatTextView
+                style="@style/CustomFontBold"
+
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="MM/YY"
+                android:textColor="@color/hint_color"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="@dimen/_5sdp"
+                android:textSize="@dimen/_6mdpi"/>
+
+
+            <androidx.appcompat.widget.AppCompatEditText
+                style="@style/CustomFontBold"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:hint="CVV"
+                android:textColorHint="@color/hint_color"
+                android:textColor="@color/btnColor"
+                android:background="@null"
+                android:inputType="number"
+                android:maxLength="3"
+                android:textSize="@dimen/_6mdpi"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="@dimen/_5sdp"/>
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Enter Card Number Here"
+            android:textColor="@color/hint_color"
+            android:textSize="@dimen/_5mdpi"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginLeft="@dimen/_5sdp"
+            android:layout_marginTop="@dimen/_5sdp"/>
+
+        <androidx.appcompat.widget.AppCompatTextView
+            style="@style/CustomFontBold"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/tvCard"
+            android:layout_gravity="center_vertical"
+            android:text="Charge"
+            android:layout_marginHorizontal="@dimen/_10sdp"
+            android:padding="@dimen/_9sdp"
+            android:background="@drawable/button_selected"
+            android:gravity="center"
+            android:layout_marginTop="@dimen/_20sdp"
+            android:textColor="@color/white"
+            android:textSize="@dimen/_7mdpi" />
+
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
+</layout>

@@ -53,6 +53,10 @@ class CartFragment() : Fragment() {
 
     private fun loadCategoryFragment(fragment: Fragment) {
         val fm: FragmentManager = requireActivity().supportFragmentManager
+        val bundle=Bundle().apply {
+            fragmentId?.let { putInt("fragmentId", it) }
+        }
+        fragment.arguments=bundle
         fragmentId?.let { fm.beginTransaction().replace(it, fragment).commit() }
     }
 

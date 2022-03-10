@@ -1,6 +1,7 @@
 package com.android.pos.ui.adapter
 
 import android.content.Context
+import android.os.Bundle
 import androidx.annotation.NonNull
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
@@ -11,7 +12,8 @@ import com.android.pos.ui.fragments.checkout.SplitCustomAmountFragment
 class PaymentTypePagerAdapter(
     context: Context,
     fragmentManager: FragmentManager?,
-    totalTabs: Int
+    totalTabs: Int,
+    val bundle: Bundle
 ) :
     FragmentPagerAdapter(fragmentManager!!) {
     var mContext: Context
@@ -24,9 +26,9 @@ class PaymentTypePagerAdapter(
     @NonNull
     override fun getItem(position: Int): Fragment {
         return when (position) {
-            0 -> PayFullAmountFragment()
+            0 -> PayFullAmountFragment(bundle)
             1 -> SplitCustomAmountFragment()
-            else -> PayFullAmountFragment()
+            else -> PayFullAmountFragment(bundle)
         }
     }
 
