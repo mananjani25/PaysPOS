@@ -11,13 +11,18 @@ import androidx.lifecycle.Observer
 import com.android.pos.data.entities.CartModel
 import com.android.pos.data.entities.TbItem
 import com.android.pos.data.entities.TbServiceCharge
+import com.android.pos.data.remote.Constants
+import com.android.pos.data.remote.Constants.ADD
+import com.android.pos.data.remote.Constants.TAKEOUT
 import com.android.pos.databinding.FragmentAddItemBinding
+import com.android.pos.di.PrefProvider
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.android.pos.utils.callback.ItemListner
 import com.android.pos.utils.statusUtils.Resource
 import com.android.pos.utils.statusUtils.Status
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class AddItemFragment(val listner: ItemListner) : Fragment() {
@@ -28,6 +33,9 @@ class AddItemFragment(val listner: ItemListner) : Fragment() {
     private var serviceChargesObserve: Observer<Resource<List<TbServiceCharge>>>? = null
     private val viewModel by activityViewModels<DashBoardCategoryViewModel>()
     private val TAG = "AddItemFragment"
+
+    @Inject
+    lateinit var prefProvider: PrefProvider
     private var qty = 1
 
     companion object {
@@ -50,7 +58,24 @@ class AddItemFragment(val listner: ItemListner) : Fragment() {
         binding = FragmentAddItemBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = this
         getServiceCharges()
+        addObserver()
         return binding.root
+    }
+
+    private fun addObserver() {
+        viewModel.mAllWords(
+            Constants.TAKEOUT, prefProvider.getValueInt(
+                com.android.pos.data.remote.Constants.EMPLOYEE_ID, 0
+            )
+        ).observe(viewLifecycleOwner, {
+            if (it.isNotEmpty()) {
+                cartList.clear()
+                cartList = arrayListOf()
+                cartList.addAll(it)
+
+            }
+        })
+
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -83,6 +108,22 @@ class AddItemFragment(val listner: ItemListner) : Fragment() {
         binding.txtDone.setOnClickListener {
             item?.itemQuantity = qty
 
+            if (cartList.isEmpty()) {
+                val model: CartModel = CartModel()
+                model.serviceCharge = serviceChargesList
+                model.orderType = TAKEOUT
+                model.orderTypeId = 1
+                cartList.add(model)
+
+
+                viewModel.addCart(model)
+
+
+            }
+
+
+            viewModel.addItemToCart(cartList, item, ADD)
+            listner.onCancelItemSelected()
 
         }
 

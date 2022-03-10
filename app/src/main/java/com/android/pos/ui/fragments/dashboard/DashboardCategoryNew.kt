@@ -421,6 +421,8 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                     }
                     viewModel.addCart(cartList[0])
                 }
+
+
             }
         }
 
