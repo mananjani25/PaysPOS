@@ -756,6 +756,7 @@
     <string name="logout">Logout</string>
     <string name="current_order">Current Order</string>
     <string name="add_customer2">+ Add Customer</string>
+    <string name="card">Card</string>
 
 
 </resources>

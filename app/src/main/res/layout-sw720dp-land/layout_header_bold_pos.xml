@@ -9,7 +9,8 @@
         android:layout_height="wrap_content"
         android:background="@color/bg_color"
         android:orientation="horizontal"
-        android:paddingVertical="@dimen/_4sdp">
+        android:paddingVertical="@dimen/_4sdp"
+        android:id="@+id/rlRoot">
 
         <androidx.appcompat.widget.LinearLayoutCompat
             android:id="@+id/linearFirst"
@@ -158,6 +159,7 @@
                 android:background="@color/txtColor" />
 
             <ImageView
+                android:id="@+id/ivLock"
                 android:layout_width="@dimen/_10sdp"
                 android:layout_height="@dimen/_12sdp"
                 android:layout_gravity="center"

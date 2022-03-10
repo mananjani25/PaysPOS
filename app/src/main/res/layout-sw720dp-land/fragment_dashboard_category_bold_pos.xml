@@ -13,6 +13,11 @@
             android:id="@+id/layout_header"
             layout="@layout/layout_header_bold_pos" />
 
+        <include
+            android:id="@+id/layout_header_checkout"
+            layout="@layout/layout_header_checkout_details"
+            />
+
         <include layout="@layout/divider" />
 
         <androidx.appcompat.widget.LinearLayoutCompat
