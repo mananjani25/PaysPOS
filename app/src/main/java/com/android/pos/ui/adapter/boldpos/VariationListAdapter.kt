@@ -117,6 +117,8 @@ class VariationListAdapter() :
                 if (variation.id == id) {
                     mpos = i
                     notifyItemChanged(mpos)
+                    showVariationPriceClick?.invoke(variationList[i])
+
                     break
                 }
             }

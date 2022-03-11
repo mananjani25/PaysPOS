@@ -5,10 +5,10 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.widget.AppCompatTextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
+import com.android.pos.R
 import com.android.pos.data.entities.CartModel
 import com.android.pos.data.entities.TbItem
 import com.android.pos.data.entities.TbServiceCharge
@@ -19,6 +19,7 @@ import com.android.pos.di.PrefProvider
 import com.android.pos.ui.adapter.VariationDashboardListAdapter
 import com.android.pos.ui.adapter.boldpos.VariationListAdapter
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
+import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.callback.ItemListner
 import com.android.pos.utils.statusUtils.Resource
@@ -128,32 +129,56 @@ class AddItemFragment(val listner: ItemListner) : Fragment() {
                             binding.rvVariationList.visibility = View.VISIBLE
 
                             variationAdapter.addVariations(it.variationsAttributes)
+
+
+                            variationAdapter?.showVariationPriceClick = { it: VariationsAttribute ->
+                                if (!MethodUtils.isDoubleClick()) {
+                                    Log.e(TAG, "priceType:  ${it.priceType}")
+                                    if (it.priceType == "Variable") {
+                                        val bundle = Bundle().apply {
+                                            putParcelable("variationAttribute", it)
+                                        }
+
+                                        if (item.price == 0.0 && item.variationsAttributes.isNotEmpty()) {
+                                            AlertUtils.showCustomAlert(
+                                                requireActivity(),
+                                                "Please enter atleast one price of item"
+                                            )
+
+                                        } else if (!checkItemQty(item, variationAdapter)) {
+                                            AlertUtils.showCustomAlert(
+                                                requireActivity(),
+                                                getString(R.string.qty_validation)
+                                            )
+
+                                        }
+
+                                        val variationList = ArrayList<VariationsAttribute>()
+                                        if (item.variationsAttributes.isNotEmpty()) {
+                                            val variation = variationAdapter?.getItem()!!
+                                            variationList.add(variation)
+                                            item.name =
+                                                item.name.substringBefore(" (") + " (" + variation.name + ")"
+                                            item.variationsAttributes = variationList
+                                        }
+                                        /*  findNavController().navigate(
+                                              R.id.action_dashboardCategoryNew_to_addVariablePriceDialog, bundle
+                                          )*/
+                                    } else if (it.priceType == "Fixed") {
+                                        showPriceTitle(it, variationAdapter = null, item, true)
+
+                                    }
+                                }
+                            }
+
+
                             if (item.variationsAttributes.isNotEmpty() && item.variationsAttributes[0].id != null) {
                                 variationAdapter.selectItem(
                                     item.variationsAttributes[0].id ?: 0
                                 )
                             }
 
-                            variationAdapter?.showVariationPriceClick = { it: VariationsAttribute ->
-                                if (!MethodUtils.isDoubleClick()) {
-                                    if (it.priceType == "Variable") {
-                                        val bundle = Bundle().apply {
-                                            putParcelable("variationAttribute", it)
-                                        }
-                                        /*  findNavController().navigate(
-                                              R.id.action_dashboardCategoryNew_to_addVariablePriceDialog, bundle
-                                          )*/
-                                    } else if (it.priceType == "Fixed") {
-                                       /* showPriceTitle(
-                                            it,
-                                            variationAdapter = null,
-                                            item,
-                                            ,
-                                            true
-                                        )*/
-                                    }
-                                }
-                            }
+
                         }
 
                     }
@@ -175,7 +200,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment() {
         variationsAttribute: VariationsAttribute?,
         variationAdapter: VariationDashboardListAdapter?,
         data: TbItem,
-        txtTitle: AppCompatTextView,
+        /*txtTitle: AppCompatTextView,*/
         isItemClick: Boolean
     ) {
         var variation: VariationsAttribute? = null
@@ -196,20 +221,20 @@ class AddItemFragment(val listner: ItemListner) : Fragment() {
             data.price = data.price
         }
         if (data.discountPrice != 0.0) {
-            txtTitle.text = data.name.substringBefore(" (") + "  $" + String.format(
-                "%.2f", (totalPrice(data) - data.discountPrice)
-            )
+            /*  txtTitle.text = data.name.substringBefore(" (") + "  $" + String.format(
+                  "%.2f", (totalPrice(data) - data.discountPrice)
+              )*/
         } else {
-            if (isItemClick) {
-                txtTitle.text = data.name.substringBefore(" (") + "  $" + String.format(
-                    "%.2f",
-                    data.price
-                )
-            } else
-                txtTitle.text = data.name.substringBefore(" (") + "  $" + String.format(
-                    "%.2f",
-                    totalPrice(data)
-                )
+            /* if (isItemClick) {
+                 txtTitle.text = data.name.substringBefore(" (") + "  $" + String.format(
+                     "%.2f",
+                     data.price
+                 )
+             } else
+                 txtTitle.text = data.name.substringBefore(" (") + "  $" + String.format(
+                     "%.2f",
+                     totalPrice(data)
+                 )*/
         }
     }
 
@@ -231,5 +256,35 @@ class AddItemFragment(val listner: ItemListner) : Fragment() {
 
         }
     }
+
+    private fun checkItemQty(
+        data: TbItem,
+        variationAdapter: VariationListAdapter?
+    ): Boolean {
+
+        if (data.variationsAttributes.isNotEmpty()) {
+
+            val stockQty = variationAdapter?.getItem()?.stockQty
+
+            return if (stockQty?.isNotEmpty() == true) {
+
+                stockQty.toInt() >= 1
+
+            } else {
+                false
+            }
+
+        } else {
+
+            return if (data.isManualSales) {
+                true
+            } else {
+                data.quantity >= 1
+            }
+        }
+
+        return false
+    }
+
 
 }

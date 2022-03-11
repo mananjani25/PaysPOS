@@ -969,7 +969,6 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
         binding.footer.linearMore.setOnClickListener {
             findNavController().navigate(R.id.action_dashboardCategoryNew_to_menuFragment)
-
             //dialogPOSMenu()
 
         }

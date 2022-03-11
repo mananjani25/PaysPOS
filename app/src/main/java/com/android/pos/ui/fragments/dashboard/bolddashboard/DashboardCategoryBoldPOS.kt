@@ -20,6 +20,7 @@ import com.android.pos.data.remote.Constants.TAKEOUT
 import com.android.pos.data.remote.Constants.TERMINAL_ID
 import com.android.pos.databinding.FragmentDashboardCategoryBoldPosBinding
 import com.android.pos.di.PrefProvider
+import com.android.pos.ui.adapter.VariationDashboardListAdapter
 import com.android.pos.ui.fragments.checkout.CheckoutDetailsFragmentNew
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.android.pos.ui.fragments.manualsales.ManualSaleBoldPOS.KeyPadManualSaleFragment
@@ -192,5 +193,34 @@ class DashboardCategoryBoldPOS : Fragment(), ItemListner {
         }
 
         viewModel.serviceCharges.observe(requireActivity(), serviceChargesObserve!!)
+    }
+
+    private fun checkItemQty(
+        data: TbItem,
+        variationAdapter: VariationDashboardListAdapter?
+    ): Boolean {
+
+        if (data.variationsAttributes.isNotEmpty()) {
+
+            val stockQty = variationAdapter?.getItem()?.stockQty
+
+            return if (stockQty?.isNotEmpty() == true) {
+
+                stockQty.toInt() >= 1
+
+            } else {
+                false
+            }
+
+        } else {
+
+            return if (data.isManualSales) {
+                true
+            } else {
+                data.quantity >= 1
+            }
+        }
+
+        return false
     }
 }
