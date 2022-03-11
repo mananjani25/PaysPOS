@@ -48,7 +48,7 @@
                     android:textSize="@dimen/_6mdpi" />
 
                 <com.google.android.material.switchmaterial.SwitchMaterial
-                    android:id="@+id/swtOrderId"
+                    android:id="@+id/time_tracker"
                     style="@style/AppTheme"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -58,7 +58,6 @@
                     android:scaleX="1"
                     android:scaleY="1"
                     android:showText="false"
-
                     android:thumb="@drawable/custom_thumb_printer_active_switch"
                     android:visibility="visible"
                     app:srcCompat="@drawable/ic_arrow_forward"
