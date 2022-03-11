@@ -8,7 +8,6 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
-import com.android.pos.R
 import com.android.pos.data.entities.CartModel
 import com.android.pos.data.entities.TbItem
 import com.android.pos.data.entities.TbServiceCharge
@@ -19,7 +18,6 @@ import com.android.pos.di.PrefProvider
 import com.android.pos.ui.adapter.VariationDashboardListAdapter
 import com.android.pos.ui.adapter.boldpos.VariationListAdapter
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
-import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.callback.ItemListner
 import com.android.pos.utils.statusUtils.Resource
@@ -140,16 +138,16 @@ class AddItemFragment(val listner: ItemListner) : Fragment() {
                                         }
 
                                         if (item.price == 0.0 && item.variationsAttributes.isNotEmpty()) {
-                                            AlertUtils.showCustomAlert(
+                                         /*   AlertUtils.showCustomAlert(
                                                 requireActivity(),
                                                 "Please enter atleast one price of item"
                                             )
 
-                                        } else if (!checkItemQty(item, variationAdapter)) {
-                                            AlertUtils.showCustomAlert(
+*/                                        } else if (!checkItemQty(item, variationAdapter)) {
+                                           /* AlertUtils.showCustomAlert(
                                                 requireActivity(),
                                                 getString(R.string.qty_validation)
-                                            )
+                                            )*/
 
                                         }
 
