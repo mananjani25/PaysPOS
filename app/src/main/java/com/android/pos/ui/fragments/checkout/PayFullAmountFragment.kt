@@ -25,6 +25,7 @@ import com.android.pos.di.PrefProvider
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.android.pos.ui.fragments.payment.PaymentViewModel
 import com.android.pos.utils.MethodUtils
+import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.callback.ItemListner
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
@@ -81,6 +82,7 @@ class PayFullAmountFragment(val bundle: Bundle?) : Fragment(), ItemListner {
         onClick()
         frameLayoutId = bundle?.getInt("frameLayoutId")!!
         llRoot = bundle?.getInt("llRoot")!!
+        observeShowProgress()
         getCartData()
         observeData()
 
@@ -400,6 +402,20 @@ class PayFullAmountFragment(val bundle: Bundle?) : Fragment(), ItemListner {
                 }
             }
         }
+    }
+
+    private fun observeShowProgress() {
+
+        paymentviewModel.showProgress.observe(viewLifecycleOwner) { event ->
+            event.getContentIfNotHandled()?.let {
+                if (it) {
+                    ProgressUtils.showProgressDialog(requireActivity())
+                } else {
+                    ProgressUtils.dismissProgressDialog()
+                }
+            }
+        }
+
     }
 
     fun makeCashPayment() {
