@@ -146,15 +146,15 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     fun getItemByProductCode(productCode: String) = posRepository.getItemByProductCode(productCode)
 
-/*
-    fun getCartList(orderType:String,employee_Id: Int) : List<CartModel>{
-        viewModelcartList.clear()
-        viewModelcartList = arrayListOf()
+    /*
+        fun getCartList(orderType:String,employee_Id: Int) : List<CartModel>{
+            viewModelcartList.clear()
+            viewModelcartList = arrayListOf()
 
-        posRepository.getCartList(orderType,employee_Id)
-    }
+            posRepository.getCartList(orderType,employee_Id)
+        }
 
-*/
+    */
     fun mAllWords(orderType: String, employee_Id: Int): LiveData<List<CartModel>> {
 
         return posRepository.getCartList(orderType, employee_Id)
@@ -471,6 +471,8 @@ class DashBoardCategoryViewModel @Inject constructor(
                     if (type == DELETE) {
                         deleteCart()
                     } else {
+
+                        Log.e(TAG, "AddedListNull")
                         val cartModel = cartList?.get(0)
                         cartModel?.items = listOf(item!!)
                         if (cartModel != null) {
@@ -484,6 +486,145 @@ class DashBoardCategoryViewModel @Inject constructor(
 
 
         }
+    }
+
+    fun addItemToCart(
+        cartList: List<CartModel>?,
+        item: TbItem?,
+        type: String,
+        dineInList: List<DineInModel> = arrayListOf()
+    ) {
+
+        if (cartList != null && cartList.isEmpty()) {
+            // empty cart hoy to new cart create kare
+            val cartModel = item?.let { addCartModel(it) }
+            if (cartModel != null) {
+                addCart(cartModel)
+            }
+
+
+        } else {
+
+            val list = cartList?.get(0)?.items?.toMutableList()
+            if (list != null && list.isNotEmpty()) {
+
+                if (type == ADD || type == UPDATE) {
+                    var index = -1
+
+                    list.forEachIndexed { pos, tbItem ->
+                        if (item != null) {
+                            if (tbItem.itemId == item.itemId && checkVariation(
+                                    tbItem,
+                                    item
+                                ) && checkModifier(tbItem, item)
+                            ) {
+                                //   if (checkModifier(tbItem, item)) {
+                                index = pos
+                                return@forEachIndexed
+                                //  }
+                            }
+                        }
+
+                    }
+                    if (index != -1) {
+                        val model = cartList[0].items?.get(index)
+                        if (model != null) {
+                            if (type == "UPDATE") {
+                                if (item != null) {
+                                    model.itemQuantity = item.itemQuantity
+                                    if (item.isEdited) {
+                                        model.isEdited = item.isEdited
+                                    }
+                                }
+                                list[index] = model
+                            } else {
+                                if (index != -1) {
+                                    if (item != null) {
+                                        model.itemQuantity =
+                                            item.itemQuantity + model.itemQuantity
+                                        item.modifiers.forEach {
+                                            it.itemQuantity = model.itemQuantity
+                                        }
+                                        model.modifiers = item.modifiers
+                                        if (item.isEdited) {
+                                            model.isEdited = item.isEdited
+                                        }
+                                    }
+
+                                    list[index] = model
+                                } else {
+                                    if (item != null) {
+                                        model.itemQuantity = item.itemQuantity
+                                        if (item.isEdited) {
+                                            model.isEdited = item.isEdited
+                                        }
+                                    }
+                                    list[index] = model
+                                }
+                            }
+
+                        }
+                    } else {
+                        if (item != null) {
+                            list.add(item)
+                        }
+                    }
+                } else if (type == DELETE) {
+
+                    var index = -1
+
+                    list.forEachIndexed { pos, tbItem ->
+                        if (item != null) {
+                            if (tbItem.itemId == item.itemId) {
+                                index = pos
+                                return@forEachIndexed
+                            }
+                        }
+                    }
+                    if (index != -1) {
+                        val model = cartList[0].items?.get(index)
+                        if (model != null) {
+                            //delete from cart
+                            if (item?.isEdited == true) {
+                                model.isEdited = item.isEdited
+                                model.isDestroy = true
+                            } else {
+                                list.remove(item)
+                            }
+                        }
+                    } else {
+                        //list.remove(item)
+                    }
+                }
+
+                val cartModel = cartList[0]
+                cartModel.items = list
+                addCart(cartModel)
+
+                if (list.isEmpty()) {
+                    // delete cart
+                    deleteCart()
+                }
+            } else {
+
+                if (type == DELETE) {
+                    deleteCart()
+                } else {
+
+                    Log.e(TAG, "AddedListNull")
+                    val cartModel = cartList?.get(0)
+                    cartModel?.items = listOf(item!!)
+                    Log.e(TAG, "cartModel:  ${Gson().toJson(cartModel)}")
+                    if (cartModel != null) {
+
+                        addCart(cartModel)
+                    }
+                }
+
+
+            }
+        }
+
     }
 
     private fun checkModifier(tbItem: TbItem, item: TbItem): Boolean {
