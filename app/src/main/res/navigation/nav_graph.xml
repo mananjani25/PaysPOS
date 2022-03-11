@@ -19,7 +19,7 @@
             app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_login_to_dashboardCategory"
-            app:destination="@id/dashboardCategoryNew"
+            app:destination="@id/dashboardCategoryBoldPOS"
             app:popUpTo="@id/login"
             app:popUpToInclusive="true" />
         <action
