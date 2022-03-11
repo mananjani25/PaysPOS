@@ -45,7 +45,7 @@
             app:enterAnim="@anim/nav_default_enter_anim" />
         <action
             android:id="@+id/action_clockInOwner_to_dashboardCategory"
-            app:destination="@id/dashboardCategoryNew"
+            app:destination="@id/dashboardCategoryBoldPOS"
             app:enterAnim="@anim/nav_default_enter_anim"
             app:popUpTo="@id/clockInOwner"
             app:popUpToInclusive="true" />
@@ -79,7 +79,7 @@
             app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_passcode_to_dashboard"
-            app:destination="@id/dashboardCategoryNew"
+            app:destination="@id/dashboardCategoryBoldPOS"
             app:enterAnim="@anim/nav_default_enter_anim"
             app:popUpToInclusive="true" />
         <argument
@@ -189,7 +189,7 @@
             app:enterAnim="@anim/nav_default_enter_anim" />
         <action
             android:id="@+id/action_inventory_to_dashboardCategory"
-            app:destination="@id/dashboardCategoryNew"
+            app:destination="@id/dashboardCategoryBoldPOS"
             app:popUpTo="@id/inventory"
             app:popUpToInclusive="true" />
         <action
@@ -219,7 +219,7 @@
         android:label="TeamList">
         <action
             android:id="@+id/action_teamList_to_dashboardCategoryNew"
-            app:destination="@id/dashboardCategoryNew" />
+            app:destination="@id/dashboardCategoryBoldPOS" />
     </fragment>
     <action
         android:id="@+id/action_global_teamList"
@@ -227,7 +227,7 @@
         app:enterAnim="@anim/nav_default_enter_anim" />
     <action
         android:id="@+id/action_global_dashboardCategory"
-        app:destination="@id/dashboardCategoryNew"
+        app:destination="@id/dashboardCategoryBoldPOS"
         app:enterAnim="@anim/nav_default_enter_anim" />
     <fragment
         android:id="@+id/createDiscount"
@@ -246,7 +246,7 @@
         tools:layout="@layout/fragment_settings">
         <action
             android:id="@+id/action_settings_to_dashboardCategory"
-            app:destination="@id/dashboardCategoryNew"
+            app:destination="@id/dashboardCategoryBoldPOS"
             app:popUpTo="@id/settings"
             app:popUpToInclusive="true" />
         <action
@@ -369,7 +369,7 @@
         tools:layout="@layout/fragment_reports">
         <action
             android:id="@+id/action_reports_to_dashboardCategory"
-            app:destination="@id/dashboardCategoryNew"
+            app:destination="@id/dashboardCategoryBoldPOS"
             app:popUpTo="@id/reports"
             app:popUpToInclusive="true" />
 
@@ -557,7 +557,7 @@
         tools:layout="@layout/fragment_customer">
         <action
             android:id="@+id/action_customer_to_dashboardCategoryNew"
-            app:destination="@id/dashboardCategoryNew"
+            app:destination="@id/dashboardCategoryBoldPOS"
             app:popUpTo="@id/customer"
             app:popUpToInclusive="true">
             <argument
@@ -601,7 +601,7 @@
             app:destination="@id/singleTeamMemberTimeSheetFragment" />
         <action
             android:id="@+id/action_teamMemberTimeSheetFragment_to_dashboardCategoryNew"
-            app:destination="@id/dashboardCategoryNew"
+            app:destination="@id/dashboardCategoryBoldPOS"
             app:popUpToInclusive="true" />
     </fragment>
     <fragment
@@ -610,7 +610,7 @@
         android:label="SingleTeamMemberTimeSheetFragment">
         <action
             android:id="@+id/action_singleTeamMemberTimeSheetFragment_to_dashboardCategoryNew"
-            app:destination="@id/dashboardCategoryNew"
+            app:destination="@id/dashboardCategoryBoldPOS"
             app:popUpToInclusive="true" />
     </fragment>
     <fragment
@@ -622,7 +622,7 @@
             app:destination="@id/userAccessPermissionFragment" />
         <action
             android:id="@+id/action_userAccessPermissionListFragment_to_dashboardCategory"
-            app:destination="@id/dashboardCategoryNew"
+            app:destination="@id/dashboardCategoryBoldPOS"
             app:popUpTo="@id/userAccessPermissionListFragment"
             app:popUpToInclusive="true" />
     </fragment>
@@ -640,7 +640,7 @@
             app:destination="@id/assignTeamMemberListDialog" />
         <action
             android:id="@+id/action_userAccessPermissionFragment_to_dashboardCategoryNew"
-            app:destination="@id/dashboardCategoryNew"
+            app:destination="@id/dashboardCategoryBoldPOS"
             app:launchSingleTop="true" />
     </fragment>
     <fragment
@@ -676,7 +676,7 @@
             app:destination="@id/addTipsDialog" />
         <action
             android:id="@+id/action_paymentFragment_to_dashboardCategoryNew"
-            app:destination="@id/dashboardCategoryNew"
+            app:destination="@id/dashboardCategoryBoldPOS"
             app:launchSingleTop="true" />
     </fragment>
     <dialog
@@ -714,7 +714,7 @@
             app:destination="@id/addEditCustomer" />
         <action
             android:id="@+id/action_assignCustomerOrderFragment_to_dashboard_category_new"
-            app:destination="@id/dashboardCategoryNew" />
+            app:destination="@id/dashboardCategoryBoldPOS" />
     </fragment>
     <fragment
         android:id="@+id/manualSales"
@@ -898,7 +898,7 @@
             app:enterAnim="@anim/nav_default_enter_anim" />
         <action
             android:id="@+id/action_printer_to_dashboardCategoryNew"
-            app:destination="@id/dashboardCategoryNew"
+            app:destination="@id/dashboardCategoryBoldPOS"
             app:popUpTo="@id/printer"
             app:popUpToInclusive="true" />
     </fragment>
@@ -1006,8 +1006,8 @@
         tools:layout="@layout/fragment_dine_in_guest">
         <action
             android:id="@+id/action_dineInGuestFragment_to_dashboardCategoryNew"
-            app:destination="@id/dashboardCategoryNew"
-            app:popUpTo="@id/dashboardCategoryNew"
+            app:destination="@id/dashboardCategoryBoldPOS"
+            app:popUpTo="@id/dashboardCategoryBoldPOS"
             app:popUpToInclusive="true" />
     </fragment>
     <dialog
@@ -1015,7 +1015,7 @@
         android:name="com.android.pos.ui.dialog.OrderTypeDialog">
         <action
             android:id="@+id/action_orderTypeDialog_to_dashboardCategoryNew"
-            app:destination="@id/dashboardCategoryNew" />
+            app:destination="@id/dashboardCategoryBoldPOS" />
         <action
             android:id="@+id/action_orderTypeDialog_to_openOrderCustomerFragment"
             app:destination="@id/openOrderCustomerFragment"
@@ -1050,8 +1050,8 @@
             app:enterAnim="@anim/nav_default_enter_anim" />
         <action
             android:id="@+id/action_dineInOrderTable_to_dashboardCategoryNew"
-            app:destination="@id/dashboardCategoryNew"
-            app:popUpTo="@id/dashboardCategoryNew"
+            app:destination="@id/dashboardCategoryBoldPOS"
+            app:popUpTo="@id/dashboardCategoryBoldPOS"
             app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_dineInOrderTable_to_dineInFragment"
@@ -1072,7 +1072,7 @@
             app:destination="@id/dineInOrderTable" />
         <action
             android:id="@+id/action_payByGuestDialog_to_dashboardCategoryNew"
-            app:destination="@id/dashboardCategoryNew"
+            app:destination="@id/dashboardCategoryBoldPOS"
             app:popUpTo="@id/payByGuestDialog"
             app:popUpToInclusive="true" />
         <action
@@ -1124,7 +1124,7 @@
         android:label="PrinterQueue">
         <action
             android:id="@+id/action_printerQueue_to_dashboardCategoryNew"
-            app:destination="@id/dashboardCategoryNew"
+            app:destination="@id/dashboardCategoryBoldPOS"
             app:popUpTo="@id/printerQueue"
             app:popUpToInclusive="true" />
     </fragment>
@@ -1159,7 +1159,7 @@
             app:enterAnim="@anim/nav_default_enter_anim" />
         <action
             android:id="@+id/action_hardware_to_dashboardCategoryNew"
-            app:destination="@id/dashboardCategoryNew"
+            app:destination="@id/dashboardCategoryBoldPOS"
             app:popUpTo="@id/hardware"
             app:popUpToInclusive="true" />
     </fragment>
