@@ -55,7 +55,7 @@ class LoginFragment : Fragment() {
                 if(prefProvider.getValueboolean("clockOutFromNoti",false)){
                     findNavController().navigate(R.id.action_login_to_passcode,arguments)
                 }else{
-                    findNavController().navigate(R.id.action_login_to_dashboardCategory)
+                    findNavController().navigate(R.id.action_login_to_dashboardCategoryBoldPOS)
                 }
 
             }
