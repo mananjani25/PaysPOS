@@ -6,6 +6,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.activityViewModels
@@ -49,6 +50,13 @@ class DashboardCategoryBoldPOS : Fragment(), ItemListner {
     ): View? {
 
         binding = FragmentDashboardCategoryBoldPosBinding.inflate(inflater, container, false)
+        val callback: OnBackPressedCallback =
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    requireActivity().finish()
+                }
+            }
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
         addObserver()
         getServiceCharges()
         binding.lifecycleOwner = this
@@ -88,7 +96,7 @@ class DashboardCategoryBoldPOS : Fragment(), ItemListner {
     private fun onClick() {
 
         binding.layoutHeader.txtTransaction.setOnClickListener {
-            viewModel.deleteCart()
+            findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_transactionFragment)
 
         }
         binding.layoutHeader.txtDineIn.setOnClickListener {
@@ -97,6 +105,9 @@ class DashboardCategoryBoldPOS : Fragment(), ItemListner {
         binding.layoutHeader.imgDrawer.setOnClickListener {
             findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_menuFragment)
 
+        }
+        binding.layoutHeader.txtOpenOrder.setOnClickListener {
+            findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
         }
 
 
@@ -114,7 +125,7 @@ class DashboardCategoryBoldPOS : Fragment(), ItemListner {
         binding.layoutHeader.imgSync.setOnClickListener {
             viewModel.syncInventoryModule()
         }
-        binding.layoutHeader.txtOpenOrder.setOnClickListener {
+       /* binding.layoutHeader.txtOpenOrder.setOnClickListener {
             loadCategoryFragment(CategoryFragment(this))
             binding.layoutHeader.txtOpenOrder.setTextColor(resources.getColor(R.color.btnColor))
             binding.layoutHeader.txtOpenOrder.setTypeface(
@@ -126,7 +137,7 @@ class DashboardCategoryBoldPOS : Fragment(), ItemListner {
                 binding.layoutHeader.txtKeypad.typeface,
                 Typeface.NORMAL
             )
-        }
+        }*/
         binding.layoutHeader.txtKeypad.setOnClickListener {
             loadKeyPadFragment(KeyPadManualSaleFragment())
             binding.layoutHeader.txtKeypad.setTextColor(resources.getColor(R.color.btnColor))
