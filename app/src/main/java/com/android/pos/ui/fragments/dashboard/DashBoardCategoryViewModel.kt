@@ -79,6 +79,7 @@ class DashBoardCategoryViewModel @Inject constructor(
     var nonCashAdj: Double = 0.0
     var totalServiceCharge = 0.0
     var totalDiscount = 0.0
+    var cartModel: CartModel? = null
     var assignCustomer: TbCustomer? = null
     var orderItemDiscount = 0.0
     var selectedCustomer: TbCustomer? = null
@@ -106,6 +107,9 @@ class DashBoardCategoryViewModel @Inject constructor(
         return posRepository.orderTypesDb()
     }
 
+    fun setCartModel(cartList: List<CartModel>){
+        this.cartModel = generateCombinedItems(cartList[0])
+    }
     val serviceCharges = posRepository.serviceChargeList()
 
     val activeLoyaltyProgramLiveData = posRepository.getActiveLoyaltyProgramFromDb()
