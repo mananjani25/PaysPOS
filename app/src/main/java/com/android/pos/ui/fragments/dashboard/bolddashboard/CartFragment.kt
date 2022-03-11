@@ -15,8 +15,10 @@ import com.android.pos.di.PrefProvider
 import com.android.pos.ui.adapter.boldpos.CartAdapter
 import com.android.pos.ui.fragments.checkout.CheckoutDetailsFragmentNew
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
+import com.google.gson.Gson
+import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
-
+@AndroidEntryPoint
 class CartFragment() : Fragment() {
     private lateinit var binding: FragmentCartBinding
     var fragmentId: Int? = null
@@ -56,10 +58,11 @@ class CartFragment() : Fragment() {
     private fun addObserver() {
 
         viewModel.mAllWords(
-            TAKEOUT, 0
+            TAKEOUT, prefProvider.getValueInt(com.android.pos.data.remote.Constants.EMPLOYEE_ID, 0)
         ).observe(requireActivity(), {
             if (it.isNotEmpty()) {
-                Log.e(TAG, "listSize  ${it.size}")
+                Log.e(TAG, "listSize  ${Gson().toJson(it)}")
+                it[it.size - 1].items?.toCollection(arrayListOf())?.let { it1 -> cartAdapter.setList(it1) }
 
             }
         })
@@ -104,6 +107,7 @@ class CartFragment() : Fragment() {
 
     private fun setCartAdapter() {
         cartAdapter = CartAdapter()
+        binding.rvCartList.adapter = cartAdapter
     }
 
 }

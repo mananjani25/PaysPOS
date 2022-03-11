@@ -1,10 +1,12 @@
 package com.android.pos.ui.adapter.boldpos
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.data.entities.TbItem
 import com.android.pos.databinding.ViewItemCartBinding
+import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.callback.MyCallback
 
 class CartAdapter : RecyclerView.Adapter<CartAdapter.MyViewHolder>() {
@@ -22,6 +24,11 @@ class CartAdapter : RecyclerView.Adapter<CartAdapter.MyViewHolder>() {
         RecyclerView.ViewHolder(binding.root) {
 
         fun bind(item: TbItem, pos: Int) {
+            Log.e(TAG,"itemprice:  ${item.price}")
+            binding.txtName.text = item.name
+            binding.txtQuantity.text = ""+item.itemQuantity
+            binding.txtEachQntPrice.text = "$"+item.price
+            binding.txtTotalPrice.text = "$"+MethodUtils.roundOffAmountString((item.price * item.itemQuantity))
 
 
         }

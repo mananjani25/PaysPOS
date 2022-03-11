@@ -9,21 +9,37 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.Observer
 import com.android.pos.R
+import com.android.pos.data.entities.CartModel
 import com.android.pos.data.entities.TbItem
+import com.android.pos.data.entities.TbServiceCharge
+import com.android.pos.data.remote.Constants
+import com.android.pos.data.remote.Constants.TAKEOUT
+import com.android.pos.data.remote.Constants.TERMINAL_ID
 import com.android.pos.databinding.FragmentDashboardCategoryBoldPosBinding
+import com.android.pos.di.PrefProvider
 import com.android.pos.ui.fragments.checkout.CheckoutDetailsFragmentNew
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.android.pos.ui.fragments.manualsales.ManualSaleBoldPOS.KeyPadManualSaleFragment
 import com.android.pos.utils.callback.ItemListner
+import com.android.pos.utils.statusUtils.Resource
+import com.android.pos.utils.statusUtils.Status
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class DashboardCategoryBoldPOS : Fragment(), ItemListner {
+    private var cartList: ArrayList<CartModel> = arrayListOf()
     private lateinit var binding: FragmentDashboardCategoryBoldPosBinding
     private val viewModel by activityViewModels<DashBoardCategoryViewModel>()
+    private var serviceChargesList: List<TbServiceCharge>? = null
+    private var serviceChargesObserve: Observer<Resource<List<TbServiceCharge>>>? = null
     private val TAG = "DashboardCategoryBold"
+
+    @Inject
+    lateinit var prefProvider: PrefProvider
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -31,6 +47,8 @@ class DashboardCategoryBoldPOS : Fragment(), ItemListner {
     ): View? {
 
         binding = FragmentDashboardCategoryBoldPosBinding.inflate(inflater, container, false)
+        addObserver()
+        getServiceCharges()
         binding.lifecycleOwner = this
         return binding.root
     }
@@ -78,17 +96,15 @@ class DashboardCategoryBoldPOS : Fragment(), ItemListner {
 
         }
 
-        binding.layoutHeader.txtTransaction.setOnClickListener {
 
-        }
         binding.layoutHeader.ivLock.setOnClickListener {
-            binding.layoutHeaderCheckout.rlRoot.visibility=View.VISIBLE
-            binding.layoutHeader.rlRoot.visibility=View.GONE
+            binding.layoutHeaderCheckout.rlRoot.visibility = View.VISIBLE
+            binding.layoutHeader.rlRoot.visibility = View.GONE
             loadCategoryFragment(CheckoutDetailsFragmentNew())
         }
         binding.layoutHeaderCheckout.imgDrawer.setOnClickListener {
-            binding.layoutHeaderCheckout.rlRoot.visibility=View.GONE
-            binding.layoutHeader.rlRoot.visibility=View.VISIBLE
+            binding.layoutHeaderCheckout.rlRoot.visibility = View.GONE
+            binding.layoutHeader.rlRoot.visibility = View.VISIBLE
             loadCategoryFragment(CategoryFragment(this))
         }
 
@@ -128,17 +144,51 @@ class DashboardCategoryBoldPOS : Fragment(), ItemListner {
 
     override fun onItemSelected(item: TbItem) {
         Log.e(TAG, "getitem:  ${Gson().toJson(item)}")
-        val fragment = AddItemFragment.newInstance(item,this)
-        loadCategoryFragment(fragment)
+        if (cartList.isEmpty()) {
+            val model = CartModel()
+            model.employeeID =
+                prefProvider.getValueInt(com.android.pos.data.remote.Constants.EMPLOYEE_ID, 0)
+            model.terminalId = prefProvider.getValueInt(TERMINAL_ID, 0)
+            model.orderType = TAKEOUT
+            model.serviceCharge = serviceChargesList
+            model.orderTypeId = 1
 
+            cartList.add(model)
+        }
+        val fragment = AddItemFragment.newInstance(item, this, cartList)
+        loadCategoryFragment(fragment)
     }
 
     override fun onCancelItemSelected() {
+        loadCategoryFragment(CategoryFragment(this))
 
     }
 
-    private fun addItemsToCart(item: TbItem) {
+    private fun addObserver() {
 
+        viewModel.mAllWords(
+            Constants.TAKEOUT,
+            prefProvider.getValueInt(com.android.pos.data.remote.Constants.EMPLOYEE_ID, 0)
+        ).observe(requireActivity(), {
+            cartList.clear()
+            cartList = arrayListOf()
+            cartList = it.toCollection(arrayListOf())
+        })
     }
 
+    private fun getServiceCharges() {
+
+        serviceChargesObserve = Observer {
+
+            if (it.status == Status.SUCCESS) {
+
+                serviceChargesList = it.data
+                Log.e(TAG, "serviceChargesList:  ${Gson().toJson(serviceChargesList)}")
+
+            }
+
+        }
+
+        viewModel.serviceCharges.observe(requireActivity(), serviceChargesObserve!!)
+    }
 }
