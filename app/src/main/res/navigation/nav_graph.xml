@@ -867,6 +867,9 @@
         <action
             android:id="@+id/action_transactionFragment_to_dashboardCategoryNew"
             app:destination="@id/dashboardCategoryBoldPOS" />
+        <action
+            android:id="@+id/action_transactionFragment_to_menfragment"
+            app:destination="@id/menuFragment" />
     </fragment>
     <action
         android:id="@+id/action_global_transactionFragment"
@@ -936,7 +939,12 @@
         android:label="CashLogFragment">
         <action
             android:id="@+id/action_cashLogFragment_to_dashboardCategoryNew"
-            app:destination="@id/dashboardCategoryNew"
+            app:destination="@id/dashboardCategoryBoldPOS"
+            app:popUpTo="@id/cashLogFragment"
+            app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_cashlogfragment_to_menuFragment"
+            app:destination="@id/menuFragment"
             app:popUpTo="@id/cashLogFragment"
             app:popUpToInclusive="true" />
     </fragment>
@@ -1258,6 +1266,16 @@
             android:id="@+id/action_dashboardCategoryBoldPOS_to_orders"
             app:destination="@id/orders"
             app:enterAnim="@anim/nav_default_enter_anim" />
+
+        <action
+            android:id="@+id/action_dashboardCategoryBoldPOS_to_passcode"
+            app:destination="@id/passcode"
+            app:enterAnim="@anim/nav_default_enter_anim" />
+        <action
+            android:id="@+id/action_dashboardCategoryBoldPOS_to_reportEODFragment"
+            app:destination="@id/reportEODFragment"
+            app:enterAnim="@anim/nav_default_enter_anim" />
+
 
 
     </fragment>
