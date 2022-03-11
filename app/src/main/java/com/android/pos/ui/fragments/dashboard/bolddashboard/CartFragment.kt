@@ -15,9 +15,11 @@ import com.android.pos.di.PrefProvider
 import com.android.pos.ui.adapter.boldpos.CartAdapter
 import com.android.pos.ui.fragments.checkout.CheckoutDetailsFragmentNew
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
+import com.android.pos.utils.MethodUtils
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
+
 @AndroidEntryPoint
 class CartFragment() : Fragment() {
     private lateinit var binding: FragmentCartBinding
@@ -62,7 +64,20 @@ class CartFragment() : Fragment() {
         ).observe(requireActivity(), {
             if (it.isNotEmpty()) {
                 Log.e(TAG, "listSize  ${Gson().toJson(it)}")
-                it[it.size - 1].items?.toCollection(arrayListOf())?.let { it1 -> cartAdapter.setList(it1) }
+                it[it.size - 1].items?.toCollection(arrayListOf())
+                    ?.let { it1 -> cartAdapter.setList(it1) }
+                viewModel.itemCalculation(
+                    it,
+                    binding.txtTotal,
+                    requireContext()
+                )
+                viewModel.setCartModel(it)
+
+                binding.txtSubTotal.text = MethodUtils.roundOffAmount(viewModel.subTotalPrice)
+                binding.txtTax.text = MethodUtils.roundOffAmount(viewModel.totalTax)
+                binding.txtServiceCharge.text =
+                    MethodUtils.roundOffAmount(viewModel.totalServiceCharge)
+                binding.tvPayNow.text = "Pay " + MethodUtils.roundOffAmount(viewModel.totalPrice)
 
             }
         })

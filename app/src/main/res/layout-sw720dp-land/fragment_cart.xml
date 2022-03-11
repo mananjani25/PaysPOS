@@ -167,6 +167,7 @@
                                 android:textSize="@dimen/_6mdpi" />
 
                             <androidx.appcompat.widget.AppCompatTextView
+                                android:id="@+id/txtSubTotal"
                                 style="@style/CustomFontSemiBold"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
@@ -196,6 +197,7 @@
                                 android:textSize="@dimen/_6mdpi" />
 
                             <androidx.appcompat.widget.AppCompatTextView
+                                android:id="@+id/txtTax"
                                 style="@style/CustomFontSemiBold"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
@@ -223,11 +225,12 @@
                                 android:layout_height="wrap_content"
                                 android:layout_alignParentStart="true"
                                 android:layout_marginStart="@dimen/_3sdp"
-                                android:text="Tip (%)"
+                                android:text="Service Charge"
                                 android:textColor="@color/dark_gray"
                                 android:textSize="@dimen/_6mdpi" />
 
                             <androidx.appcompat.widget.AppCompatTextView
+                                android:id="@+id/txtServiceCharge"
                                 style="@style/CustomFontSemiBold"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
@@ -295,7 +298,7 @@
                             android:layout_marginTop="@dimen/_3sdp"
                             android:orientation="horizontal"
                             android:padding="@dimen/_2sdp"
-                            android:visibility="visible">
+                            android:visibility="gone">
 
                             <androidx.appcompat.widget.AppCompatTextView
                                 style="@style/CustomFontMediumStyle"
@@ -339,6 +342,7 @@
                                 android:textSize="@dimen/_6mdpi" />
 
                             <androidx.appcompat.widget.AppCompatTextView
+                                android:id="@+id/txtTotal"
                                 style="@style/CustomFontBold"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
@@ -438,7 +442,7 @@
                         android:textColor="@color/white"
                         android:textSize="@dimen/_7mdpi" />
 
-                    <TextView
+                    <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/tvPayNow"
                         style="@style/CustomFontBold"
                         android:layout_width="0dp"

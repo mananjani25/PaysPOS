@@ -2,17 +2,27 @@ package com.android.pos.ui.adapter.boldpos
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.data.entities.Modifier
+import com.android.pos.data.entities.ModifierSet
 import com.android.pos.databinding.ViewModifiersBoldBinding
+import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 
-class ModifiersAdapter : RecyclerView.Adapter<ModifiersAdapter.MyViewHolder>() {
-    var list = ArrayList<Modifier>()
+class ModifiersAdapter(
+    val viewModel: DashBoardCategoryViewModel,
+    private val _itemId: Int,
+    private val viewLifecycleOwner: LifecycleOwner
+) : RecyclerView.Adapter<ModifiersAdapter.MyViewHolder>() {
+    var filterList = ArrayList<ModifierSet>()
+    var selectedModifierList = ArrayList<Modifier>()
+
+
 
     inner class MyViewHolder(private var binding: ViewModifiersBoldBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(item: Modifier) {
+        fun bind(item: ModifierSet) {
 
 
         }
@@ -31,32 +41,14 @@ class ModifiersAdapter : RecyclerView.Adapter<ModifiersAdapter.MyViewHolder>() {
     }
 
     override fun onBindViewHolder(holder: ModifiersAdapter.MyViewHolder, position: Int) {
-        holder.bind(list[holder.bindingAdapterPosition])
+        holder.bind(filterList[holder.bindingAdapterPosition])
 
     }
 
     override fun getItemCount(): Int {
-        return list.size
+        return filterList.size
 
     }
 
-    fun add(modifierSet: Modifier) {
-        list.add(modifierSet)
-        notifyDataSetChanged()
-    }
-
-    fun getItem(pos: Int): Modifier {
-        return list[pos]
-    }
-
-
-    fun getAll(): ArrayList<Modifier> {
-        return list
-    }
-
-    fun addAll(modifiers: List<Modifier>) {
-        list.addAll(modifiers)
-        notifyDataSetChanged()
-    }
 
 }
