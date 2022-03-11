@@ -153,20 +153,22 @@ class AddItemFragment(val listner: ItemListner) : Fragment() {
 
                                         }
 
-                                        val variationList = ArrayList<VariationsAttribute>()
-                                        if (item.variationsAttributes.isNotEmpty()) {
-                                            val variation = variationAdapter?.getItem()!!
-                                            variationList.add(variation)
-                                            item.name =
-                                                item.name.substringBefore(" (") + " (" + variation.name + ")"
-                                            item.variationsAttributes = variationList
-                                        }
+
                                         /*  findNavController().navigate(
                                               R.id.action_dashboardCategoryNew_to_addVariablePriceDialog, bundle
                                           )*/
                                     } else if (it.priceType == "Fixed") {
                                         showPriceTitle(it, variationAdapter = null, item, true)
 
+                                    }
+
+                                    val variationList = ArrayList<VariationsAttribute>()
+                                    if (item.variationsAttributes.isNotEmpty()) {
+                                        val variation = variationAdapter?.getItem()!!
+                                        variationList.add(variation)
+                                        item.name =
+                                            item.name.substringBefore(" (") + " (" + variation.name + ")"
+                                        item.variationsAttributes = variationList
                                     }
                                 }
                             }

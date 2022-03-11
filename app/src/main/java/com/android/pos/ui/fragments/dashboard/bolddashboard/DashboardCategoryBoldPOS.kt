@@ -184,10 +184,7 @@ class DashboardCategoryBoldPOS : Fragment(), ItemListner {
         serviceChargesObserve = Observer {
 
             if (it.status == Status.SUCCESS) {
-
                 serviceChargesList = it.data
-                Log.e(TAG, "serviceChargesList:  ${Gson().toJson(serviceChargesList)}")
-
             }
 
         }
