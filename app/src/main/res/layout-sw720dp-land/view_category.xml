@@ -53,6 +53,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
+                    android:padding="@dimen/_5sdp"
                     android:layout_marginStart="@dimen/_5sdp"
                     android:layout_marginEnd="@dimen/_10sdp"
                     app:srcCompat="@drawable/ic_baseline_menu" />

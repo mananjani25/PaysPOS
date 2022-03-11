@@ -130,7 +130,7 @@ class TaxesList : Fragment() {
                         ProgressUtils.dismissProgressDialog()
                         binding.rvTaxList.visibility = View.VISIBLE
                         resource.data?.let { taxList ->
-                            Collections.reverse(taxList)
+//                            Collections.reverse(taxList)
                             setTaxData(taxList)
                         }
                         viewModel.setTaxData()

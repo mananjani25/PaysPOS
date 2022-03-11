@@ -25,13 +25,13 @@ class CategoriesListAdapter(private val isChoose: Boolean) :
         fun bind(item: TbCategory) {
             binding.model = item
             binding.executePendingBindings()
-            if(absoluteAdapterPosition==0){
+            if (absoluteAdapterPosition == 0) {
                 binding.firstviewCategory.visibility = View.VISIBLE
-            }else{
+            } else {
                 binding.firstviewCategory.visibility = View.GONE
             }
             if (isChoose) {
-                if (mpos == bindingAdapterPosition) {
+                if (mpos == absoluteAdapterPosition) {
                     binding.imageCheck.setImageResource(R.drawable.ic_outline_radio_button_checked)
                 } else {
                     binding.imageCheck.setImageResource(R.drawable.ic_uncheck_circle)
@@ -46,7 +46,7 @@ class CategoriesListAdapter(private val isChoose: Boolean) :
 
             binding.imageCheck.setOnClickListener {
                 if (isChoose) {
-                    mpos = bindingAdapterPosition
+                    mpos = absoluteAdapterPosition
                     notifyDataSetChanged()
                 }
             }
@@ -151,15 +151,6 @@ class CategoriesListAdapter(private val isChoose: Boolean) :
 
         categoryList.clear()
         filterList.clear()
-        if (isChoose) {
-            /*categoryList.add(0, TbCategory().apply {
-                name = "None"
-            })
-            filterList.add(0, TbCategory().apply {
-                name = "None"
-            })*/
-        }
-
         categoryList.addAll(categoryModel)
         filterList.addAll(categoryModel)
         notifyDataSetChanged()

@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/dashboardCategoryBoldPOS">
+    app:startDestination="@id/login">
 
 
     <fragment
@@ -19,7 +19,7 @@
             app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_login_to_dashboardCategory"
-            app:destination="@id/dashboardCategoryNew"
+            app:destination="@id/dashboardCategoryBoldPOS"
             app:popUpTo="@id/login"
             app:popUpToInclusive="true" />
         <action

@@ -43,12 +43,6 @@ class SplitCustomAmountFragment() : Fragment(), ItemListner {
 
 
 
-    private fun onClick() {
-        binding.tvFullAmount.setOnClickListener {
-
-            binding.tv2ways.setBackgroundDrawable(resources.getDrawable(R.drawable.button_selected))
-        }
-    }
 
     override fun onItemSelected(item: TbItem) {
 
@@ -57,5 +51,129 @@ class SplitCustomAmountFragment() : Fragment(), ItemListner {
     override fun onCancelItemSelected() {
 
     }
+
+    private fun onClick() {
+        binding.tvFullAmount.setOnClickListener {
+            binding.tvFullAmount.setBackgroundDrawable(resources.getDrawable(R.drawable.button_selected))
+            binding.tv2ways.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
+            binding.tv3ways.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
+            binding.tv4ways.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
+            binding.tv5ways.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
+            binding.tv6ways.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
+            binding.tvCustom.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
+
+            binding.tvFullAmount.setTextColor(resources.getColor(R.color.white))
+            binding.tv2ways.setTextColor(resources.getColor(R.color.txtColor))
+            binding.tv3ways.setTextColor(resources.getColor(R.color.txtColor))
+            binding.tv4ways.setTextColor(resources.getColor(R.color.txtColor))
+            binding.tv5ways.setTextColor(resources.getColor(R.color.txtColor))
+            binding.tv6ways.setTextColor(resources.getColor(R.color.txtColor))
+            binding.tvCustom.setTextColor(resources.getColor(R.color.txtColor))
+        }
+
+        binding.tv2ways.setOnClickListener {
+            binding.tv2ways.setBackgroundDrawable(resources.getDrawable(R.drawable.button_selected))
+            binding.tvFullAmount.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
+            binding.tv3ways.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
+            binding.tv4ways.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
+            binding.tv5ways.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
+            binding.tv6ways.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
+            binding.tvCustom.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
+
+            binding.tv2ways.setTextColor(resources.getColor(R.color.white))
+            binding.tvFullAmount.setTextColor(resources.getColor(R.color.txtColor))
+            binding.tv3ways.setTextColor(resources.getColor(R.color.txtColor))
+            binding.tv4ways.setTextColor(resources.getColor(R.color.txtColor))
+            binding.tv5ways.setTextColor(resources.getColor(R.color.txtColor))
+            binding.tv6ways.setTextColor(resources.getColor(R.color.txtColor))
+            binding.tvCustom.setTextColor(resources.getColor(R.color.txtColor))
+        }
+        binding.tv3ways.setOnClickListener {
+            binding.tv3ways.setBackgroundDrawable(resources.getDrawable(R.drawable.button_selected))
+            binding.tvFullAmount.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
+            binding.tv2ways.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
+            binding.tv4ways.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
+            binding.tv5ways.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
+            binding.tv6ways.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
+            binding.tvCustom.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
+
+            binding.tv3ways.setTextColor(resources.getColor(R.color.white))
+            binding.tvFullAmount.setTextColor(resources.getColor(R.color.txtColor))
+            binding.tv2ways.setTextColor(resources.getColor(R.color.txtColor))
+            binding.tv4ways.setTextColor(resources.getColor(R.color.txtColor))
+            binding.tv5ways.setTextColor(resources.getColor(R.color.txtColor))
+            binding.tv6ways.setTextColor(resources.getColor(R.color.txtColor))
+            binding.tvCustom.setTextColor(resources.getColor(R.color.txtColor))
+        }
+        binding.tv4ways.setOnClickListener {
+            binding.tv4ways.setBackgroundDrawable(resources.getDrawable(R.drawable.button_selected))
+            binding.tvFullAmount.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
+            binding.tv2ways.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
+            binding.tv3ways.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
+            binding.tv5ways.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
+            binding.tv6ways.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
+            binding.tvCustom.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
+
+            binding.tv4ways.setTextColor(resources.getColor(R.color.white))
+            binding.tvFullAmount.setTextColor(resources.getColor(R.color.txtColor))
+            binding.tv2ways.setTextColor(resources.getColor(R.color.txtColor))
+            binding.tv3ways.setTextColor(resources.getColor(R.color.txtColor))
+            binding.tv5ways.setTextColor(resources.getColor(R.color.txtColor))
+            binding.tv6ways.setTextColor(resources.getColor(R.color.txtColor))
+            binding.tvCustom.setTextColor(resources.getColor(R.color.txtColor))
+        }
+        binding.tv5ways.setOnClickListener {
+            binding.tv5ways.setBackgroundDrawable(resources.getDrawable(R.drawable.button_selected))
+            binding.tvFullAmount.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
+            binding.tv2ways.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
+            binding.tv3ways.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
+            binding.tv4ways.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
+            binding.tv6ways.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
+            binding.tvCustom.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
+
+            binding.tv5ways.setTextColor(resources.getColor(R.color.white))
+            binding.tvFullAmount.setTextColor(resources.getColor(R.color.txtColor))
+            binding.tv2ways.setTextColor(resources.getColor(R.color.txtColor))
+            binding.tv3ways.setTextColor(resources.getColor(R.color.txtColor))
+            binding.tv4ways.setTextColor(resources.getColor(R.color.txtColor))
+            binding.tv6ways.setTextColor(resources.getColor(R.color.txtColor))
+            binding.tvCustom.setTextColor(resources.getColor(R.color.txtColor))
+        }
+        binding.tv6ways.setOnClickListener {
+            binding.tv6ways.setBackgroundDrawable(resources.getDrawable(R.drawable.button_selected))
+            binding.tvFullAmount.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
+            binding.tv2ways.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
+            binding.tv3ways.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
+            binding.tv4ways.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
+            binding.tv5ways.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
+            binding.tvCustom.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
+
+            binding.tv6ways.setTextColor(resources.getColor(R.color.white))
+            binding.tvFullAmount.setTextColor(resources.getColor(R.color.txtColor))
+            binding.tv2ways.setTextColor(resources.getColor(R.color.txtColor))
+            binding.tv3ways.setTextColor(resources.getColor(R.color.txtColor))
+            binding.tv4ways.setTextColor(resources.getColor(R.color.txtColor))
+            binding.tv5ways.setTextColor(resources.getColor(R.color.txtColor))
+            binding.tvCustom.setTextColor(resources.getColor(R.color.txtColor))
+        }
+        binding.tvCustom.setOnClickListener {
+            binding.tvCustom.setBackgroundDrawable(resources.getDrawable(R.drawable.button_selected))
+            binding.tvFullAmount.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
+            binding.tv2ways.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
+            binding.tv3ways.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
+            binding.tv4ways.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
+            binding.tv5ways.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
+            binding.tv6ways.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
+
+            binding.tvCustom.setTextColor(resources.getColor(R.color.white))
+            binding.tvFullAmount.setTextColor(resources.getColor(R.color.txtColor))
+            binding.tv2ways.setTextColor(resources.getColor(R.color.txtColor))
+            binding.tv3ways.setTextColor(resources.getColor(R.color.txtColor))
+            binding.tv4ways.setTextColor(resources.getColor(R.color.txtColor))
+            binding.tv5ways.setTextColor(resources.getColor(R.color.txtColor))
+            binding.tv6ways.setTextColor(resources.getColor(R.color.txtColor))
+        }
+    }
+
 
 }
