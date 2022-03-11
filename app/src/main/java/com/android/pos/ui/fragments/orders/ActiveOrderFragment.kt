@@ -8,6 +8,8 @@ import android.graphics.Bitmap
 import android.graphics.Point
 import android.os.Build
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.*
 import androidx.fragment.app.Fragment
@@ -204,7 +206,7 @@ class ActiveOrderFragment(var param1: String, var startDateTime: String?,var end
         getOpenOrders()
         observeShowProgress()
 
-
+        searchFilter()
     }
 
     private fun observeShowProgress() {
@@ -1872,5 +1874,24 @@ class ActiveOrderFragment(var param1: String, var startDateTime: String?,var end
             }
         })
     }
+
+    private fun searchFilter() {
+
+        binding.autoSearch.addTextChangedListener(object : TextWatcher {
+            override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
+
+            }
+
+            override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
+            }
+
+            override fun afterTextChanged(s: Editable) {
+
+                adapter.filter.filter(s.toString().trim())
+
+            }
+        })
+    }
+
 
 }

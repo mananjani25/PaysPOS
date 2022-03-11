@@ -19,6 +19,7 @@ import com.android.pos.data.remote.Constants.TAKEOUT
 import com.android.pos.data.remote.Constants.TERMINAL_ID
 import com.android.pos.databinding.FragmentDashboardCategoryBoldPosBinding
 import com.android.pos.di.PrefProvider
+import com.android.pos.ui.activities.MainActivity
 import com.android.pos.ui.fragments.checkout.CheckoutDetailsFragmentNew
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.android.pos.ui.fragments.manualsales.ManualSaleBoldPOS.KeyPadManualSaleFragment
@@ -93,6 +94,7 @@ class DashboardCategoryBoldPOS : Fragment(), ItemListner {
 
         }
         binding.layoutHeader.imgDrawer.setOnClickListener {
+            (requireActivity() as MainActivity).enableDrawer()
 
         }
 
