@@ -66,14 +66,14 @@ class CartFragment() : Fragment() {
                 it[it.size - 1].items?.toCollection(arrayListOf())?.let { it1 -> cartAdapter.setList(it1) }
                 viewModel.itemCalculation(
                     it,
-                    binding.tvPayNow,
+                    binding.txtTotal,
                     requireContext()
                 )
 
                 binding.txtSubTotal.text = MethodUtils.roundOffAmount(viewModel.subTotalPrice)
                 binding.txtTax.text = MethodUtils.roundOffAmount(viewModel.totalTax)
                 binding.txtServiceCharge.text = MethodUtils.roundOffAmount(viewModel.totalServiceCharge)
-
+                binding.tvPayNow.text =  "Pay "+MethodUtils.roundOffAmount(viewModel.totalPrice)
 
             }
         })
