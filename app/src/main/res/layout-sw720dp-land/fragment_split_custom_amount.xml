@@ -158,36 +158,25 @@
 
             </androidx.appcompat.widget.LinearLayoutCompat>
 
-            <RelativeLayout
+
+            <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tvCustom"
+                style="@style/CustomFontBold"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/tvCard"
-                android:layout_marginLeft="@dimen/_5sdp"
+                android:layout_centerInParent="true"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginLeft="@dimen/_3sdp"
+                android:layout_marginRight="@dimen/_1sdp"
                 android:layout_marginTop="@dimen/_5sdp"
-                android:layout_weight="1"
                 android:background="@drawable/background_square_border_grey"
+                android:gravity="center_horizontal"
+                android:paddingVertical="@dimen/_12sdp"
+                android:text="Custom"
+                android:textAlignment="center"
+                android:textColor="@color/txtColor"
+                android:textSize="@dimen/_7mdpi" />
 
-                android:paddingVertical="@dimen/_12sdp">
-
-                <androidx.appcompat.widget.AppCompatImageView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal" />
-
-                <androidx.appcompat.widget.AppCompatTextView
-                    style="@style/CustomFontBold"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerInParent="true"
-                    android:layout_gravity="center_horizontal"
-                    android:gravity="center_horizontal"
-                    android:text="Custom"
-                    android:textAlignment="center"
-                    android:textColor="@color/txtColor"
-                    android:textSize="@dimen/_7mdpi" />
-
-            </RelativeLayout>
 
             <androidx.appcompat.widget.LinearLayoutCompat
                 android:layout_width="match_parent"
