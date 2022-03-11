@@ -5,17 +5,21 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.widget.AppCompatTextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import com.android.pos.data.entities.CartModel
 import com.android.pos.data.entities.TbItem
 import com.android.pos.data.entities.TbServiceCharge
+import com.android.pos.data.entities.VariationsAttribute
 import com.android.pos.data.remote.Constants.ADD
 import com.android.pos.databinding.FragmentAddItemBinding
 import com.android.pos.di.PrefProvider
+import com.android.pos.ui.adapter.VariationDashboardListAdapter
 import com.android.pos.ui.adapter.boldpos.VariationListAdapter
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
+import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.callback.ItemListner
 import com.android.pos.utils.statusUtils.Resource
 import com.android.pos.utils.statusUtils.Status
@@ -129,6 +133,27 @@ class AddItemFragment(val listner: ItemListner) : Fragment() {
                                     item.variationsAttributes[0].id ?: 0
                                 )
                             }
+
+                            variationAdapter?.showVariationPriceClick = { it: VariationsAttribute ->
+                                if (!MethodUtils.isDoubleClick()) {
+                                    if (it.priceType == "Variable") {
+                                        val bundle = Bundle().apply {
+                                            putParcelable("variationAttribute", it)
+                                        }
+                                        /*  findNavController().navigate(
+                                              R.id.action_dashboardCategoryNew_to_addVariablePriceDialog, bundle
+                                          )*/
+                                    } else if (it.priceType == "Fixed") {
+                                       /* showPriceTitle(
+                                            it,
+                                            variationAdapter = null,
+                                            item,
+                                            ,
+                                            true
+                                        )*/
+                                    }
+                                }
+                            }
                         }
 
                     }
@@ -144,6 +169,67 @@ class AddItemFragment(val listner: ItemListner) : Fragment() {
 
         })
 
+    }
+
+    private fun showPriceTitle(
+        variationsAttribute: VariationsAttribute?,
+        variationAdapter: VariationDashboardListAdapter?,
+        data: TbItem,
+        txtTitle: AppCompatTextView,
+        isItemClick: Boolean
+    ) {
+        var variation: VariationsAttribute? = null
+        if (variationAdapter != null) {
+            variation = variationAdapter.getItem()
+        } else if (variationsAttribute != null) {
+            variation = variationsAttribute
+        }
+
+
+
+        if (variation != null) {
+            variation.price?.let {
+                data.price = it
+            }
+
+        } else {
+            data.price = data.price
+        }
+        if (data.discountPrice != 0.0) {
+            txtTitle.text = data.name.substringBefore(" (") + "  $" + String.format(
+                "%.2f", (totalPrice(data) - data.discountPrice)
+            )
+        } else {
+            if (isItemClick) {
+                txtTitle.text = data.name.substringBefore(" (") + "  $" + String.format(
+                    "%.2f",
+                    data.price
+                )
+            } else
+                txtTitle.text = data.name.substringBefore(" (") + "  $" + String.format(
+                    "%.2f",
+                    totalPrice(data)
+                )
+        }
+    }
+
+    private fun totalPrice(model: TbItem): Double {
+
+        return if (model.modifiers.isNotEmpty()) {
+
+            var totalPrice = 0.0
+
+            val mList = model.modifiers
+            mList.forEach { items ->
+                totalPrice += items.price * items.itemQuantity
+            }
+
+            (model.price * model.itemQuantity) + totalPrice
+        } else {
+
+            model.price * model.itemQuantity
+
+        }
     }
 
 }

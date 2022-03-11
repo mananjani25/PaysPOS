@@ -10,6 +10,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.data.entities.CartModel
 import com.android.pos.data.entities.TbItem
@@ -93,6 +94,7 @@ class DashboardCategoryBoldPOS : Fragment(), ItemListner {
 
         }
         binding.layoutHeader.imgDrawer.setOnClickListener {
+            findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_menuFragment)
 
         }
 
