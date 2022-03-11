@@ -5,6 +5,8 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Filter
+import android.widget.Filterable
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -18,11 +20,16 @@ import com.android.pos.utils.TimeFormatUtils
 import com.android.pos.utils.callback.OrderCallBack
 import com.android.pos.utils.extensions.gone
 import com.android.pos.utils.extensions.visible
+import com.google.android.gms.common.data.DataHolder
+import java.util.*
+import kotlin.collections.ArrayList
+
 
 class OpenOrderAdapter(val context: Context) :
-    RecyclerView.Adapter<OpenOrderAdapter.MyViewHolder>() {
+    RecyclerView.Adapter<OpenOrderAdapter.MyViewHolder>(), Filterable {
 
     var orderList = ArrayList<OpenOrderResponse.Data.Order>()
+    var filterList = ArrayList<OpenOrderResponse.Data.Order>()
 
     private var mCallback: OrderCallBack? = null
     fun setCallback(callback: OrderCallBack) {
@@ -50,8 +57,22 @@ class OpenOrderAdapter(val context: Context) :
                         context
                     )
 
-                binding.tvtime.text=item.futureDeliveryTime
-            } else {
+            }
+            if (item.futureDeliveryTime?.isNotEmpty() == true && item.futureDeliveryTime != null) {
+                binding.tvtime.text =item.futureDeliveryTime
+            }
+            if (position==3){
+                if (item.futureDeliveryDate?.isNotEmpty() == true && item.futureDeliveryDate != null) {
+                    val date=TimeFormatUtils.convertDateFormatForOpenOrder(
+                        item.futureDeliveryDate!!,
+                        context
+                    )
+
+                }
+
+                if (item.futureDeliveryTime?.isNotEmpty() == true && item.futureDeliveryTime != null) {
+                    val time =item.futureDeliveryTime
+                }
 
             }
 
@@ -127,12 +148,12 @@ class OpenOrderAdapter(val context: Context) :
         init {
             binding.root.setOnClickListener {
 
-                val item = orderList[bindingAdapterPosition]
+                val item = filterList[bindingAdapterPosition]
 
                 if (item.isCheck) {
                     item.isCheck = false
                 } else {
-                    orderList.forEach {
+                    filterList.forEach {
                         it.isCheck = false
                     }
                     item.isCheck = true
@@ -159,7 +180,7 @@ class OpenOrderAdapter(val context: Context) :
                 binding.txtCustomerReceipt.background=itemView.context.getDrawable(R.drawable.background_square_border_grey)
                 binding.txtPayNow.background=itemView.context.getDrawable(R.drawable.background_square_border_grey)
 
-                if (orderList[bindingAdapterPosition].paymentStatus == "Paid") {
+                if (filterList[bindingAdapterPosition].paymentStatus == "Paid") {
                     mCallback?.onItemClickListener(it, bindingAdapterPosition, PRINT_PAID)
                 } else {
                     mCallback?.onItemClickListener(it, bindingAdapterPosition, PRINT_UNPAID)
@@ -189,7 +210,7 @@ class OpenOrderAdapter(val context: Context) :
                 binding.txtPrintReceipt.background=itemView.context.getDrawable(R.drawable.background_square_border_grey)
                 binding.txtCustomerReceipt.background=itemView.context.getDrawable(R.drawable.button_selected)
                 binding.txtPayNow.background=itemView.context.getDrawable(R.drawable.background_square_border_grey)
-                if (orderList[bindingAdapterPosition].paymentStatus == "Paid") {
+                if (filterList[bindingAdapterPosition].paymentStatus == "Paid") {
                     mCallback?.onItemClickListener(it, bindingAdapterPosition, PRINT_PAID)
                 } else {
                     mCallback?.onItemClickListener(it, bindingAdapterPosition, PRINT_UNPAID)
@@ -209,26 +230,60 @@ class OpenOrderAdapter(val context: Context) :
     }
 
     override fun onBindViewHolder(holder: OpenOrderAdapter.MyViewHolder, position: Int) {
-        holder.bind(orderList.get(position))
+        holder.bind(filterList.get(position))
     }
 
     override fun getItemCount(): Int {
-        return orderList.size
+        return filterList.size
     }
 
     fun add(orders: List<OpenOrderResponse.Data.Order>) {
-        orderList = orders as ArrayList<OpenOrderResponse.Data.Order>
+        this.orderList = orders as ArrayList<OpenOrderResponse.Data.Order>
+        this.filterList = orders
         notifyDataSetChanged()
     }
 
     fun getItem(pos: Int): OpenOrderResponse.Data.Order {
 
-        return orderList[pos]
+        return filterList[pos]
     }
 
     fun update(position: Int) {
-        orderList.removeAt(position)
+        filterList.removeAt(position)
         notifyDataSetChanged()
+    }
+
+    override fun getFilter(): Filter {
+        return object : Filter() {
+            override fun performFiltering(charSequence: CharSequence): FilterResults {
+                val charString = charSequence.toString()
+                filterList = if (charString.isEmpty()) {
+                    orderList
+                } else {
+                    val fList = ArrayList<OpenOrderResponse.Data.Order>()
+
+                    orderList.filter {
+                        it.offlineId.toString().lowercase(Locale.getDefault())
+                            .contains(charString.lowercase(Locale.getDefault()))
+                    }.forEach { fList.add(it) }
+
+                    fList
+                }
+
+                return FilterResults().apply { values = filterList }
+            }
+
+            override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
+
+
+                if (results != null && results.count > 0) {
+                    filterList = results.values as ArrayList<OpenOrderResponse.Data.Order>
+                }
+
+                notifyDataSetChanged()
+
+            }
+        }
     }
 
 }
