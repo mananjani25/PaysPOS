@@ -845,7 +845,7 @@
         android:label="Orders">
         <action
             android:id="@+id/action_orders_to_dashboardCategoryNew"
-            app:destination="@id/dashboardCategoryNew"
+            app:destination="@id/dashboardCategoryBoldPOS"
             app:launchSingleTop="true" />
         <action
             android:id="@+id/action_orders_to_paymentFragment"
@@ -866,7 +866,7 @@
             app:destination="@id/addTipsDialog" />
         <action
             android:id="@+id/action_transactionFragment_to_dashboardCategoryNew"
-            app:destination="@id/dashboardCategoryNew" />
+            app:destination="@id/dashboardCategoryBoldPOS" />
     </fragment>
     <action
         android:id="@+id/action_global_transactionFragment"
@@ -1231,7 +1231,12 @@
         android:id="@+id/dummyFragment"
         android:name="com.android.pos.ui.fragments.DummyFragment"
         android:label="DummyFragment"
-        tools:layout="@layout/fragment_dummy" />
+        tools:layout="@layout/fragment_dummy" >
+        <action
+            android:id="@+id/action_dummyFragment_to_orders"
+            app:destination="@id/orders"
+            app:enterAnim="@anim/nav_default_enter_anim" />
+    </fragment>
     <fragment
         android:id="@+id/dashboardCategoryBoldPOS"
         android:name="com.android.pos.ui.fragments.dashboard.bolddashboard.DashboardCategoryBoldPOS"
@@ -1245,6 +1250,14 @@
         <action
             android:id="@+id/action_dashboardCategoryBoldPOS_to_menuFragment"
             app:destination="@id/menuFragment" />
+        <action
+                android:id="@+id/action_dashboardCategoryBoldPOS_to_transactionFragment"
+            app:destination="@id/transactionFragment"
+            app:enterAnim="@anim/nav_default_enter_anim" />
+        <action
+            android:id="@+id/action_dashboardCategoryBoldPOS_to_orders"
+            app:destination="@id/orders"
+            app:enterAnim="@anim/nav_default_enter_anim" />
 
 
     </fragment>
