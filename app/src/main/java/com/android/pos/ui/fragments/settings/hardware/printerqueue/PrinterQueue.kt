@@ -6,6 +6,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -342,7 +343,7 @@ class PrinterQueue : Fragment(), StatusChangeEventListener, BatteryStatusChangeE
                 viewHolder: RecyclerView.ViewHolder?,
                 underlayButtons: MutableList<UnderlayButton>?
             ) {
-                underlayButtons?.add(UnderlayButton("Delete", 0, Color.parseColor("#FF3C30")) {
+                underlayButtons?.add(UnderlayButton("Delete", ContextCompat.getColor(context, R.color.swipe_text_color),ContextCompat.getColor(context, R.color.swipe_bg_delete)) {
                     Log.e(TAG, "position  ${it}")
                     adapter.getList().get(it).id?.let { it1 -> deletePrinterQueue(it1, it) }
                 })

@@ -8,6 +8,7 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
 import android.view.*
+import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
@@ -111,7 +112,7 @@ class Customer : Fragment() {
             }
 
         })
-        viewModel._customerNoDataFound.observe(viewLifecycleOwner) {event->
+        viewModel._customerNoDataFound.observe(viewLifecycleOwner) { event ->
             binding.rvEmployeeList.visibility = View.GONE
             binding.noCustomerDats.visibility = View.VISIBLE
             binding.noCustomerDats.text = event.getContentIfNotHandled()
@@ -378,8 +379,8 @@ class Customer : Fragment() {
             ) {
                 underlayButtons.add(UnderlayButton(
                     "Delete",
-                    0,
-                    Color.parseColor("#FFFFFF")
+                    ContextCompat.getColor(context, R.color.swipe_text_color),
+                    ContextCompat.getColor(context, R.color.white_swipe)
                 ) { pos ->
                     deletedPos = pos
                     alert(

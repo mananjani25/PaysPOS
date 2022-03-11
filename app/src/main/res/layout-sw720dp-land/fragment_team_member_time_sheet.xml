@@ -45,7 +45,7 @@
                 android:text="@string/tv_team_member"
                 android:textColor="@color/white"
                 android:textAllCaps="true"
-                android:textSize="@dimen/_7mdpi" />
+                android:textSize="@dimen/_6mdpi" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 style="@style/CustomFontSemiBold"
@@ -57,7 +57,7 @@
                 android:textColor="@color/white"
                 android:textAllCaps="true"
 
-                android:textSize="@dimen/_7mdpi" />
+                android:textSize="@dimen/_6mdpi" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 style="@style/CustomFontSemiBold"
@@ -69,7 +69,7 @@
                 android:textColor="@color/white"
                 android:textAllCaps="true"
 
-                android:textSize="@dimen/_7mdpi" />
+                android:textSize="@dimen/_6mdpi" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 style="@style/CustomFontSemiBold"
@@ -81,7 +81,7 @@
                 android:textColor="@color/white"
                 android:textAllCaps="true"
 
-                android:textSize="@dimen/_7mdpi" />
+                android:textSize="@dimen/_6mdpi" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 style="@style/CustomFontSemiBold"
@@ -93,7 +93,7 @@
                 android:textColor="@color/white"
                 android:textAllCaps="true"
 
-                android:textSize="@dimen/_7mdpi" />
+                android:textSize="@dimen/_6mdpi" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 style="@style/CustomFontSemiBold"
@@ -105,7 +105,7 @@
                 android:textColor="@color/white"
                 android:textAllCaps="true"
 
-                android:textSize="@dimen/_7mdpi" />
+                android:textSize="@dimen/_6mdpi" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 style="@style/CustomFontSemiBold"
@@ -117,7 +117,7 @@
                 android:textColor="@color/white"
                 android:textAllCaps="true"
 
-                android:textSize="@dimen/_7mdpi" />
+                android:textSize="@dimen/_6mdpi" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 style="@style/CustomFontSemiBold"
@@ -129,7 +129,7 @@
                 android:textColor="@color/white"
                 android:textAllCaps="true"
 
-                android:textSize="@dimen/_7mdpi" />
+                android:textSize="@dimen/_6mdpi" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 style="@style/CustomFontSemiBold"
@@ -141,7 +141,7 @@
                 android:textColor="@color/white"
                 android:textAllCaps="true"
 
-                android:textSize="@dimen/_7mdpi" />
+                android:textSize="@dimen/_6mdpi" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 style="@style/CustomFontSemiBold"
@@ -153,7 +153,7 @@
                 android:textColor="@color/white"
                 android:textAllCaps="true"
 
-                android:textSize="@dimen/_7mdpi" />
+                android:textSize="@dimen/_6mdpi" />
         </LinearLayout>
 
         <androidx.recyclerview.widget.RecyclerView
@@ -174,7 +174,7 @@
             android:layout_marginBottom="@dimen/_1sdp"
             android:gravity="center"
             android:textColor="@color/btnColorDark"
-            android:textSize="@dimen/_5mdpi"
+            android:textSize="@dimen/_6mdpi"
             android:textStyle="bold" />
 
         <androidx.appcompat.widget.AppCompatTextView
@@ -187,7 +187,7 @@
             android:layout_marginBottom="@dimen/_5sdp"
             android:gravity="center"
             android:textColor="@color/btnColorDark"
-            android:textSize="@dimen/_5mdpi"
+            android:textSize="@dimen/_6mdpi"
             android:textStyle="bold" />
 
 
