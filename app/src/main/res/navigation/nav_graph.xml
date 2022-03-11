@@ -644,6 +644,13 @@
             app:launchSingleTop="true" />
     </fragment>
     <fragment
+        android:id="@+id/paymentFullAmount"
+        android:name="com.android.pos.ui.fragments.checkout.PayFullAmountFragment"
+        android:label="paymentFullAmount"
+        >
+
+    </fragment>
+    <fragment
         android:id="@+id/paymentFragment"
         android:name="com.android.pos.ui.fragments.payment.PaymentFragment"
         android:label="PaymentFragment">
@@ -660,6 +667,9 @@
             app:destination="@id/customAmountFragment" />
         <action
             android:id="@+id/action_paymentFragment_to_orderCompleteFragment"
+            app:destination="@id/orderCompleteFragment" />
+        <action
+            android:id="@+id/actionPaymentFull_to_orderCompleteFragment"
             app:destination="@id/orderCompleteFragment" />
         <action
             android:id="@+id/action_paymentFragment_to_addTipsDialog"
@@ -1231,7 +1241,9 @@
         android:id="@+id/dashboardCategoryBoldPOS"
         android:name="com.android.pos.ui.fragments.dashboard.bolddashboard.DashboardCategoryBoldPOS"
         android:label="DashboardCategoryBoldPOS">
-
+        <action
+            android:id="@+id/actionboldpos_to_orderCompleteFragment"
+            app:destination="@id/orderCompleteFragment" />
         <action
             android:id="@+id/action_dashboardCategoryBoldPOS_to_checkoutDetailsFragment"
             app:destination="@id/checkoutDetailsFragment" />

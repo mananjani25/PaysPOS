@@ -71,6 +71,7 @@ class CartFragment() : Fragment() {
                     binding.txtTotal,
                     requireContext()
                 )
+                viewModel.setCartModel(it)
 
                 binding.txtSubTotal.text = MethodUtils.roundOffAmount(viewModel.subTotalPrice)
                 binding.txtTax.text = MethodUtils.roundOffAmount(viewModel.totalTax)
