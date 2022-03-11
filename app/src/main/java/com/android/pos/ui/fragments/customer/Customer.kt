@@ -155,7 +155,6 @@ class Customer : Fragment() {
         viewModel.customerList(data).observe(
             viewLifecycleOwner
 
-
         ) {
             it?.let { resource ->
                 when (resource.status) {
@@ -248,7 +247,6 @@ class Customer : Fragment() {
             }
 
             override fun afterTextChanged(s: Editable?) {
-
                 try {
                     if (s?.trim()?.isNotEmpty() == true) {
                         searchByText(s?.trim().toString())
