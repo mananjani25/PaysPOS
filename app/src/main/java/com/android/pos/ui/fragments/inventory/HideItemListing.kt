@@ -8,6 +8,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -155,8 +156,8 @@ class HideItemListing : Fragment() {
 
                 underlayButtons.add(UnderlayButton(
                     "UnHide",
-                    0,
-                    Color.parseColor("#2997cc")
+                    ContextCompat.getColor(context, R.color.swipe_text_color),
+                    ContextCompat.getColor(context, R.color.swipe_bg_hide)
                 ) { pos ->
 
                     alert(

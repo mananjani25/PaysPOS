@@ -55,7 +55,8 @@ class SingleTeamMemberTimeSheetFragment : Fragment() {
         getEmployeesTimeSheetDetailsObserver()
 
         binding.tvEmployeeName.text = employeeModel.teamName + " Time Sheet"
-        binding.tvEmployeeId.text = "Employee ID: #" + employeeModel.teamId
+        binding.tvEmployeeId.text =
+            "Employee ID: #" + employeeModel.teamId + " | " + "Employee Role: #" + employeeModel.teamRoleName
         binding.includeView.spRoles.visibility = View.GONE
         binding.includeView.edtSearch.visibility = View.GONE
         binding.includeView.txtPrint.visibility = View.GONE
