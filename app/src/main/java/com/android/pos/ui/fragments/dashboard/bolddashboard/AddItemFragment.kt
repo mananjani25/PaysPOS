@@ -62,6 +62,8 @@ class AddItemFragment(val listner: ItemListner) : Fragment() {
     ): View? {
         binding = FragmentAddItemBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = this
+        variationAdapter = VariationListAdapter()
+        binding.rvVariationList.adapter = variationAdapter
 
         return binding.root
     }
@@ -127,14 +129,6 @@ class AddItemFragment(val listner: ItemListner) : Fragment() {
                                     item.variationsAttributes[0].id ?: 0
                                 )
                             }
-                            /*showPriceTitle(
-                                variationsAttribute = null,
-                                variationAdapter,
-                                data,
-                                txtTitle,
-                                isItemClick
-                            )
-*/
                         }
 
                     }

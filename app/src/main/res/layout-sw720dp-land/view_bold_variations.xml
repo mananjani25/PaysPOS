@@ -26,7 +26,5 @@
             android:textSize="@dimen/_7mdpi" />
 
 
-
-
     </LinearLayout>
 </layout>
