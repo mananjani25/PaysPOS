@@ -162,7 +162,7 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
-
+                            android:inputType="textCapWords|textVisiblePassword"
                             android:layout_marginStart="@dimen/_5sdp"
                             android:layout_weight="1"
                             android:background="@null"
@@ -172,7 +172,6 @@
                             android:textColor="@color/txtColor"
                             android:textColorHint="@color/hintColor"
                             android:textSize="@dimen/_5mdpi"
-                            android:inputType="text"
                             android:digits="1234567890-_+=/.,!@#~`$%^*()|\;'[]{}?abcdefghijklmnopqrstuvwxyzABCDEFGHHIJKLMNOPQURSTUVWXYZ"/>
 
 

@@ -26,7 +26,7 @@ class MainApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         FirebaseApp.initializeApp(this)
-       // TestFairy.begin(this, "SDK-TVuIrZk6");
+       // TestFairy.begin(this, "SDK-Q1UpRvUs");
         instance = this
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
 
@@ -100,7 +100,7 @@ class MainApplication : Application() {
         var virtualTetherHostActivated = false
 
         //bluetooth mac address
-        var btAddress : String? = ""
+        var btAddress: String? = ""
 
     }
 
@@ -115,9 +115,10 @@ class MainApplication : Application() {
             val importance = NotificationManager.IMPORTANCE_HIGH
             val channel = NotificationChannel(id, name, importance)
             channel.description = description
-            val notificationManager: NotificationManager? = MainApplication.getInstance()?.applicationContext?.getSystemService<NotificationManager>(
-                NotificationManager::class.java
-            )
+            val notificationManager: NotificationManager? =
+                MainApplication.getInstance()?.applicationContext?.getSystemService<NotificationManager>(
+                    NotificationManager::class.java
+                )
             notificationManager?.createNotificationChannel(channel)
         }
     }

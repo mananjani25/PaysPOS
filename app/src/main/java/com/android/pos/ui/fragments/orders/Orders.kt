@@ -177,7 +177,7 @@ class Orders : Fragment() {
             findNavController().navigate(R.id.action_orders_to_dashboardCategoryNew)
         }
 
-        binding.commonToolbar.txtTitle.text = ""
+        binding.commonToolbar.txtTitle.text = "Open Orders"
         binding.commonToolbar.imgOptionMenu.visibility = View.GONE
         binding.commonToolbar.txtSubTitle.text = "Active Orders"
         binding.commonToolbar.imgOptionMenuContainer.visibility = View.GONE
