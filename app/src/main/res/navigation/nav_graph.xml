@@ -851,6 +851,11 @@
             android:id="@+id/action_orders_to_paymentFragment"
             app:destination="@id/paymentFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/manualSaleBold"
+        android:name="com.android.pos.ui.fragments.manualsales.ManualSaleBoldPOS.ManualSaleBoldFragment"
+        android:label="Manual Sales Bold">
+    </fragment>
     <action
         android:id="@+id/action_global_orders"
         app:destination="@id/orders" />
@@ -1244,9 +1249,11 @@
         <action
             android:id="@+id/actionboldpos_to_orderCompleteFragment"
             app:destination="@id/orderCompleteFragment" />
+<!--
         <action
             android:id="@+id/action_dashboardCategoryBoldPOS_to_checkoutDetailsFragment"
             app:destination="@id/checkoutDetailsFragment" />
+-->
         <action
             android:id="@+id/action_dashboardCategoryBoldPOS_to_menuFragment"
             app:destination="@id/menuFragment" />
@@ -1258,16 +1265,22 @@
             android:id="@+id/action_dashboardCategoryBoldPOS_to_orders"
             app:destination="@id/orders"
             app:enterAnim="@anim/nav_default_enter_anim" />
+        <action
+            android:id="@+id/action_dashboardCategoryBoldPOS_to_manualSalesBold"
+            app:destination="@id/manualSaleBold"
+            app:enterAnim="@anim/nav_default_enter_anim" />
 
 
     </fragment>
 
+<!--
     <fragment
         android:id="@+id/checkoutDetailsFragment"
         android:name="com.android.pos.ui.fragments.checkout.CheckoutDetailsFragment"
         android:label="CheckoutDetails">
 
     </fragment>
+-->
 
 
 </navigation>
