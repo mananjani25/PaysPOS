@@ -1,6 +1,5 @@
 package com.android.pos.ui.fragments.checkout
 
-import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -18,19 +17,17 @@ import com.android.pos.data.entities.RedeemLoyaltyInfo
 import com.android.pos.data.entities.TbItem
 import com.android.pos.data.model.requestModel.SpitByOrderPaymentModel
 import com.android.pos.data.model.requestModel.SpitByOrderRequestModel
-import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.TAKEOUT
 import com.android.pos.databinding.FragmentPayFullAmountBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.android.pos.ui.fragments.payment.PaymentViewModel
 import com.android.pos.utils.MethodUtils
+import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.callback.ItemListner
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
-import kotlin.math.ceil
-import kotlin.math.floor
 
 @AndroidEntryPoint
 class PayFullAmountFragment(val bundle: Bundle?) : Fragment(), ItemListner {
@@ -45,6 +42,7 @@ class PayFullAmountFragment(val bundle: Bundle?) : Fragment(), ItemListner {
     var llRoot = 0
     private var remainingAmount: Double = 0.0
     var cashDiscountType = ""
+    var paymentAmount = 0.0
     private var redeemLoyaltyInfo: RedeemLoyaltyInfo? = null
     var totalPrice = 0.0
     private var splitValue: Int = -1
@@ -57,9 +55,7 @@ class PayFullAmountFragment(val bundle: Bundle?) : Fragment(), ItemListner {
     private var future_delivery_date: String = ""
     private var future_delivery_time: String = ""
     var totalDiscount = 0.0
-    private var fourthValue: Double = 0.0
-    private var thirdValue: Double = 0.0
-    private var secondValue: Int = 0
+
     private var cartList: CartModel? = null
 
     @Inject
@@ -81,6 +77,7 @@ class PayFullAmountFragment(val bundle: Bundle?) : Fragment(), ItemListner {
         onClick()
         frameLayoutId = bundle?.getInt("frameLayoutId")!!
         llRoot = bundle?.getInt("llRoot")!!
+        observeShowProgress()
         getCartData()
         observeData()
 
@@ -111,95 +108,15 @@ class PayFullAmountFragment(val bundle: Bundle?) : Fragment(), ItemListner {
             cardActualAmount
         )
 
-        getCashPaymentOptionList(totalPrice)
-    }
-
-    private fun calculateCashOption(value: Double): Double {
-        if (value > 1000) {
-            return ceil(value / 100) * 100
-
-        } else if (value > 500) {
-            return ceil(value / 50) * 50
-        } else {
-            val arrAmount = arrayOf(
-                5,
-                10,
-                20,
-                50,
-                100,
-                110,
-                120,
-                150,
-                200,
-                210,
-                220,
-                250,
-                300,
-                310,
-                320,
-                350,
-                400,
-                410,
-                420,
-                450,
-                500
-            )
-            val myValue = value.toInt()
-            Log.e(TAG, "myValue:  ${myValue}")
-            var searchIndex: Int = -1
-            val filterValue = arrAmount.filter {
-                it >= value
-            }.first()
-            searchIndex = arrAmount.indexOf(filterValue)
-            Log.e(TAG, "filterValue:  ${filterValue}")
-            Log.e(TAG, "searchIndex:  ${searchIndex}")
-
-
-            if (arrAmount.contains(myValue)) {
-                searchIndex += 1
-            }
-
-            if (searchIndex >= arrAmount.size) {
-                return 550.0
-            } else {
-                val lastAmount = arrAmount[searchIndex]
-                return lastAmount.toDouble()
-            }
-
-
-//            if (searchIndex > 0)
-        }
-    }
-
-    @SuppressLint("SetTextI18n")
-    private fun getCashPaymentOptionList(totalPrice: Double) {
-        Log.e(TAG, "totalPrice  $totalPrice")
-        secondValue = floor(totalPrice + 1).toInt()
-        Log.e(TAG, "secondValue  $secondValue")
-        val newVal = totalPrice + 1
-        thirdValue = calculateCashOption(newVal)
-        Log.e(TAG, "thirdValuethirdValue:   ${thirdValue}")
-        if (secondValue.toDouble() == thirdValue) {
-            if (secondValue > 1000) {
-                thirdValue += 100
-            } else {
-                thirdValue += 50
-            }
-
-        }
-        fourthValue = calculateCashOption(thirdValue)
-        if (thirdValue == fourthValue) {
-            fourthValue += 100
-        } else {
-            fourthValue += 50
-        }
-
-        MethodUtils.setPriceTextView(binding.tvCash1, secondValue.toDouble())
-        MethodUtils.setPriceTextView(binding.tvCash2, thirdValue)
-        MethodUtils.setPriceTextView(binding.tvCash3, fourthValue)
-
+        MethodUtils.getCashPaymentOptionList(
+            totalPrice,
+            binding.tvCash1,
+            binding.tvCash2,
+            binding.tvCash3
+        )
 
     }
+
 
     private fun onClick() {
         binding.llManualCardEntry.setOnClickListener {
@@ -214,7 +131,11 @@ class PayFullAmountFragment(val bundle: Bundle?) : Fragment(), ItemListner {
 
 
         binding.llPaycash.setOnClickListener {
+            paymentAmount = totalPrice
             makeCashPayment()
+        }
+        binding.tvCash1.setOnClickListener {
+
         }
         binding.llCreditCard.setOnClickListener {
             binding.llCreditCard.setBackgroundDrawable(resources.getDrawable(R.drawable.button_selected))
@@ -402,7 +323,21 @@ class PayFullAmountFragment(val bundle: Bundle?) : Fragment(), ItemListner {
         }
     }
 
-    fun makeCashPayment() {
+    private fun observeShowProgress() {
+
+        paymentviewModel.showProgress.observe(viewLifecycleOwner) { event ->
+            event.getContentIfNotHandled()?.let {
+                if (it) {
+                    ProgressUtils.showProgressDialog(requireActivity())
+                } else {
+                    ProgressUtils.dismissProgressDialog()
+                }
+            }
+        }
+
+    }
+
+    private fun makeCashPayment() {
         paymentType = "Cash"
         Log.e(TAG, "cartList:  ${Gson().toJson(cartList)}")
         Log.e(TAG, "cartListcartItems:  ${Gson().toJson(cartItems)}")
@@ -411,7 +346,7 @@ class PayFullAmountFragment(val bundle: Bundle?) : Fragment(), ItemListner {
             paymentviewModel.createOrderRequest(
                 it,
                 subTotalPrice,
-                totalPrice,
+                paymentAmount,
                 totalServiceCharge,
                 totalTax,
                 TAKEOUT,

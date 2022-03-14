@@ -9,12 +9,14 @@ import android.widget.RelativeLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.activityViewModels
+import com.android.pos.R
 import com.android.pos.data.remote.Constants.TAKEOUT
 import com.android.pos.databinding.FragmentCartBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.adapter.boldpos.CartAdapter
 import com.android.pos.ui.fragments.checkout.CheckoutDetailsFragmentNew
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
+import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.MethodUtils
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
@@ -85,14 +87,23 @@ class CartFragment() : Fragment() {
 
     fun initListeners() {
         binding.tvPayNow.setOnClickListener {
-            val checkoutHeader: RelativeLayout =
-                activity?.findViewById(checkoutHeaderId) as RelativeLayout
-            checkoutHeader.visibility = View.VISIBLE
+            if (cartAdapter.cartList.isNotEmpty()) {
+                val checkoutHeader: RelativeLayout =
+                    activity?.findViewById(checkoutHeaderId) as RelativeLayout
+                checkoutHeader.visibility = View.VISIBLE
 
-            val dashboardHeader: RelativeLayout =
-                activity?.findViewById(dashboardHeaderId) as RelativeLayout
-            dashboardHeader.visibility = View.GONE
-            loadCategoryFragment(CheckoutDetailsFragmentNew())
+                val dashboardHeader: RelativeLayout =
+                    activity?.findViewById(dashboardHeaderId) as RelativeLayout
+                dashboardHeader.visibility = View.GONE
+                loadCategoryFragment(CheckoutDetailsFragmentNew())
+            } else {
+                AlertUtils.showCustomAlertWithListenerWithOK(
+                    requireContext(),
+                    resources.getString(R.string.please_add_Atleast_one_item_in_cart)
+                ) { _, _ ->
+                }
+            }
+
         }
     }
 

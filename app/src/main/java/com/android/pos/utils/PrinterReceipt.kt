@@ -18,7 +18,7 @@ import com.android.pos.data.model.responseModel.OpenOrderResponse
 import com.android.pos.data.remote.Constants
 import com.epson.eposprint.Builder
 
-private val TAG = "PrinterReceipt"
+val TAG = "PrinterReceipt"
 
 fun padLine(
     @Nullable partOne: String?,

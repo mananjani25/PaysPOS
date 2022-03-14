@@ -10,6 +10,8 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.TextView
 import androidx.appcompat.widget.AppCompatEditText
 import androidx.appcompat.widget.AppCompatTextView
+import androidx.appcompat.widget.LinearLayoutCompat
+import androidx.core.content.res.ResourcesCompat
 import com.android.pos.MainApplication
 import com.android.pos.R
 import com.android.pos.data.model.requestModel.CreateCategoryRequestModel
@@ -25,10 +27,16 @@ import java.io.File
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.math.ceil
+import kotlin.math.floor
 
 
 class MethodUtils {
     companion object {
+
+        private var fourthValue: Double = 0.0
+        private var thirdValue: Double = 0.0
+        private var secondValue: Int = 0
 
         @SuppressLint("SetTextI18n")
         fun setPriceEditText(appCompatEditText: AppCompatEditText, price: Double) {
@@ -309,20 +317,103 @@ class MethodUtils {
         fun percentageCalculation(price: Double, rate: Double): Double {
             return (price * rate) / 100
         }
-    }
+
+        @SuppressLint("SetTextI18n")
+        fun getCashPaymentOptionList(
+            totalPrice: Double,
+            tvCash1: AppCompatTextView,
+            tvCash2: AppCompatTextView,
+            tvCash3: AppCompatTextView
+        ) {
+            Log.e(TAG, "totalPrice  $totalPrice")
+            secondValue = floor(totalPrice + 1).toInt()
+            Log.e(TAG, "secondValue  $secondValue")
+            val newVal = totalPrice + 1
+            thirdValue = calculateCashOption(newVal)
+            Log.e(TAG, "thirdValuethirdValue:   ${thirdValue}")
+            if (secondValue.toDouble() == thirdValue) {
+                if (secondValue > 1000) {
+                    thirdValue += 100
+                } else {
+                    thirdValue += 50
+                }
+
+            }
+            fourthValue = calculateCashOption(thirdValue)
+            if (thirdValue == fourthValue) {
+                fourthValue += 100
+            } else {
+                fourthValue += 50
+            }
+
+            setPriceTextView(tvCash1, secondValue.toDouble())
+            setPriceTextView(tvCash2, thirdValue)
+            setPriceTextView(tvCash3, fourthValue)
 
 
-}
+        }
 
-/*fun addItemsForDineIn(list: ArrayList<DineInModel>): ArrayList<DineInModel> {
-    for (i in 0 until list.size) {
-        if (list.get(i).items.isNotEmpty()) {
-            list[i].items.forEach {
+        private fun calculateCashOption(value: Double): Double {
+            when {
+                value > 1000 -> {
+                    return ceil(value / 100) * 100
 
+                }
+                value > 500 -> {
+                    return ceil(value / 50) * 50
+                }
+                else -> {
+                    val arrAmount = arrayOf(
+                        5,
+                        10,
+                        20,
+                        50,
+                        100,
+                        110,
+                        120,
+                        150,
+                        200,
+                        210,
+                        220,
+                        250,
+                        300,
+                        310,
+                        320,
+                        350,
+                        400,
+                        410,
+                        420,
+                        450,
+                        500
+                    )
+                    val myValue = value.toInt()
+                    Log.e(TAG, "myValue:  ${myValue}")
+                    var searchIndex: Int = -1
+                    val filterValue = arrAmount.filter {
+                        it >= value
+                    }.first()
+                    searchIndex = arrAmount.indexOf(filterValue)
+                    Log.e(TAG, "filterValue:  ${filterValue}")
+                    Log.e(TAG, "searchIndex:  ${searchIndex}")
+
+
+                    if (arrAmount.contains(myValue)) {
+                        searchIndex += 1
+                    }
+
+                    return if (searchIndex >= arrAmount.size) {
+                        550.0
+                    } else {
+                        val lastAmount = arrAmount[searchIndex]
+                        lastAmount.toDouble()
+                    }
+
+                }
             }
         }
 
     }
 
 
-}*/
+}
+
