@@ -174,5 +174,5 @@ dependencies {
     //Phone no Fromating
     implementation 'com.googlecode.libphonenumber:libphonenumber:7.2.2'
     implementation 'com.github.poovamraj:PinEditTextField:1.2.6'
-
+    implementation files('libs/mtusdk.aar')
 }

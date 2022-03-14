@@ -817,5 +817,26 @@ class PosRepository @Inject constructor(
 
     fun orderCounts(startDate: String?, endDate: String?) =
         performGetOperationNew(networkCall = { apiHelperNew.orderCounts(startDate, endDate) })
+
+    suspend fun addCardReader(tbCardReader: TbCardReader) {
+        appDatabase.cardReaderDao().add(tbCardReader)
+    }
+
+    suspend fun deleteTable() {
+        appDatabase.cardReaderDao().delete()
+    }
+
+    suspend fun updateCardReader(tbCardReader: TbCardReader) {
+        appDatabase.cardReaderDao().updateById(tbCardReader.status, tbCardReader.mcAddress)
+    }
+
+    fun getCardReaderList(id: String) =
+        performGetOperationDatabase { appDatabase.cardReaderDao().cardReaderById(id) }
+
+    fun getCardReaderList() =
+        performGetOperationDatabase { appDatabase.cardReaderDao().allList() }
+
+    fun cardReaderActiveList() =
+        performGetOperationDatabase { appDatabase.cardReaderDao().cardReaderActiveList() }
 }
 
