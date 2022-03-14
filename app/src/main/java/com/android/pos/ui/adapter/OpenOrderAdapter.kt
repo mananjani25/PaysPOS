@@ -294,41 +294,27 @@ class OpenOrderAdapter(val context: Context) :
                 } else {
                     val fList = ArrayList<OpenOrderResponse.Data.Order>()
 
-
                     for (it in orderList){
-                        if (it.offlineId.contains(charString)){
-                            orderList.filter {
-                                it.offlineId.lowercase(Locale.getDefault())
-                                    .contains(charString.lowercase(Locale.getDefault()))
-                            }.forEach { fList.add(it) }
-                            break
+                        if (it.offlineId.lowercase(Locale.getDefault()).contains(charString.lowercase(Locale.getDefault()))){
+                             fList.add(it)
                         }
-                      else if (it.customer?.firstName?.contains(charString)!!){
-                            orderList.filter {
-                                it.customer?.firstName?.lowercase(Locale.getDefault())
-                                    ?.contains(charString.lowercase(Locale.getDefault()))!!
-                            }.forEach { fList.add(it) }
-                            break
-                        }else if (it.customer?.lastName?.contains(charString)!!){
-                            orderList.filter {
-                                it.customer?.lastName?.lowercase(Locale.getDefault())
-                                    ?.contains(charString.lowercase(Locale.getDefault()))!!
-                            }.forEach { fList.add(it) }
-                            break
-                        }else if (it.employee?.firstName?.contains(charString)!!){
-                            orderList.filter {
-                                it.employee?.firstName?.lowercase(Locale.getDefault())
-                                    ?.contains(charString.lowercase(Locale.getDefault()))!!
-                            }.forEach { fList.add(it) }
-                            break
-                        }else if (it.employee?.lastName?.contains(charString)!!){
-                            orderList.filter {
-                                it.employee?.lastName?.lowercase(Locale.getDefault())
-                                    ?.contains(charString.lowercase(Locale.getDefault()))!!
-                            }.forEach { fList.add(it) }
-                            break
+                       else if (it.customer!=null&&it.customer.firstName.lowercase(Locale.getDefault()).contains(charString.lowercase(Locale.getDefault()))
+                        ){
+                             fList.add(it)
+                        }
+                        else if (it.customer!=null&&it.customer.lastName.lowercase(Locale.getDefault()).contains(charString.lowercase(Locale.getDefault()))
+                        ){
+                             fList.add(it)
+                        } else if (it.employee.firstName.lowercase(Locale.getDefault()).contains(charString.lowercase(Locale.getDefault()))
+                        ){
+                             fList.add(it)
+                        }
+                        else if (it.employee.lastName.lowercase(Locale.getDefault()).contains(charString.lowercase(Locale.getDefault()))
+                        ){
+                             fList.add(it)
                         }
                     }
+
                     fList
                 }
 
