@@ -187,7 +187,7 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
         //   viewModel.setCurrentDate(myCalendar)
 
         binding.includeView.imgDrawer.setOnClickListener {
-            (requireActivity() as MainActivity).enableDrawer()
+            findNavController().navigate(R.id.action_transactionFragment_to_menfragment)
         }
 
         binding.includeView.txtTitle.text = getString(R.string.transactions)

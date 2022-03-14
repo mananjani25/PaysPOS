@@ -285,17 +285,7 @@ class PaymentViewModel @Inject constructor(
 
                             if (order.payments.isNotEmpty()) {
                                 if (order.payments[order.payments.size - 1].amount == totalPayAmounts) {
-                                    if (prefProvider.getValueboolean(
-                                            IS_PRINTER_QUEUE_ENABLE,
-                                            false
-                                        )
-                                    ) {
-                                        _data.value = Event(createOrderResponse)
-                                        _queueStart.value = Event(createOrderResponse)
-                                    } else {
-
-                                        _data.value = Event(createOrderResponse)
-                                    }
+                                    _data.value = Event(createOrderResponse)
                                 } else {
                                     cashOutApi(createOrderResponse, "out")
                                 }
@@ -416,8 +406,7 @@ class PaymentViewModel @Inject constructor(
 
         if (cartModel.openOrderType.isNotEmpty() && cartModel.openOrderType != null) {
             orderAttributeRequestModel.deliveryType = cartModel.openOrderType
-        }
-        else{
+        } else {
             orderAttributeRequestModel.deliveryType = cartModel.deliveryType
         }
         orderAttributeRequestModel.employeeId = prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
@@ -569,8 +558,7 @@ class PaymentViewModel @Inject constructor(
 
         if (cartModel.openOrderType.isNotEmpty() && cartModel.openOrderType != null) {
             orderAttributeRequestModel.deliveryType = cartModel.openOrderType
-        }
-        else{
+        } else {
             orderAttributeRequestModel.deliveryType = cartModel.deliveryType
         }
         orderAttributeRequestModel.employeeId = cartModel.employeeID
@@ -690,8 +678,7 @@ class PaymentViewModel @Inject constructor(
 
         if (cartModel.openOrderType.isNotEmpty() && cartModel.openOrderType != null) {
             orderAttributeRequestModel.deliveryType = cartModel.openOrderType
-        }
-        else{
+        } else {
             orderAttributeRequestModel.deliveryType = cartModel.deliveryType
         }
         orderAttributeRequestModel.employeeId = cartModel.employeeID

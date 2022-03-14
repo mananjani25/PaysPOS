@@ -6,6 +6,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
@@ -17,6 +18,7 @@ import com.android.pos.data.entities.CartModel
 import com.android.pos.data.entities.TbItem
 import com.android.pos.data.entities.TbServiceCharge
 import com.android.pos.data.remote.Constants
+import com.android.pos.data.remote.Constants.EMPLOYEE_NAME
 import com.android.pos.data.remote.Constants.TAKEOUT
 import com.android.pos.data.remote.Constants.TERMINAL_ID
 import com.android.pos.databinding.FragmentDashboardCategoryBoldPosBinding
@@ -66,10 +68,18 @@ class DashboardCategoryBoldPOS : Fragment(), ItemListner {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         onClick()
+        syncData()
+        requireActivity().window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         loadCartFragment(CartFragment())
         loadCategoryFragment(CategoryFragment(this))
+        binding.layoutHeader.txtUserName.text =  prefProvider.getValue(EMPLOYEE_NAME, "").toString()
 
+    }
+    private fun syncData() {
 
+        val sync = prefProvider.getValueboolean(Constants.SYNC_DATA, false)
+        if (!sync)
+            viewModel.syncInventoryModule()
     }
 
     private fun loadCategoryFragment(fragment: Fragment) {
@@ -110,11 +120,14 @@ class DashboardCategoryBoldPOS : Fragment(), ItemListner {
             findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
         }
 
-
+        binding.layoutHeader.linearSwitchUser.setOnClickListener {
+            var bundle = Bundle()
+            bundle.putBoolean("isSwap", true)
+            bundle.putBoolean("isDashboard", false)
+            findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_passcode, bundle)
+        }
         binding.layoutHeader.ivLock.setOnClickListener {
-            binding.layoutHeaderCheckout.rlRoot.visibility = View.VISIBLE
-            binding.layoutHeader.rlRoot.visibility = View.GONE
-            loadCategoryFragment(CheckoutDetailsFragmentNew())
+            findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_reportEODFragment)
         }
         binding.layoutHeaderCheckout.imgDrawer.setOnClickListener {
             binding.layoutHeaderCheckout.rlRoot.visibility = View.GONE

@@ -82,7 +82,7 @@ class CashLogFragment : Fragment(), AdapterView.OnItemSelectedListener {
             findNavController().navigate(R.id.action_cashLogFragment_to_dashboardCategoryNew)
         }
         binding.imgDrawer.setOnClickListener {
-            (requireActivity() as MainActivity).enableDrawer()
+            findNavController().navigate(R.id.action_cashlogfragment_to_menuFragment)
         }
     }
 

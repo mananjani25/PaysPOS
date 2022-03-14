@@ -46,6 +46,7 @@ class PayFullAmountFragment(val bundle: Bundle?) : Fragment(), ItemListner {
     var llRoot = 0
     private var remainingAmount: Double = 0.0
     var cashDiscountType = ""
+    var paymentAmount = 0.0
     private var redeemLoyaltyInfo: RedeemLoyaltyInfo? = null
     var totalPrice = 0.0
     private var splitValue: Int = -1
@@ -216,7 +217,11 @@ class PayFullAmountFragment(val bundle: Bundle?) : Fragment(), ItemListner {
 
 
         binding.llPaycash.setOnClickListener {
+            paymentAmount = totalPrice
             makeCashPayment()
+        }
+        binding.tvCash1.setOnClickListener {
+
         }
         binding.llCreditCard.setOnClickListener {
             binding.llCreditCard.setBackgroundDrawable(resources.getDrawable(R.drawable.button_selected))
@@ -427,7 +432,7 @@ class PayFullAmountFragment(val bundle: Bundle?) : Fragment(), ItemListner {
             paymentviewModel.createOrderRequest(
                 it,
                 subTotalPrice,
-                totalPrice,
+                paymentAmount,
                 totalServiceCharge,
                 totalTax,
                 TAKEOUT,
