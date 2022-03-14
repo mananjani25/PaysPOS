@@ -122,7 +122,12 @@ class PaymentViewModel @Inject constructor(
                                 if (orderRequestModel.order.openOrderType == Constants.OPEN_ORDER
                                     || orderRequestModel.order.openOrderType == Constants.OPEN_ORDER_
                                 ) {
-                                    posRepository.deleteCart(prefProvider.getValueInt(Constants.EMPLOYEE_ID,0))
+                                    posRepository.deleteCart(
+                                        prefProvider.getValueInt(
+                                            Constants.EMPLOYEE_ID,
+                                            0
+                                        )
+                                    )
                                 }
 
                                 if (onlySave) {
@@ -211,7 +216,12 @@ class PaymentViewModel @Inject constructor(
                         if (response?.status == 200) {
 
                             if (splitValue != -1) {
-                                posRepository.deleteCart(prefProvider.getValueInt(Constants.EMPLOYEE_ID,0))
+                                posRepository.deleteCart(
+                                    prefProvider.getValueInt(
+                                        Constants.EMPLOYEE_ID,
+                                        0
+                                    )
+                                )
                             }
                             resource.data?.let { createOrderResponse ->
                                 if (createOrderResponse.data.order.payments.isNotEmpty()) {

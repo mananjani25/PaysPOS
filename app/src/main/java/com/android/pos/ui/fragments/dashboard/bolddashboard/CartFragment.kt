@@ -5,16 +5,15 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.RelativeLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.activityViewModels
+import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.data.remote.Constants.TAKEOUT
 import com.android.pos.databinding.FragmentCartBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.adapter.boldpos.CartAdapter
-import com.android.pos.ui.fragments.checkout.CheckoutDetailsFragmentNew
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.MethodUtils
@@ -88,14 +87,16 @@ class CartFragment() : Fragment() {
     fun initListeners() {
         binding.tvPayNow.setOnClickListener {
             if (cartAdapter.cartList.isNotEmpty()) {
-                val checkoutHeader: RelativeLayout =
-                    activity?.findViewById(checkoutHeaderId) as RelativeLayout
-                checkoutHeader.visibility = View.VISIBLE
 
-                val dashboardHeader: RelativeLayout =
-                    activity?.findViewById(dashboardHeaderId) as RelativeLayout
-                dashboardHeader.visibility = View.GONE
-                loadCategoryFragment(CheckoutDetailsFragmentNew())
+                findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_paymentBoldPosFragment)
+                /* val checkoutHeader: RelativeLayout =
+                     activity?.findViewById(checkoutHeaderId) as RelativeLayout
+                 checkoutHeader.visibility = View.VISIBLE
+
+                 val dashboardHeader: RelativeLayout =
+                     activity?.findViewById(dashboardHeaderId) as RelativeLayout
+                 dashboardHeader.visibility = View.GONE
+                 loadCategoryFragment(CheckoutDetailsFragmentNew())*/
             } else {
                 AlertUtils.showCustomAlertWithListenerWithOK(
                     requireContext(),

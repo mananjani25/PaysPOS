@@ -1286,7 +1286,12 @@
     <fragment
         android:id="@+id/paymentBoldPosFragment"
         android:name="com.android.pos.ui.fragments.payment.PaymentBoldPosFragment"
-        android:label="PaymentBoldPosFragment" />
+        android:label="PaymentBoldPosFragment" >
+        <action
+            android:id="@+id/action_paymentBoldPosFragment_to_orderComplete"
+            app:destination="@id/orderCompleteFragment"
+            app:enterAnim="@anim/nav_default_enter_anim" />
+    </fragment>
 
 
 </navigation>

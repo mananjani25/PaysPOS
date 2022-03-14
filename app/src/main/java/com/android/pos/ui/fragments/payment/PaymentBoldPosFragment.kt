@@ -20,6 +20,7 @@ class PaymentBoldPosFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentPaymentBoldPosBinding.inflate(inflater, container, false)
+        binding.layoutHeaderCheckout.rlRoot.visibility = View.VISIBLE
         binding.lifecycleOwner = this
         return binding.root
     }

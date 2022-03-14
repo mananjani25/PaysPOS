@@ -101,6 +101,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment() {
         binding.txtDone.setOnClickListener {
             item?.itemQuantity = qty
 
+
             viewModel.cartLogic(cartList, item, ADD)
             listner.onCancelItemSelected()
 
