@@ -44,9 +44,13 @@ class CartFragment() : Fragment() {
         binding.lifecycleOwner = this
         Log.e("bundleData", arguments.toString())
 
-        fragmentId = arguments?.getInt("fragmentId")
-        checkoutHeaderId = arguments?.getInt("checkoutHeaderId")!!
-        dashboardHeaderId = arguments?.getInt("dashboardHeaderId")!!
+        if (arguments?.getInt("fragmentId") != null)
+            fragmentId = arguments?.getInt("fragmentId")
+        if (arguments?.getInt("checkoutHeaderId") != null)
+            checkoutHeaderId = arguments?.getInt("checkoutHeaderId")!!
+
+        if (arguments?.getInt("dashboardHeaderId") != null)
+            dashboardHeaderId = arguments?.getInt("dashboardHeaderId")!!
         return binding.root
     }
 
@@ -63,7 +67,7 @@ class CartFragment() : Fragment() {
 
         viewModel.mAllWords(
             TAKEOUT, prefProvider.getValueInt(com.android.pos.data.remote.Constants.EMPLOYEE_ID, 0)
-        ).observe(requireActivity(), {
+        ).observe(requireActivity()) {
             if (it.isNotEmpty()) {
                 Log.e(TAG, "listSize  ${Gson().toJson(it)}")
                 it[it.size - 1].items?.toCollection(arrayListOf())
@@ -82,7 +86,7 @@ class CartFragment() : Fragment() {
                 binding.tvPayNow.text = "Pay " + MethodUtils.roundOffAmount(viewModel.totalPrice)
 
             }
-        })
+        }
     }
 
     fun initListeners() {

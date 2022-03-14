@@ -45,7 +45,7 @@ class KeyPadManualSaleFragment : Fragment() {
     }
 
     private fun setKeypad() {
-        binding.manualKeypad.first.setOnClickListener {
+      /*  binding.manualKeypad.first.setOnClickListener {
             calculateValue("1", false)
         }
         binding.manualKeypad.second.setOnClickListener {
@@ -80,7 +80,7 @@ class KeyPadManualSaleFragment : Fragment() {
         }
         binding.manualKeypad.txtAdd.setOnClickListener {
 
-        }
+        }*/
 
     }
 
