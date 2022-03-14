@@ -6,10 +6,12 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.data.entities.CartModel
 import com.android.pos.data.entities.TbItem
@@ -19,7 +21,7 @@ import com.android.pos.data.remote.Constants.TAKEOUT
 import com.android.pos.data.remote.Constants.TERMINAL_ID
 import com.android.pos.databinding.FragmentDashboardCategoryBoldPosBinding
 import com.android.pos.di.PrefProvider
-import com.android.pos.ui.activities.MainActivity
+import com.android.pos.ui.adapter.VariationDashboardListAdapter
 import com.android.pos.ui.fragments.checkout.CheckoutDetailsFragmentNew
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.android.pos.ui.fragments.manualsales.ManualSaleBoldPOS.KeyPadManualSaleFragment
@@ -48,6 +50,13 @@ class DashboardCategoryBoldPOS : Fragment(), ItemListner {
     ): View? {
 
         binding = FragmentDashboardCategoryBoldPosBinding.inflate(inflater, container, false)
+        val callback: OnBackPressedCallback =
+            object : OnBackPressedCallback(true) {
+                override fun handleOnBackPressed() {
+                    requireActivity().finish()
+                }
+            }
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
         addObserver()
         getServiceCharges()
         binding.lifecycleOwner = this
@@ -87,15 +96,18 @@ class DashboardCategoryBoldPOS : Fragment(), ItemListner {
     private fun onClick() {
 
         binding.layoutHeader.txtTransaction.setOnClickListener {
-            viewModel.deleteCart()
+            findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_transactionFragment)
 
         }
         binding.layoutHeader.txtDineIn.setOnClickListener {
 
         }
         binding.layoutHeader.imgDrawer.setOnClickListener {
-            (requireActivity() as MainActivity).enableDrawer()
+            findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_menuFragment)
 
+        }
+        binding.layoutHeader.txtOpenOrder.setOnClickListener {
+            findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
         }
 
 
@@ -113,7 +125,7 @@ class DashboardCategoryBoldPOS : Fragment(), ItemListner {
         binding.layoutHeader.imgSync.setOnClickListener {
             viewModel.syncInventoryModule()
         }
-        binding.layoutHeader.txtOpenOrder.setOnClickListener {
+       /* binding.layoutHeader.txtOpenOrder.setOnClickListener {
             loadCategoryFragment(CategoryFragment(this))
             binding.layoutHeader.txtOpenOrder.setTextColor(resources.getColor(R.color.btnColor))
             binding.layoutHeader.txtOpenOrder.setTypeface(
@@ -125,7 +137,7 @@ class DashboardCategoryBoldPOS : Fragment(), ItemListner {
                 binding.layoutHeader.txtKeypad.typeface,
                 Typeface.NORMAL
             )
-        }
+        }*/
         binding.layoutHeader.txtKeypad.setOnClickListener {
             loadKeyPadFragment(KeyPadManualSaleFragment())
             binding.layoutHeader.txtKeypad.setTextColor(resources.getColor(R.color.btnColor))
@@ -183,14 +195,40 @@ class DashboardCategoryBoldPOS : Fragment(), ItemListner {
         serviceChargesObserve = Observer {
 
             if (it.status == Status.SUCCESS) {
-
                 serviceChargesList = it.data
-                Log.e(TAG, "serviceChargesList:  ${Gson().toJson(serviceChargesList)}")
-
             }
 
         }
 
         viewModel.serviceCharges.observe(requireActivity(), serviceChargesObserve!!)
+    }
+
+    private fun checkItemQty(
+        data: TbItem,
+        variationAdapter: VariationDashboardListAdapter?
+    ): Boolean {
+
+        if (data.variationsAttributes.isNotEmpty()) {
+
+            val stockQty = variationAdapter?.getItem()?.stockQty
+
+            return if (stockQty?.isNotEmpty() == true) {
+
+                stockQty.toInt() >= 1
+
+            } else {
+                false
+            }
+
+        } else {
+
+            return if (data.isManualSales) {
+                true
+            } else {
+                data.quantity >= 1
+            }
+        }
+
+        return false
     }
 }

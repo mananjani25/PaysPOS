@@ -290,6 +290,7 @@ class PaymentViewModel @Inject constructor(
                                             false
                                         )
                                     ) {
+                                        _data.value = Event(createOrderResponse)
                                         _queueStart.value = Event(createOrderResponse)
                                     } else {
 
@@ -419,9 +420,9 @@ class PaymentViewModel @Inject constructor(
         else{
             orderAttributeRequestModel.deliveryType = cartModel.deliveryType
         }
-        orderAttributeRequestModel.employeeId = cartModel.employeeID
-        orderAttributeRequestModel.locationId = cartModel.locationId
-        orderAttributeRequestModel.terminalId = cartModel.terminalId
+        orderAttributeRequestModel.employeeId = prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
+        orderAttributeRequestModel.locationId = prefProvider.getValueInt(Constants.LOCATION_ID, 1)
+        orderAttributeRequestModel.terminalId = prefProvider.getValueInt(Constants.TERMINAL_ID, 0)
         orderAttributeRequestModel.note = cartModel.note
         if (paymentType == "Cash") {
             if (cashdiscountType == "SurCharge") {
@@ -434,6 +435,8 @@ class PaymentViewModel @Inject constructor(
 
                 orderAttributeRequestModel.totalAmount = actual_Total - actual_CashDiscountSurCharge
             } else {
+                orderAttributeRequestModel.cash_discount_or_surcharge = 0.0
+                orderAttributeRequestModel.cash_discount_type = ""
                 orderAttributeRequestModel.totalAmount = actual_Total
             }
         } /*else if (paymentType == "Card") {

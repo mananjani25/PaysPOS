@@ -6,10 +6,9 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/bg_color"
-        android:orientation="vertical"
         android:layout_margin="@dimen/_5sdp"
-        >
+        android:background="@color/bg_color"
+        android:orientation="vertical">
 
 
         <TextView
@@ -40,13 +39,13 @@
                 android:background="@drawable/background_square_border_grey"
                 android:gravity="center_horizontal"
                 android:orientation="horizontal"
-                android:paddingVertical="@dimen/_10sdp">
+                android:paddingVertical="@dimen/_5sdp">
 
                 <androidx.appcompat.widget.AppCompatImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
-
+                    android:padding="@dimen/_3sdp"
                     android:src="@drawable/ic_credit_card" />
 
 
@@ -75,13 +74,12 @@
                 android:background="@drawable/background_square_border_grey"
                 android:gravity="center_horizontal"
                 android:orientation="horizontal"
-                android:paddingVertical="@dimen/_12sdp">
+                android:paddingVertical="@dimen/_8sdp">
 
                 <androidx.appcompat.widget.AppCompatImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_horizontal"
-
                     android:src="@drawable/ic_manual_card" />
 
 
@@ -135,7 +133,7 @@
                 android:layout_weight="1"
                 android:background="@drawable/background_square_border_grey"
                 android:gravity="center_horizontal"
-                android:paddingVertical="@dimen/_12sdp"
+                android:paddingVertical="@dimen/_10sdp"
                 android:text="$10"
                 android:textColor="@color/txtColor"
                 android:textSize="@dimen/_7mdpi" />
@@ -151,7 +149,7 @@
                 android:layout_weight="1"
                 android:background="@drawable/background_square_border_grey"
                 android:gravity="center_horizontal"
-                android:paddingVertical="@dimen/_12sdp"
+                android:paddingVertical="@dimen/_10sdp"
                 android:text="$20"
                 android:textColor="@color/txtColor"
                 android:textSize="@dimen/_7mdpi" />
@@ -167,7 +165,7 @@
                 android:layout_weight="1"
                 android:background="@drawable/background_square_border_grey"
                 android:gravity="center_horizontal"
-                android:paddingVertical="@dimen/_12sdp"
+                android:paddingVertical="@dimen/_10sdp"
                 android:text="$20"
                 android:textColor="@color/txtColor"
                 android:textSize="@dimen/_7mdpi" />
@@ -194,13 +192,14 @@
                 android:layout_weight="0.5"
                 android:background="@drawable/background_square_border_grey"
                 android:gravity="center_horizontal"
-                android:paddingVertical="@dimen/_12sdp"
+                android:paddingVertical="@dimen/_10sdp"
                 android:text="Custom"
                 android:textColor="@color/txtColor"
                 android:textSize="@dimen/_7mdpi" />
 
 
             <androidx.appcompat.widget.LinearLayoutCompat
+                android:id="@+id/llPaycash"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/llCash"
@@ -209,7 +208,7 @@
                 android:background="@drawable/button_selected"
                 android:gravity="center_horizontal"
                 android:orientation="horizontal"
-                android:paddingVertical="@dimen/_12sdp">
+                android:paddingVertical="@dimen/_10sdp">
 
                 <androidx.appcompat.widget.AppCompatImageView
                     android:layout_width="wrap_content"
@@ -266,7 +265,7 @@
                 android:background="@drawable/background_square_border_grey"
                 android:gravity="center_horizontal"
                 android:orientation="horizontal"
-                android:paddingVertical="@dimen/_12sdp"
+                android:paddingVertical="@dimen/_10sdp"
                 android:text="Text Payment Link"
                 android:textColor="@color/txtColor"
                 android:textSize="@dimen/_7mdpi" />
