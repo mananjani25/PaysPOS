@@ -100,7 +100,7 @@
                 android:text="0" />
 
             <TextView
-                android:id="@+id/txt_add"
+                android:id="@+id/imgAdd"
                 style="@style/keypadManualSaleviewStyle"
                 android:background="@color/btnColor"
                 android:text="+ Add"

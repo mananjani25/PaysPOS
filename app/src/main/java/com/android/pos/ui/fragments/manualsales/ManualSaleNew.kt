@@ -550,60 +550,60 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
     }
 
     private fun onClickKeypad() {
-        binding.llKeypad.tvOne.setOnClickListener {
+        binding.llKeypad.manualKeypad.tvOne.setOnClickListener {
             calculateValue("1", false)
 
         }
 
-        binding.llKeypad.tvTwo.setOnClickListener {
+        binding.llKeypad.manualKeypad.tvTwo.setOnClickListener {
 
             calculateValue("2", false)
         }
-        binding.llKeypad.tvThree.setOnClickListener {
+        binding.llKeypad.manualKeypad.tvThree.setOnClickListener {
             calculateValue("3", false)
         }
-        binding.llKeypad.tvFour.setOnClickListener {
+        binding.llKeypad.manualKeypad.tvFour.setOnClickListener {
 
             calculateValue("4", false)
         }
-        binding.llKeypad.tvFive.setOnClickListener {
+        binding.llKeypad.manualKeypad.tvFive.setOnClickListener {
             calculateValue("5", false)
         }
-        binding.llKeypad.tvSix.setOnClickListener {
+        binding.llKeypad.manualKeypad.tvSix.setOnClickListener {
 
             calculateValue("6", false)
         }
-        binding.llKeypad.tvSeven.setOnClickListener {
+        binding.llKeypad.manualKeypad.tvSeven.setOnClickListener {
 
             calculateValue("7", false)
         }
-        binding.llKeypad.tvEight.setOnClickListener {
+        binding.llKeypad.manualKeypad.tvEight.setOnClickListener {
 
             calculateValue("8", false)
         }
-        binding.llKeypad.tvNine.setOnClickListener {
+        binding.llKeypad.manualKeypad.tvNine.setOnClickListener {
 
             calculateValue("9", false)
         }
-        binding.llKeypad.tvZero.setOnClickListener {
+        binding.llKeypad.manualKeypad.tvZero.setOnClickListener {
             calculateValue("0", false)
 
         }
-        binding.llKeypad.imgAdd.setOnClickListener {
+        binding.llKeypad.manualKeypad.imgAdd.setOnClickListener {
             // binding.txtAmount.setText( "0.00")
 
-            if (!(binding.txtAmount.text!!.trim().toString()
-                    .equals("0.00")) && (!(binding.txtAmount.text!!.trim().toString()
-                    .equals("$0.00"))) && (!binding.txtAmount.text!!.trim().toString().equals("0"))
+            if (!(binding.llKeypad.txtAmount.text!!.trim().toString()
+                    .equals("0.00")) && (!(binding.llKeypad.txtAmount.text!!.trim().toString()
+                    .equals("$0.00"))) && (!binding.llKeypad.txtAmount.text!!.trim().toString().equals("0"))
             ) {
-                addItemToCart(binding.txtAmount.text.toString(), true)
-                binding.txtAmount.setText("0.00")
+                addItemToCart(binding.llKeypad.txtAmount.text.toString(), true)
+                binding.llKeypad.txtAmount.setText("0.00")
             }
 
 
         }
-        binding.llKeypad.tvBack.setOnClickListener {
-            if (binding.txtAmount.text.toString().isNotEmpty()) {
+        binding.llKeypad.manualKeypad.tvBack.setOnClickListener {
+            if (binding.llKeypad.txtAmount.text.toString().isNotEmpty()) {
                 calculateValue("", true)
             }
 
@@ -736,8 +736,8 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
 
 
     private fun onConfig() {
-        binding.txtAmount.addTextChangedListener(AmountTextWatcher(binding.txtAmount, true))
-        binding.txtAmount.setText("0.00")
+        binding.llKeypad.txtAmount.addTextChangedListener(AmountTextWatcher(binding.txtAmount, true))
+        binding.llKeypad.txtAmount.setText("0.00")
 
         //set customer data
         setUpCustomer(prefProvider.getCustomerData())
@@ -756,26 +756,28 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
 
     private fun calculateValue(number: String, delete: Boolean) {
 
-        if (delete && binding.txtAmount.text?.length!! > 1) {
+        if (delete && binding.llKeypad.txtAmount.text?.length!! > 1) {
 
-            binding.txtAmount.setText(removeLastCharacter(binding.txtAmount.text.toString()))
-        } else if (binding.txtAmount.text?.trim()!!.equals("0.00")) {
-            binding.txtAmount.setText("")
-            binding.txtAmount.append(number)
+            binding.llKeypad.txtAmount.setText(removeLastCharacter(binding.txtAmount.text.toString()))
+        } else if (binding.llKeypad.txtAmount.text?.trim()!!.equals("0.00")) {
+            binding.llKeypad.txtAmount.setText("")
+            binding.llKeypad.txtAmount.append(number)
         } else {
-            binding.txtAmount.append(number)
+            binding.llKeypad.txtAmount.append(number)
         }
-        addItemToCart(binding.txtAmount.text.toString(), false)
-        val str = binding.txtAmount.text.toString().replace("""[$]""".toRegex(), "")
+        addItemToCart(binding.llKeypad.txtAmount.text.toString(), false)
+        val str = binding.llKeypad.txtAmount.text.toString().replace("""[$]""".toRegex(), "")
         //binding.txtAmount.setText("${binding.txtAmount.text.toString().replace("""[$]""".toRegex(), "")}")
         var newText = StringBuilder(str).insert(0, "%").toString()
 
 
         Log.e(
             TAG,
-            "afterTextSet  ${binding.txtAmount.text.toString().replace("""[$]""".toRegex(), "%")}"
+            "afterTextSet  ${binding.llKeypad.txtAmount.text.toString().replace("""[$]""".toRegex(), "%")}"
         )
     }
+
+
 
     private fun removeLastCharacter(str: String): String {
         return str.substring(0, str.length - 1)

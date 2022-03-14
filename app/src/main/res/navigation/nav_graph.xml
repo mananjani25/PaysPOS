@@ -1279,8 +1279,8 @@
             app:destination="@id/paymentBoldPosFragment"
             app:enterAnim="@anim/nav_default_enter_anim" />
         <action
-            android:id="@+id/action_dashboardCategoryBoldPOS_to_manualSalesBold"
-            app:destination="@id/manualSaleBold"
+            android:id="@+id/action_dashboardCategoryBoldPOS_to_manualSalesNew"
+            app:destination="@id/manualSaleNew"
             app:enterAnim="@anim/nav_default_enter_anim" />
 
 

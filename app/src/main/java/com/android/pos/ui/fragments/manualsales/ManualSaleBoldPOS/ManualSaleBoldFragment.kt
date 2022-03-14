@@ -87,7 +87,7 @@ class ManualSaleBoldFragment : Fragment(), ManualSaleCartAdapter.ManualSaleInter
         binding.lifecycleOwner = this
         getLoyaltyPrograms()
         getServiceCharge()
-        loadCartFragment(CartFragment())
+        loadCartFragment(ManualSaleCartFragment())
         Log.e(TAG, "CategoryId: ${prefProvider.getValueInt(MANUAL_SALE_CATEGORY_ID, 1)}")
         Log.e(TAG, "CategoryItemId: ${prefProvider.getValueInt(MANUAL_SALE_ITEM_ID, 1)}")
         Log.e(TAG, "cartDetails: $arguments")
@@ -590,7 +590,7 @@ class ManualSaleBoldFragment : Fragment(), ManualSaleCartAdapter.ManualSaleInter
             calculateValue("0", false)
 
         }
-        binding.keyPadManualSale.manualKeypad.txtAdd.setOnClickListener {
+        binding.keyPadManualSale.manualKeypad.imgAdd.setOnClickListener {
             // binding.txtAmount.setText( "0.00")
 
             if (!(binding.txtAmount.text!!.trim().toString()
