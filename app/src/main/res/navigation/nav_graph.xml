@@ -1286,6 +1286,10 @@
         android:label="CheckoutDetails">
 
     </fragment>
+    <fragment
+        android:id="@+id/paymentBoldPosFragment"
+        android:name="com.android.pos.ui.fragments.payment.PaymentBoldPosFragment"
+        android:label="PaymentBoldPosFragment" />
 
 
 </navigation>
