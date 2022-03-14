@@ -76,7 +76,7 @@ class PayFullAmountFragment(val bundle: Bundle?) : Fragment(), ItemListner {
         super.onViewCreated(view, savedInstanceState)
         onClick()
         frameLayoutId = bundle?.getInt("frameLayoutId")!!
-        llRoot = bundle?.getInt("llRoot")!!
+        llRoot = bundle.getInt("llRoot")!!
         observeShowProgress()
         getCartData()
         observeData()

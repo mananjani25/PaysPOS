@@ -5,7 +5,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.activityViewModels
 import com.android.pos.data.entities.TbItem
 import com.android.pos.databinding.FragmentCheckoutDetailsNewBinding
@@ -46,19 +45,24 @@ class CheckoutDetailsFragmentNew : Fragment(), ItemListner {
         binding.tabLayout.addTab(binding.tabLayout.newTab().setText("Split Custom Amount"))
         binding.tabLayout.tabGravity = TabLayout.GRAVITY_FILL
 
-        val bundle=Bundle().apply {
-            putInt("frameLayoutId",binding.frameLayoutId.id)
-            putInt("llRoot",binding.llRoot.id)
+        val bundle = Bundle().apply {
+            putInt("frameLayoutId", binding.frameLayoutId.id)
+            putInt("llRoot", binding.llRoot.id)
         }
-        val adapter= PaymentTypePagerAdapter(requireContext(),childFragmentManager,binding.tabLayout.tabCount,bundle)
+        val adapter = PaymentTypePagerAdapter(
+            requireContext(),
+            childFragmentManager,
+            binding.tabLayout.tabCount,
+            bundle
+        )
         binding.frameLayout.adapter = adapter
-        binding.frameLayout.addOnPageChangeListener( TabLayout.TabLayoutOnPageChangeListener(binding.tabLayout))
+        binding.frameLayout.addOnPageChangeListener(TabLayout.TabLayoutOnPageChangeListener(binding.tabLayout))
 
-        binding.tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener{
+        binding.tabLayout.addOnTabSelectedListener(object : TabLayout.OnTabSelectedListener {
 
             override fun onTabSelected(tab: TabLayout.Tab?) {
 
-                binding.frameLayout.currentItem= tab?.position!!
+                binding.frameLayout.currentItem = tab?.position!!
 
             }
 
@@ -71,14 +75,13 @@ class CheckoutDetailsFragmentNew : Fragment(), ItemListner {
     }
 
 
-
     private fun onClick() {
     }
 
     override fun onItemSelected(item: TbItem) {
-       /* Log.e(TAG, "getitem:  ${Gson().toJson(item)}")
-        val fragment = AddItemFragment.newInstance(item)
-        loadCategoryFragment(fragment)*/
+        /* Log.e(TAG, "getitem:  ${Gson().toJson(item)}")
+         val fragment = AddItemFragment.newInstance(item)
+         loadCategoryFragment(fragment)*/
 
     }
 

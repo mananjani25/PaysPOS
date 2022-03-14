@@ -643,13 +643,7 @@
             app:destination="@id/dashboardCategoryBoldPOS"
             app:launchSingleTop="true" />
     </fragment>
-    <fragment
-        android:id="@+id/paymentFullAmount"
-        android:name="com.android.pos.ui.fragments.checkout.PayFullAmountFragment"
-        android:label="paymentFullAmount"
-        >
 
-    </fragment>
     <fragment
         android:id="@+id/paymentFragment"
         android:name="com.android.pos.ui.fragments.payment.PaymentFragment"
@@ -1275,7 +1269,10 @@
             android:id="@+id/action_dashboardCategoryBoldPOS_to_reportEODFragment"
             app:destination="@id/reportEODFragment"
             app:enterAnim="@anim/nav_default_enter_anim" />
-
+        <action
+            android:id="@+id/action_dashboardCategoryBoldPOS_to_paymentBoldPosFragment"
+            app:destination="@id/paymentBoldPosFragment"
+            app:enterAnim="@anim/nav_default_enter_anim" />
 
 
     </fragment>
