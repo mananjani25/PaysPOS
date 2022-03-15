@@ -19,6 +19,7 @@
 
     <androidx.appcompat.widget.AppCompatTextView
         style="@style/CustomFontSemiBold"
+        android:id="@+id/txtMessage"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
