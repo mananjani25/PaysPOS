@@ -377,7 +377,7 @@ class Customer : Fragment() {
             ) {
                 underlayButtons.add(UnderlayButton(
                     "Delete",
-                    ContextCompat.getColor(context, R.color.swipe_text_color),
+                    ContextCompat.getColor(context, R.color.swipe_text_color_d),
                     ContextCompat.getColor(context, R.color.white_swipe)
                 ) { pos ->
                     deletedPos = pos
