@@ -20,6 +20,7 @@ import com.android.pos.data.remote.Constants.ORDER_TYPE
 import com.android.pos.data.remote.Constants.TAKEOUT
 import com.android.pos.databinding.FragmentCartBinding
 import com.android.pos.di.PrefProvider
+import com.android.pos.ui.adapter.DineInAdapter
 import com.android.pos.ui.adapter.boldpos.CartAdapter
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.android.pos.ui.fragments.payment.PaymentViewModel
@@ -239,6 +240,33 @@ class CartFragment() : Fragment() {
             requireContext()
         )
     }
+
+
+/*
+    private fun getCartList() {
+
+        Log.e("Loyalty", "getCartList called..")
+
+        cartAdapter = CartAdapter()
+        cartAdapter.setCallback(this)
+        dineInCartAdapter = DineInAdapter()
+        dineInCartAdapter.setListner(this)
+        binding.layoutCart.rvCart.adapter = cartAdapter
+        binding.layoutCart.rvCartDineIn.adapter = dineInCartAdapter
+
+
+        nameObserver = Observer {
+
+            bindData(it)
+
+            removeObserver()
+        }
+
+
+        if (isAdded)
+            addObserver()
+    }
+*/
 
     fun initListeners() {
         binding.imgOrderMenu.setOnClickListener {
