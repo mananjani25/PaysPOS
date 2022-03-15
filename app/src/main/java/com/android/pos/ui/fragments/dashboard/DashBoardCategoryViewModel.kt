@@ -1844,9 +1844,17 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 tipDiscountRepository.deleteTipsFromDb()
                                 tipDiscountRepository.addTips(it.data.tip_settings)
                                 posRepository.deleteCustomerReceiptSettingsFromDb()
-                                posRepository.addCustomerReceiptSettings(it.data.customerReceipt)
+                                it.data.customerReceipt?.let { it1 ->
+                                    posRepository.addCustomerReceiptSettings(
+                                        it1
+                                    )
+                                }
                                 posRepository.deleteKitchenReceiptSettingsFromDb()
-                                posRepository.addKitchenReceiptSettings(it.data.kitchenReceipt)
+                                it.data.kitchenReceipt?.let { it1 ->
+                                    posRepository.addKitchenReceiptSettings(
+                                        it1
+                                    )
+                                }
                                 posRepository.deleteLoyaltyProgramFromDb()
                                 posRepository.addLoyaltyProgramFromDb(it.data.loyaltyPrograms)
                                 posRepository.deleteSurcharge()
