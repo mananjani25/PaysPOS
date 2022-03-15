@@ -680,24 +680,19 @@ class PaymentViewModel @Inject constructor(
         orderAttributeRequestModel.locationId = cartModel.locationId
         orderAttributeRequestModel.terminalId = cartModel.terminalId
         orderAttributeRequestModel.note = cartModel.note
-        /*if (paymentType == "Cash") {
-            if (cashdiscountType == "SurCharge") {
-                orderAttributeRequestModel.cash_discount_type = ""
-                orderAttributeRequestModel.cash_discount_or_surcharge = 0.0
-            } else if (cashdiscountType == "CashDiscount") {
-                orderAttributeRequestModel.cash_discount_or_surcharge = actual_CashDiscountSurCharge
-                orderAttributeRequestModel.cash_discount_type = cashdiscountType
-            }
-        } else*/ if (paymentType == "Card") {
+        if (paymentType == "Card") {
             if (cashdiscountType == "SurCharge") {
                 orderAttributeRequestModel.cash_discount_or_surcharge = actual_CashDiscountSurCharge
                 orderAttributeRequestModel.cash_discount_type = cashdiscountType
-
                 orderAttributeRequestModel.totalAmount =
                     actual_CardAmount + actual_CashDiscountSurCharge
             } else if (cashdiscountType == "CashDiscount") {
                 orderAttributeRequestModel.cash_discount_type = ""
                 orderAttributeRequestModel.cash_discount_or_surcharge = 0.0
+                orderAttributeRequestModel.totalAmount = actual_CardAmount
+            }else{
+                orderAttributeRequestModel.cash_discount_or_surcharge = 0.0
+                orderAttributeRequestModel.cash_discount_type = ""
                 orderAttributeRequestModel.totalAmount = actual_CardAmount
             }
         }

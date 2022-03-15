@@ -233,7 +233,7 @@ class DashboardCategoryBoldPOS : Fragment(), ItemListner {
 
     override fun onItemSelected(item: TbItem) {
         Log.e(TAG, "getitem:  ${Gson().toJson(item)}")
-        if (prefProvider.getValue(ORDER_TYPE, "") == Constants.OPEN_ORDER) {
+        if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == Constants.OPEN_ORDER) {
             val model = CartModel()
             model.employeeID =
                 prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
