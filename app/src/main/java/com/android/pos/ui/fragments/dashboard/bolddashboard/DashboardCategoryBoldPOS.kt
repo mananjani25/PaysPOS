@@ -164,7 +164,7 @@ class DashboardCategoryBoldPOS : Fragment(), ItemListner {
                 Typeface.NORMAL
             )
 
-            findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_manualSalesBold)
+            findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_manualSalesNew)
         }
 
 
