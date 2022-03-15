@@ -5,11 +5,13 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
+import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.TAKEOUT
 import com.android.pos.databinding.FragmentCartBinding
 import com.android.pos.di.PrefProvider
@@ -17,6 +19,7 @@ import com.android.pos.ui.adapter.boldpos.CartAdapter
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.MethodUtils
+import com.android.pos.utils.extensions.alert
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -34,6 +37,19 @@ class CartFragment() : Fragment() {
     @Inject
     lateinit var prefProvider: PrefProvider
     private val TAG = "CartFragment"
+    private var isFromPayment = false
+
+    companion object {
+        fun newInstacne(isFromPayment: Boolean): CartFragment {
+            val bundle = bundleOf("isFromPayment" to isFromPayment)
+            val frag = CartFragment()
+            frag.arguments = bundle
+            return frag
+
+        }
+
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -50,7 +66,17 @@ class CartFragment() : Fragment() {
 
         if (arguments?.getInt("dashboardHeaderId") != null)
             dashboardHeaderId = arguments?.getInt("dashboardHeaderId")!!
+
+        isFromPayment = arguments?.getBoolean("isFromPayment") ?: false
+        setUpData()
         return binding.root
+    }
+
+    private fun setUpData() {
+        if (isFromPayment) {
+            binding.linearOrderPlace.visibility = View.GONE
+            binding.imgOrderMenu.visibility = View.GONE
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -59,6 +85,7 @@ class CartFragment() : Fragment() {
         initListeners()
         setCartAdapter()
         addObserver()
+
 
     }
 
@@ -84,6 +111,8 @@ class CartFragment() : Fragment() {
                     MethodUtils.roundOffAmount(viewModel.totalServiceCharge)
                 binding.tvPayNow.text = "Pay " + MethodUtils.roundOffAmount(viewModel.totalPrice)
 
+            } else {
+                cartAdapter.clearList()
             }
         }
     }
@@ -109,6 +138,40 @@ class CartFragment() : Fragment() {
                 }
             }
 
+        }
+
+        binding.imgOrderMenu.setOnClickListener {
+
+            hideOrderMenu()
+
+        }
+
+        binding.llClearCart.setOnClickListener {
+            alert(
+                getString(R.string.app_name),
+                getString(R.string.delete_items_message)
+            ) {
+                positiveButton(getString(R.string.tv_delete)) {
+                    // Do positive stuff here
+                    prefProvider.setValueInt(Constants.DINE_INGUEST_SELECTED, 0)
+
+
+
+                    viewModel.deleteCart()
+
+                    if (prefProvider.getValue(Constants.ORDER_TYPE, "").toString() != "") {
+                        prefProvider.setValue(Constants.ORDER_TYPE, "")
+                    }
+
+                    hideOrderMenu()
+                    prefProvider.setValueboolean(Constants.LOYALTY_ADDED, false)
+
+
+                }
+                negativeButton(R.string.tv_cancel) {
+                    // Do negative stuff here
+                }
+            }
         }
     }
 
@@ -139,6 +202,14 @@ class CartFragment() : Fragment() {
     private fun setCartAdapter() {
         cartAdapter = CartAdapter()
         binding.rvCartList.adapter = cartAdapter
+    }
+
+    private fun hideOrderMenu() {
+        if (binding.llClearCart.visibility == View.VISIBLE) {
+            binding.llClearCart.visibility = View.GONE
+        } else {
+            binding.llClearCart.visibility = View.VISIBLE
+        }
     }
 
 }

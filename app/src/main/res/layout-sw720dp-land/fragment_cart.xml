@@ -32,22 +32,68 @@
                 style="@style/CustomFontSemiBold"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
+                android:layout_toStartOf="@+id/imgOrderMenu"
+                android:background="?attr/selectableItemBackground"
                 android:gravity="end"
                 android:padding="@dimen/_6sdp"
                 android:text="@string/add_customer2"
                 android:textColor="@color/btnColor"
                 android:textSize="@dimen/_6mdpi" />
 
+            <ImageView
+                android:id="@+id/imgOrderMenu"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:layout_gravity="center"
+                android:background="?attr/selectableItemBackground"
+                android:contentDescription="@string/menu"
+                android:padding="@dimen/_4sdp"
+                android:src="@drawable/ic_dot_menu"
+                app:tint="@color/txtColor" />
+
+
         </RelativeLayout>
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:id="@+id/llClearCart"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/relHeader"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <include
+
+                layout="@layout/divider"
+                android:layout_width="match_parent"
+                android:layout_height="1dp" />
+
+
+            <TextView
+                android:id="@+id/txtClearItems"
+                style="@style/CustomFontMediumStyle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:paddingStart="@dimen/_5sdp"
+                android:paddingTop="@dimen/_3sdp"
+                android:paddingEnd="@dimen/_5sdp"
+                android:paddingBottom="@dimen/_5sdp"
+                android:text="@string/clear_items"
+                android:textColor="@color/txtColor"
+                android:textSize="@dimen/_5mdpi" />
+        </androidx.appcompat.widget.LinearLayoutCompat>
 
         <include
             android:id="@+id/viewDivider"
             layout="@layout/divider"
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:layout_below="@+id/relHeader" />
+            android:layout_below="@+id/llClearCart" />
 
         <androidx.appcompat.widget.LinearLayoutCompat
             android:layout_width="match_parent"
@@ -422,6 +468,7 @@
                 </LinearLayout>
 
                 <LinearLayout
+                    android:id="@+id/linearOrderPlace"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:weightSum="2">

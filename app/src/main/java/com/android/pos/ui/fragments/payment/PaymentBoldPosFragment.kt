@@ -28,18 +28,19 @@ class PaymentBoldPosFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        loadCartFragment(CartFragment())
+        loadCartFragment(CartFragment.newInstacne(true))
         loadCategoryFragment(CheckoutDetailsFragmentNew())
 
 
     }
+
     private fun loadCartFragment(frag: Fragment) {
         val fm: FragmentManager = requireActivity().supportFragmentManager
         val result = Bundle().apply {
             putInt("fragmentId", binding.frameLayout.id)
             putInt("checkoutHeaderId", binding.layoutHeaderCheckout.rlRoot.id)
-            putBoolean("isFromPayment",true)
-           // putInt("dashboardHeaderId", binding.layoutHeader.rlRoot.id)
+            putBoolean("isFromPayment", true)
+            // putInt("dashboardHeaderId", binding.layoutHeader.rlRoot.id)
         }
         frag.arguments = result
         fm.beginTransaction().replace(binding.frameLayoutCart.id, frag).commit()
@@ -47,12 +48,12 @@ class PaymentBoldPosFragment : Fragment() {
 
     private fun loadCategoryFragment(fragment: Fragment) {
         val fm: FragmentManager = requireActivity().supportFragmentManager
-       /* val bundle = Bundle().apply {
-            fragmentId?.let { putInt("fragmentId", it) }
-        }*/
-       // fragment.arguments = bundle
-        fm.beginTransaction().replace(binding.frameLayout.id,fragment).commit()
-       // binding.frameLayout?.let { fm.beginTransaction().replace(it, fragment).commit() }
+        /* val bundle = Bundle().apply {
+             fragmentId?.let { putInt("fragmentId", it) }
+         }*/
+        // fragment.arguments = bundle
+        fm.beginTransaction().replace(binding.frameLayout.id, fragment).commit()
+        // binding.frameLayout?.let { fm.beginTransaction().replace(it, fragment).commit() }
     }
 
 }
