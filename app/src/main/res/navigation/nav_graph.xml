@@ -845,11 +845,6 @@
             android:id="@+id/action_orders_to_paymentFragment"
             app:destination="@id/paymentBoldPosFragment" />
     </fragment>
-    <fragment
-        android:id="@+id/manualSaleBold"
-        android:name="com.android.pos.ui.fragments.manualsales.ManualSaleBoldPOS.ManualSaleBoldFragment"
-        android:label="Manual Sales Bold">
-    </fragment>
     <action
         android:id="@+id/action_global_orders"
         app:destination="@id/orders" />
