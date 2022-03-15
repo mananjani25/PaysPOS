@@ -7,14 +7,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.os.bundleOf
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
-import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.*
+import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
-import com.android.pos.data.entities.CartModel
-import com.android.pos.data.entities.CashDiscountModel
+import com.android.pos.data.entities.*
+import com.android.pos.data.model.DineInModel
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.ORDER_TYPE
 import com.android.pos.data.remote.Constants.TAKEOUT
@@ -27,13 +26,18 @@ import com.android.pos.ui.fragments.payment.PaymentViewModel
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.ProgressUtils
+import com.android.pos.utils.callback.MyCallback
 import com.android.pos.utils.extensions.alert
+import com.android.pos.utils.extensions.gone
+import com.android.pos.utils.extensions.visible
+import com.android.pos.utils.statusUtils.Resource
+import com.android.pos.utils.statusUtils.Status
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class CartFragment() : Fragment() {
+class CartFragment : Fragment() , MyCallback ,DineInAdapter.DineInCallback{
     private lateinit var binding: FragmentCartBinding
     var fragmentId: Int? = null
     var checkoutHeaderId: Int = 0
@@ -54,7 +58,11 @@ class CartFragment() : Fragment() {
     private val viewModelPayment by viewModels<PaymentViewModel>()
     var updateBundle: Bundle? = null
     var isFromPayment: Boolean = false
-
+    private var serviceChargesObserve: Observer<Resource<List<TbServiceCharge>>>? = null
+    private lateinit var nameObserver: Observer<List<CartModel>>
+    private lateinit var dineInCartAdapter: DineInAdapter
+    private var assignCustomer: TbCustomer? = null
+    private var openORderType: String = ""
 
     @Inject
     lateinit var prefProvider: PrefProvider
@@ -117,6 +125,7 @@ class CartFragment() : Fragment() {
         initListeners()
         setCartAdapter()
         addObserver()
+        getCartList()
 
 
         if (isFromPayment) {
@@ -155,7 +164,7 @@ class CartFragment() : Fragment() {
             prefProvider.getValue(ORDER_TYPE, TAKEOUT),
             prefProvider.getValueInt(com.android.pos.data.remote.Constants.EMPLOYEE_ID, 0)
         ).observe(requireActivity()) {
-            Log.e(TAG,"getCartList:  ${Gson().toJson(it)}")
+            Log.e(TAG, "getCartList:  ${Gson().toJson(it)}")
             if (it.isNotEmpty()) {
                 Log.e(TAG, "listSize  ${Gson().toJson(it)}")
                 it[it.size - 1].items?.toCollection(arrayListOf())
@@ -439,6 +448,417 @@ class CartFragment() : Fragment() {
         } else {
             binding.llClearCart.visibility = View.VISIBLE
         }
+    }
+
+    private fun getCartList() {
+        Log.e("Loyalty", "getCartList called..")
+
+        cartAdapter = CartAdapter()
+        cartAdapter.setCallback(this)
+        dineInCartAdapter = DineInAdapter()
+        dineInCartAdapter.setListner(this)
+        binding.rvCartList.adapter = cartAdapter
+        //binding.layoutCart.rvCartDineIn.adapter = dineInCartAdapter
+
+
+        nameObserver = Observer {
+
+            bindData(it)
+
+            removeObserver()
+        }
+
+
+        if (isAdded)
+            addObserver()
+    }
+
+    private fun removeObserver() {
+
+        viewModel.mAllWords(
+            prefProvider.getValue(ORDER_TYPE, ""), prefProvider.getValueInt(
+                Constants.EMPLOYEE_ID, 0
+            )
+        ).removeObserver(nameObserver)
+        //  addObserver()
+    }
+
+    private fun bindData(it: List<CartModel>?) {
+        Log.e("bindData", "YesAdded")
+
+        cartlist = it as ArrayList<CartModel>
+        viewModel.destroyedList.clear()
+
+        if (cartlist.isNotEmpty()) {
+            cartlist[0].items?.filter { item -> item.isDestroy }?.let {
+                viewModel.destroyedList.addAll(it)
+            }
+
+            refreshOrderTypeLabel()
+
+            if (prefProvider.getValue(ORDER_TYPE, "") == Constants.DINE_IN) {
+                binding.rvCartList.visibility = View.GONE
+                //binding.layoutCart.rvCartDineIn.visibility = View.VISIBLE
+                //binding.layoutCart.llPayment.visibility = View.VISIBLE
+
+
+                if (cartlist[0].items?.isNotEmpty() == true) {
+                    val dineList = cartlist[0].dineInList ?: dineInCartAdapter.getList()
+
+                    // mannual sale added in dineinn //yash
+                    cartlist[0].items?.forEach {
+
+                        if (it.isManualSales && dineList.isNotEmpty()) {
+
+                            if (it.timeStamp == null || it.timeStamp?.lowercase() == "null".lowercase()) {
+                                it.timeStamp = viewModel.randomOfflineId()
+                            }
+                            dineList.get(0).selectedPosition =
+                                prefProvider.getValueInt(Constants.DINE_INGUEST_SELECTED, 0)
+                            dineList[prefProvider.getValueInt(
+                                Constants.DINE_INGUEST_SELECTED,
+                                0
+                            )].items.add(it)
+                            Log.d(
+                                "yash",
+                                "bindData: dineine HEaderPositonn " + prefProvider.getValueInt(
+                                    Constants.DINE_INGUEST_SELECTED,
+                                    0
+                                )
+                            )
+
+                        }
+                        cartlist[0].items?.toCollection(arrayListOf())?.clear()
+                        cartlist[0].items = listOf()
+
+                    }
+
+                    viewModel.cartLogic(cartlist, null, Constants.ADD, dineInList = dineList)
+
+                }
+
+                val list1 = cartlist.get(0).dineInList
+                if (isAdded) {
+
+                    setFragmentResultListener("request_key_customer_dine_in") { _, bundle ->
+                        val result = bundle.getParcelable<TbCustomer>("data")
+                        if (result != null) {
+
+
+                            if (list1?.isNotEmpty() == true) {
+
+                                var position = bundle.getInt("position")
+
+                                val dineInList = list1
+                                if (dineInList.size >= position && position != 0) {
+
+
+                                    dineInList.get(position).customer = result
+
+                                    Log.e(TAG, "UpdateCustomerPostition ${position}")
+                                    Log.e(
+                                        TAG,
+                                        "UpdateCustomer ${dineInList.get(position).customer}"
+                                    )
+
+                                    viewModel.dineInCartUpdate(
+                                        cartlist,
+                                        dineInList
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+
+
+            } else {
+
+
+                binding.rvCartList.visibility = View.VISIBLE
+               // binding.layoutCart.rvCartDineIn.visibility = View.GONE
+                if (cartlist[0].items?.isEmpty() == true) {
+                   // binding.layoutCart.llPayment.gone()
+                } else
+                    //binding.layoutCart.llPayment.visible()
+
+                Log.e(TAG, "cartList[0].items > ${cartlist[0].items?.size}")
+                Log.e(TAG, "viewModel.destroyedList > ${viewModel.destroyedList.size}")
+                cartAdapter.addCart(cartlist[0].items)
+            }
+            viewModel.itemCalculation(
+                cartlist,
+                binding.txtTotal,
+                requireContext()
+            )
+
+            val orderType = prefProvider.getValue(ORDER_TYPE, "")
+            Log.e("!_@_", "rlSave -------- $orderType ")
+            if (orderType == TAKEOUT || orderType == Constants.DINE_IN) {
+                Log.e("!_@_", "rlSave -- GONE ")
+                binding.tvSave.visibility = View.GONE
+                if (prefProvider.getValue(ORDER_TYPE, "").toString() == Constants.DINE_IN) {
+                    binding.txtTotal.visibility = View.GONE
+                    binding.tvPayNow.visibility = View.GONE
+                   // binding.layoutCart.txtDineInProceed.visibility = View.VISIBLE
+                    if (prefProvider.getValueboolean(Constants.DINE_IN_UPDATE, false) == true) {
+
+                       // binding.layoutCart.txtDineInProceed.setText("Update and Proceed")
+                    } else {
+                       // binding.layoutCart.txtDineInProceed.setText("Proceed To Fire")
+                    }
+                } else {
+                    //binding.layoutCart.txtDineInProceed.visibility = View.GONE
+                    binding.rvCartList.visible()
+                    if (cartlist[0].items?.isEmpty() == true) {
+                        binding.tvPayNow.gone()
+                    } else
+                        binding.tvPayNow.visible()
+                    //  binding.layoutCart.llPayment.visible()
+                }
+            } else {
+                Log.e("!_@_", "rlSave -- VISIBLE ")
+                binding.tvSave.visibility = View.VISIBLE
+                binding.rvCartList.visible()
+                //  binding.layoutCart.llPayment.visible()
+                if (cartlist[0].items?.isEmpty() == true) {
+                    binding.tvPayNow.gone()
+                } else
+                    binding.tvPayNow.visible()
+            }
+
+
+        } else {
+
+            viewModel.itemCalculation(
+                cartlist,
+                binding.tvPayNow,
+                requireContext()
+            )
+
+            binding.rvCartList.gone()
+            binding.tvPayNow.gone()
+
+
+        }
+
+
+        if (prefProvider.getValueInt("ORDER_ID", -1) != -1) {
+            Log.e(TAG, "ManualSale ORderIDNOt Null")
+            if (prefProvider.getValue(ORDER_TYPE, TAKEOUT).toString() != Constants.DINE_IN) {
+                lifecycleScope.launchWhenResumed {
+                    if (findNavController().currentDestination?.id == R.id.dashboardCategoryNew) {
+                        val bundle = bundleOf(Constants.IS_NEXT_AMOUNT to true)
+
+                        /*  findNavController().navigate(
+                              R.id.action_dashboardCategoryNew_to_paymentFragment, bundle
+                          )*/
+                    }
+                }
+            }
+
+            gotoPayment()
+        }
+    }
+    private fun refreshOrderTypeLabel() {
+        //set order type label
+        var label = prefProvider.getValue(ORDER_TYPE, TAKEOUT).toString()
+        if (label.equals(Constants.OPEN_ORDER, true) || label.equals(Constants.OPEN_ORDER_, true)) {
+            label = Constants.OPEN_ORDER_
+        }
+        Log.e(TAG, "OrderType Label : $label")
+        //binding.layoutCart.txtOrderType.text = label
+    }
+
+
+    private fun gotoPayment() {
+        Log.e(TAG, "cartList:  ${cartlist.size}")
+        if (cartlist.isNotEmpty()) {
+            if (prefProvider.getValueboolean(Constants.DINE_IN_UPDATE, false)) {
+                var itemCount = 0
+                for (i in cartlist.indices) {
+                    for (j in cartlist[i].dineInList?.indices!!) {
+                        if (cartlist[i].dineInList?.get(j)?.items?.size!! > 0) {
+                            itemCount++
+                            break
+                        }
+                    }
+                    if (itemCount != 0) {
+                        break
+                    }
+
+                }
+
+                if (itemCount == 0) {
+                    AlertUtils.showCustomAlertWithListenerWithOK(
+                        requireContext(),
+                        getString(R.string.please_add_Atleast_one_item_in_cart)
+                    ) { _, _ ->
+                    }
+                } else {
+                    val request = viewModel.updateOrder(cartlist[0])
+
+                    prefProvider.setValueboolean(Constants.DINE_IN_UPDATE, false)
+                    prefProvider.setValueboolean(Constants.DINE_IN_LIST_EDIT, false)
+                    prefProvider.setValueboolean(Constants.DINE_IN_UPDATE, false)
+                    cartlist[0].orderId?.let { viewModel.updateOrderCall(it, request) }
+
+
+                }
+
+            } else {
+
+                val bundle = Bundle()
+
+                var final_total = (binding.txtTotal.text.toString().subSequence(
+                    2,
+                    binding.txtTotal.text.length
+                ) as String).toDouble()
+                bundle.putDouble("totalPrice", final_total)
+                bundle.putParcelable(
+                    "redeemLoyalty",
+                    viewModel.redeemLoyaltyInfo
+                )
+                bundle.putDouble(
+                    "cashDiscountSurcharge",
+                    MethodUtils.calculateCashDiscount(final_total, prefProvider, requireContext())
+                )
+
+                if (MethodUtils.isEnableCashDiscount(requireContext())) {
+                    prefProvider.setValue(
+                        "cashDiscountSurCharge",
+                        MethodUtils.calculateCashDiscount(
+                            final_total,
+                            prefProvider,
+                            requireContext()
+                        ).toString()
+                    )
+                }
+                bundle.putDouble(
+                    "subTotalPrice",
+                    if (viewModel.subTotalPrice < 0) 0.0 else viewModel.subTotalPrice
+                )
+                bundle.putDouble(
+                    "totalTax",
+                    if (viewModel.subTotalPrice < 0) 0.0 else viewModel.totalTax
+                )
+                bundle.putDouble(
+                    "totalDiscount",
+                    viewModel.totalDiscount + cartlist[0].discountPrice
+                )
+                bundle.putDouble(
+                    "totalServiceCharge",
+                    if (viewModel.subTotalPrice < 0) 0.0 else viewModel.totalServiceCharge
+                )
+                bundle.putString("future_delivery_date", future_delivery_date)
+                bundle.putString("future_delivery_time", future_delivery_time)
+                cartlist[0].customer = assignCustomer
+                val cartModel = viewModel.generateCombinedItems(cartlist[0])
+               // Log.e(TAG, "openORderType  ${openORderType}")
+                cartModel.openOrderType = openORderType
+                Log.e(TAG, "PaymentPAsscartModel: ${Gson().toJson(cartModel)}")
+                bundle.putParcelable("cartList", cartModel)
+                if (isOrderUpdate) {
+                    bundle.putBoolean("update", true)
+                    orderId?.let { bundle.putInt("orderId", it) }
+                    paymentId?.let { bundle.putInt("paymentId", it) }
+                    bundle.putString("paymentOfflineId", paymentOfflineId)
+                    bundle.putString("orderOfflineId", orderOfflineId)
+                }
+                if (prefProvider.getValue(ORDER_TYPE, "").toString() == Constants.DINE_IN) {
+                    var itemCount = 0
+                    for (i in cartlist.indices) {
+                        for (j in cartlist[i].dineInList?.indices!!) {
+                            if (cartlist[i].dineInList?.get(j)?.items?.size!! > 0) {
+                                itemCount++
+                                break
+                            }
+                        }
+                        if (itemCount != 0) {
+                            //createDineInRequest()
+                            break
+                        }
+                    }
+
+                    if (itemCount == 0) {
+                        bundle.clear()
+                        AlertUtils.showCustomAlertWithListenerWithOK(
+                            requireContext(),
+                            getString(R.string.please_add_Atleast_one_item_in_cart)
+                        ) { _, _ ->
+                        }
+
+                    }
+                } else {
+                    prefProvider.setValue(Constants.TOTAL_PRICE_ACTUAL, final_total.toString())
+                    prefProvider.setValue(
+                        Constants.SUB_TOTAL_ACTUAL,
+                        viewModel.subTotalPrice.toString()
+                    )
+                    prefProvider.setValue(
+                        Constants.TOTAL_DISCOUNT_ACTUAL,
+                        viewModel.totalDiscount.toString()
+                    )
+                    prefProvider.setValue(
+                        Constants.TOTAL_SERVICE_CHARGE_ACTUAL,
+                        viewModel.totalServiceCharge.toString()
+                    )
+                    prefProvider.setValue(
+                        Constants.TAX_CHARGE_ACTUAL,
+                        viewModel.totalTax.toString()
+                    )
+                    prefProvider.setValue(Constants.TIPS_AMOUNT_ACTUAL, "0.0")
+
+
+
+                    lifecycleScope.launchWhenStarted {
+                        if (findNavController().currentDestination?.id == R.id.dashboardCategoryNew) {
+                            if (prefProvider.getValueInt("ORDER_ID", -1) != -1) {
+                                bundle.putBoolean(Constants.IS_NEXT_AMOUNT, true)
+                            }
+                            findNavController().navigate(
+                                R.id.action_dashboardCategoryNew_to_paymentFragment,
+                                bundle
+                            )
+                        }
+                    }
+                }
+            }
+        } else if (cartlist.isEmpty() && prefProvider.getValueInt("ORDER_ID", -1) != -1) {
+
+            val bundle = bundleOf(Constants.IS_NEXT_AMOUNT to true)
+            findNavController().navigate(
+                R.id.action_dashboardCategoryNew_to_paymentFragment,
+                bundle
+            )
+
+        }
+
+    }
+
+
+
+
+    override fun onPause() {
+        super.onPause()
+        ProgressUtils.dismissProgressDialog()
+    }
+
+    override fun onItemClickListener(view: View?, data: TbItem, position: Int?) {
+
+    }
+
+    override fun onHeaderSelected(position: Int) {
+        
+    }
+
+    override fun onItemSelected(headerPosition: Int, position: Int, item: TbItem) {
+    }
+
+    override fun onCustomerClicked(position: Int, isRemoved: Boolean) {
+    }
+
+    override fun onItemDelete(position: Int, itemPosition: Int, data: TbItem) {
     }
 
 }
