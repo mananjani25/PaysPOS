@@ -81,6 +81,9 @@ class PaymentViewModel @Inject constructor(
     public var actual_CashDiscountSurCharge: Double = 0.0
     public var actual_CardAmount: Double = 0.0
 
+    private var magensaResponse: String? = null
+
+    fun cardReaderList() = posRepository.cardReaderActiveList()
 
     fun submit(orderRequestModel: OrderRequestModel) {
 
@@ -1560,6 +1563,11 @@ class PaymentViewModel @Inject constructor(
 
         }
 
+
+    }
+
+    fun setMagensaResponse(response: String?) {
+        magensaResponse = response
 
     }
 }

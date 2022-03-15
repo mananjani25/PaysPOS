@@ -8,8 +8,12 @@ import android.graphics.drawable.ColorDrawable
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.WindowManager
+import androidx.appcompat.widget.AppCompatImageView
+import androidx.appcompat.widget.AppCompatTextView
 import androidx.fragment.app.FragmentActivity
 import com.android.pos.R
+import com.android.pos.utils.callback.DeleteOptionCallback
+import com.android.pos.utils.extensions.visible
 import java.lang.Exception
 
 
@@ -28,6 +32,11 @@ import java.lang.Exception
 object ProgressUtils {
     private var builder: Dialog? = null
 
+    private var listener: DeleteOptionCallback? = null
+
+    fun setCallback(callback: DeleteOptionCallback) {
+        listener = callback
+    }
     /***
      * Show progress dialog
      * @param message Message
@@ -76,6 +85,8 @@ object ProgressUtils {
         val dialogView = inflater.inflate(R.layout.view_loading, null)
         builder?.setContentView(dialogView)
 
+        dialogView.findViewById<AppCompatTextView>(R.id.txtMessage).text = message
+        val imgClose = dialogView.findViewById<AppCompatImageView>(R.id.imgClose)
         builder?.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
         builder?.window?.setBackgroundDrawable(
             ColorDrawable(Color.WHITE)
@@ -85,6 +96,11 @@ object ProgressUtils {
             WindowManager.LayoutParams.WRAP_CONTENT,
             WindowManager.LayoutParams.WRAP_CONTENT
         )
+        imgClose.visible()
+
+        imgClose.setOnClickListener {
+            listener?.onItemClickListener(0)
+        }
 
         if (builder != null) {
             if (!builder!!.isShowing) {

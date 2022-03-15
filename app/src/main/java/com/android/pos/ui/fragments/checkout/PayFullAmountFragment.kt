@@ -1,10 +1,13 @@
 package com.android.pos.ui.fragments.checkout
 
+import android.bluetooth.BluetoothDevice
 import android.os.Bundle
+import android.text.InputType
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.EditText
 import android.widget.FrameLayout
 import android.widget.LinearLayout
 import androidx.fragment.app.Fragment
@@ -17,20 +20,42 @@ import com.android.pos.data.entities.RedeemLoyaltyInfo
 import com.android.pos.data.entities.TbItem
 import com.android.pos.data.model.requestModel.SpitByOrderPaymentModel
 import com.android.pos.data.model.requestModel.SpitByOrderRequestModel
+import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.TAKEOUT
 import com.android.pos.databinding.FragmentPayFullAmountBinding
+import com.android.pos.di.ApiModule1
+import com.android.pos.di.MagtekModule
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
+import com.android.pos.ui.fragments.magtek.MagtekRequestUtils
+import com.android.pos.ui.fragments.magtek.PaymentResponse
+import com.android.pos.ui.fragments.magtekPro.MTParser
+import com.android.pos.ui.fragments.magtekPro.SessionManager
 import com.android.pos.ui.fragments.payment.PaymentViewModel
+import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.ProgressUtils
+import com.android.pos.utils.TLVParser
+import com.android.pos.utils.callback.DeleteOptionCallback
 import com.android.pos.utils.callback.ItemListner
+import com.android.pos.utils.callback.magtekCallback
+import com.android.pos.utils.extensions.runOnUiThread
+import com.android.pos.utils.statusUtils.Status
 import com.google.gson.Gson
+import com.google.gson.JsonArray
+import com.magtek.mobile.android.mtlib.IMTCardData
+import com.magtek.mobile.android.mtlib.MTConnectionState
+import com.magtek.mobile.android.mtusdk.*
 import dagger.hilt.android.AndroidEntryPoint
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class PayFullAmountFragment(val bundle: Bundle?) : Fragment(), ItemListner {
+class PayFullAmountFragment(val bundle: Bundle?) : Fragment(), ItemListner, magtekCallback,
+    DeleteOptionCallback {
+    private var requestCancel: Boolean = false
     private lateinit var binding: FragmentPayFullAmountBinding
     private val viewModel by activityViewModels<DashBoardCategoryViewModel>()
     private val paymentviewModel by activityViewModels<PaymentViewModel>()
@@ -55,8 +80,21 @@ class PayFullAmountFragment(val bundle: Bundle?) : Fragment(), ItemListner {
     private var future_delivery_date: String = ""
     private var future_delivery_time: String = ""
     var totalDiscount = 0.0
+    var cardPaymentAmount = 0.0
 
     private var cartList: CartModel? = null
+
+    @Inject
+    lateinit var magtekModule: MagtekModule
+
+    @Inject
+    lateinit var magtekRequestUtils: MagtekRequestUtils
+
+    @Inject
+    lateinit var apiModule1: ApiModule1
+
+    @Inject
+    lateinit var mSessionManager: SessionManager
 
     @Inject
     lateinit var prefProvider: PrefProvider
@@ -153,6 +191,14 @@ class PayFullAmountFragment(val bundle: Bundle?) : Fragment(), ItemListner {
             binding.tvCash3.setTextColor(resources.getColor(R.color.txtColor))
             binding.tvCustom.setTextColor(resources.getColor(R.color.txtColor))
             binding.tvPaymentLink.setTextColor(resources.getColor(R.color.txtColor))
+
+            val device = prefProvider.getValueInt(Constants.MAGTEK_HARDWARE, 0)
+
+            if (device == 0) {
+                magtekPaymentCall()
+            } else {
+                magtekProPaymentCall()
+            }
         }
         binding.llManualCardEntry.setOnClickListener {
             binding.llManualCardEntry.setBackgroundDrawable(resources.getDrawable(R.drawable.button_selected))
@@ -388,6 +434,367 @@ class PayFullAmountFragment(val bundle: Bundle?) : Fragment(), ItemListner {
 
             }
         }
+    }
+
+    private fun magtekPaymentCall() {
+
+        paymentviewModel.cardReaderList().observe(viewLifecycleOwner) {
+
+            if (it.status == Status.SUCCESS) {
+
+                if (it.data == null) {
+
+                    if (magtekModule.m_scra?.isDeviceConnected == true) {
+                        magtekModule.startTransactionWithLED()
+                    } else
+                        showdialog()
+
+                } else {
+
+                    if (magtekModule.m_scra?.isDeviceConnected == true) {
+
+                        magtekModule.startTransactionWithLED()
+                    } else {
+                        ProgressUtils.showProgressDialog(requireActivity())
+                        magtekModule.setupInit()
+                        magtekModule.openDevice(it.data.mcAddress)
+                    }
+
+
+                }
+
+            }
+        }
+
+    }
+
+    private fun showdialog() {
+        val builder: android.app.AlertDialog.Builder =
+            android.app.AlertDialog.Builder(requireContext())
+        builder.setTitle(" Card Reader Not Found")
+        builder.setMessage("Please enter mac address")
+
+        val input = EditText(requireContext())
+        input.hint = "14:42:FC:0B:FB:FF"
+        input.inputType = InputType.TYPE_CLASS_TEXT
+        builder.setView(input)
+
+        builder.setPositiveButton("OK") { dialog, which ->
+            val m_Text = input.text.toString().trim()
+
+            if (m_Text.isEmpty())
+                return@setPositiveButton
+
+            testDevice(m_Text)
+        }
+        builder.setNegativeButton(
+            "Cancel"
+        ) { dialog, which -> dialog.cancel() }
+
+        builder.show()
+    }
+
+    private fun testDevice(m_Text: String) {
+        if (magtekModule.m_scra?.isDeviceConnected == true) {
+
+            magtekModule.startTransactionWithLED()
+        } else {
+            ProgressUtils.showProgressDialog(requireActivity())
+            magtekModule.setupInit()
+            magtekModule.openDeviceTest(m_Text)
+        }
+    }
+
+    override fun startScanning() {
+    }
+
+    override fun processStart(message: String, isDismiss: Boolean) {
+
+        ProgressUtils.setCallback(this)
+        if (isDismiss) {
+
+            ProgressUtils.dismissProgressDialog()
+
+            if (requestCancel) {
+                AlertUtils.showCustomAlert(
+                    requireContext(), message
+                )
+            } else {
+                AlertUtils.showCustomAlert(
+                    requireContext(), message
+                )
+            }
+
+
+        } else {
+            ProgressUtils.showProgressDialog(message, requireActivity())
+        }
+
+    }
+
+    override fun stopScanning() {
+    }
+
+    override fun onConnect(deviceState: MTConnectionState) {
+
+        runOnUiThread {
+            when (deviceState) {
+                MTConnectionState.Connected -> {
+                    ProgressUtils.dismissProgressDialog()
+                    magtekModule.startTransactionWithLED()
+
+                }
+                MTConnectionState.Disconnected -> {
+                    magtekModule.setLED(false)
+                    magtekModule.closeDevice()
+
+                    ProgressUtils.dismissProgressDialog()
+
+                    AlertUtils.showCustomAlert(requireContext(), "Connection error")
+                }
+                else -> {
+                }
+            }
+        }
+    }
+
+    override fun onDeviceResponse(response: String) {
+
+    }
+
+    override fun onDeviceList(bluetoothDevice: BluetoothDevice) {
+
+    }
+
+    override fun OnCardDataReceived(imtCardData: IMTCardData) {
+        ProgressUtils.dismissProgressDialog()
+
+        val jsonArray1 = magtekModule.m_scra?.let {
+            magtekRequestUtils.processCardSwipe(
+                (cardPaymentAmount * 100).toInt(),
+                magtekModule.m_scra!!.ksn,
+                magtekModule.m_scra!!.magnePrint,
+                magtekModule.m_scra!!.magnePrintStatus,
+                it.track2
+            )
+        }
+
+        networkCall(jsonArray1, 1)
+
+    }
+
+    private fun networkCall(jsonArray1: JsonArray?, i: Int) {
+
+        ProgressUtils.showProgressDialog(requireActivity())
+
+        var call: Call<PaymentResponse>? = null
+        if (i == 1) {
+            call = jsonArray1?.let { apiModule1.getRetrofit1().processCardSwipe(it) }
+        } else if (i == 2) {
+            call = jsonArray1?.let { apiModule1.getRetrofit1().processData(it) }
+        }
+
+        call!!.enqueue(object : Callback<PaymentResponse> {
+
+            override fun onResponse(
+                call: Call<PaymentResponse>,
+                response: Response<PaymentResponse>
+            ) {
+                ProgressUtils.dismissProgressDialog()
+                if (response.isSuccessful) {
+                    Log.e("onResponse", Gson().toJson(response.body()))
+                    if (response.body() != null && response.body()!![0].transactionOutput != null) {
+
+                        if (response.body()!![0].transactionOutput?.isTransactionApproved == true) {
+                            if (isDynamo())
+                                magtekModule.stopListner()
+                            paymentviewModel.setMagensaResponse(Gson().toJson(response.body()!![0]))
+                            makePaymentCreditCard()
+                        } else {
+                            AlertUtils.showCustomAlert(
+                                requireContext(),
+                                response.body()!![0].transactionOutput?.transactionMessage
+                            )
+                        }
+
+                        if (isDynamo())
+                            magtekModule.setLED(false)
+
+                    } else {
+                        if (response.body()!![0].mPPGv4WSFault != null)
+                            AlertUtils.showCustomAlert(
+                                requireContext(),
+                                response.body()!![0].mPPGv4WSFault?.faultCode + "\n" +
+                                        response.body()!![0].mPPGv4WSFault?.faultReason
+                            )
+                    }
+                }
+            }
+
+            override fun onFailure(call: Call<PaymentResponse>, t: Throwable) {
+
+                ProgressUtils.dismissProgressDialog()
+            }
+        })
+    }
+
+    private fun makePaymentCreditCard() {
+
+
+    }
+
+
+
+    override fun OnARQCReceived(data: ByteArray) {
+
+        ProgressUtils.dismissProgressDialog()
+
+        val jsonArray1 = magtekRequestUtils.processData(
+            (cardPaymentAmount * 100).toInt(),
+            TLVParser.getHexString(data),
+            Constants.SALE
+        )
+
+        networkCall(jsonArray1, 2)
+
+    }
+
+    override fun onItemClickListener(position: Int) {
+
+        if (!isDynamo()) {
+            mSessionManager.cancelTransaction()
+        } else {
+            requestCancel = true
+            magtekModule.cancelTransaction()
+        }
+    }
+
+    fun processEvent(eventType: EventType, data: IData) {
+        Log.d(
+            "processEvent", ": eventType=$eventType"
+        )
+
+        runOnUiThread {
+            when (eventType) {
+                EventType.ConnectionState -> {
+                    when (ConnectionStateBuilder.GetValue(data.StringValue())) {
+                        ConnectionState.Connected -> {
+                            Log.e("", "[CONNECTED]")
+
+                            startTransaction()
+                        }
+                        ConnectionState.Disconnected -> {
+                            Log.e("", "[DISCONNECTED]")
+                            ProgressUtils.dismissProgressDialog()
+                            AlertUtils.showCustomAlert(requireContext(), "DISCONNECTED")
+                        }
+                        ConnectionState.Disconnecting -> {
+                            Log.e("", "[DISCONNECTING]")
+                        }
+                        ConnectionState.Connecting -> {
+                            Log.e("", "[CONNECTING]")
+
+                        }
+                        else -> ""
+                    }
+                }
+                EventType.TransactionResult -> {
+
+//                ProgressUtils.dismissProgressDialog()
+
+                    Log.e("TransactionResult", "TransactionResult called")
+
+                    dismissDialog()
+
+                    val jsonArray1 = magtekRequestUtils.processData(
+                        (cardPaymentAmount * 100).toInt(),
+                        MTParser.getHexString(data.ByteArray()),
+                        Constants.SALE
+                    )
+
+                    networkCall(jsonArray1, 2)
+
+
+                }
+
+                EventType.TransactionStatus -> {
+                    when (TransactionStatusBuilder.GetStatusCode(data.StringValue())) {
+
+                        TransactionStatus.TimedOut -> {
+                            AlertUtils.showCustomAlert(requireContext(), "TRANSACTION TIMED OUT")
+                            //  ProgressUtils.dismissProgressDialog()
+                            dismissDialog()
+                        }
+                        TransactionStatus.HostCancelled -> {
+                            AlertUtils.showCustomAlert(requireContext(), "HOST CANCELLED")
+                            // ProgressUtils.dismissProgressDialog()
+                            dismissDialog()
+                        }
+                        TransactionStatus.TransactionCancelled -> {
+                            AlertUtils.showCustomAlert(requireContext(), "TRANSACTION CANCELLED")
+                            // ProgressUtils.dismissProgressDialog()
+                            dismissDialog()
+                        }
+                        TransactionStatus.TransactionError -> {
+                            AlertUtils.showCustomAlert(requireContext(), "TRANSACTION ERROR")
+                            //  ProgressUtils.dismissProgressDialog()
+                            dismissDialog()
+                        }
+                        else -> ""
+                    }
+                }
+            }
+        }
+
+    }
+
+    private fun dismissDialog() {
+        ProgressUtils.dismissProgressDialog()
+    }
+
+    private fun magtekProPaymentCall() {
+
+        ProgressUtils.showProgressDialog(requireActivity())
+        ProgressUtils.setCallback(this)
+
+
+        Log.e("mSessionManager", mSessionManager.isConnected.toString())
+        if (mSessionManager.isConnected) {
+            startTransaction()
+        } else {
+            if (mSessionManager.device != null) {
+                mSessionManager.connectDevice()
+            } else {
+                ProgressUtils.dismissProgressDialog()
+                dismissDialog()
+                AlertUtils.showCustomAlert(requireActivity(), "Please connect device")
+            }
+        }
+    }
+
+    private fun startTransaction() {
+
+
+        val paymentMethods = TransactionBuilder.GetPaymentMethods(true, true, true, false)
+
+        val transaction = Transaction(
+            60,
+            paymentMethods,
+            "1.0",
+            "",
+            true,
+            true,
+            0
+        )
+
+        mSessionManager.startTransaction(transaction, getSignature = false, fallback = false)
+
+
+    }
+
+    private fun isDynamo(): Boolean {
+        val device = prefProvider.getValueInt(Constants.MAGTEK_HARDWARE, 0)
+        return device == 0
     }
 
 }
