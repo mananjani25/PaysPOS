@@ -1162,6 +1162,12 @@
             app:destination="@id/dashboardCategoryBoldPOS"
             app:popUpTo="@id/hardware"
             app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_hardware_to_magtekFragment"
+            app:destination="@id/magtekFragment" />
+        <action
+            android:id="@+id/action_hardware_to_magtekProFragment"
+            app:destination="@id/magtekProFragment" />
     </fragment>
     <dialog
         android:id="@+id/printerTypeSelection"
@@ -1286,6 +1292,14 @@
         android:label="CheckoutDetails">
 
     </fragment>
+    <fragment
+        android:id="@+id/magtekFragment"
+        android:name="com.android.pos.ui.fragments.magtek.MagtekFragment"
+        android:label="MagtekFragment" />
+    <fragment
+        android:id="@+id/magtekProFragment"
+        android:name="com.android.pos.ui.fragments.magtekPro.MagtekProFragment"
+        android:label="MagtekProFragment" />
 
 
 </navigation>
