@@ -1,11 +1,12 @@
 package com.android.pos.ui.fragments.dashboard.bolddashboard
 
+import android.R.attr.button
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
+import android.widget.TextView
+import androidx.appcompat.widget.PopupMenu
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
@@ -20,7 +21,6 @@ import com.android.pos.data.remote.Constants.ORDER_TYPE
 import com.android.pos.data.remote.Constants.TAKEOUT
 import com.android.pos.databinding.FragmentCartBinding
 import com.android.pos.di.PrefProvider
-import com.android.pos.ui.adapter.DineInAdapter
 import com.android.pos.ui.adapter.boldpos.CartAdapter
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.android.pos.ui.fragments.payment.PaymentViewModel
@@ -32,8 +32,10 @@ import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
+
 @AndroidEntryPoint
 class CartFragment() : Fragment() {
+    private lateinit var customerName: TextView
     private lateinit var binding: FragmentCartBinding
     var fragmentId: Int? = null
     var checkoutHeaderId: Int = 0
@@ -60,6 +62,25 @@ class CartFragment() : Fragment() {
     lateinit var prefProvider: PrefProvider
     private val TAG = "CartFragment"
 
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.cart_menu, menu);
+        super.onCreateOptionsMenu(menu, inflater)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.menu_clear_cart ->
+                // Not implemented here
+                clearCart()
+        }
+        return false
+    }
 
     companion object {
         fun newInstacne(isFromPayment: Boolean): CartFragment {
@@ -98,8 +119,23 @@ class CartFragment() : Fragment() {
             dashboardHeaderId = arguments?.getInt("dashboardHeaderId")!!
 
         isFromPayment = arguments?.getBoolean("isFromPayment") ?: false
+
+        customerName = binding.txtAddCustomer
+
         setUpData()
         return binding.root
+    }
+
+    private fun displayCustomer() {
+
+        val name = prefProvider.getValue(Constants.CUSTOMER_NAME, "")
+        Log.e("Customer Name", name)
+        if (name.isNotEmpty()) {
+            binding.txtAddCustomer.text = name
+        } else {
+            binding.txtAddCustomer.text = getString(R.string.add_customer2)
+        }
+
     }
 
     private fun setUpData() {
@@ -153,9 +189,9 @@ class CartFragment() : Fragment() {
 
         viewModel.mAllWords(
             prefProvider.getValue(ORDER_TYPE, TAKEOUT),
-            prefProvider.getValueInt(com.android.pos.data.remote.Constants.EMPLOYEE_ID, 0)
+            prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
         ).observe(requireActivity()) {
-            Log.e(TAG,"getCartList:  ${Gson().toJson(it)}")
+            Log.e(TAG, "getCartList:  ${Gson().toJson(it)}")
             if (it.isNotEmpty()) {
                 Log.e(TAG, "listSize  ${Gson().toJson(it)}")
                 it[it.size - 1].items?.toCollection(arrayListOf())
@@ -176,6 +212,8 @@ class CartFragment() : Fragment() {
             } else {
                 cartAdapter.clearList()
             }
+
+            displayCustomer()
         }
 
         viewModel.showProgress.observe(viewLifecycleOwner) { event ->
@@ -208,7 +246,7 @@ class CartFragment() : Fragment() {
         }
     }
 
-    fun redirectToActiveOrder() {
+    private fun redirectToActiveOrder() {
         try {
             var intent: Intent = Intent()
             intent.action = "SEND_TO_ACTIVE_ORDER"
@@ -263,39 +301,36 @@ class CartFragment() : Fragment() {
     }
 */
 
+
     fun initListeners() {
-        binding.imgOrderMenu.setOnClickListener {
 
-            hideOrderMenu()
-
+        binding.txtAddCustomer.setOnClickListener {
+            findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_assignCustomerOrderFragment)
         }
 
-        binding.llClearCart.setOnClickListener {
-            alert(
-                getString(R.string.app_name),
-                getString(R.string.delete_items_message)
-            ) {
-                positiveButton(getString(R.string.tv_delete)) {
-                    // Do positive stuff here
-                    prefProvider.setValueInt(Constants.DINE_INGUEST_SELECTED, 0)
+        binding.imgOrderMenu.setOnClickListener {
 
+            val popupMenu = PopupMenu(requireContext(), it)
+            popupMenu.menuInflater.inflate(R.menu.cart_menu, popupMenu.menu)
+            popupMenu.setOnMenuItemClickListener { menuItem ->
+                val id = menuItem.itemId
+                if (id == R.id.menu_clear_cart) {
+                    clearCart()
+                } else if (id == R.id.menu_remove_customer) {
 
-
-                    viewModel.deleteCart()
-
-                    if (prefProvider.getValue(Constants.ORDER_TYPE, "").toString() != "") {
-                        prefProvider.setValue(Constants.ORDER_TYPE, "")
+                    if (cartlist.isNotEmpty() && cartlist[0].customer != null){
+                        cartlist[0].customer = null
+                        viewModel.addCart(cartlist[0])
                     }
 
-                    hideOrderMenu()
-                    prefProvider.setValueboolean(Constants.LOYALTY_ADDED, false)
 
-
+                    clearCustomer()
+                    displayCustomer()
                 }
-                negativeButton(R.string.tv_cancel) {
-                    // Do negative stuff here
-                }
+                true
             }
+            popupMenu.show()
+
         }
 
         binding.tvPayNow.setOnClickListener {
@@ -393,6 +428,34 @@ class CartFragment() : Fragment() {
         }
     }
 
+    private fun clearCart() {
+        alert(
+            getString(R.string.app_name),
+            getString(R.string.delete_items_message)
+        ) {
+            positiveButton(getString(R.string.tv_delete)) {
+                // Do positive stuff here
+                prefProvider.setValueInt(Constants.DINE_INGUEST_SELECTED, 0)
+
+                clearCustomer()
+
+                viewModel.deleteCart()
+
+                if (prefProvider.getValue(ORDER_TYPE, "").toString() != "") {
+                    prefProvider.setValue(ORDER_TYPE, "")
+                }
+
+                prefProvider.setValueboolean(Constants.LOYALTY_ADDED, false)
+
+                displayCustomer()
+
+            }
+            negativeButton(R.string.tv_cancel) {
+                // Do negative stuff here
+            }
+        }
+    }
+
     private fun showMessage() {
         AlertUtils.showCustomAlert(requireContext(), "Order should be less than 1 million usd.")
     }
@@ -433,12 +496,6 @@ class CartFragment() : Fragment() {
         binding.rvCartList.adapter = cartAdapter
     }
 
-    private fun hideOrderMenu() {
-        if (binding.llClearCart.visibility == View.VISIBLE) {
-            binding.llClearCart.visibility = View.GONE
-        } else {
-            binding.llClearCart.visibility = View.VISIBLE
-        }
-    }
+
 
 }

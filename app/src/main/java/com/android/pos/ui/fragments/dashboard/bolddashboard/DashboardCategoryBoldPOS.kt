@@ -16,13 +16,11 @@ import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
-import com.android.pos.data.entities.CartModel
-import com.android.pos.data.entities.TbItem
-import com.android.pos.data.entities.TbOrderType
-import com.android.pos.data.entities.TbServiceCharge
+import com.android.pos.data.entities.*
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.EMPLOYEE_NAME
 import com.android.pos.data.remote.Constants.ORDER_TYPE
@@ -55,7 +53,7 @@ class DashboardCategoryBoldPOS : Fragment(), ItemListner {
     var isupdate = false
     private val redirectionBroadCast: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(ctxt: Context, i: Intent) {
-            if(findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
+            if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
                 findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
             }
 
@@ -78,10 +76,38 @@ class DashboardCategoryBoldPOS : Fragment(), ItemListner {
                 }
             }
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
+        resultListener()
         addObserver()
         getServiceCharges()
         binding.lifecycleOwner = this
         return binding.root
+    }
+
+    private fun resultListener() {
+
+        setFragmentResultListener("request_key_customer") { _: String, bundle: Bundle ->
+            val result = bundle.getParcelable<TbCustomer>("data")
+            if (result != null) {
+                Log.e(TAG, "gotBundlebundle:  ${Gson().toJson(bundle)}")
+                setUpCustomer(result, bundle)
+            }
+        }
+    }
+
+    private fun setUpCustomer(result: TbCustomer, bundle: Bundle) {
+
+        prefProvider.setValue(Constants.CUSTOMER_NAME, result.first_name + " " + result.last_name)
+        result.id?.let { prefProvider.setValueInt(Constants.CUSTOMER_ID, it) }
+
+        if (cartList.isEmpty()) {
+            val cart = createCart()
+            cart?.get(0)?.customer = result
+        } else {
+            cartList[0].customer = result
+            viewModel.addCart(cartList[0])
+        }
+
+
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -210,7 +236,7 @@ class DashboardCategoryBoldPOS : Fragment(), ItemListner {
         if (prefProvider.getValue(ORDER_TYPE, "") == Constants.OPEN_ORDER) {
             val model = CartModel()
             model.employeeID =
-                prefProvider.getValueInt(com.android.pos.data.remote.Constants.EMPLOYEE_ID, 0)
+                prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
             model.terminalId = prefProvider.getValueInt(TERMINAL_ID, 0)
             model.orderType = prefProvider.getValue(ORDER_TYPE, "")
             model.locationId = prefProvider.getValueInt(Constants.LOCATION_ID, 1)
@@ -222,25 +248,33 @@ class DashboardCategoryBoldPOS : Fragment(), ItemListner {
             }
             cartList.add(model)
         } else {
-            if (cartList.isEmpty()) {
-                val model = CartModel()
-                model.employeeID =
-                    prefProvider.getValueInt(com.android.pos.data.remote.Constants.EMPLOYEE_ID, 0)
-                model.terminalId = prefProvider.getValueInt(TERMINAL_ID, 0)
-                model.orderType = prefProvider.getValue(ORDER_TYPE, "")
-                model.locationId = prefProvider.getValueInt(Constants.LOCATION_ID, 1)
-                model.serviceCharge = serviceChargesList
-                viewModel.ordertypelist.forEach {
-                    if (it.orderType == Constants.TAKEOUT) {
-                        model.orderTypeId = it.id
-                    }
-                }
-                cartList.add(model)
-            }
+            createCart()
         }
 
         val fragment = AddItemFragment.newInstance(item, this, cartList)
         loadCategoryFragment(fragment)
+    }
+
+    private fun createCart(): ArrayList<CartModel>? {
+        if (cartList.isEmpty()) {
+            val model = CartModel()
+            model.employeeID =
+                prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
+            model.terminalId = prefProvider.getValueInt(TERMINAL_ID, 0)
+            model.orderType = prefProvider.getValue(ORDER_TYPE, "")
+            model.locationId = prefProvider.getValueInt(Constants.LOCATION_ID, 1)
+            model.serviceCharge = serviceChargesList
+            viewModel.ordertypelist.forEach {
+                if (it.orderType == TAKEOUT) {
+                    model.orderTypeId = it.id
+                }
+            }
+            cartList.add(model)
+
+            return cartList
+        }
+
+        return null
     }
 
     override fun onCancelItemSelected() {
@@ -252,7 +286,7 @@ class DashboardCategoryBoldPOS : Fragment(), ItemListner {
 
         viewModel.mAllWords(
             prefProvider.getValue(ORDER_TYPE, TAKEOUT),
-            prefProvider.getValueInt(com.android.pos.data.remote.Constants.EMPLOYEE_ID, 0)
+            prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
         ).observe(requireActivity()) {
             cartList.clear()
             cartList = arrayListOf()
@@ -280,7 +314,6 @@ class DashboardCategoryBoldPOS : Fragment(), ItemListner {
 
         viewModel.serviceCharges.observe(requireActivity(), serviceChargesObserve!!)
     }
-
 
 
     private fun checkItemQty(

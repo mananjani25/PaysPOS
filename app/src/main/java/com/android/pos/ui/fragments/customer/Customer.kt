@@ -279,7 +279,7 @@ class Customer : Fragment() {
         binding.layoutTool.txtTitle.text = "Customers"
 
         binding.layoutTool.imgDrawer.setOnClickListener {
-            findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_menuFragment)
+            findNavController().navigate(R.id.action_customer_to_menuFragment2)
         }
         binding.layoutTool.txtHome.setOnClickListener {
             findNavController().navigate(R.id.action_customer_to_dashboardCategoryNew)
