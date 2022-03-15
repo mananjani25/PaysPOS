@@ -23,6 +23,8 @@ import com.android.pos.data.remote.Constants.TAKEOUT
 import com.android.pos.data.remote.Constants.TERMINAL_ID
 import com.android.pos.databinding.FragmentDashboardCategoryBoldPosBinding
 import com.android.pos.di.PrefProvider
+import com.android.pos.ui.adapter.CartAdapter
+import com.android.pos.ui.adapter.DineInAdapter
 import com.android.pos.ui.adapter.VariationDashboardListAdapter
 import com.android.pos.ui.fragments.checkout.CheckoutDetailsFragmentNew
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
@@ -210,12 +212,15 @@ class DashboardCategoryBoldPOS : Fragment(), ItemListner {
 
             if (it.status == Status.SUCCESS) {
                 serviceChargesList = it.data
+
             }
 
         }
 
         viewModel.serviceCharges.observe(requireActivity(), serviceChargesObserve!!)
     }
+
+
 
     private fun checkItemQty(
         data: TbItem,
