@@ -65,9 +65,9 @@ data class VenueDetailsResponse(
         @SerializedName("is_printer_queue_enable")
         val isPrinterQueueEnable: Boolean,
         @SerializedName("customer_receipt")
-        val customerReceipt: GetCustomerReceiptSettingsResponse.Data,
+        val customerReceipt: GetCustomerReceiptSettingsResponse.Data? = null,
         @SerializedName("kitchen_receipt")
-        val kitchenReceipt: GetKitchenReceiptSettingsResponse.Data,
+        val kitchenReceipt: GetKitchenReceiptSettingsResponse.Data? = null,
         @SerializedName("team_roles")
         val teamRoles: List<TeamRole>,
         @SerializedName("employee")
@@ -79,7 +79,7 @@ data class VenueDetailsResponse(
         @SerializedName("magensa_settings")
         val magensaSettings: List<MagensaSettings>
 
-        ) {
+    ) {
         data class CancelOrderReason(
             @SerializedName("created_at")
             val createdAt: String,
@@ -123,7 +123,7 @@ data class VenueDetailsResponse(
             @SerializedName("name")
             val name: String,
             @SerializedName("url")
-            val logoUrl:String,
+            val logoUrl: String,
             @SerializedName("record")
             val record: Record
         ) {
