@@ -3,9 +3,7 @@ package com.android.pos.ui.fragments.createoption
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.text.method.KeyListener
 import android.util.Log
-import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -76,7 +74,7 @@ class CreateOptionSet : Fragment(), TextWatcher {
 
             optionSet = arguments?.getParcelable("optionObject")!!
 
-            viewModel.setData(isEdit, optionSet!!.name, optionSet!!.id, optionSet!!.displayName)
+            viewModel.setData(isEdit, optionSet!!.name, optionSet!!.id, optionSet!!.displayName ?: "")
 
 
             optionSet!!.options.sortedBy {

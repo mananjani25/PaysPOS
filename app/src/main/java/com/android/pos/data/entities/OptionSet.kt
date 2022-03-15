@@ -10,7 +10,7 @@ import kotlinx.parcelize.Parcelize
 @Entity(tableName = "OptionSet")
 class OptionSet : Parcelable {
     @SerializedName("display_name")
-    var displayName: String = ""
+    var displayName: String? = ""
 
     @PrimaryKey
     @SerializedName("id")

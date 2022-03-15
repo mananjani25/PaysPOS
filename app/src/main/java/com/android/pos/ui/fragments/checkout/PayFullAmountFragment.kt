@@ -76,7 +76,7 @@ class PayFullAmountFragment(val bundle: Bundle?) : Fragment(), ItemListner {
         super.onViewCreated(view, savedInstanceState)
         onClick()
         frameLayoutId = bundle?.getInt("frameLayoutId")!!
-        llRoot = bundle?.getInt("llRoot")!!
+        llRoot = bundle.getInt("llRoot")!!
         observeShowProgress()
         getCartData()
         observeData()
@@ -310,7 +310,7 @@ class PayFullAmountFragment(val bundle: Bundle?) : Fragment(), ItemListner {
                         bundle.putBoolean("isFromActiveOrder", false)
 
                         findNavController().navigate(
-                            R.id.actionboldpos_to_orderCompleteFragment,
+                            R.id.action_paymentBoldPosFragment_to_orderComplete,
                             bundle
                         )
 

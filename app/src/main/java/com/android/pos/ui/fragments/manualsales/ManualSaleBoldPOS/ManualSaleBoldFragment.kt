@@ -1,4 +1,4 @@
-package com.android.pos.ui.fragments.manualsales
+package com.android.pos.ui.fragments.manualsales.ManualSaleBoldPOS
 
 import android.annotation.SuppressLint
 import android.app.Dialog
@@ -16,10 +16,7 @@ import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.core.os.bundleOf
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.setFragmentResultListener
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.*
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
@@ -33,11 +30,13 @@ import com.android.pos.data.remote.Constants.LOYALTY_ADDED
 import com.android.pos.data.remote.Constants.MANUALSALE
 import com.android.pos.data.remote.Constants.MANUAL_SALE_CATEGORY_ID
 import com.android.pos.data.remote.Constants.MANUAL_SALE_ITEM_ID
-import com.android.pos.databinding.FragmentManualSaleNewBinding
+import com.android.pos.databinding.FragmentManualSaleBoldBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.di.RolePermission
 import com.android.pos.ui.adapter.ManualSaleCartAdapter
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
+import com.android.pos.ui.fragments.dashboard.bolddashboard.CartFragment
+import com.android.pos.ui.fragments.manualsales.ManualSaleViewModel
 import com.android.pos.utils.AmountTextWatcher
 import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.callback.ManualSaleOptionsCustomCallback
@@ -49,18 +48,19 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
+class ManualSaleBoldFragment : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
     ManualSaleOptionsCustomCallback {
 
     private var mPostion: Int = 0
     private var manualItemId: Int = 0
     private var manualCategoryId: Int = 0
     private lateinit var nameObserver: Observer<List<CartModel>>
-    private lateinit var binding: FragmentManualSaleNewBinding
+    private lateinit var binding: FragmentManualSaleBoldBinding
     private val TAG = "ManualSaleNew"
     private var cartList: List<CartModel>? = null
     private lateinit var cartAdapter: ManualSaleCartAdapter
     private var cartItemModel = TbItem()
+
     private val viewModel by viewModels<ManualSaleViewModel>()
     var amountToBepaid = 0.0
     var totalquantity = 0
@@ -83,10 +83,11 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding = FragmentManualSaleNewBinding.inflate(inflater, container, false)
+        binding = FragmentManualSaleBoldBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = this
         getLoyaltyPrograms()
         getServiceCharge()
+        loadCartFragment(ManualSaleCartFragment())
         Log.e(TAG, "CategoryId: ${prefProvider.getValueInt(MANUAL_SALE_CATEGORY_ID, 1)}")
         Log.e(TAG, "CategoryItemId: ${prefProvider.getValueInt(MANUAL_SALE_ITEM_ID, 1)}")
         Log.e(TAG, "cartDetails: $arguments")
@@ -98,19 +99,19 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
     }
 
     private fun getDiscountList() {
-        dashboardViewModel.discountList.observe(requireActivity(), {
+        dashboardViewModel.discountList.observe(requireActivity()) {
 
             if (it.data != null)
                 discountList = it.data
-        })
+        }
     }
 
 
     private fun getTaxList() {
-        dashboardViewModel.taxList.observe(requireActivity(), {
+        dashboardViewModel.taxList.observe(requireActivity()) {
             if (it.data != null)
                 taxList = it.data
-        })
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -550,63 +551,62 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
     }
 
     private fun onClickKeypad() {
-        binding.llKeypad.manualKeypad.tvOne.setOnClickListener {
+        binding.keyPadManualSale.manualKeypad.tvOne.setOnClickListener {
             calculateValue("1", false)
 
         }
 
-        binding.llKeypad.manualKeypad.tvTwo.setOnClickListener {
+        binding.keyPadManualSale.manualKeypad.tvTwo.setOnClickListener {
 
             calculateValue("2", false)
         }
-        binding.llKeypad.manualKeypad.tvThree.setOnClickListener {
+        binding.keyPadManualSale.manualKeypad.tvThree.setOnClickListener {
             calculateValue("3", false)
         }
-        binding.llKeypad.manualKeypad.tvFour.setOnClickListener {
+        binding.keyPadManualSale.manualKeypad.tvFour.setOnClickListener {
 
             calculateValue("4", false)
         }
-        binding.llKeypad.manualKeypad.tvFive.setOnClickListener {
+        binding.keyPadManualSale.manualKeypad.tvFive.setOnClickListener {
             calculateValue("5", false)
         }
-        binding.llKeypad.manualKeypad.tvSix.setOnClickListener {
+        binding.keyPadManualSale.manualKeypad.tvSix.setOnClickListener {
 
             calculateValue("6", false)
         }
-        binding.llKeypad.manualKeypad.tvSeven.setOnClickListener {
+        binding.keyPadManualSale.manualKeypad.tvSeven.setOnClickListener {
 
             calculateValue("7", false)
         }
-        binding.llKeypad.manualKeypad.tvEight.setOnClickListener {
+        binding.keyPadManualSale.manualKeypad.tvEight.setOnClickListener {
 
             calculateValue("8", false)
         }
-        binding.llKeypad.manualKeypad.tvNine.setOnClickListener {
+        binding.keyPadManualSale.manualKeypad.tvNine.setOnClickListener {
 
             calculateValue("9", false)
         }
-        binding.llKeypad.manualKeypad.tvZero.setOnClickListener {
+        binding.keyPadManualSale.manualKeypad.tvZero.setOnClickListener {
             calculateValue("0", false)
 
         }
-        binding.llKeypad.manualKeypad.imgAdd.setOnClickListener {
+        binding.keyPadManualSale.manualKeypad.imgAdd.setOnClickListener {
             // binding.txtAmount.setText( "0.00")
 
-            if (!(binding.llKeypad.txtAmount.text!!.trim().toString()
-                    .equals("0.00")) && (!(binding.llKeypad.txtAmount.text!!.trim().toString()
-                    .equals("$0.00"))) && (!binding.llKeypad.txtAmount.text!!.trim().toString().equals("0"))
+            if (!(binding.txtAmount.text!!.trim().toString()
+                    .equals("0.00")) && (!(binding.txtAmount.text!!.trim().toString()
+                    .equals("$0.00"))) && (!binding.txtAmount.text!!.trim().toString().equals("0"))
             ) {
-                addItemToCart(binding.llKeypad.txtAmount.text.toString(), true)
-                binding.llKeypad.txtAmount.setText("0.00")
+                addItemToCart(binding.txtAmount.text.toString(), true)
+                binding.txtAmount.setText("0.00")
             }
 
 
         }
-        binding.llKeypad.manualKeypad.tvBack.setOnClickListener {
-            if (binding.llKeypad.txtAmount.text.toString().isNotEmpty()) {
+        binding.keyPadManualSale.manualKeypad.tvBack.setOnClickListener {
+            if (binding.txtAmount.text.toString().isNotEmpty()) {
                 calculateValue("", true)
             }
-
         }
     }
 
@@ -736,8 +736,8 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
 
 
     private fun onConfig() {
-        binding.llKeypad.txtAmount.addTextChangedListener(AmountTextWatcher(binding.txtAmount, true))
-        binding.llKeypad.txtAmount.setText("0.00")
+        binding.txtAmount.addTextChangedListener(AmountTextWatcher(binding.txtAmount, true))
+        binding.txtAmount.setText("0.00")
 
         //set customer data
         setUpCustomer(prefProvider.getCustomerData())
@@ -756,28 +756,26 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
 
     private fun calculateValue(number: String, delete: Boolean) {
 
-        if (delete && binding.llKeypad.txtAmount.text?.length!! > 1) {
+        if (delete && binding.txtAmount.text?.length!! > 1) {
 
-            binding.llKeypad.txtAmount.setText(removeLastCharacter(binding.txtAmount.text.toString()))
-        } else if (binding.llKeypad.txtAmount.text?.trim()!!.equals("0.00")) {
-            binding.llKeypad.txtAmount.setText("")
-            binding.llKeypad.txtAmount.append(number)
+            binding.txtAmount.setText(removeLastCharacter(binding.txtAmount.text.toString()))
+        } else if (binding.txtAmount.text?.trim()!!.equals("0.00")) {
+            binding.txtAmount.setText("")
+            binding.txtAmount.append(number)
         } else {
-            binding.llKeypad.txtAmount.append(number)
+            binding.txtAmount.append(number)
         }
-        addItemToCart(binding.llKeypad.txtAmount.text.toString(), false)
-        val str = binding.llKeypad.txtAmount.text.toString().replace("""[$]""".toRegex(), "")
+        addItemToCart(binding.txtAmount.text.toString(), false)
+        val str = binding.txtAmount.text.toString().replace("""[$]""".toRegex(), "")
         //binding.txtAmount.setText("${binding.txtAmount.text.toString().replace("""[$]""".toRegex(), "")}")
         var newText = StringBuilder(str).insert(0, "%").toString()
 
 
         Log.e(
             TAG,
-            "afterTextSet  ${binding.llKeypad.txtAmount.text.toString().replace("""[$]""".toRegex(), "%")}"
+            "afterTextSet  ${binding.txtAmount.text.toString().replace("""[$]""".toRegex(), "%")}"
         )
     }
-
-
 
     private fun removeLastCharacter(str: String): String {
         return str.substring(0, str.length - 1)
@@ -1318,5 +1316,17 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
             }
         }
     }
+
+    private fun loadCartFragment(frag: Fragment) {
+        val fm: FragmentManager = requireActivity().supportFragmentManager
+        /*val result = Bundle().apply {
+            putInt("fragmentId", binding.frameLayout.id)
+            putInt("checkoutHeaderId", binding.layoutHeaderCheckout.rlRoot.id)
+            putInt("dashboardHeaderId", binding.layoutHeader.rlRoot.id)
+        }
+        frag.arguments = result*/
+        fm.beginTransaction().replace(binding.frameLayoutCart.id, frag).commit()
+    }
+
 }
 

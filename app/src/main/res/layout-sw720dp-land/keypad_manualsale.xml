@@ -22,17 +22,17 @@
             android:gravity="center_horizontal">
 
             <TextView
-                android:id="@+id/first"
+                android:id="@+id/tvOne"
                 style="@style/keypadManualSaleviewStyle"
                 android:text="1" />
 
             <TextView
-                android:id="@+id/second"
+                android:id="@+id/tvTwo"
                 style="@style/keypadManualSaleviewStyle"
                 android:text="2" />
 
             <TextView
-                android:id="@+id/third"
+                android:id="@+id/tvThree"
                 style="@style/keypadManualSaleviewStyle"
                 android:text="3" />
         </TableRow>
@@ -44,17 +44,17 @@
             android:gravity="center_horizontal">
 
             <TextView
-                android:id="@+id/fourth"
+                android:id="@+id/tvFour"
                 style="@style/keypadManualSaleviewStyle"
                 android:text="4" />
 
             <TextView
-                android:id="@+id/five"
+                android:id="@+id/tvFive"
                 style="@style/keypadManualSaleviewStyle"
                 android:text="5" />
 
             <TextView
-                android:id="@+id/six"
+                android:id="@+id/tvSix"
                 style="@style/keypadManualSaleviewStyle"
                 android:text="6" />
         </TableRow>
@@ -66,17 +66,17 @@
             android:gravity="center_horizontal">
 
             <TextView
-                android:id="@+id/seven"
+                android:id="@+id/tvSeven"
                 style="@style/keypadManualSaleviewStyle"
                 android:text="7" />
 
             <TextView
-                android:id="@+id/eight"
+                android:id="@+id/tvEight"
                 style="@style/keypadManualSaleviewStyle"
                 android:text="8" />
 
             <TextView
-                android:id="@+id/nine"
+                android:id="@+id/tvNine"
                 style="@style/keypadManualSaleviewStyle"
                 android:text="9" />
         </TableRow>
@@ -88,19 +88,19 @@
             android:gravity="center_horizontal">
 
             <TextView
-                android:id="@+id/clear"
+                android:id="@+id/tvBack"
                 style="@style/keypadManualSaleviewStyle"
                 android:text="C"
                 android:textStyle="bold"
                 android:textSize="@dimen/_10sdp" />
 
             <TextView
-                android:id="@+id/zero"
+                android:id="@+id/tvZero"
                 style="@style/keypadManualSaleviewStyle"
                 android:text="0" />
 
             <TextView
-                android:id="@+id/txt_add"
+                android:id="@+id/imgAdd"
                 style="@style/keypadManualSaleviewStyle"
                 android:background="@color/btnColor"
                 android:text="+ Add"

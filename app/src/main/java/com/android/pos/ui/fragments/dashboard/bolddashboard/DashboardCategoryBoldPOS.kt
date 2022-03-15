@@ -152,7 +152,7 @@ class DashboardCategoryBoldPOS : Fragment(), ItemListner {
             )
         }*/
         binding.layoutHeader.txtKeypad.setOnClickListener {
-            loadKeyPadFragment(KeyPadManualSaleFragment())
+            //loadKeyPadFragment(KeyPadManualSaleFragment())
             binding.layoutHeader.txtKeypad.setTextColor(resources.getColor(R.color.btnColor))
             binding.layoutHeader.txtKeypad.setTypeface(
                 binding.layoutHeader.txtKeypad.typeface,
@@ -164,6 +164,7 @@ class DashboardCategoryBoldPOS : Fragment(), ItemListner {
                 Typeface.NORMAL
             )
 
+            findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_manualSalesNew)
         }
 
 

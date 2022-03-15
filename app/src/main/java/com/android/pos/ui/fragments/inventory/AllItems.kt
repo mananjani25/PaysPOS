@@ -254,8 +254,6 @@ class AllItems : Fragment() {
                     }
                 }
             }
-
-
         }
     }
 
