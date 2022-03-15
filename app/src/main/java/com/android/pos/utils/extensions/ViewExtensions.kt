@@ -160,3 +160,8 @@ fun View.setOnSingleClickListener(l: (View) -> Unit) {
 }
 
 
+fun Fragment?.runOnUiThread(action: Runnable) {
+    this ?: return
+    if (!isAdded) return // Fragment not attached to an Activity
+    activity?.runOnUiThread(action)
+}
