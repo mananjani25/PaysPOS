@@ -310,7 +310,7 @@ class PayFullAmountFragment(val bundle: Bundle?) : Fragment(), ItemListner {
                         bundle.putBoolean("isFromActiveOrder", false)
 
                         findNavController().navigate(
-                            R.id.actionboldpos_to_orderCompleteFragment,
+                            R.id.action_paymentBoldPosFragment_to_orderComplete,
                             bundle
                         )
 

@@ -325,6 +325,7 @@ class ActiveOrderFragment(var param1: String, var startDateTime: String?,var end
                 val bundle = Bundle()
                 bundle.putBoolean("update", true)
                 bundle.putInt("orderId", order.id)
+                prefProvider.setValueInt("ORDER_ID",order.id)
                 if (!order.payments.isNullOrEmpty()) {
                     bundle.putInt("paymentId", order.payments[0].id)
                     bundle.putString("paymentOfflineId", order.payments[0].offlineId)
@@ -339,8 +340,11 @@ class ActiveOrderFragment(var param1: String, var startDateTime: String?,var end
 
             }
             "PAY" -> {
-
+                prefProvider.setValue(Constants.ORDER_TYPE, order.orderType)
                 val cartModel = cartModel(order)
+                dashboardViewModel.addCart(
+                    cartModel(order)
+                )
                 prefProvider.setValue(
                     Constants.CUSTOMER_NAME,
                     order.customer?.firstName + " " + order.customer?.lastName
@@ -368,6 +372,7 @@ class ActiveOrderFragment(var param1: String, var startDateTime: String?,var end
 
                 bundle.putBoolean("update", true)
                 bundle.putInt("orderId", order.id)
+                prefProvider.setValueInt("ORDER_ID",order.id)
                 if (order.payments.isNotEmpty()) {
                     bundle.putInt("paymentId", order.payments[0].id)
                     bundle.putString("paymentOfflineId", order.payments[0].offlineId)

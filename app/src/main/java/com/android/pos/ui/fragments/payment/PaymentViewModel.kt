@@ -126,20 +126,7 @@ class PaymentViewModel @Inject constructor(
                                 }
 
                                 if (onlySave) {
-                                    if (prefProvider.getValueboolean(
-                                            IS_PRINTER_QUEUE_ENABLE,
-                                            false
-                                        )
-                                    ) {
-
-
-                                        _queueStartSaveOrder.value = Event(createOrderResponse)
-                                    } else {
-                                        _queueStart.value = Event(createOrderResponse)
-                                        //_data.value = Event(createOrderResponse)
-                                    }
-                                    //_queueStart.value = Event(createOrderResponse)
-
+                                    _queueCreateSaveOrder.value = Event(true)
                                 } else {
                                     if (createOrderResponse.data.order.orderType != "Dine In") {
                                         cashLogApi(createOrderResponse, "in")
@@ -211,7 +198,12 @@ class PaymentViewModel @Inject constructor(
                         if (response?.status == 200) {
 
                             if (splitValue != -1) {
-                                posRepository.deleteCart(prefProvider.getValueInt(Constants.EMPLOYEE_ID,0))
+                                posRepository.deleteCart(
+                                    prefProvider.getValueInt(
+                                        Constants.EMPLOYEE_ID,
+                                        0
+                                    )
+                                )
                             }
                             resource.data?.let { createOrderResponse ->
                                 if (createOrderResponse.data.order.payments.isNotEmpty()) {
