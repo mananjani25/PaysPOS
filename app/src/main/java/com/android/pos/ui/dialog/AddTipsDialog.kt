@@ -48,8 +48,11 @@ class AddTipsDialog : DialogFragment(), DialogTipsListAdapter.DiscountInterface,
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        totalPrice = requireArguments().getDouble("totalPrice")
-        totalTip = requireArguments().getDouble("totalTip")
+        if (arguments!=null){
+            if (arguments?.getDouble("totalPrice")!=null) totalPrice = requireArguments().getDouble("totalPrice")
+            if (arguments?.getDouble("totalTip")!=null) totalTip = requireArguments().getDouble("totalTip")
+        }
+
         binding.txtTitle.text = getString(R.string.add_tips)
 
         tipsListAdapter = DialogTipsListAdapter()

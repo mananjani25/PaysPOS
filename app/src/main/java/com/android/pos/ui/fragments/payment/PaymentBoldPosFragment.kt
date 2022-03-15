@@ -7,6 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.navigation.fragment.findNavController
+import com.android.pos.R
 import com.android.pos.databinding.FragmentPaymentBoldPosBinding
 
 import com.android.pos.ui.fragments.checkout.CheckoutDetailsFragmentNew
@@ -36,6 +37,17 @@ class PaymentBoldPosFragment : Fragment() {
             findNavController().popBackStack()
         }
 
+        listeners()
+
+    }
+
+    private fun listeners() {
+        binding.layoutHeaderCheckout.tvAddTip.setOnClickListener {
+            findNavController().navigate(R.id.action_paymentBoldPosFragment_to_addTipDialog)
+        }
+        binding.layoutHeaderCheckout.tvAddDiscount.setOnClickListener {
+            findNavController().navigate(R.id.action_paymentBoldPosFragment_to_addDiscountDialog)
+        }
     }
 
     private fun loadCartFragment(frag: Fragment) {
