@@ -468,12 +468,13 @@
                 </LinearLayout>
 
                 <LinearLayout
-                    android:id="@+id/linearOrderPlace"
+                    android:id="@+id/linear_button_view"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:weightSum="2">
 
                     <TextView
+                        android:id="@+id/tvSave"
                         style="@style/CustomFontSemiBold"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"

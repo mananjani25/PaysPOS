@@ -126,7 +126,8 @@ class TransactionDetailsFragment : Fragment() {
         }
 
         binding.txtHome.setOnClickListener {
-            findNavController().popBackStack(R.id.dashboardCategoryNew, false)
+            val navControll = findNavController()
+            navControll.navigate(R.id.action_transactionDetailsFragment_to_dashboardboldpos)
         }
 
         binding.txtPrintReceipt.setOnClickListener {
