@@ -61,7 +61,7 @@
             android:background="@drawable/background_square_border_grey"
             android:gravity="center"
             android:orientation="vertical"
-            android:visibility="gone">
+            android:visibility="visible">
 
             <TextView
                 android:id="@+id/txtAddDiscount"

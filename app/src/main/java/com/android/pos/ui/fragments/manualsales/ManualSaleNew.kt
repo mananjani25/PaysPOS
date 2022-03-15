@@ -600,7 +600,31 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                 binding.llKeypad.txtAmount.setText("0.00")
             }
 
-
+            binding.txtSubTotal.text = "$" + String.format(
+                "%.2f",
+                viewModel.subTotalPrice
+            )
+            binding. txtServiceCharge.text = "$" + String.format(
+                "%.2f",
+                viewModel.totalServiceCharge
+            )
+            binding. txtDiscount.text = "- $" + String.format(
+                "%.2f",
+                viewModel.totalDiscount
+            )
+            //txtTotalAmount.text = binding.txtTotalAmount.text.toString()
+            binding. txtTotalTax.text = "$" + String.format(
+                "%.2f",
+                viewModel.totalTax
+            )
+            binding. txtTotal.text = "$" + String.format(
+                "%.2f",
+                viewModel.totalPrice
+            )
+            binding. tvDiscount.text = "$" + String.format(
+                "%.2f",
+                viewModel.totalDiscount
+            )
         }
         binding.llKeypad.manualKeypad.tvBack.setOnClickListener {
             if (binding.llKeypad.txtAmount.text.toString().isNotEmpty()) {
@@ -636,8 +660,8 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
             count++
             tabItemMOdel.customItemCount = count
             tabItemMOdel.name = "Custom Item ${count}"
-            if (binding.edtItemName.text?.isNotEmpty() == true) {
-                tabItemMOdel.name = binding.edtItemName.text.toString()
+            if (binding.llKeypad.edtItemName.text?.isNotEmpty() == true) {
+                tabItemMOdel.name = binding.llKeypad.edtItemName.text.toString()
                 count--
                 tabItemMOdel.customItemCount = count
             }
@@ -662,7 +686,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
             tabItemMOdel.categoryId = manualCategoryId
 
             viewModel.cartLogic(cartList, tabItemMOdel, ADD)
-            binding.edtItemName.text?.clear()
+            binding.llKeypad.edtItemName.text?.clear()
 
         }
 
@@ -736,7 +760,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
 
 
     private fun onConfig() {
-        binding.llKeypad.txtAmount.addTextChangedListener(AmountTextWatcher(binding.txtAmount, true))
+        binding.llKeypad.txtAmount.addTextChangedListener(AmountTextWatcher(binding.llKeypad.txtAmount, true))
         binding.llKeypad.txtAmount.setText("0.00")
 
         //set customer data
@@ -758,7 +782,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
 
         if (delete && binding.llKeypad.txtAmount.text?.length!! > 1) {
 
-            binding.llKeypad.txtAmount.setText(removeLastCharacter(binding.txtAmount.text.toString()))
+            binding.llKeypad.txtAmount.setText(removeLastCharacter(binding.llKeypad.txtAmount.text.toString()))
         } else if (binding.llKeypad.txtAmount.text?.trim()!!.equals("0.00")) {
             binding.llKeypad.txtAmount.setText("")
             binding.llKeypad.txtAmount.append(number)
@@ -815,7 +839,6 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
         dialog.setContentView(R.layout.dialog_update_quantity)
 
         val imgClose: AppCompatImageView = dialog.findViewById(R.id.imgBack)
-        val txtSave: AppCompatTextView = dialog.findViewById(R.id.txtSave)
         val txtTitle: AppCompatTextView = dialog.findViewById(R.id.txtTitle)
         val txtQty: AppCompatEditText = dialog.findViewById(R.id.txtQty)
         val llPlus: LinearLayoutCompat = dialog.findViewById(R.id.llPlus)
@@ -876,7 +899,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
             dialog.dismiss()
         }
 
-        txtSave.setOnClickListener {
+        binding.txtSave.setOnClickListener {
             dialog.dismiss()
             val itemCost = model.price
 
@@ -1274,7 +1297,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                     bundle
                 )
             }
-            R.id.txt_delete -> {
+/*            R.id.txt_delete -> {
                 cartAdapter.viewBinderHelper.closeLayout(pos.toString())
                 alert(
                     getString(R.string.app_name),
@@ -1315,7 +1338,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                     bundle
                 )
 
-            }
+            }*/
         }
     }
 }

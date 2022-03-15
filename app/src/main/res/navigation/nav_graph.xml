@@ -843,7 +843,7 @@
             app:launchSingleTop="true" />
         <action
             android:id="@+id/action_orders_to_paymentFragment"
-            app:destination="@id/paymentFragment" />
+            app:destination="@id/paymentBoldPosFragment" />
     </fragment>
     <fragment
         android:id="@+id/manualSaleBold"
@@ -908,6 +908,9 @@
         <action
             android:id="@+id/action_transactionDetailsFragment_to_issueRefundFragment"
             app:destination="@id/issueRefundFragment" />
+        <action
+            android:id="@+id/action_transactionDetailsFragment_to_dashboardboldpos"
+            app:destination="@id/dashboardCategoryBoldPOS" />
         <action
             android:id="@+id/action_transactionDetailsFragment_to_sendReceiptFragment"
             app:destination="@id/sendReceiptFragment" />

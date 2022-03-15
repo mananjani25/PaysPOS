@@ -1272,6 +1272,7 @@ class ManualSaleBoldFragment : Fragment(), ManualSaleCartAdapter.ManualSaleInter
                     bundle
                 )
             }
+/*
             R.id.txt_delete -> {
                 cartAdapter.viewBinderHelper.closeLayout(pos.toString())
                 alert(
@@ -1291,7 +1292,8 @@ class ManualSaleBoldFragment : Fragment(), ManualSaleCartAdapter.ManualSaleInter
                     }
                 }
             }
-            R.id.txt_note -> {
+*/
+/*            R.id.txt_note -> {
                 cartItemModel = cartAdapter.getItem(pos)
                 val bundle = Bundle().apply {
                     putString("note", cartItemModel.note)
@@ -1313,7 +1315,7 @@ class ManualSaleBoldFragment : Fragment(), ManualSaleCartAdapter.ManualSaleInter
                     bundle
                 )
 
-            }
+            }*/
         }
     }
 

@@ -54,6 +54,12 @@ class CartAdapter : RecyclerView.Adapter<CartAdapter.MyViewHolder>() {
         notifyDataSetChanged()
     }
 
+    fun clearList(){
+        cartList.clear()
+        cartList = arrayListOf()
+        notifyDataSetChanged()
+    }
+
     override fun getItemCount(): Int {
         return cartList.size
     }

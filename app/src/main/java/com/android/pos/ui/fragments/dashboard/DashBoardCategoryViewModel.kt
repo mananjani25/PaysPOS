@@ -57,6 +57,7 @@ import java.net.HttpURLConnection
 import java.net.URL
 import java.util.*
 import javax.inject.Inject
+import kotlin.collections.ArrayList
 import kotlin.collections.set
 
 
@@ -87,6 +88,7 @@ class DashBoardCategoryViewModel @Inject constructor(
     var redeemLoyaltyInfo: RedeemLoyaltyInfo = RedeemLoyaltyInfo()
     var paymentType: String = "cash"
     var destroyedList: ArrayList<TbItem> = arrayListOf()
+    var ordertypelist: ArrayList<TbOrderType> = arrayListOf()
     var isOrderUpdate: Boolean = false
 
     var viewModelcartList: ArrayList<CartModel> = arrayListOf()
@@ -107,9 +109,14 @@ class DashBoardCategoryViewModel @Inject constructor(
         return posRepository.orderTypesDb()
     }
 
-    fun setCartModel(cartList: List<CartModel>){
+    fun setOrderTypeList(ordertypelist: ArrayList<TbOrderType>) {
+        this.ordertypelist = ordertypelist
+    }
+
+    fun setCartModel(cartList: List<CartModel>) {
         this.cartModel = generateCombinedItems(cartList[0])
     }
+
     val serviceCharges = posRepository.serviceChargeList()
 
     val activeLoyaltyProgramLiveData = posRepository.getActiveLoyaltyProgramFromDb()
@@ -1810,7 +1817,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 prefProvider.setValue(BUSINESS_NAME, it.data.businessName)
                                 prefProvider.setValue(SYSTEM_TIMEZONE, it.data.timeZone)
                                 prefProvider.setValue(BUSINESS_PHONE_NO, it.data.phoneNumber)
-                                if(it.data.address!=null){
+                                if (it.data.address != null) {
                                     prefProvider.setValue(BUSINESS_ADDRESS, it.data.address)
                                 }
                                 prefProvider.setValueboolean(
@@ -1837,9 +1844,17 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 tipDiscountRepository.deleteTipsFromDb()
                                 tipDiscountRepository.addTips(it.data.tip_settings)
                                 posRepository.deleteCustomerReceiptSettingsFromDb()
-                                posRepository.addCustomerReceiptSettings(it.data.customerReceipt)
+                                it.data.customerReceipt?.let { it1 ->
+                                    posRepository.addCustomerReceiptSettings(
+                                        it1
+                                    )
+                                }
                                 posRepository.deleteKitchenReceiptSettingsFromDb()
-                                posRepository.addKitchenReceiptSettings(it.data.kitchenReceipt)
+                                it.data.kitchenReceipt?.let { it1 ->
+                                    posRepository.addKitchenReceiptSettings(
+                                        it1
+                                    )
+                                }
                                 posRepository.deleteLoyaltyProgramFromDb()
                                 posRepository.addLoyaltyProgramFromDb(it.data.loyaltyPrograms)
                                 posRepository.deleteSurcharge()

@@ -461,7 +461,7 @@
                                 android:textSize="@dimen/_6mdpi" />
 
                             <androidx.appcompat.widget.AppCompatTextView
-                                android:id="@+id/txtTax"
+                                android:id="@+id/txtTotalTax"
                                 style="@style/CustomFontSemiBold"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
@@ -542,6 +542,7 @@
                                 android:textSize="@dimen/_6mdpi" />
 
                             <androidx.appcompat.widget.AppCompatTextView
+                                android:id="@+id/tvDiscount"
                                 style="@style/CustomFontSemiBold"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
@@ -692,6 +693,7 @@
                     android:weightSum="2">
 
                     <TextView
+                        android:id="@+id/tvSave"
                         style="@style/CustomFontSemiBold"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
@@ -842,7 +844,6 @@
                 android:visibility="gone">
 
                 <androidx.appcompat.widget.AppCompatEditText
-                    android:id="@+id/edtItemName"
                     style="@style/CustomFontSemiBold"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -875,7 +876,6 @@
                         android:visibility="invisible" />
 
                     <androidx.appcompat.widget.AppCompatEditText
-                        android:id="@+id/txtAmount"
                         style="@style/CustomFontRegularStyle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
