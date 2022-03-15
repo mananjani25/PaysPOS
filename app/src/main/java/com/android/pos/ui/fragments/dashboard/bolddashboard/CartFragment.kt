@@ -50,7 +50,7 @@ class CartFragment() : Fragment() {
     var cashDiscountType = ""
     var cartlist: ArrayList<CartModel> = arrayListOf()
     private val viewModel by activityViewModels<DashBoardCategoryViewModel>()
-    private val viewModelPayment by viewModels<PaymentViewModel>()
+    private val viewModelPayment by activityViewModels<PaymentViewModel>()
     var updateBundle: Bundle? = null
     var isFromPayment: Boolean = false
 
@@ -154,7 +154,8 @@ class CartFragment() : Fragment() {
             prefProvider.getValue(ORDER_TYPE, TAKEOUT),
             prefProvider.getValueInt(com.android.pos.data.remote.Constants.EMPLOYEE_ID, 0)
         ).observe(requireActivity()) {
-            Log.e(TAG,"getCartList:  ${Gson().toJson(it)}")
+            Log.d(TAG, "addObserver: " + prefProvider.getValue(ORDER_TYPE, TAKEOUT))
+            Log.e(TAG, "getCartList:  ${Gson().toJson(it)}")
             if (it.isNotEmpty()) {
                 Log.e(TAG, "listSize  ${Gson().toJson(it)}")
                 it[it.size - 1].items?.toCollection(arrayListOf())
@@ -165,15 +166,19 @@ class CartFragment() : Fragment() {
                     requireContext()
                 )
                 viewModel.setCartModel(it)
-
                 binding.txtSubTotal.text = MethodUtils.roundOffAmount(viewModel.subTotalPrice)
                 binding.txtTax.text = MethodUtils.roundOffAmount(viewModel.totalTax)
                 binding.txtServiceCharge.text =
                     MethodUtils.roundOffAmount(viewModel.totalServiceCharge)
                 binding.tvPayNow.text = "Pay " + MethodUtils.roundOffAmount(viewModel.totalPrice)
-
             } else {
                 cartAdapter.clearList()
+                binding.txtTotal.text = MethodUtils.roundOffAmount(0.0)
+                binding.txtSubTotal.text = MethodUtils.roundOffAmount(0.0)
+                binding.txtTax.text = MethodUtils.roundOffAmount(0.0)
+                binding.txtServiceCharge.text =
+                    MethodUtils.roundOffAmount(0.0)
+                binding.tvPayNow.text = "Pay " + MethodUtils.roundOffAmount(0.0)
             }
         }
 
@@ -199,7 +204,7 @@ class CartFragment() : Fragment() {
             it.getContentIfNotHandled()?.let {
                 viewModel.deleteCart()
                 if (prefProvider.getValue(Constants.ORDER_TYPE, "").toString() != "") {
-                    prefProvider.setValue(Constants.ORDER_TYPE, "")
+                    prefProvider.setValue(Constants.ORDER_TYPE, TAKEOUT)
                 }
                 clearCustomer()
                 redirectToActiveOrder()
@@ -256,7 +261,7 @@ class CartFragment() : Fragment() {
                     viewModel.deleteCart()
 
                     if (prefProvider.getValue(Constants.ORDER_TYPE, "").toString() != "") {
-                        prefProvider.setValue(Constants.ORDER_TYPE, "")
+                        prefProvider.setValue(Constants.ORDER_TYPE, TAKEOUT)
                     }
 
                     hideOrderMenu()

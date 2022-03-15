@@ -53,7 +53,7 @@ class DashboardCategoryBoldPOS : Fragment(), ItemListner {
     var isupdate = false
     private val redirectionBroadCast: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(ctxt: Context, i: Intent) {
-            if(findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
+            if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
                 findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
             }
 
@@ -205,7 +205,7 @@ class DashboardCategoryBoldPOS : Fragment(), ItemListner {
 
     override fun onItemSelected(item: TbItem) {
         Log.e(TAG, "getitem:  ${Gson().toJson(item)}")
-        if (prefProvider.getValue(ORDER_TYPE, "") == Constants.OPEN_ORDER) {
+        if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == Constants.OPEN_ORDER) {
             val model = CartModel()
             model.employeeID =
                 prefProvider.getValueInt(com.android.pos.data.remote.Constants.EMPLOYEE_ID, 0)
@@ -220,21 +220,20 @@ class DashboardCategoryBoldPOS : Fragment(), ItemListner {
             }
             cartList.add(model)
         } else {
-            if (cartList.isEmpty()) {
-                val model = CartModel()
-                model.employeeID =
-                    prefProvider.getValueInt(com.android.pos.data.remote.Constants.EMPLOYEE_ID, 0)
-                model.terminalId = prefProvider.getValueInt(TERMINAL_ID, 0)
-                model.orderType = prefProvider.getValue(ORDER_TYPE, "")
-                model.locationId = prefProvider.getValueInt(Constants.LOCATION_ID, 1)
-                model.serviceCharge = serviceChargesList
-                viewModel.ordertypelist.forEach {
-                    if (it.orderType == Constants.TAKEOUT) {
-                        model.orderTypeId = it.id
-                    }
+            val model = CartModel()
+            model.employeeID =
+                prefProvider.getValueInt(com.android.pos.data.remote.Constants.EMPLOYEE_ID, 0)
+            model.terminalId = prefProvider.getValueInt(TERMINAL_ID, 0)
+            model.orderType = prefProvider.getValue(ORDER_TYPE, TAKEOUT)
+            model.locationId = prefProvider.getValueInt(Constants.LOCATION_ID, 1)
+            model.serviceCharge = serviceChargesList
+            viewModel.ordertypelist.forEach {
+                if (it.orderType == Constants.TAKEOUT) {
+                    model.orderTypeId = it.id
                 }
-                cartList.add(model)
             }
+            cartList.add(model)
+
         }
 
         val fragment = AddItemFragment.newInstance(item, this, cartList)
