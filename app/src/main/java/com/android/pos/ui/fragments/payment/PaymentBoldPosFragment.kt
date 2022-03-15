@@ -6,7 +6,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
+import androidx.navigation.fragment.findNavController
 import com.android.pos.databinding.FragmentPaymentBoldPosBinding
+
 import com.android.pos.ui.fragments.checkout.CheckoutDetailsFragmentNew
 import com.android.pos.ui.fragments.dashboard.bolddashboard.CartFragment
 import dagger.hilt.android.AndroidEntryPoint
@@ -30,7 +32,9 @@ class PaymentBoldPosFragment : Fragment() {
 
         loadCartFragment(CartFragment())
         loadCategoryFragment(CheckoutDetailsFragmentNew())
-
+        binding.layoutHeaderCheckout.imgDrawer.setOnClickListener {
+            findNavController().popBackStack()
+        }
 
     }
     private fun loadCartFragment(frag: Fragment) {

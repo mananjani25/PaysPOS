@@ -1,5 +1,9 @@
 package com.android.pos.ui.fragments.dashboard.bolddashboard
 
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.graphics.Typeface
 import android.os.Bundle
 import android.util.Log
@@ -7,6 +11,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
+import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
@@ -16,9 +21,11 @@ import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.data.entities.CartModel
 import com.android.pos.data.entities.TbItem
+import com.android.pos.data.entities.TbOrderType
 import com.android.pos.data.entities.TbServiceCharge
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.EMPLOYEE_NAME
+import com.android.pos.data.remote.Constants.ORDER_TYPE
 import com.android.pos.data.remote.Constants.TAKEOUT
 import com.android.pos.data.remote.Constants.TERMINAL_ID
 import com.android.pos.databinding.FragmentDashboardCategoryBoldPosBinding
@@ -42,6 +49,16 @@ class DashboardCategoryBoldPOS : Fragment(), ItemListner {
     private var serviceChargesList: List<TbServiceCharge>? = null
     private var serviceChargesObserve: Observer<Resource<List<TbServiceCharge>>>? = null
     private val TAG = "DashboardCategoryBold"
+    var ordertypelist: ArrayList<TbOrderType> = arrayListOf()
+    var isupdate = false
+    private val redirectionBroadCast: BroadcastReceiver = object : BroadcastReceiver() {
+        override fun onReceive(ctxt: Context, i: Intent) {
+            if(findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
+                findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
+            }
+
+        }
+    }
 
     @Inject
     lateinit var prefProvider: PrefProvider
@@ -67,14 +84,27 @@ class DashboardCategoryBoldPOS : Fragment(), ItemListner {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        requireActivity().registerReceiver(
+            redirectionBroadCast,
+            IntentFilter("SEND_TO_ACTIVE_ORDER")
+        )
         onClick()
+        if (arguments != null) {
+            isupdate = arguments?.getBoolean("update")!!
+        }
         syncData()
         requireActivity().window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         loadCartFragment(CartFragment())
         loadCategoryFragment(CategoryFragment(this))
-        binding.layoutHeader.txtUserName.text =  prefProvider.getValue(EMPLOYEE_NAME, "").toString()
+        binding.layoutHeader.txtUserName.text = prefProvider.getValue(EMPLOYEE_NAME, "").toString()
 
     }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        requireActivity().unregisterReceiver(redirectionBroadCast)
+    }
+
     private fun syncData() {
 
         val sync = prefProvider.getValueboolean(Constants.SYNC_DATA, false)
@@ -93,6 +123,9 @@ class DashboardCategoryBoldPOS : Fragment(), ItemListner {
             putInt("fragmentId", binding.frameLayout.id)
             putInt("checkoutHeaderId", binding.layoutHeaderCheckout.rlRoot.id)
             putInt("dashboardHeaderId", binding.layoutHeader.rlRoot.id)
+            if (arguments != null) {
+                putBundle("updateBundle", arguments)
+            }
         }
         frag.arguments = result
         fm.beginTransaction().replace(binding.frameLayoutCart.id, frag).commit()
@@ -138,19 +171,19 @@ class DashboardCategoryBoldPOS : Fragment(), ItemListner {
         binding.layoutHeader.imgSync.setOnClickListener {
             viewModel.syncInventoryModule()
         }
-       /* binding.layoutHeader.txtOpenOrder.setOnClickListener {
-            loadCategoryFragment(CategoryFragment(this))
-            binding.layoutHeader.txtOpenOrder.setTextColor(resources.getColor(R.color.btnColor))
-            binding.layoutHeader.txtOpenOrder.setTypeface(
-                binding.layoutHeader.txtOpenOrder.typeface,
-                Typeface.BOLD
-            )
-            binding.layoutHeader.txtKeypad.setTextColor(resources.getColor(R.color.txtColor))
-            binding.layoutHeader.txtKeypad.setTypeface(
-                binding.layoutHeader.txtKeypad.typeface,
-                Typeface.NORMAL
-            )
-        }*/
+        /* binding.layoutHeader.txtOpenOrder.setOnClickListener {
+             loadCategoryFragment(CategoryFragment(this))
+             binding.layoutHeader.txtOpenOrder.setTextColor(resources.getColor(R.color.btnColor))
+             binding.layoutHeader.txtOpenOrder.setTypeface(
+                 binding.layoutHeader.txtOpenOrder.typeface,
+                 Typeface.BOLD
+             )
+             binding.layoutHeader.txtKeypad.setTextColor(resources.getColor(R.color.txtColor))
+             binding.layoutHeader.txtKeypad.setTypeface(
+                 binding.layoutHeader.txtKeypad.typeface,
+                 Typeface.NORMAL
+             )
+         }*/
         binding.layoutHeader.txtKeypad.setOnClickListener {
             //loadKeyPadFragment(KeyPadManualSaleFragment())
             binding.layoutHeader.txtKeypad.setTextColor(resources.getColor(R.color.btnColor))
@@ -172,17 +205,38 @@ class DashboardCategoryBoldPOS : Fragment(), ItemListner {
 
     override fun onItemSelected(item: TbItem) {
         Log.e(TAG, "getitem:  ${Gson().toJson(item)}")
-        if (cartList.isEmpty()) {
+        if (prefProvider.getValue(ORDER_TYPE, "") == Constants.OPEN_ORDER) {
             val model = CartModel()
             model.employeeID =
                 prefProvider.getValueInt(com.android.pos.data.remote.Constants.EMPLOYEE_ID, 0)
             model.terminalId = prefProvider.getValueInt(TERMINAL_ID, 0)
-            model.orderType = TAKEOUT
+            model.orderType = prefProvider.getValue(ORDER_TYPE, "")
+            model.locationId = prefProvider.getValueInt(Constants.LOCATION_ID, 1)
             model.serviceCharge = serviceChargesList
-            model.orderTypeId = 1
-
+            viewModel.ordertypelist.forEach {
+                if (it.orderType == Constants.OPEN_ORDER) {
+                    model.orderTypeId = it.id
+                }
+            }
             cartList.add(model)
+        } else {
+            if (cartList.isEmpty()) {
+                val model = CartModel()
+                model.employeeID =
+                    prefProvider.getValueInt(com.android.pos.data.remote.Constants.EMPLOYEE_ID, 0)
+                model.terminalId = prefProvider.getValueInt(TERMINAL_ID, 0)
+                model.orderType = prefProvider.getValue(ORDER_TYPE, "")
+                model.locationId = prefProvider.getValueInt(Constants.LOCATION_ID, 1)
+                model.serviceCharge = serviceChargesList
+                viewModel.ordertypelist.forEach {
+                    if (it.orderType == Constants.TAKEOUT) {
+                        model.orderTypeId = it.id
+                    }
+                }
+                cartList.add(model)
+            }
         }
+
         val fragment = AddItemFragment.newInstance(item, this, cartList)
         loadCategoryFragment(fragment)
     }
@@ -195,13 +249,20 @@ class DashboardCategoryBoldPOS : Fragment(), ItemListner {
     private fun addObserver() {
 
         viewModel.mAllWords(
-            Constants.TAKEOUT,
+            prefProvider.getValue(ORDER_TYPE, TAKEOUT),
             prefProvider.getValueInt(com.android.pos.data.remote.Constants.EMPLOYEE_ID, 0)
-        ).observe(requireActivity(), {
+        ).observe(requireActivity()) {
             cartList.clear()
             cartList = arrayListOf()
             cartList = it.toCollection(arrayListOf())
-        })
+        }
+
+        viewModel.orderTypes().observe(requireActivity()) {
+            if (it.data != null) {
+                ordertypelist = it.data as ArrayList<TbOrderType>
+                viewModel.setOrderTypeList(ordertypelist)
+            }
+        }
     }
 
     private fun getServiceCharges() {

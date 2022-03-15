@@ -4224,6 +4224,27 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         })
     }
 
+    private fun queuePrinterObserver() {
+        viewModelPayment.QueueCreateSaveOrder.observe(requireActivity(), {
+            it.getContentIfNotHandled()?.let {
+                binding.layoutCart.txtSave.text = getString(R.string.save)
+                viewModel.deleteCart()
+                if (prefProvider.getValue(ORDER_TYPE, "").toString() != "") {
+                    prefProvider.setValue(ORDER_TYPE, "")
+                }
+
+
+                clearCustomer()
+                hideOrderType()
+                //getKitchenPrinters(it)
+                clearUpdateFlag()
+                findNavController().navigate(R.id.action_dashboardCategoryNew_to_orders)
+
+
+            }
+        })
+    }
+
     private fun createQueuePrinter(createOrder: CreateOrderResponse) {
         val listPrinter: List<Int> = listOf()
         val orderRequest = cartList?.let {
@@ -4257,27 +4278,6 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
         )
         viewModelPayment.createQueuePrinter(createRequest, createOrder)
-    }
-
-    private fun queuePrinterObserver() {
-        viewModelPayment.QueueCreateSaveOrder.observe(requireActivity(), {
-            it.getContentIfNotHandled()?.let {
-                binding.layoutCart.txtSave.text = getString(R.string.save)
-                viewModel.deleteCart()
-                if (prefProvider.getValue(ORDER_TYPE, "").toString() != "") {
-                    prefProvider.setValue(ORDER_TYPE, "")
-                }
-
-
-                clearCustomer()
-                hideOrderType()
-                //getKitchenPrinters(it)
-                clearUpdateFlag()
-                findNavController().navigate(R.id.action_dashboardCategoryNew_to_orders)
-
-
-            }
-        })
     }
 
     fun getBitmapFromURL(src: String?): Bitmap? {
