@@ -773,8 +773,8 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
 
 
 
-        binding.layoutMenu.txtProducts.setTextColor(resources.getColor(R.color.txtColor))
-        binding.layoutMenu.txtKeypad.setTextColor(resources.getColor(R.color.txt_color_blue))
+      /*  binding.layoutMenu.txtProducts.setTextColor(resources.getColor(R.color.txtColor))
+        binding.layoutMenu.txtKeypad.setTextColor(resources.getColor(R.color.txt_color_blue))*/
 
     }
 
