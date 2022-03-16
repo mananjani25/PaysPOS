@@ -849,7 +849,7 @@
             app:destination="@id/paymentBoldPosFragment" />
         <action
             android:id="@+id/action_orders_to_menuposbold"
-            app:destination="@id/menuPOS" />
+            app:destination="@id/menuFragment" />
         <action
             android:id="@+id/action_orders_to_dashboardCategoryBoldPOS"
             app:popUpToInclusive="true"
