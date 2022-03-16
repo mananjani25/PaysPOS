@@ -33,6 +33,7 @@ import com.android.pos.data.remote.Constants.LOYALTY_ADDED
 import com.android.pos.data.remote.Constants.MANUALSALE
 import com.android.pos.data.remote.Constants.MANUAL_SALE_CATEGORY_ID
 import com.android.pos.data.remote.Constants.MANUAL_SALE_ITEM_ID
+import com.android.pos.data.remote.Constants.TAKEOUT
 import com.android.pos.databinding.FragmentManualSaleNewBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.di.RolePermission
@@ -405,7 +406,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
         binding.txtSave.setOnClickListener {
             if (cartList?.isNotEmpty() == true) {
                 dashboardViewModel.mAllWords(
-                    prefProvider.getValue(Constants.ORDER_TYPE, "").toString(),
+                    prefProvider.getValue(Constants.ORDER_TYPE, TAKEOUT).toString(),
                     prefProvider.getValueInt(
                         Constants.EMPLOYEE_ID, 0
                     )

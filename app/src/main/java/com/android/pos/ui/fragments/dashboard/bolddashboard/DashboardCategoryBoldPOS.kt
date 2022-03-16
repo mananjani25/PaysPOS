@@ -33,6 +33,7 @@ import com.android.pos.ui.adapter.DineInAdapter
 import com.android.pos.ui.adapter.VariationDashboardListAdapter
 import com.android.pos.ui.fragments.checkout.CheckoutDetailsFragmentNew
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
+import com.android.pos.ui.fragments.payment.PaymentViewModel
 import com.android.pos.utils.callback.ItemListner
 import com.android.pos.utils.statusUtils.Resource
 import com.android.pos.utils.statusUtils.Status
@@ -45,11 +46,13 @@ class DashboardCategoryBoldPOS : Fragment(), ItemListner {
     private var cartList: ArrayList<CartModel> = arrayListOf()
     private lateinit var binding: FragmentDashboardCategoryBoldPosBinding
     private val viewModel by activityViewModels<DashBoardCategoryViewModel>()
+    private val viewModelPayment by activityViewModels<PaymentViewModel>()
     private var serviceChargesList: List<TbServiceCharge>? = null
     private var serviceChargesObserve: Observer<Resource<List<TbServiceCharge>>>? = null
     private val TAG = "DashboardCategoryBold"
     var ordertypelist: ArrayList<TbOrderType> = arrayListOf()
     var isupdate = false
+    var orderDiscount = 0.0
 
     @Inject
     lateinit var prefProvider: PrefProvider

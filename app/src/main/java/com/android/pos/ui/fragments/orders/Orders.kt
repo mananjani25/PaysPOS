@@ -171,7 +171,7 @@ class Orders : Fragment() {
 
     private fun configureToolbar() {
         binding.commonToolbar.imgDrawer.setOnClickListener {
-            (requireActivity() as MainActivity).enableDrawer()
+            findNavController().navigate(R.id.action_orders_to_menuposbold)
         }
         binding.commonToolbar.txtHome.setOnClickListener {
             findNavController().navigate(R.id.action_orders_to_dashboardCategoryNew)
