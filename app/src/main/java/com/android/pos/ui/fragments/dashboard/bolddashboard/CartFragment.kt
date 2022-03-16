@@ -207,6 +207,17 @@ class CartFragment : Fragment(), MyCallback, DineInAdapter.DineInCallback {
         ).observe(requireActivity()) {
             if (it.isNotEmpty()) {
                 Log.e(TAG, "listSize  ${Gson().toJson(it)}")
+                var ordertype = ""
+                var ordertypeId = 0
+                viewModel.ordertypelist.forEach {
+                    if (it.orderType == prefProvider.getValue(ORDER_TYPE, TAKEOUT)) {
+                        ordertype = it.orderType
+                        ordertypeId = it.id
+                    }
+                }
+                it[it.size-1].orderType = ordertype
+                it[it.size-1].orderTypeId = ordertypeId
+
                 it[it.size - 1].items?.toCollection(arrayListOf())
                     ?.let { it1 -> cartAdapter.setList(it1) }
                 viewModel.itemCalculationCartModel(
@@ -255,11 +266,7 @@ class CartFragment : Fragment(), MyCallback, DineInAdapter.DineInCallback {
         }
 
 
-            }
-
-
-
-
+    }
 
 
     private fun clearCustomer() {
@@ -332,7 +339,6 @@ class CartFragment : Fragment(), MyCallback, DineInAdapter.DineInCallback {
 
         binding.tvPayNow.setOnClickListener {
             if (cartAdapter.cartList.isNotEmpty()) {
-
                 findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_paymentBoldPosFragment)
             } else {
                 AlertUtils.showCustomAlertWithListenerWithOK(
@@ -444,7 +450,7 @@ class CartFragment : Fragment(), MyCallback, DineInAdapter.DineInCallback {
 
 
                 if (prefProvider.getValue(ORDER_TYPE, "").toString() != "") {
-                    prefProvider.setValue(ORDER_TYPE, "")
+                    prefProvider.setValue(ORDER_TYPE, TAKEOUT)
                     Log.e("ORDER_TYPE", "Updated check2")
                 }
 
@@ -500,7 +506,6 @@ class CartFragment : Fragment(), MyCallback, DineInAdapter.DineInCallback {
     }
 
 
-
     private fun getCartList() {
         Log.e("Loyalty", "getCartList called..")
 
@@ -516,7 +521,7 @@ class CartFragment : Fragment(), MyCallback, DineInAdapter.DineInCallback {
 
             bindData(it)
 
-          //  removeObserver()
+            //  removeObserver()
         }
 
 
@@ -631,9 +636,9 @@ class CartFragment : Fragment(), MyCallback, DineInAdapter.DineInCallback {
                 if (cartlist[0].items?.isEmpty() == true) {
                     // binding.layoutCart.llPayment.gone()
                 } else
-                    //binding.layoutCart.llPayment.visible()
+                //binding.layoutCart.llPayment.visible()
 
-                Log.e(TAG, "cartList[0].items > ${cartlist[0].items?.size}")
+                    Log.e(TAG, "cartList[0].items > ${cartlist[0].items?.size}")
                 Log.e(TAG, "viewModel.destroyedList > ${viewModel.destroyedList.size}")
                 cartAdapter.addCart(cartlist[0].items)
             }
@@ -651,12 +656,12 @@ class CartFragment : Fragment(), MyCallback, DineInAdapter.DineInCallback {
                 if (prefProvider.getValue(ORDER_TYPE, "").toString() == Constants.DINE_IN) {
                     binding.txtTotal.visibility = View.GONE
                     binding.tvPayNow.visibility = View.GONE
-                   // binding.layoutCart.txtDineInProceed.visibility = View.VISIBLE
+                    // binding.layoutCart.txtDineInProceed.visibility = View.VISIBLE
                     if (prefProvider.getValueboolean(Constants.DINE_IN_UPDATE, false) == true) {
 
-                       // binding.layoutCart.txtDineInProceed.setText("Update and Proceed")
+                        // binding.layoutCart.txtDineInProceed.setText("Update and Proceed")
                     } else {
-                       // binding.layoutCart.txtDineInProceed.setText("Proceed To Fire")
+                        // binding.layoutCart.txtDineInProceed.setText("Proceed To Fire")
                     }
                 } else {
                     //binding.layoutCart.txtDineInProceed.visibility = View.GONE
@@ -711,6 +716,7 @@ class CartFragment : Fragment(), MyCallback, DineInAdapter.DineInCallback {
             gotoPayment()
         }
     }
+
     private fun refreshOrderTypeLabel() {
         //set order type label
         var label = prefProvider.getValue(ORDER_TYPE, TAKEOUT).toString()
@@ -805,7 +811,7 @@ class CartFragment : Fragment(), MyCallback, DineInAdapter.DineInCallback {
                 bundle.putString("future_delivery_time", future_delivery_time)
                 cartlist[0].customer = assignCustomer
                 val cartModel = viewModel.generateCombinedItems(cartlist[0])
-               // Log.e(TAG, "openORderType  ${openORderType}")
+                // Log.e(TAG, "openORderType  ${openORderType}")
                 cartModel.openOrderType = openORderType
                 Log.e(TAG, "PaymentPAsscartModel: ${Gson().toJson(cartModel)}")
                 bundle.putParcelable("cartList", cartModel)
@@ -886,8 +892,6 @@ class CartFragment : Fragment(), MyCallback, DineInAdapter.DineInCallback {
         }
 
     }
-
-
 
 
     override fun onPause() {
