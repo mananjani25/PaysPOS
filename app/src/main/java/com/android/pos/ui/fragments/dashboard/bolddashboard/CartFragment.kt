@@ -6,11 +6,14 @@ import android.os.Bundle
 import android.util.Log
 import android.view.*
 import android.widget.TextView
+import androidx.annotation.IdRes
 import androidx.appcompat.widget.PopupMenu
 import androidx.core.os.bundleOf
 import androidx.fragment.app.*
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.Navigation
+import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.data.entities.*
@@ -252,9 +255,13 @@ class CartFragment : Fragment() , MyCallback , DineInAdapter.DineInCallback{
                     prefProvider.setValue(Constants.ORDER_TYPE, TAKEOUT)
                 }
                 clearCustomer()
-                redirectToActiveOrder()
+               findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
             }
         }
+    }
+
+    fun Fragment.getFragmentNavController(@IdRes id: Int) = activity?.let {
+        return@let Navigation.findNavController(it, id)
     }
 
     private fun redirectToActiveOrder() {
