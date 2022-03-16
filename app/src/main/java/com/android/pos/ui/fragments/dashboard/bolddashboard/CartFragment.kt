@@ -135,7 +135,7 @@ class CartFragment : Fragment() , MyCallback , DineInAdapter.DineInCallback{
 
         val name = prefProvider.getValue(Constants.CUSTOMER_NAME, "")
         Log.e("Customer Name", name)
-        if (name.isNotEmpty()) {
+        if (name.isNotEmpty() && name!=null) {
             binding.txtAddCustomer.text = name
         } else {
             binding.txtAddCustomer.text = getString(R.string.add_customer2)
@@ -197,14 +197,12 @@ class CartFragment : Fragment() , MyCallback , DineInAdapter.DineInCallback{
             prefProvider.getValue(ORDER_TYPE, TAKEOUT),
             prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
         ).observe(requireActivity()) {
-            Log.e(TAG, "getCartList:  ${Gson().toJson(it)}")
-            Log.d(TAG, "addObserver: " + prefProvider.getValue(ORDER_TYPE, TAKEOUT))
             if (it.isNotEmpty()) {
                 Log.e(TAG, "listSize  ${Gson().toJson(it)}")
                 it[it.size - 1].items?.toCollection(arrayListOf())
                     ?.let { it1 -> cartAdapter.setList(it1) }
-                viewModel.itemCalculation(
-                    it,
+                viewModel.itemCalculationCartModel(
+                    it[0],
                     binding.txtTotal,
                     requireContext()
                 )
@@ -252,19 +250,14 @@ class CartFragment : Fragment() , MyCallback , DineInAdapter.DineInCallback{
                     prefProvider.setValue(Constants.ORDER_TYPE, TAKEOUT)
                 }
                 clearCustomer()
-                redirectToActiveOrder()
+
+                findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
+
+
             }
         }
     }
 
-    private fun redirectToActiveOrder() {
-        try {
-            var intent: Intent = Intent()
-            intent.action = "SEND_TO_ACTIVE_ORDER"
-            requireActivity().sendBroadcast(intent)
-        } catch (e: Exception) {
-        }
-    }
 
     private fun clearCustomer() {
         prefProvider.setValue(Constants.CUSTOMER_NAME, "")

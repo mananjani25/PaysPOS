@@ -50,14 +50,6 @@ class DashboardCategoryBoldPOS : Fragment(), ItemListner {
     private val TAG = "DashboardCategoryBold"
     var ordertypelist: ArrayList<TbOrderType> = arrayListOf()
     var isupdate = false
-    private val redirectionBroadCast: BroadcastReceiver = object : BroadcastReceiver() {
-        override fun onReceive(ctxt: Context, i: Intent) {
-            if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
-                findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
-            }
-
-        }
-    }
 
     @Inject
     lateinit var prefProvider: PrefProvider
@@ -82,123 +74,123 @@ class DashboardCategoryBoldPOS : Fragment(), ItemListner {
         return binding.root
     }
 
-    private fun resultListener() {
+        private fun resultListener() {
 
-        setFragmentResultListener("request_key_customer") { _: String, bundle: Bundle ->
-            val result = bundle.getParcelable<TbCustomer>("data")
-            if (result != null) {
-                Log.e(TAG, "gotBundlebundle:  ${Gson().toJson(bundle)}")
-                setUpCustomer(result, bundle)
+            setFragmentResultListener("request_key_customer") { _: String, bundle: Bundle ->
+                val result = bundle.getParcelable<TbCustomer>("data")
+                if (result != null) {
+                    Log.e(TAG, "gotBundlebundle:  ${Gson().toJson(bundle)}")
+                    setUpCustomer(result, bundle)
+                }
             }
         }
-    }
 
-    private fun setUpCustomer(result: TbCustomer, bundle: Bundle) {
+        private fun setUpCustomer(result: TbCustomer, bundle: Bundle) {
 
-        prefProvider.setValue(Constants.CUSTOMER_NAME, result.first_name + " " + result.last_name)
-        result.id?.let { prefProvider.setValueInt(Constants.CUSTOMER_ID, it) }
+            prefProvider.setValue(
+                Constants.CUSTOMER_NAME,
+                result.first_name + " " + result.last_name
+            )
+            result.id?.let { prefProvider.setValueInt(Constants.CUSTOMER_ID, it) }
 
-        if (cartList.isEmpty()) {
-            val cart = createCart()
-            cart?.get(0)?.customer = result
-        } else {
-            cartList[0].customer = result
-            viewModel.addCart(cartList[0])
+            if (cartList.isEmpty()) {
+                val cart = createCart()
+                cart?.get(0)?.customer = result
+            } else {
+                cartList[0].customer = result
+                viewModel.addCart(cartList[0])
+            }
+
+
         }
 
+        override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+            super.onViewCreated(view, savedInstanceState)
 
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        requireActivity().registerReceiver(
-            redirectionBroadCast,
-            IntentFilter("SEND_TO_ACTIVE_ORDER")
-        )
-        onClick()
-        if (arguments != null) {
-            isupdate = arguments?.getBoolean("update")!!
-        }
-        syncData()
-        requireActivity().window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
-        loadCartFragment(CartFragment())
-        loadCategoryFragment(CategoryFragment(this))
-        binding.layoutHeader.txtUserName.text = prefProvider.getValue(EMPLOYEE_NAME, "").toString()
-
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        requireActivity().unregisterReceiver(redirectionBroadCast)
-    }
-
-    private fun syncData() {
-
-        val sync = prefProvider.getValueboolean(Constants.SYNC_DATA, false)
-        if (!sync)
-            viewModel.syncInventoryModule()
-    }
-
-    private fun loadCategoryFragment(fragment: Fragment) {
-        val fm: FragmentManager = requireActivity().supportFragmentManager
-        fm.beginTransaction().replace(binding.frameLayout.id, fragment).commit()
-    }
-
-    private fun loadCartFragment(frag: Fragment) {
-        val fm: FragmentManager = requireActivity().supportFragmentManager
-        val result = Bundle().apply {
-            putInt("fragmentId", binding.frameLayout.id)
-            putInt("checkoutHeaderId", binding.layoutHeaderCheckout.rlRoot.id)
-            putInt("dashboardHeaderId", binding.layoutHeader.rlRoot.id)
+            onClick()
             if (arguments != null) {
-                putBundle("updateBundle", arguments)
+                isupdate = arguments?.getBoolean("update")!!
             }
-        }
-        frag.arguments = result
-        fm.beginTransaction().replace(binding.frameLayoutCart.id, frag).commit()
-    }
-
-    private fun loadKeyPadFragment(frag: Fragment) {
-        val fm: FragmentManager = requireActivity().supportFragmentManager
-        fm.beginTransaction().replace(binding.frameLayout.id, frag).commit()
-    }
-
-    private fun onClick() {
-
-        binding.layoutHeader.txtTransaction.setOnClickListener {
-            findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_transactionFragment)
-
-        }
-        binding.layoutHeader.txtDineIn.setOnClickListener {
-
-        }
-        binding.layoutHeader.imgDrawer.setOnClickListener {
-            findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_menuFragment)
-
-        }
-        binding.layoutHeader.txtOpenOrder.setOnClickListener {
-            findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
-        }
-
-        binding.layoutHeader.linearSwitchUser.setOnClickListener {
-            var bundle = Bundle()
-            bundle.putBoolean("isSwap", true)
-            bundle.putBoolean("isDashboard", false)
-            findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_passcode, bundle)
-        }
-        binding.layoutHeader.ivLock.setOnClickListener {
-            findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_reportEODFragment)
-        }
-        binding.layoutHeaderCheckout.imgDrawer.setOnClickListener {
-            binding.layoutHeaderCheckout.rlRoot.visibility = View.GONE
-            binding.layoutHeader.rlRoot.visibility = View.VISIBLE
+            syncData()
+            requireActivity().window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+            loadCartFragment(CartFragment())
             loadCategoryFragment(CategoryFragment(this))
+            binding.layoutHeader.txtUserName.text =
+                prefProvider.getValue(EMPLOYEE_NAME, "").toString()
+
         }
 
-        binding.layoutHeader.imgSync.setOnClickListener {
-            viewModel.syncInventoryModule()
+
+        private fun syncData() {
+
+            val sync = prefProvider.getValueboolean(Constants.SYNC_DATA, false)
+            if (!sync)
+                viewModel.syncInventoryModule()
         }
-        /* binding.layoutHeader.txtOpenOrder.setOnClickListener {
+
+        private fun loadCategoryFragment(fragment: Fragment) {
+            val fm: FragmentManager = requireActivity().supportFragmentManager
+            fm.beginTransaction().replace(binding.frameLayout.id, fragment).commit()
+        }
+
+        private fun loadCartFragment(frag: Fragment) {
+            val fm: FragmentManager = requireActivity().supportFragmentManager
+            val result = Bundle().apply {
+                putInt("fragmentId", binding.frameLayout.id)
+                putInt("checkoutHeaderId", binding.layoutHeaderCheckout.rlRoot.id)
+                putInt("dashboardHeaderId", binding.layoutHeader.rlRoot.id)
+                if (arguments != null) {
+                    putBundle("updateBundle", arguments)
+                }
+            }
+            frag.arguments = result
+            fm.beginTransaction().replace(binding.frameLayoutCart.id, frag).commit()
+        }
+
+        private fun loadKeyPadFragment(frag: Fragment) {
+            val fm: FragmentManager = requireActivity().supportFragmentManager
+            fm.beginTransaction().replace(binding.frameLayout.id, frag).commit()
+        }
+
+        private fun onClick() {
+
+            binding.layoutHeader.txtTransaction.setOnClickListener {
+                findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_transactionFragment)
+
+            }
+            binding.layoutHeader.txtDineIn.setOnClickListener {
+
+            }
+            binding.layoutHeader.imgDrawer.setOnClickListener {
+                findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_menuFragment)
+
+            }
+            binding.layoutHeader.txtOpenOrder.setOnClickListener {
+                findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
+            }
+
+            binding.layoutHeader.linearSwitchUser.setOnClickListener {
+                var bundle = Bundle()
+                bundle.putBoolean("isSwap", true)
+                bundle.putBoolean("isDashboard", false)
+                findNavController().navigate(
+                    R.id.action_dashboardCategoryBoldPOS_to_passcode,
+                    bundle
+                )
+            }
+            binding.layoutHeader.ivLock.setOnClickListener {
+                findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_reportEODFragment)
+            }
+            binding.layoutHeaderCheckout.imgDrawer.setOnClickListener {
+                binding.layoutHeaderCheckout.rlRoot.visibility = View.GONE
+                binding.layoutHeader.rlRoot.visibility = View.VISIBLE
+                loadCategoryFragment(CategoryFragment(this))
+            }
+
+            binding.layoutHeader.imgSync.setOnClickListener {
+                viewModel.syncInventoryModule()
+            }
+            /* binding.layoutHeader.txtOpenOrder.setOnClickListener {
              loadCategoryFragment(CategoryFragment(this))
              binding.layoutHeader.txtOpenOrder.setTextColor(resources.getColor(R.color.btnColor))
              binding.layoutHeader.txtOpenOrder.setTypeface(
@@ -211,136 +203,140 @@ class DashboardCategoryBoldPOS : Fragment(), ItemListner {
                  Typeface.NORMAL
              )
          }*/
-        binding.layoutHeader.txtKeypad.setOnClickListener {
-            //loadKeyPadFragment(KeyPadManualSaleFragment())
-            binding.layoutHeader.txtKeypad.setTextColor(resources.getColor(R.color.btnColor))
-            binding.layoutHeader.txtKeypad.setTypeface(
-                binding.layoutHeader.txtKeypad.typeface,
-                Typeface.BOLD
-            )
-            binding.layoutHeader.txtOpenOrder.setTextColor(resources.getColor(R.color.txtColor))
-            binding.layoutHeader.txtOpenOrder.setTypeface(
-                binding.layoutHeader.txtOpenOrder.typeface,
-                Typeface.NORMAL
-            )
+            binding.layoutHeader.txtKeypad.setOnClickListener {
+                //loadKeyPadFragment(KeyPadManualSaleFragment())
+                binding.layoutHeader.txtKeypad.setTextColor(resources.getColor(R.color.btnColor))
+                binding.layoutHeader.txtKeypad.setTypeface(
+                    binding.layoutHeader.txtKeypad.typeface,
+                    Typeface.BOLD
+                )
+                binding.layoutHeader.txtOpenOrder.setTextColor(resources.getColor(R.color.txtColor))
+                binding.layoutHeader.txtOpenOrder.setTypeface(
+                    binding.layoutHeader.txtOpenOrder.typeface,
+                    Typeface.NORMAL
+                )
 
-            findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_manualSalesNew)
+                findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_manualSalesNew)
+            }
+
+
         }
 
+        override fun onItemSelected(item: TbItem) {
+            Log.e(TAG, "getitem:  ${Gson().toJson(item)}")
+            if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == Constants.OPEN_ORDER) {
+                val model = CartModel()
+                model.employeeID =
+                    prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
+                model.terminalId = prefProvider.getValueInt(TERMINAL_ID, 0)
+                model.orderType = prefProvider.getValue(ORDER_TYPE, "")
+                model.locationId = prefProvider.getValueInt(Constants.LOCATION_ID, 1)
+                model.serviceCharge = serviceChargesList
+                viewModel.ordertypelist.forEach {
+                    if (it.orderType == Constants.OPEN_ORDER) {
+                        model.orderTypeId = it.id
+                    }
+                }
+                cartList.add(model)
+            } else {
+                createCart()
+            }
 
-    }
+            val fragment = AddItemFragment.newInstance(item, this, cartList)
+            loadCategoryFragment(fragment)
+        }
 
-    override fun onItemSelected(item: TbItem) {
-        Log.e(TAG, "getitem:  ${Gson().toJson(item)}")
-        if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == Constants.OPEN_ORDER) {
-            val model = CartModel()
-            model.employeeID =
+        private fun createCart(): ArrayList<CartModel>? {
+            if (cartList.isEmpty()) {
+                val model = CartModel()
+                model.employeeID =
+                    prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
+                model.terminalId = prefProvider.getValueInt(TERMINAL_ID, 0)
+                model.orderType = prefProvider.getValue(ORDER_TYPE, "")
+                model.locationId = prefProvider.getValueInt(Constants.LOCATION_ID, 1)
+                model.serviceCharge = serviceChargesList
+                viewModel.ordertypelist.forEach {
+                    if (it.orderType == TAKEOUT) {
+                        model.orderTypeId = it.id
+                    }
+                }
+                cartList.add(model)
+
+                return cartList
+            }
+
+            return null
+        }
+
+        override fun onCancelItemSelected() {
+            loadCategoryFragment(CategoryFragment(this))
+
+        }
+
+        private fun addObserver() {
+
+            viewModel.mAllWords(
+                prefProvider.getValue(ORDER_TYPE, TAKEOUT),
                 prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
-            model.terminalId = prefProvider.getValueInt(TERMINAL_ID, 0)
-            model.orderType = prefProvider.getValue(ORDER_TYPE, "")
-            model.locationId = prefProvider.getValueInt(Constants.LOCATION_ID, 1)
-            model.serviceCharge = serviceChargesList
-            viewModel.ordertypelist.forEach {
-                if (it.orderType == Constants.OPEN_ORDER) {
-                    model.orderTypeId = it.id
+            ).observe(requireActivity()) {
+                cartList.clear()
+                cartList = arrayListOf()
+                cartList = it.toCollection(arrayListOf())
+            }
+
+            viewModel.orderTypes().observe(requireActivity()) {
+                if (it.data != null) {
+                    ordertypelist = it.data as ArrayList<TbOrderType>
+                    viewModel.setOrderTypeList(ordertypelist)
                 }
             }
-            cartList.add(model)
-        } else {
-            createCart()
         }
 
-        val fragment = AddItemFragment.newInstance(item, this, cartList)
-        loadCategoryFragment(fragment)
-    }
+        private fun getServiceCharges() {
 
-    private fun createCart(): ArrayList<CartModel>? {
-        if (cartList.isEmpty()) {
-            val model = CartModel()
-            model.employeeID =
-                prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
-            model.terminalId = prefProvider.getValueInt(TERMINAL_ID, 0)
-            model.orderType = prefProvider.getValue(ORDER_TYPE, "")
-            model.locationId = prefProvider.getValueInt(Constants.LOCATION_ID, 1)
-            model.serviceCharge = serviceChargesList
-            viewModel.ordertypelist.forEach {
-                if (it.orderType == TAKEOUT) {
-                    model.orderTypeId = it.id
+            serviceChargesObserve = Observer {
+
+                if (it.status == Status.SUCCESS) {
+                    serviceChargesList = it.data
+
+                }
+
+            }
+
+            viewModel.serviceCharges.observe(requireActivity(), serviceChargesObserve!!)
+        }
+
+
+        private fun checkItemQty(
+            data: TbItem,
+            variationAdapter: VariationDashboardListAdapter?
+        ): Boolean {
+
+            if (data.variationsAttributes.isNotEmpty()) {
+
+                val stockQty = variationAdapter?.getItem()?.stockQty
+
+                return if (stockQty?.isNotEmpty() == true) {
+
+                    stockQty.toInt() >= 1
+
+                } else {
+                    false
+                }
+
+            } else {
+
+                return if (data.isManualSales) {
+                    true
+                } else {
+                    data.quantity >= 1
                 }
             }
-            cartList.add(model)
 
-            return cartList
+            return false
         }
 
-        return null
-    }
-
-    override fun onCancelItemSelected() {
-        loadCategoryFragment(CategoryFragment(this))
-
-    }
-
-    private fun addObserver() {
-
-        viewModel.mAllWords(
-            prefProvider.getValue(ORDER_TYPE, TAKEOUT),
-            prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
-        ).observe(requireActivity()) {
-            cartList.clear()
-            cartList = arrayListOf()
-            cartList = it.toCollection(arrayListOf())
-        }
-
-        viewModel.orderTypes().observe(requireActivity()) {
-            if (it.data != null) {
-                ordertypelist = it.data as ArrayList<TbOrderType>
-                viewModel.setOrderTypeList(ordertypelist)
-            }
-        }
-    }
-
-    private fun getServiceCharges() {
-
-        serviceChargesObserve = Observer {
-
-            if (it.status == Status.SUCCESS) {
-                serviceChargesList = it.data
-
-            }
-
-        }
-
-        viewModel.serviceCharges.observe(requireActivity(), serviceChargesObserve!!)
-    }
 
 
-    private fun checkItemQty(
-        data: TbItem,
-        variationAdapter: VariationDashboardListAdapter?
-    ): Boolean {
 
-        if (data.variationsAttributes.isNotEmpty()) {
-
-            val stockQty = variationAdapter?.getItem()?.stockQty
-
-            return if (stockQty?.isNotEmpty() == true) {
-
-                stockQty.toInt() >= 1
-
-            } else {
-                false
-            }
-
-        } else {
-
-            return if (data.isManualSales) {
-                true
-            } else {
-                data.quantity >= 1
-            }
-        }
-
-        return false
-    }
 }

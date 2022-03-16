@@ -826,6 +826,146 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     }
 
+    @SuppressLint("SetTextI18n")
+    fun itemCalculationCartModel(
+        cartModel: CartModel,
+        txtTotalAmount: AppCompatTextView,
+        context: Context
+    ) {
+
+
+        var totalAmmount = 0.0
+        nonCashAdj = 0.0
+        totalPrice = 0.0
+        totalCount = 0
+        subTotalPrice = 0.0
+        totalDiscount = 0.0
+        totalTax = 0.0
+        totalServiceCharge = 0.0
+        var amountToBePaid = 0.0
+        if (cartModel != null) {
+            if (cartModel.orderType == DINE_IN) {
+
+                cartModel.dineInList?.forEach { dine ->
+
+                    dine.items.forEach { item ->
+                        totalCount += item.itemQuantity
+                        if (!item.isManualSales) {
+                            subTotalPrice += (item.price * item.itemQuantity) - (item.discountPrice * item.itemQuantity)
+                        } else {
+                            subTotalPrice += (item.price * item.itemQuantity) - item.discountPrice
+                        }
+
+                        taxCalculation(item)
+
+                        item.modifiers.forEach {
+                            subTotalPrice += (it.price * it.itemQuantity)
+                        }
+                    }
+
+
+                }
+
+                serviceChargeCalculationModel(cartModel)
+                subTotalPrice -= (cartModel.discountPrice)
+
+
+                cartModel.dineInList?.forEach {
+                    it.items.forEach {
+                        if (!it.isManualSales) {
+                            totalDiscount += (it.discountPrice * it.itemQuantity)
+                        } else {
+                            totalDiscount += it.discountPrice
+                        }
+                    }
+                }
+
+
+                totalPrice = (subTotalPrice + totalTax + totalServiceCharge)
+                amountToBePaid = totalPrice - totalDiscount
+
+                MethodUtils.setPriceTextView(txtTotalAmount, amountToBePaid)
+            } else {
+                Log.d(TAG, "addObserver: " + prefProvider.getValue(
+                    Constants.ORDER_TYPE,
+                    Constants.TAKEOUT
+                ))
+
+                if (cartModel.items?.isEmpty() == false) {
+
+
+                    cartModel.items?.forEach { item ->
+                        totalCount += item.itemQuantity
+                        if (!item.isManualSales) {
+                            subTotalPrice += (item.price * item.itemQuantity) - (item.discountPrice * item.itemQuantity)
+                        } else {
+                            subTotalPrice += (item.price * item.itemQuantity) - item.discountPrice
+                        }
+
+                        taxCalculation(item)
+                        Log.d("yash", "TaxCalculation: " + totalTax)
+
+                        item.modifiers.forEach {
+                            subTotalPrice += (it.price * it.itemQuantity)
+
+                        }
+                    }
+
+
+                    serviceChargeCalculationModel(cartModel)
+                    subTotalPrice -= cartModel.discountPrice
+
+
+
+                    cartModel.items!!.forEach {
+                        if (!it.isManualSales) {
+                            totalDiscount += (it.discountPrice * it.itemQuantity)
+                        } else {
+                            totalDiscount += it.discountPrice
+                        }
+                    }
+
+                    totalPrice = (subTotalPrice + totalTax + totalServiceCharge)
+
+
+                    //loyalty point and price calculation
+                    amountToBePaid = totalPrice
+
+
+                    if (selectedCustomer == null) {
+                        var fnAmount = amountToBePaid
+                        MethodUtils.setPriceTextView(
+                            txtTotalAmount,
+                            fnAmount
+                        )
+                    } else {
+                        var fnAmount = amountToBePaid
+                        checkAppliedLoyaltyProgram(
+                            selectedCustomer,
+                            fnAmount,
+                            txtTotalAmount
+                        )
+                    }
+
+                    Log.e("amountToBePaid", "" + amountToBePaid)
+                } else {
+
+                    nonCashAdj = 0.0
+                    totalPrice = 0.0
+                    totalCount = 0
+                    subTotalPrice = 0.0
+                    totalDiscount = 0.0
+                    totalTax = 0.0
+                    totalServiceCharge = 0.0
+                    amountToBePaid = 0.0
+                }
+            }
+        }
+        //totalAmmount = totalPrice-cartList[0].discountPrice
+
+
+    }
+
     fun loyaltyPointCondition(customer: TbCustomer?): Boolean {
         return (customer?.enroll_to_loyalty == true && activeLoyaltyProgram != null && activeLoyaltyProgram?.rewardPoint ?: 0 <= customer.final_reward ?: 0)
     }
@@ -890,6 +1030,19 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     private fun serviceChargeCalculation(cartList: List<CartModel>) {
         val serviceChargesList = cartList[0].serviceCharge
+
+        if (serviceChargesList != null && serviceChargesList.isNotEmpty()) {
+            serviceChargesList.forEach {
+                if (it.isEnabled) {
+                    totalServiceCharge += (subTotalPrice * it.percentage) / 100
+
+                }
+            }
+
+        }
+    }
+    private fun serviceChargeCalculationModel(cartModel: CartModel) {
+        val serviceChargesList = cartModel.serviceCharge
 
         if (serviceChargesList != null && serviceChargesList.isNotEmpty()) {
             serviceChargesList.forEach {
