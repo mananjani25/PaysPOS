@@ -696,6 +696,7 @@ class DashBoardCategoryViewModel @Inject constructor(
         context: Context
     ) {
 
+        Log.e("itemCalculation","------------------>")
 
         var totalAmmount = 0.0
         nonCashAdj = 0.0
@@ -826,7 +827,7 @@ class DashBoardCategoryViewModel @Inject constructor(
         }
         //totalAmmount = totalPrice-cartList[0].discountPrice
 
-
+        Log.e("itemCalculation 1","------------------>")
     }
 
     @SuppressLint("SetTextI18n")

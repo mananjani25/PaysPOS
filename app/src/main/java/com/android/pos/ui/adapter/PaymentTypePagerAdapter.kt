@@ -16,7 +16,7 @@ class PaymentTypePagerAdapter(
     val bundle: Bundle
 ) :
     FragmentPagerAdapter(fragmentManager!!) {
-    var mContext: Context
+    var mContext: Context = context
     var count: Int?=null
 
     override fun getCount(): Int {
@@ -33,7 +33,6 @@ class PaymentTypePagerAdapter(
     }
 
     init {
-        mContext = context
         count = totalTabs
     }
 }

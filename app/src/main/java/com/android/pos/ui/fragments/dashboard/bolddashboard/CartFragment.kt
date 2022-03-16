@@ -11,6 +11,7 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.*
 import androidx.lifecycle.Observer
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.Navigation
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.data.entities.*
@@ -116,7 +117,7 @@ class CartFragment : Fragment(), MyCallback, DineInAdapter.DineInCallback {
 
         val name = prefProvider.getValue(Constants.CUSTOMER_NAME, "")
         Log.e("Customer Name", name)
-        if (name.isNotEmpty() && name!=null) {
+        if (name.isNotEmpty() && name != null) {
             binding.txtAddCustomer.text = name
         } else {
             binding.txtAddCustomer.text = getString(R.string.add_customer2)
@@ -139,7 +140,7 @@ class CartFragment : Fragment(), MyCallback, DineInAdapter.DineInCallback {
         initListeners()
         setCartAdapter()
         addObserver()
-        getCartList()
+      //  getCartList()
 
 
         if (isFromPayment) {
@@ -158,10 +159,12 @@ class CartFragment : Fragment(), MyCallback, DineInAdapter.DineInCallback {
                     updateBundle?.getBoolean("isLoyaltyApplied")!!
             } else {
                 prefProvider.setValue(ORDER_TYPE, TAKEOUT)
+                Log.e("ORDER_TYPE", "Updated check")
             }
         } else {
             isOrderUpdate = false
             prefProvider.setValue(ORDER_TYPE, TAKEOUT)
+            Log.e("ORDER_TYPE", "Updated check1")
         }
 
         if (isOrderUpdate) {
@@ -173,6 +176,8 @@ class CartFragment : Fragment(), MyCallback, DineInAdapter.DineInCallback {
     }
 
     private fun addObserver() {
+
+        Log.e("ORDER_TYPE", prefProvider.getValue(ORDER_TYPE, TAKEOUT))
 
         viewModel.mAllWords(
             prefProvider.getValue(ORDER_TYPE, TAKEOUT),
@@ -226,19 +231,7 @@ class CartFragment : Fragment(), MyCallback, DineInAdapter.DineInCallback {
                 }
             }
         }
-        viewModelPayment.QueueCreateSaveOrder.observe(requireActivity()) {
-            it.getContentIfNotHandled()?.let {
-                viewModel.deleteCart()
-                if (prefProvider.getValue(Constants.ORDER_TYPE, "").toString() != "") {
-                    prefProvider.setValue(Constants.ORDER_TYPE, TAKEOUT)
-                }
-                clearCustomer()
 
-                findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
-
-
-            }
-        }
     }
 
 
@@ -272,33 +265,37 @@ class CartFragment : Fragment(), MyCallback, DineInAdapter.DineInCallback {
             val popupMenu = PopupMenu(requireContext(), it)
             popupMenu.menuInflater.inflate(R.menu.cart_menu, popupMenu.menu)
             popupMenu.setOnMenuItemClickListener { menuItem ->
-                val id = menuItem.itemId
-                if (id == R.id.menu_clear_cart) {
-                    clearCart()
-                } else if (id == R.id.menu_remove_customer) {
-
-                    if (cartlist.isNotEmpty() && cartlist[0].customer != null) {
-                        cartlist[0].customer = null
-                        viewModel.addCart(cartlist[0])
+                when (menuItem.itemId) {
+                    R.id.menu_clear_cart -> {
+                        clearCart()
                     }
-                    clearCustomer()
-                    displayCustomer()
-                } else if (id == R.id.menu_discount) {
+                    R.id.menu_remove_customer -> {
 
-                    val bundle = Bundle()
-                    bundle.putBoolean("isOrderDiscount", true)
-                    bundle.putDouble("totalPrice", viewModel.totalPrice)
-                    if (cartlist.isNotEmpty()) {
-                        bundle.putDouble("orderDiscountPrice", cartlist[0].discountPrice)
-                        bundle.putString("orderDiscountType", cartlist[0].discountType)
+                        if (cartlist.isNotEmpty() && cartlist[0].customer != null) {
+                            cartlist[0].customer = null
+                            viewModel.addCart(cartlist[0])
+                        }
+                        clearCustomer()
+                        displayCustomer()
                     }
-                    findNavController().navigate(
-                        R.id.action_dashboardCategoryBoldPOS_to_addDiscountDialog,
-                        bundle
-                    )
+                    R.id.menu_discount -> {
 
-                } else if (id == R.id.menu_note) {
-                    clearCart()
+                        val bundle = Bundle()
+                        bundle.putBoolean("isOrderDiscount", true)
+                        bundle.putDouble("totalPrice", viewModel.totalPrice)
+                        if (cartlist.isNotEmpty()) {
+                            bundle.putDouble("orderDiscountPrice", cartlist[0].discountPrice)
+                            bundle.putString("orderDiscountType", cartlist[0].discountType)
+                        }
+                        findNavController().navigate(
+                            R.id.action_dashboardCategoryBoldPOS_to_addDiscountDialog,
+                            bundle
+                        )
+
+                    }
+                    R.id.menu_note -> {
+                        clearCart()
+                    }
                 }
                 true
             }
@@ -321,7 +318,7 @@ class CartFragment : Fragment(), MyCallback, DineInAdapter.DineInCallback {
         }
         binding.tvSave.setOnClickListener {
             if (cartAdapter.cartList.isNotEmpty()) {
-                if (prefProvider.getValue(Constants.ORDER_TYPE, "") != Constants.DINE_IN) {
+                if (prefProvider.getValue(ORDER_TYPE, "") != Constants.DINE_IN) {
 
                     var ordertype = ""
                     var ordertypeId = 0
@@ -347,14 +344,12 @@ class CartFragment : Fragment(), MyCallback, DineInAdapter.DineInCallback {
                             orderOfflineId
                         )
 
-                        var totalAmountTobeSave = 0.0
-                        if (viewModel.redeemLoyaltyInfo.isLoyaltyApplied == true) {
-                            totalAmountTobeSave =
+                        val totalAmountTobeSave =
+                            if (viewModel.redeemLoyaltyInfo.isLoyaltyApplied == true) {
                                 (viewModel.redeemLoyaltyInfo.getAmountToBePaid() ?: 0.0)
-                        } else {
-                            totalAmountTobeSave =
+                            } else {
                                 viewModel.totalPrice
-                        }
+                            }
 
                         if (cartList.futureDeliveryDate.isNotEmpty()) {
                             future_delivery_date = cartList.futureDeliveryDate
@@ -417,6 +412,7 @@ class CartFragment : Fragment(), MyCallback, DineInAdapter.DineInCallback {
 
                 if (prefProvider.getValue(ORDER_TYPE, "").toString() != "") {
                     prefProvider.setValue(ORDER_TYPE, "")
+                    Log.e("ORDER_TYPE", "Updated check2")
                 }
 
                 prefProvider.setValueboolean(Constants.LOYALTY_ADDED, false)
@@ -486,7 +482,7 @@ class CartFragment : Fragment(), MyCallback, DineInAdapter.DineInCallback {
 
             bindData(it)
 
-            removeObserver()
+          //  removeObserver()
         }
 
 

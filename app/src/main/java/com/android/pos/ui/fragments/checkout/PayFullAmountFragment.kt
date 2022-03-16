@@ -57,8 +57,8 @@ class PayFullAmountFragment(val bundle: Bundle?) : Fragment(), ItemListner, magt
     DeleteOptionCallback {
     private var requestCancel: Boolean = false
     private lateinit var binding: FragmentPayFullAmountBinding
-    private val viewModel by activityViewModels<DashBoardCategoryViewModel>()
     private val paymentviewModel by activityViewModels<PaymentViewModel>()
+    private val viewModel by activityViewModels<DashBoardCategoryViewModel>()
     private val TAG = "DashboardCategoryBold"
     var frameLayoutId = 0
     var paymentType = "Cash"
@@ -107,11 +107,7 @@ class PayFullAmountFragment(val bundle: Bundle?) : Fragment(), ItemListner, magt
 
         binding = FragmentPayFullAmountBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = this
-        return binding.root
-    }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
         onClick()
         frameLayoutId = bundle?.getInt("frameLayoutId")!!
         llRoot = bundle.getInt("llRoot")!!
@@ -119,9 +115,17 @@ class PayFullAmountFragment(val bundle: Bundle?) : Fragment(), ItemListner, magt
         getCartData()
         observeData()
 
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
     }
 
     private fun getCartData() {
+
+
         cartList = viewModel.cartModel
         totalPrice = viewModel.totalPrice
         subTotalPrice = viewModel.subTotalPrice

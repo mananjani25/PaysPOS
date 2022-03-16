@@ -18,6 +18,7 @@ import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.Observer
+import androidx.navigation.Navigation
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.data.entities.*
@@ -33,6 +34,7 @@ import com.android.pos.ui.adapter.DineInAdapter
 import com.android.pos.ui.adapter.VariationDashboardListAdapter
 import com.android.pos.ui.fragments.checkout.CheckoutDetailsFragmentNew
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
+import com.android.pos.ui.fragments.payment.PaymentViewModel
 import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.callback.ItemListner
 import com.android.pos.utils.statusUtils.Resource
@@ -60,6 +62,8 @@ class DashboardCategoryBoldPOS : Fragment(), ItemListner {
 
         }
     }
+
+    private val viewModelPayment by activityViewModels<PaymentViewModel>()
 
     @Inject
     lateinit var prefProvider: PrefProvider
@@ -316,6 +320,18 @@ class DashboardCategoryBoldPOS : Fragment(), ItemListner {
                 if (it.data != null) {
                     ordertypelist = it.data as ArrayList<TbOrderType>
                     viewModel.setOrderTypeList(ordertypelist)
+                }
+            }
+
+            viewModelPayment.QueueCreateSaveOrder.observe(requireActivity()) {
+                it.getContentIfNotHandled()?.let {
+                    viewModel.deleteCart()
+                    if (prefProvider.getValue(ORDER_TYPE, "") != "") {
+                        prefProvider.setValue(ORDER_TYPE, TAKEOUT)
+                    }
+
+                    findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
+
                 }
             }
         }
