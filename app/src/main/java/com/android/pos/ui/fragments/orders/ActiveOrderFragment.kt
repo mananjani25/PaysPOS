@@ -345,12 +345,14 @@ class ActiveOrderFragment(
             }
             "PAY" -> {
 
-                prefProvider.setValue(
-                    Constants.CUSTOMER_NAME,
-                    order.customer?.firstName + " " + order.customer?.lastName
-                )
+                if (order.customer != null) {
+                    prefProvider.setValue(
+                        Constants.CUSTOMER_NAME,
+                        order.customer.firstName + " " + order.customer.lastName
+                    )
+                }
 
-                Log.e("ORDER_TYPE",order.orderType)
+                Log.e("ORDER_TYPE", order.orderType)
 
                 prefProvider.setValue(Constants.ORDER_TYPE, order.orderType)
                 dashboardViewModel.addCart(
