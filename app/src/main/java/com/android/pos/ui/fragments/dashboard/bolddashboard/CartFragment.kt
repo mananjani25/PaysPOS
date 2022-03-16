@@ -256,8 +256,10 @@ class CartFragment : Fragment(), MyCallback, DineInAdapter.DineInCallback {
 
 
             }
-        }
-    }
+
+
+
+
 
 
     private fun clearCustomer() {
@@ -909,5 +911,6 @@ class CartFragment : Fragment(), MyCallback, DineInAdapter.DineInCallback {
 
     override fun onItemDelete(position: Int, itemPosition: Int, data: TbItem) {
     }
+
 
 }
