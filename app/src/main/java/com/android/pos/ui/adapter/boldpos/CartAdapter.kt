@@ -26,7 +26,7 @@ class CartAdapter : RecyclerView.Adapter<CartAdapter.MyViewHolder>() {
         fun bind(item: TbItem, pos: Int) {
             Log.e(TAG,"itemprice:  ${item.price}")
             binding.txtName.text = item.name
-            binding.txtQuantity.text = ""+item.itemQuantity
+            binding.txtQuantity.text = "X"+item.itemQuantity
             binding.txtEachQntPrice.text = "$"+item.price
             binding.txtTotalPrice.text = "$"+MethodUtils.roundOffAmountString((item.price * item.itemQuantity))
 
@@ -63,4 +63,19 @@ class CartAdapter : RecyclerView.Adapter<CartAdapter.MyViewHolder>() {
     override fun getItemCount(): Int {
         return cartList.size
     }
+
+    fun addCart(mList: List<TbItem>?) {
+        cartList = mList as ArrayList<TbItem>
+        val it: MutableIterator<TbItem> = cartList.iterator()
+
+        while (it.hasNext()) {
+            val s: TbItem = it.next()
+            if (s.isDestroy) {
+                it.remove()
+            }
+        }
+
+        notifyDataSetChanged()
+    }
+
 }

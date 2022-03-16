@@ -33,7 +33,6 @@ import com.android.pos.ui.adapter.DineInAdapter
 import com.android.pos.ui.adapter.VariationDashboardListAdapter
 import com.android.pos.ui.fragments.checkout.CheckoutDetailsFragmentNew
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
-import com.android.pos.ui.fragments.manualsales.ManualSaleBoldPOS.KeyPadManualSaleFragment
 import com.android.pos.utils.callback.ItemListner
 import com.android.pos.utils.statusUtils.Resource
 import com.android.pos.utils.statusUtils.Status

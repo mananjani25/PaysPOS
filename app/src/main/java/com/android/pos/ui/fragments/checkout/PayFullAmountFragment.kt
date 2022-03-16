@@ -276,6 +276,7 @@ class PayFullAmountFragment(val bundle: Bundle?) : Fragment(), ItemListner, magt
             binding.tvPaymentLink.setTextColor(resources.getColor(R.color.txtColor))
         }
         binding.tvCustom.setOnClickListener {
+
             binding.tvCustom.setBackgroundDrawable(resources.getDrawable(R.drawable.button_selected))
             binding.llCreditCard.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
             binding.llManualCardEntry.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
@@ -291,6 +292,8 @@ class PayFullAmountFragment(val bundle: Bundle?) : Fragment(), ItemListner, magt
             binding.tvCash2.setTextColor(resources.getColor(R.color.txtColor))
             binding.tvCash3.setTextColor(resources.getColor(R.color.txtColor))
             binding.tvPaymentLink.setTextColor(resources.getColor(R.color.txtColor))
+
+
         }
         binding.tvPaymentLink.setOnClickListener {
             binding.tvPaymentLink.setBackgroundDrawable(resources.getDrawable(R.drawable.button_selected))

@@ -58,6 +58,7 @@
 
 
             <TextView
+                android:id="@+id/tvAddTip"
                 style="@style/CustomFontBold"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -70,6 +71,7 @@
                 android:textSize="@dimen/_6mdpi" />
 
             <TextView
+                android:id="@+id/tvAddDiscount"
                 style="@style/CustomFontBold"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

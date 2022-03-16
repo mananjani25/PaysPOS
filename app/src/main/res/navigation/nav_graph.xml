@@ -849,11 +849,6 @@
             android:id="@+id/action_orders_to_paymentFragment"
             app:destination="@id/paymentBoldPosFragment" />
     </fragment>
-    <fragment
-        android:id="@+id/manualSaleBold"
-        android:name="com.android.pos.ui.fragments.manualsales.ManualSaleBoldPOS.ManualSaleBoldFragment"
-        android:label="Manual Sales Bold">
-    </fragment>
     <action
         android:id="@+id/action_global_orders"
         app:destination="@id/orders" />
@@ -1316,6 +1311,15 @@
             android:id="@+id/action_paymentBoldPosFragment_to_orderComplete"
             app:destination="@id/orderCompleteFragment"
             app:enterAnim="@anim/nav_default_enter_anim" />
+        <action
+            android:id="@+id/action_paymentBoldPosFragment_to_addTipDialog"
+            app:destination="@id/addTipsDialog"
+            app:enterAnim="@anim/nav_default_enter_anim" />
+        <action
+            android:id="@+id/action_paymentBoldPosFragment_to_addDiscountDialog"
+            app:destination="@id/addDiscountDialog"
+            app:enterAnim="@anim/nav_default_enter_anim" />
+
     </fragment>
     <fragment
         android:id="@+id/magtekFragment"
