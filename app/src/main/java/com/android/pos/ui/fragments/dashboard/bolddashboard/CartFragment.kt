@@ -36,7 +36,10 @@ import com.android.pos.utils.statusUtils.Resource
 import com.android.pos.utils.statusUtils.Status
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
+import java.text.SimpleDateFormat
+import java.util.*
 import javax.inject.Inject
+import kotlin.collections.ArrayList
 
 
 @AndroidEntryPoint
@@ -117,7 +120,7 @@ class CartFragment : Fragment(), MyCallback, DineInAdapter.DineInCallback {
 
         val name = prefProvider.getValue(Constants.CUSTOMER_NAME, "")
         Log.e("Customer Name", name)
-        if (name.isNotEmpty() && name != null) {
+        if (name.isNotEmpty() && name!=null) {
             binding.txtAddCustomer.text = name
         } else {
             binding.txtAddCustomer.text = getString(R.string.add_customer2)
@@ -351,9 +354,15 @@ class CartFragment : Fragment(), MyCallback, DineInAdapter.DineInCallback {
                                 viewModel.totalPrice
                             }
 
-                        if (cartList.futureDeliveryDate.isNotEmpty()) {
-                            future_delivery_date = cartList.futureDeliveryDate
-                        }
+                        cartList.openOrderType = openORderType
+                        if (!isOrderUpdate)
+                            cartList.customer = assignCustomer
+
+                        val formatterdate = SimpleDateFormat("yyyy-MM-dd")
+                        val formattertime = SimpleDateFormat("hh:mm a")
+                        val date = Date()
+                        future_delivery_date = formatterdate.format(date)
+                        future_delivery_time = formattertime.format(date)
 
                         val request = viewModelPayment.createOpenOrderRequest(
                             cartList,

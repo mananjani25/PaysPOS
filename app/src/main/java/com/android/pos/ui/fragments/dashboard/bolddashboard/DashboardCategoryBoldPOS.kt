@@ -18,7 +18,6 @@ import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.Observer
-import androidx.navigation.Navigation
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.data.entities.*
@@ -35,7 +34,6 @@ import com.android.pos.ui.adapter.VariationDashboardListAdapter
 import com.android.pos.ui.fragments.checkout.CheckoutDetailsFragmentNew
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.android.pos.ui.fragments.payment.PaymentViewModel
-import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.callback.ItemListner
 import com.android.pos.utils.statusUtils.Resource
 import com.android.pos.utils.statusUtils.Status
@@ -48,22 +46,13 @@ class DashboardCategoryBoldPOS : Fragment(), ItemListner {
     private var cartList: ArrayList<CartModel> = arrayListOf()
     private lateinit var binding: FragmentDashboardCategoryBoldPosBinding
     private val viewModel by activityViewModels<DashBoardCategoryViewModel>()
+    private val viewModelPayment by activityViewModels<PaymentViewModel>()
     private var serviceChargesList: List<TbServiceCharge>? = null
     private var serviceChargesObserve: Observer<Resource<List<TbServiceCharge>>>? = null
     private val TAG = "DashboardCategoryBold"
     var ordertypelist: ArrayList<TbOrderType> = arrayListOf()
     var isupdate = false
-    private var orderDiscount: Double = 0.0
-    private val redirectionBroadCast: BroadcastReceiver = object : BroadcastReceiver() {
-        override fun onReceive(ctxt: Context, i: Intent) {
-            if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
-                findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
-            }
-
-        }
-    }
-
-    private val viewModelPayment by activityViewModels<PaymentViewModel>()
+    var orderDiscount = 0.0
 
     @Inject
     lateinit var prefProvider: PrefProvider
@@ -88,7 +77,7 @@ class DashboardCategoryBoldPOS : Fragment(), ItemListner {
         return binding.root
     }
 
-    private fun resultListener() {
+        private fun resultListener() {
 
         setFragmentResultListener("request_key_customer") { _: String, bundle: Bundle ->
             val result = bundle.getParcelable<TbCustomer>("data")
@@ -165,24 +154,24 @@ class DashboardCategoryBoldPOS : Fragment(), ItemListner {
             fm.beginTransaction().replace(binding.frameLayout.id, fragment).commit()
         }
 
-        private fun loadCartFragment(frag: Fragment) {
-            val fm: FragmentManager = requireActivity().supportFragmentManager
-            val result = Bundle().apply {
-                putInt("fragmentId", binding.frameLayout.id)
-                putInt("checkoutHeaderId", binding.layoutHeaderCheckout.rlRoot.id)
-                putInt("dashboardHeaderId", binding.layoutHeader.rlRoot.id)
-                if (arguments != null) {
-                    putBundle("updateBundle", arguments)
-                }
+    private fun loadCartFragment(frag: Fragment) {
+        val fm: FragmentManager = childFragmentManager
+        val result = Bundle().apply {
+            putInt("fragmentId", binding.frameLayout.id)
+            putInt("checkoutHeaderId", binding.layoutHeaderCheckout.rlRoot.id)
+            putInt("dashboardHeaderId", binding.layoutHeader.rlRoot.id)
+            if (arguments != null) {
+                putBundle("updateBundle", arguments)
             }
-            frag.arguments = result
-            fm.beginTransaction().replace(binding.frameLayoutCart.id, frag).commit()
         }
+        frag.arguments = result
+        fm.beginTransaction().replace(binding.frameLayoutCart.id, frag).commit()
+    }
 
-        private fun loadKeyPadFragment(frag: Fragment) {
-            val fm: FragmentManager = requireActivity().supportFragmentManager
-            fm.beginTransaction().replace(binding.frameLayout.id, frag).commit()
-        }
+    private fun loadKeyPadFragment(frag: Fragment) {
+        val fm: FragmentManager = requireActivity().supportFragmentManager
+        fm.beginTransaction().replace(binding.frameLayout.id, frag).commit()
+    }
 
         private fun onClick() {
 

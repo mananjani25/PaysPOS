@@ -64,7 +64,7 @@
                 android:gravity="end"
                 android:text="$3.50"
                 android:textColor="@color/white"
-                android:textSize="@dimen/_7mdpi"
+                android:textSize="@dimen/text_size_medium"
                 tools:text="$20.00" />
 
             <androidx.appcompat.widget.AppCompatTextView

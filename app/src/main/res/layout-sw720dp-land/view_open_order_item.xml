@@ -61,6 +61,8 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
 
+                android:layout_gravity="center"
+                android:gravity="center"
                 android:orientation="vertical">
 
 
@@ -86,7 +88,7 @@
                     android:visibility="visible"
                     android:layout_gravity="center"
                     android:gravity="center"
-                    android:layout_marginRight="@dimen/_4sdp"/>
+                    />
 
             </androidx.appcompat.widget.LinearLayoutCompat>
 
