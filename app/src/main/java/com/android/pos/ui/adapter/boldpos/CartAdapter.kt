@@ -24,11 +24,12 @@ class CartAdapter : RecyclerView.Adapter<CartAdapter.MyViewHolder>() {
         RecyclerView.ViewHolder(binding.root) {
 
         fun bind(item: TbItem, pos: Int) {
-            Log.e(TAG,"itemprice:  ${item.price}")
+            Log.e(TAG, "itemprice:  ${item.price}")
             binding.txtName.text = item.name
-            binding.txtQuantity.text = "X"+item.itemQuantity
-            binding.txtEachQntPrice.text = "$"+item.price
-            binding.txtTotalPrice.text = "$"+MethodUtils.roundOffAmountString((item.price * item.itemQuantity))
+            binding.txtQuantity.text = "X" + item.itemQuantity
+            binding.txtEachQntPrice.text = MethodUtils.roundOffAmount((item.price))
+            binding.txtTotalPrice.text =
+                MethodUtils.roundOffAmount((item.price * item.itemQuantity))
 
 
         }
@@ -54,7 +55,7 @@ class CartAdapter : RecyclerView.Adapter<CartAdapter.MyViewHolder>() {
         notifyDataSetChanged()
     }
 
-    fun clearList(){
+    fun clearList() {
         cartList.clear()
         cartList = arrayListOf()
         notifyDataSetChanged()

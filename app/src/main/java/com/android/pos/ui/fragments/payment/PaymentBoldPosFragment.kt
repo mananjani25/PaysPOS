@@ -1,6 +1,8 @@
 package com.android.pos.ui.fragments.payment
 
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -32,7 +34,10 @@ class PaymentBoldPosFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         loadCartFragment(CartFragment.newInstacne(true))
-        loadCategoryFragment(CheckoutDetailsFragmentNew())
+        Handler(Looper.getMainLooper()).postDelayed(Runnable { /* Create an Intent that will start the Menu-Activity. */
+            loadCategoryFragment(CheckoutDetailsFragmentNew())
+        }, 100)
+
         binding.layoutHeaderCheckout.imgDrawer.setOnClickListener {
             findNavController().popBackStack()
         }

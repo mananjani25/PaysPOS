@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.Filter
 import android.widget.Filterable
 import androidx.core.content.ContextCompat
+import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -48,29 +49,17 @@ class OpenOrderAdapter(val context: Context) :
             binding.llShowLayout.visibility = View.GONE
 
 
-            if (item.futureDeliveryDate?.isNotEmpty() == true && item.futureDeliveryDate != null) {
+            if (item.createdAt.isNotEmpty()) {
                 binding.tvDate.text =
-                    TimeFormatUtils.convertDateFormatForOpenOrder(
-                        item.futureDeliveryDate!!,
+                    TimeFormatUtils.convertCurrentDate(
+                        item.createdAt,
                         context
                     )
-
-            }
-            if (item.futureDeliveryTime?.isNotEmpty() == true && item.futureDeliveryTime != null) {
-                binding.tvtime.text = item.futureDeliveryTime
-            }
-            if (position == 3) {
-                if (item.futureDeliveryDate?.isNotEmpty() == true && item.futureDeliveryDate != null) {
-                    val date = TimeFormatUtils.convertDateFormatForOpenOrder(
-                        item.futureDeliveryDate!!,
+                binding.tvtime.text =
+                    TimeFormatUtils.convertCurrentTime(
+                        item.createdAt,
                         context
                     )
-
-                }
-
-                if (item.futureDeliveryTime?.isNotEmpty() == true && item.futureDeliveryTime != null) {
-                    val time = item.futureDeliveryTime
-                }
 
             }
 
@@ -123,7 +112,9 @@ class OpenOrderAdapter(val context: Context) :
                 binding.tvDeliveryStatus.setTextColor(binding.root.resources.getColor(R.color.txtColor))
                 binding.tvTeamMember.setTextColor(binding.root.resources.getColor(R.color.txtColor))
                 binding.llShowLayout.visibility = View.GONE
-                binding.imgIndicator.setImageDrawable(binding.root.resources.getDrawable(R.drawable.ic_down_solid_arrow))
+                binding.imgIndicator.setImageDrawable(ResourcesCompat.getDrawable(binding.root.resources,R.drawable.ic_down_solid_arrow,binding.root.resources.newTheme()))
+
+//                binding.imgIndicator.setImageDrawable(binding.root.resources.getDrawable(R.drawable.ic_down_solid_arrow))
                 binding.imgIndicator.setColorFilter(
                     ContextCompat.getColor(
                         context,
@@ -145,7 +136,8 @@ class OpenOrderAdapter(val context: Context) :
                 binding.tvDeliveryStatus.setTextColor(binding.root.resources.getColor(R.color.white))
                 binding.tvTeamMember.setTextColor(binding.root.resources.getColor(R.color.white))
                 binding.llShowLayout.visibility = View.VISIBLE
-                binding.imgIndicator.setImageDrawable(binding.root.resources.getDrawable(R.drawable.ic_solid_up_arrow))
+//                binding.imgIndicator.setImageDrawable(binding.root.resources.getDrawable(R.drawable.ic_solid_up_arrow))
+                binding.imgIndicator.setImageDrawable(ResourcesCompat.getDrawable(binding.root.resources,R.drawable.ic_solid_up_arrow,binding.root.resources.newTheme()))
                 binding.imgIndicator.setColorFilter(ContextCompat.getColor(context, R.color.white))
                 binding.tvDeliveryStatus.setTextColor(binding.root.resources.getColor(R.color.white))
 

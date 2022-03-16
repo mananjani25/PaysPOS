@@ -930,6 +930,7 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text="Payment"
+                                android:textAllCaps="true"
                                 android:textColor="@color/cool_grey"
                                 android:textSize="@dimen/_5mdpi" />
 

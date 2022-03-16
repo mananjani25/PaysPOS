@@ -23,7 +23,7 @@
 
         <androidx.appcompat.widget.LinearLayoutCompat
             android:layout_width="match_parent"
-            android:layout_height="100dp"
+            android:layout_height="@dimen/_30sdp"
             android:background="@{model.selected ? @color/txt_color_blue : @color/bg_color}"
             android:orientation="horizontal"
             android:weightSum="2">

@@ -17,7 +17,6 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class CheckoutDetailsFragmentNew : Fragment(), ItemListner {
     private lateinit var binding: FragmentCheckoutDetailsNewBinding
-    private val viewModel by activityViewModels<DashBoardCategoryViewModel>()
     private val TAG = "DashboardCategoryBold"
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -41,8 +40,8 @@ class CheckoutDetailsFragmentNew : Fragment(), ItemListner {
     }
 
     private fun setPagerAdapter() {
-        binding.tabLayout.addTab(binding.tabLayout.newTab().setText("Pay Full Amount"))
-        binding.tabLayout.addTab(binding.tabLayout.newTab().setText("Split Custom Amount"))
+        binding.tabLayout.addTab(binding.tabLayout.newTab().setText("PAY FULL AMOUNT"))
+        binding.tabLayout.addTab(binding.tabLayout.newTab().setText("SPLIT CUSTOM AMOUNT"))
         binding.tabLayout.tabGravity = TabLayout.GRAVITY_FILL
 
         val bundle = Bundle().apply {

@@ -84,6 +84,7 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
         selectedCurrency = defaultModel.discountType
         if (selectedCurrency.isEmpty()) {
             selectedCurrency = AMOUNT
+            amountView()
         }
 
         binding.edtAmount.addTextChangedListener(this)
@@ -120,7 +121,7 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
                 if (discountAdapter.selectedPosition != -1)
                     selectedListPos = discountAdapter.selectedPosition
                 if (defaultModel.discountType == getString(R.string.disc_percentage)) {
-                    if(discountAdapter.selectedPosition!=-1){
+                    if (discountAdapter.selectedPosition != -1) {
                         var applydis = discountAdapter.discountList[selectedListPos].percentage
                         binding.edtAmount.setText(
                             MethodUtils.roundOffAmountString(
@@ -128,7 +129,7 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
                                     .toDouble()
                             )
                         )
-                    }else{
+                    } else {
                         val applyDiscount =
                             (defaultModel.discountPrice * 100) / (itemPrice/*(defaultModel.price + modifierPrice) * defaultModel.itemQuantity*/)
                         binding.edtAmount.setText(
@@ -192,25 +193,53 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
 
         binding.llKeypad.txt10.setOnClickListener {
 
-            binding.edtAmount.removeTextChangedListener(this)
-            binding.edtAmount.setText(MethodUtils.roundOffAmountString(10.0))
+            val discount = TbDiscount(
+                "",
+                selectedCurrency,
+                -1,
+                -1,
+                "",
+                10.0,
+                ""
+            )
+
+            calculationDiscount(discount, -1)
         }
         binding.llKeypad.txt20.setOnClickListener {
 
-            binding.edtAmount.removeTextChangedListener(this)
-            binding.edtAmount.setText(MethodUtils.roundOffAmountString(20.0))
+            val discount = TbDiscount(
+                "",
+                selectedCurrency,
+                -1,
+                -1,
+                "",
+                10.0,
+                ""
+            )
+
+            calculationDiscount(discount, -1)
         }
         binding.llKeypad.txt30.setOnClickListener {
-            binding.edtAmount.removeTextChangedListener(this)
-            binding.edtAmount.setText(MethodUtils.roundOffAmountString(30.0))
+            val discount = TbDiscount(
+                "",
+                selectedCurrency,
+                -1,
+                -1,
+                "",
+                10.0,
+                ""
+            )
+
+            calculationDiscount(discount, -1)
         }
     }
 
+
     @SuppressLint("UseCompatLoadingForDrawables")
     private fun amountView() {
-        binding.llKeypad.txt10.text="$10"
-        binding.llKeypad.txt20.text="$20"
-        binding.llKeypad.txt30.text="$30"
+        binding.llKeypad.txt10.text = "$10"
+        binding.llKeypad.txt20.text = "$20"
+        binding.llKeypad.txt30.text = "$30"
         binding.txtCurrency.visibility = View.VISIBLE
         binding.txtPer.visibility = View.GONE
         selectedCurrency = AMOUNT
@@ -227,9 +256,9 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
 
     @SuppressLint("UseCompatLoadingForDrawables")
     private fun percentageView() {
-        binding.llKeypad.txt10.text="10%"
-        binding.llKeypad.txt20.text="20%"
-        binding.llKeypad.txt30.text="30%"
+        binding.llKeypad.txt10.text = "10%"
+        binding.llKeypad.txt20.text = "20%"
+        binding.llKeypad.txt30.text = "30%"
         selectedCurrency = PERCENTAGE
         binding.txtCurrency.visibility = View.GONE
         binding.txtPer.visibility = View.VISIBLE
@@ -240,7 +269,6 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
         binding.txtCurrencyDollar.setTextColor(requireActivity().resources.getColor(R.color.txtColor))
         binding.txtCurrencyPercentage.setTextColor(requireActivity().resources.getColor(R.color.white))
         binding.edtAmount.setText(binding.edtAmount.text.toString().trim())
-
 
 
     }
@@ -312,7 +340,7 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
     }
 
     private fun setDiscountList() {
-        viewModel.getDiscountList.observe(requireActivity(), {
+        viewModel.getDiscountList.observe(requireActivity()) {
             Log.e(TAG, "DiscountList ${Gson().toJson(it)}")
             if (it.data?.isNotEmpty() == true) {
                 it.data.forEach {
@@ -324,7 +352,7 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
             }
 
 
-        })
+        }
 
 
     }
@@ -486,6 +514,11 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
     override fun selectedItem(model: TbDiscount, pos: Int) {
         Log.e(TAG, "SelectedItem:  ${Gson().toJson(model)}")
 
+        calculationDiscount(model, pos)
+
+    }
+
+    private fun calculationDiscount(model: TbDiscount, pos: Int) {
         if (isOrderDiscount) {
 
             if (model.discountType == requireContext().getString(R.string.disc_percentage)) {
@@ -535,7 +568,6 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
 
 
         }
-
     }
 
     private fun displayError(message: String) {
@@ -563,7 +595,7 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
         selectedListPos = pos
     }
 
-    fun calculateValue(number: String, delete: Boolean) {
+    private fun calculateValue(number: String, delete: Boolean) {
         discountAdapter.clearSelectedItem()
         selectedListPos = -1
         if (binding.edtAmount.text?.length!! > 1 && delete) {

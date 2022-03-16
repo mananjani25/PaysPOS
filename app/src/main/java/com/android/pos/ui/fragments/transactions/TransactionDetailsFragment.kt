@@ -190,10 +190,11 @@ class TransactionDetailsFragment : Fragment() {
                     isSplitPayment = true
                 }
 
-
+                binding.llNotes.visibility = View.VISIBLE
                 if (it.data.order.note.isNotEmpty()) {
-                    binding.llNotes.visibility = View.VISIBLE
                     binding.tvNote.text=it.data.order.note
+                }else{
+                    binding.tvNote.text = ""
                 }
                 binding.tvDate.text =
                     convertCurrentDate(
