@@ -1317,7 +1317,7 @@
             app:enterAnim="@anim/nav_default_enter_anim" />
         <action
             android:id="@+id/action_paymentBoldPosFragment_to_addDiscountDialog"
-            app:destination="@id/addDiscountDialog"
+            app:destination="@id/customAmountFragment"
             app:enterAnim="@anim/nav_default_enter_anim" />
 
     </fragment>

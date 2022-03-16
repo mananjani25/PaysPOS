@@ -33,7 +33,8 @@ class CustomAmountFragment : DialogFragment() {
 
 
         binding.edtAmount.addTextChangedListener(AmountTextWatcher(binding.edtAmount, false))
-        totalprice = requireArguments().getDouble("totalprice")
+        if (arguments != null)
+            totalprice = requireArguments().getDouble("totalprice")
         binding.txtAmount.text = "$ " + String.format(
             "%.2f",
             totalprice
@@ -58,7 +59,6 @@ class CustomAmountFragment : DialogFragment() {
                 ) { _, _ ->
                 }
             }
-
         }
         return binding.root
     }
