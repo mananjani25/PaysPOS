@@ -111,6 +111,7 @@ class PayFullAmountFragment(val bundle: Bundle?) : Fragment(), ItemListner, magt
         binding = FragmentPayFullAmountBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = this
 
+        magtekModule.setCallback(this)
         onClick()
         frameLayoutId = bundle?.getInt("frameLayoutId")!!
         llRoot = bundle.getInt("llRoot")!!
@@ -300,7 +301,7 @@ class PayFullAmountFragment(val bundle: Bundle?) : Fragment(), ItemListner, magt
             binding.tvCash3.setTextColor(resources.getColor(R.color.txtColor))
             binding.tvPaymentLink.setTextColor(resources.getColor(R.color.txtColor))
 
-            val bundle=Bundle().apply {
+            val bundle = Bundle().apply {
 
                 if (splitAfterAmount != 0.0) {
                     bundle?.putDouble("totalprice", (splitAfterAmount + tipAmount))
@@ -310,7 +311,10 @@ class PayFullAmountFragment(val bundle: Bundle?) : Fragment(), ItemListner, magt
 
 
             }
-            findNavController().navigate(R.id.action_paymentBoldPosFragment_to_addDiscountDialog,bundle)
+            findNavController().navigate(
+                R.id.action_paymentBoldPosFragment_to_addDiscountDialog,
+                bundle
+            )
 
         }
         binding.tvPaymentLink.setOnClickListener {
@@ -567,10 +571,12 @@ class PayFullAmountFragment(val bundle: Bundle?) : Fragment(), ItemListner, magt
 
                 if (it.data == null) {
 
-                    if (magtekModule.m_scra?.isDeviceConnected == true) {
-                        magtekModule.startTransactionWithLED()
-                    } else
-                        showdialog()
+//                    if (magtekModule.m_scra?.isDeviceConnected == true) {
+//                        magtekModule.startTransactionWithLED()
+//                    } else
+//                        showdialog()
+
+                    AlertUtils.showCustomAlert(requireContext(), "Please connect device")
 
                 } else {
 
@@ -694,7 +700,7 @@ class PayFullAmountFragment(val bundle: Bundle?) : Fragment(), ItemListner, magt
 
         val jsonArray1 = magtekModule.m_scra?.let {
             magtekRequestUtils.processCardSwipe(
-                (cardPaymentAmount * 100).toInt(),
+                (paymentAmount * 100).toInt(),
                 magtekModule.m_scra!!.ksn,
                 magtekModule.m_scra!!.magnePrint,
                 magtekModule.m_scra!!.magnePrintStatus,
@@ -767,7 +773,7 @@ class PayFullAmountFragment(val bundle: Bundle?) : Fragment(), ItemListner, magt
         ProgressUtils.dismissProgressDialog()
 
         val jsonArray1 = magtekRequestUtils.processData(
-            (cardPaymentAmount * 100).toInt(),
+            (paymentAmount * 100).toInt(),
             TLVParser.getHexString(data),
             Constants.SALE
         )
@@ -824,7 +830,7 @@ class PayFullAmountFragment(val bundle: Bundle?) : Fragment(), ItemListner, magt
                     dismissDialog()
 
                     val jsonArray1 = magtekRequestUtils.processData(
-                        (cardPaymentAmount * 100).toInt(),
+                        (paymentAmount * 100).toInt(),
                         MTParser.getHexString(data.ByteArray()),
                         Constants.SALE
                     )
