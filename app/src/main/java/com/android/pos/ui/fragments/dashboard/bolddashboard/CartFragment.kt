@@ -188,6 +188,17 @@ class CartFragment : Fragment(), MyCallback, DineInAdapter.DineInCallback {
         ).observe(requireActivity()) {
             if (it.isNotEmpty()) {
                 Log.e(TAG, "listSize  ${Gson().toJson(it)}")
+                var ordertype = ""
+                var ordertypeId = 0
+                viewModel.ordertypelist.forEach {
+                    if (it.orderType == prefProvider.getValue(ORDER_TYPE, TAKEOUT)) {
+                        ordertype = it.orderType
+                        ordertypeId = it.id
+                    }
+                }
+                it[it.size-1].orderType = ordertype
+                it[it.size-1].orderTypeId = ordertypeId
+
                 it[it.size - 1].items?.toCollection(arrayListOf())
                     ?.let { it1 -> cartAdapter.setList(it1) }
                 viewModel.itemCalculationCartModel(
@@ -308,7 +319,6 @@ class CartFragment : Fragment(), MyCallback, DineInAdapter.DineInCallback {
 
         binding.tvPayNow.setOnClickListener {
             if (cartAdapter.cartList.isNotEmpty()) {
-
                 findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_paymentBoldPosFragment)
             } else {
                 AlertUtils.showCustomAlertWithListenerWithOK(
@@ -420,7 +430,7 @@ class CartFragment : Fragment(), MyCallback, DineInAdapter.DineInCallback {
 
 
                 if (prefProvider.getValue(ORDER_TYPE, "").toString() != "") {
-                    prefProvider.setValue(ORDER_TYPE, "")
+                    prefProvider.setValue(ORDER_TYPE, TAKEOUT)
                     Log.e("ORDER_TYPE", "Updated check2")
                 }
 
@@ -497,5 +507,6 @@ class CartFragment : Fragment(), MyCallback, DineInAdapter.DineInCallback {
 
     override fun onItemDelete(position: Int, itemPosition: Int, data: TbItem) {
     }
+
 
 }

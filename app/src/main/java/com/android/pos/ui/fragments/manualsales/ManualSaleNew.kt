@@ -427,7 +427,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                     getString(R.string.delete_items_message)
                 ) {
                     positiveButton(getString(R.string.tv_delete)) {
-                        viewModel.deleteCart(prefProvider.getValueInt(EMPLOYEE_ID,0))
+                        viewModel.deleteCart(prefProvider.getValueInt(EMPLOYEE_ID, 0))
                         prefProvider.setValueInt(Constants.CUSTOMER_ID, -1)
                         binding.txtTotalAmount.text = "$0.00"
 
@@ -526,7 +526,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
             ) {
                 positiveButton(getString(R.string.tv_delete)) {
                     // Do positive stuff here
-                    viewModel.deleteCart(prefProvider.getValueInt(EMPLOYEE_ID,0))
+                    viewModel.deleteCart(prefProvider.getValueInt(EMPLOYEE_ID, 0))
                     binding.txtTotalAmount.setText("$0.00")
                     //resetCart()
                     dialogMenu()
@@ -595,7 +595,8 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
 
             if (!(binding.llKeypad.txtAmount.text!!.trim().toString()
                     .equals("0.00")) && (!(binding.llKeypad.txtAmount.text!!.trim().toString()
-                    .equals("$0.00"))) && (!binding.llKeypad.txtAmount.text!!.trim().toString().equals("0"))
+                    .equals("$0.00"))) && (!binding.llKeypad.txtAmount.text!!.trim().toString()
+                    .equals("0"))
             ) {
                 addItemToCart(binding.llKeypad.txtAmount.text.toString(), true)
                 binding.llKeypad.txtAmount.setText("0.00")
@@ -605,24 +606,24 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                 "%.2f",
                 viewModel.subTotalPrice
             )
-            binding. txtServiceCharge.text = "$" + String.format(
+            binding.txtServiceCharge.text = "$" + String.format(
                 "%.2f",
                 viewModel.totalServiceCharge
             )
-            binding. txtDiscount.text = "- $" + String.format(
+            binding.txtDiscount.text = "- $" + String.format(
                 "%.2f",
                 viewModel.totalDiscount
             )
             //txtTotalAmount.text = binding.txtTotalAmount.text.toString()
-            binding. txtTotalTax.text = "$" + String.format(
+            binding.txtTotalTax.text = "$" + String.format(
                 "%.2f",
                 viewModel.totalTax
             )
-            binding. txtTotal.text = "$" + String.format(
+            binding.txtTotal.text = "$" + String.format(
                 "%.2f",
                 viewModel.totalPrice
             )
-            binding. tvDiscount.text = "$" + String.format(
+            binding.tvDiscount.text = "$" + String.format(
                 "%.2f",
                 viewModel.totalDiscount
             )
@@ -685,6 +686,10 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
 
             tabItemMOdel.itemId = manualItemId
             tabItemMOdel.categoryId = manualCategoryId
+            dashboardViewModel.ordertypelist.forEach {
+                if (it.orderType == Constants.TAKEOUT)
+                    tabItemMOdel.orderItemId = it.id
+            }
 
             viewModel.cartLogic(cartList, tabItemMOdel, ADD)
             binding.llKeypad.edtItemName.text?.clear()
@@ -761,7 +766,12 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
 
 
     private fun onConfig() {
-        binding.llKeypad.txtAmount.addTextChangedListener(AmountTextWatcher(binding.llKeypad.txtAmount, true))
+        binding.llKeypad.txtAmount.addTextChangedListener(
+            AmountTextWatcher(
+                binding.llKeypad.txtAmount,
+                true
+            )
+        )
         binding.llKeypad.txtAmount.setText("0.00")
 
         //set customer data
@@ -798,10 +808,11 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
 
         Log.e(
             TAG,
-            "afterTextSet  ${binding.llKeypad.txtAmount.text.toString().replace("""[$]""".toRegex(), "%")}"
+            "afterTextSet  ${
+                binding.llKeypad.txtAmount.text.toString().replace("""[$]""".toRegex(), "%")
+            }"
         )
     }
-
 
 
     private fun removeLastCharacter(str: String): String {
