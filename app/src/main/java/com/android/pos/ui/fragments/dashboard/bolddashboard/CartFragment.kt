@@ -39,7 +39,7 @@ import javax.inject.Inject
 
 
 @AndroidEntryPoint
-class CartFragment : Fragment() , MyCallback , DineInAdapter.DineInCallback{
+class CartFragment : Fragment(), MyCallback, DineInAdapter.DineInCallback {
     private lateinit var binding: FragmentCartBinding
     var fragmentId: Int? = null
     var checkoutHeaderId: Int = 0
@@ -70,25 +70,6 @@ class CartFragment : Fragment() , MyCallback , DineInAdapter.DineInCallback{
     lateinit var prefProvider: PrefProvider
     private val TAG = "CartFragment"
 
-
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        setHasOptionsMenu(true)
-    }
-
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.cart_menu, menu);
-        super.onCreateOptionsMenu(menu, inflater)
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            R.id.menu_clear_cart ->
-                // Not implemented here
-                clearCart()
-        }
-        return false
-    }
 
     companion object {
         fun newInstacne(isFromPayment: Boolean): CartFragment {
@@ -214,11 +195,13 @@ class CartFragment : Fragment() , MyCallback , DineInAdapter.DineInCallback{
                 binding.txtServiceCharge.text =
                     MethodUtils.roundOffAmount(viewModel.totalServiceCharge)
                 binding.tvPayNow.text = "Pay " + MethodUtils.roundOffAmount(viewModel.totalPrice)
+                binding.txtDiscount.text = MethodUtils.roundOffAmount(viewModel.totalDiscount)
             } else {
                 cartAdapter.clearList()
                 binding.txtTotal.text = MethodUtils.roundOffAmount(0.0)
                 binding.txtSubTotal.text = MethodUtils.roundOffAmount(0.0)
                 binding.txtTax.text = MethodUtils.roundOffAmount(0.0)
+                binding.txtDiscount.text = MethodUtils.roundOffAmount(0.0)
                 binding.txtServiceCharge.text =
                     MethodUtils.roundOffAmount(0.0)
                 binding.tvPayNow.text = "Pay " + MethodUtils.roundOffAmount(0.0)
@@ -285,34 +268,6 @@ class CartFragment : Fragment() , MyCallback , DineInAdapter.DineInCallback{
         )
     }
 
-
-/*
-    private fun getCartList() {
-
-        Log.e("Loyalty", "getCartList called..")
-
-        cartAdapter = CartAdapter()
-        cartAdapter.setCallback(this)
-        dineInCartAdapter = DineInAdapter()
-        dineInCartAdapter.setListner(this)
-        binding.layoutCart.rvCart.adapter = cartAdapter
-        binding.layoutCart.rvCartDineIn.adapter = dineInCartAdapter
-
-
-        nameObserver = Observer {
-
-            bindData(it)
-
-            removeObserver()
-        }
-
-
-        if (isAdded)
-            addObserver()
-    }
-*/
-
-
     fun initListeners() {
 
         binding.txtAddCustomer.setOnClickListener {
@@ -329,14 +284,28 @@ class CartFragment : Fragment() , MyCallback , DineInAdapter.DineInCallback{
                     clearCart()
                 } else if (id == R.id.menu_remove_customer) {
 
-                    if (cartlist.isNotEmpty() && cartlist[0].customer != null){
+                    if (cartlist.isNotEmpty() && cartlist[0].customer != null) {
                         cartlist[0].customer = null
                         viewModel.addCart(cartlist[0])
                     }
-
-
                     clearCustomer()
                     displayCustomer()
+                } else if (id == R.id.menu_discount) {
+
+                    val bundle = Bundle()
+                    bundle.putBoolean("isOrderDiscount", true)
+                    bundle.putDouble("totalPrice", viewModel.totalPrice)
+                    if (cartlist.isNotEmpty()) {
+                        bundle.putDouble("orderDiscountPrice", cartlist[0].discountPrice)
+                        bundle.putString("orderDiscountType", cartlist[0].discountType)
+                    }
+                    findNavController().navigate(
+                        R.id.action_dashboardCategoryBoldPOS_to_addDiscountDialog,
+                        bundle
+                    )
+
+                } else if (id == R.id.menu_note) {
+                    clearCart()
                 }
                 true
             }
@@ -509,7 +478,6 @@ class CartFragment : Fragment() , MyCallback , DineInAdapter.DineInCallback{
     }
 
 
-
     private fun getCartList() {
         Log.e("Loyalty", "getCartList called..")
 
@@ -636,13 +604,13 @@ class CartFragment : Fragment() , MyCallback , DineInAdapter.DineInCallback{
 
 
                 binding.rvCartList.visibility = View.VISIBLE
-               // binding.layoutCart.rvCartDineIn.visibility = View.GONE
+                // binding.layoutCart.rvCartDineIn.visibility = View.GONE
                 if (cartlist[0].items?.isEmpty() == true) {
-                   // binding.layoutCart.llPayment.gone()
+                    // binding.layoutCart.llPayment.gone()
                 } else
-                    //binding.layoutCart.llPayment.visible()
+                //binding.layoutCart.llPayment.visible()
 
-                Log.e(TAG, "cartList[0].items > ${cartlist[0].items?.size}")
+                    Log.e(TAG, "cartList[0].items > ${cartlist[0].items?.size}")
                 Log.e(TAG, "viewModel.destroyedList > ${viewModel.destroyedList.size}")
                 cartAdapter.addCart(cartlist[0].items)
             }
@@ -660,12 +628,12 @@ class CartFragment : Fragment() , MyCallback , DineInAdapter.DineInCallback{
                 if (prefProvider.getValue(ORDER_TYPE, "").toString() == Constants.DINE_IN) {
                     binding.txtTotal.visibility = View.GONE
                     binding.tvPayNow.visibility = View.GONE
-                   // binding.layoutCart.txtDineInProceed.visibility = View.VISIBLE
+                    // binding.layoutCart.txtDineInProceed.visibility = View.VISIBLE
                     if (prefProvider.getValueboolean(Constants.DINE_IN_UPDATE, false) == true) {
 
-                       // binding.layoutCart.txtDineInProceed.setText("Update and Proceed")
+                        // binding.layoutCart.txtDineInProceed.setText("Update and Proceed")
                     } else {
-                       // binding.layoutCart.txtDineInProceed.setText("Proceed To Fire")
+                        // binding.layoutCart.txtDineInProceed.setText("Proceed To Fire")
                     }
                 } else {
                     //binding.layoutCart.txtDineInProceed.visibility = View.GONE
@@ -720,6 +688,7 @@ class CartFragment : Fragment() , MyCallback , DineInAdapter.DineInCallback{
             gotoPayment()
         }
     }
+
     private fun refreshOrderTypeLabel() {
         //set order type label
         var label = prefProvider.getValue(ORDER_TYPE, TAKEOUT).toString()
@@ -814,7 +783,7 @@ class CartFragment : Fragment() , MyCallback , DineInAdapter.DineInCallback{
                 bundle.putString("future_delivery_time", future_delivery_time)
                 cartlist[0].customer = assignCustomer
                 val cartModel = viewModel.generateCombinedItems(cartlist[0])
-               // Log.e(TAG, "openORderType  ${openORderType}")
+                // Log.e(TAG, "openORderType  ${openORderType}")
                 cartModel.openOrderType = openORderType
                 Log.e(TAG, "PaymentPAsscartModel: ${Gson().toJson(cartModel)}")
                 bundle.putParcelable("cartList", cartModel)
@@ -895,8 +864,6 @@ class CartFragment : Fragment() , MyCallback , DineInAdapter.DineInCallback{
         }
 
     }
-
-
 
 
     override fun onPause() {

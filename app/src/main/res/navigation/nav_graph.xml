@@ -1293,6 +1293,9 @@
         <action
             android:id="@+id/action_dashboardCategoryBoldPOS_to_assignCustomerOrderFragment"
             app:destination="@id/assignCustomerOrderFragment" />
+        <action
+            android:id="@+id/action_dashboardCategoryBoldPOS_to_addDiscountDialog"
+            app:destination="@id/addDiscountDialog" />
 
 
     </fragment>

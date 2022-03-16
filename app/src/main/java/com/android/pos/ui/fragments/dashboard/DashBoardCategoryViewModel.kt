@@ -776,14 +776,17 @@ class DashBoardCategoryViewModel @Inject constructor(
                     subTotalPrice -= cartList[0].discountPrice
 
 
+                    totalDiscount += cartList[0].discountPrice
 
                     cartList[0].items!!.forEach {
-                        if (!it.isManualSales) {
-                            totalDiscount += (it.discountPrice * it.itemQuantity)
+                        totalDiscount += if (!it.isManualSales) {
+                            (it.discountPrice * it.itemQuantity)
                         } else {
-                            totalDiscount += it.discountPrice
+                            it.discountPrice
                         }
                     }
+
+                    Log.e("totalDiscount", totalDiscount.toString())
 
                     totalPrice = (subTotalPrice + totalTax + totalServiceCharge)
 

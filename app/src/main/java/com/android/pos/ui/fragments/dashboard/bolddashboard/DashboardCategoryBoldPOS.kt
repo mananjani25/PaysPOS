@@ -33,6 +33,7 @@ import com.android.pos.ui.adapter.DineInAdapter
 import com.android.pos.ui.adapter.VariationDashboardListAdapter
 import com.android.pos.ui.fragments.checkout.CheckoutDetailsFragmentNew
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
+import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.callback.ItemListner
 import com.android.pos.utils.statusUtils.Resource
 import com.android.pos.utils.statusUtils.Status
@@ -50,6 +51,7 @@ class DashboardCategoryBoldPOS : Fragment(), ItemListner {
     private val TAG = "DashboardCategoryBold"
     var ordertypelist: ArrayList<TbOrderType> = arrayListOf()
     var isupdate = false
+    private var orderDiscount: Double = 0.0
     private val redirectionBroadCast: BroadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(ctxt: Context, i: Intent) {
             if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
@@ -89,6 +91,27 @@ class DashboardCategoryBoldPOS : Fragment(), ItemListner {
             if (result != null) {
                 Log.e(TAG, "gotBundlebundle:  ${Gson().toJson(bundle)}")
                 setUpCustomer(result, bundle)
+            }
+        }
+
+        setFragmentResultListener("request_key_discount_order") { _: String, bundle: Bundle ->
+            val result = bundle.getParcelable<TbDiscount>("data")
+            if (result != null && viewModel.totalPrice != 0.0) {
+                orderDiscount = result.percentage
+
+                val discountApplyPrice = viewModel.totalPrice
+                val price = discountApplyPrice - orderDiscount
+
+                if (cartList.isNotEmpty()) {
+                    cartList[0].discountPrice = orderDiscount
+                    cartList[0].discountType = result.discountType
+                    if (result.id != -1) {
+                        cartList[0].discountId = result.id
+                    }
+                    viewModel.addCart(cartList[0])
+                }
+
+
             }
         }
     }
