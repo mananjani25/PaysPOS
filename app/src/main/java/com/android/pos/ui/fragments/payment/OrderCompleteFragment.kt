@@ -512,16 +512,16 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         binding.llCheckOut.setOnClickListener(this)
 
 
-        setFragmentResultListener("request_key_customer") { requestKey: String, bundle: Bundle ->
-            val result = bundle.getParcelable<TbCustomer>("data")
-            if (result != null) {
-                isFromCustomer = true
-                //  Log.e("request_key_customer", result.first_name)
-                val payment_id = prefProvider.getValueInt(PAYMENT_ID, 0)
-                val final_Reward = result.final_reward
-                result.id?.let { viewModel.assignCustomer(orderID, it, payment_id, final_Reward!!) }
-            }
-        }
+//        setFragmentResultListener("request_key_customer") { requestKey: String, bundle: Bundle ->
+//            val result = bundle.getParcelable<TbCustomer>("data")
+//            if (result != null) {
+//                isFromCustomer = true
+//                //  Log.e("request_key_customer", result.first_name)
+//                val payment_id = prefProvider.getValueInt(PAYMENT_ID, 0)
+//                val final_Reward = result.final_reward
+//                result.id?.let { viewModel.assignCustomer(orderID, it, payment_id, final_Reward!!) }
+//            }
+//        }
 
         if (!isSpilt) {
 
@@ -4959,6 +4959,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
     fun removeCustomer() {
         prefProvider.setValue(Constants.CUSTOMER_NAME, "")
+        prefProvider.setValueInt(Constants.CUSTOMER_ID, -1)
         prefProvider.setValue("PaidAmount", "")
         prefProvider.setValue("WholeTotal", "")
         prefProvider.setValue(SUB_TOTAL, "")

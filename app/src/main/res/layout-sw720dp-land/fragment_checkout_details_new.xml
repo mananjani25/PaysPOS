@@ -34,16 +34,15 @@
                     android:id="@+id/tabLayout"
                     style="@style/MyTabLayout"
                     android:layout_width="wrap_content"
-                    android:layout_height="74dp"
+                    android:layout_height="match_parent"
                     android:layout_centerInParent="true"
-                    android:clipToPadding="true"
                     android:isScrollContainer="true"
-                    android:textSize="@dimen/_7mdpi"
                     app:tabGravity="center"
                     app:tabIndicator="@color/btnColor"
                     app:tabIndicatorColor="@color/btnColor"
                     app:tabIndicatorGravity="bottom"
                     app:tabMode="scrollable"
+
                     app:tabSelectedTextColor="@color/btnColor"
                     app:tabTextAppearance="@style/MyTabTextAppearance"
                     app:tabTextColor="@color/txtColor" />

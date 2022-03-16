@@ -232,7 +232,7 @@ class ActiveOrderFragment(
                         var intent = Intent()
                         intent.action = "cancelled"
                         intent.putExtra("isCount", false)
-                        intent.putExtra("position", 3)
+                        intent.putExtra("position", 2)
                         intent.putExtra("start_date", viewModel.startDate.value.toString())
                         intent.putExtra("end_date", viewModel.endDate.value.toString())
                         requireContext().sendBroadcast(intent)

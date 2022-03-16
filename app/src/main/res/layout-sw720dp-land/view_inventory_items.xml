@@ -22,9 +22,10 @@
             android:background="@color/view" />
 
         <androidx.appcompat.widget.LinearLayoutCompat
+            android:id="@+id/linear_background_order"
             android:layout_width="match_parent"
             android:layout_height="@dimen/_30sdp"
-            android:background="@{model.selected ? @color/txt_color_blue : @color/bg_color}"
+
             android:orientation="horizontal"
             android:weightSum="2">
 
@@ -39,7 +40,7 @@
                 android:layout_marginStart="@dimen/_10sdp"
                 android:gravity="start|center_vertical"
                 android:text="@{model.title}"
-                android:textColor="@{model.selected ? @color/white : @color/txtColor}"
+
                 android:textSize="@dimen/text_size_medium"
                 android:layout_weight="1.8"
                 />
@@ -52,7 +53,7 @@
                 android:layout_marginStart="@dimen/_10sdp"
                 android:gravity="start|center_vertical"
                 android:text="@{Integer.toString(model.count)}"
-                android:textColor="@{model.selected ? @color/white : @color/txtColor}"
+
                 android:textSize="@dimen/text_size_medium"
                 android:visibility="visible"
                 android:layout_weight="0.8"

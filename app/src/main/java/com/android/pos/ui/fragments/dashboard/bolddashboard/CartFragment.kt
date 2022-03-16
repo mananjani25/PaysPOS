@@ -213,6 +213,7 @@ class CartFragment : Fragment(), MyCallback, DineInAdapter.DineInCallback {
                     MethodUtils.roundOffAmount(viewModel.totalServiceCharge)
                 binding.tvPayNow.text = "Pay " + MethodUtils.roundOffAmount(viewModel.totalPrice)
                 binding.txtDiscount.text = MethodUtils.roundOffAmount(viewModel.totalDiscount)
+                displayCustomer()
             } else {
                 cartAdapter.clearList()
                 binding.txtTotal.text = MethodUtils.roundOffAmount(0.0)
@@ -222,9 +223,12 @@ class CartFragment : Fragment(), MyCallback, DineInAdapter.DineInCallback {
                 binding.txtServiceCharge.text =
                     MethodUtils.roundOffAmount(0.0)
                 binding.tvPayNow.text = "Pay " + MethodUtils.roundOffAmount(0.0)
+                prefProvider.setValue(Constants.CUSTOMER_NAME,"")
+                prefProvider.setValueInt(Constants.CUSTOMER_ID,-1)
+                displayCustomer()
             }
 
-            displayCustomer()
+
         }
 
         viewModel.showProgress.observe(viewLifecycleOwner) { event ->
@@ -252,13 +256,9 @@ class CartFragment : Fragment(), MyCallback, DineInAdapter.DineInCallback {
     private fun clearCustomer() {
         prefProvider.setValue(Constants.CUSTOMER_NAME, "")
         prefProvider.setValueInt(Constants.CUSTOMER_ID, -1)
-        saveCustomerData(null)
         refreshItemCalculation()
     }
 
-    private fun saveCustomerData(nothing: Nothing?) {
-
-    }
 
     private fun refreshItemCalculation() {
         viewModel.itemCalculation(
@@ -271,7 +271,11 @@ class CartFragment : Fragment(), MyCallback, DineInAdapter.DineInCallback {
     fun initListeners() {
 
         binding.txtAddCustomer.setOnClickListener {
-            findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_assignCustomerOrderFragment)
+            if (isFromPayment) {
+                findNavController().navigate(R.id.action_paymentBoldPosFragment_to_assignCustomerOrderFragment)
+            } else {
+                findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_assignCustomerOrderFragment)
+            }
         }
 
         binding.imgOrderMenu.setOnClickListener {

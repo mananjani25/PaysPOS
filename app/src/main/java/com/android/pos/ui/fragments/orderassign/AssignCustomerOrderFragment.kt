@@ -199,6 +199,7 @@ class AssignCustomerOrderFragment : Fragment(), ItemCallback {
             Constants.CUSTOMER_NAME,
             customer.first_name + " " + customer.last_name
         )
+        customer.id?.let { prefProvider.setValueInt(Constants.CUSTOMER_ID, it) }
         prefProvider.saveCustomerData(customer)
         val result = Bundle().apply {
             putParcelable("data", customer)
