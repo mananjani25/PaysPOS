@@ -20,6 +20,7 @@ import com.android.pos.data.remote.Constants.ORDER_TYPE
 import com.android.pos.data.remote.Constants.TAKEOUT
 import com.android.pos.databinding.FragmentCartBinding
 import com.android.pos.di.PrefProvider
+import com.android.pos.ui.adapter.DineInAdapter
 import com.android.pos.ui.adapter.boldpos.CartAdapter
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.android.pos.ui.fragments.payment.PaymentViewModel
@@ -38,7 +39,7 @@ import javax.inject.Inject
 
 
 @AndroidEntryPoint
-class CartFragment : Fragment() , MyCallback ,DineInAdapter.DineInCallback{
+class CartFragment : Fragment() , MyCallback , DineInAdapter.DineInCallback{
     private lateinit var binding: FragmentCartBinding
     var fragmentId: Int? = null
     var checkoutHeaderId: Int = 0
