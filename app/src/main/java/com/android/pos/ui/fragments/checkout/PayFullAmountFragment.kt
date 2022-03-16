@@ -111,6 +111,7 @@ class PayFullAmountFragment(val bundle: Bundle?) : Fragment(), ItemListner, magt
         binding = FragmentPayFullAmountBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = this
 
+        magtekModule.setCallback(this)
         onClick()
         frameLayoutId = bundle?.getInt("frameLayoutId")!!
         llRoot = bundle.getInt("llRoot")!!
@@ -567,10 +568,12 @@ class PayFullAmountFragment(val bundle: Bundle?) : Fragment(), ItemListner, magt
 
                 if (it.data == null) {
 
-                    if (magtekModule.m_scra?.isDeviceConnected == true) {
-                        magtekModule.startTransactionWithLED()
-                    } else
-                        showdialog()
+//                    if (magtekModule.m_scra?.isDeviceConnected == true) {
+//                        magtekModule.startTransactionWithLED()
+//                    } else
+//                        showdialog()
+
+                    AlertUtils.showCustomAlert(requireContext(), "Please connect device")
 
                 } else {
 
