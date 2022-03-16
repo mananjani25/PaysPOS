@@ -120,7 +120,7 @@ class CartFragment : Fragment(), MyCallback, DineInAdapter.DineInCallback {
 
         val name = prefProvider.getValue(Constants.CUSTOMER_NAME, "")
         Log.e("Customer Name", name)
-        if (name.isNotEmpty() && name!=null) {
+        if (name.isNotEmpty() && name != null) {
             binding.txtAddCustomer.text = name
         } else {
             binding.txtAddCustomer.text = getString(R.string.add_customer2)
@@ -143,7 +143,10 @@ class CartFragment : Fragment(), MyCallback, DineInAdapter.DineInCallback {
         initListeners()
         setCartAdapter()
         addObserver()
-      //  getCartList()
+        if (prefProvider.getValueInt(Constants.CUSTOMER_ID, -1) != -1) {
+            displayCustomer()
+        }
+        //  getCartList()
 
 
         if (isFromPayment) {
@@ -196,8 +199,8 @@ class CartFragment : Fragment(), MyCallback, DineInAdapter.DineInCallback {
                         ordertypeId = it.id
                     }
                 }
-                it[it.size-1].orderType = ordertype
-                it[it.size-1].orderTypeId = ordertypeId
+                it[it.size - 1].orderType = ordertype
+                it[it.size - 1].orderTypeId = ordertypeId
 
                 it[it.size - 1].items?.toCollection(arrayListOf())
                     ?.let { it1 -> cartAdapter.setList(it1) }
@@ -213,6 +216,7 @@ class CartFragment : Fragment(), MyCallback, DineInAdapter.DineInCallback {
                     MethodUtils.roundOffAmount(viewModel.totalServiceCharge)
                 binding.tvPayNow.text = "Pay " + MethodUtils.roundOffAmount(viewModel.totalPrice)
                 binding.txtDiscount.text = MethodUtils.roundOffAmount(viewModel.totalDiscount)
+                Log.d(TAG, "addObserver in : " + prefProvider.getValue(Constants.CUSTOMER_NAME, ""))
                 displayCustomer()
             } else {
                 cartAdapter.clearList()
@@ -223,8 +227,12 @@ class CartFragment : Fragment(), MyCallback, DineInAdapter.DineInCallback {
                 binding.txtServiceCharge.text =
                     MethodUtils.roundOffAmount(0.0)
                 binding.tvPayNow.text = "Pay " + MethodUtils.roundOffAmount(0.0)
-                prefProvider.setValue(Constants.CUSTOMER_NAME,"")
-                prefProvider.setValueInt(Constants.CUSTOMER_ID,-1)
+//                prefProvider.setValue(Constants.CUSTOMER_NAME, "")
+//                prefProvider.setValueInt(Constants.CUSTOMER_ID, -1)
+                Log.d(
+                    TAG,
+                    "addObserver out : " + prefProvider.getValue(Constants.CUSTOMER_NAME, "")
+                )
                 displayCustomer()
             }
 
