@@ -99,6 +99,9 @@ class PayFullAmountFragment(val bundle: Bundle?) : Fragment(), ItemListner, magt
     @Inject
     lateinit var prefProvider: PrefProvider
 
+    private var splitAfterAmount: Double = 0.0
+
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -297,6 +300,17 @@ class PayFullAmountFragment(val bundle: Bundle?) : Fragment(), ItemListner, magt
             binding.tvCash3.setTextColor(resources.getColor(R.color.txtColor))
             binding.tvPaymentLink.setTextColor(resources.getColor(R.color.txtColor))
 
+            val bundle=Bundle().apply {
+
+                if (splitAfterAmount != 0.0) {
+                    bundle?.putDouble("totalprice", (splitAfterAmount + tipAmount))
+                } else {
+                    bundle?.putDouble("totalprice", ((totalPrice + tipAmount)))
+                }
+
+
+            }
+            findNavController().navigate(R.id.action_paymentBoldPosFragment_to_addDiscountDialog,bundle)
 
         }
         binding.tvPaymentLink.setOnClickListener {

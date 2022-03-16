@@ -859,6 +859,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
         val btnAddDiscount: AppCompatTextView = dialog.findViewById(R.id.btnAddDiscount)
         val edtNote: AppCompatEditText = dialog.findViewById(R.id.edtNote)
         val edtItemName: AppCompatEditText = dialog.findViewById(R.id.edtItemName)
+        val txtSave: AppCompatTextView = dialog.findViewById(R.id.txtSave)
 
         edtNote.setText(model.note)
         totalquantity = 0
@@ -911,7 +912,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
             dialog.dismiss()
         }
 
-        binding.txtSave.setOnClickListener {
+        txtSave.setOnClickListener {
             dialog.dismiss()
             val itemCost = model.price
 

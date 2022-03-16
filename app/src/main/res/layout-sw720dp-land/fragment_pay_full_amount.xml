@@ -125,7 +125,7 @@
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tvCash1"
-                style="@style/CustomFontBold"
+                style="@style/CustomFontSemiBold"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/tvCard"
@@ -140,7 +140,7 @@
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tvCash2"
-                style="@style/CustomFontBold"
+                style="@style/CustomFontSemiBold"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/tvCard"
@@ -156,7 +156,7 @@
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tvCash3"
-                style="@style/CustomFontBold"
+                style="@style/CustomFontSemiBold"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/tvCard"
@@ -184,7 +184,7 @@
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tvCustom"
-                style="@style/CustomFontBold"
+                style="@style/CustomFontSemiBold"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/tvCard"
@@ -218,7 +218,7 @@
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/txt_pay_cash"
-                    style="@style/CustomFontBold"
+                    style="@style/CustomFontSemiBold"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/tvCard"
@@ -236,7 +236,7 @@
 
         <TextView
             android:id="@+id/tvOther"
-            style="@style/CustomFontBold"
+            style="@style/CustomFontSemiBold"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/llcustom"
@@ -257,7 +257,7 @@
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tvPaymentLink"
-                style="@style/CustomFontBold"
+                style="@style/CustomFontSemiBold"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/tvCard"

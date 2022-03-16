@@ -292,6 +292,7 @@ data class OpenOrderResponse(
             )
 
             data class Customer(
+
                 @SerializedName("birth_date")
                 val birthDate: String,
                 @SerializedName("company")
@@ -319,7 +320,7 @@ data class OpenOrderResponse(
                 @SerializedName("enroll_to_loyalty")
                 val enroll_to_loyalty: Boolean?,
                 @SerializedName("final_reward")
-                val final_reward: Int? = 0
+                val final_reward: Int? = 0,
             ) {
                 @Parcelize
                 data class Address(
