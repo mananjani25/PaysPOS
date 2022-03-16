@@ -50,14 +50,6 @@ class DashboardCategoryBoldPOS : Fragment(), ItemListner {
     private val TAG = "DashboardCategoryBold"
     var ordertypelist: ArrayList<TbOrderType> = arrayListOf()
     var isupdate = false
-    private val redirectionBroadCast: BroadcastReceiver = object : BroadcastReceiver() {
-        override fun onReceive(ctxt: Context, i: Intent) {
-            if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
-                findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
-            }
-
-        }
-    }
 
     @Inject
     lateinit var prefProvider: PrefProvider
@@ -95,7 +87,10 @@ class DashboardCategoryBoldPOS : Fragment(), ItemListner {
 
     private fun setUpCustomer(result: TbCustomer, bundle: Bundle) {
 
-        prefProvider.setValue(Constants.CUSTOMER_NAME, result.first_name + " " + result.last_name)
+        prefProvider.setValue(
+            Constants.CUSTOMER_NAME,
+            result.first_name + " " + result.last_name
+        )
         result.id?.let { prefProvider.setValueInt(Constants.CUSTOMER_ID, it) }
 
         if (cartList.isEmpty()) {
@@ -111,10 +106,7 @@ class DashboardCategoryBoldPOS : Fragment(), ItemListner {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        requireActivity().registerReceiver(
-            redirectionBroadCast,
-            IntentFilter("SEND_TO_ACTIVE_ORDER")
-        )
+
         onClick()
         if (arguments != null) {
             isupdate = arguments?.getBoolean("update")!!
@@ -123,14 +115,11 @@ class DashboardCategoryBoldPOS : Fragment(), ItemListner {
         requireActivity().window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         loadCartFragment(CartFragment())
         loadCategoryFragment(CategoryFragment(this))
-        binding.layoutHeader.txtUserName.text = prefProvider.getValue(EMPLOYEE_NAME, "").toString()
+        binding.layoutHeader.txtUserName.text =
+            prefProvider.getValue(EMPLOYEE_NAME, "").toString()
 
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        requireActivity().unregisterReceiver(redirectionBroadCast)
-    }
 
     private fun syncData() {
 
@@ -145,7 +134,7 @@ class DashboardCategoryBoldPOS : Fragment(), ItemListner {
     }
 
     private fun loadCartFragment(frag: Fragment) {
-        val fm: FragmentManager = requireActivity().supportFragmentManager
+        val fm: FragmentManager = childFragmentManager
         val result = Bundle().apply {
             putInt("fragmentId", binding.frameLayout.id)
             putInt("checkoutHeaderId", binding.layoutHeaderCheckout.rlRoot.id)
@@ -184,7 +173,10 @@ class DashboardCategoryBoldPOS : Fragment(), ItemListner {
             var bundle = Bundle()
             bundle.putBoolean("isSwap", true)
             bundle.putBoolean("isDashboard", false)
-            findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_passcode, bundle)
+            findNavController().navigate(
+                R.id.action_dashboardCategoryBoldPOS_to_passcode,
+                bundle
+            )
         }
         binding.layoutHeader.ivLock.setOnClickListener {
             findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_reportEODFragment)
@@ -199,18 +191,18 @@ class DashboardCategoryBoldPOS : Fragment(), ItemListner {
             viewModel.syncInventoryModule()
         }
         /* binding.layoutHeader.txtOpenOrder.setOnClickListener {
-             loadCategoryFragment(CategoryFragment(this))
-             binding.layoutHeader.txtOpenOrder.setTextColor(resources.getColor(R.color.btnColor))
-             binding.layoutHeader.txtOpenOrder.setTypeface(
-                 binding.layoutHeader.txtOpenOrder.typeface,
-                 Typeface.BOLD
-             )
-             binding.layoutHeader.txtKeypad.setTextColor(resources.getColor(R.color.txtColor))
-             binding.layoutHeader.txtKeypad.setTypeface(
-                 binding.layoutHeader.txtKeypad.typeface,
-                 Typeface.NORMAL
-             )
-         }*/
+         loadCategoryFragment(CategoryFragment(this))
+         binding.layoutHeader.txtOpenOrder.setTextColor(resources.getColor(R.color.btnColor))
+         binding.layoutHeader.txtOpenOrder.setTypeface(
+             binding.layoutHeader.txtOpenOrder.typeface,
+             Typeface.BOLD
+         )
+         binding.layoutHeader.txtKeypad.setTextColor(resources.getColor(R.color.txtColor))
+         binding.layoutHeader.txtKeypad.setTypeface(
+             binding.layoutHeader.txtKeypad.typeface,
+             Typeface.NORMAL
+         )
+     }*/
         binding.layoutHeader.txtKeypad.setOnClickListener {
             //loadKeyPadFragment(KeyPadManualSaleFragment())
             binding.layoutHeader.txtKeypad.setTextColor(resources.getColor(R.color.btnColor))
@@ -343,4 +335,6 @@ class DashboardCategoryBoldPOS : Fragment(), ItemListner {
 
         return false
     }
+
+
 }
