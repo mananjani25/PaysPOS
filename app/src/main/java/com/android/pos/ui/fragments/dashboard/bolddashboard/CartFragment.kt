@@ -1,11 +1,12 @@
 package com.android.pos.ui.fragments.dashboard.bolddashboard
 
+import android.R.attr.button
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
+import android.widget.TextView
+import androidx.appcompat.widget.PopupMenu
 import androidx.core.os.bundleOf
 import androidx.fragment.app.*
 import androidx.lifecycle.Observer
@@ -36,8 +37,9 @@ import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
+
 @AndroidEntryPoint
-class CartFragment : Fragment() , MyCallback ,DineInAdapter.DineInCallback{
+class CartFragment : Fragment() , MyCallback , DineInAdapter.DineInCallback{
     private lateinit var binding: FragmentCartBinding
     var fragmentId: Int? = null
     var checkoutHeaderId: Int = 0
@@ -55,7 +57,7 @@ class CartFragment : Fragment() , MyCallback ,DineInAdapter.DineInCallback{
     var cashDiscountType = ""
     var cartlist: ArrayList<CartModel> = arrayListOf()
     private val viewModel by activityViewModels<DashBoardCategoryViewModel>()
-    private val viewModelPayment by viewModels<PaymentViewModel>()
+    private val viewModelPayment by activityViewModels<PaymentViewModel>()
     var updateBundle: Bundle? = null
     var isFromPayment: Boolean = false
     private var serviceChargesObserve: Observer<Resource<List<TbServiceCharge>>>? = null
@@ -68,6 +70,25 @@ class CartFragment : Fragment() , MyCallback ,DineInAdapter.DineInCallback{
     lateinit var prefProvider: PrefProvider
     private val TAG = "CartFragment"
 
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setHasOptionsMenu(true)
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.cart_menu, menu);
+        super.onCreateOptionsMenu(menu, inflater)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.menu_clear_cart ->
+                // Not implemented here
+                clearCart()
+        }
+        return false
+    }
 
     companion object {
         fun newInstacne(isFromPayment: Boolean): CartFragment {
@@ -108,6 +129,18 @@ class CartFragment : Fragment() , MyCallback ,DineInAdapter.DineInCallback{
         isFromPayment = arguments?.getBoolean("isFromPayment") ?: false
         setUpData()
         return binding.root
+    }
+
+    private fun displayCustomer() {
+
+        val name = prefProvider.getValue(Constants.CUSTOMER_NAME, "")
+        Log.e("Customer Name", name)
+        if (name.isNotEmpty()) {
+            binding.txtAddCustomer.text = name
+        } else {
+            binding.txtAddCustomer.text = getString(R.string.add_customer2)
+        }
+
     }
 
     private fun setUpData() {
@@ -162,9 +195,10 @@ class CartFragment : Fragment() , MyCallback ,DineInAdapter.DineInCallback{
 
         viewModel.mAllWords(
             prefProvider.getValue(ORDER_TYPE, TAKEOUT),
-            prefProvider.getValueInt(com.android.pos.data.remote.Constants.EMPLOYEE_ID, 0)
+            prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
         ).observe(requireActivity()) {
             Log.e(TAG, "getCartList:  ${Gson().toJson(it)}")
+            Log.d(TAG, "addObserver: " + prefProvider.getValue(ORDER_TYPE, TAKEOUT))
             if (it.isNotEmpty()) {
                 Log.e(TAG, "listSize  ${Gson().toJson(it)}")
                 it[it.size - 1].items?.toCollection(arrayListOf())
@@ -175,16 +209,22 @@ class CartFragment : Fragment() , MyCallback ,DineInAdapter.DineInCallback{
                     requireContext()
                 )
                 viewModel.setCartModel(it)
-
                 binding.txtSubTotal.text = MethodUtils.roundOffAmount(viewModel.subTotalPrice)
                 binding.txtTax.text = MethodUtils.roundOffAmount(viewModel.totalTax)
                 binding.txtServiceCharge.text =
                     MethodUtils.roundOffAmount(viewModel.totalServiceCharge)
                 binding.tvPayNow.text = "Pay " + MethodUtils.roundOffAmount(viewModel.totalPrice)
-
             } else {
                 cartAdapter.clearList()
+                binding.txtTotal.text = MethodUtils.roundOffAmount(0.0)
+                binding.txtSubTotal.text = MethodUtils.roundOffAmount(0.0)
+                binding.txtTax.text = MethodUtils.roundOffAmount(0.0)
+                binding.txtServiceCharge.text =
+                    MethodUtils.roundOffAmount(0.0)
+                binding.tvPayNow.text = "Pay " + MethodUtils.roundOffAmount(0.0)
             }
+
+            displayCustomer()
         }
 
         viewModel.showProgress.observe(viewLifecycleOwner) { event ->
@@ -209,7 +249,7 @@ class CartFragment : Fragment() , MyCallback ,DineInAdapter.DineInCallback{
             it.getContentIfNotHandled()?.let {
                 viewModel.deleteCart()
                 if (prefProvider.getValue(Constants.ORDER_TYPE, "").toString() != "") {
-                    prefProvider.setValue(Constants.ORDER_TYPE, "")
+                    prefProvider.setValue(Constants.ORDER_TYPE, TAKEOUT)
                 }
                 clearCustomer()
                 redirectToActiveOrder()
@@ -217,7 +257,7 @@ class CartFragment : Fragment() , MyCallback ,DineInAdapter.DineInCallback{
         }
     }
 
-    fun redirectToActiveOrder() {
+    private fun redirectToActiveOrder() {
         try {
             var intent: Intent = Intent()
             intent.action = "SEND_TO_ACTIVE_ORDER"
@@ -272,39 +312,36 @@ class CartFragment : Fragment() , MyCallback ,DineInAdapter.DineInCallback{
     }
 */
 
+
     fun initListeners() {
-        binding.imgOrderMenu.setOnClickListener {
 
-            hideOrderMenu()
-
+        binding.txtAddCustomer.setOnClickListener {
+            findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_assignCustomerOrderFragment)
         }
 
-        binding.llClearCart.setOnClickListener {
-            alert(
-                getString(R.string.app_name),
-                getString(R.string.delete_items_message)
-            ) {
-                positiveButton(getString(R.string.tv_delete)) {
-                    // Do positive stuff here
-                    prefProvider.setValueInt(Constants.DINE_INGUEST_SELECTED, 0)
+        binding.imgOrderMenu.setOnClickListener {
 
+            val popupMenu = PopupMenu(requireContext(), it)
+            popupMenu.menuInflater.inflate(R.menu.cart_menu, popupMenu.menu)
+            popupMenu.setOnMenuItemClickListener { menuItem ->
+                val id = menuItem.itemId
+                if (id == R.id.menu_clear_cart) {
+                    clearCart()
+                } else if (id == R.id.menu_remove_customer) {
 
-
-                    viewModel.deleteCart()
-
-                    if (prefProvider.getValue(Constants.ORDER_TYPE, "").toString() != "") {
-                        prefProvider.setValue(Constants.ORDER_TYPE, "")
+                    if (cartlist.isNotEmpty() && cartlist[0].customer != null){
+                        cartlist[0].customer = null
+                        viewModel.addCart(cartlist[0])
                     }
 
-                    hideOrderMenu()
-                    prefProvider.setValueboolean(Constants.LOYALTY_ADDED, false)
 
-
+                    clearCustomer()
+                    displayCustomer()
                 }
-                negativeButton(R.string.tv_cancel) {
-                    // Do negative stuff here
-                }
+                true
             }
+            popupMenu.show()
+
         }
 
         binding.tvPayNow.setOnClickListener {
@@ -402,6 +439,35 @@ class CartFragment : Fragment() , MyCallback ,DineInAdapter.DineInCallback{
         }
     }
 
+    private fun clearCart() {
+        alert(
+            getString(R.string.app_name),
+            getString(R.string.delete_items_message)
+        ) {
+            positiveButton(getString(R.string.tv_delete)) {
+                // Do positive stuff here
+                prefProvider.setValueInt(Constants.DINE_INGUEST_SELECTED, 0)
+
+                clearCustomer()
+
+                viewModel.deleteCart()
+
+
+                if (prefProvider.getValue(ORDER_TYPE, "").toString() != "") {
+                    prefProvider.setValue(ORDER_TYPE, "")
+                }
+
+                prefProvider.setValueboolean(Constants.LOYALTY_ADDED, false)
+
+                displayCustomer()
+
+            }
+            negativeButton(R.string.tv_cancel) {
+                // Do negative stuff here
+            }
+        }
+    }
+
     private fun showMessage() {
         AlertUtils.showCustomAlert(requireContext(), "Order should be less than 1 million usd.")
     }
@@ -442,13 +508,7 @@ class CartFragment : Fragment() , MyCallback ,DineInAdapter.DineInCallback{
         binding.rvCartList.adapter = cartAdapter
     }
 
-    private fun hideOrderMenu() {
-        if (binding.llClearCart.visibility == View.VISIBLE) {
-            binding.llClearCart.visibility = View.GONE
-        } else {
-            binding.llClearCart.visibility = View.VISIBLE
-        }
-    }
+
 
     private fun getCartList() {
         Log.e("Loyalty", "getCartList called..")
@@ -849,7 +909,7 @@ class CartFragment : Fragment() , MyCallback ,DineInAdapter.DineInCallback{
     }
 
     override fun onHeaderSelected(position: Int) {
-        
+
     }
 
     override fun onItemSelected(headerPosition: Int, position: Int, item: TbItem) {

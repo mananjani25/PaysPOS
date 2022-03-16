@@ -57,43 +57,13 @@
 
         </RelativeLayout>
 
-        <androidx.appcompat.widget.LinearLayoutCompat
-            android:id="@+id/llClearCart"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/relHeader"
-            android:orientation="vertical"
-            android:visibility="gone">
-
-            <include
-
-                layout="@layout/divider"
-                android:layout_width="match_parent"
-                android:layout_height="1dp" />
-
-
-            <TextView
-                android:id="@+id/txtClearItems"
-                style="@style/CustomFontMediumStyle"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:gravity="center"
-                android:paddingStart="@dimen/_5sdp"
-                android:paddingTop="@dimen/_3sdp"
-                android:paddingEnd="@dimen/_5sdp"
-                android:paddingBottom="@dimen/_5sdp"
-                android:text="@string/clear_items"
-                android:textColor="@color/txtColor"
-                android:textSize="@dimen/_5mdpi" />
-        </androidx.appcompat.widget.LinearLayoutCompat>
 
         <include
             android:id="@+id/viewDivider"
             layout="@layout/divider"
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:layout_below="@+id/llClearCart" />
+            android:layout_below="@+id/relHeader" />
 
         <androidx.appcompat.widget.LinearLayoutCompat
             android:layout_width="match_parent"

@@ -124,7 +124,8 @@
     <color name="dark_btn_Color">#A84C0F</color>
 
     <color name="white_swipe">#FF6700</color>
-    <color name="swipe_text_color">#000000</color>
+    <color name="swipe_text_color">#FFFFFF</color>
+    <color name="swipe_text_color_d">#000000</color>
 
     <color name="swipe_bg_delete">#E22417</color>
     <color name="swipe_bg_edit">#23049D</color>

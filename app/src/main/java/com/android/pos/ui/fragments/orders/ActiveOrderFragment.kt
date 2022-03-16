@@ -342,13 +342,16 @@ class ActiveOrderFragment(var param1: String, var startDateTime: String?,var end
             "PAY" -> {
                 prefProvider.setValue(Constants.ORDER_TYPE, order.orderType)
                 val cartModel = cartModel(order)
-                dashboardViewModel.addCart(
-                    cartModel(order)
-                )
                 prefProvider.setValue(
                     Constants.CUSTOMER_NAME,
                     order.customer?.firstName + " " + order.customer?.lastName
                 )
+
+                dashboardViewModel.totalPrice = order.totalAmount
+                dashboardViewModel.totalDiscount = order.totalDiscount
+                dashboardViewModel.subTotalPrice = order.subTotal
+                dashboardViewModel.totalTax = order.totalTaxAmount
+                dashboardViewModel.totalServiceCharge = order.totalServiceCharges
 
                 val bundle = Bundle()
                 bundle.putDouble("totalPrice", order.totalAmount)

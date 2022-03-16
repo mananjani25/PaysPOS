@@ -127,6 +127,8 @@ class PayFullAmountFragment(val bundle: Bundle?) : Fragment(), ItemListner, magt
         subTotalPrice = viewModel.subTotalPrice
         totalServiceCharge = viewModel.totalServiceCharge
         totalTax = viewModel.totalTax
+        Log.d("yash", "getCartData: totalprice $totalPrice")
+        Log.d("yash", "getCartData: subtotal $subTotalPrice")
 
         if (MethodUtils.isEnableCashDiscount(requireContext())) {
             cashDiscountSurcharge = MethodUtils.calculateCashDiscount(
@@ -143,7 +145,7 @@ class PayFullAmountFragment(val bundle: Bundle?) : Fragment(), ItemListner, magt
             tipAmount,
             totalDiscount,
             MethodUtils.calculateCashDiscount(totalPrice, prefProvider, requireContext()),
-            cardActualAmount
+            totalPrice
         )
 
         MethodUtils.getCashPaymentOptionList(
@@ -152,6 +154,10 @@ class PayFullAmountFragment(val bundle: Bundle?) : Fragment(), ItemListner, magt
             binding.tvCash2,
             binding.tvCash3
         )
+        MethodUtils.setPriceTextView(binding.txtPayCash, totalPrice)
+        binding.txtPayCash.text = "Pay Cash (" + binding.txtPayCash.text + ")"
+        MethodUtils.setPriceTextView(binding.tvCreditCard, totalPrice)
+        binding.tvCreditCard.text = "Card (" + binding.tvCreditCard.text + ")"
 
     }
 
@@ -172,6 +178,7 @@ class PayFullAmountFragment(val bundle: Bundle?) : Fragment(), ItemListner, magt
             paymentAmount = totalPrice
             makeCashPayment()
         }
+
         binding.tvCash1.setOnClickListener {
 
         }
@@ -367,6 +374,47 @@ class PayFullAmountFragment(val bundle: Bundle?) : Fragment(), ItemListner, magt
 
 
                     }
+                    "Card" -> {
+                        Log.e("TipAmount 4:: ", tipAmount.toString())
+
+                        val bundle = Bundle()
+                        bundle.putBoolean("isDineIn", false)
+
+                        if (remainingAmount == 0.0) {
+                            bundle.putDouble("PaidAmount", totalPrice)
+                        } else {
+                            bundle.putDouble("PaidAmount", remainingAmount)
+                        }
+
+
+                        bundle.putDouble("WholetotalPrice", totalPrice)
+                        bundle.putDouble(
+                            "remainingAmount",
+                            0.0
+                        )
+                        bundle.putInt("orderID", it.data.order.id ?: 0)
+                        bundle.putParcelable("receiptData", it.data)
+                        bundle.putInt("splitValue", -1)
+                        bundle.putBoolean("isSpilt", false)
+                        bundle.putBoolean("isSplitByNo", false)
+                        bundle.putBoolean("isSplitByAmount", false)
+                        bundle.putString("paymentType", "Card")
+                        bundle.putParcelable("cartList", cartList)
+                        bundle.putParcelable("redeemLoyalty", redeemLoyaltyInfo)
+                        bundle.putDouble("TipAmount", tipAmount)
+
+                        bundle.putDouble("noCashAdj", cashDiscountSurcharge)
+                        bundle.putBoolean("isFromActiveOrder", false)
+
+                        findNavController().navigate(
+                            R.id.action_paymentBoldPosFragment_to_orderComplete,
+                            bundle
+                        )
+
+                        prefProvider.setValueInt("ORDER_ID", -1)
+
+
+                    }
                 }
             }
         }
@@ -384,6 +432,60 @@ class PayFullAmountFragment(val bundle: Bundle?) : Fragment(), ItemListner, magt
             }
         }
 
+    }
+
+    private fun makePaymentCreditCard() {
+        paymentType = "Card"
+        paymentAmount = totalPrice
+        Log.e(TAG, "cartList:  ${Gson().toJson(cartList)}")
+        Log.e(TAG, "cartListcartItems:  ${Gson().toJson(cartItems)}")
+        val myRequest = cartList?.let {
+
+            paymentviewModel.createOrderRequestForCard(
+                it,
+                subTotalPrice,
+                paymentAmount,
+                totalServiceCharge,
+                totalTax,
+                TAKEOUT,
+                future_delivery_date,
+                future_delivery_time,
+                true,
+                totalDiscount,
+                tipAmount,
+                splitValue,
+                redeemLoyaltyInfo,
+                cashDiscountSurcharge,
+                true,
+                paymentType, cashDiscountType,
+                tipID
+            )
+        }
+        Log.e(TAG, "myRequestOriginal ${Gson().toJson(myRequest)}")
+        if (myRequest != null) {
+            paymentviewModel.totalPayAmount(totalPrice)
+            val orderId = prefProvider.getValueInt("ORDER_ID", -1)
+            Log.e(TAG, "orderIdmyRequestOriginal ${orderId}")
+            if (orderId == -1) {
+                paymentviewModel.submit(myRequest)
+            } else {
+
+                val paymentReq = myRequest.order.paymentAttributes
+                if (paymentReq != null) {
+                    paymentReq.order_id = orderId
+                }
+
+                val aa = SpitByOrderRequestModel(
+                    orderId,
+                    true,
+                    paymentReq!!,
+                    SpitByOrderPaymentModel(listOf(paymentReq))
+                )
+
+                paymentviewModel.splitByOrder(aa, false)
+
+            }
+        }
     }
 
     private fun makeCashPayment() {
@@ -640,12 +742,6 @@ class PayFullAmountFragment(val bundle: Bundle?) : Fragment(), ItemListner, magt
             }
         })
     }
-
-    private fun makePaymentCreditCard() {
-
-
-    }
-
 
 
     override fun OnARQCReceived(data: ByteArray) {

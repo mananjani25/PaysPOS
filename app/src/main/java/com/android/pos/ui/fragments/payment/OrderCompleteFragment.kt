@@ -41,6 +41,7 @@ import com.android.pos.data.remote.Constants.PRINT_DATA_DINE_IN
 import com.android.pos.data.remote.Constants.SAVE_SPLIT_BUNDLE
 import com.android.pos.data.remote.Constants.SUB_TOTAL
 import com.android.pos.data.remote.Constants.SUB_TOTAL_DINEIN
+import com.android.pos.data.remote.Constants.TAKEOUT
 import com.android.pos.data.remote.Constants.TOTAL_PRICE_DINEIN
 import com.android.pos.data.remote.Constants.VENUE_LOGO
 import com.android.pos.data.remote.Constants.getReceiptFormatDateFromUTCServer
@@ -524,7 +525,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
         if (!isSpilt) {
 
-            prefProvider.setValue(Constants.ORDER_TYPE, "")
+            prefProvider.setValue(Constants.ORDER_TYPE, TAKEOUT)
             prefProvider.setValue(Constants.CUSTOMER_NAME, "")
             prefProvider.setValueInt(Constants.CUSTOMER_ID, -1)
             viewModel.deleteCart()

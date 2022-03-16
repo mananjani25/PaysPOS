@@ -279,7 +279,7 @@ class Customer : Fragment() {
         binding.layoutTool.txtTitle.text = "Customers"
 
         binding.layoutTool.imgDrawer.setOnClickListener {
-            findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_menuFragment)
+            findNavController().navigate(R.id.action_customer_to_menuFragment2)
         }
         binding.layoutTool.txtHome.setOnClickListener {
             findNavController().navigate(R.id.action_customer_to_dashboardCategoryNew)
@@ -377,7 +377,7 @@ class Customer : Fragment() {
             ) {
                 underlayButtons.add(UnderlayButton(
                     "Delete",
-                    ContextCompat.getColor(context, R.color.swipe_text_color),
+                    ContextCompat.getColor(context, R.color.swipe_text_color_d),
                     ContextCompat.getColor(context, R.color.white_swipe)
                 ) { pos ->
                     deletedPos = pos

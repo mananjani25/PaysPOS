@@ -1,14 +1,14 @@
 <resources>
-    <string name="app_name">POS Android</string>
+    <string name="app_name">BOLD POS</string>
     <string name="PREF_BARCODE_SCANNER">BarcodeScannerPrefs</string>
-    <string name="tv_pos">POS</string>
+    <string name="tv_pos">BOLD POS</string>
     <string name="tv_Info">Enterprise Cloud Point of Sale</string>
     <string name="tv_hint_email">Email Address <font color='#E90C0C'>*</font></string>
     <string name="tv_hint_email_">Email Address</string>
     <string name="tv_hint_password">Password <font color='#E90C0C'>*</font></string>
     <string name="tv_login">Login</string>
     <string name="tv_info_provider">If you forgot password, please <font color='#00A3E0'>contact</font> your sales provider</string>
-    <string name="tv_pos_2021">&#169; POS 2022</string>
+    <string name="tv_pos_2021">&#169; BOLD POS 2022</string>
     <string name="save">Save</string>
     <string name="add_category_name">Add Category Name <font color='#E90C0C'>*</font></string>
     <string name="assign_item_to_category">Assign Item to category</string>
@@ -90,7 +90,7 @@
     <string name="role_name_validate">Please Enter Role Name</string>
 
 
-    <string name="delete_tax_message">Are you sure want to Delete Tax?</string>
+    <string name="delete_tax_message">Are you sure, you want to delete tax?</string>
     <string name="delete_tip_message">Are you sure want to Delete the Tip?</string>
     <string name="delete_note_message">Are you sure want to Delete Note?</string>
     <string name="delete_discount_message">Are you sure want to Delete Discount?</string>
