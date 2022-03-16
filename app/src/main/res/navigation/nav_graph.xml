@@ -843,10 +843,16 @@
         android:label="Orders">
         <action
             android:id="@+id/action_orders_to_dashboardCategoryNew"
-            app:destination="@id/dashboardCategoryBoldPOS"
-            app:launchSingleTop="true" />
+            app:destination="@id/dashboardCategoryBoldPOS" />
         <action
             android:id="@+id/action_orders_to_paymentFragment"
+            app:destination="@id/paymentBoldPosFragment" />
+        <action
+            android:id="@+id/action_orders_to_dashboardCategoryBoldPOS"
+            app:popUpToInclusive="true"
+            app:destination="@id/dashboardCategoryBoldPOS" />
+        <action
+            android:id="@+id/action_orders_to_paymentBoldPosFragment"
             app:destination="@id/paymentBoldPosFragment" />
     </fragment>
     <action
@@ -1293,6 +1299,9 @@
         <action
             android:id="@+id/action_dashboardCategoryBoldPOS_to_assignCustomerOrderFragment"
             app:destination="@id/assignCustomerOrderFragment" />
+        <action
+            android:id="@+id/action_dashboardCategoryBoldPOS_to_addDiscountDialog"
+            app:destination="@id/addDiscountDialog" />
 
 
     </fragment>

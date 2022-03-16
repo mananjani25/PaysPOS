@@ -17,7 +17,6 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class CheckoutDetailsFragmentNew : Fragment(), ItemListner {
     private lateinit var binding: FragmentCheckoutDetailsNewBinding
-    private val viewModel by activityViewModels<DashBoardCategoryViewModel>()
     private val TAG = "DashboardCategoryBold"
     override fun onCreateView(
         inflater: LayoutInflater,

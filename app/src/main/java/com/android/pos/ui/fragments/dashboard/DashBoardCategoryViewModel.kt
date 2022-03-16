@@ -696,6 +696,7 @@ class DashBoardCategoryViewModel @Inject constructor(
         context: Context
     ) {
 
+        Log.e("itemCalculation","------------------>")
 
         var totalAmmount = 0.0
         nonCashAdj = 0.0
@@ -776,14 +777,17 @@ class DashBoardCategoryViewModel @Inject constructor(
                     subTotalPrice -= cartList[0].discountPrice
 
 
+                    totalDiscount += cartList[0].discountPrice
 
                     cartList[0].items!!.forEach {
-                        if (!it.isManualSales) {
-                            totalDiscount += (it.discountPrice * it.itemQuantity)
+                        totalDiscount += if (!it.isManualSales) {
+                            (it.discountPrice * it.itemQuantity)
                         } else {
-                            totalDiscount += it.discountPrice
+                            it.discountPrice
                         }
                     }
+
+                    Log.e("totalDiscount", totalDiscount.toString())
 
                     totalPrice = (subTotalPrice + totalTax + totalServiceCharge)
 
@@ -823,7 +827,7 @@ class DashBoardCategoryViewModel @Inject constructor(
         }
         //totalAmmount = totalPrice-cartList[0].discountPrice
 
-
+        Log.e("itemCalculation 1","------------------>")
     }
 
     @SuppressLint("SetTextI18n")

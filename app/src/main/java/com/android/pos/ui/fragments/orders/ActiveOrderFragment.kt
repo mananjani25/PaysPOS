@@ -8,6 +8,8 @@ import android.graphics.Bitmap
 import android.graphics.Point
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
@@ -26,9 +28,6 @@ import com.android.pos.data.model.responseModel.GetTipReponse
 import com.android.pos.data.model.responseModel.OpenOrderResponse
 import com.android.pos.data.model.responseModel.PrinterResponse
 import com.android.pos.data.remote.Constants
-import com.android.pos.data.remote.Constants.ARG_PARAM1
-import com.android.pos.data.remote.Constants.ARG_PARAM2
-import com.android.pos.data.remote.Constants.ARG_PARAM3
 import com.android.pos.data.remote.Constants.BUSINESS_ADDRESS
 import com.android.pos.data.remote.Constants.PRINT_PAID
 import com.android.pos.data.remote.Constants.PRINT_UNPAID
@@ -52,11 +51,14 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
 import javax.inject.Inject
-import kotlin.collections.ArrayList
 import kotlin.math.abs
 
 @AndroidEntryPoint
-class ActiveOrderFragment(var param1: String, var startDateTime: String?,var endDateTime: String?) : Fragment(), OrderCallBack {
+class ActiveOrderFragment(
+    var param1: String,
+    var startDateTime: String?,
+    var endDateTime: String?
+) : Fragment(), OrderCallBack {
     private var paramStartDate: String = ""
     private var paramEndDate: String = ""
 
@@ -109,7 +111,7 @@ class ActiveOrderFragment(var param1: String, var startDateTime: String?,var end
             paramEndDate = it.getString(ARG_PARAM3).toString()
         }
 */
-        viewModel.setCurrentDate(myCalendar,startDateTime,endDateTime)
+        viewModel.setCurrentDate(myCalendar, startDateTime, endDateTime)
     }
 
 
@@ -325,7 +327,7 @@ class ActiveOrderFragment(var param1: String, var startDateTime: String?,var end
                 val bundle = Bundle()
                 bundle.putBoolean("update", true)
                 bundle.putInt("orderId", order.id)
-                prefProvider.setValueInt("ORDER_ID",order.id)
+                prefProvider.setValueInt("ORDER_ID", order.id)
                 if (!order.payments.isNullOrEmpty()) {
                     bundle.putInt("paymentId", order.payments[0].id)
                     bundle.putString("paymentOfflineId", order.payments[0].offlineId)
@@ -335,8 +337,10 @@ class ActiveOrderFragment(var param1: String, var startDateTime: String?,var end
                 bundle.putString("orderOfflineId", order.offlineId)
                 bundle.putBoolean("isLoyaltyApplied", order.isLoyaltyApplied)
                 findNavController().navigate(
-                    R.id.action_orders_to_dashboardCategoryNew, bundle
+                    R.id.action_orders_to_dashboardCategoryBoldPOS, bundle
                 )
+
+//                findNavController().navigateUp()
 
             }
             "PAY" -> {
@@ -346,6 +350,8 @@ class ActiveOrderFragment(var param1: String, var startDateTime: String?,var end
                     order.customer?.firstName + " " + order.customer?.lastName
                 )
 
+                Log.e("ORDER_TYPE",order.orderType)
+
                 prefProvider.setValue(Constants.ORDER_TYPE, order.orderType)
                 dashboardViewModel.addCart(
                     cartModel(order)
@@ -353,7 +359,7 @@ class ActiveOrderFragment(var param1: String, var startDateTime: String?,var end
 
                 val bundle = Bundle()
                 bundle.putBoolean("update", true)
-                prefProvider.setValueInt("ORDER_ID",order.id)
+                prefProvider.setValueInt("ORDER_ID", order.id)
                 bundle.putDouble("totalPrice", order.totalAmount)
                 bundle.putDouble("finalprice", order.totalAmount)
                 bundle.putDouble(
@@ -406,10 +412,8 @@ class ActiveOrderFragment(var param1: String, var startDateTime: String?,var end
                 )
                 bundle.putBoolean("isFromActiveOrder", true)
 
-                findNavController().navigate(
-                    R.id.action_orders_to_paymentFragment,
-                    bundle
-                )
+                findNavController().navigate(R.id.action_orders_to_paymentBoldPosFragment)
+
 
             }
             PRINT_UNPAID -> {
