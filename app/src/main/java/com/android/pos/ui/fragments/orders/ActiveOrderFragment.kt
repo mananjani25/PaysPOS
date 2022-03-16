@@ -340,20 +340,20 @@ class ActiveOrderFragment(var param1: String, var startDateTime: String?,var end
 
             }
             "PAY" -> {
-                prefProvider.setValue(Constants.ORDER_TYPE, order.orderType)
-                val cartModel = cartModel(order)
+
                 prefProvider.setValue(
                     Constants.CUSTOMER_NAME,
                     order.customer?.firstName + " " + order.customer?.lastName
                 )
 
-                dashboardViewModel.totalPrice = order.totalAmount
-                dashboardViewModel.totalDiscount = order.totalDiscount
-                dashboardViewModel.subTotalPrice = order.subTotal
-                dashboardViewModel.totalTax = order.totalTaxAmount
-                dashboardViewModel.totalServiceCharge = order.totalServiceCharges
+                prefProvider.setValue(Constants.ORDER_TYPE, order.orderType)
+                dashboardViewModel.addCart(
+                    cartModel(order)
+                )
 
                 val bundle = Bundle()
+                bundle.putBoolean("update", true)
+                prefProvider.setValueInt("ORDER_ID",order.id)
                 bundle.putDouble("totalPrice", order.totalAmount)
                 bundle.putDouble("finalprice", order.totalAmount)
                 bundle.putDouble(
@@ -370,12 +370,10 @@ class ActiveOrderFragment(var param1: String, var startDateTime: String?,var end
                 bundle.putDouble("totalServiceCharge", order.totalServiceCharges)
                 bundle.putString("future_delivery_date", order.futureDeliveryDate)
                 bundle.putString("future_delivery_time", order.futureDeliveryTime)
-                bundle.putParcelable("cartList", cartModel)
+                bundle.putParcelable("cartList", cartModel(order))
 
 
-                bundle.putBoolean("update", true)
                 bundle.putInt("orderId", order.id)
-                prefProvider.setValueInt("ORDER_ID",order.id)
                 if (order.payments.isNotEmpty()) {
                     bundle.putInt("paymentId", order.payments[0].id)
                     bundle.putString("paymentOfflineId", order.payments[0].offlineId)

@@ -232,27 +232,27 @@ class Orders : Fragment() {
         when (pos) {
             0 -> {
                 list.add(InventoryItemModel(0, "Active Orders ",activeOrdersCount, true))
-                list.add(InventoryItemModel(0, "Upcoming Orders ",upcomingOrdersCount))
+//                list.add(InventoryItemModel(0, "Upcoming Orders ",upcomingOrdersCount))
                 list.add(InventoryItemModel(0, "Completed ",completedOrdersCount))
                 list.add(InventoryItemModel(0, "Cancelled Orders ",cancelledOrdersCount))
             }
             1 -> {
                 list.add(InventoryItemModel(0, "Active Orders ",activeOrdersCount))
-                list.add(InventoryItemModel(0, "Upcoming Orders ",upcomingOrdersCount, true))
+//                list.add(InventoryItemModel(0, "Upcoming Orders ",upcomingOrdersCount, true))
                 list.add(InventoryItemModel(0, "Completed ",completedOrdersCount))
                 list.add(InventoryItemModel(0, "Cancelled Orders ",cancelledOrdersCount))
 
             }
             2 -> {
                 list.add(InventoryItemModel(0, "Active Orders ",activeOrdersCount))
-                list.add(InventoryItemModel(0, "Upcoming Orders ",upcomingOrdersCount))
+//                list.add(InventoryItemModel(0, "Upcoming Orders ",upcomingOrdersCount))
                 list.add(InventoryItemModel(0, "Completed ",completedOrdersCount ,true))
                 list.add(InventoryItemModel(0, "Cancelled Orders ",cancelledOrdersCount))
 
             }
             3 -> {
                 list.add(InventoryItemModel(0, "Active Orders ",activeOrdersCount))
-                list.add(InventoryItemModel(0, "Upcoming Orders ",upcomingOrdersCount))
+//                list.add(InventoryItemModel(0, "Upcoming Orders ",upcomingOrdersCount))
                 list.add(InventoryItemModel(0, "Completed ",completedOrdersCount))
                 list.add(InventoryItemModel(0, "Cancelled Orders ",cancelledOrdersCount, true))
 
