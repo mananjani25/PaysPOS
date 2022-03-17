@@ -193,6 +193,9 @@ class AddItemFragment(val listner: ItemListner) : Fragment() {
 
 
         })
+        if (item.modifier_set_ids.isNotEmpty()){
+
+        }
 
     }
 

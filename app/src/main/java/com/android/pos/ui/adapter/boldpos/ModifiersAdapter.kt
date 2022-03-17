@@ -18,7 +18,6 @@ class ModifiersAdapter(
     var selectedModifierList = ArrayList<Modifier>()
 
 
-
     inner class MyViewHolder(private var binding: ViewModifiersBoldBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
