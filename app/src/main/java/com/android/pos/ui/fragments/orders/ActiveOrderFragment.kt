@@ -327,7 +327,6 @@ class ActiveOrderFragment(
                 val bundle = Bundle()
                 bundle.putBoolean("update", true)
                 bundle.putInt("orderId", order.id)
-                prefProvider.setValueInt("ORDER_ID", order.id)
                 if (!order.payments.isNullOrEmpty()) {
                     bundle.putInt("paymentId", order.payments[0].id)
                     bundle.putString("paymentOfflineId", order.payments[0].offlineId)
@@ -361,7 +360,6 @@ class ActiveOrderFragment(
 
                 val bundle = Bundle()
                 bundle.putBoolean("update", true)
-                prefProvider.setValueInt("ORDER_ID", order.id)
                 bundle.putDouble("totalPrice", order.totalAmount)
                 bundle.putDouble("finalprice", order.totalAmount)
                 bundle.putDouble(
