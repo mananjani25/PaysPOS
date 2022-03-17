@@ -228,27 +228,34 @@ class DashboardCategoryBoldPOS : Fragment(), ItemListner {
 
     }
 
+
     override fun onItemSelected(item: TbItem) {
         Log.e(TAG, "getitem:  ${Gson().toJson(item)}")
+        Log.e(TAG, "OrderTYpe:  ${prefProvider.getValue(ORDER_TYPE, TAKEOUT)}")
 
+        /*
         if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == Constants.OPEN_ORDER) {
-            val model = CartModel()
-            model.employeeID =
-                prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
-            model.terminalId = prefProvider.getValueInt(TERMINAL_ID, 0)
-            model.orderType = prefProvider.getValue(ORDER_TYPE, "")
-            model.locationId = prefProvider.getValueInt(Constants.LOCATION_ID, 1)
-            model.serviceCharge = serviceChargesList
-            viewModel.ordertypelist.forEach {
-                if (it.orderType == Constants.OPEN_ORDER) {
-                    model.orderTypeId = it.id
-                }
-            }
-            cartList.add(model)
-        } else  {
-            createCart()
-        }
 
+             if (cartList.isEmpty()) {
+                 val model = CartModel()
+                 model.employeeID =
+                     prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
+                 model.terminalId = prefProvider.getValueInt(TERMINAL_ID, 0)
+                 model.orderType = prefProvider.getValue(ORDER_TYPE, TAKEOUT)
+                 model.locationId = prefProvider.getValueInt(Constants.LOCATION_ID, 1)
+                 model.serviceCharge = serviceChargesList
+                 viewModel.ordertypelist.forEach {
+                     if (it.orderType == Constants.OPEN_ORDER) {
+                         model.orderTypeId = it.id
+                     }
+                 }
+                 cartList.add(model)
+             }
+
+         } else {
+             createCart()
+         }
+ */
 
         val fragment = AddItemFragment.newInstance(item, this, cartList)
         loadCategoryFragment(fragment)
@@ -260,15 +267,15 @@ class DashboardCategoryBoldPOS : Fragment(), ItemListner {
             model.employeeID =
                 prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
             model.terminalId = prefProvider.getValueInt(TERMINAL_ID, 0)
-            model.orderType = prefProvider.getValue(ORDER_TYPE, TAKEOUT)
+            model.orderType = TAKEOUT
             model.locationId = prefProvider.getValueInt(Constants.LOCATION_ID, 1)
             model.serviceCharge = serviceChargesList
-            model.orderTypeId = 1
-            /*viewModel.ordertypelist.forEach {
-                if (it.orderType == prefProvider.getValue(Constants.ORDER_TYPE, TAKEOUT)) {
+            // model.orderTypeId = 1
+            viewModel.ordertypelist.forEach {
+                if (it.orderType.lowercase() == TAKEOUT.lowercase()) {
                     model.orderTypeId = it.id
                 }
-            }*/
+            }
             cartList.add(model)
             viewModel.addCart(cartList[0])
             return cartList
@@ -282,15 +289,28 @@ class DashboardCategoryBoldPOS : Fragment(), ItemListner {
 
     }
 
+    override fun onCategorySelected(item: TbItem) {
+
+    }
+
     private fun addObserver() {
 
         viewModel.mAllWords(
             prefProvider.getValue(ORDER_TYPE, TAKEOUT),
             prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
         ).observe(requireActivity()) {
-            cartList.clear()
-            cartList = arrayListOf()
-            cartList = it.toCollection(arrayListOf())
+            Log.e(TAG, "MAllWords:::  ${Gson().toJson(it)}" )
+            if (it.isEmpty()) {
+                cartList.clear()
+                cartList = arrayListOf()
+
+            } else {
+                cartList.clear()
+                cartList = arrayListOf()
+                cartList.addAll(it.toCollection(arrayListOf()))
+            }
+
+
         }
 
         viewModel.orderTypes().observe(requireActivity()) {

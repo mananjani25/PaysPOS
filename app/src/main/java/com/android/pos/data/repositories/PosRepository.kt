@@ -12,7 +12,6 @@ import com.android.pos.data.model.SplitDetailListModel
 import com.android.pos.data.model.requestModel.*
 import com.android.pos.data.model.responseModel.*
 import com.android.pos.data.remote.ApiHelper
-import com.android.pos.data.remote.Constants
 import com.android.pos.di.PrefProvider
 import com.android.pos.utils.performGetOperation
 import com.android.pos.utils.performGetOperationDatabase
@@ -545,6 +544,11 @@ class PosRepository @Inject constructor(
 
         appDatabase.cartDao().add(cartModel)
     }
+
+    suspend fun createEmptyCart(cartModel: CartModel){
+        appDatabase.cartDao().add(cartModel)
+    }
+
 
     suspend fun deleteCart(employee_id: Int) {
 

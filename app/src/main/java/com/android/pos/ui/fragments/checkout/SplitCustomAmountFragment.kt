@@ -1,21 +1,16 @@
 package com.android.pos.ui.fragments.checkout
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.activityViewModels
 import com.android.pos.R
 import com.android.pos.data.entities.TbItem
 import com.android.pos.databinding.FragmentSplitCustomAmountBinding
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
-import com.android.pos.ui.fragments.dashboard.bolddashboard.CartFragment
-import com.android.pos.ui.fragments.dashboard.bolddashboard.CategoryFragment
 import com.android.pos.utils.callback.ItemListner
-import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -49,6 +44,10 @@ class SplitCustomAmountFragment() : Fragment(), ItemListner {
     }
 
     override fun onCancelItemSelected() {
+
+    }
+
+    override fun onCategorySelected(item: TbItem) {
 
     }
 

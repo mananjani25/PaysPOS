@@ -193,8 +193,8 @@ class CartFragment : Fragment(), MyCallback, DineInAdapter.DineInCallback {
             prefProvider.getValue(ORDER_TYPE, TAKEOUT),
             prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
         ).observe(requireActivity()) {
+            Log.e(TAG, "listSize  ${Gson().toJson(it)}")
             if (it.isNotEmpty()) {
-                Log.e(TAG, "listSize  ${Gson().toJson(it)}")
                 it[0].items?.toCollection(arrayListOf())
                     ?.let { it1 -> cartAdapter.setList(it1) }
                 viewModel.itemCalculationCartModel(
@@ -426,6 +426,7 @@ class CartFragment : Fragment(), MyCallback, DineInAdapter.DineInCallback {
                 prefProvider.setValueInt(Constants.DINE_INGUEST_SELECTED, 0)
                 clearCustomer()
                 viewModel.deleteCart()
+                cartlist.clear()
                 prefProvider.setValue(ORDER_TYPE, TAKEOUT)
                 prefProvider.setValueboolean(Constants.LOYALTY_ADDED, false)
 

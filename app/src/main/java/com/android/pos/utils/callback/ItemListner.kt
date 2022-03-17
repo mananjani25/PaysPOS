@@ -6,5 +6,6 @@ interface ItemListner {
 
     fun onItemSelected(item: TbItem)
     fun onCancelItemSelected()
+    fun onCategorySelected(item: TbItem)
 
 }

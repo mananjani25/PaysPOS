@@ -364,6 +364,10 @@ class PayFullAmountFragment(val bundle: Bundle?) : Fragment(), ItemListner, magt
 
     }
 
+    override fun onCategorySelected(item: TbItem) {
+
+    }
+
     private fun observeData() {
 
         paymentviewModel.data.observe(viewLifecycleOwner) { event ->
