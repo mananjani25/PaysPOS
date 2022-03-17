@@ -528,9 +528,6 @@ class PayFullAmountFragment(val bundle: Bundle?) : Fragment(), ItemListner, magt
 
     private fun makeCashPayment() {
         paymentType = "Cash"
-        Log.e(TAG, "cartList:  ${Gson().toJson(cartList)}")
-        Log.e(TAG, "cartListcartItems:  ${Gson().toJson(cartItems)}")
-
 
         if (orderId != -1)
             paymentviewModel.updateOrder(
