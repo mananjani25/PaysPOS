@@ -301,19 +301,17 @@ class PayFullAmountFragment(val bundle: Bundle?) : Fragment(), ItemListner, magt
             binding.tvCash3.setTextColor(resources.getColor(R.color.txtColor))
             binding.tvPaymentLink.setTextColor(resources.getColor(R.color.txtColor))
 
-            val bundle = Bundle().apply {
+            val bundleVal = Bundle().apply {
 
                 if (splitAfterAmount != 0.0) {
-                    bundle?.putDouble("totalprice", (splitAfterAmount + tipAmount))
+                    putDouble("totalprice", (splitAfterAmount + tipAmount))
                 } else {
-                    bundle?.putDouble("totalprice", ((totalPrice + tipAmount)))
+                    putDouble("totalprice", ((totalPrice + tipAmount)))
                 }
-
-
             }
             findNavController().navigate(
-                R.id.action_paymentBoldPosFragment_to_addDiscountDialog,
-                bundle
+                R.id.action_paymentBoldPosFragment_to_customAmountFragment,
+                bundleVal
             )
 
         }

@@ -1328,7 +1328,11 @@
             app:destination="@id/addTipsDialog"
             app:enterAnim="@anim/nav_default_enter_anim" />
         <action
-            android:id="@+id/action_paymentBoldPosFragment_to_addDiscountDialog"
+            android:id="@+id/action_paymentBoldPosFragment_to_addDiscountDialogFragment"
+            app:destination="@id/addDiscountDialog"
+            app:enterAnim="@anim/nav_default_enter_anim" />
+        <action
+            android:id="@+id/action_paymentBoldPosFragment_to_customAmountFragment"
             app:destination="@id/customAmountFragment"
             app:enterAnim="@anim/nav_default_enter_anim" />
         <action
