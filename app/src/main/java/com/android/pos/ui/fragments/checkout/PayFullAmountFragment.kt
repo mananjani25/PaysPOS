@@ -21,6 +21,7 @@ import com.android.pos.data.entities.TbItem
 import com.android.pos.data.model.requestModel.SpitByOrderPaymentModel
 import com.android.pos.data.model.requestModel.SpitByOrderRequestModel
 import com.android.pos.data.remote.Constants
+import com.android.pos.data.remote.Constants.ORDER_TYPE
 import com.android.pos.data.remote.Constants.TAKEOUT
 import com.android.pos.databinding.FragmentPayFullAmountBinding
 import com.android.pos.di.ApiModule1
@@ -55,6 +56,10 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class PayFullAmountFragment(val bundle: Bundle?) : Fragment(), ItemListner, magtekCallback,
     DeleteOptionCallback {
+    private var orderOfflineId: String = ""
+    private var paymentOfflineId: String = ""
+    private var paymentId: Int = -1
+    private var orderId: Int = -1
     private var requestCancel: Boolean = false
     private lateinit var binding: FragmentPayFullAmountBinding
     private val paymentviewModel by activityViewModels<PaymentViewModel>()
@@ -114,7 +119,17 @@ class PayFullAmountFragment(val bundle: Bundle?) : Fragment(), ItemListner, magt
         magtekModule.setCallback(this)
         onClick()
         frameLayoutId = bundle?.getInt("frameLayoutId")!!
-        llRoot = bundle.getInt("llRoot")!!
+        llRoot = bundle.getInt("llRoot")
+        orderId = bundle.getInt("orderId")
+
+        Log.e("orderId :: ", orderId.toString())
+
+        if (orderId != -1) {
+            paymentId = bundle.getInt("paymentId")
+            paymentOfflineId = bundle.getString("paymentOfflineId").toString()
+            orderOfflineId = bundle.getString("orderOfflineId").toString()
+        }
+
         observeShowProgress()
         getCartData()
         observeData()
@@ -122,10 +137,6 @@ class PayFullAmountFragment(val bundle: Bundle?) : Fragment(), ItemListner, magt
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-
-    }
 
     private fun getCartData() {
 
@@ -135,11 +146,11 @@ class PayFullAmountFragment(val bundle: Bundle?) : Fragment(), ItemListner, magt
         subTotalPrice = viewModel.subTotalPrice
         totalServiceCharge = viewModel.totalServiceCharge
         totalTax = viewModel.totalTax
-        Log.d("yash", "getCartData: totalprice $totalPrice")
-        Log.d("yash", "getCartData: subtotal $subTotalPrice")
+
+        Log.e("ORDER_TYPE", prefProvider.getValue(ORDER_TYPE, TAKEOUT))
 
         viewModel.ordertypelist.forEach {
-            if (prefProvider.getValue(Constants.ORDER_TYPE, TAKEOUT) == it.orderType) {
+            if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == it.orderType) {
                 paymentviewModel.setOrderTypeId(it.id)
             }
         }
@@ -474,7 +485,7 @@ class PayFullAmountFragment(val bundle: Bundle?) : Fragment(), ItemListner, magt
                 paymentAmount,
                 totalServiceCharge,
                 totalTax,
-                TAKEOUT,
+                prefProvider.getValue(ORDER_TYPE, TAKEOUT),
                 future_delivery_date,
                 future_delivery_time,
                 true,
@@ -519,7 +530,20 @@ class PayFullAmountFragment(val bundle: Bundle?) : Fragment(), ItemListner, magt
         paymentType = "Cash"
         Log.e(TAG, "cartList:  ${Gson().toJson(cartList)}")
         Log.e(TAG, "cartListcartItems:  ${Gson().toJson(cartItems)}")
+
+
+        if (orderId != -1)
+            paymentviewModel.updateOrder(
+                true,
+                orderId,
+                paymentId,
+                paymentOfflineId,
+                orderOfflineId
+            )
+
         paymentviewModel.saveOrder(false)
+
+        Log.e("ORDER TYPE", prefProvider.getValue(ORDER_TYPE, TAKEOUT))
         val myRequest = cartList?.let {
 
             paymentviewModel.createOrderRequest(
@@ -528,7 +552,7 @@ class PayFullAmountFragment(val bundle: Bundle?) : Fragment(), ItemListner, magt
                 paymentAmount,
                 totalServiceCharge,
                 totalTax,
-                TAKEOUT,
+                prefProvider.getValue(ORDER_TYPE, TAKEOUT),
                 future_delivery_date,
                 future_delivery_time,
                 true,
@@ -543,6 +567,8 @@ class PayFullAmountFragment(val bundle: Bundle?) : Fragment(), ItemListner, magt
             )
         }
         Log.e(TAG, "myRequestOriginal ${Gson().toJson(myRequest)}")
+
+        Log.e("ORDER TYPE 1", prefProvider.getValue(ORDER_TYPE, TAKEOUT))
         if (myRequest != null) {
             paymentviewModel.totalPayAmount(totalPrice)
             val orderId = prefProvider.getValueInt("ORDER_ID", -1)

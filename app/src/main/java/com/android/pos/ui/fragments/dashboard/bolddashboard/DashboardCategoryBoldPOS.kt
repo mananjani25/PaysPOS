@@ -307,10 +307,7 @@ class DashboardCategoryBoldPOS : Fragment(), ItemListner {
         viewModelPayment.QueueCreateSaveOrder.observe(requireActivity()) {
             it.getContentIfNotHandled()?.let {
                 viewModel.deleteCart()
-                if (prefProvider.getValue(ORDER_TYPE, "") != "") {
-                    prefProvider.setValue(ORDER_TYPE, TAKEOUT)
-                }
-
+                prefProvider.setValue(ORDER_TYPE, TAKEOUT)
                 findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
 
             }

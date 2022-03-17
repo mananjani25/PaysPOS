@@ -3,6 +3,7 @@ package com.android.pos.ui.fragments.payment
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -18,6 +19,10 @@ import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class PaymentBoldPosFragment : Fragment() {
+    private var orderId: Int? = null
+    private var orderOfflineId: String = ""
+    private var paymentOfflineId: String = ""
+    private var paymentId: Int = -1
     private lateinit var binding: FragmentPaymentBoldPosBinding
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -27,6 +32,16 @@ class PaymentBoldPosFragment : Fragment() {
         binding = FragmentPaymentBoldPosBinding.inflate(inflater, container, false)
         binding.layoutHeaderCheckout.rlRoot.visibility = View.VISIBLE
         binding.lifecycleOwner = this
+
+        orderId = arguments?.getInt("orderId")
+
+        Log.e("orderId :: ", orderId.toString())
+        if (orderId != null) {
+            paymentId = requireArguments().getInt("paymentId")
+            paymentOfflineId = requireArguments().getString("paymentOfflineId").toString()
+            orderOfflineId = requireArguments().getString("orderOfflineId").toString()
+        }
+
         return binding.root
     }
 
@@ -34,7 +49,7 @@ class PaymentBoldPosFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         loadCartFragment(CartFragment.newInstacne(true))
-        Handler(Looper.getMainLooper()).postDelayed(Runnable { /* Create an Intent that will start the Menu-Activity. */
+        Handler(Looper.getMainLooper()).postDelayed({ /* Create an Intent that will start the Menu-Activity. */
             loadCategoryFragment(CheckoutDetailsFragmentNew())
         }, 100)
 
@@ -69,10 +84,16 @@ class PaymentBoldPosFragment : Fragment() {
 
     private fun loadCategoryFragment(fragment: Fragment) {
         val fm: FragmentManager = requireActivity().supportFragmentManager
-        /* val bundle = Bundle().apply {
-             fragmentId?.let { putInt("fragmentId", it) }
-         }*/
-        // fragment.arguments = bundle
+
+        Log.e("orderId :: ", orderId.toString())
+        val bundle = Bundle().apply {
+            orderId?.let { putInt("orderId", it) }
+            putInt("paymentId", paymentId)
+            putString("orderOfflineId", orderOfflineId)
+            putString("paymentOfflineId", paymentOfflineId)
+
+        }
+        fragment.arguments = bundle
         fm.beginTransaction().replace(binding.frameLayout.id, fragment).commit()
         // binding.frameLayout?.let { fm.beginTransaction().replace(it, fragment).commit() }
     }

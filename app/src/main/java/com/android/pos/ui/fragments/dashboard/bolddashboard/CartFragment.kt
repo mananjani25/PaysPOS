@@ -174,12 +174,12 @@ class CartFragment : Fragment(), MyCallback, DineInAdapter.DineInCallback {
                 )
 
             } else {
-                prefProvider.setValue(ORDER_TYPE, TAKEOUT)
+              //  prefProvider.setValue(ORDER_TYPE, TAKEOUT)
                 Log.e("ORDER_TYPE", "Updated check")
             }
         } else {
             isOrderUpdate = false
-            prefProvider.setValue(ORDER_TYPE, TAKEOUT)
+         //   prefProvider.setValue(ORDER_TYPE, TAKEOUT)
             Log.e("ORDER_TYPE", "Updated check1")
         }
 
@@ -265,7 +265,7 @@ class CartFragment : Fragment(), MyCallback, DineInAdapter.DineInCallback {
         )
     }
 
-    fun initListeners() {
+    private fun initListeners() {
 
         binding.txtAddCustomer.setOnClickListener {
             if (isFromPayment) {
@@ -320,9 +320,9 @@ class CartFragment : Fragment(), MyCallback, DineInAdapter.DineInCallback {
 
         binding.tvPayNow.setOnClickListener {
             if (cartAdapter.cartList.isNotEmpty()) {
-                if(isOrderUpdate){
-                    prefProvider.setValue(Constants.ORDER_TYPE, OPEN_ORDER)
-                }
+
+                prefProvider.setValue(ORDER_TYPE, prefProvider.getValue(ORDER_TYPE, TAKEOUT))
+
                 findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_paymentBoldPosFragment)
             } else {
                 AlertUtils.showCustomAlertWithListenerWithOK(
@@ -335,12 +335,15 @@ class CartFragment : Fragment(), MyCallback, DineInAdapter.DineInCallback {
         }
         binding.tvSave.setOnClickListener {
             if (cartAdapter.cartList.isNotEmpty()) {
+
+                prefProvider.setValue(ORDER_TYPE, OPEN_ORDER)
+
                 if (prefProvider.getValue(ORDER_TYPE, "") != Constants.DINE_IN) {
 
                     var ordertype = ""
                     var ordertypeId = 0
                     viewModel.ordertypelist.forEach {
-                        if (it.orderType == Constants.OPEN_ORDER) {
+                        if (it.orderType == OPEN_ORDER) {
                             ordertype = it.orderType
                             ordertypeId = it.id
                         }
@@ -384,7 +387,7 @@ class CartFragment : Fragment(), MyCallback, DineInAdapter.DineInCallback {
                             totalAmountTobeSave,
                             viewModel.totalServiceCharge,
                             viewModel.totalTax,
-                            Constants.OPEN_ORDER_,
+                            OPEN_ORDER,
                             future_delivery_date,
                             future_delivery_time,
                             false,
@@ -427,17 +430,9 @@ class CartFragment : Fragment(), MyCallback, DineInAdapter.DineInCallback {
             positiveButton(getString(R.string.tv_delete)) {
                 // Do positive stuff here
                 prefProvider.setValueInt(Constants.DINE_INGUEST_SELECTED, 0)
-
                 clearCustomer()
-
                 viewModel.deleteCart()
-
-
-                if (prefProvider.getValue(ORDER_TYPE, "").toString() != "") {
-                    prefProvider.setValue(ORDER_TYPE, TAKEOUT)
-                    Log.e("ORDER_TYPE", "Updated check2")
-                }
-
+                prefProvider.setValue(ORDER_TYPE, TAKEOUT)
                 prefProvider.setValueboolean(Constants.LOYALTY_ADDED, false)
 
 

@@ -650,11 +650,10 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
 
                 cartList?.get(0)?.items?.let {
 
-                    if (it.isNotEmpty()) {
-                        count =
-                            it.get(cartList?.get(0)?.items!!.size - 1).customItemCount
+                    count = if (it.isNotEmpty()) {
+                        it.get(cartList?.get(0)?.items!!.size - 1).customItemCount
                     } else {
-                        count = -1
+                        -1
                     }
                 }
 

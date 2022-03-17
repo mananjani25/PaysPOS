@@ -48,6 +48,32 @@ class Orders : Fragment() {
     ): View? {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_inventory, container, false)
         binding.lifecycleOwner = this
+
+        configureToolbar()
+        changePosition(0)
+        // setAdapter(0)
+        getOrderCountsObserver("","")
+        requireContext().registerReceiver(broadcastReceiver, IntentFilter("cancelled"));
+        findNavController().currentBackStackEntry?.savedStateHandle?.getLiveData<String>(KEY)
+            ?.observe(viewLifecycleOwner) { it ->
+                Log.e(TAG, "InventoryLifeCycler  $it")
+                when (it) {
+                    ACTIVE_ORDER -> {
+                        changePosition(0)
+                        setAdapter(0)
+                    }
+                    COMPLETED_ORDER -> {
+                        changePosition(1)
+                        setAdapter(1)
+                    }
+                    CANCELED_ORDER ->  {
+                        changePosition(2)
+                        setAdapter(2)
+                    }
+                }
+
+            }
+
         return binding.root
     }
 
@@ -96,30 +122,7 @@ class Orders : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        configureToolbar()
-        changePosition(0)
-        // setAdapter(0)
-        getOrderCountsObserver("","")
-        requireContext().registerReceiver(broadcastReceiver, IntentFilter("cancelled"));
-        findNavController().currentBackStackEntry?.savedStateHandle?.getLiveData<String>(KEY)
-            ?.observe(viewLifecycleOwner) { it ->
-                Log.e(TAG, "InventoryLifeCycler  $it")
-                when (it) {
-                    ACTIVE_ORDER -> {
-                        changePosition(0)
-                        setAdapter(0)
-                    }
-                    COMPLETED_ORDER -> {
-                        changePosition(1)
-                        setAdapter(1)
-                    }
-                    CANCELED_ORDER ->  {
-                        changePosition(2)
-                        setAdapter(2)
-                    }
-                }
 
-            }
 
     }
 

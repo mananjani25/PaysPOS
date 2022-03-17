@@ -129,7 +129,7 @@ class PaymentViewModel @Inject constructor(
                                 }
 
                                 if (orderRequestModel.order.openOrderType == Constants.OPEN_ORDER
-                                    || orderRequestModel.order.openOrderType == Constants.OPEN_ORDER_
+                                    || orderRequestModel.order.openOrderType == Constants.OPEN_ORDER
                                 ) {
                                     posRepository.deleteCart(
                                         prefProvider.getValueInt(
@@ -404,11 +404,10 @@ class PaymentViewModel @Inject constructor(
             orderAttributeRequestModel.id = orderId
 
 
-        if (isUpdateOrder) {
-            orderAttributeRequestModel.openOrderType = Constants.OPEN_ORDER
-        } else {
-            orderAttributeRequestModel.openOrderType = Constants.TAKEOUT
-        }
+
+        orderAttributeRequestModel.openOrderType =
+            prefProvider.getValue(Constants.ORDER_TYPE, TAKEOUT)
+
         orderAttributeRequestModel.orderTypeId = order_type_id
         orderAttributeRequestModel.date = TimeFormatUtils.getCurrentDate()
         if (future_delivery_date.isNotEmpty())
@@ -682,11 +681,9 @@ class PaymentViewModel @Inject constructor(
 
 
 
-        if (isUpdateOrder) {
-            orderAttributeRequestModel.openOrderType = Constants.OPEN_ORDER
-        } else {
-            orderAttributeRequestModel.openOrderType = Constants.TAKEOUT
-        }
+        orderAttributeRequestModel.openOrderType =
+            prefProvider.getValue(Constants.ORDER_TYPE, TAKEOUT)
+
         orderAttributeRequestModel.orderTypeId = order_type_id
         orderAttributeRequestModel.date = TimeFormatUtils.getCurrentDate()
         if (future_delivery_date.isNotEmpty())
@@ -1587,4 +1584,5 @@ class PaymentViewModel @Inject constructor(
         magensaResponse = response
 
     }
+
 }

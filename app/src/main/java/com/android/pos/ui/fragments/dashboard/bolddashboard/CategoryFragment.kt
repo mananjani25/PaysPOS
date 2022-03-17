@@ -164,7 +164,7 @@ class CategoryFragment(val listner: ItemListner) : Fragment(), CategoryTabAdapte
     }
 
     private fun observeShowProgress() {
-        viewModel.showProgress.observe(viewLifecycleOwner, { event ->
+        viewModel.showProgress.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
                 if (it) {
                     ProgressUtils.showProgressDialog(requireActivity())
@@ -172,7 +172,7 @@ class CategoryFragment(val listner: ItemListner) : Fragment(), CategoryTabAdapte
                     ProgressUtils.dismissProgressDialog()
                 }
             }
-        })
+        }
     }
 
 
@@ -224,7 +224,7 @@ class CategoryFragment(val listner: ItemListner) : Fragment(), CategoryTabAdapte
         listItems.clear()
         listItems = arrayListOf()
 
-        var categoryId =
+        val categoryId =
             categoryParentAdapter.getList().get(parentPosition).list.get(childPosition).id
         Log.e(TAG, "selectedcategoryId:  ${categoryId}")
         Log.e(TAG, "itemList1itemList1:  ${Gson().toJson(itemList1)}")

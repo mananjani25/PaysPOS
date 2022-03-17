@@ -3535,7 +3535,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             builder.addTextAlign(Builder.ALIGN_CENTER)
             builder.addText(receiptModel?.order?.orderType + "\n")
             Log.e(TAG, "orderType:  ${receiptModel?.order?.orderType}")
-            if (receiptModel?.order?.orderType?.lowercase() == OPEN_ORDER_.lowercase()
+            if (receiptModel?.order?.orderType?.lowercase() == OPEN_ORDER.lowercase()
                 || receiptModel?.order?.orderType?.lowercase() == OPEN_ORDER.lowercase()
             ) {
 
