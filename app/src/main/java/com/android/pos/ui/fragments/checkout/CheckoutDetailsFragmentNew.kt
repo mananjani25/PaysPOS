@@ -11,6 +11,7 @@ import com.android.pos.databinding.FragmentCheckoutDetailsNewBinding
 import com.android.pos.ui.adapter.PaymentTypePagerAdapter
 import com.android.pos.utils.callback.ItemListner
 import com.google.android.material.tabs.TabLayout
+import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -68,6 +69,7 @@ class CheckoutDetailsFragmentNew : Fragment(), ItemListner {
                 putString("paymentOfflineId", paymentOfflineId)
             }
         }
+        Log.e(TAG,"getBundle  ${Gson().toJson(bundle)}")
         val adapter = PaymentTypePagerAdapter(
             requireContext(),
             childFragmentManager,

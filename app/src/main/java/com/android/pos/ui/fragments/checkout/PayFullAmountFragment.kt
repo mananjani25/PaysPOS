@@ -124,7 +124,7 @@ class PayFullAmountFragment(val bundle: Bundle?) : Fragment(), ItemListner, magt
 
         Log.e("orderId :: ", orderId.toString())
 
-        if (orderId != -1) {
+        if (orderId != -1 && orderId != 0) {
             paymentId = bundle.getInt("paymentId")
             paymentOfflineId = bundle.getString("paymentOfflineId").toString()
             orderOfflineId = bundle.getString("orderOfflineId").toString()
@@ -531,7 +531,7 @@ class PayFullAmountFragment(val bundle: Bundle?) : Fragment(), ItemListner, magt
     private fun makeCashPayment() {
         paymentType = "Cash"
 
-        if (orderId != -1)
+        if (orderId != -1 && orderId != 0)
             paymentviewModel.updateOrder(
                 true,
                 orderId,
