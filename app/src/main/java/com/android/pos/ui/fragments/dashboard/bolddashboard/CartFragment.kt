@@ -17,6 +17,7 @@ import com.android.pos.R
 import com.android.pos.data.entities.*
 import com.android.pos.data.model.DineInModel
 import com.android.pos.data.remote.Constants
+import com.android.pos.data.remote.Constants.OPEN_ORDER
 import com.android.pos.data.remote.Constants.ORDER_TYPE
 import com.android.pos.data.remote.Constants.TAKEOUT
 import com.android.pos.databinding.FragmentCartBinding
@@ -163,6 +164,15 @@ class CartFragment : Fragment(), MyCallback, DineInAdapter.DineInCallback {
                 orderOfflineId = updateBundle?.getString("orderOfflineId").toString()
                 viewModel.redeemLoyaltyInfo.needToApplyLoyalty =
                     updateBundle?.getBoolean("isLoyaltyApplied")!!
+
+                viewModelPayment.updateOrder(
+                    isOrderUpdate,
+                    orderId,
+                    paymentId,
+                    paymentOfflineId,
+                    orderOfflineId
+                )
+
             } else {
                 prefProvider.setValue(ORDER_TYPE, TAKEOUT)
                 Log.e("ORDER_TYPE", "Updated check")
@@ -191,17 +201,6 @@ class CartFragment : Fragment(), MyCallback, DineInAdapter.DineInCallback {
         ).observe(requireActivity()) {
             if (it.isNotEmpty()) {
                 Log.e(TAG, "listSize  ${Gson().toJson(it)}")
-                var ordertype = ""
-                var ordertypeId = 0
-                viewModel.ordertypelist.forEach {
-                    if (it.orderType == prefProvider.getValue(ORDER_TYPE, TAKEOUT)) {
-                        ordertype = it.orderType
-                        ordertypeId = it.id
-                    }
-                }
-                it[it.size - 1].orderType = ordertype
-                it[it.size - 1].orderTypeId = ordertypeId
-
                 it[it.size - 1].items?.toCollection(arrayListOf())
                     ?.let { it1 -> cartAdapter.setList(it1) }
                 viewModel.itemCalculationCartModel(
@@ -216,8 +215,6 @@ class CartFragment : Fragment(), MyCallback, DineInAdapter.DineInCallback {
                     MethodUtils.roundOffAmount(viewModel.totalServiceCharge)
                 binding.tvPayNow.text = "Pay " + MethodUtils.roundOffAmount(viewModel.totalPrice)
                 binding.txtDiscount.text = MethodUtils.roundOffAmount(viewModel.totalDiscount)
-                Log.d(TAG, "addObserver in : " + prefProvider.getValue(Constants.CUSTOMER_NAME, ""))
-                displayCustomer()
             } else {
                 cartAdapter.clearList()
                 binding.txtTotal.text = MethodUtils.roundOffAmount(0.0)
@@ -227,16 +224,7 @@ class CartFragment : Fragment(), MyCallback, DineInAdapter.DineInCallback {
                 binding.txtServiceCharge.text =
                     MethodUtils.roundOffAmount(0.0)
                 binding.tvPayNow.text = "Pay " + MethodUtils.roundOffAmount(0.0)
-//                prefProvider.setValue(Constants.CUSTOMER_NAME, "")
-//                prefProvider.setValueInt(Constants.CUSTOMER_ID, -1)
-                Log.d(
-                    TAG,
-                    "addObserver out : " + prefProvider.getValue(Constants.CUSTOMER_NAME, "")
-                )
-                displayCustomer()
             }
-
-
         }
 
         viewModel.showProgress.observe(viewLifecycleOwner) { event ->
@@ -264,6 +252,7 @@ class CartFragment : Fragment(), MyCallback, DineInAdapter.DineInCallback {
     private fun clearCustomer() {
         prefProvider.setValue(Constants.CUSTOMER_NAME, "")
         prefProvider.setValueInt(Constants.CUSTOMER_ID, -1)
+        displayCustomer()
         refreshItemCalculation()
     }
 
@@ -302,7 +291,7 @@ class CartFragment : Fragment(), MyCallback, DineInAdapter.DineInCallback {
                             viewModel.addCart(cartlist[0])
                         }
                         clearCustomer()
-                        displayCustomer()
+
                     }
                     R.id.menu_discount -> {
 
@@ -331,6 +320,9 @@ class CartFragment : Fragment(), MyCallback, DineInAdapter.DineInCallback {
 
         binding.tvPayNow.setOnClickListener {
             if (cartAdapter.cartList.isNotEmpty()) {
+                if(isOrderUpdate){
+                    prefProvider.setValue(Constants.ORDER_TYPE, OPEN_ORDER)
+                }
                 findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_paymentBoldPosFragment)
             } else {
                 AlertUtils.showCustomAlertWithListenerWithOK(
@@ -376,7 +368,7 @@ class CartFragment : Fragment(), MyCallback, DineInAdapter.DineInCallback {
                                 viewModel.totalPrice
                             }
 
-                        cartList.openOrderType = openORderType
+                        cartList.openOrderType = Constants.PICK_UP
                         if (!isOrderUpdate)
                             cartList.customer = assignCustomer
 
@@ -448,7 +440,6 @@ class CartFragment : Fragment(), MyCallback, DineInAdapter.DineInCallback {
 
                 prefProvider.setValueboolean(Constants.LOYALTY_ADDED, false)
 
-                displayCustomer()
 
             }
             negativeButton(R.string.tv_cancel) {
