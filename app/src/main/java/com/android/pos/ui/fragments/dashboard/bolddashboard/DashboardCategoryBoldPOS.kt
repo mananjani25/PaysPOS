@@ -1,9 +1,5 @@
 package com.android.pos.ui.fragments.dashboard.bolddashboard
 
-import android.content.BroadcastReceiver
-import android.content.Context
-import android.content.Intent
-import android.content.IntentFilter
 import android.graphics.Typeface
 import android.os.Bundle
 import android.util.Log
@@ -11,7 +7,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
-import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
@@ -28,10 +23,7 @@ import com.android.pos.data.remote.Constants.TAKEOUT
 import com.android.pos.data.remote.Constants.TERMINAL_ID
 import com.android.pos.databinding.FragmentDashboardCategoryBoldPosBinding
 import com.android.pos.di.PrefProvider
-import com.android.pos.ui.adapter.CartAdapter
-import com.android.pos.ui.adapter.DineInAdapter
 import com.android.pos.ui.adapter.VariationDashboardListAdapter
-import com.android.pos.ui.fragments.checkout.CheckoutDetailsFragmentNew
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.android.pos.ui.fragments.payment.PaymentViewModel
 import com.android.pos.utils.callback.ItemListner
@@ -238,6 +230,7 @@ class DashboardCategoryBoldPOS : Fragment(), ItemListner {
 
     override fun onItemSelected(item: TbItem) {
         Log.e(TAG, "getitem:  ${Gson().toJson(item)}")
+
         if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == Constants.OPEN_ORDER) {
             val model = CartModel()
             model.employeeID =
@@ -252,9 +245,10 @@ class DashboardCategoryBoldPOS : Fragment(), ItemListner {
                 }
             }
             cartList.add(model)
-        } else {
+        } else  {
             createCart()
         }
+
 
         val fragment = AddItemFragment.newInstance(item, this, cartList)
         loadCategoryFragment(fragment)
@@ -266,19 +260,21 @@ class DashboardCategoryBoldPOS : Fragment(), ItemListner {
             model.employeeID =
                 prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
             model.terminalId = prefProvider.getValueInt(TERMINAL_ID, 0)
-            model.orderType = prefProvider.getValue(ORDER_TYPE, "")
+            model.orderType = prefProvider.getValue(ORDER_TYPE, TAKEOUT)
             model.locationId = prefProvider.getValueInt(Constants.LOCATION_ID, 1)
             model.serviceCharge = serviceChargesList
-            viewModel.ordertypelist.forEach {
+            model.orderTypeId = 1
+            /*viewModel.ordertypelist.forEach {
                 if (it.orderType == prefProvider.getValue(Constants.ORDER_TYPE, TAKEOUT)) {
                     model.orderTypeId = it.id
                 }
-            }
+            }*/
             cartList.add(model)
+            viewModel.addCart(cartList[0])
             return cartList
         }
 
-        return null
+        return cartList
     }
 
     override fun onCancelItemSelected() {

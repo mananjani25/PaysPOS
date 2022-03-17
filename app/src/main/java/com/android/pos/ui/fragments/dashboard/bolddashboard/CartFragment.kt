@@ -1,21 +1,19 @@
 package com.android.pos.ui.fragments.dashboard.bolddashboard
 
-import android.R.attr.button
-import android.content.Intent
 import android.os.Bundle
 import android.util.Log
-import android.view.*
-import android.widget.TextView
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import androidx.appcompat.widget.PopupMenu
 import androidx.core.os.bundleOf
-import androidx.fragment.app.*
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
-import androidx.lifecycle.lifecycleScope
-import androidx.navigation.Navigation
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.data.entities.*
-import com.android.pos.data.model.DineInModel
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.OPEN_ORDER
 import com.android.pos.data.remote.Constants.ORDER_TYPE
@@ -31,16 +29,12 @@ import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.callback.MyCallback
 import com.android.pos.utils.extensions.alert
-import com.android.pos.utils.extensions.gone
-import com.android.pos.utils.extensions.visible
 import com.android.pos.utils.statusUtils.Resource
-import com.android.pos.utils.statusUtils.Status
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
-import kotlin.collections.ArrayList
 
 
 @AndroidEntryPoint
@@ -201,7 +195,7 @@ class CartFragment : Fragment(), MyCallback, DineInAdapter.DineInCallback {
         ).observe(requireActivity()) {
             if (it.isNotEmpty()) {
                 Log.e(TAG, "listSize  ${Gson().toJson(it)}")
-                it[it.size - 1].items?.toCollection(arrayListOf())
+                it[0].items?.toCollection(arrayListOf())
                     ?.let { it1 -> cartAdapter.setList(it1) }
                 viewModel.itemCalculationCartModel(
                     it[0],
