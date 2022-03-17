@@ -14,6 +14,7 @@ import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.DINE_IN
 import com.android.pos.data.remote.Constants.IS_PRINTER_QUEUE_ENABLE
 import com.android.pos.data.remote.Constants.PAYMENT_ID
+import com.android.pos.data.remote.Constants.TAKEOUT
 import com.android.pos.data.repositories.PosRepository
 import com.android.pos.di.PrefProvider
 import com.android.pos.utils.Event
@@ -41,6 +42,7 @@ class PaymentViewModel @Inject constructor(
     private var orderId: Int? = null
     private var paymentId: Int? = null
     private var paymentOfflineId: String? = null
+    public var order_type_id = -1
     private var orderOfflineId: String? = null
     private val _snackbarText = MutableLiveData<Event<Any?>>()
     val snackbarText: LiveData<Event<Any?>> = _snackbarText
@@ -85,6 +87,10 @@ class PaymentViewModel @Inject constructor(
 
     fun cardReaderList() = posRepository.cardReaderActiveList()
 
+    fun setOrderTypeId(order_typeId: Int) {
+        this.order_type_id = order_typeId
+    }
+
     fun submit(orderRequestModel: OrderRequestModel) {
 
         _showProgress.value = Event(true)
@@ -125,7 +131,12 @@ class PaymentViewModel @Inject constructor(
                                 if (orderRequestModel.order.openOrderType == Constants.OPEN_ORDER
                                     || orderRequestModel.order.openOrderType == Constants.OPEN_ORDER_
                                 ) {
-                                    posRepository.deleteCart(prefProvider.getValueInt(Constants.EMPLOYEE_ID,0))
+                                    posRepository.deleteCart(
+                                        prefProvider.getValueInt(
+                                            Constants.EMPLOYEE_ID,
+                                            0
+                                        )
+                                    )
                                 }
 
                                 if (onlySave) {
@@ -392,6 +403,13 @@ class PaymentViewModel @Inject constructor(
         if (isUpdateOrder)
             orderAttributeRequestModel.id = orderId
 
+
+        if (isUpdateOrder) {
+            orderAttributeRequestModel.openOrderType = Constants.OPEN_ORDER
+        } else {
+            orderAttributeRequestModel.openOrderType = Constants.TAKEOUT
+        }
+        orderAttributeRequestModel.orderTypeId = order_type_id
         orderAttributeRequestModel.date = TimeFormatUtils.getCurrentDate()
         if (future_delivery_date.isNotEmpty())
             orderAttributeRequestModel.futureDeliveryDate = future_delivery_date
@@ -435,8 +453,6 @@ class PaymentViewModel @Inject constructor(
         orderAttributeRequestModel.offlineId =
             if (isUpdateOrder) orderOfflineId.toString() else randomOfflineId()
         Log.e(TAG, "openOrderType: " + cartModel.orderType)
-        orderAttributeRequestModel.openOrderType = cartModel.orderType
-        orderAttributeRequestModel.orderTypeId = cartModel.orderTypeId
         orderAttributeRequestModel.paymentStatus = if (isPaid) 1 else 0
         orderAttributeRequestModel.serviceChargeEnabled = true
         orderAttributeRequestModel.taxEnabled = true
@@ -664,6 +680,14 @@ class PaymentViewModel @Inject constructor(
         if (isUpdateOrder)
             orderAttributeRequestModel.id = orderId
 
+
+
+        if (isUpdateOrder) {
+            orderAttributeRequestModel.openOrderType = Constants.OPEN_ORDER
+        } else {
+            orderAttributeRequestModel.openOrderType = Constants.TAKEOUT
+        }
+        orderAttributeRequestModel.orderTypeId = order_type_id
         orderAttributeRequestModel.date = TimeFormatUtils.getCurrentDate()
         if (future_delivery_date.isNotEmpty())
             orderAttributeRequestModel.futureDeliveryDate = future_delivery_date
@@ -690,7 +714,7 @@ class PaymentViewModel @Inject constructor(
                 orderAttributeRequestModel.cash_discount_type = ""
                 orderAttributeRequestModel.cash_discount_or_surcharge = 0.0
                 orderAttributeRequestModel.totalAmount = actual_CardAmount
-            }else{
+            } else {
                 orderAttributeRequestModel.cash_discount_or_surcharge = 0.0
                 orderAttributeRequestModel.cash_discount_type = ""
                 orderAttributeRequestModel.totalAmount = actual_CardAmount
@@ -700,8 +724,6 @@ class PaymentViewModel @Inject constructor(
         orderAttributeRequestModel.offlineId =
             if (isUpdateOrder) orderOfflineId.toString() else randomOfflineId()
 
-        orderAttributeRequestModel.openOrderType = cartModel.orderType
-        orderAttributeRequestModel.orderTypeId = cartModel.orderTypeId
         orderAttributeRequestModel.paymentStatus = if (isPaid) 1 else 0
         orderAttributeRequestModel.serviceChargeEnabled = true
         orderAttributeRequestModel.taxEnabled = true

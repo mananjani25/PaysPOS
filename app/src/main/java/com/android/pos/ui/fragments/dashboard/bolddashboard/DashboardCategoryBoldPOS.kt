@@ -110,9 +110,6 @@ class DashboardCategoryBoldPOS : Fragment(), ItemListner {
     }
 
     private fun setUpCustomer(result: TbCustomer, bundle: Bundle) {
-
-        prefProvider.setValue(Constants.CUSTOMER_NAME, result.first_name + " " + result.last_name)
-        result.id?.let { prefProvider.setValueInt(Constants.CUSTOMER_ID, it) }
         if (cartList.isNotEmpty()) {
             cartList[0].customer = result
             viewModel.addCart(cartList[0])
@@ -273,12 +270,11 @@ class DashboardCategoryBoldPOS : Fragment(), ItemListner {
             model.locationId = prefProvider.getValueInt(Constants.LOCATION_ID, 1)
             model.serviceCharge = serviceChargesList
             viewModel.ordertypelist.forEach {
-                if (it.orderType == TAKEOUT) {
+                if (it.orderType == prefProvider.getValue(Constants.ORDER_TYPE, TAKEOUT)) {
                     model.orderTypeId = it.id
                 }
             }
             cartList.add(model)
-
             return cartList
         }
 

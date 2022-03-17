@@ -138,6 +138,11 @@ class PayFullAmountFragment(val bundle: Bundle?) : Fragment(), ItemListner, magt
         Log.d("yash", "getCartData: totalprice $totalPrice")
         Log.d("yash", "getCartData: subtotal $subTotalPrice")
 
+        viewModel.ordertypelist.forEach {
+            if (prefProvider.getValue(Constants.ORDER_TYPE, TAKEOUT) == it.orderType) {
+                paymentviewModel.setOrderTypeId(it.id)
+            }
+        }
         if (MethodUtils.isEnableCashDiscount(requireContext())) {
             cashDiscountSurcharge = MethodUtils.calculateCashDiscount(
                 viewModel.totalPrice,
@@ -514,6 +519,7 @@ class PayFullAmountFragment(val bundle: Bundle?) : Fragment(), ItemListner, magt
         paymentType = "Cash"
         Log.e(TAG, "cartList:  ${Gson().toJson(cartList)}")
         Log.e(TAG, "cartListcartItems:  ${Gson().toJson(cartItems)}")
+        paymentviewModel.saveOrder(false)
         val myRequest = cartList?.let {
 
             paymentviewModel.createOrderRequest(
