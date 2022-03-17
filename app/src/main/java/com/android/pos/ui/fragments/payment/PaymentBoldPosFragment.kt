@@ -51,7 +51,7 @@ class PaymentBoldPosFragment : Fragment() {
             findNavController().navigate(R.id.action_paymentBoldPosFragment_to_addTipDialog)
         }
         binding.layoutHeaderCheckout.tvAddDiscount.setOnClickListener {
-            findNavController().navigate(R.id.action_paymentBoldPosFragment_to_addDiscountDialog)
+            findNavController().navigate(R.id.action_paymentBoldPosFragment_to_addDiscountDialogFragment)
         }
     }
 

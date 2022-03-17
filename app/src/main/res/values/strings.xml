@@ -762,6 +762,7 @@
     <string name="current_order">Current Order</string>
     <string name="add_customer2">+ Add Customer</string>
     <string name="card">Card</string>
+    <string name="add_custom_amount">Add Custom Amount</string>
 
 
 </resources>

@@ -21,12 +21,13 @@
             android:textColor="@color/txtColor"
             android:textSize="@dimen/_7mdpi" />
 
+
         <androidx.appcompat.widget.LinearLayoutCompat
             android:id="@+id/llCard"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/tvCard"
-            android:layout_marginTop="@dimen/_5sdp"
+            android:layout_marginTop="11dp"
             android:orientation="horizontal"
             android:weightSum="2">
 
@@ -68,18 +69,17 @@
             <androidx.appcompat.widget.LinearLayoutCompat
                 android:id="@+id/llManualCardEntry"
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="@dimen/_31sdp"
                 android:layout_marginLeft="@dimen/_5sdp"
                 android:layout_weight="1"
                 android:background="@drawable/background_square_border_grey"
                 android:gravity="center_horizontal"
-                android:orientation="horizontal"
-                android:paddingVertical="@dimen/_8sdp">
+                android:orientation="horizontal">
 
                 <androidx.appcompat.widget.AppCompatImageView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
+                    android:layout_gravity="center_horizontal|center_vertical"
                     android:src="@drawable/ic_manual_card" />
 
 
@@ -100,7 +100,6 @@
 
 
         </androidx.appcompat.widget.LinearLayoutCompat>
-
 
         <TextView
             android:id="@+id/tvCash"

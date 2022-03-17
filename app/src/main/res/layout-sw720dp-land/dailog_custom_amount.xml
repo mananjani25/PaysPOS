@@ -13,7 +13,8 @@
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:paddingVertical="@dimen/_4sdp">
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/imgBack"
@@ -30,12 +31,11 @@
                 style="@style/CustomFontSemiBold"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true"
-                android:layout_centerVertical="true"
+                android:layout_centerInParent="true"
                 android:layout_gravity="center"
                 android:gravity="center"
                 android:padding="@dimen/_5sdp"
-                android:text="$12.50 Cash"
+                android:text="@string/add_custom_amount"
                 android:textColor="@color/txtColor"
                 android:textSize="@dimen/_7mdpi" />
 
@@ -46,6 +46,587 @@
 
 
         <androidx.appcompat.widget.LinearLayoutCompat
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="@dimen/_10sdp"
+            android:visibility="visible">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/_2sdp"
+                android:padding="@dimen/_9sdp"
+                android:background="@drawable/background_square_border_grey">
+
+                <TextView
+                    android:id="@+id/txtCurrency"
+                    style="@style/CustomFontSemiBold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/_10sdp"
+                    android:text="$"
+                    android:visibility="gone"
+                    android:textColor="@color/btnColor"
+                    android:textSize="@dimen/_7mdpi"
+                    app:layout_constraintBottom_toBottomOf="@+id/edtAmount"
+                    app:layout_constraintEnd_toStartOf="@+id/edtAmount"
+                    app:layout_constraintTop_toTopOf="@+id/edtAmount" />
+
+                <androidx.appcompat.widget.AppCompatEditText
+                    android:id="@+id/edtAmount"
+                    style="@style/CustomFontSemiBold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/_10sdp"
+                    android:layout_marginEnd="@dimen/_10sdp"
+                    android:background="@null"
+                    android:hint="$0.00"
+                    android:maxLength="11"
+                    android:textColor="@color/btnColor"
+                    android:textColorHint="@color/hintColor"
+                    android:textSize="@dimen/_7mdpi"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:textAllCaps="true"
+                    android:digits="0123456789"
+
+                    />
+
+                <TextView
+                    android:id="@+id/txtPer"
+                    style="@style/CustomFontSemiBold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="%"
+                    android:textColor="@color/txtColor"
+                    android:textSize="@dimen/_6mdpi"
+                    android:visibility="gone"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/linearLayout"
+                    app:layout_constraintHorizontal_bias="0.015"
+                    app:layout_constraintStart_toEndOf="@+id/edtAmount"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintVertical_bias="0.487" />
+
+                <LinearLayout
+                    android:id="@+id/linearLayout"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/_5sdp"
+                    android:orientation="horizontal"
+                    android:paddingVertical="@dimen/_3sdp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:visibility="gone">
+
+                    <TextView
+                        android:id="@+id/txtCurrencyPercentage"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="@dimen/_2sdp"
+                        android:paddingVertical="@dimen/_4sdp"
+                        android:paddingStart="@dimen/_7sdp"
+                        android:paddingEnd="@dimen/_7sdp"
+                        android:text="%"
+                        android:background="@drawable/background_square_border_grey"
+                        android:textColor="@color/txtColor"/>
+
+                    <TextView
+                        android:id="@+id/txtCurrencyDollar"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/_2sdp"
+                        android:paddingVertical="@dimen/_4sdp"
+                        android:paddingStart="@dimen/_7sdp"
+                        android:paddingEnd="@dimen/_7sdp"
+                        android:text="$"
+                        android:background="@drawable/background_square_border_grey"
+                        android:textColor="@color/txtColor"/>
+
+
+                </LinearLayout>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@color/bg_color"
+                android:gravity="center"
+                android:orientation="vertical"
+                tools:ignore="MissingDefaultResource">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:layout_marginTop="@dimen/_5sdp"
+                    android:orientation="horizontal">
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/tvOne"
+                        style="@style/CustomFontRegularStyle"
+                        android:layout_width="0dp"
+                        android:layout_height="@dimen/_30sdp"
+                        android:layout_weight="1"
+                        android:background="@drawable/background_square_border_grey"
+                        android:gravity="center"
+                        android:padding="@dimen/_5sdp"
+                        android:text="@string/buttonOne"
+                        android:textColor="@color/txtColor"
+                        android:textSize="@dimen/_6mdpi"
+                        />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/tvTwo"
+                        style="@style/CustomFontRegularStyle"
+                        android:layout_width="0dp"
+                        android:layout_height="@dimen/_30sdp"
+                        android:layout_weight="1"
+                        android:background="@drawable/background_square_border_grey"
+                        android:gravity="center"
+                        android:padding="@dimen/_5sdp"
+                        android:text="@string/buttonTwo"
+                        android:textColor="@color/txtColor"
+                        android:textSize="@dimen/_6mdpi"
+                        android:layout_marginLeft="@dimen/_5sdp"/>
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/tvThree"
+                        style="@style/CustomFontRegularStyle"
+                        android:layout_width="0dp"
+                        android:layout_height="@dimen/_30sdp"
+                        android:layout_weight="1"
+                        android:background="@drawable/background_square_border_grey"
+                        android:gravity="center"
+                        android:padding="@dimen/_5sdp"
+                        android:text="@string/buttonThree"
+                        android:textColor="@color/txtColor"
+                        android:textSize="@dimen/_6mdpi"
+                        android:layout_marginHorizontal="@dimen/_5sdp"/>
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/txt10"
+                        style="@style/CustomFontBold"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="@dimen/_30sdp"
+                        android:layout_alignParentEnd="true"
+                        android:layout_gravity="center"
+                        android:background="@color/btnColor"
+                        android:gravity="center"
+                        android:text="10%"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/_7mdpi"
+                        />
+
+                </LinearLayout>
+
+
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="@dimen/_5sdp"
+                    android:gravity="center"
+                    android:orientation="horizontal">
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/tvFour"
+                        style="@style/CustomFontRegularStyle"
+                        android:layout_width="0dp"
+                        android:layout_height="@dimen/_30sdp"
+                        android:layout_weight="1"
+                        android:background="@drawable/background_square_border_grey"
+                        android:gravity="center"
+                        android:padding="@dimen/_5sdp"
+                        android:text="@string/buttonFour"
+                        android:textColor="@color/txtColor"
+                        android:textSize="@dimen/_6mdpi"
+                        />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/tvFive"
+                        style="@style/CustomFontRegularStyle"
+                        android:layout_width="0dp"
+                        android:layout_height="@dimen/_30sdp"
+                        android:layout_weight="1"
+                        android:background="@drawable/background_square_border_grey"
+                        android:gravity="center"
+                        android:padding="@dimen/_5sdp"
+                        android:text="@string/buttonFive"
+                        android:textColor="@color/txtColor"
+                        android:textSize="@dimen/_6mdpi"
+                        android:layout_marginLeft="@dimen/_5sdp"
+                        />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/tvSix"
+                        style="@style/CustomFontRegularStyle"
+                        android:layout_width="0dp"
+                        android:layout_height="@dimen/_30sdp"
+                        android:layout_weight="1"
+                        android:background="@drawable/background_square_border_grey"
+                        android:gravity="center"
+                        android:padding="@dimen/_5sdp"
+                        android:text="@string/buttonSix"
+                        android:textColor="@color/txtColor"
+                        android:textSize="@dimen/_6mdpi"
+                        android:layout_marginHorizontal="@dimen/_5sdp"/>
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        style="@style/CustomFontBold"
+                        android:id="@+id/txt20"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="@dimen/_30sdp"
+                        android:layout_alignParentEnd="true"
+                        android:layout_gravity="center"
+                        android:background="@color/btnColor"
+                        android:gravity="center"
+                        android:text="20%"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/_7mdpi"
+                        />
+
+                </LinearLayout>
+
+
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="@dimen/_5sdp"
+                    android:gravity="center"
+                    android:orientation="horizontal">
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/tvSeven"
+                        style="@style/CustomFontRegularStyle"
+                        android:layout_width="0dp"
+                        android:layout_height="@dimen/_30sdp"
+                        android:layout_weight="1"
+                        android:background="@drawable/background_square_border_grey"
+                        android:gravity="center"
+                        android:padding="@dimen/_5sdp"
+                        android:text="@string/buttonSeven"
+                        android:textColor="@color/txtColor"
+                        android:textSize="@dimen/_6mdpi"
+                        />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/tvEight"
+                        style="@style/CustomFontRegularStyle"
+                        android:layout_width="0dp"
+                        android:layout_height="@dimen/_30sdp"
+                        android:layout_weight="1"
+                        android:background="@drawable/background_square_border_grey"
+                        android:gravity="center"
+                        android:padding="@dimen/_5sdp"
+                        android:text="@string/buttonEight"
+                        android:textColor="@color/txtColor"
+                        android:textSize="@dimen/_6mdpi"
+                        android:layout_marginLeft="@dimen/_5sdp"/>
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/tvNine"
+                        style="@style/CustomFontRegularStyle"
+                        android:layout_width="0dp"
+                        android:layout_height="@dimen/_30sdp"
+                        android:layout_weight="1"
+                        android:background="@drawable/background_square_border_grey"
+                        android:gravity="center"
+                        android:padding="@dimen/_5sdp"
+                        android:text="@string/buttonNine"
+                        android:textColor="@color/txtColor"
+                        android:textSize="@dimen/_6mdpi"
+                        android:layout_marginHorizontal="@dimen/_5sdp"/>
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        style="@style/CustomFontBold"
+                        android:id="@+id/txt30"
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="@dimen/_30sdp"
+                        android:layout_alignParentEnd="true"
+                        android:layout_gravity="center"
+                        android:background="@color/btnColor"
+                        android:gravity="center"
+                        android:text="30%"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/_7mdpi"
+                        />
+
+
+                </LinearLayout>
+
+
+
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="@dimen/_5sdp"
+                    android:gravity="center"
+                    android:orientation="horizontal">
+
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/txtClear"
+                        style="@style/CustomFontRegularStyle"
+                        android:layout_width="0dp"
+                        android:layout_height="@dimen/_30sdp"
+                        android:layout_weight="1"
+                        android:background="@drawable/background_square_border_grey"
+                        android:gravity="center"
+                        android:padding="@dimen/_5sdp"
+                        android:text="@string/clear"
+                        android:textColor="@color/txtColor"
+                        android:textSize="@dimen/_6mdpi"
+                        />
+
+
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/tvZero"
+                        style="@style/CustomFontRegularStyle"
+                        android:layout_width="0dp"
+                        android:layout_height="@dimen/_30sdp"
+                        android:layout_weight="1"
+                        android:background="@drawable/background_square_border_grey"
+                        android:gravity="center"
+                        android:padding="@dimen/_5sdp"
+                        android:text="0"
+                        android:textColor="@color/txtColor"
+                        android:textSize="@dimen/_6mdpi"
+                        android:layout_marginLeft="@dimen/_5sdp"/>
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/tvDZero"
+                        style="@style/CustomFontRegularStyle"
+                        android:layout_width="0dp"
+                        android:layout_height="@dimen/_30sdp"
+                        android:layout_weight="1"
+                        android:background="@drawable/background_square_border_grey"
+                        android:gravity="center"
+                        android:padding="@dimen/_5sdp"
+                        android:text="00"
+                        android:textColor="@color/txtColor"
+                        android:textSize="@dimen/_6mdpi"
+                        android:layout_marginLeft="@dimen/_5sdp"/>
+
+
+                    <ImageView
+                        android:id="@+id/tvClear"
+                        style="@style/CustomFontRegularStyle"
+                        android:layout_width="0dp"
+                        android:layout_height="@dimen/_30sdp"
+                        android:layout_weight="1"
+                        android:background="@drawable/background_square_border_grey"
+                        android:padding="@dimen/_5sdp"
+                        android:src="@drawable/ic_cancel_black"
+                        android:layout_marginLeft="@dimen/_5sdp"/>
+                </LinearLayout>
+
+            </LinearLayout>
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/_10sdp"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:layout_marginEnd="@dimen/_10sdp"
+                android:orientation="horizontal"
+                android:visibility="gone">
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    style="@style/CustomFontBold"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginEnd="@dimen/_10sdp"
+                    android:layout_weight="1"
+                    android:background="@drawable/background_drawer_button"
+                    android:gravity="center"
+                    android:minLines="2"
+                    android:padding="@dimen/_5sdp"
+                    android:text="$5"
+                    android:textColor="@color/btnColorDark_"
+                    android:textSize="@dimen/_5mdpi" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    style="@style/CustomFontBold"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginEnd="@dimen/_10sdp"
+                    android:layout_weight="1"
+                    android:background="@drawable/background_drawer_button"
+                    android:gravity="center"
+                    android:minLines="2"
+                    android:padding="@dimen/_5sdp"
+                    android:text="$10"
+                    android:textColor="@color/btnColorDark_"
+                    android:textSize="@dimen/_5mdpi" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    style="@style/CustomFontBold"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_weight="1"
+                    android:background="@drawable/background_drawer_button"
+                    android:gravity="center"
+                    android:minLines="2"
+                    android:padding="@dimen/_5sdp"
+                    android:text="$15"
+                    android:textColor="@color/btnColorDark_"
+                    android:textSize="@dimen/_5mdpi" />
+
+            </androidx.appcompat.widget.LinearLayoutCompat>
+
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/_10sdp"
+                android:layout_marginTop="@dimen/_5sdp"
+                android:layout_marginEnd="@dimen/_10sdp"
+                android:orientation="horizontal"
+                android:visibility="gone">
+
+
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/_10sdp"
+                    android:layout_weight="1"
+                    android:background="@drawable/background_drawer_button"
+                    android:orientation="vertical"
+                    android:padding="@dimen/_5sdp">
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        style="@style/CustomFontMediumStyle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:text="Staff Meal"
+                        android:textColor="@color/txtColor"
+                        android:textSize="@dimen/_5mdpi" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        style="@style/CustomFontBold"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:text="$10"
+                        android:textColor="@color/btnColorDark_"
+                        android:textSize="@dimen/_5mdpi" />
+
+                </androidx.appcompat.widget.LinearLayoutCompat>
+
+
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/_10sdp"
+                    android:layout_weight="1"
+                    android:background="@drawable/background_drawer_button"
+                    android:orientation="vertical"
+                    android:padding="@dimen/_5sdp">
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        style="@style/CustomFontMediumStyle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:text="Staff Meal"
+                        android:textColor="@color/txtColor"
+                        android:textSize="@dimen/_5mdpi" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        style="@style/CustomFontBold"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:text="$10"
+                        android:textColor="@color/btnColorDark_"
+                        android:textSize="@dimen/_5mdpi" />
+
+                </androidx.appcompat.widget.LinearLayoutCompat>
+
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@drawable/background_drawer_button"
+                    android:orientation="vertical"
+                    android:padding="@dimen/_5sdp">
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        style="@style/CustomFontMediumStyle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:text="Staff Meal"
+                        android:textColor="@color/txtColor"
+                        android:textSize="@dimen/_5mdpi" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        style="@style/CustomFontBold"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:text="$10"
+                        android:textColor="@color/btnColorDark_"
+                        android:textSize="@dimen/_5mdpi" />
+
+                </androidx.appcompat.widget.LinearLayoutCompat>
+
+            </androidx.appcompat.widget.LinearLayoutCompat>
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/txtSend"
+                style="@style/CustomFontBold"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_30sdp"
+                android:layout_gravity="center"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:layout_weight="1"
+                android:background="@drawable/button_selected"
+                android:gravity="center"
+                android:padding="@dimen/_5sdp"
+                android:text="Continue"
+                android:clickable="true"
+                android:focusable="true"
+                android:enabled="true"
+                android:textColor="@color/white"
+                android:textSize="@dimen/_5mdpi"
+                android:visibility="visible"/>
+
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+      <!--  <androidx.appcompat.widget.LinearLayoutCompat
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
@@ -94,7 +675,7 @@
                 android:textColor="@color/white"
                 android:textSize="@dimen/_6mdpi" />
 
-        </androidx.appcompat.widget.LinearLayoutCompat>
+        </androidx.appcompat.widget.LinearLayoutCompat>-->
 
 
     </androidx.appcompat.widget.LinearLayoutCompat>
