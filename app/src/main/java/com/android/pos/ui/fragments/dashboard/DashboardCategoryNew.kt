@@ -4083,8 +4083,8 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
     private fun refreshOrderTypeLabel() {
         //set order type label
         var label = prefProvider.getValue(ORDER_TYPE, TAKEOUT).toString()
-        if (label.equals(OPEN_ORDER, true) || label.equals(OPEN_ORDER_, true)) {
-            label = OPEN_ORDER_
+        if (label.equals(OPEN_ORDER, true)) {
+            label = OPEN_ORDER
         }
         Log.e(TAG, "OrderType Label : $label")
         binding.layoutCart.txtOrderType.text = label

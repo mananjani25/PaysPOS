@@ -1,6 +1,7 @@
 package com.android.pos.ui.fragments.checkout
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -18,6 +19,12 @@ import dagger.hilt.android.AndroidEntryPoint
 class CheckoutDetailsFragmentNew : Fragment(), ItemListner {
     private lateinit var binding: FragmentCheckoutDetailsNewBinding
     private val TAG = "DashboardCategoryBold"
+
+    private var orderId: Int? = null
+    private var orderOfflineId: String = ""
+    private var paymentOfflineId: String = ""
+    private var paymentId: Int = -1
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -26,6 +33,16 @@ class CheckoutDetailsFragmentNew : Fragment(), ItemListner {
 
         binding = FragmentCheckoutDetailsNewBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = this
+
+        orderId = arguments?.getInt("orderId")
+
+        Log.e("orderId :: ", orderId.toString())
+        if (orderId != null) {
+            paymentId = arguments?.getInt("paymentId")!!
+            paymentOfflineId = arguments?.getString("paymentOfflineId").toString()
+            orderOfflineId = arguments?.getString("orderOfflineId").toString()
+        }
+
         return binding.root
     }
 
@@ -33,8 +50,7 @@ class CheckoutDetailsFragmentNew : Fragment(), ItemListner {
         super.onViewCreated(view, savedInstanceState)
         onClick()
         setPagerAdapter()
-        //loadCartFragment(CartFragment())
-        //loadCategoryFragment(SplitCustomAmountFragment())
+
 
 
     }
@@ -47,6 +63,12 @@ class CheckoutDetailsFragmentNew : Fragment(), ItemListner {
         val bundle = Bundle().apply {
             putInt("frameLayoutId", binding.frameLayoutId.id)
             putInt("llRoot", binding.llRoot.id)
+            orderId?.let { putInt("orderId", it) }
+            if (orderId != null) {
+                putInt("paymentId", paymentId)
+                putString("orderOfflineId", orderOfflineId)
+                putString("paymentOfflineId", paymentOfflineId)
+            }
         }
         val adapter = PaymentTypePagerAdapter(
             requireContext(),

@@ -29,6 +29,7 @@ import com.android.pos.data.model.responseModel.OpenOrderResponse
 import com.android.pos.data.model.responseModel.PrinterResponse
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.BUSINESS_ADDRESS
+import com.android.pos.data.remote.Constants.OPEN_ORDER
 import com.android.pos.data.remote.Constants.PRINT_PAID
 import com.android.pos.data.remote.Constants.PRINT_UNPAID
 import com.android.pos.databinding.FragmentActiveOrdersBinding
@@ -310,8 +311,7 @@ class ActiveOrderFragment(
         val order = adapter.getItem(pos)
         when (status) {
             "UPDATE" -> {
-                prefProvider.setValue(Constants.ORDER_TYPE, order.orderType)
-
+                prefProvider.setValue(Constants.ORDER_TYPE, OPEN_ORDER)
 
                 if (order.customer != null) {
                     prefProvider.setValue(
@@ -344,16 +344,14 @@ class ActiveOrderFragment(
             }
             "PAY" -> {
 
+                prefProvider.setValue(Constants.ORDER_TYPE, OPEN_ORDER)
+
                 if (order.customer != null) {
                     prefProvider.setValue(
                         Constants.CUSTOMER_NAME,
                         order.customer.firstName + " " + order.customer.lastName
                     )
                 }
-
-                Log.e("ORDER_TYPE", order.orderType)
-
-                prefProvider.setValue(Constants.ORDER_TYPE, order.orderType)
                 dashboardViewModel.addCart(
                     cartModel(order)
                 )
@@ -380,6 +378,7 @@ class ActiveOrderFragment(
 
 
                 bundle.putInt("orderId", order.id)
+                Log.e("orderId :: ", order.id.toString())
                 if (order.payments.isNotEmpty()) {
                     bundle.putInt("paymentId", order.payments[0].id)
                     bundle.putString("paymentOfflineId", order.payments[0].offlineId)
@@ -412,7 +411,7 @@ class ActiveOrderFragment(
                 )
                 bundle.putBoolean("isFromActiveOrder", true)
 
-                findNavController().navigate(R.id.action_orders_to_paymentBoldPosFragment)
+                findNavController().navigate(R.id.action_orders_to_paymentBoldPosFragment, bundle)
 
 
             }
@@ -863,7 +862,7 @@ class ActiveOrderFragment(
             builder.addTextAlign(Builder.ALIGN_CENTER)
             builder.addText(receiptModel?.orderType + "\n")
 
-            if (receiptModel?.orderType?.lowercase() == Constants.OPEN_ORDER_.lowercase()
+            if (receiptModel?.orderType?.lowercase() == Constants.OPEN_ORDER.lowercase()
                 || receiptModel?.orderType?.lowercase() == Constants.OPEN_ORDER.lowercase()
             ) {
 

@@ -99,7 +99,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment() {
         }
 
         binding.txtDone.setOnClickListener {
-            item?.itemQuantity = qty
+            item.itemQuantity = qty
 
             viewModel.cartLogic(cartList, item, ADD)
             listner.onCancelItemSelected()
@@ -116,9 +116,9 @@ class AddItemFragment(val listner: ItemListner) : Fragment() {
     }
 
     private fun setData() {
-        binding.txtItem.setText("" + item?.name)
+        binding.txtItem.text = "" + item?.name
 
-        viewModel.getItemsbyId(item?.itemId).observe(viewLifecycleOwner, {
+        viewModel.getItemsbyId(item.itemId).observe(viewLifecycleOwner) {
 
             it?.let { resource ->
                 when (resource.status) {
@@ -138,16 +138,17 @@ class AddItemFragment(val listner: ItemListner) : Fragment() {
                                         }
 
                                         if (item.price == 0.0 && item.variationsAttributes.isNotEmpty()) {
-                                         /*   AlertUtils.showCustomAlert(
-                                                requireActivity(),
-                                                "Please enter atleast one price of item"
-                                            )
+                                            /*   AlertUtils.showCustomAlert(
+                                                   requireActivity(),
+                                                   "Please enter atleast one price of item"
+                                               )
 
-*/                                        } else if (!checkItemQty(item, variationAdapter)) {
-                                           /* AlertUtils.showCustomAlert(
-                                                requireActivity(),
-                                                getString(R.string.qty_validation)
-                                            )*/
+   */
+                                        } else if (!checkItemQty(item, variationAdapter)) {
+                                            /* AlertUtils.showCustomAlert(
+                                                 requireActivity(),
+                                                 getString(R.string.qty_validation)
+                                             )*/
 
                                         }
 
@@ -191,9 +192,6 @@ class AddItemFragment(val listner: ItemListner) : Fragment() {
                 }
             }
 
-
-        })
-        if (item.modifier_set_ids.isNotEmpty()){
 
         }
 
