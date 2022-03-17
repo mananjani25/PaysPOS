@@ -554,7 +554,6 @@ class PosRepository @Inject constructor(
     suspend fun deleteManualSaleCart(employee_id: Int) {
         appDatabase.cartDao().deleteManualSale(employee_id)
     }
-
     suspend fun updateModifierSort(allCategories: ArrayList<ModifierSet>) {
         appDatabase.modifierSetDao().addAll(allCategories)
     }

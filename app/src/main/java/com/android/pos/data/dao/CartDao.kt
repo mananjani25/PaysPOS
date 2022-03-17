@@ -28,7 +28,7 @@ interface CartDao {
     suspend fun delete()
 
     @Query("select * from CartModel where CartModel.isMaual = 1 AND CartModel.employeeID=:employee_Id")
-     fun manualItem(employee_Id: Int): LiveData<List<CartModel>>
+    fun manualItem(employee_Id: Int): LiveData<List<CartModel>>
 
     @Query("DELETE FROM CartModel where CartModel.isMaual = 1 AND CartModel.employeeID=:employee_Id")
     suspend fun deleteManualSale(employee_Id: Int)

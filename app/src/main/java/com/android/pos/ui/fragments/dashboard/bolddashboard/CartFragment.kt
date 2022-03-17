@@ -193,6 +193,8 @@ class CartFragment : Fragment(), MyCallback, DineInAdapter.DineInCallback {
 
     private fun addObserver() {
 
+
+
         Log.e("ORDER_TYPE", prefProvider.getValue(ORDER_TYPE, TAKEOUT))
 
         viewModel.mAllWords(

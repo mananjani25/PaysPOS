@@ -307,11 +307,18 @@ class DashboardCategoryBoldPOS : Fragment(), ItemListner {
         viewModelPayment.QueueCreateSaveOrder.observe(requireActivity()) {
             it.getContentIfNotHandled()?.let {
                 viewModel.deleteCart()
+                clearCustomer()
                 prefProvider.setValue(ORDER_TYPE, TAKEOUT)
                 findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
 
             }
         }
+    }
+
+    private fun clearCustomer() {
+        prefProvider.setValue(Constants.CUSTOMER_NAME, "")
+        prefProvider.setValueInt(Constants.CUSTOMER_ID, -1)
+
     }
 
     private fun getServiceCharges() {
