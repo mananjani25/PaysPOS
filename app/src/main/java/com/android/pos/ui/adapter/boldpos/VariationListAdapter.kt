@@ -5,12 +5,13 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.data.entities.VariationsAttribute
 import com.android.pos.databinding.ViewBoldVariationsBinding
-import com.android.pos.ui.fragments.createitem.CreateItemViewModel
 import com.android.pos.utils.callback.UpdateVariationCallback
 
-class VariationListAdapter(val viewModel: CreateItemViewModel) :
+class VariationListAdapter() :
     RecyclerView.Adapter<VariationListAdapter.MyViewHolder>() {
 
+    var showVariationPriceClick: ((VariationsAttribute) -> Unit)? = null
+    private var mpos: Int = 0
     var variationList = ArrayList<VariationsAttribute>()
 
     private lateinit var mCallback: UpdateVariationCallback
@@ -26,9 +27,19 @@ class VariationListAdapter(val viewModel: CreateItemViewModel) :
         val binding = ViewBoldVariationsBinding.inflate(inflater, parent, false)
         return MyViewHolder(binding)
 
+
     }
 
     override fun onBindViewHolder(holder: VariationListAdapter.MyViewHolder, position: Int) {
+
+        val itemBinding = holder.noteItemBinding
+        itemBinding.txtVariation.setText("" + variationList[position].name)
+        if (mpos == position) {
+            itemBinding.txtVariation.isSelected = true
+        } else {
+            itemBinding.txtVariation.isSelected = false
+        }
+
 
     }
 
@@ -38,7 +49,20 @@ class VariationListAdapter(val viewModel: CreateItemViewModel) :
 
 
     inner class MyViewHolder(val noteItemBinding: ViewBoldVariationsBinding) :
-        RecyclerView.ViewHolder(noteItemBinding.root)
+        RecyclerView.ViewHolder(noteItemBinding.root) {
+
+        init {
+
+            noteItemBinding.root.setOnClickListener {
+
+                mpos = bindingAdapterPosition
+                showVariationPriceClick?.invoke(variationList[bindingAdapterPosition])
+                notifyDataSetChanged()
+
+
+            }
+        }
+    }
 
     fun addAllVariations(variationList: ArrayList<VariationsAttribute>) {
         this.variationList.apply {
@@ -72,5 +96,49 @@ class VariationListAdapter(val viewModel: CreateItemViewModel) :
 
 
     fun selectedVariation() = variationList
+
+    fun addVariations(variationList: List<VariationsAttribute>) {
+
+        this.variationList.apply {
+            clear()
+            addAll(variationList)
+        }
+        notifyDataSetChanged()
+    }
+
+    fun getItem(): VariationsAttribute {
+        return variationList[mpos]
+    }
+
+    fun selectItem(id: Int) {
+        if (variationList.isNotEmpty()) {
+            for (i in 0 until variationList.size) {
+                val variation = variationList[i]
+                if (variation.id == id) {
+                    mpos = i
+                    notifyItemChanged(mpos)
+                    showVariationPriceClick?.invoke(variationList[i])
+
+                    break
+                }
+            }
+        }
+    }
+
+    fun updateVariation(variation: VariationsAttribute) {
+        var position = -1
+        variationList.forEachIndexed { index, variationsAttribute ->
+            if (variationsAttribute.id == variation.id) {
+                position = index
+                return@forEachIndexed
+            }
+        }
+
+        if (position != -1) {
+            variationList.set(position, variation)
+        }
+
+        notifyDataSetChanged()
+    }
 
 }

@@ -48,6 +48,32 @@ class Orders : Fragment() {
     ): View? {
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_inventory, container, false)
         binding.lifecycleOwner = this
+
+        configureToolbar()
+        changePosition(0)
+        // setAdapter(0)
+        getOrderCountsObserver("","")
+        requireContext().registerReceiver(broadcastReceiver, IntentFilter("cancelled"));
+        findNavController().currentBackStackEntry?.savedStateHandle?.getLiveData<String>(KEY)
+            ?.observe(viewLifecycleOwner) { it ->
+                Log.e(TAG, "InventoryLifeCycler  $it")
+                when (it) {
+                    ACTIVE_ORDER -> {
+                        changePosition(0)
+                        setAdapter(0)
+                    }
+                    COMPLETED_ORDER -> {
+                        changePosition(1)
+                        setAdapter(1)
+                    }
+                    CANCELED_ORDER ->  {
+                        changePosition(2)
+                        setAdapter(2)
+                    }
+                }
+
+            }
+
         return binding.root
     }
 
@@ -75,17 +101,12 @@ class Orders : Fragment() {
                     "1" -> {
                         //complete
                         completedOrdersCount = count
-                        setAdapter(2)
+                        setAdapter(1)
                     }
                     "2" -> {
                         //cancel
                         cancelledOrdersCount = count
-                        setAdapter(3)
-                    }
-                    "Upcoming" -> {
-
-                        upcomingOrdersCount = count
-                        setAdapter(1)
+                        setAdapter(2)
                     }
                 }
 
@@ -101,35 +122,7 @@ class Orders : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        configureToolbar()
-        changePosition(0)
-        // setAdapter(0)
-        getOrderCountsObserver("","")
-        requireContext().registerReceiver(broadcastReceiver, IntentFilter("cancelled"));
-        findNavController().currentBackStackEntry?.savedStateHandle?.getLiveData<String>(KEY)
-            ?.observe(viewLifecycleOwner) { it ->
-                Log.e(TAG, "InventoryLifeCycler  $it")
-                when (it) {
-                    ACTIVE_ORDER -> {
-                        changePosition(0)
-                        setAdapter(0)
-                    }
 
-                    UPCOMING_ORDER -> {
-                        changePosition(1)
-                        setAdapter(1)
-                    }
-                    COMPLETED_ORDER -> {
-                        changePosition(2)
-                        setAdapter(2)
-                    }
-                    CANCELED_ORDER -> {
-                        changePosition(3)
-                        setAdapter(3)
-                    }
-                }
-
-            }
 
     }
 
@@ -171,13 +164,13 @@ class Orders : Fragment() {
 
     private fun configureToolbar() {
         binding.commonToolbar.imgDrawer.setOnClickListener {
-            (requireActivity() as MainActivity).enableDrawer()
+            findNavController().navigate(R.id.action_orders_to_menuposbold)
         }
         binding.commonToolbar.txtHome.setOnClickListener {
             findNavController().navigate(R.id.action_orders_to_dashboardCategoryNew)
         }
 
-        binding.commonToolbar.txtTitle.text = ""
+        binding.commonToolbar.txtTitle.text = "Open Orders"
         binding.commonToolbar.imgOptionMenu.visibility = View.GONE
         binding.commonToolbar.txtSubTitle.text = "Active Orders"
         binding.commonToolbar.imgOptionMenuContainer.visibility = View.GONE
@@ -193,20 +186,13 @@ class Orders : Fragment() {
                 binding.commonToolbar.txtSubTitle.text = "Active Orders"
             }
             1 -> {
-                val upcomingOrders = ActiveOrderFragment("Upcoming",startDate,endDate)
-                loadFragment(upcomingOrders)
-                binding.commonToolbar.txtSetItem.visibility = View.GONE
-                binding.commonToolbar.txtSubTitle.text = "Upcoming Orders"
-
-            }
-            2 -> {
                 val modifier: Fragment = ActiveOrderFragment("1",startDate,endDate)
                 loadFragment(modifier)
                 binding.commonToolbar.txtSetItem.visibility = View.GONE
                 binding.commonToolbar.txtSubTitle.text = "Completed"
             }
 
-            3 -> {
+            2 -> {
                 val cancelled = ActiveOrderFragment("2",startDate,endDate)
                 loadFragment(cancelled)
                 binding.commonToolbar.txtSetItem.visibility = View.GONE
@@ -232,27 +218,20 @@ class Orders : Fragment() {
         when (pos) {
             0 -> {
                 list.add(InventoryItemModel(0, "Active Orders ",activeOrdersCount, true))
-                list.add(InventoryItemModel(0, "Upcoming Orders ",upcomingOrdersCount))
+//                list.add(InventoryItemModel(0, "Upcoming Orders ",upcomingOrdersCount))
                 list.add(InventoryItemModel(0, "Completed ",completedOrdersCount))
                 list.add(InventoryItemModel(0, "Cancelled Orders ",cancelledOrdersCount))
             }
             1 -> {
                 list.add(InventoryItemModel(0, "Active Orders ",activeOrdersCount))
-                list.add(InventoryItemModel(0, "Upcoming Orders ",upcomingOrdersCount, true))
-                list.add(InventoryItemModel(0, "Completed ",completedOrdersCount))
+//                list.add(InventoryItemModel(0, "Upcoming Orders ",upcomingOrdersCount))
+                list.add(InventoryItemModel(0, "Completed ",completedOrdersCount ,true))
                 list.add(InventoryItemModel(0, "Cancelled Orders ",cancelledOrdersCount))
 
             }
             2 -> {
                 list.add(InventoryItemModel(0, "Active Orders ",activeOrdersCount))
-                list.add(InventoryItemModel(0, "Upcoming Orders ",upcomingOrdersCount))
-                list.add(InventoryItemModel(0, "Completed ",completedOrdersCount ,true))
-                list.add(InventoryItemModel(0, "Cancelled Orders ",cancelledOrdersCount))
-
-            }
-            3 -> {
-                list.add(InventoryItemModel(0, "Active Orders ",activeOrdersCount))
-                list.add(InventoryItemModel(0, "Upcoming Orders ",upcomingOrdersCount))
+//                list.add(InventoryItemModel(0, "Upcoming Orders ",upcomingOrdersCount))
                 list.add(InventoryItemModel(0, "Completed ",completedOrdersCount))
                 list.add(InventoryItemModel(0, "Cancelled Orders ",cancelledOrdersCount, true))
 

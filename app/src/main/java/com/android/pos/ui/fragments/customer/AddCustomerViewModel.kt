@@ -177,8 +177,8 @@ class AddCustomerViewModel @Inject constructor(
 
 
                 Log.e("DaataJson", "PassData  ${Gson().toJson(value?.data)}")
-                data?.first_name = value?.data?.first_name!!
-                data?.last_name = value?.data?.last_name!!
+                data?.first_name = value?.data?.first_name!!.replaceFirstChar { it.uppercase() }
+                data?.last_name = value?.data?.last_name!!.replaceFirstChar { it.uppercase() }
 
                 val phone = CreateCustomerRequestModel.Customer.Phone(
                     id = phoneId,

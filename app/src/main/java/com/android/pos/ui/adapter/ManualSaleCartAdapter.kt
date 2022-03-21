@@ -29,12 +29,14 @@ class ManualSaleCartAdapter : RecyclerView.Adapter<ManualSaleCartAdapter.MyViewH
 
         private val txtItem: TextView = binding.root.findViewById(R.id.txtItem)
         fun bind(model: TbItem, pos: Int) {
-            viewBinderHelper.bind(binding.swipeLayout,absoluteAdapterPosition.toString())
+           // viewBinderHelper.bind(binding.swipeLayout,absoluteAdapterPosition.toString())
             binding.txtQuantity.text = "x ${model.itemQuantity}"
-            MethodUtils.setPriceTextView(binding.txtItemPrice, (model.price * model.itemQuantity))
+            binding.txtItemPrice.text = "$"+model.price
+            binding.txtTotalPrice.text = "$"+MethodUtils.roundOffAmountString((model.price * model.itemQuantity))
 
 
 
+/*
             if (model.note.isNotEmpty()) {
                 binding.txtNoteMannualcart.visibility = View.VISIBLE
                 binding.txtNoteMannualcart.text = "Note: " + model.note
@@ -42,7 +44,9 @@ class ManualSaleCartAdapter : RecyclerView.Adapter<ManualSaleCartAdapter.MyViewH
                 binding.txtNoteMannualcart.visibility = View.INVISIBLE
 
             }
+*/
             txtItem.text = list[pos].name
+/*
             if (list[pos].discountPrice != 0.0) {
                 binding.txtItemPrice.paintFlags =
                     binding.txtItemPrice.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
@@ -53,6 +57,7 @@ class ManualSaleCartAdapter : RecyclerView.Adapter<ManualSaleCartAdapter.MyViewH
                 binding.txtItemPrice.paintFlags = 0
                 binding.txtDiscountPrice.text = ""
             }
+*/
 
             binding.model = model
             binding.executePendingBindings()
@@ -88,7 +93,7 @@ class ManualSaleCartAdapter : RecyclerView.Adapter<ManualSaleCartAdapter.MyViewH
                 listnerCall.onItemClicked(list[layoutPosition], layoutPosition)
             }
 
-            binding.txtDiscount.setOnClickListener {
+          /*  binding.txtDiscount.setOnClickListener {
                 itemlistnerCall.onItemClickListener(binding.txtDiscount,list[layoutPosition],layoutPosition)
             }
             binding.txtNote.setOnClickListener {
@@ -99,7 +104,7 @@ class ManualSaleCartAdapter : RecyclerView.Adapter<ManualSaleCartAdapter.MyViewH
             }
             binding.txtDelete.setOnClickListener {
                 itemlistnerCall.onItemClickListener(binding.txtDelete,list[layoutPosition],layoutPosition)
-            }
+            }*/
 
         }
     }

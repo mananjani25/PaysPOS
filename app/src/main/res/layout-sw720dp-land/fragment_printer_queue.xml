@@ -30,7 +30,7 @@
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/txtTitle"
-                style="@style/CustomFontMediumStyle"
+                style="@style/CustomFontBold"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_gravity="center"
@@ -38,7 +38,7 @@
                 android:gravity="center"
                 android:text="@string/printer_queue_list"
                 android:textColor="@color/txtColor"
-                android:textSize="@dimen/_6mdpi"
+                android:textSize="@dimen/header_title_size"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -124,6 +124,7 @@
                     android:text="@string/tv_home"
                     android:textColor="@color/txt_color_blue"
                     android:textSize="@dimen/_6mdpi"
+                    android:textAllCaps="true"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
@@ -145,18 +146,29 @@
             style="@style/CustomFontRegularStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="@dimen/_15sdp"
-            android:layout_marginEnd="@dimen/_15sdp"
             android:paddingVertical="@dimen/_5sdp"
             android:text="@string/printer_queue_tag"
             android:textAlignment="center"
-            android:textColor="@color/txtColor"
-            android:textSize="@dimen/_6mdpi" />
+            android:textColor="@color/hint_color"
+            android:textSize="@dimen/_6mdpi"
+            android:layout_marginBottom="@dimen/_5sdp"
+            android:layout_gravity="center"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:background="@color/view"/>
 
         <include
             android:id="@+id/includeHeader"
             layout="@layout/view_printer_queue_header"
             app:layout_constraintTop_toBottomOf="@+id/viewLine" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:background="@color/view"/>
+
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvPrinterQueueList"

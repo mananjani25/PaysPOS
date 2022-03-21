@@ -3,7 +3,7 @@
 
     <item android:drawable="@drawable/background_menu_items" android:state_pressed="true" />
 
-    <item android:drawable="@drawable/background_menu_item_gray" android:state_focused="true" />
+    <item android:drawable="@drawable/background_square_border_grey" android:state_focused="true" />
 
-    <item android:drawable="@drawable/background_menu_item_gray" />
+    <item android:drawable="@drawable/background_square_border_grey" />
 </selector>

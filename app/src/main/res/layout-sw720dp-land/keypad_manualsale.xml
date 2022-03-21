@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:ignore="MissingDefaultResource">
+
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+    <TableLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center_vertical"
+        tools:ignore="MissingConstraints">
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center_horizontal">
+
+            <TextView
+                android:id="@+id/tvOne"
+                style="@style/keypadManualSaleviewStyle"
+                android:text="1" />
+
+            <TextView
+                android:id="@+id/tvTwo"
+                style="@style/keypadManualSaleviewStyle"
+                android:text="2" />
+
+            <TextView
+                android:id="@+id/tvThree"
+                style="@style/keypadManualSaleviewStyle"
+                android:text="3" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center_horizontal">
+
+            <TextView
+                android:id="@+id/tvFour"
+                style="@style/keypadManualSaleviewStyle"
+                android:text="4" />
+
+            <TextView
+                android:id="@+id/tvFive"
+                style="@style/keypadManualSaleviewStyle"
+                android:text="5" />
+
+            <TextView
+                android:id="@+id/tvSix"
+                style="@style/keypadManualSaleviewStyle"
+                android:text="6" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center_horizontal">
+
+            <TextView
+                android:id="@+id/tvSeven"
+                style="@style/keypadManualSaleviewStyle"
+                android:text="7" />
+
+            <TextView
+                android:id="@+id/tvEight"
+                style="@style/keypadManualSaleviewStyle"
+                android:text="8" />
+
+            <TextView
+                android:id="@+id/tvNine"
+                style="@style/keypadManualSaleviewStyle"
+                android:text="9" />
+        </TableRow>
+
+        <TableRow
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center_horizontal">
+
+            <TextView
+                android:id="@+id/tvBack"
+                style="@style/keypadManualSaleviewStyle"
+                android:text="C"
+                android:textStyle="bold"
+                android:textSize="@dimen/_10sdp" />
+
+            <TextView
+                android:id="@+id/tvZero"
+                style="@style/keypadManualSaleviewStyle"
+                android:text="0" />
+
+            <TextView
+                android:id="@+id/imgAdd"
+                style="@style/keypadManualSaleviewStyle"
+                android:background="@color/btnColor"
+                android:text="+ Add"
+                android:textStyle="bold" />
+
+        </TableRow>
+    </TableLayout>
+    </ScrollView>
+</androidx.constraintlayout.widget.ConstraintLayout>

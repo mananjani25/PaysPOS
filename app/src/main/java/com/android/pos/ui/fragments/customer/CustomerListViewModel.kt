@@ -36,6 +36,7 @@ public class CustomerListViewModel @Inject constructor(
 
 
     val _customerListResponse = MutableLiveData<Event<ArrayList<TbCustomer?>>>()
+    val _customerNoDataFound = MutableLiveData<Event<String>>()
 
 
     private val mdata = MutableLiveData<Event<BaseResponse?>>()
@@ -89,7 +90,12 @@ public class CustomerListViewModel @Inject constructor(
                                         )
                                     )
                                 }
-                                _customerListResponse.value = Event(customerdatalist)
+                                if (customerlist.data.isNotEmpty()) {
+                                    _customerListResponse.value = Event(customerdatalist)
+                                } else {
+                                    _customerNoDataFound.value = Event(customerlist.message)
+                                }
+
                             }
                         } else {
                             _snackbarText.value = Event(resource.message)

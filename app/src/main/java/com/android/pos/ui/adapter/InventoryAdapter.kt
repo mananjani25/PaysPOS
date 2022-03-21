@@ -3,10 +3,12 @@ package com.android.pos.ui.adapter
 import android.content.Context
 import android.graphics.Typeface
 import android.opengl.Visibility
+import android.os.Build
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.android.pos.R
 import com.android.pos.data.model.InventoryItemModel
 import com.android.pos.databinding.ViewInventoryItemsBinding
 
@@ -20,15 +22,36 @@ class InventoryAdapter(
         RecyclerView.ViewHolder(binding.root) {
         fun bind(item: InventoryItemModel) {
             binding.model = item
-            if(absoluteAdapterPosition==0){
+            if (absoluteAdapterPosition == 0) {
+
+
                 binding.firstview.visibility = View.VISIBLE
-            }else{
+            } else {
                 binding.firstview.visibility = View.GONE
             }
-            if(item.isSelected){
-                binding.txtTitle.setTypeface(binding.txtTitle.typeface,Typeface.BOLD)
-            }else{
-                binding.txtTitle.setTypeface(binding.txtTitle.typeface,Typeface.NORMAL)
+
+            if (item.isSelected) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    binding.linearBackgroundOrder.setBackgroundColor(
+                        binding.root.context.getColor(
+                            R.color.txt_color_blue
+                        )
+                    )
+                    binding.txtTitle.setTextColor(binding.root.context.getColor(R.color.white))
+                    binding.txtCount.setTextColor(binding.root.context.getColor(R.color.white))
+                }
+                binding.txtTitle.setTypeface(binding.txtTitle.typeface, Typeface.BOLD)
+            } else {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    binding.linearBackgroundOrder.setBackgroundColor(
+                        binding.root.context.getColor(
+                            R.color.bg_color
+                        )
+                    )
+                    binding.txtTitle.setTextColor(binding.root.context.getColor(R.color.txtColor))
+                    binding.txtCount.setTextColor(binding.root.context.getColor(R.color.txtColor))
+                }
+                binding.txtTitle.setTypeface(binding.txtTitle.typeface, Typeface.NORMAL)
             }
             binding.executePendingBindings()
 
@@ -36,10 +59,12 @@ class InventoryAdapter(
 
         init {
             binding.root.setOnClickListener {
-
                 listener.onItemSelect(layoutPosition)
+
                 for (i in 0 until list.size) {
-                    list[i].isSelected = i == layoutPosition
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                        list[i].isSelected = i == layoutPosition
+                    }
                 }
 
                 notifyDataSetChanged()

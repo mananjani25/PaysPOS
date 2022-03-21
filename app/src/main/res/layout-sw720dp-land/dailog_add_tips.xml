@@ -67,9 +67,8 @@
                         style="@style/CustomFontSemiBold"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="@dimen/_10sdp"
                         android:text="$"
-                        android:visibility="gone"
+                        android:visibility="visible"
                         android:textColor="@color/btnColor"
                         android:textSize="@dimen/_6mdpi"
                         app:layout_constraintBottom_toBottomOf="@+id/edtAmount"
@@ -84,7 +83,6 @@
                         android:layout_marginStart="@dimen/_10sdp"
                         android:layout_marginEnd="@dimen/_10sdp"
                         android:background="@null"
-
                         android:enabled="false"
                         android:digits="@string/disable_emoji_string"
                         android:hint="0.00"
@@ -98,21 +96,7 @@
                         app:textAllCaps="true"
                         android:inputType="textVisiblePassword"/>
 
-                    <TextView
-                        android:id="@+id/txtPer"
-                        style="@style/CustomFontSemiBold"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="%"
-                        android:textColor="@color/btnColor"
-                        android:textSize="@dimen/_6mdpi"
-                        android:visibility="visible"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toStartOf="@+id/linearLayout"
-                        app:layout_constraintHorizontal_bias="0.015"
-                        app:layout_constraintStart_toEndOf="@+id/edtAmount"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintVertical_bias="0.487" />
+
 
 
                 </androidx.constraintlayout.widget.ConstraintLayout>

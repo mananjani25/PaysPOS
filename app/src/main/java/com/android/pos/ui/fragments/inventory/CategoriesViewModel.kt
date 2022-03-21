@@ -23,6 +23,8 @@ class CategoriesViewModel @Inject constructor(
 ) : ViewModel() {
 
     val categories = posRepository.getCategoryList()
+
+    val categoriesAll = posRepository.getCategoryListAll()
     val unhideCategories = posRepository.unhideCategoryList()
     val taxList = taxServiceChargeRepository.getTaxList()
 

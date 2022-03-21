@@ -146,6 +146,18 @@
                 </androidx.appcompat.widget.LinearLayoutCompat>
 
 
+                <TextView
+                    android:id="@+id/no_customer_dats"
+                    style="@style/CustomFontMediumStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:padding="@dimen/_7sdp"
+                    android:text=""
+                    android:visibility="gone"
+                    android:textColor="@color/txtColor"
+                    android:textSize="@dimen/_5mdpi" />
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rvEmployeeList"
                     android:layout_width="match_parent"
@@ -153,6 +165,7 @@
                     android:layout_below="@+id/linearSearchView"
                     android:nestedScrollingEnabled="false"
                     android:orientation="vertical"
+                    android:visibility="visible"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     tools:listitem="@layout/view_customer_list" />
 

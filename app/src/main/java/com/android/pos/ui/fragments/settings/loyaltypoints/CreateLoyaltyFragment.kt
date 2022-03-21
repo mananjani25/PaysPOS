@@ -39,7 +39,25 @@ class CreateLoyaltyFragment : Fragment() {
         binding.viewModel = viewModel
         initControls()
         initObservers()
+        initListeners()
         return binding.root
+    }
+
+    private fun initListeners() {
+        binding.swtFixedValue.setOnCheckedChangeListener { buttonView, isChecked ->
+            if (isChecked) {
+                binding.cbPercentageValue.isChecked = false
+                discountType(false)
+            }
+
+        }
+        binding.cbPercentageValue.setOnCheckedChangeListener { buttonView, isChecked ->
+            if (isChecked) {
+                binding.swtFixedValue.isChecked = false
+                discountType(true)
+            }
+
+        }
     }
 
     private fun initControls() {
@@ -54,16 +72,27 @@ class CreateLoyaltyFragment : Fragment() {
 
             viewModel.setLoyaltyData(loyaltyProgramsModel)
 
-            binding.cbPercentageValue.isChecked = loyaltyProgramsModel?.rewardType == getString(R.string.percentage_symbol)
+            if (loyaltyProgramsModel?.rewardType == getString(R.string.percentage_symbol)){
+                binding.cbPercentageValue.isChecked = loyaltyProgramsModel?.rewardType == getString(R.string.percentage_symbol)
+                discountType(true)
+            }
+            else{
+                binding.swtFixedValue.isChecked = loyaltyProgramsModel?.rewardType == getString(R.string.dollar_symbol)
+                discountType(false)
+
+            }
+
 
         } else {
             binding.header.txtSave.text = getString(R.string.save)
             binding.header.txtTitle.text = getString(R.string.create_loyalty_point)
 
-            binding.cbPercentageValue.isChecked = true
-            binding.swtFixedValue.isChecked = false
+            binding.cbPercentageValue.isChecked = false
+            binding.swtFixedValue.isChecked = true
+
+            discountType(false)
+
         }
-        discountType(binding.swtFixedValue.isChecked)
 
     }
 

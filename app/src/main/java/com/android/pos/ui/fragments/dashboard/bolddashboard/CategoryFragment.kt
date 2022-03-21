@@ -22,12 +22,13 @@ import com.android.pos.ui.adapter.boldpos.CategoryTabAdapter
 import com.android.pos.ui.adapter.boldpos.ItemAdapter
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.android.pos.utils.ProgressUtils
+import com.android.pos.utils.callback.ItemListner
 import com.android.pos.utils.statusUtils.Status
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class CategoryFragment : Fragment(), CategoryTabAdapter1.TabListner,
+class CategoryFragment(val listner: ItemListner) : Fragment(), CategoryTabAdapter1.TabListner,
     CategoryItemAdapter1.CategoryItemList, CategoryParentAdapter.CategoryParentListner {
     private var categoryList1: ArrayList<CategoryWithInventory> = arrayListOf()
     private lateinit var binding: FragmentCategoryBinding
@@ -39,7 +40,18 @@ class CategoryFragment : Fragment(), CategoryTabAdapter1.TabListner,
     private var allItems: ArrayList<TbItem?> = arrayListOf()
     private var tabList: ArrayList<CategoryTabModel> = arrayListOf()
     var list: ArrayList<CategoryParentModel> = arrayListOf()
+    lateinit var itemListner: ItemListner
     private val TAG = "CategoryFragment"
+
+    companion object {
+        fun newInstance(callback: ItemListner): CategoryFragment {
+            val fragment = CategoryFragment(callback)
+            return fragment
+
+        }
+
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -108,12 +120,6 @@ class CategoryFragment : Fragment(), CategoryTabAdapter1.TabListner,
                                 categoryList1[i].inventoryLists?.forEach {
                                     allItems.add(it)
                                 }
-
-
-
-
-
-                                Log.e(TAG, "tabListSize  ${tmpTabList.size}")
                                 if ((tmpTabList.size == 8) or (tabList.size > 8 && tabList.size == categoryList1.size)) {
                                     var model = CategoryParentModel()
                                     model.list.addAll(tmpTabList)
@@ -133,7 +139,7 @@ class CategoryFragment : Fragment(), CategoryTabAdapter1.TabListner,
                             }?.let { it1 ->
                                 itemList1.addAll(it1)
                             }
-                            Log.e(TAG, "listlist:  ${Gson().toJson(list)}")
+
                             categoryParentAdapter.addList(list)
                             itemAdapter.addList(itemList1)
                             if (list.isNotEmpty()) {
@@ -158,7 +164,7 @@ class CategoryFragment : Fragment(), CategoryTabAdapter1.TabListner,
     }
 
     private fun observeShowProgress() {
-        viewModel.showProgress.observe(viewLifecycleOwner, { event ->
+        viewModel.showProgress.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
                 if (it) {
                     ProgressUtils.showProgressDialog(requireActivity())
@@ -166,12 +172,11 @@ class CategoryFragment : Fragment(), CategoryTabAdapter1.TabListner,
                     ProgressUtils.dismissProgressDialog()
                 }
             }
-        })
+        }
     }
 
 
     private fun setAdapter() {
-
         var list: ArrayList<CategoryParentModel> = arrayListOf()
         var listCategories: ArrayList<CategoryTabModel> = arrayListOf()
         for (i in 0 until 8) {
@@ -199,6 +204,9 @@ class CategoryFragment : Fragment(), CategoryTabAdapter1.TabListner,
 
 
     override fun onClick(item: TbItem) {
+        Log.e(TAG, "selectedItem:  ${Gson().toJson(item)}")
+        listner.onItemSelected(item)
+
 
     }
 
@@ -216,7 +224,7 @@ class CategoryFragment : Fragment(), CategoryTabAdapter1.TabListner,
         listItems.clear()
         listItems = arrayListOf()
 
-        var categoryId =
+        val categoryId =
             categoryParentAdapter.getList().get(parentPosition).list.get(childPosition).id
         Log.e(TAG, "selectedcategoryId:  ${categoryId}")
         Log.e(TAG, "itemList1itemList1:  ${Gson().toJson(itemList1)}")

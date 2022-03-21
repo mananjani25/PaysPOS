@@ -12,7 +12,6 @@ import com.android.pos.data.model.SplitDetailListModel
 import com.android.pos.data.model.requestModel.*
 import com.android.pos.data.model.responseModel.*
 import com.android.pos.data.remote.ApiHelper
-import com.android.pos.data.remote.Constants
 import com.android.pos.di.PrefProvider
 import com.android.pos.utils.performGetOperation
 import com.android.pos.utils.performGetOperationDatabase
@@ -173,6 +172,9 @@ class PosRepository @Inject constructor(
         appDatabase.itemModifierSetsDao().addAll(itemModifierSetList)
         appDatabase.optionSetDao().addAll(mData.optionSets)
     }
+
+    fun getCategoryListAll() =
+        performGetOperationDatabase(databaseQuery = { appDatabase.categoryDao().all() })
 
     fun getCategoryList() =
         performGetOperation(databaseQuery = { appDatabase.categoryDao().all() },
@@ -543,6 +545,11 @@ class PosRepository @Inject constructor(
         appDatabase.cartDao().add(cartModel)
     }
 
+    suspend fun createEmptyCart(cartModel: CartModel){
+        appDatabase.cartDao().add(cartModel)
+    }
+
+
     suspend fun deleteCart(employee_id: Int) {
 
         appDatabase.cartDao().delete(employee_id)
@@ -814,5 +821,26 @@ class PosRepository @Inject constructor(
 
     fun orderCounts(startDate: String?, endDate: String?) =
         performGetOperationNew(networkCall = { apiHelperNew.orderCounts(startDate, endDate) })
+
+    suspend fun addCardReader(tbCardReader: TbCardReader) {
+        appDatabase.cardReaderDao().add(tbCardReader)
+    }
+
+    suspend fun deleteTable() {
+        appDatabase.cardReaderDao().delete()
+    }
+
+    suspend fun updateCardReader(tbCardReader: TbCardReader) {
+        appDatabase.cardReaderDao().updateById(tbCardReader.status, tbCardReader.mcAddress)
+    }
+
+    fun getCardReaderList(id: String) =
+        performGetOperationDatabase { appDatabase.cardReaderDao().cardReaderById(id) }
+
+    fun getCardReaderList() =
+        performGetOperationDatabase { appDatabase.cardReaderDao().allList() }
+
+    fun cardReaderActiveList() =
+        performGetOperationDatabase { appDatabase.cardReaderDao().cardReaderActiveList() }
 }
 

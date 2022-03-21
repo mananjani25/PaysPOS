@@ -49,7 +49,7 @@
                 android:padding="@dimen/_5mdpi"
                 android:text="Printers"
                 android:textColor="@color/txtColor"
-                android:textSize="@dimen/_6mdpi"
+                android:textSize="@dimen/header_title_size"
                 android:visibility="visible" />
 
             <androidx.appcompat.widget.AppCompatTextView
@@ -65,7 +65,7 @@
                 android:text="@string/tv_home"
                 android:textAllCaps="true"
                 android:textColor="@color/btnColor"
-                android:textSize="@dimen/_5mdpi" />
+                android:textSize="@dimen/_7mdpi" />
 
         </RelativeLayout>
 
@@ -97,7 +97,7 @@
                     android:layout_marginStart="@dimen/_50sdp"
                     android:layout_marginTop="@dimen/_5sdp"
                     android:layout_marginEnd="@dimen/_50sdp"
-                    android:background="@drawable/background_printer_labels"
+                    android:background="@drawable/background_square_border_solid_grey"
                     android:orientation="horizontal"
                     android:paddingVertical="@dimen/_7sdp"
                     android:weightSum="5">
@@ -169,6 +169,7 @@
 
                 </androidx.appcompat.widget.LinearLayoutCompat>
 
+
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rvCustomerPrinter"
                     android:layout_width="match_parent"
@@ -198,7 +199,7 @@
                     android:layout_marginStart="@dimen/_50sdp"
                     android:layout_marginTop="@dimen/_5sdp"
                     android:layout_marginEnd="@dimen/_50sdp"
-                    android:background="@drawable/background_printer_labels"
+                    android:background="@drawable/background_square_border_solid_grey"
                     android:orientation="horizontal"
                     android:paddingVertical="@dimen/_7sdp"
                     android:weightSum="5">
@@ -300,7 +301,7 @@
                     android:layout_marginStart="@dimen/_50sdp"
                     android:layout_marginTop="@dimen/_5sdp"
                     android:layout_marginEnd="@dimen/_50sdp"
-                    android:background="@drawable/background_printer_labels"
+                    android:background="@drawable/background_square_border_solid_grey"
                     android:orientation="horizontal"
                     android:paddingVertical="@dimen/_7sdp">
 

@@ -16,171 +16,242 @@
 
     </data>
 
-    <RelativeLayout
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:id="@+id/llRoot"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:id="@+id/rlRoot">
+        android:orientation="vertical">
 
-        <com.android.pos.utils.swipereveallayout.SwipeRevealLayout
-            android:id="@+id/swipe_layout"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:dragEdge="right"
-            android:layout_marginBottom="@dimen/_5sdp"
-            app:mode="same_level">
+            android:orientation="horizontal"
+            android:padding="@dimen/_6sdp"
+            android:weightSum="3.7">
 
-            <LinearLayout
-                android:layout_width="@dimen/_120sdp"
-                android:layout_height="match_parent"
-                android:orientation="horizontal">
+            <TextView
+                android:id="@+id/txtItem"
+                style="@style/CustomFontSemiBold"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:text="Item Name"
+                android:textColor="@color/txtColor"
+                android:textSize="@dimen/_5mdpi" />
 
-                <TextView
-                    android:id="@+id/txt_delete"
-                    android:layout_width="@dimen/_30sdp"
-                    android:layout_height="match_parent"
-                    android:background="@color/delete"
-                    android:text="@string/delete"
-                    android:gravity="center"
-                    android:layout_gravity="center"
-                    android:textColor="@color/white"
-                    android:textSize="@dimen/_5sdp"
-                    android:textStyle="normal" />
+            <TextView
+                android:id="@+id/txtQuantity"
+                style="@style/CustomFontSemiBold"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="start"
+                android:layout_weight="0.5"
+                android:gravity="start"
+                android:text="Qty"
+                android:textColor="@color/txtColor"
+                android:textSize="@dimen/_5mdpi" />
 
-                <TextView
-                    android:id="@+id/txt_discount"
-                    android:layout_width="@dimen/_30sdp"
-                    android:layout_height="match_parent"
-                    android:background="@color/addDiscount"
-                    android:text="@string/tv_discount"
-                    android:gravity="center"
-                    android:layout_gravity="center"
-                    android:textColor="@color/white"
-                    android:textSize="@dimen/_5sdp"
-                    android:textStyle="normal" />
-
-                <TextView
-                    android:id="@+id/txt_note"
-                    android:layout_width="@dimen/_30sdp"
-                    android:layout_height="match_parent"
-                    android:background="@color/addNote"
-                    android:text="@string/note"
-                    android:gravity="center"
-                    android:layout_gravity="center"
-                    android:textColor="@color/white"
-                    android:textSize="@dimen/_5sdp"
-                    android:textStyle="normal" />
+            <TextView
+                android:id="@+id/txtItemPrice"
+                style="@style/CustomFontSemiBold"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:layout_weight="0.5"
+                android:gravity="end"
+                android:text="Each"
+                android:textColor="@color/txtColor"
+                android:textSize="@dimen/_5mdpi" />
 
 
-                <TextView
-                    android:id="@+id/txt_rename"
-                    android:layout_width="@dimen/_30sdp"
-                    android:layout_height="match_parent"
-                    android:background="@color/colorR1"
-                    android:text="@string/rename"
-                    android:gravity="center"
-                    android:layout_gravity="center"
-                    android:textColor="@color/white"
-                    android:textSize="@dimen/_5sdp"
-                    android:textStyle="normal" />
+            <TextView
+                android:id="@+id/txtTotalPrice"
+                style="@style/CustomFontSemiBold"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:layout_weight="0.7"
+                android:gravity="end"
+                android:text="Total"
+                android:textColor="@color/txtColor"
+                android:textSize="@dimen/_5mdpi" />
 
 
+        </LinearLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvModifiers"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            tools:listitem="@layout/view_cart_modifier" />
+    </androidx.appcompat.widget.LinearLayoutCompat>
 
 
+    <!--
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/rlRoot"
+            android:layout_margin="@dimen/_5sdp">
 
-            </LinearLayout>
-            <androidx.appcompat.widget.LinearLayoutCompat
+            <com.android.pos.utils.swipereveallayout.SwipeRevealLayout
+                android:id="@+id/swipe_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="@dimen/_4sdp"
-                android:weightSum="1"
-                android:id="@+id/llRoot">
-
-                <androidx.appcompat.widget.LinearLayoutCompat
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_marginLeft="@dimen/_1sdp"
-                    android:layout_weight="0.6"
-                    android:gravity="center"
-                    android:orientation="vertical">
-
-                    <TextView
-                        android:id="@+id/txtItem"
-                        style="@style/CustomFontSemiBold"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:ellipsize="end"
-                        android:lines="1"
-                        android:maxLines="1"
-                        android:singleLine="true"
-
-                        android:textColor="@color/txtColor"
-                        android:textSize="@dimen/_5mdpi" />
-
-                    <TextView
-                        android:id="@+id/txt_note_mannualcart"
-                        style="@style/CustomFontRegularStyle"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:ellipsize="end"
-                        android:lines="1"
-                        android:maxLines="1"
-                        android:singleLine="true"
-                        android:textColor="@color/txtColor"
-                        android:textSize="@dimen/_5mdpi" />
-                </androidx.appcompat.widget.LinearLayoutCompat>
-
-                <TextView
-                    android:id="@+id/txtQuantity"
-                    style="@style/CustomFontSemiBold"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="0.1"
-                    android:gravity="center"
-                    android:textColor="@color/txtColor"
-                    android:textSize="@dimen/_5mdpi" />
-
+                app:dragEdge="right"
+                app:mode="same_level">
 
                 <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="0.3"
-                    android:orientation="vertical">
+                    android:layout_width="@dimen/_120sdp"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal">
 
-                    <androidx.appcompat.widget.AppCompatTextView
-                        android:id="@+id/txtItemPrice"
-                        style="@style/CustomFontBold"
-                        android:layout_width="match_parent"
+                    <TextView
+                        android:id="@+id/txt_delete"
+                        android:layout_width="@dimen/_30sdp"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center"
+                        android:background="@color/delete"
+                        android:gravity="center"
+                        android:text="@string/delete"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/_5sdp"
+                        android:textStyle="normal" />
+
+                    <TextView
+                        android:id="@+id/txt_discount"
+                        android:layout_width="@dimen/_30sdp"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center"
+                        android:background="@color/addDiscount"
+                        android:gravity="center"
+                        android:text="@string/tv_discount"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/_5sdp"
+                        android:textStyle="normal" />
+
+                    <TextView
+                        android:id="@+id/txt_note"
+                        android:layout_width="@dimen/_30sdp"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center"
+                        android:background="@color/addNote"
+                        android:gravity="center"
+                        android:text="@string/note"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/_5sdp"
+                        android:textStyle="normal" />
+
+
+                    <TextView
+                        android:id="@+id/txt_rename"
+                        android:layout_width="@dimen/_30sdp"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center"
+                        android:background="@color/colorR1"
+                        android:gravity="center"
+                        android:text="@string/rename"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/_5sdp"
+                        android:textStyle="normal" />
+
+
+                </LinearLayout>
+
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:id="@+id/llRoot"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:weightSum="1">
+
+                    <androidx.appcompat.widget.LinearLayoutCompat
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        android:ellipsize="end"
+                        android:layout_weight="0.6"
                         android:gravity="center"
-                        android:lines="1"
-                        android:maxLines="1"
-                        android:singleLine="true"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/txtItem"
+                            style="@style/CustomFontSemiBold"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:ellipsize="end"
+                            android:lines="1"
+                            android:maxLines="1"
+                            android:singleLine="true"
+
+                            android:textColor="@color/txtColor"
+                            android:textSize="@dimen/_5mdpi" />
+
+                        <TextView
+                            android:id="@+id/txt_note_mannualcart"
+                            style="@style/CustomFontRegularStyle"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:ellipsize="end"
+                            android:lines="1"
+                            android:maxLines="1"
+                            android:singleLine="true"
+                            android:textColor="@color/white"
+                            android:textSize="@dimen/_7mdpi" />
+                    </androidx.appcompat.widget.LinearLayoutCompat>
+
+                    <TextView
+                        android:id="@+id/txtQuantity"
+                        style="@style/CustomFontSemiBold"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.1"
+                        android:gravity="center"
                         android:textColor="@color/txtColor"
                         android:textSize="@dimen/_5mdpi" />
 
-                    <androidx.appcompat.widget.AppCompatTextView
-                        android:id="@+id/txtDiscountPrice"
-                        style="@style/CustomFontBold"
-                        android:layout_width="wrap_content"
+
+                    <LinearLayout
+                        android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:ellipsize="end"
-                        android:gravity="center"
-                        android:lines="1"
-                        android:maxLines="1"
-                        android:singleLine="true"
-                        android:textColor="@color/colorRed"
-                        android:textSize="@dimen/_5mdpi" />
-                </LinearLayout>
+                        android:layout_weight="0.3"
+                        android:orientation="vertical">
+
+                        <androidx.appcompat.widget.AppCompatTextView
+                            android:id="@+id/txtItemPrice"
+                            style="@style/CustomFontBold"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:ellipsize="end"
+                            android:gravity="center"
+                            android:lines="1"
+                            android:maxLines="1"
+                            android:singleLine="true"
+                            android:textColor="@color/txtColor"
+                            android:textSize="@dimen/_5mdpi" />
+
+                        <androidx.appcompat.widget.AppCompatTextView
+                            android:id="@+id/txtDiscountPrice"
+                            style="@style/CustomFontBold"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:ellipsize="end"
+                            android:gravity="center"
+                            android:lines="1"
+                            android:maxLines="1"
+                            android:singleLine="true"
+                            android:textColor="@color/colorRed"
+                            android:textSize="@dimen/_5mdpi" />
+                    </LinearLayout>
 
 
-            </androidx.appcompat.widget.LinearLayoutCompat>
-        </com.android.pos.utils.swipereveallayout.SwipeRevealLayout>
+                </androidx.appcompat.widget.LinearLayoutCompat>
+            </com.android.pos.utils.swipereveallayout.SwipeRevealLayout>
 
 
-    </RelativeLayout>
+        </RelativeLayout>
+    -->
 
 </layout>

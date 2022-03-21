@@ -156,7 +156,7 @@ class AssignCustomerOrderFragment : Fragment(), ItemCallback {
     private fun loadCustomerLocalList(currentpage: Int) {
         data["page"] = currentpage.toString()
         data["per_page"] = perpagedata.toString()
-        viewModel.customerList(data).observe(viewLifecycleOwner, {
+        viewModel.customerList(data).observe(viewLifecycleOwner) {
             it?.let { resource ->
                 when (resource.status) {
                     Status.SUCCESS -> {
@@ -190,9 +190,6 @@ class AssignCustomerOrderFragment : Fragment(), ItemCallback {
 
         }
 
-
-        )
-
     }
 
     override fun onItemClickListener(view: View?, pos: Int) {
@@ -202,6 +199,7 @@ class AssignCustomerOrderFragment : Fragment(), ItemCallback {
             Constants.CUSTOMER_NAME,
             customer.first_name + " " + customer.last_name
         )
+        customer.id?.let { prefProvider.setValueInt(Constants.CUSTOMER_ID, it) }
         prefProvider.saveCustomerData(customer)
         val result = Bundle().apply {
             putParcelable("data", customer)

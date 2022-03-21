@@ -3,6 +3,7 @@ package com.android.pos.data.model.responseModel
 
 import android.widget.ImageView
 import androidx.databinding.BindingAdapter
+import com.android.pos.R
 import com.android.pos.data.entities.ModifierSet
 import com.android.pos.data.entities.OptionSet
 import com.android.pos.data.model.responseModel.category.Category
@@ -35,7 +36,7 @@ data class VenueDataResponse(
         fun loadImage(view: ImageView, imageUrl: String?, thumbNail: String?) {
             if (imageUrl.isNullOrBlank() || imageUrl.trim() == "" || imageUrl.trim() == "null" || imageUrl.isNullOrEmpty()
             ) {
-                view.setImageDrawable(view.context.resources.getDrawable(android.R.drawable.screen_background_dark_transparent))
+                view.setImageDrawable(view.context.resources.getDrawable(R.drawable.ic_item_placeholder))
 
             } else {
                 Glide.with(view.context)

@@ -9,7 +9,9 @@ import com.android.pos.data.model.responseModel.BaseResponse
 import com.android.pos.data.model.responseModel.OpenOrderResponse
 import com.android.pos.data.model.responseModel.OrderCountsResponse
 import com.android.pos.data.model.responseModel.PrinterResponse
+import com.android.pos.data.remote.Constants
 import com.android.pos.data.repositories.PosRepository
+import com.android.pos.di.PrefProvider
 import com.android.pos.utils.Event
 import com.android.pos.utils.statusUtils.Resource
 import com.android.pos.utils.statusUtils.Status
@@ -21,7 +23,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ActiveOrderViewModel @Inject constructor(
-    private val posRepository: PosRepository
+    private val posRepository: PosRepository,
+    private val prefProvider: PrefProvider
 ) : ViewModel() {
     private val _snackbarText = MutableLiveData<Event<Any?>>()
     val snackbarText: LiveData<Event<Any?>> = _snackbarText
@@ -51,11 +54,15 @@ class ActiveOrderViewModel @Inject constructor(
 
     fun getTipsList() = posRepository.getTipsList()
 
-    fun openOrders(paymentStatus:String,startDate:String,endDate:String): LiveData<Resource<OpenOrderResponse>> =
-        posRepository.getOpenOrders(paymentStatus,startDate,endDate)
+    fun openOrders(
+        paymentStatus: String,
+        startDate: String,
+        endDate: String
+    ): LiveData<Resource<OpenOrderResponse>> =
+        posRepository.getOpenOrders(paymentStatus, startDate, endDate)
 
     fun orderCounts(startDate: String?, endDate: String?): LiveData<Resource<OrderCountsResponse>> =
-        posRepository.orderCounts(startDate,endDate)
+        posRepository.orderCounts(startDate, endDate)
 
     fun setCurrentDate(myCalendar: Calendar, paramStartDate: String?, paramEndDate: String?) {
         val myFormat = "MM/dd/yyyy" //In which you need put here
@@ -65,12 +72,10 @@ class ActiveOrderViewModel @Inject constructor(
              Locale.getDefault()
          ).format(Date(System.currentTimeMillis() - 60000 * 30))*/
 
-        if (paramStartDate!=null&&paramEndDate!=null)
-        {
-            startDate.value=paramStartDate.toString()
-            endDate.value=paramEndDate.toString()
-        }
-        else{
+        if (paramStartDate != null && paramEndDate != null) {
+            startDate.value = paramStartDate.toString()
+            endDate.value = paramEndDate.toString()
+        } else {
             startDate.value = sdf.format(myCalendar.time) + " " + "12:00 AM"
             endDate.value = sdf.format(myCalendar.time) + " " + SimpleDateFormat(
                 "hh:mm a",
@@ -78,7 +83,6 @@ class ActiveOrderViewModel @Inject constructor(
             ).format(Date(System.currentTimeMillis() + 300000))
         }
     }
-
 
 
     fun datePicker(selectPicker: Boolean) {
@@ -95,7 +99,11 @@ class ActiveOrderViewModel @Inject constructor(
     fun cancelOrder(orderId: Int) {
         _showProgress.value = Event(true)
 
-        val request = OrderCancelRequest.OrderData("Cancelled", "", null)
+        val request = OrderCancelRequest.OrderData(
+            "Cancelled", "", null, prefProvider.getValueInt(
+                Constants.EMPLOYEE_ID, 0
+            )
+        )
 
         val orderCancelRequest = OrderCancelRequest(request)
 

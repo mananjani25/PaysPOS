@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
+import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -102,8 +103,8 @@ class UserAccessPermissionListFragment : Fragment() {
 
                 underlayButtons.add(UnderlayButton(
                     "Edit",
-                    0,
-                    Color.parseColor("#2997cc")
+                    ContextCompat.getColor(context, R.color.swipe_text_color),
+                    ContextCompat.getColor(context, R.color.swipe_bg_edit)
                 ) { pos ->
 
                     userPermissionObject = userPermissionListAdapter.getItem(pos)
@@ -121,8 +122,8 @@ class UserAccessPermissionListFragment : Fragment() {
 
                 underlayButtons.add(UnderlayButton(
                     "Delete",
-                    0,
-                    Color.parseColor("#FF3C30")
+                    ContextCompat.getColor(context, R.color.swipe_text_color),
+                    ContextCompat.getColor(context, R.color.swipe_bg_delete)
                 ) { pos ->
 
                     position = pos

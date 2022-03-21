@@ -16,9 +16,18 @@ class ItemAdapter(
     inner class MyViewHolder(private val binding: ViewCategoryItemBoldBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(model: TbItem?) {
-            binding.txtCategoryName.setText(""+model?.name)
+            binding.txtCategoryName.setText("" + model?.name)
 
         }
+
+        init {
+
+            binding.txtCategoryName.setOnClickListener {
+                list[bindingAdapterPosition]?.let { listner.onClick(it) }
+
+            }
+        }
+
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemAdapter.MyViewHolder {

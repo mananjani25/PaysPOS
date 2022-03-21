@@ -46,16 +46,16 @@
                 android:padding="@dimen/_3sdp"
                 android:text="@string/scan_gun"
                 android:textColor="@color/txtColor"
-                android:textSize="@dimen/_6mdpi" />
+                android:textSize="@dimen/header_title_size" />
 
             <TextView
                 android:id="@+id/txtResetDevice"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:background="@drawable/save_selector"
+                android:background="@drawable/button_action_hover"
                 android:padding="@dimen/_6sdp"
                 android:text="Reset Device"
-                android:textColor="@color/txtColor"
+                android:textColor="@color/white"
                 android:textSize="@dimen/_6mdpi" />
 
         </LinearLayout>
