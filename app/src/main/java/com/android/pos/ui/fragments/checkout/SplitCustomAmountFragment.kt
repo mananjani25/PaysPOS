@@ -91,6 +91,7 @@ class SplitCustomAmountFragment() : Fragment(), ItemListner {
         }
 
         if (prefProvider.getValue(Constants.SUB_TOTAL, "").isEmpty()) {
+            subTotalPrice = viewModel.subTotalPrice
             prefProvider.setValue(
                 Constants.SUB_TOTAL,
                 String.format("%.2f", viewModel.subTotalPrice)
@@ -100,6 +101,7 @@ class SplitCustomAmountFragment() : Fragment(), ItemListner {
         }
 
         if (prefProvider.getValue(Constants.TAX_CHARGE, "").isEmpty()) {
+            totalTax = viewModel.totalTax
             prefProvider.setValue(Constants.TAX_CHARGE, String.format("%.2f", viewModel.totalTax))
         } else {
             totalTax = prefProvider.getValue(Constants.TAX_CHARGE, "").toDouble()
@@ -107,6 +109,7 @@ class SplitCustomAmountFragment() : Fragment(), ItemListner {
 
 
         if (prefProvider.getValue(Constants.SERVICE_CHARGE, "").isEmpty()) {
+            totalServiceCharge = viewModel.totalServiceCharge
             prefProvider.setValue(
                 Constants.SERVICE_CHARGE,
                 String.format("%.2f", viewModel.totalServiceCharge)
@@ -117,6 +120,7 @@ class SplitCustomAmountFragment() : Fragment(), ItemListner {
 
 
         if (prefProvider.getValue(Constants.TOTAL_DISCOUNT, "").isEmpty()) {
+            totalDiscount = viewModel.totalDiscount
             prefProvider.setValue(
                 Constants.TOTAL_DISCOUNT,
                 String.format("%.2f", viewModel.totalDiscount)
@@ -127,6 +131,7 @@ class SplitCustomAmountFragment() : Fragment(), ItemListner {
 
 
         if (prefProvider.getValue(Constants.TIP, "").isEmpty()) {
+            tipAmount = viewModel.tip
             prefProvider.setValue(Constants.TIP, String.format("%.2f", viewModel.tip))
         } else {
             tipAmount = prefProvider.getValue(Constants.TIP, "").toDouble()
@@ -435,11 +440,6 @@ class SplitCustomAmountFragment() : Fragment(), ItemListner {
         split_totaltax = String.format("%.2f", totalTax / count).toDouble()
         split_servicecharge = String.format("%.2f", totalServiceCharge / count).toDouble()
         split_totaldiscount = String.format("%.2f", totalDiscount / count).toDouble()
-        if (count > 1) {
-            paymentviewModel.setIsSplitOrNot(true)
-        } else {
-            paymentviewModel.setIsSplitOrNot(false)
-        }
         makeCashPayment()
     }
 

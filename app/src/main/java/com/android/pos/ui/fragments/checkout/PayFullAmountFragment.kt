@@ -141,6 +141,7 @@ class PayFullAmountFragment(val bundle: Bundle?) : Fragment(), ItemListner, magt
         }
 
         if (prefProvider.getValue(Constants.SUB_TOTAL, "").isEmpty()) {
+            subTotalPrice = viewModel.subTotalPrice
             prefProvider.setValue(
                 Constants.SUB_TOTAL,
                 String.format("%.2f", viewModel.subTotalPrice)
@@ -150,6 +151,7 @@ class PayFullAmountFragment(val bundle: Bundle?) : Fragment(), ItemListner, magt
         }
 
         if (prefProvider.getValue(Constants.TAX_CHARGE, "").isEmpty()) {
+            totalTax = viewModel.totalTax
             prefProvider.setValue(Constants.TAX_CHARGE, String.format("%.2f", viewModel.totalTax))
         } else {
             totalTax = prefProvider.getValue(Constants.TAX_CHARGE, "").toDouble()
@@ -157,6 +159,7 @@ class PayFullAmountFragment(val bundle: Bundle?) : Fragment(), ItemListner, magt
 
 
         if (prefProvider.getValue(Constants.SERVICE_CHARGE, "").isEmpty()) {
+            totalServiceCharge = viewModel.totalServiceCharge
             prefProvider.setValue(
                 Constants.SERVICE_CHARGE,
                 String.format("%.2f", viewModel.totalServiceCharge)
@@ -167,6 +170,7 @@ class PayFullAmountFragment(val bundle: Bundle?) : Fragment(), ItemListner, magt
 
 
         if (prefProvider.getValue(Constants.TOTAL_DISCOUNT, "").isEmpty()) {
+            totalDiscount = viewModel.totalDiscount
             prefProvider.setValue(
                 Constants.TOTAL_DISCOUNT,
                 String.format("%.2f", viewModel.totalDiscount)
@@ -177,6 +181,7 @@ class PayFullAmountFragment(val bundle: Bundle?) : Fragment(), ItemListner, magt
 
 
         if (prefProvider.getValue(Constants.TIP, "").isEmpty()) {
+            tipAmount = viewModel.tip
             prefProvider.setValue(Constants.TIP, String.format("%.2f", viewModel.tip))
         } else {
             tipAmount = prefProvider.getValue(Constants.TIP, "").toDouble()
@@ -202,7 +207,8 @@ class PayFullAmountFragment(val bundle: Bundle?) : Fragment(), ItemListner, magt
             cashDiscountSurcharge = 0.0
             prefProvider.getValue(
                 cashDiscountSurcharge.toString(),
-                String.format("%.2f", cashDiscountSurcharge))
+                String.format("%.2f", cashDiscountSurcharge)
+            )
         }
 
         getCartData()
