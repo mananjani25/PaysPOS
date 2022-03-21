@@ -7,12 +7,14 @@
     <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:orientation="vertical"
+        android:background="@color/bg_color">
 
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:background="@color/bg_color">
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/imgClose"
@@ -21,11 +23,11 @@
                 android:layout_gravity="center"
                 android:background="?attr/selectableItemBackground"
                 android:padding="@dimen/_6sdp"
-                android:src="@drawable/ic_cancel_black" />
+                android:src="@drawable/ic_arrow_back" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/txtTitle"
-                style="@style/CustomFontMediumStyle"
+                style="@style/CustomFontBold"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
@@ -33,8 +35,8 @@
                 android:layout_weight="1"
                 android:gravity="center"
                 android:text="Number of Guests"
-                android:textColor="@color/viewTextColor"
-                android:textSize="@dimen/_6mdpi" />
+                android:textColor="@color/txtColor"
+                android:textSize="@dimen/_7mdpi" />
 
             <ImageView
                 android:id="@+id/imgUnMergeTable"
@@ -44,9 +46,15 @@
                 android:layout_centerVertical="true"
                 android:layout_marginEnd="@dimen/_8sdp"
                 android:padding="@dimen/_2sdp"
-                android:src="@drawable/ic_unmerge" />
+                android:src="@drawable/ic_unmerge"
+                app:tint="@color/btnColor" />
 
         </RelativeLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/view"/>
 
         <androidx.appcompat.widget.LinearLayoutCompat
             android:layout_width="match_parent"
@@ -55,7 +63,7 @@
             android:layout_marginTop="@dimen/_10sdp"
             android:layout_marginEnd="@dimen/_50sdp"
             android:layout_marginBottom="@dimen/_10sdp"
-            android:background="@color/white"
+            android:background="@color/bg_color"
             android:orientation="vertical">
 
             <androidx.appcompat.widget.AppCompatTextView
@@ -65,8 +73,8 @@
                 android:layout_gravity="center"
                 android:layout_marginBottom="@dimen/_5sdp"
                 android:text="@string/tv_select_number_of_guests"
-                android:textColor="@color/viewTextColor"
-                android:textSize="@dimen/_5mdpi" />
+                android:textColor="@color/txtColor"
+                android:textSize="@dimen/_6mdpi" />
 
 
             <androidx.recyclerview.widget.RecyclerView

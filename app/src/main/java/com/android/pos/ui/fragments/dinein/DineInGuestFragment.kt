@@ -7,7 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
@@ -16,7 +15,6 @@ import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.DINE_IN
 import com.android.pos.data.remote.Constants.DINE_IN_TABLE_ID
 import com.android.pos.data.remote.Constants.MERGED
-import com.android.pos.data.remote.Constants.MERGEDANDOCCUPIED
 import com.android.pos.data.remote.Constants.OCCUPIED
 import com.android.pos.data.remote.Constants.ORDER_TYPE
 import com.android.pos.data.remote.Constants.ORDER_TYPE_NAME
@@ -58,7 +56,7 @@ class DineInGuestFragment : Fragment(), GuestListAdapter.GuestListner {
     }
 
     private fun tableStatusSucess() {
-        viewModel.tableCheckSuccess.observe(viewLifecycleOwner, { event ->
+        viewModel.tableCheckSuccess.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let { status ->
                 prefProvider.setValue(ORDER_TYPE, DINE_IN)
                 prefProvider.setValue(ORDER_TYPE_NAME, DINE_IN)
@@ -75,7 +73,7 @@ class DineInGuestFragment : Fragment(), GuestListAdapter.GuestListner {
                 )
 
             }
-        })
+        }
 
     }
 

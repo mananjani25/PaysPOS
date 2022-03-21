@@ -165,7 +165,7 @@ class DashboardCategoryBoldPOS : Fragment(), ItemListner {
 
         }
         binding.layoutHeader.txtDineIn.setOnClickListener {
-
+            findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_dineInFragment)
         }
         binding.layoutHeader.imgDrawer.setOnClickListener {
             findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_menuFragment)

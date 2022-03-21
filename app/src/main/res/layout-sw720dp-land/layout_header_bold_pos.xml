@@ -12,6 +12,7 @@
         android:paddingVertical="@dimen/_4sdp"
         android:id="@+id/rlRoot">
 
+
         <androidx.appcompat.widget.LinearLayoutCompat
             android:id="@+id/linearFirst"
             android:layout_width="wrap_content"
@@ -70,7 +71,6 @@
 
 
         </androidx.appcompat.widget.LinearLayoutCompat>
-
 
         <androidx.appcompat.widget.LinearLayoutCompat
             android:id="@+id/linearSecond"
