@@ -14,7 +14,7 @@
     <dimen name="_4mdpi">@dimen/_4ssp</dimen>
 
 
-    <dimen name="_txtTitle">@dimen/_6ssp</dimen>
+    <dimen name="_txtTitle">@dimen/_7ssp</dimen>
 
     <dimen name="full_swipe_edge_padding">90dp</dimen>
 
@@ -38,6 +38,7 @@
 
     <dimen name="box_size">@dimen/_25sdp</dimen>
     <dimen name="btn_size">@dimen/_25sdp</dimen>
+    <dimen name="header_title_size">@dimen/_7mdpi</dimen>
 
 
 

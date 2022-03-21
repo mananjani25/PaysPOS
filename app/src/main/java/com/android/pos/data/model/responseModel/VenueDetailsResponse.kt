@@ -65,9 +65,9 @@ data class VenueDetailsResponse(
         @SerializedName("is_printer_queue_enable")
         val isPrinterQueueEnable: Boolean,
         @SerializedName("customer_receipt")
-        val customerReceipt: GetCustomerReceiptSettingsResponse.Data,
+        val customerReceipt: GetCustomerReceiptSettingsResponse.Data? = null,
         @SerializedName("kitchen_receipt")
-        val kitchenReceipt: GetKitchenReceiptSettingsResponse.Data,
+        val kitchenReceipt: GetKitchenReceiptSettingsResponse.Data? = null,
         @SerializedName("team_roles")
         val teamRoles: List<TeamRole>,
         @SerializedName("employee")
@@ -76,8 +76,10 @@ data class VenueDetailsResponse(
         val phoneCountrylist: List<TbCountryList>,
         @SerializedName("order_types")
         val orderTypes: List<TbOrderType>,
+        @SerializedName("magensa_settings")
+        val magensaSettings: List<MagensaSettings>
 
-        ) {
+    ) {
         data class CancelOrderReason(
             @SerializedName("created_at")
             val createdAt: String,
@@ -93,11 +95,35 @@ data class VenueDetailsResponse(
             val updatedAt: String
         )
 
+        data class MagensaSettings(
+            @SerializedName("created_at")
+            val createdAt: String,
+            @SerializedName("id")
+            val id: Int,
+            @SerializedName("location_id")
+            val location_id: Int,
+            @SerializedName("updated_at")
+            val updatedAt: String,
+            @SerializedName("processor_name")
+            val processor_name: String,
+            @SerializedName("customer_name")
+            val customer_name: String,
+            @SerializedName("customer_code")
+            val customer_code: String,
+            @SerializedName("user_name")
+            val user_name: String,
+            @SerializedName("password")
+            val password: String,
+            @SerializedName("mcc_code")
+            val mcc_code: String,
+
+            )
+
         data class Logo(
             @SerializedName("name")
             val name: String,
             @SerializedName("url")
-            val logoUrl:String,
+            val logoUrl: String,
             @SerializedName("record")
             val record: Record
         ) {

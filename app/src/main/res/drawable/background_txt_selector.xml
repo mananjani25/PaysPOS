@@ -2,6 +2,6 @@
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:drawable="@color/colorR1" android:state_pressed="true" />
     <item android:drawable="@color/colorR1" android:state_selected="true" />
-    <item android:drawable="@drawable/background_menu_item_gray" />
+    <item android:drawable="@drawable/background_square_border_grey" />
 
 </selector>

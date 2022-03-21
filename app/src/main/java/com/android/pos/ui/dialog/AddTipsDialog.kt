@@ -48,8 +48,11 @@ class AddTipsDialog : DialogFragment(), DialogTipsListAdapter.DiscountInterface,
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        totalPrice = requireArguments().getDouble("totalPrice")
-        totalTip = requireArguments().getDouble("totalTip")
+        if (arguments!=null){
+            if (arguments?.getDouble("totalPrice")!=null) totalPrice = requireArguments().getDouble("totalPrice")
+            if (arguments?.getDouble("totalTip")!=null) totalTip = requireArguments().getDouble("totalTip")
+        }
+
         binding.txtTitle.text = getString(R.string.add_tips)
 
         tipsListAdapter = DialogTipsListAdapter()
@@ -72,17 +75,28 @@ class AddTipsDialog : DialogFragment(), DialogTipsListAdapter.DiscountInterface,
         }
 
         binding.llKeypad.txt10.setOnClickListener {
-            val price=binding.llKeypad.txt10.text.toString().trim().substring(0,binding.llKeypad.txt10.text.toString().length-1).toDouble()
+            val rate = binding.llKeypad.txt10.text.toString().trim()
+                .substring(0, binding.llKeypad.txt10.text.toString().length - 1).toDouble()
+
+            val price = MethodUtils.percentageCalculation(totalPrice, rate)
             binding.edtAmount.removeTextChangedListener(this)
             binding.edtAmount.setText(MethodUtils.roundOffAmountString(price))
         }
         binding.llKeypad.txt20.setOnClickListener {
-            val price=binding.llKeypad.txt20.text.toString().trim().substring(0,binding.llKeypad.txt20.text.toString().length-1).toDouble()
+            val rate = binding.llKeypad.txt20.text.toString().trim()
+                .substring(0, binding.llKeypad.txt20.text.toString().length - 1).toDouble()
+            val price = MethodUtils.percentageCalculation(totalPrice, rate)
             binding.edtAmount.removeTextChangedListener(this)
             binding.edtAmount.setText(MethodUtils.roundOffAmountString(price))
         }
         binding.llKeypad.txt30.setOnClickListener {
-            val price=binding.llKeypad.txt30.text.toString().trim().substring(0,binding.llKeypad.txt30.text.toString().length-1).toDouble()
+
+
+            val rate = binding.llKeypad.txt30.text.toString().trim()
+                .substring(0, binding.llKeypad.txt30.text.toString().length - 1).toDouble()
+
+            val price = MethodUtils.percentageCalculation(totalPrice, rate)
+
             binding.edtAmount.removeTextChangedListener(this)
             binding.edtAmount.setText(MethodUtils.roundOffAmountString(price))
         }
@@ -156,7 +170,7 @@ class AddTipsDialog : DialogFragment(), DialogTipsListAdapter.DiscountInterface,
     }
 
     private fun setDiscountList() {
-        viewModel.getTipList.observe(requireActivity(), {
+        viewModel.getTipList.observe(requireActivity()) {
             Log.e(TAG, "DiscountList ${Gson().toJson(it)}")
             if (it.data?.isNotEmpty() == true) {
                 it.data.forEach {
@@ -168,7 +182,7 @@ class AddTipsDialog : DialogFragment(), DialogTipsListAdapter.DiscountInterface,
             }
 
 
-        })
+        }
 
 
     }
@@ -232,7 +246,7 @@ class AddTipsDialog : DialogFragment(), DialogTipsListAdapter.DiscountInterface,
         selectedListPos = pos
     }
 
-    fun calculateValue(number: String, delete: Boolean) {
+    private fun calculateValue(number: String, delete: Boolean) {
         tipsListAdapter.clearSelectedItem()
         tipID = null
         selectedListPos = -1
@@ -241,8 +255,6 @@ class AddTipsDialog : DialogFragment(), DialogTipsListAdapter.DiscountInterface,
 
         } else {
             binding.edtAmount.append(number)
-
-
         }
     }
 

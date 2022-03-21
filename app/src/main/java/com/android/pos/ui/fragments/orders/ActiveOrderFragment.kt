@@ -8,6 +8,10 @@ import android.graphics.Bitmap
 import android.graphics.Point
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.*
 import androidx.fragment.app.Fragment
@@ -24,10 +28,8 @@ import com.android.pos.data.model.responseModel.GetTipReponse
 import com.android.pos.data.model.responseModel.OpenOrderResponse
 import com.android.pos.data.model.responseModel.PrinterResponse
 import com.android.pos.data.remote.Constants
-import com.android.pos.data.remote.Constants.ARG_PARAM1
-import com.android.pos.data.remote.Constants.ARG_PARAM2
-import com.android.pos.data.remote.Constants.ARG_PARAM3
 import com.android.pos.data.remote.Constants.BUSINESS_ADDRESS
+import com.android.pos.data.remote.Constants.OPEN_ORDER
 import com.android.pos.data.remote.Constants.PRINT_PAID
 import com.android.pos.data.remote.Constants.PRINT_UNPAID
 import com.android.pos.databinding.FragmentActiveOrdersBinding
@@ -50,11 +52,14 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
 import javax.inject.Inject
-import kotlin.collections.ArrayList
 import kotlin.math.abs
 
 @AndroidEntryPoint
-class ActiveOrderFragment(var param1: String, var startDateTime: String?,var endDateTime: String?) : Fragment(), OrderCallBack {
+class ActiveOrderFragment(
+    var param1: String,
+    var startDateTime: String?,
+    var endDateTime: String?
+) : Fragment(), OrderCallBack {
     private var paramStartDate: String = ""
     private var paramEndDate: String = ""
 
@@ -107,7 +112,7 @@ class ActiveOrderFragment(var param1: String, var startDateTime: String?,var end
             paramEndDate = it.getString(ARG_PARAM3).toString()
         }
 */
-        viewModel.setCurrentDate(myCalendar,startDateTime,endDateTime)
+        viewModel.setCurrentDate(myCalendar, startDateTime, endDateTime)
     }
 
 
@@ -204,7 +209,7 @@ class ActiveOrderFragment(var param1: String, var startDateTime: String?,var end
         getOpenOrders()
         observeShowProgress()
 
-
+        searchFilter()
     }
 
     private fun observeShowProgress() {
@@ -228,7 +233,7 @@ class ActiveOrderFragment(var param1: String, var startDateTime: String?,var end
                         var intent = Intent()
                         intent.action = "cancelled"
                         intent.putExtra("isCount", false)
-                        intent.putExtra("position", 3)
+                        intent.putExtra("position", 2)
                         intent.putExtra("start_date", viewModel.startDate.value.toString())
                         intent.putExtra("end_date", viewModel.endDate.value.toString())
                         requireContext().sendBroadcast(intent)
@@ -306,8 +311,7 @@ class ActiveOrderFragment(var param1: String, var startDateTime: String?,var end
         val order = adapter.getItem(pos)
         when (status) {
             "UPDATE" -> {
-                prefProvider.setValue(Constants.ORDER_TYPE, order.orderType)
-
+                prefProvider.setValue(Constants.ORDER_TYPE, OPEN_ORDER)
 
                 if (order.customer != null) {
                     prefProvider.setValue(
@@ -332,19 +336,28 @@ class ActiveOrderFragment(var param1: String, var startDateTime: String?,var end
                 bundle.putString("orderOfflineId", order.offlineId)
                 bundle.putBoolean("isLoyaltyApplied", order.isLoyaltyApplied)
                 findNavController().navigate(
-                    R.id.action_orders_to_dashboardCategoryNew, bundle
+                    R.id.action_orders_to_dashboardCategoryBoldPOS, bundle
                 )
+
+//                findNavController().navigateUp()
 
             }
             "PAY" -> {
 
-                val cartModel = cartModel(order)
-                prefProvider.setValue(
-                    Constants.CUSTOMER_NAME,
-                    order.customer?.firstName + " " + order.customer?.lastName
+                prefProvider.setValue(Constants.ORDER_TYPE, OPEN_ORDER)
+
+                if (order.customer != null) {
+                    prefProvider.setValue(
+                        Constants.CUSTOMER_NAME,
+                        order.customer.firstName + " " + order.customer.lastName
+                    )
+                }
+                dashboardViewModel.addCart(
+                    cartModel(order)
                 )
 
                 val bundle = Bundle()
+                bundle.putBoolean("update", true)
                 bundle.putDouble("totalPrice", order.totalAmount)
                 bundle.putDouble("finalprice", order.totalAmount)
                 bundle.putDouble(
@@ -361,11 +374,11 @@ class ActiveOrderFragment(var param1: String, var startDateTime: String?,var end
                 bundle.putDouble("totalServiceCharge", order.totalServiceCharges)
                 bundle.putString("future_delivery_date", order.futureDeliveryDate)
                 bundle.putString("future_delivery_time", order.futureDeliveryTime)
-                bundle.putParcelable("cartList", cartModel)
+                bundle.putParcelable("cartList", cartModel(order))
 
 
-                bundle.putBoolean("update", true)
                 bundle.putInt("orderId", order.id)
+                Log.e("orderId :: ", order.id.toString())
                 if (order.payments.isNotEmpty()) {
                     bundle.putInt("paymentId", order.payments[0].id)
                     bundle.putString("paymentOfflineId", order.payments[0].offlineId)
@@ -398,10 +411,8 @@ class ActiveOrderFragment(var param1: String, var startDateTime: String?,var end
                 )
                 bundle.putBoolean("isFromActiveOrder", true)
 
-                findNavController().navigate(
-                    R.id.action_orders_to_paymentFragment,
-                    bundle
-                )
+                findNavController().navigate(R.id.action_orders_to_paymentBoldPosFragment, bundle)
+
 
             }
             PRINT_UNPAID -> {
@@ -851,7 +862,7 @@ class ActiveOrderFragment(var param1: String, var startDateTime: String?,var end
             builder.addTextAlign(Builder.ALIGN_CENTER)
             builder.addText(receiptModel?.orderType + "\n")
 
-            if (receiptModel?.orderType?.lowercase() == Constants.OPEN_ORDER_.lowercase()
+            if (receiptModel?.orderType?.lowercase() == Constants.OPEN_ORDER.lowercase()
                 || receiptModel?.orderType?.lowercase() == Constants.OPEN_ORDER.lowercase()
             ) {
 
@@ -1872,5 +1883,24 @@ class ActiveOrderFragment(var param1: String, var startDateTime: String?,var end
             }
         })
     }
+
+    private fun searchFilter() {
+
+        binding.autoSearch.addTextChangedListener(object : TextWatcher {
+            override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
+
+            }
+
+            override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
+            }
+
+            override fun afterTextChanged(s: Editable) {
+
+                adapter.filter.filter(s.toString().trim())
+
+            }
+        })
+    }
+
 
 }

@@ -552,7 +552,7 @@ class OpenOrderCustomerFragmentNew : DialogFragment(), View.OnClickListener {
                 binding.txtCustomerDetails.setTextColor(resources.getColor(color.txtColor))
                 binding.txtDeliveryAddress.setTextColor(resources.getColor(color.txtColor))
 
-                binding.txtCustomerDetails.setBackgroundColor(resources.getColor(color.btnColor))
+                binding.txtCustomerDetails.background=resources.getDrawable(R.drawable.button_action_hover)
                 binding.txtDeliveryAddress.setBackgroundColor(resources.getColor(color.bg_color))
                 binding.txtCustomerDetails.setTextColor(resources.getColor(color.white))
                 binding.txtDeliveryAddress.setTextColor(resources.getColor(color.txtColor))
@@ -569,7 +569,7 @@ class OpenOrderCustomerFragmentNew : DialogFragment(), View.OnClickListener {
                 binding.txtDeliveryAddress.setTextColor(resources.getColor(color.txtColor))
 
                 binding.txtCustomerDetails.setBackgroundColor(resources.getColor(color.bg_color))
-                binding.txtDeliveryAddress.setBackgroundColor(resources.getColor(color.btnColor))
+                binding.txtDeliveryAddress.background=resources.getDrawable(R.drawable.button_action_hover)
 
                 binding.txtCustomerDetails.setTextColor(resources.getColor(color.txtColor))
                 binding.txtDeliveryAddress.setTextColor(resources.getColor(color.white))
@@ -628,7 +628,7 @@ class OpenOrderCustomerFragmentNew : DialogFragment(), View.OnClickListener {
                 binding.txtPickup.setTextColor(resources.getColor(color.txtColor))
                 binding.txtDelivery.setTextColor(resources.getColor(color.txtColor))
 
-                binding.txtPickup.setBackgroundColor(resources.getColor(color.btnColor))
+                binding.txtPickup.background=resources.getDrawable(R.drawable.button_action_hover)
                 binding.txtDelivery.setBackgroundColor(resources.getColor(color.bg_color))
 
                 binding.txtPickup.setTextColor(resources.getColor(color.white))
@@ -643,7 +643,7 @@ class OpenOrderCustomerFragmentNew : DialogFragment(), View.OnClickListener {
                 binding.txtDelivery.setTextColor(resources.getColor(color.txtColor))
 
                 binding.txtPickup.setBackgroundColor(resources.getColor(color.bg_color))
-                binding.txtDelivery.setBackgroundColor(resources.getColor(color.btnColor))
+                binding.txtDelivery.background=resources.getDrawable(R.drawable.button_action_hover)
 
                 binding.txtPickup.setTextColor(resources.getColor(color.txtColor))
                 binding.txtDelivery.setTextColor(resources.getColor(color.white))

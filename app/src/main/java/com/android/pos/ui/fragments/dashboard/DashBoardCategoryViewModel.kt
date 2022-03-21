@@ -7,7 +7,10 @@ import android.graphics.BitmapFactory
 import android.util.Base64
 import android.util.Log
 import androidx.appcompat.widget.AppCompatTextView
-import androidx.lifecycle.*
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.android.pos.data.db.AppDatabase
 import com.android.pos.data.entities.*
 import com.android.pos.data.model.DineInModel
@@ -41,7 +44,10 @@ import com.android.pos.utils.TimeFormatUtils
 import com.android.pos.utils.statusUtils.Resource
 import com.android.pos.utils.statusUtils.Status
 import com.google.gson.Gson
-import com.squareup.okhttp.*
+import com.squareup.okhttp.Callback
+import com.squareup.okhttp.OkHttpClient
+import com.squareup.okhttp.Request
+import com.squareup.okhttp.Response
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import java.io.ByteArrayOutputStream
@@ -51,8 +57,7 @@ import java.net.HttpURLConnection
 import java.net.URL
 import java.util.*
 import javax.inject.Inject
-import kotlin.collections.ArrayList
-import kotlin.collections.HashMap
+import kotlin.collections.set
 
 
 @HiltViewModel
@@ -74,6 +79,7 @@ class DashBoardCategoryViewModel @Inject constructor(
     var nonCashAdj: Double = 0.0
     var totalServiceCharge = 0.0
     var totalDiscount = 0.0
+    var cartModel: CartModel? = null
     var assignCustomer: TbCustomer? = null
     var orderItemDiscount = 0.0
     var selectedCustomer: TbCustomer? = null
@@ -81,7 +87,10 @@ class DashBoardCategoryViewModel @Inject constructor(
     var redeemLoyaltyInfo: RedeemLoyaltyInfo = RedeemLoyaltyInfo()
     var paymentType: String = "cash"
     var destroyedList: ArrayList<TbItem> = arrayListOf()
+    var ordertypelist: ArrayList<TbOrderType> = arrayListOf()
     var isOrderUpdate: Boolean = false
+
+    var viewModelcartList: ArrayList<CartModel> = arrayListOf()
 
     private val _updateOrder = MutableLiveData<Event<Any?>>()
     val updateOrder: LiveData<Event<Any?>> = _updateOrder
@@ -97,6 +106,14 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     fun orderTypes(): LiveData<Resource<List<TbOrderType>>> {
         return posRepository.orderTypesDb()
+    }
+
+    fun setOrderTypeList(ordertypelist: ArrayList<TbOrderType>) {
+        this.ordertypelist = ordertypelist
+    }
+
+    fun setCartModel(cartList: List<CartModel>) {
+        this.cartModel = generateCombinedItems(cartList[0])
     }
 
     val serviceCharges = posRepository.serviceChargeList()
@@ -139,8 +156,19 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     fun getItemByProductCode(productCode: String) = posRepository.getItemByProductCode(productCode)
 
-    fun mAllWords(orderType: String,employee_Id:Int): LiveData<List<CartModel>> {
-        return posRepository.getCartList(orderType,employee_Id)
+    /*
+        fun getCartList(orderType:String,employee_Id: Int) : List<CartModel>{
+            viewModelcartList.clear()
+            viewModelcartList = arrayListOf()
+
+            posRepository.getCartList(orderType,employee_Id)
+        }
+
+    */
+    fun mAllWords(orderType: String, employee_Id: Int): LiveData<List<CartModel>> {
+
+        return posRepository.getCartList(orderType, employee_Id)
+
     }
 
     var serviceChargesList: List<TbServiceCharge> = emptyList()
@@ -152,6 +180,14 @@ class DashBoardCategoryViewModel @Inject constructor(
             posRepository.addItemCart(generateCombinedItems(cartModel))
             destroyedList.clear()
         }
+    }
+
+    fun createEmptyCart(model: CartModel) {
+        viewModelScope.launch {
+            posRepository.createEmptyCart(model)
+        }
+
+
     }
 
     fun generateCombinedItems(cartModel: CartModel): CartModel {
@@ -166,7 +202,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     fun deleteCart() {
         viewModelScope.launch {
-            posRepository.deleteCart(prefProvider.getValueInt(EMPLOYEE_ID,0))
+            posRepository.deleteCart(prefProvider.getValueInt(EMPLOYEE_ID, 0))
             destroyedList.clear()
         }
     }
@@ -453,8 +489,11 @@ class DashBoardCategoryViewModel @Inject constructor(
                     if (type == DELETE) {
                         deleteCart()
                     } else {
+
+                        Log.e(TAG, "AddedListNull")
                         val cartModel = cartList?.get(0)
-                        cartModel?.items = listOf(item!!)
+                        if (item != null)
+                            cartModel?.items = listOf(item)
                         if (cartModel != null) {
                             addCart(cartModel)
                         }
@@ -466,6 +505,145 @@ class DashBoardCategoryViewModel @Inject constructor(
 
 
         }
+    }
+
+    fun addItemToCart(
+        cartList: List<CartModel>?,
+        item: TbItem?,
+        type: String,
+        dineInList: List<DineInModel> = arrayListOf()
+    ) {
+
+        if (cartList != null && cartList.isEmpty()) {
+            // empty cart hoy to new cart create kare
+            val cartModel = item?.let { addCartModel(it) }
+            if (cartModel != null) {
+                addCart(cartModel)
+            }
+
+
+        } else {
+
+            val list = cartList?.get(0)?.items?.toMutableList()
+            if (list != null && list.isNotEmpty()) {
+
+                if (type == ADD || type == UPDATE) {
+                    var index = -1
+
+                    list.forEachIndexed { pos, tbItem ->
+                        if (item != null) {
+                            if (tbItem.itemId == item.itemId && checkVariation(
+                                    tbItem,
+                                    item
+                                ) && checkModifier(tbItem, item)
+                            ) {
+                                //   if (checkModifier(tbItem, item)) {
+                                index = pos
+                                return@forEachIndexed
+                                //  }
+                            }
+                        }
+
+                    }
+                    if (index != -1) {
+                        val model = cartList[0].items?.get(index)
+                        if (model != null) {
+                            if (type == "UPDATE") {
+                                if (item != null) {
+                                    model.itemQuantity = item.itemQuantity
+                                    if (item.isEdited) {
+                                        model.isEdited = item.isEdited
+                                    }
+                                }
+                                list[index] = model
+                            } else {
+                                if (index != -1) {
+                                    if (item != null) {
+                                        model.itemQuantity =
+                                            item.itemQuantity + model.itemQuantity
+                                        item.modifiers.forEach {
+                                            it.itemQuantity = model.itemQuantity
+                                        }
+                                        model.modifiers = item.modifiers
+                                        if (item.isEdited) {
+                                            model.isEdited = item.isEdited
+                                        }
+                                    }
+
+                                    list[index] = model
+                                } else {
+                                    if (item != null) {
+                                        model.itemQuantity = item.itemQuantity
+                                        if (item.isEdited) {
+                                            model.isEdited = item.isEdited
+                                        }
+                                    }
+                                    list[index] = model
+                                }
+                            }
+
+                        }
+                    } else {
+                        if (item != null) {
+                            list.add(item)
+                        }
+                    }
+                } else if (type == DELETE) {
+
+                    var index = -1
+
+                    list.forEachIndexed { pos, tbItem ->
+                        if (item != null) {
+                            if (tbItem.itemId == item.itemId) {
+                                index = pos
+                                return@forEachIndexed
+                            }
+                        }
+                    }
+                    if (index != -1) {
+                        val model = cartList[0].items?.get(index)
+                        if (model != null) {
+                            //delete from cart
+                            if (item?.isEdited == true) {
+                                model.isEdited = item.isEdited
+                                model.isDestroy = true
+                            } else {
+                                list.remove(item)
+                            }
+                        }
+                    } else {
+                        //list.remove(item)
+                    }
+                }
+
+                val cartModel = cartList[0]
+                cartModel.items = list
+                addCart(cartModel)
+
+                if (list.isEmpty()) {
+                    // delete cart
+                    deleteCart()
+                }
+            } else {
+
+                if (type == DELETE) {
+                    deleteCart()
+                } else {
+
+                    Log.e(TAG, "AddedListNull")
+                    val cartModel = cartList?.get(0)
+                    cartModel?.items = listOf(item!!)
+                    Log.e(TAG, "cartModel:  ${Gson().toJson(cartModel)}")
+                    if (cartModel != null) {
+
+                        addCart(cartModel)
+                    }
+                }
+
+
+            }
+        }
+
     }
 
     private fun checkModifier(tbItem: TbItem, item: TbItem): Boolean {
@@ -526,6 +704,7 @@ class DashBoardCategoryViewModel @Inject constructor(
         context: Context
     ) {
 
+        Log.e("itemCalculation", "------------------>")
 
         var totalAmmount = 0.0
         nonCashAdj = 0.0
@@ -606,8 +785,153 @@ class DashBoardCategoryViewModel @Inject constructor(
                     subTotalPrice -= cartList[0].discountPrice
 
 
+                    totalDiscount += cartList[0].discountPrice
 
                     cartList[0].items!!.forEach {
+                        totalDiscount += if (!it.isManualSales) {
+                            (it.discountPrice * it.itemQuantity)
+                        } else {
+                            it.discountPrice
+                        }
+                    }
+
+                    Log.e("totalDiscount", totalDiscount.toString())
+
+                    totalPrice = (subTotalPrice + totalTax + totalServiceCharge)
+
+
+                    //loyalty point and price calculation
+                    amountToBePaid = totalPrice
+
+
+                    if (selectedCustomer == null) {
+                        var fnAmount = amountToBePaid
+                        MethodUtils.setPriceTextView(
+                            txtTotalAmount,
+                            fnAmount
+                        )
+                    } else {
+                        var fnAmount = amountToBePaid
+                        checkAppliedLoyaltyProgram(
+                            selectedCustomer,
+                            fnAmount,
+                            txtTotalAmount
+                        )
+                    }
+
+                    Log.e("amountToBePaid", "" + amountToBePaid)
+                } else {
+
+                    nonCashAdj = 0.0
+                    totalPrice = 0.0
+                    totalCount = 0
+                    subTotalPrice = 0.0
+                    totalDiscount = 0.0
+                    totalTax = 0.0
+                    totalServiceCharge = 0.0
+                    amountToBePaid = 0.0
+                }
+            }
+        }
+        //totalAmmount = totalPrice-cartList[0].discountPrice
+
+        Log.e("itemCalculation 1", "------------------>")
+    }
+
+    @SuppressLint("SetTextI18n")
+    fun itemCalculationCartModel(
+        cartModel: CartModel,
+        txtTotalAmount: AppCompatTextView,
+        context: Context
+    ) {
+
+
+        var totalAmmount = 0.0
+        nonCashAdj = 0.0
+        totalPrice = 0.0
+        totalCount = 0
+        subTotalPrice = 0.0
+        totalDiscount = 0.0
+        totalTax = 0.0
+        totalServiceCharge = 0.0
+        var amountToBePaid = 0.0
+        if (cartModel != null) {
+            if (cartModel.orderType == DINE_IN) {
+
+                cartModel.dineInList?.forEach { dine ->
+
+                    dine.items.forEach { item ->
+                        totalCount += item.itemQuantity
+                        if (!item.isManualSales) {
+                            subTotalPrice += (item.price * item.itemQuantity) - (item.discountPrice * item.itemQuantity)
+                        } else {
+                            subTotalPrice += (item.price * item.itemQuantity) - item.discountPrice
+                        }
+
+                        taxCalculation(item)
+
+                        item.modifiers.forEach {
+                            subTotalPrice += (it.price * it.itemQuantity)
+                        }
+                    }
+
+
+                }
+
+                serviceChargeCalculationModel(cartModel)
+                subTotalPrice -= (cartModel.discountPrice)
+
+
+                cartModel.dineInList?.forEach {
+                    it.items.forEach {
+                        if (!it.isManualSales) {
+                            totalDiscount += (it.discountPrice * it.itemQuantity)
+                        } else {
+                            totalDiscount += it.discountPrice
+                        }
+                    }
+                }
+
+
+                totalPrice = (subTotalPrice + totalTax + totalServiceCharge)
+                amountToBePaid = totalPrice - totalDiscount
+
+                MethodUtils.setPriceTextView(txtTotalAmount, amountToBePaid)
+            } else {
+                Log.d(
+                    TAG, "addObserver: " + prefProvider.getValue(
+                        Constants.ORDER_TYPE,
+                        Constants.TAKEOUT
+                    )
+                )
+
+                if (cartModel.items?.isEmpty() == false) {
+
+
+                    cartModel.items?.forEach { item ->
+                        totalCount += item.itemQuantity
+                        if (!item.isManualSales) {
+                            subTotalPrice += (item.price * item.itemQuantity) - (item.discountPrice * item.itemQuantity)
+                        } else {
+                            subTotalPrice += (item.price * item.itemQuantity) - item.discountPrice
+                        }
+
+                        taxCalculation(item)
+                        Log.d("yash", "TaxCalculation: " + totalTax)
+
+                        item.modifiers.forEach {
+                            subTotalPrice += (it.price * it.itemQuantity)
+
+                        }
+                    }
+
+
+                    serviceChargeCalculationModel(cartModel)
+                    subTotalPrice -= cartModel.discountPrice
+
+
+
+                    cartModel.items!!.forEach {
                         if (!it.isManualSales) {
                             totalDiscount += (it.discountPrice * it.itemQuantity)
                         } else {
@@ -720,6 +1044,20 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     private fun serviceChargeCalculation(cartList: List<CartModel>) {
         val serviceChargesList = cartList[0].serviceCharge
+
+        if (serviceChargesList != null && serviceChargesList.isNotEmpty()) {
+            serviceChargesList.forEach {
+                if (it.isEnabled) {
+                    totalServiceCharge += (subTotalPrice * it.percentage) / 100
+
+                }
+            }
+
+        }
+    }
+
+    private fun serviceChargeCalculationModel(cartModel: CartModel) {
+        val serviceChargesList = cartModel.serviceCharge
 
         if (serviceChargesList != null && serviceChargesList.isNotEmpty()) {
             serviceChargesList.forEach {
@@ -1635,19 +1973,21 @@ class DashBoardCategoryViewModel @Inject constructor(
                                    } catch (e: Exception) {
                                        e.printStackTrace()
                                    }
-   */
+   *//*
                                 if (it.data.logo != null && it.data.logo.logoUrl.isNotEmpty()) {
 
                                     downaloadVenueImage(it.data.logo.logoUrl)
-                                    /*   prefProvider.setValue(
+                                    *//*   prefProvider.setValue(
                                            VENUE_LOGO,
                                            it.data.logo.logoUrl
-                                       )*/
-                                }
+                                       )*//*
+                                }*/
                                 prefProvider.setValue(BUSINESS_NAME, it.data.businessName)
                                 prefProvider.setValue(SYSTEM_TIMEZONE, it.data.timeZone)
                                 prefProvider.setValue(BUSINESS_PHONE_NO, it.data.phoneNumber)
-                                prefProvider.setValue(BUSINESS_ADDRESS, it.data.address)
+                                if (it.data.address != null) {
+                                    prefProvider.setValue(BUSINESS_ADDRESS, it.data.address)
+                                }
                                 prefProvider.setValueboolean(
                                     IS_PRINTER_QUEUE_ENABLE,
                                     it.data.isPrinterQueueEnable
@@ -1672,9 +2012,17 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 tipDiscountRepository.deleteTipsFromDb()
                                 tipDiscountRepository.addTips(it.data.tip_settings)
                                 posRepository.deleteCustomerReceiptSettingsFromDb()
-                                posRepository.addCustomerReceiptSettings(it.data.customerReceipt)
+                                it.data.customerReceipt?.let { it1 ->
+                                    posRepository.addCustomerReceiptSettings(
+                                        it1
+                                    )
+                                }
                                 posRepository.deleteKitchenReceiptSettingsFromDb()
-                                posRepository.addKitchenReceiptSettings(it.data.kitchenReceipt)
+                                it.data.kitchenReceipt?.let { it1 ->
+                                    posRepository.addKitchenReceiptSettings(
+                                        it1
+                                    )
+                                }
                                 posRepository.deleteLoyaltyProgramFromDb()
                                 posRepository.addLoyaltyProgramFromDb(it.data.loyaltyPrograms)
                                 posRepository.deleteSurcharge()

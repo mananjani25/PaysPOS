@@ -27,19 +27,12 @@ class CategoryAdapter(
         RecyclerView.ViewHolder(binding.root) {
         fun bind(model: CategoryTabModel) {
             binding.txtCategoryName.isSelected = model.isSelected
-            binding.txtCategoryName.setText(model.title)
+            binding.txtCategoryName.text = model.title
 
             binding.root.setOnClickListener {
-
                 listner.onTabSelected(bindingAdapterPosition)
                 list.forEachIndexed { index, categoryTabModel ->
-                    if (index == bindingAdapterPosition){
-                        categoryTabModel.isSelected = true
-                    }
-                    else{
-                        categoryTabModel.isSelected = false
-                    }
-
+                    categoryTabModel.isSelected = index == bindingAdapterPosition
                 }
                 notifyDataSetChanged()
             }
@@ -50,7 +43,7 @@ class CategoryAdapter(
     }
 
     override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-        holder.bind(list.get(position))
+        holder.bind(list[position])
 
 
     }

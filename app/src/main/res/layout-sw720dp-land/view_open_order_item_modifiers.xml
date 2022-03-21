@@ -19,7 +19,7 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/white"
+            android:background="@color/backgroundColor"
             android:orientation="horizontal"
             android:padding="@dimen/_5sdp">
 
@@ -32,7 +32,7 @@
                 android:gravity="center"
                 android:layout_gravity="center"
                 android:text="@{model.name}"
-                android:textColor="@color/txtColor"
+                android:textColor="@color/white"
                 android:textSize="@dimen/_5mdpi"
                 tools:text="Item Name" />
 
@@ -45,7 +45,7 @@
                 android:layout_gravity="center"
                 android:gravity="center"
                 android:text="@{@string/cross+``+model.quantity}"
-                android:textColor="@color/txtColor"
+                android:textColor="@color/white"
                 android:textSize="@dimen/_5mdpi"
                 tools:text="X 1" />
 
@@ -58,7 +58,7 @@
                 android:layout_gravity="center"
                 android:gravity="center"
                 android:text="@{@string/symbole +``+String.format(@string/format,model.price)}"
-                android:textColor="@color/txtColor"
+                android:textColor="@color/white"
                 android:textSize="@dimen/_5mdpi"
                 tools:text="$12.00" />
 
@@ -71,7 +71,7 @@
                 android:layout_weight="1"
                 android:gravity="center"
                 android:text="@{@string/symbole +``+String.format(@string/format,model.price)}"
-                android:textColor="@color/txtColor"
+                android:textColor="@color/white"
                 android:textSize="@dimen/_5mdpi"
                 tools:text="$12.00" />
 
@@ -83,7 +83,7 @@
                 android:layout_gravity="center"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:textColor="@color/txtColor"
+                android:textColor="@color/white"
                 android:textSize="@dimen/_5mdpi" />
 
             <androidx.appcompat.widget.AppCompatTextView
@@ -94,7 +94,7 @@
                 android:layout_gravity="center"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:textColor="@color/txtColor"
+                android:textColor="@color/white"
                 android:textSize="@dimen/_5mdpi"
                 tools:text="Terminal Name" />
 

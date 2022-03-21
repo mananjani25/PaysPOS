@@ -41,6 +41,7 @@ import com.android.pos.data.remote.Constants.PRINT_DATA_DINE_IN
 import com.android.pos.data.remote.Constants.SAVE_SPLIT_BUNDLE
 import com.android.pos.data.remote.Constants.SUB_TOTAL
 import com.android.pos.data.remote.Constants.SUB_TOTAL_DINEIN
+import com.android.pos.data.remote.Constants.TAKEOUT
 import com.android.pos.data.remote.Constants.TOTAL_PRICE_DINEIN
 import com.android.pos.data.remote.Constants.VENUE_LOGO
 import com.android.pos.data.remote.Constants.getReceiptFormatDateFromUTCServer
@@ -511,20 +512,20 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         binding.llCheckOut.setOnClickListener(this)
 
 
-        setFragmentResultListener("request_key_customer") { requestKey: String, bundle: Bundle ->
-            val result = bundle.getParcelable<TbCustomer>("data")
-            if (result != null) {
-                isFromCustomer = true
-                //  Log.e("request_key_customer", result.first_name)
-                val payment_id = prefProvider.getValueInt(PAYMENT_ID, 0)
-                val final_Reward = result.final_reward
-                result.id?.let { viewModel.assignCustomer(orderID, it, payment_id, final_Reward!!) }
-            }
-        }
+//        setFragmentResultListener("request_key_customer") { requestKey: String, bundle: Bundle ->
+//            val result = bundle.getParcelable<TbCustomer>("data")
+//            if (result != null) {
+//                isFromCustomer = true
+//                //  Log.e("request_key_customer", result.first_name)
+//                val payment_id = prefProvider.getValueInt(PAYMENT_ID, 0)
+//                val final_Reward = result.final_reward
+//                result.id?.let { viewModel.assignCustomer(orderID, it, payment_id, final_Reward!!) }
+//            }
+//        }
 
         if (!isSpilt) {
 
-            prefProvider.setValue(Constants.ORDER_TYPE, "")
+            prefProvider.setValue(Constants.ORDER_TYPE, TAKEOUT)
             prefProvider.setValue(Constants.CUSTOMER_NAME, "")
             prefProvider.setValueInt(Constants.CUSTOMER_ID, -1)
             viewModel.deleteCart()
@@ -577,16 +578,19 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             }
             R.id.llMessage -> {
 
-                binding.llNoReceipt.background=resources.getDrawable(R.drawable.background_square_border_grey)
+                binding.llNoReceipt.background =
+                    resources.getDrawable(R.drawable.background_square_border_grey)
                 binding.llNoReceipt.setTextColor(resources.getColor(R.color.txtColor))
 
-                binding.llEmail.background=resources.getDrawable(R.drawable.background_square_border_grey)
+                binding.llEmail.background =
+                    resources.getDrawable(R.drawable.background_square_border_grey)
                 binding.llEmail.setTextColor(resources.getColor(R.color.txtColor))
 
-                binding.llMessage.background=resources.getDrawable(R.drawable.button_selected)
+                binding.llMessage.background = resources.getDrawable(R.drawable.button_selected)
                 binding.llMessage.setTextColor(resources.getColor(R.color.white))
 
-                binding.llPrint.background=resources.getDrawable(R.drawable.background_square_border_grey)
+                binding.llPrint.background =
+                    resources.getDrawable(R.drawable.background_square_border_grey)
                 binding.llPrint.setTextColor(resources.getColor(R.color.txtColor))
 
                 type = "Message"
@@ -604,16 +608,19 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 MethodUtils.hideKeyboard(requireActivity())
             }
             R.id.llEmail -> {
-                binding.llNoReceipt.background=resources.getDrawable(R.drawable.background_square_border_grey)
+                binding.llNoReceipt.background =
+                    resources.getDrawable(R.drawable.background_square_border_grey)
                 binding.llNoReceipt.setTextColor(resources.getColor(R.color.txtColor))
 
-                binding.llEmail.background=resources.getDrawable(R.drawable.button_selected)
+                binding.llEmail.background = resources.getDrawable(R.drawable.button_selected)
                 binding.llEmail.setTextColor(resources.getColor(R.color.white))
 
-                binding.llMessage.background=resources.getDrawable(R.drawable.background_square_border_grey)
+                binding.llMessage.background =
+                    resources.getDrawable(R.drawable.background_square_border_grey)
                 binding.llMessage.setTextColor(resources.getColor(R.color.txtColor))
 
-                binding.llPrint.background=resources.getDrawable(R.drawable.background_square_border_grey)
+                binding.llPrint.background =
+                    resources.getDrawable(R.drawable.background_square_border_grey)
                 binding.llPrint.setTextColor(resources.getColor(R.color.txtColor))
 
                 type = "Email"
@@ -630,31 +637,37 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 MethodUtils.hideKeyboard(requireActivity())
             }
             R.id.llNoReceipt -> {
-                binding.llNoReceipt.background=resources.getDrawable(R.drawable.button_selected)
+                binding.llNoReceipt.background = resources.getDrawable(R.drawable.button_selected)
                 binding.llNoReceipt.setTextColor(resources.getColor(R.color.white))
 
-                binding.llEmail.background=resources.getDrawable(R.drawable.background_square_border_grey)
+                binding.llEmail.background =
+                    resources.getDrawable(R.drawable.background_square_border_grey)
                 binding.llEmail.setTextColor(resources.getColor(R.color.txtColor))
 
-                binding.llMessage.background=resources.getDrawable(R.drawable.background_square_border_grey)
+                binding.llMessage.background =
+                    resources.getDrawable(R.drawable.background_square_border_grey)
                 binding.llMessage.setTextColor(resources.getColor(R.color.txtColor))
 
-                binding.llPrint.background=resources.getDrawable(R.drawable.background_square_border_grey)
+                binding.llPrint.background =
+                    resources.getDrawable(R.drawable.background_square_border_grey)
                 binding.llPrint.setTextColor(resources.getColor(R.color.txtColor))
                 moveToDashboard()
             }
             R.id.llPrint -> {
                 //removeCustomer()
-                binding.llPrint.background=resources.getDrawable(R.drawable.button_selected)
+                binding.llPrint.background = resources.getDrawable(R.drawable.button_selected)
                 binding.llPrint.setTextColor(resources.getColor(R.color.white))
 
-                binding.llEmail.background=resources.getDrawable(R.drawable.background_square_border_grey)
+                binding.llEmail.background =
+                    resources.getDrawable(R.drawable.background_square_border_grey)
                 binding.llEmail.setTextColor(resources.getColor(R.color.txtColor))
 
-                binding.llMessage.background=resources.getDrawable(R.drawable.background_square_border_grey)
+                binding.llMessage.background =
+                    resources.getDrawable(R.drawable.background_square_border_grey)
                 binding.llMessage.setTextColor(resources.getColor(R.color.txtColor))
 
-                binding.llNoReceipt.background=resources.getDrawable(R.drawable.background_square_border_grey)
+                binding.llNoReceipt.background =
+                    resources.getDrawable(R.drawable.background_square_border_grey)
                 binding.llNoReceipt.setTextColor(resources.getColor(R.color.txtColor))
 
                 if (isDineIn) {
@@ -1890,7 +1903,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
 
             try {
-                builder.addPulse(Printer.DRAWER_HIGH,Printer.PULSE_100)
+                builder.addPulse(Printer.DRAWER_HIGH, Printer.PULSE_100)
                 PrinterClass.getPrinter()?.sendData(
                     builder,
                     PrinterClass.BLUETOOTH_TIMEOUT, status, battery
@@ -2986,22 +2999,22 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             try {
 
 
-                builder.addPulse(Printer.DRAWER_HIGH,Printer.PULSE_100)
+                builder.addPulse(Printer.DRAWER_HIGH, Printer.PULSE_100)
 
-                    PrinterClass.getPrinter()?.sendData(
-                        builder,
-                        if (customerReceiptPrinters.name.substring(0, 6).toString()
-                                .lowercase() == "TM-m30".lowercase() || customerReceiptPrinters.name.substring(
-                                0,
-                                6
-                            ).toString().lowercase() == "TM-m10".lowercase()
-                        ) {
-                            PrinterClass.BLUETOOTH_TIMEOUT
-                        } else {
-                            PrinterClass.SEND_TIMEOUT
+                PrinterClass.getPrinter()?.sendData(
+                    builder,
+                    if (customerReceiptPrinters.name.substring(0, 6).toString()
+                            .lowercase() == "TM-m30".lowercase() || customerReceiptPrinters.name.substring(
+                            0,
+                            6
+                        ).toString().lowercase() == "TM-m10".lowercase()
+                    ) {
+                        PrinterClass.BLUETOOTH_TIMEOUT
+                    } else {
+                        PrinterClass.SEND_TIMEOUT
 
-                        }, status, battery
-                    )
+                    }, status, battery
+                )
 
                 PrinterClass.closePrinter()
 
@@ -3426,7 +3439,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 builder.addFeedLine(1)
                 builder.addTextAlign(Builder.ALIGN_CENTER)
 
-               /* var bitmap = getBitmapFromURL(prefProvider.getValue(VENUE_LOGO, ""))*/
+                /* var bitmap = getBitmapFromURL(prefProvider.getValue(VENUE_LOGO, ""))*/
 
                 val decodedString: ByteArray = android.util.Base64.decode(
                     prefProvider.getValue(VENUE_LOGO, ""),
@@ -3522,7 +3535,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             builder.addTextAlign(Builder.ALIGN_CENTER)
             builder.addText(receiptModel?.order?.orderType + "\n")
             Log.e(TAG, "orderType:  ${receiptModel?.order?.orderType}")
-            if (receiptModel?.order?.orderType?.lowercase() == OPEN_ORDER_.lowercase()
+            if (receiptModel?.order?.orderType?.lowercase() == OPEN_ORDER.lowercase()
                 || receiptModel?.order?.orderType?.lowercase() == OPEN_ORDER.lowercase()
             ) {
 
@@ -4447,7 +4460,6 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             }
 
             builder.addFeedLine(2)
-
             builder.addCut(Builder.CUT_FEED)
 
             val status = IntArray(1)
@@ -4456,7 +4468,10 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
 
             try {
-                builder.addPulse(com.epson.epos2.printer.Printer.DRAWER_HIGH,com.epson.epos2.printer.Printer.PULSE_100)
+                builder.addPulse(
+                    com.epson.epos2.printer.Printer.DRAWER_HIGH,
+                    com.epson.epos2.printer.Printer.PULSE_100
+                )
                 PrinterClass.getPrinter()?.sendData(
                     builder,
                     BLUETOOTH_TIMEOUT, status, battery
@@ -4944,6 +4959,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
     fun removeCustomer() {
         prefProvider.setValue(Constants.CUSTOMER_NAME, "")
+        prefProvider.setValueInt(Constants.CUSTOMER_ID, -1)
         prefProvider.setValue("PaidAmount", "")
         prefProvider.setValue("WholeTotal", "")
         prefProvider.setValue(SUB_TOTAL, "")

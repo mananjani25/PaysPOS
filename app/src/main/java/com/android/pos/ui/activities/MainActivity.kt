@@ -271,7 +271,7 @@ class MainActivity : BaseScannerActivity() {
 
     private fun observeShowProgress() {
 
-        viewModel.showProgress.observe(this, { event ->
+        viewModel.showProgress.observe(this) { event ->
             event.getContentIfNotHandled()?.let {
                 if (it) {
                     ProgressUtils.showProgressDialog(this)
@@ -279,10 +279,10 @@ class MainActivity : BaseScannerActivity() {
                     ProgressUtils.dismissProgressDialog()
                 }
             }
-        })
+        }
 
 
-        viewModel.logout.observe(this, { event ->
+        viewModel.logout.observe(this) { event ->
             event.getContentIfNotHandled()?.let {
                 if (it) {
                     clearPreferences()
@@ -292,7 +292,7 @@ class MainActivity : BaseScannerActivity() {
                     viewModel.clearTable()
                 }
             }
-        })
+        }
 
     }
 

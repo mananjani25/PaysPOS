@@ -11,11 +11,12 @@
         android:background="@color/bg_color"
         android:orientation="horizontal">
 
-        <androidx.appcompat.widget.LinearLayoutCompat
+        <RelativeLayout
             android:layout_gravity="center"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:paddingVertical="@dimen/_5sdp">
 
             <TextView
                 android:id="@+id/txtKeypad"
@@ -28,20 +29,25 @@
                 android:padding="@dimen/_5sdp"
                 android:text="@string/keypad"
                 android:textColor="@color/txtColor"
-                android:textSize="@dimen/_5mdpi" />
+                android:textSize="@dimen/_6mdpi" />
 
             <TextView
                 android:id="@+id/txtProducts"
                 style="@style/CustomFontSemiBold"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
+                android:layout_alignParentEnd="true"
+                android:layout_gravity="end"
                 android:background="?attr/selectableItemBackground"
+                android:gravity="end"
                 android:padding="@dimen/_5sdp"
-                android:text="@string/products"
-                android:visibility="visible"
+                android:text="@string/tv_home"
+                android:textAllCaps="true"
                 android:textColor="@color/txt_color_blue"
-                android:textSize="@dimen/_5mdpi" />
+
+
+                android:textSize="@dimen/_6mdpi"
+                android:visibility="visible" />
 
             <!-- android:background="?attr/selectableItemBackground"-->
             <TextView
@@ -56,7 +62,7 @@
                 android:textSize="@dimen/_5mdpi" />
 
 
-        </androidx.appcompat.widget.LinearLayoutCompat>
+        </RelativeLayout>
 
 
         <androidx.appcompat.widget.LinearLayoutCompat
@@ -78,7 +84,8 @@
                 android:layout_toStartOf="@+id/autoSearch"
                 android:contentDescription="@string/search"
                 android:src="@drawable/ic_search"
-                app:tint="@color/txtColor" />
+
+                 />
 
             <AutoCompleteTextView
                 android:id="@+id/autoSearch"
@@ -94,7 +101,7 @@
                 android:hint="@string/scan_barcode_or_search"
                 android:imeOptions="actionDone"
                 android:inputType="text"
-                android:textColor="@color/black"
+                android:textColor="@color/txtColor"
                 android:textColorHint="@color/hint_color"
                 android:textSize="@dimen/_5mdpi" />
 
@@ -110,7 +117,7 @@
                 android:padding="@dimen/_5sdp"
                 android:background="?attr/selectableItemBackground"
                 android:src="@drawable/ic_sync"
-                app:tint="@color/txtColor" />
+                 />
 
 
             <ImageView
@@ -125,7 +132,7 @@
                 android:contentDescription="@string/menu"
                 android:padding="@dimen/_5sdp"
                 android:src="@drawable/ic_dot_menu"
-                app:tint="@color/txtColor" />
+                 />
 
 
         </androidx.appcompat.widget.LinearLayoutCompat>

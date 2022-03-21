@@ -14,6 +14,7 @@ import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.DINE_IN
 import com.android.pos.data.remote.Constants.IS_PRINTER_QUEUE_ENABLE
 import com.android.pos.data.remote.Constants.PAYMENT_ID
+import com.android.pos.data.remote.Constants.TAKEOUT
 import com.android.pos.data.repositories.PosRepository
 import com.android.pos.di.PrefProvider
 import com.android.pos.utils.Event
@@ -41,6 +42,7 @@ class PaymentViewModel @Inject constructor(
     private var orderId: Int? = null
     private var paymentId: Int? = null
     private var paymentOfflineId: String? = null
+    public var order_type_id = -1
     private var orderOfflineId: String? = null
     private val _snackbarText = MutableLiveData<Event<Any?>>()
     val snackbarText: LiveData<Event<Any?>> = _snackbarText
@@ -81,6 +83,13 @@ class PaymentViewModel @Inject constructor(
     public var actual_CashDiscountSurCharge: Double = 0.0
     public var actual_CardAmount: Double = 0.0
 
+    private var magensaResponse: String? = null
+
+    fun cardReaderList() = posRepository.cardReaderActiveList()
+
+    fun setOrderTypeId(order_typeId: Int) {
+        this.order_type_id = order_typeId
+    }
 
     fun submit(orderRequestModel: OrderRequestModel) {
 
@@ -120,26 +129,18 @@ class PaymentViewModel @Inject constructor(
                                 }
 
                                 if (orderRequestModel.order.openOrderType == Constants.OPEN_ORDER
-                                    || orderRequestModel.order.openOrderType == Constants.OPEN_ORDER_
+                                    || orderRequestModel.order.openOrderType == Constants.OPEN_ORDER
                                 ) {
-                                    posRepository.deleteCart(prefProvider.getValueInt(Constants.EMPLOYEE_ID,0))
+                                    posRepository.deleteCart(
+                                        prefProvider.getValueInt(
+                                            Constants.EMPLOYEE_ID,
+                                            0
+                                        )
+                                    )
                                 }
 
                                 if (onlySave) {
-                                    if (prefProvider.getValueboolean(
-                                            IS_PRINTER_QUEUE_ENABLE,
-                                            false
-                                        )
-                                    ) {
-
-
-                                        _queueStartSaveOrder.value = Event(createOrderResponse)
-                                    } else {
-                                        _queueStart.value = Event(createOrderResponse)
-                                        //_data.value = Event(createOrderResponse)
-                                    }
-                                    //_queueStart.value = Event(createOrderResponse)
-
+                                    _queueCreateSaveOrder.value = Event(true)
                                 } else {
                                     if (createOrderResponse.data.order.orderType != "Dine In") {
                                         cashLogApi(createOrderResponse, "in")
@@ -211,7 +212,12 @@ class PaymentViewModel @Inject constructor(
                         if (response?.status == 200) {
 
                             if (splitValue != -1) {
-                                posRepository.deleteCart(prefProvider.getValueInt(Constants.EMPLOYEE_ID,0))
+                                posRepository.deleteCart(
+                                    prefProvider.getValueInt(
+                                        Constants.EMPLOYEE_ID,
+                                        0
+                                    )
+                                )
                             }
                             resource.data?.let { createOrderResponse ->
                                 if (createOrderResponse.data.order.payments.isNotEmpty()) {
@@ -285,16 +291,7 @@ class PaymentViewModel @Inject constructor(
 
                             if (order.payments.isNotEmpty()) {
                                 if (order.payments[order.payments.size - 1].amount == totalPayAmounts) {
-                                    if (prefProvider.getValueboolean(
-                                            IS_PRINTER_QUEUE_ENABLE,
-                                            false
-                                        )
-                                    ) {
-                                        _queueStart.value = Event(createOrderResponse)
-                                    } else {
-
-                                        _data.value = Event(createOrderResponse)
-                                    }
+                                    _data.value = Event(createOrderResponse)
                                 } else {
                                     cashOutApi(createOrderResponse, "out")
                                 }
@@ -406,6 +403,12 @@ class PaymentViewModel @Inject constructor(
         if (isUpdateOrder)
             orderAttributeRequestModel.id = orderId
 
+
+
+        orderAttributeRequestModel.openOrderType =
+            prefProvider.getValue(Constants.ORDER_TYPE, TAKEOUT)
+
+        orderAttributeRequestModel.orderTypeId = order_type_id
         orderAttributeRequestModel.date = TimeFormatUtils.getCurrentDate()
         if (future_delivery_date.isNotEmpty())
             orderAttributeRequestModel.futureDeliveryDate = future_delivery_date
@@ -415,13 +418,12 @@ class PaymentViewModel @Inject constructor(
 
         if (cartModel.openOrderType.isNotEmpty() && cartModel.openOrderType != null) {
             orderAttributeRequestModel.deliveryType = cartModel.openOrderType
-        }
-        else{
+        } else {
             orderAttributeRequestModel.deliveryType = cartModel.deliveryType
         }
-        orderAttributeRequestModel.employeeId = cartModel.employeeID
-        orderAttributeRequestModel.locationId = cartModel.locationId
-        orderAttributeRequestModel.terminalId = cartModel.terminalId
+        orderAttributeRequestModel.employeeId = prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
+        orderAttributeRequestModel.locationId = prefProvider.getValueInt(Constants.LOCATION_ID, 1)
+        orderAttributeRequestModel.terminalId = prefProvider.getValueInt(Constants.TERMINAL_ID, 0)
         orderAttributeRequestModel.note = cartModel.note
         if (paymentType == "Cash") {
             if (cashdiscountType == "SurCharge") {
@@ -434,6 +436,8 @@ class PaymentViewModel @Inject constructor(
 
                 orderAttributeRequestModel.totalAmount = actual_Total - actual_CashDiscountSurCharge
             } else {
+                orderAttributeRequestModel.cash_discount_or_surcharge = 0.0
+                orderAttributeRequestModel.cash_discount_type = ""
                 orderAttributeRequestModel.totalAmount = actual_Total
             }
         } /*else if (paymentType == "Card") {
@@ -448,8 +452,6 @@ class PaymentViewModel @Inject constructor(
         orderAttributeRequestModel.offlineId =
             if (isUpdateOrder) orderOfflineId.toString() else randomOfflineId()
         Log.e(TAG, "openOrderType: " + cartModel.orderType)
-        orderAttributeRequestModel.openOrderType = cartModel.orderType
-        orderAttributeRequestModel.orderTypeId = cartModel.orderTypeId
         orderAttributeRequestModel.paymentStatus = if (isPaid) 1 else 0
         orderAttributeRequestModel.serviceChargeEnabled = true
         orderAttributeRequestModel.taxEnabled = true
@@ -566,8 +568,7 @@ class PaymentViewModel @Inject constructor(
 
         if (cartModel.openOrderType.isNotEmpty() && cartModel.openOrderType != null) {
             orderAttributeRequestModel.deliveryType = cartModel.openOrderType
-        }
-        else{
+        } else {
             orderAttributeRequestModel.deliveryType = cartModel.deliveryType
         }
         orderAttributeRequestModel.employeeId = cartModel.employeeID
@@ -678,6 +679,12 @@ class PaymentViewModel @Inject constructor(
         if (isUpdateOrder)
             orderAttributeRequestModel.id = orderId
 
+
+
+        orderAttributeRequestModel.openOrderType =
+            prefProvider.getValue(Constants.ORDER_TYPE, TAKEOUT)
+
+        orderAttributeRequestModel.orderTypeId = order_type_id
         orderAttributeRequestModel.date = TimeFormatUtils.getCurrentDate()
         if (future_delivery_date.isNotEmpty())
             orderAttributeRequestModel.futureDeliveryDate = future_delivery_date
@@ -687,32 +694,26 @@ class PaymentViewModel @Inject constructor(
 
         if (cartModel.openOrderType.isNotEmpty() && cartModel.openOrderType != null) {
             orderAttributeRequestModel.deliveryType = cartModel.openOrderType
-        }
-        else{
+        } else {
             orderAttributeRequestModel.deliveryType = cartModel.deliveryType
         }
         orderAttributeRequestModel.employeeId = cartModel.employeeID
         orderAttributeRequestModel.locationId = cartModel.locationId
         orderAttributeRequestModel.terminalId = cartModel.terminalId
         orderAttributeRequestModel.note = cartModel.note
-        /*if (paymentType == "Cash") {
-            if (cashdiscountType == "SurCharge") {
-                orderAttributeRequestModel.cash_discount_type = ""
-                orderAttributeRequestModel.cash_discount_or_surcharge = 0.0
-            } else if (cashdiscountType == "CashDiscount") {
-                orderAttributeRequestModel.cash_discount_or_surcharge = actual_CashDiscountSurCharge
-                orderAttributeRequestModel.cash_discount_type = cashdiscountType
-            }
-        } else*/ if (paymentType == "Card") {
+        if (paymentType == "Card") {
             if (cashdiscountType == "SurCharge") {
                 orderAttributeRequestModel.cash_discount_or_surcharge = actual_CashDiscountSurCharge
                 orderAttributeRequestModel.cash_discount_type = cashdiscountType
-
                 orderAttributeRequestModel.totalAmount =
                     actual_CardAmount + actual_CashDiscountSurCharge
             } else if (cashdiscountType == "CashDiscount") {
                 orderAttributeRequestModel.cash_discount_type = ""
                 orderAttributeRequestModel.cash_discount_or_surcharge = 0.0
+                orderAttributeRequestModel.totalAmount = actual_CardAmount
+            } else {
+                orderAttributeRequestModel.cash_discount_or_surcharge = 0.0
+                orderAttributeRequestModel.cash_discount_type = ""
                 orderAttributeRequestModel.totalAmount = actual_CardAmount
             }
         }
@@ -720,8 +721,6 @@ class PaymentViewModel @Inject constructor(
         orderAttributeRequestModel.offlineId =
             if (isUpdateOrder) orderOfflineId.toString() else randomOfflineId()
 
-        orderAttributeRequestModel.openOrderType = cartModel.orderType
-        orderAttributeRequestModel.orderTypeId = cartModel.orderTypeId
         orderAttributeRequestModel.paymentStatus = if (isPaid) 1 else 0
         orderAttributeRequestModel.serviceChargeEnabled = true
         orderAttributeRequestModel.taxEnabled = true
@@ -1580,4 +1579,10 @@ class PaymentViewModel @Inject constructor(
 
 
     }
+
+    fun setMagensaResponse(response: String?) {
+        magensaResponse = response
+
+    }
+
 }

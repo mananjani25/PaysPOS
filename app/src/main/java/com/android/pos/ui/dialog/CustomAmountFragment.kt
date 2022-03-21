@@ -33,35 +33,125 @@ class CustomAmountFragment : DialogFragment() {
 
 
         binding.edtAmount.addTextChangedListener(AmountTextWatcher(binding.edtAmount, false))
-        totalprice = requireArguments().getDouble("totalprice")
+        if (arguments != null)
+            totalprice = requireArguments().getDouble("totalprice")
+/*
         binding.txtAmount.text = "$ " + String.format(
             "%.2f",
             totalprice
         ) + " Cash"
+*/
 
         binding.imgBack.setOnClickListener {
             dismiss()
         }
         binding.txtSend.setOnClickListener {
-            var custom_amount = binding.edtAmount.text.toString().replace("$", "").toDouble()
-            if (custom_amount > totalprice) {
-                val result = Bundle().apply {
-                    putDouble("amount", custom_amount)
-                    putDouble("totalAmount", totalprice)
-                }
-                setFragmentResult("request_for_customAmount", result)
-                findNavController().navigateUp()
-            } else {
-                AlertUtils.showCustomAlertWithListenerWithOK(
-                    requireContext(),
-                    "Please enter amount greater than actual amount"
-                ) { _, _ ->
+            if (binding.edtAmount.text.toString().isNotEmpty()){
+                var custom_amount = binding.edtAmount.text.toString().replace("$", "").toDouble()
+                if (custom_amount > totalprice) {
+                    val result = Bundle().apply {
+                        putDouble("amount", custom_amount)
+                        putDouble("totalAmount", totalprice)
+                    }
+                    setFragmentResult("request_for_customAmount", result)
+                    findNavController().navigateUp()
+                } else {
+                    AlertUtils.showCustomAlertWithListenerWithOK(
+                        requireContext(),
+                        "Please enter amount greater than actual amount"
+                    ) { _, _ ->
+                    }
                 }
             }
 
         }
+        setKeyPad()
         return binding.root
     }
+
+    private fun setKeyPad() {
+        binding.txt10.text = "$10.00"
+        binding.txt20.text = "$20.00"
+        binding.txt30.text = "$30.00"
+
+        binding.txt10.setOnClickListener {
+            binding.edtAmount.setText("$10.00")
+        }
+        binding.txt20.setOnClickListener {
+            binding.edtAmount.setText("$20.00")
+        }
+        binding.txt30.setOnClickListener {
+            binding.edtAmount.setText("$30.00")
+        }
+
+        binding.tvOne.setOnClickListener {
+            calculateValue("1", false)
+
+        }
+
+        binding.tvTwo.setOnClickListener {
+            calculateValue("2", false)
+
+        }
+
+        binding.tvThree.setOnClickListener {
+            calculateValue("3", false)
+
+        }
+
+        binding.tvFour.setOnClickListener {
+
+            calculateValue("4", false)
+        }
+
+        binding.tvFive.setOnClickListener {
+            calculateValue("5", false)
+        }
+
+        binding.tvSix.setOnClickListener {
+            calculateValue("6", false)
+        }
+
+        binding.tvSeven.setOnClickListener {
+            calculateValue("7", false)
+        }
+
+        binding.tvEight.setOnClickListener {
+            calculateValue("8", false)
+        }
+
+        binding.tvNine.setOnClickListener {
+            calculateValue("9", false)
+        }
+
+        binding.tvZero.setOnClickListener {
+            calculateValue("0", false)
+        }
+
+        binding.tvClear.setOnClickListener {
+            calculateValue("", true)
+        }
+        binding.tvDZero.setOnClickListener {
+            calculateValue("00", false)
+        }
+
+    }
+
+    private fun calculateValue(number: String, delete: Boolean) {
+        /*discountAdapter.clearSelectedItem()
+        selectedListPos = -1*/
+        if (binding.edtAmount.text?.length!! > 1 && delete) {
+            binding.edtAmount.setText(removeLastCharacter(binding.edtAmount.text.toString()))
+
+        } else {
+            binding.edtAmount.append(number)
+        }
+    }
+    private fun removeLastCharacter(str: String): String {
+        return str.substring(0, str.length - 1)
+    }
+
+
 
     override fun onResume() {
         super.onResume()

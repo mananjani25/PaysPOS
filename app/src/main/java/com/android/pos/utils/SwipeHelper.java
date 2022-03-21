@@ -218,15 +218,15 @@ public abstract class SwipeHelper extends ItemTouchHelper.SimpleCallback {
 
     public static class UnderlayButton {
         private final String text;
-        private final int imageResId;
+        private final int textColor;
         private final int color;
         private int pos;
         private RectF clickRegion;
         private final UnderlayButtonClickListener clickListener;
 
-        public UnderlayButton(String text, int imageResId, int color, UnderlayButtonClickListener clickListener) {
+        public UnderlayButton(String text, int textColor, int color, UnderlayButtonClickListener clickListener) {
             this.text = text;
-            this.imageResId = imageResId;
+            this.textColor = textColor;
             this.color = color;
             this.clickListener = clickListener;
         }
@@ -248,9 +248,10 @@ public abstract class SwipeHelper extends ItemTouchHelper.SimpleCallback {
             c.drawRect(rect, p);
 
             // Draw Text
-            p.setColor(Color.WHITE);
-            p.setTypeface(Typeface.DEFAULT_BOLD);
+            p.setColor(textColor);
+           // p.setTypeface(Typeface.defaultFromStyle(Typeface.BOLD));
             p.setTextSize(16f);
+            p.setAntiAlias(true);
 
             Rect r = new Rect();
             float cHeight = rect.height();

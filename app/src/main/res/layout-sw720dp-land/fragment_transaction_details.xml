@@ -53,7 +53,7 @@
                     android:gravity="center"
                     android:text="@{`Order `+orderDetails.data.order.offline_id}"
                     android:textColor="@color/txtColor"
-                    android:textSize="@dimen/_txtTitle"
+                    android:textSize="@dimen/_7mdpi"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@+id/txtHome"
                     app:layout_constraintStart_toStartOf="parent"
@@ -69,6 +69,7 @@
                     android:gravity="center"
                     android:padding="@dimen/_6sdp"
                     android:text="Home"
+                    android:textAllCaps="true"
                     android:textColor="@color/txt_color_blue"
                     android:textSize="@dimen/_6mdpi" />
 
@@ -269,7 +270,7 @@
                                     android:layout_height="wrap_content"
                                     android:layout_alignParentStart="true"
                                     android:layout_marginStart="@dimen/_3sdp"
-                                    android:text="@string/tv_tips"
+                                    android:text="Tip"
                                     android:textColor="@color/txtColorGray"
                                     android:textSize="@dimen/text_size_medium" />
 
@@ -368,7 +369,6 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_marginTop="@dimen/_3sdp"
-                                android:layout_marginBottom="@dimen/_10sdp"
                                 android:orientation="horizontal"
                                 android:padding="@dimen/_2sdp">
 
@@ -422,7 +422,7 @@
                                     android:layout_marginRight="@dimen/_5sdp"
                                     android:gravity="end"
                                     android:text=""
-                                    android:textColor="@color/colorRed"
+                                    android:textColor="@color/btnColor"
                                     android:textSize="@dimen/text_size_medium" />
                             </RelativeLayout>
 
@@ -697,11 +697,13 @@
                     </LinearLayout>
 
                     <LinearLayout
+                        android:id="@+id/llNotes"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginBottom="@dimen/_1sdp"
                         android:orientation="horizontal"
                         android:padding="@dimen/_2sdp"
+                        android:visibility="gone"
                         >
 
                         <androidx.appcompat.widget.AppCompatTextView
@@ -714,12 +716,12 @@
                             android:textSize="@dimen/text_size_medium" />
 
                         <androidx.appcompat.widget.AppCompatTextView
+                            android:id="@+id/tvNote"
                             style="@style/CustomFontSemiBold"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="@dimen/_3sdp"
                             android:gravity="end"
-                            android:text="@{orderDetails.data.order.note}"
                             android:textColor="@color/white"
                             android:textSize="@dimen/text_size_medium" />
                     </LinearLayout>
@@ -837,7 +839,7 @@
                             android:text="@string/tv_transactions"
 
                             android:textColor="@color/txtColor"
-                            android:textSize="@dimen/text_size_large" />
+                            android:textSize="@dimen/_6mdpi" />
 
 
                     </LinearLayout>
@@ -855,18 +857,34 @@
                         >
 
                         <ImageView
-                            android:layout_width="wrap_content"
+                            android:layout_width="@dimen/_8sdp"
+                            android:adjustViewBounds="true"
                             android:layout_height="wrap_content"
                             android:src="@drawable/ic_check_circle_green" />
 
-                        <androidx.appcompat.widget.AppCompatTextView
-                            android:id="@+id/tvTransactionDate"
-                            style="@style/CustomFontSemiBold"
+                        <androidx.appcompat.widget.LinearLayoutCompat
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:orientation="vertical"
                             android:layout_marginStart="@dimen/_3sdp"
-                            android:textColor="@color/txtColor"
-                            android:textSize="@dimen/_5mdpi" />
+                            >
+                            <androidx.appcompat.widget.AppCompatTextView
+                                android:id="@+id/tvTransactionTime"
+                                style="@style/CustomFontSemiBold"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textColor="@color/txtColor"
+                                android:textSize="@dimen/_5mdpi" />
+                            <androidx.appcompat.widget.AppCompatTextView
+                                android:id="@+id/tvTransactionDate"
+                                style="@style/CustomFontSemiBold"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textColor="@color/cool_grey"
+                                android:textSize="@dimen/_5mdpi" />
+
+                        </androidx.appcompat.widget.LinearLayoutCompat>
+
 
                         <androidx.appcompat.widget.AppCompatTextView
                             style="@style/CustomFontBold"
@@ -879,31 +897,46 @@
                             android:textSize="@dimen/_5mdpi" />
                     </LinearLayout>
 
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="0.5dp"
-                        android:background="@color/view" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
                         android:padding="@dimen/_3sdp"
+                        android:layout_marginStart="1dp"
                         >
 
                         <ImageView
-                            android:layout_width="wrap_content"
+                            android:layout_width="@dimen/_7sdp"
                             android:layout_height="wrap_content"
+                            android:adjustViewBounds="true"
                             android:src="@drawable/ic_dollar_filled" />
 
-                        <androidx.appcompat.widget.AppCompatTextView
-                            style="@style/CustomFontSemiBold"
+                        <androidx.appcompat.widget.LinearLayoutCompat
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="@dimen/_3sdp"
-                            android:text="@{@string/symbole +``+String.format(@string/format,(orderDetails.data.amount + orderDetails.data.tips))}"
-                            android:textColor="@color/txtColor"
-                            android:textSize="@dimen/_5mdpi" />
+                            android:orientation="vertical">
+
+                            <androidx.appcompat.widget.AppCompatTextView
+                                style="@style/CustomFontSemiBold"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@{@string/symbole +``+String.format(@string/format,(orderDetails.data.amount + orderDetails.data.tips))}"
+                                android:textColor="@color/txtColor"
+                                android:textSize="@dimen/_5mdpi" />
+                            <androidx.appcompat.widget.AppCompatTextView
+                                style="@style/CustomFontSemiBold"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="Payment"
+                                android:textAllCaps="true"
+                                android:textColor="@color/cool_grey"
+                                android:textSize="@dimen/_5mdpi" />
+
+                        </androidx.appcompat.widget.LinearLayoutCompat>
+
+
 
                     </LinearLayout>
 
@@ -937,7 +970,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_gravity="center"
-                    android:background="@drawable/button_hover_blue"
+                    android:background="@drawable/button_action_hover"
                     android:gravity="center"
                     android:paddingHorizontal="@dimen/_7sdp"
                     android:paddingVertical="@dimen/_10sdp"
@@ -953,7 +986,7 @@
                     android:layout_height="match_parent"
                     android:layout_gravity="center"
                     android:layout_marginTop="@dimen/_10sdp"
-                    android:background="@drawable/button_hover_blue"
+                    android:background="@drawable/button_action_hover"
                     android:gravity="center"
                     android:paddingHorizontal="@dimen/_7sdp"
                     android:paddingVertical="@dimen/_10sdp"
@@ -968,7 +1001,7 @@
                     android:layout_height="match_parent"
                     android:layout_gravity="center"
                     android:layout_marginTop="@dimen/_10sdp"
-                    android:background="@drawable/button_hover_blue"
+                    android:background="@drawable/button_action_hover"
                     android:gravity="center"
                     android:paddingHorizontal="@dimen/_7sdp"
                     android:paddingVertical="@dimen/_10sdp"
@@ -984,7 +1017,7 @@
                     android:layout_height="match_parent"
                     android:layout_gravity="center"
                     android:layout_marginTop="@dimen/_10sdp"
-                    android:background="@drawable/button_hover_blue"
+                    android:background="@drawable/button_action_hover"
                     android:gravity="center"
                     android:paddingHorizontal="@dimen/_7sdp"
                     android:paddingVertical="@dimen/_10sdp"
@@ -1000,7 +1033,7 @@
                     android:layout_height="match_parent"
                     android:layout_gravity="center"
                     android:layout_marginTop="@dimen/_10sdp"
-                    android:background="@drawable/button_hover_blue"
+                    android:background="@drawable/button_action_hover"
                     android:gravity="center"
                     android:paddingHorizontal="@dimen/_7sdp"
                     android:paddingVertical="@dimen/_10sdp"

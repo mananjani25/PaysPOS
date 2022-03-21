@@ -8,6 +8,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -157,8 +158,8 @@ class Categories : Fragment() {
 
                 underlayButtons.add(UnderlayButton(
                     "Hide",
-                    0,
-                    Color.parseColor("#0AB833")
+                    ContextCompat.getColor(context, R.color.swipe_text_color),
+                    ContextCompat.getColor(context, R.color.swipe_bg_hide)
                 ) { pos ->
                     // hideCategoryCall(pos)
 
@@ -177,8 +178,8 @@ class Categories : Fragment() {
                 })
                 underlayButtons.add(UnderlayButton(
                     "Edit",
-                    0,
-                    Color.parseColor("#2997cc")
+                    ContextCompat.getColor(context, R.color.swipe_text_color),
+                    ContextCompat.getColor(context, R.color.swipe_bg_edit)
                 ) { pos ->
                     val bundle = Bundle()
                     bundle.putBoolean("isEdit", true)
@@ -193,8 +194,8 @@ class Categories : Fragment() {
 
                 underlayButtons.add(UnderlayButton(
                     "Delete",
-                    0,
-                    Color.parseColor("#FF3C30")
+                    ContextCompat.getColor(context, R.color.swipe_text_color),
+                    ContextCompat.getColor(context, R.color.swipe_bg_delete)
                 ) { pos ->
 
                     alert(

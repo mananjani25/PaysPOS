@@ -151,6 +151,7 @@ object Constants {
     const val REORDER_ITEM = "items/{id}/reorder"
 
     const val TEAM_ROLES = "team_roles"
+    const val TIME_TRACKER_ENABLED = "time_Trackerenable"
     const val TEAM_ROLES_UPDATE_DELETE = "team_roles/{id}"
     const val GET_TEAM_MODULE = "team_roles/modules"
 
@@ -496,4 +497,24 @@ object Constants {
     const val TOTAL_PRICE_DINEIN = "totalprice_dinein"
     const val LAYOUT_ORIENTATION = "layout_orientation"
 
+
+    const val MAGENSA_SETTINGS = "magensaSettings"
+
+    const val ELAVON_GATEWAY = "Elavon"
+    const val FIRST_DATA_GATEWAY = "Rapid Connect" //(First Data Nashville/Omaha/North)
+    const val CHASE_GATEWAY = "Chase" // (Orbital)
+    const val EPX_GATEWAY = "EPX"
+    const val HEARTLAND_GATEWAY = "Heartland"
+    const val TSYS_GATEWAY = "TSYS" //(MultiPass)
+    const val VANIT_EXORESS_GATEWAY = "Vantiv Express" //(WorldPay)
+
+    const val SALE = 1
+    const val AUTHORIZE = 2
+    const val CAPTURE = 3
+    const val VOID = 4
+    const val REFUND1 = 5
+    const val FORCE = 6
+    const val REJECT = 7
+
+    const val MAGTEK_HARDWARE = "MegtekHardware"
 }

@@ -29,6 +29,8 @@ data class GetEmployeesTimeSheetResponse(
         val teamId: Int,
         @SerializedName("team_name")
         val teamName: String,
+        @SerializedName("team_role_name")
+        val teamRoleName: String,
         @SerializedName("team_role")
         val teamRole: Int,
         @SerializedName("total_hours")

@@ -38,7 +38,7 @@
                 android:gravity="center"
                 android:text="@{itemSheetModel.teamName}"
                 android:textColor="@color/txtColor"
-                android:textSize="@dimen/_5mdpi" />
+                android:textSize="@dimen/_6mdpi" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 style="@style/CustomFontSemiBold"
@@ -48,7 +48,7 @@
                 android:gravity="center"
                 android:text="@{``+itemSheetModel.totalHours}"
                 android:textColor="@color/txtColor"
-                android:textSize="@dimen/_5mdpi" />
+                android:textSize="@dimen/_6mdpi" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 style="@style/CustomFontSemiBold"
@@ -58,7 +58,7 @@
                 android:gravity="center"
                 android:text="@{itemSheetModel.totalWage}"
                 android:textColor="@color/btnColor"
-                android:textSize="@dimen/_5mdpi" />
+                android:textSize="@dimen/_6mdpi" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 style="@style/CustomFontSemiBold"
@@ -68,7 +68,7 @@
                 android:gravity="center"
                 android:text="@{itemSheetModel.dataOfWeek.mon}"
                 android:textColor="@color/txtColor"
-                android:textSize="@dimen/_5mdpi" />
+                android:textSize="@dimen/_6mdpi" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 style="@style/CustomFontSemiBold"
@@ -78,7 +78,7 @@
                 android:gravity="center"
                 android:text="@{itemSheetModel.dataOfWeek.tue}"
                 android:textColor="@color/txtColor"
-                android:textSize="@dimen/_5mdpi" />
+                android:textSize="@dimen/_6mdpi" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 style="@style/CustomFontSemiBold"
@@ -88,7 +88,7 @@
                 android:gravity="center"
                 android:text="@{itemSheetModel.dataOfWeek.wed}"
                 android:textColor="@color/txtColor"
-                android:textSize="@dimen/_5mdpi" />
+                android:textSize="@dimen/_6mdpi" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 style="@style/CustomFontSemiBold"
@@ -98,7 +98,7 @@
                 android:gravity="center"
                 android:text="@{itemSheetModel.dataOfWeek.thu}"
                 android:textColor="@color/txtColor"
-                android:textSize="@dimen/_5mdpi" />
+                android:textSize="@dimen/_6mdpi" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 style="@style/CustomFontSemiBold"
@@ -108,7 +108,7 @@
                 android:gravity="center"
                 android:text="@{itemSheetModel.dataOfWeek.fri}"
                 android:textColor="@color/txtColor"
-                android:textSize="@dimen/_5mdpi" />
+                android:textSize="@dimen/_6mdpi" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 style="@style/CustomFontSemiBold"
@@ -118,7 +118,7 @@
                 android:gravity="center"
                 android:text="@{itemSheetModel.dataOfWeek.sat}"
                 android:textColor="@color/txtColor"
-                android:textSize="@dimen/_5mdpi" />
+                android:textSize="@dimen/_6mdpi" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 style="@style/CustomFontSemiBold"
@@ -128,7 +128,7 @@
                 android:gravity="center"
                 android:text="@{itemSheetModel.dataOfWeek.sun}"
                 android:textColor="@color/txtColor"
-                android:textSize="@dimen/_5mdpi" />
+                android:textSize="@dimen/_6mdpi" />
         </LinearLayout>
 
     </LinearLayout>

@@ -6,5 +6,4 @@ data class CategoryTabModel(
     var isSelected: Boolean,
     val position: Int,
     var type:String =""
-    
 )

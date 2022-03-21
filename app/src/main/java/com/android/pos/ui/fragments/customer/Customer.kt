@@ -8,6 +8,7 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
 import android.view.*
+import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
@@ -48,7 +49,7 @@ class Customer : Fragment() {
     private var isLoading = false
     private var isLastPage = false
     private var firstDetailLoad = false
-    private var deletedPos:Int?=null
+    private var deletedPos: Int? = null
 
     val data = LinkedHashMap<String, String>()
     override fun onCreateView(
@@ -111,11 +112,18 @@ class Customer : Fragment() {
             }
 
         })
+        viewModel._customerNoDataFound.observe(viewLifecycleOwner) { event ->
+            binding.rvEmployeeList.visibility = View.GONE
+            binding.noCustomerDats.visibility = View.VISIBLE
+            binding.noCustomerDats.text = event.getContentIfNotHandled()
 
+        }
         viewModel._customerListResponse.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let { customerList ->
                 var data: ArrayList<TbCustomer>
                 if (customerList.isNotEmpty()) {
+                    binding.rvEmployeeList.visibility = View.VISIBLE
+                    binding.noCustomerDats.visibility = View.GONE
                     dynamicCustomerList.clear()
                     data = customerList as ArrayList<TbCustomer>
                     dynamicCustomerList.addAll(data)
@@ -129,7 +137,6 @@ class Customer : Fragment() {
                     } catch (e: Exception) {
 
                     }
-
                 }
 
             }
@@ -145,8 +152,8 @@ class Customer : Fragment() {
         if (currentpage == 1) {
             firstDetailLoad = false
         }
-        viewModel.customerList(data).observe(viewLifecycleOwner
-
+        viewModel.customerList(data).observe(
+            viewLifecycleOwner
 
         ) {
             it?.let { resource ->
@@ -158,7 +165,8 @@ class Customer : Fragment() {
                         if (resource.data != null) {
                             data =
                                 resource.data as ArrayList<TbCustomer>
-
+                            binding.rvEmployeeList.visibility = View.VISIBLE
+                            binding.noCustomerDats.visibility = View.GONE
                             Log.e(TAG, "getCustomerData ${Gson().toJson(data)}")
                             dynamicCustomerList.clear()
                             dynamicCustomerList.addAll(data)
@@ -239,11 +247,10 @@ class Customer : Fragment() {
             }
 
             override fun afterTextChanged(s: Editable?) {
-
                 try {
-                    if(s?.trim()?.isNotEmpty() == true){
+                    if (s?.trim()?.isNotEmpty() == true) {
                         searchByText(s?.trim().toString())
-                    }else{
+                    } else {
                         loadCustomerLocalList(1)
                     }
                 } catch (e: Exception) {
@@ -272,7 +279,7 @@ class Customer : Fragment() {
         binding.layoutTool.txtTitle.text = "Customers"
 
         binding.layoutTool.imgDrawer.setOnClickListener {
-            (requireActivity() as MainActivity).enableDrawer()
+            findNavController().navigate(R.id.action_customer_to_menuFragment2)
         }
         binding.layoutTool.txtHome.setOnClickListener {
             findNavController().navigate(R.id.action_customer_to_dashboardCategoryNew)
@@ -307,25 +314,25 @@ class Customer : Fragment() {
         viewModel.data.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
 
-               // customerAdapter.getList()[pos]
+                // customerAdapter.getList()[pos]
 
 
-
-                if (customerAdapter.getList().size-1!=deletedPos){
-                    if (customerAdapter.getList().lastIndex==deletedPos){
-                        val model= deletedPos?.minus(1)?.let { it1 -> customerAdapter.getList().get(it1) } as TbCustomer
+                if (customerAdapter.getList().size - 1 != deletedPos) {
+                    if (customerAdapter.getList().lastIndex == deletedPos) {
+                        val model = deletedPos?.minus(1)
+                            ?.let { it1 -> customerAdapter.getList().get(it1) } as TbCustomer
+                        binding.layoutTool.txtSubTitle.setText(model?.first_name + " " + model?.last_name)
+                        loadFragment(model)
+                    } else {
+                        val model = deletedPos?.plus(1)
+                            ?.let { it1 -> customerAdapter.getList().get(it1) } as TbCustomer
                         binding.layoutTool.txtSubTitle.setText(model?.first_name + " " + model?.last_name)
                         loadFragment(model)
                     }
-                    else{
-                        val model= deletedPos?.plus(1)?.let { it1 -> customerAdapter.getList().get(it1) } as TbCustomer
-                        binding.layoutTool.txtSubTitle.setText(model?.first_name + " " + model?.last_name)
-                        loadFragment(model)
-                    }
 
-                }
-                else{
-                    val model= deletedPos?.minus(1)?.let { it1 -> customerAdapter.getList().get(it1) } as TbCustomer
+                } else {
+                    val model = deletedPos?.minus(1)
+                        ?.let { it1 -> customerAdapter.getList().get(it1) } as TbCustomer
                     binding.layoutTool.txtSubTitle.setText(model?.first_name + " " + model?.last_name)
                     loadFragment(model)
                 }
@@ -370,10 +377,10 @@ class Customer : Fragment() {
             ) {
                 underlayButtons.add(UnderlayButton(
                     "Delete",
-                    0,
-                    Color.parseColor("#FFFFFF")
+                    ContextCompat.getColor(context, R.color.swipe_text_color_d),
+                    ContextCompat.getColor(context, R.color.white_swipe)
                 ) { pos ->
-                    deletedPos=pos
+                    deletedPos = pos
                     alert(
                         getString(R.string.app_name),
                         getString(R.string.delete_customer_message)

@@ -14,7 +14,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_margin="@dimen/_4sdp"
-            android:background="@drawable/categories_selector"
+            android:background="@drawable/item_selector"
             android:ellipsize="end"
             android:gravity="center"
             android:lines="1"
@@ -24,7 +24,7 @@
             android:paddingEnd="@dimen/_4sdp"
             android:paddingBottom="@dimen/_10sdp"
             android:text="FOOD"
-            android:textColor="@color/txtColor"
+            android:textColor="@color/black"
             android:textSize="@dimen/_6mdpi" />
 
 

@@ -421,6 +421,8 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                     }
                     viewModel.addCart(cartList[0])
                 }
+
+
             }
         }
 
@@ -967,7 +969,6 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
         binding.footer.linearMore.setOnClickListener {
             findNavController().navigate(R.id.action_dashboardCategoryNew_to_menuFragment)
-
             //dialogPOSMenu()
 
         }
@@ -4082,8 +4083,8 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
     private fun refreshOrderTypeLabel() {
         //set order type label
         var label = prefProvider.getValue(ORDER_TYPE, TAKEOUT).toString()
-        if (label.equals(OPEN_ORDER, true) || label.equals(OPEN_ORDER_, true)) {
-            label = OPEN_ORDER_
+        if (label.equals(OPEN_ORDER, true)) {
+            label = OPEN_ORDER
         }
         Log.e(TAG, "OrderType Label : $label")
         binding.layoutCart.txtOrderType.text = label
@@ -4223,6 +4224,27 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         })
     }
 
+    private fun queuePrinterObserver() {
+        viewModelPayment.QueueCreateSaveOrder.observe(requireActivity(), {
+            it.getContentIfNotHandled()?.let {
+                binding.layoutCart.txtSave.text = getString(R.string.save)
+                viewModel.deleteCart()
+                if (prefProvider.getValue(ORDER_TYPE, "").toString() != "") {
+                    prefProvider.setValue(ORDER_TYPE, "")
+                }
+
+
+                clearCustomer()
+                hideOrderType()
+                //getKitchenPrinters(it)
+                clearUpdateFlag()
+                findNavController().navigate(R.id.action_dashboardCategoryNew_to_orders)
+
+
+            }
+        })
+    }
+
     private fun createQueuePrinter(createOrder: CreateOrderResponse) {
         val listPrinter: List<Int> = listOf()
         val orderRequest = cartList?.let {
@@ -4256,27 +4278,6 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
         )
         viewModelPayment.createQueuePrinter(createRequest, createOrder)
-    }
-
-    private fun queuePrinterObserver() {
-        viewModelPayment.QueueCreateSaveOrder.observe(requireActivity(), {
-            it.getContentIfNotHandled()?.let {
-                binding.layoutCart.txtSave.text = getString(R.string.save)
-                viewModel.deleteCart()
-                if (prefProvider.getValue(ORDER_TYPE, "").toString() != "") {
-                    prefProvider.setValue(ORDER_TYPE, "")
-                }
-
-
-                clearCustomer()
-                hideOrderType()
-                //getKitchenPrinters(it)
-                clearUpdateFlag()
-                findNavController().navigate(R.id.action_dashboardCategoryNew_to_orders)
-
-
-            }
-        })
     }
 
     fun getBitmapFromURL(src: String?): Bitmap? {

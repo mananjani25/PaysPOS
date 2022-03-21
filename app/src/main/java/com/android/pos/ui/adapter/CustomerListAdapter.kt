@@ -91,8 +91,7 @@ class CustomerListAdapter(
 
 
             if (isSelectedPos == pos) {
-                binding.layout.background =
-                    binding.root.context.getDrawable(R.color.txt_color_blue)
+                binding.layout.background =binding.root.context.getDrawable(R.drawable.button_action_hover)
                 binding.txtName.setTextColor(binding.root.context.getColorCompat(R.color.txtColor))
                 binding.txtNumber.setTextColor(binding.root.context.getColorCompat(R.color.txtColor))
             } else {

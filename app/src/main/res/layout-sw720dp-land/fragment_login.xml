@@ -175,7 +175,7 @@
             android:padding="@dimen/_5sdp"
             android:textColor="@color/btnColor"
             android:textSize="@dimen/_6mdpi"
-            tools:text="@string/tv_pos_2021" />
+            tools:text="dfdgfgfhgh" />
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/txtBottom"

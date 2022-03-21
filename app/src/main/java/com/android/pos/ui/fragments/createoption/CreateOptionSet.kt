@@ -3,9 +3,7 @@ package com.android.pos.ui.fragments.createoption
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.text.method.KeyListener
 import android.util.Log
-import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -27,7 +25,7 @@ import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class CreateOptionSet : Fragment() {
+class CreateOptionSet : Fragment(), TextWatcher {
     private var optionSet: OptionSet? = null
     private lateinit var binding: DialogCreateOptionBinding
     private lateinit var adapter: OptionAdapter
@@ -60,66 +58,12 @@ class CreateOptionSet : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         onCLick()
-        binding.edtOption.setOnKeyListener(object : KeyListener, View.OnKeyListener {
-            override fun getInputType(): Int {
-                return 0
-            }
 
-            override fun onKeyDown(
-                view: View?,
-                text: Editable?,
-                keyCode: Int,
-                event: KeyEvent?
-            ): Boolean {
-
-                return false
-            }
-
-            override fun onKeyUp(
-                view: View?,
-                text: Editable?,
-                keyCode: Int,
-                event: KeyEvent?
-            ): Boolean {
-                return false
-            }
-
-            override fun onKeyOther(view: View?, text: Editable?, event: KeyEvent?): Boolean {
-                return false
-            }
-
-            override fun clearMetaKeyState(view: View?, content: Editable?, states: Int) {
-
-            }
-
-            override fun onKey(v: View?, keyCode: Int, event: KeyEvent?): Boolean {
-                if ((event?.action == KeyEvent.ACTION_DOWN) && (keyCode == KeyEvent.KEYCODE_ENTER)
-                ) {
-                    addOptionset()
-                    return true
-                }
-                return false
-            }
-
-        })
-
-    }
-
-    private fun addOptionset() {
-        if (binding.edtOption.text.toString() != null && binding.edtOption.text.toString().isNotEmpty()) {
-            val model = Option().apply {
-                name = binding.edtOption.text.toString().trim()
-            }
-            adapter.add(model)
-        }
-        binding.edtOption.text?.clear()
-        binding.edtOption.clearFocus()
-        viewModel.setModifiers(adapter.getAll())
     }
 
     private fun setupUI() {
 
-
+        binding.edtOption.addTextChangedListener(this)
         binding.header.txtTitle.text = getString(R.string.create_option)
         binding.header.txtSave.text = getString(R.string.save)
 
@@ -130,7 +74,7 @@ class CreateOptionSet : Fragment() {
 
             optionSet = arguments?.getParcelable("optionObject")!!
 
-            viewModel.setData(isEdit, optionSet!!.name, optionSet!!.id, optionSet!!.displayName)
+            viewModel.setData(isEdit, optionSet!!.name, optionSet!!.id, optionSet!!.displayName ?: "")
 
 
             optionSet!!.options.sortedBy {
@@ -206,6 +150,34 @@ class CreateOptionSet : Fragment() {
         })
 
         touchHelper.attachToRecyclerView(binding.rvModifiers)
+    }
+
+    override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+    }
+
+    override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+
+        if (s.hashCode() == binding.edtOption.text.hashCode()) {
+            // do other things
+            binding.edtOption.removeTextChangedListener(this)
+
+            if (s != null && s.length == 1) {
+                val model = Option().apply {
+                    name = binding.edtOption.text.toString().trim()
+                }
+                adapter.add(model)
+            }
+            binding.edtOption.text?.clear()
+            binding.edtOption.clearFocus()
+            binding.edtOption.addTextChangedListener(this)
+        }
+
+
+        viewModel.setModifiers(adapter.getAll())
+
+    }
+
+    override fun afterTextChanged(s: Editable?) {
     }
 
     private fun onCLick() {

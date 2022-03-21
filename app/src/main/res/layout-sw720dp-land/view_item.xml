@@ -42,7 +42,8 @@
                     android:layout_gravity="center|center_vertical"
                     thumbHolder="@{model.thumbImageUrl != null ? model.thumbImageUrl : null}"
                     android:scaleType="centerCrop"
-                    app:srcCompat="@android:drawable/screen_background_dark_transparent" />
+                    android:src="@drawable/ic_item_placeholder"
+                    app:srcCompat="@drawable/ic_item_placeholder" />
 
                 <androidx.appcompat.widget.AppCompatTextView
                     style="@style/CustomFontSemiBold"

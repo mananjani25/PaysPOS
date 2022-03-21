@@ -5,7 +5,10 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Filter
+import android.widget.Filterable
 import androidx.core.content.ContextCompat
+import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -18,11 +21,14 @@ import com.android.pos.utils.TimeFormatUtils
 import com.android.pos.utils.callback.OrderCallBack
 import com.android.pos.utils.extensions.gone
 import com.android.pos.utils.extensions.visible
+import java.util.*
+import kotlin.collections.ArrayList
 
 class OpenOrderAdapter(val context: Context) :
-    RecyclerView.Adapter<OpenOrderAdapter.MyViewHolder>() {
+    RecyclerView.Adapter<OpenOrderAdapter.MyViewHolder>(), Filterable {
 
     var orderList = ArrayList<OpenOrderResponse.Data.Order>()
+    var filterList = ArrayList<OpenOrderResponse.Data.Order>()
 
     private var mCallback: OrderCallBack? = null
     fun setCallback(callback: OrderCallBack) {
@@ -43,15 +49,17 @@ class OpenOrderAdapter(val context: Context) :
             binding.llShowLayout.visibility = View.GONE
 
 
-            if (item.futureDeliveryDate?.isNotEmpty() == true && item.futureDeliveryDate != null) {
+            if (item.createdAt.isNotEmpty()) {
                 binding.tvDate.text =
-                    TimeFormatUtils.convertDateFormatForOpenOrder(
-                        item.futureDeliveryDate!!,
+                    TimeFormatUtils.convertCurrentDate(
+                        item.createdAt,
                         context
                     )
-
-                binding.tvtime.text=item.futureDeliveryTime
-            } else {
+                binding.tvtime.text =
+                    TimeFormatUtils.convertCurrentTime(
+                        item.createdAt,
+                        context
+                    )
 
             }
 
@@ -104,11 +112,21 @@ class OpenOrderAdapter(val context: Context) :
                 binding.tvDeliveryStatus.setTextColor(binding.root.resources.getColor(R.color.txtColor))
                 binding.tvTeamMember.setTextColor(binding.root.resources.getColor(R.color.txtColor))
                 binding.llShowLayout.visibility = View.GONE
-                binding.imgIndicator.setImageDrawable(binding.root.resources.getDrawable(R.drawable.ic_down_solid_arrow))
-                binding.imgIndicator.setColorFilter(ContextCompat.getColor(context,R.color.drawable_ic_color))
+                binding.imgIndicator.setImageDrawable(ResourcesCompat.getDrawable(binding.root.resources,R.drawable.ic_down_solid_arrow,binding.root.resources.newTheme()))
+
+//                binding.imgIndicator.setImageDrawable(binding.root.resources.getDrawable(R.drawable.ic_down_solid_arrow))
+                binding.imgIndicator.setColorFilter(
+                    ContextCompat.getColor(
+                        context,
+                        R.color.drawable_ic_color
+                    )
+                )
+                binding.tvDeliveryStatus.setTextColor(binding.root.resources.getColor(R.color.btnColor))
+
             } else {
 
-                binding.llMainLayout.background=itemView.context.getDrawable(R.drawable.button_selected)
+                binding.llMainLayout.background =
+                    itemView.context.getDrawable(R.drawable.button_selected)
                 binding.tvDate.setTextColor(binding.root.resources.getColor(R.color.white))
                 binding.tvOrderType.setTextColor(binding.root.resources.getColor(R.color.white))
                 binding.tvTotalAmount.setTextColor(binding.root.resources.getColor(R.color.white))
@@ -118,8 +136,10 @@ class OpenOrderAdapter(val context: Context) :
                 binding.tvDeliveryStatus.setTextColor(binding.root.resources.getColor(R.color.white))
                 binding.tvTeamMember.setTextColor(binding.root.resources.getColor(R.color.white))
                 binding.llShowLayout.visibility = View.VISIBLE
-                binding.imgIndicator.setImageDrawable(binding.root.resources.getDrawable(R.drawable.ic_solid_up_arrow))
-                binding.imgIndicator.setColorFilter(ContextCompat.getColor(context,R.color.white))
+//                binding.imgIndicator.setImageDrawable(binding.root.resources.getDrawable(R.drawable.ic_solid_up_arrow))
+                binding.imgIndicator.setImageDrawable(ResourcesCompat.getDrawable(binding.root.resources,R.drawable.ic_solid_up_arrow,binding.root.resources.newTheme()))
+                binding.imgIndicator.setColorFilter(ContextCompat.getColor(context, R.color.white))
+                binding.tvDeliveryStatus.setTextColor(binding.root.resources.getColor(R.color.white))
 
             }
         }
@@ -127,12 +147,12 @@ class OpenOrderAdapter(val context: Context) :
         init {
             binding.root.setOnClickListener {
 
-                val item = orderList[bindingAdapterPosition]
+                val item = filterList[bindingAdapterPosition]
 
                 if (item.isCheck) {
                     item.isCheck = false
                 } else {
-                    orderList.forEach {
+                    filterList.forEach {
                         it.isCheck = false
                     }
                     item.isCheck = true
@@ -143,23 +163,33 @@ class OpenOrderAdapter(val context: Context) :
             }
 
             binding.txtCancelOrder.setOnClickListener {
-                binding.txtCancelOrder.background=itemView.context.getDrawable(R.drawable.button_selected)
-                binding.txtEditOrder.background=itemView.context.getDrawable(R.drawable.background_square_border_grey)
-                binding.txtPrintReceipt.background=itemView.context.getDrawable(R.drawable.background_square_border_grey)
-                binding.txtCustomerReceipt.background=itemView.context.getDrawable(R.drawable.background_square_border_grey)
-                binding.txtPayNow.background=itemView.context.getDrawable(R.drawable.background_square_border_grey)
+                binding.txtCancelOrder.background =
+                    itemView.context.getDrawable(R.drawable.button_selected)
+                binding.txtEditOrder.background =
+                    itemView.context.getDrawable(R.drawable.background_square_border_grey)
+                binding.txtPrintReceipt.background =
+                    itemView.context.getDrawable(R.drawable.background_square_border_grey)
+                binding.txtCustomerReceipt.background =
+                    itemView.context.getDrawable(R.drawable.background_square_border_grey)
+                binding.txtPayNow.background =
+                    itemView.context.getDrawable(R.drawable.background_square_border_grey)
                 mCallback?.onItemClickListener(it, bindingAdapterPosition, "")
             }
 
             binding.txtPrintReceipt.setOnClickListener {
 
-                binding.txtCancelOrder.background=itemView.context.getDrawable(R.drawable.background_square_border_grey)
-                binding.txtEditOrder.background=itemView.context.getDrawable(R.drawable.background_square_border_grey)
-                binding.txtPrintReceipt.background=itemView.context.getDrawable(R.drawable.button_selected)
-                binding.txtCustomerReceipt.background=itemView.context.getDrawable(R.drawable.background_square_border_grey)
-                binding.txtPayNow.background=itemView.context.getDrawable(R.drawable.background_square_border_grey)
+                binding.txtCancelOrder.background =
+                    itemView.context.getDrawable(R.drawable.background_square_border_grey)
+                binding.txtEditOrder.background =
+                    itemView.context.getDrawable(R.drawable.background_square_border_grey)
+                binding.txtPrintReceipt.background =
+                    itemView.context.getDrawable(R.drawable.button_selected)
+                binding.txtCustomerReceipt.background =
+                    itemView.context.getDrawable(R.drawable.background_square_border_grey)
+                binding.txtPayNow.background =
+                    itemView.context.getDrawable(R.drawable.background_square_border_grey)
 
-                if (orderList[bindingAdapterPosition].paymentStatus == "Paid") {
+                if (filterList[bindingAdapterPosition].paymentStatus == "Paid") {
                     mCallback?.onItemClickListener(it, bindingAdapterPosition, PRINT_PAID)
                 } else {
                     mCallback?.onItemClickListener(it, bindingAdapterPosition, PRINT_UNPAID)
@@ -167,29 +197,44 @@ class OpenOrderAdapter(val context: Context) :
             }
 
             binding.txtEditOrder.setOnClickListener {
-                binding.txtCancelOrder.background=itemView.context.getDrawable(R.drawable.background_square_border_grey)
-                binding.txtEditOrder.background=itemView.context.getDrawable(R.drawable.button_selected)
-                binding.txtPrintReceipt.background=itemView.context.getDrawable(R.drawable.background_square_border_grey)
-                binding.txtCustomerReceipt.background=itemView.context.getDrawable(R.drawable.background_square_border_grey)
-                binding.txtPayNow.background=itemView.context.getDrawable(R.drawable.background_square_border_grey)
+                binding.txtCancelOrder.background =
+                    itemView.context.getDrawable(R.drawable.background_square_border_grey)
+                binding.txtEditOrder.background =
+                    itemView.context.getDrawable(R.drawable.button_selected)
+                binding.txtPrintReceipt.background =
+                    itemView.context.getDrawable(R.drawable.background_square_border_grey)
+                binding.txtCustomerReceipt.background =
+                    itemView.context.getDrawable(R.drawable.background_square_border_grey)
+                binding.txtPayNow.background =
+                    itemView.context.getDrawable(R.drawable.background_square_border_grey)
                 mCallback?.onItemClickListener(it, bindingAdapterPosition, "UPDATE")
             }
 
             binding.txtPayNow.setOnClickListener {
-                binding.txtCancelOrder.background=itemView.context.getDrawable(R.drawable.background_square_border_grey)
-                binding.txtEditOrder.background=itemView.context.getDrawable(R.drawable.background_square_border_grey)
-                binding.txtPrintReceipt.background=itemView.context.getDrawable(R.drawable.background_square_border_grey)
-                binding.txtCustomerReceipt.background=itemView.context.getDrawable(R.drawable.background_square_border_grey)
-                binding.txtPayNow.background=itemView.context.getDrawable(R.drawable.button_selected)
+                binding.txtCancelOrder.background =
+                    itemView.context.getDrawable(R.drawable.background_square_border_grey)
+                binding.txtEditOrder.background =
+                    itemView.context.getDrawable(R.drawable.background_square_border_grey)
+                binding.txtPrintReceipt.background =
+                    itemView.context.getDrawable(R.drawable.background_square_border_grey)
+                binding.txtCustomerReceipt.background =
+                    itemView.context.getDrawable(R.drawable.background_square_border_grey)
+                binding.txtPayNow.background =
+                    itemView.context.getDrawable(R.drawable.button_selected)
                 mCallback?.onItemClickListener(it, bindingAdapterPosition, "PAY")
             }
             binding.txtCustomerReceipt.setOnClickListener {
-                binding.txtCancelOrder.background=itemView.context.getDrawable(R.drawable.background_square_border_grey)
-                binding.txtEditOrder.background=itemView.context.getDrawable(R.drawable.background_square_border_grey)
-                binding.txtPrintReceipt.background=itemView.context.getDrawable(R.drawable.background_square_border_grey)
-                binding.txtCustomerReceipt.background=itemView.context.getDrawable(R.drawable.button_selected)
-                binding.txtPayNow.background=itemView.context.getDrawable(R.drawable.background_square_border_grey)
-                if (orderList[bindingAdapterPosition].paymentStatus == "Paid") {
+                binding.txtCancelOrder.background =
+                    itemView.context.getDrawable(R.drawable.background_square_border_grey)
+                binding.txtEditOrder.background =
+                    itemView.context.getDrawable(R.drawable.background_square_border_grey)
+                binding.txtPrintReceipt.background =
+                    itemView.context.getDrawable(R.drawable.background_square_border_grey)
+                binding.txtCustomerReceipt.background =
+                    itemView.context.getDrawable(R.drawable.button_selected)
+                binding.txtPayNow.background =
+                    itemView.context.getDrawable(R.drawable.background_square_border_grey)
+                if (filterList[bindingAdapterPosition].paymentStatus == "Paid") {
                     mCallback?.onItemClickListener(it, bindingAdapterPosition, PRINT_PAID)
                 } else {
                     mCallback?.onItemClickListener(it, bindingAdapterPosition, PRINT_UNPAID)
@@ -209,26 +254,76 @@ class OpenOrderAdapter(val context: Context) :
     }
 
     override fun onBindViewHolder(holder: OpenOrderAdapter.MyViewHolder, position: Int) {
-        holder.bind(orderList.get(position))
+        holder.bind(filterList.get(position))
     }
 
     override fun getItemCount(): Int {
-        return orderList.size
+        return filterList.size
     }
 
     fun add(orders: List<OpenOrderResponse.Data.Order>) {
-        orderList = orders as ArrayList<OpenOrderResponse.Data.Order>
+        this.orderList = orders as ArrayList<OpenOrderResponse.Data.Order>
+        this.filterList = orders
         notifyDataSetChanged()
     }
 
     fun getItem(pos: Int): OpenOrderResponse.Data.Order {
 
-        return orderList[pos]
+        return filterList[pos]
     }
 
     fun update(position: Int) {
-        orderList.removeAt(position)
+        filterList.removeAt(position)
         notifyDataSetChanged()
+    }
+
+    override fun getFilter(): Filter {
+        return object : Filter() {
+            override fun performFiltering(charSequence: CharSequence): FilterResults {
+                val charString = charSequence.toString()
+                filterList = if (charString.isEmpty()) {
+                    orderList
+                } else {
+                    val fList = ArrayList<OpenOrderResponse.Data.Order>()
+
+                    for (it in orderList){
+                        if (it.offlineId.lowercase(Locale.getDefault()).contains(charString.lowercase(Locale.getDefault()))){
+                             fList.add(it)
+                        }
+                       else if (it.customer!=null&&it.customer.firstName.lowercase(Locale.getDefault()).contains(charString.lowercase(Locale.getDefault()))
+                        ){
+                             fList.add(it)
+                        }
+                        else if (it.customer!=null&&it.customer.lastName.lowercase(Locale.getDefault()).contains(charString.lowercase(Locale.getDefault()))
+                        ){
+                             fList.add(it)
+                        } else if (it.employee.firstName.lowercase(Locale.getDefault()).contains(charString.lowercase(Locale.getDefault()))
+                        ){
+                             fList.add(it)
+                        }
+                        else if (it.employee.lastName.lowercase(Locale.getDefault()).contains(charString.lowercase(Locale.getDefault()))
+                        ){
+                             fList.add(it)
+                        }
+                    }
+
+                    fList
+                }
+
+                return FilterResults().apply { values = filterList }
+            }
+
+            override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
+
+
+                if (results != null && results.count > 0) {
+                    filterList = results.values as ArrayList<OpenOrderResponse.Data.Order>
+                }
+
+                notifyDataSetChanged()
+
+            }
+        }
     }
 
 }

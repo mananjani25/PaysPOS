@@ -1,6 +1,7 @@
 package com.android.pos.ui.fragments.settings.hardware
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,12 +11,19 @@ import com.android.pos.R
 import com.android.pos.data.model.HardwareModel
 import com.android.pos.data.remote.Constants
 import com.android.pos.databinding.FragmentHardwareBinding
+import com.android.pos.di.PrefProvider
 import com.android.pos.ui.adapter.HardwareListAdapter
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
-class Hardware : Fragment(), HardwareListAdapter.HardwareListner {
+class Hardware : Fragment() {
     private lateinit var binding: FragmentHardwareBinding
+    @Inject
+    lateinit var prefProvider: PrefProvider
+
+    var choices = arrayOf<CharSequence>("eDynamo", "DynaFlex")
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -53,38 +61,35 @@ class Hardware : Fragment(), HardwareListAdapter.HardwareListner {
         binding.txtPrinterQueue.setOnClickListener {
             findNavController().navigate(R.id.action_hardware_to_printerQueue)
         }
+        binding.txtCardMachine.setOnClickListener {
+            val device = prefProvider.getValueInt(Constants.MAGTEK_HARDWARE, 0)
 
+            activity?.let {
+                MaterialAlertDialogBuilder(it, R.style.MaterialAlertDialogText)
+                    .setTitle("Choose Card Reader Device")
+                    .setSingleChoiceItems(
+                        choices,
+                        device
+                    ) { dialogInterface, i ->
 
-    }
+                        Log.e("setSingleChoice pos", i.toString())
 
-    private fun setAdapter() {
-        var list: ArrayList<HardwareModel> = arrayListOf()
-        list.add(HardwareModel(0, Constants.HARDWARE_PRINTER))
-        list.add(HardwareModel(0, Constants.HARDWARE_CREDIT_CARD_MACHINE))
-        list.add(HardwareModel(0, Constants.HARDWARE_SCAN_GUN))
-        //list.add(HardwareModel(0, Constants.HARDWARE_TERMINAL))
-        //list.add(HardwareModel(0, Constants.HARDWARE_KITCHEN_DISPLAY))
-        list.add(HardwareModel(0, Constants.HARDWARE_PRINTER_QUEUE))
-        val adapter = HardwareListAdapter(requireContext(), list)
-        adapter.setListner(this)
-        //   binding.rvHardwareList.adapter = adapter
+                        dialogInterface.dismiss()
+                        prefProvider.setValueInt(Constants.MAGTEK_HARDWARE, i)
 
-    }
-
-    override fun onITemClicked(itemName: String) {
-
-        when (itemName) {
-            Constants.HARDWARE_PRINTER -> {
-                findNavController().navigate(R.id.action_hardware_to_printer)
+                        if (i == 0) {
+                            // eDynamo
+                            findNavController().navigate(R.id.action_hardware_to_magtekFragment)
+                        } else {
+                            // DynaFlex
+                            findNavController().navigate(R.id.action_hardware_to_magtekProFragment)
+                        }
+                    }
+                    .show()
             }
-            Constants.HARDWARE_SCAN_GUN -> {
-                //(activity as MainActivity).loadFragmentInSettings(fragment = ScannerListFragment())
-                findNavController().navigate(R.id.action_hardware_to_scannerListFragment)
-            }
-            Constants.HARDWARE_PRINTER_QUEUE -> {
-                findNavController().navigate(R.id.action_hardware_to_printerQueue)
-            }
-
         }
+
+
     }
+
 }
