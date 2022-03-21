@@ -92,15 +92,24 @@
         </LinearLayout>
 
 
-        <FrameLayout
-            android:id="@+id/flFloorPlan"
+        <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_below="@+id/llinear_floorplan"
-            android:layout_marginHorizontal="@dimen/_20sdp"
             android:layout_marginTop="@dimen/_10sdp">
 
-        </FrameLayout>
+            <FrameLayout
+                android:id="@+id/flFloorPlan"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginHorizontal="@dimen/_20sdp"
+                >
+
+            </FrameLayout>
+
+        </androidx.core.widget.NestedScrollView>
+
+
 
     </RelativeLayout>
 

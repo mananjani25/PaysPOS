@@ -71,10 +71,8 @@ class DineInGuestFragment : Fragment(), GuestListAdapter.GuestListner {
                     R.id.action_dineInGuestFragment_to_dashboardCategoryNew,
                     bundle
                 )
-
             }
         }
-
     }
 
 
@@ -124,9 +122,6 @@ class DineInGuestFragment : Fragment(), GuestListAdapter.GuestListner {
             viewModel.getTableStatus(dineInFloorTableModel.id, OCCUPIED)
         }
 
-
-
-
         /*
         prefProvider.setValue(ORDER_TYPE, DINE_IN)
          prefProvider.setValue(ORDER_TYPE_NAME, DINE_IN)
@@ -145,7 +140,7 @@ class DineInGuestFragment : Fragment(), GuestListAdapter.GuestListner {
     }
 
     private fun tableStatusCheck() {
-        viewModel.tableCheck.observe(viewLifecycleOwner, { event ->
+        viewModel.tableCheck.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let { status ->
                 Log.e(TAG, "getstr:   $status")
 
@@ -158,7 +153,7 @@ class DineInGuestFragment : Fragment(), GuestListAdapter.GuestListner {
                 }
 
             }
-        })
+        }
     }
 
     private fun observeShowProgress() {

@@ -133,7 +133,7 @@ class DineInFragment : Fragment() {
     }
 
     private fun loadFloorPlan() {
-        viewModel.getFloorPlan().observe(viewLifecycleOwner, {
+        viewModel.getFloorPlan().observe(viewLifecycleOwner) {
             it?.let { resource ->
                 when (resource.status) {
                     Status.SUCCESS -> {
@@ -160,7 +160,7 @@ class DineInFragment : Fragment() {
                     }
                 }
             }
-        })
+        }
     }
 
     private fun loadFloorPlanDetails() {

@@ -81,10 +81,10 @@ class DineInAdapter : RecyclerView.Adapter<DineInAdapter.MyViewHolder>(), MyCall
                 binding.constraintHeader.setBackground(
                     binding.root.context.getDrawable(R.drawable.background_dine_in_unselected)
                 )
-                binding.txtTableName.setTextColor(binding.root.context.resources.getColor(R.color.txtColor))
-                binding.imgOrderMenu.setColorFilter(binding.root.context.resources.getColor(R.color.txtColor))
+                binding.txtTableName.setTextColor(binding.root.context.resources.getColor(R.color.black))
+                binding.imgOrderMenu.setColorFilter(binding.root.context.resources.getColor(R.color.black))
                 if (layoutPosition == 0) {
-                    binding.imgProfile.setColorFilter(binding.root.context.resources.getColor(R.color.txtColor))
+                    binding.imgProfile.setColorFilter(binding.root.context.resources.getColor(R.color.black))
                 } else {
                     // binding.imgProfile.setColorFilter(binding.root.context.resources.getColor(R.color.white))
                     binding.imgProfile.colorFilter = null

@@ -14,6 +14,9 @@ import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.data.entities.*
+import com.android.pos.data.model.DineInModel
+import com.android.pos.data.model.responseModel.GetFloorPlanResponse
+import com.android.pos.data.model.responseModel.GetOrderDetailsResponse
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.OPEN_ORDER
 import com.android.pos.data.remote.Constants.ORDER_TYPE
@@ -64,6 +67,11 @@ class CartFragment : Fragment(), MyCallback, DineInAdapter.DineInCallback {
     private lateinit var dineInCartAdapter: DineInAdapter
     private var assignCustomer: TbCustomer? = null
     private var openORderType: String = ""
+    private var orderFloorDetails: GetOrderDetailsResponse.Data.FloorPlanTable =
+        GetOrderDetailsResponse.Data.FloorPlanTable()
+    private var serviceChargesList: List<TbServiceCharge>? = null
+
+    private var dineInFloorTableModel: GetFloorPlanResponse.Data.FloorPlanTable? = null
 
     @Inject
     lateinit var prefProvider: PrefProvider
@@ -138,6 +146,8 @@ class CartFragment : Fragment(), MyCallback, DineInAdapter.DineInCallback {
         initListeners()
         setCartAdapter()
         addObserver()
+
+        getDineInData()
         if (prefProvider.getValueInt(Constants.CUSTOMER_ID, -1) != -1) {
             displayCustomer()
         }
@@ -185,12 +195,137 @@ class CartFragment : Fragment(), MyCallback, DineInAdapter.DineInCallback {
 
     }
 
+    private fun getDineInData() {
+        if (updateBundle!=null){
+            if (updateBundle?.getBoolean("isFromDineIn") == true) {
+                getDineInCartList()
+            } else if (updateBundle?.getBoolean("is_dine_in_edit") == true) {
+                checkDineInEditOrder()
+            }
+
+        }
+
+    }
+
+    private fun getDineInCartList() {
+        dineInCartAdapter = DineInAdapter()
+        binding.rvCartList.adapter = dineInCartAdapter
+        val numOfGuest: Int by lazy {
+            updateBundle!!.getInt("numberOfGuest")
+        }
+
+        dineInFloorTableModel = arguments?.getParcelable("floorplan")
+
+
+        var orderDEtails: GetOrderDetailsResponse.Data.FloorPlanTable? =
+            arguments?.getParcelable("tableDetails")
+        if (orderDEtails != null) {
+            orderFloorDetails = orderDEtails
+        }
+        if (orderFloorDetails.id == null) {
+            orderFloorDetails.apply {
+                id = dineInFloorTableModel?.id
+                chairCount = dineInFloorTableModel?.chairCount
+                floorPlanId = dineInFloorTableModel?.floorPlanId
+                tableName = dineInFloorTableModel?.tableName.toString()
+                status = dineInFloorTableModel?.status.toString()
+
+
+            }
+
+        }
+
+
+
+        val dineInList: ArrayList<DineInModel> = arrayListOf()
+        dineInList.add(DineInModel(0, true, 0, "Whole Table"))
+        for (i in 1..numOfGuest) {
+            dineInList.add(
+                DineInModel(
+                    0,
+                    false,
+                    0,
+                    "Guest $i",
+                    floorPlanTable = orderFloorDetails
+
+                )
+            )
+        }
+
+
+
+        dineInCartAdapter.setList(dineInList)
+
+        if (cartlist.isEmpty()) {
+            val cartModel = CartModel().apply {
+                terminalId = prefProvider.getValueInt(Constants.TERMINAL_ID, -1)
+                employeeID = prefProvider.getValueInt(Constants.EMPLOYEE_ID, -1)
+                locationId = prefProvider.getValueInt(Constants.LOCATION_ID, -1)
+                orderTypeId = prefProvider.getValueInt(Constants.ORDER_TYPE_ID, -1)
+                orderType = prefProvider.getValue(Constants.ORDER_TYPE, "").toString()
+                orderTypeName = prefProvider.getValue(Constants.ORDER_TYPE_NAME, "").toString()
+
+                serviceCharge = serviceChargesList
+
+            }
+            cartlist.add(cartModel)
+        }
+
+        cartlist.get(0).orderType = Constants.DINE_IN
+        viewModel.cartLogic(cartlist, null, Constants.ADD, dineInList = dineInList)
+
+    }
+
+    private fun checkDineInEditOrder() {
+        if (arguments?.getBoolean("is_dine_in_edit") == true) {
+            var dineInList = arguments?.getParcelableArrayList<DineInModel>("dine_in_list")
+
+            if (dineInList?.isNotEmpty() == true) {
+              //  binding.layoutCart.txtOrderType.setText("Dine In")
+
+                dineInCartAdapter = DineInAdapter()
+                dineInCartAdapter.setListner(this)
+                //dineInCartAdapter.setList(dineInList)
+
+
+                if (cartlist.isEmpty()) {
+                    val cartModel = CartModel().apply {
+                        terminalId = prefProvider.getValueInt(Constants.TERMINAL_ID, -1)
+                        employeeID = prefProvider.getValueInt(Constants.EMPLOYEE_ID, -1)
+                        locationId = prefProvider.getValueInt(Constants.LOCATION_ID, -1)
+                        orderTypeId = 2
+                        orderType = Constants.DINE_IN
+                        orderTypeName = Constants.DINE_IN
+
+                        serviceCharge = serviceChargesList
+                        orderId = arguments?.getInt("orderId")
+
+                    }
+                    cartlist.add(cartModel)
+                }
+
+                var orderTableData: GetOrderDetailsResponse.Data.FloorPlanTable? =
+                    arguments?.getParcelable("tableDetails")
+
+                dineInList.forEach {
+                    it.floorPlanTable = orderTableData
+                }
+
+                prefProvider.setValue(ORDER_TYPE, Constants.DINE_IN)
+                prefProvider.setValue(Constants.ORDER_TYPE_NAME, Constants.DINE_IN)
+                prefProvider.setValueInt(Constants.ORDER_TYPE_ID, 2)
+
+                viewModel.cartLogic(cartlist, null, Constants.ADD, dineInList = dineInList)
+                viewModel.orderItemDiscount = arguments?.getDouble("totalDiscount") ?: 0.0
+
+            }
+
+
+        }
+    }
+
     private fun addObserver() {
-
-
-
         Log.e("ORDER_TYPE", prefProvider.getValue(ORDER_TYPE, TAKEOUT))
-
         viewModel.mAllWords(
             prefProvider.getValue(ORDER_TYPE, TAKEOUT),
             prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
@@ -476,6 +611,8 @@ class CartFragment : Fragment(), MyCallback, DineInAdapter.DineInCallback {
 
 
     private fun setCartAdapter() {
+        dineInCartAdapter = DineInAdapter()
+        dineInCartAdapter.setListner(this)
         cartAdapter = CartAdapter()
         binding.rvCartList.adapter = cartAdapter
     }

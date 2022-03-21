@@ -52,7 +52,7 @@
                 android:layout_gravity="center"
                 android:layout_marginVertical="@dimen/_3sdp"
                 android:layout_marginEnd="@dimen/_2sdp"
-                android:foreground="@color/backgroundColor"
+                android:foreground="?attr/selectableItemBackground"
                 android:padding="@dimen/_2sdp"
                 android:tint="@color/white"
                 android:visibility="visible"
