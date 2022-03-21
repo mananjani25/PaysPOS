@@ -12,7 +12,11 @@ import com.android.pos.data.entities.CartModel
 import com.android.pos.data.entities.TbItem
 import com.android.pos.data.entities.TbServiceCharge
 import com.android.pos.data.entities.VariationsAttribute
+import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.ADD
+import com.android.pos.data.remote.Constants.ORDER_TYPE
+import com.android.pos.data.remote.Constants.TAKEOUT
+import com.android.pos.data.remote.Constants.TERMINAL_ID
 import com.android.pos.databinding.FragmentAddItemBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.adapter.VariationDashboardListAdapter
@@ -100,6 +104,29 @@ class AddItemFragment(val listner: ItemListner) : Fragment() {
 
         binding.txtDone.setOnClickListener {
             item.itemQuantity = qty
+            Log.e(TAG, "cartListAddItem:  ${Gson().toJson(cartList)}")
+
+            if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == Constants.OPEN_ORDER) {
+
+                if (cartList.isEmpty()) {
+                    val model = CartModel()
+                    model.employeeID =
+                        prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
+                    model.terminalId = prefProvider.getValueInt(TERMINAL_ID, 0)
+                    model.orderType = prefProvider.getValue(ORDER_TYPE, TAKEOUT)
+                    model.locationId = prefProvider.getValueInt(Constants.LOCATION_ID, 1)
+                    model.serviceCharge = serviceChargesList
+                    viewModel.ordertypelist.forEach {
+                        if (it.orderType == Constants.OPEN_ORDER) {
+                            model.orderTypeId = it.id
+                        }
+                    }
+                    cartList.add(model)
+                }
+
+            } else {
+                createCart()
+            }
 
             viewModel.cartLogic(cartList, item, ADD)
             listner.onCancelItemSelected()
@@ -108,10 +135,34 @@ class AddItemFragment(val listner: ItemListner) : Fragment() {
 
     }
 
+    private fun createCart(): ArrayList<CartModel>? {
+        if (cartList.isEmpty()) {
+            val model = CartModel()
+            model.employeeID =
+                prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
+            model.terminalId = prefProvider.getValueInt(TERMINAL_ID, 0)
+            model.orderType = TAKEOUT
+            model.locationId = prefProvider.getValueInt(Constants.LOCATION_ID, 1)
+            model.serviceCharge = serviceChargesList
+            // model.orderTypeId = 1
+            viewModel.ordertypelist.forEach {
+                if (it.orderType.lowercase() == TAKEOUT.lowercase()) {
+                    model.orderTypeId = it.id
+                }
+            }
+            cartList.add(model)
+            Log.e(TAG, "CartIsEmpty::")
+            viewModel.createEmptyCart(model)
+            return cartList
+        }
+
+        return cartList
+    }
+
     private fun getData() {
         item = requireArguments().getParcelable<TbItem>("item") ?: TbItem()
         cartList = requireArguments().getSerializable("cartList") as ArrayList<CartModel>
-        Log.e(TAG, "getitem  ${Gson().toJson(item)}")
+        Log.e(TAG, "getitemcartList  ${Gson().toJson(cartList)}")
         setData()
     }
 

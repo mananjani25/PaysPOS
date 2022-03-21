@@ -124,7 +124,7 @@ class PayFullAmountFragment(val bundle: Bundle?) : Fragment(), ItemListner, magt
 
         Log.e("orderId :: ", orderId.toString())
 
-        if (orderId != -1) {
+        if (orderId != -1 && orderId != 0) {
             paymentId = bundle.getInt("paymentId")
             paymentOfflineId = bundle.getString("paymentOfflineId").toString()
             orderOfflineId = bundle.getString("orderOfflineId").toString()
@@ -364,6 +364,10 @@ class PayFullAmountFragment(val bundle: Bundle?) : Fragment(), ItemListner, magt
 
     }
 
+    override fun onCategorySelected(item: TbItem) {
+
+    }
+
     private fun observeData() {
 
         paymentviewModel.data.observe(viewLifecycleOwner) { event ->
@@ -526,11 +530,8 @@ class PayFullAmountFragment(val bundle: Bundle?) : Fragment(), ItemListner, magt
 
     private fun makeCashPayment() {
         paymentType = "Cash"
-        Log.e(TAG, "cartList:  ${Gson().toJson(cartList)}")
-        Log.e(TAG, "cartListcartItems:  ${Gson().toJson(cartItems)}")
 
-
-        if (orderId != -1)
+        if (orderId != -1 && orderId != 0)
             paymentviewModel.updateOrder(
                 true,
                 orderId,

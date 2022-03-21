@@ -57,7 +57,6 @@ import java.net.HttpURLConnection
 import java.net.URL
 import java.util.*
 import javax.inject.Inject
-import kotlin.collections.ArrayList
 import kotlin.collections.set
 
 
@@ -181,6 +180,14 @@ class DashBoardCategoryViewModel @Inject constructor(
             posRepository.addItemCart(generateCombinedItems(cartModel))
             destroyedList.clear()
         }
+    }
+
+    fun createEmptyCart(model: CartModel) {
+        viewModelScope.launch {
+            posRepository.createEmptyCart(model)
+        }
+
+
     }
 
     fun generateCombinedItems(cartModel: CartModel): CartModel {
@@ -485,7 +492,8 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                         Log.e(TAG, "AddedListNull")
                         val cartModel = cartList?.get(0)
-                        cartModel?.items = listOf(item!!)
+                        if (item != null)
+                            cartModel?.items = listOf(item)
                         if (cartModel != null) {
                             addCart(cartModel)
                         }
@@ -696,7 +704,7 @@ class DashBoardCategoryViewModel @Inject constructor(
         context: Context
     ) {
 
-        Log.e("itemCalculation","------------------>")
+        Log.e("itemCalculation", "------------------>")
 
         var totalAmmount = 0.0
         nonCashAdj = 0.0
@@ -827,7 +835,7 @@ class DashBoardCategoryViewModel @Inject constructor(
         }
         //totalAmmount = totalPrice-cartList[0].discountPrice
 
-        Log.e("itemCalculation 1","------------------>")
+        Log.e("itemCalculation 1", "------------------>")
     }
 
     @SuppressLint("SetTextI18n")
@@ -890,10 +898,12 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                 MethodUtils.setPriceTextView(txtTotalAmount, amountToBePaid)
             } else {
-                Log.d(TAG, "addObserver: " + prefProvider.getValue(
-                    Constants.ORDER_TYPE,
-                    Constants.TAKEOUT
-                ))
+                Log.d(
+                    TAG, "addObserver: " + prefProvider.getValue(
+                        Constants.ORDER_TYPE,
+                        Constants.TAKEOUT
+                    )
+                )
 
                 if (cartModel.items?.isEmpty() == false) {
 
@@ -1045,6 +1055,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
         }
     }
+
     private fun serviceChargeCalculationModel(cartModel: CartModel) {
         val serviceChargesList = cartModel.serviceCharge
 

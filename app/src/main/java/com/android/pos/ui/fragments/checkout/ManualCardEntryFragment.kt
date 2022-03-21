@@ -5,15 +5,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.activityViewModels
 import com.android.pos.data.entities.TbItem
-import com.android.pos.databinding.FragmentCheckoutDetailsNewBinding
 import com.android.pos.databinding.FragmentManualCardEntryBinding
-import com.android.pos.ui.adapter.PaymentTypePagerAdapter
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.android.pos.utils.callback.ItemListner
-import com.google.android.material.tabs.TabLayout
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -51,6 +47,10 @@ class ManualCardEntryFragment : Fragment(), ItemListner {
     }
 
     override fun onCancelItemSelected() {
+
+    }
+
+    override fun onCategorySelected(item: TbItem) {
 
     }
 
