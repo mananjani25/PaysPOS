@@ -249,7 +249,7 @@ public abstract class SwipeHelper extends ItemTouchHelper.SimpleCallback {
 
             // Draw Text
             p.setColor(textColor);
-            p.setTypeface(Typeface.defaultFromStyle(Typeface.BOLD));
+           // p.setTypeface(Typeface.defaultFromStyle(Typeface.BOLD));
             p.setTextSize(16f);
             p.setAntiAlias(true);
 
