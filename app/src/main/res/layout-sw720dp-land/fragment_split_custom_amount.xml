@@ -22,31 +22,30 @@
                 style="@style/CustomFontBold"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_centerHorizontal="true"
+                android:layout_gravity="center_horizontal"
                 android:layout_marginLeft="@dimen/_5sdp"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:layout_weight="1"
                 android:text="$24.00"
                 android:textAlignment="center"
                 android:textColor="@color/txtColor"
-                android:textSize="@dimen/_10mdpi"
-                android:layout_weight="1"
-                android:layout_marginTop="@dimen/_10sdp"
-                android:layout_centerHorizontal="true"
-                android:layout_gravity="center_horizontal"
-                />
+                android:textSize="@dimen/_10mdpi" />
+
             <TextView
                 android:id="@+id/tvFullAMounttxt"
                 style="@style/CustomFontMediumStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/_5sdp"
-                android:text="Full Amount"
-                android:textAlignment="center"
-                android:textColor="@color/cool_grey"
-                android:textSize="@dimen/_5mdpi"
-                android:layout_weight="1"
                 android:layout_below="@+id/tvAmount"
                 android:layout_centerHorizontal="true"
                 android:layout_gravity="center_horizontal"
-                />
+                android:layout_marginLeft="@dimen/_5sdp"
+                android:layout_weight="1"
+                android:text="Full Amount"
+                android:textAlignment="center"
+                android:textColor="@color/cool_grey"
+                android:textSize="@dimen/_5mdpi" />
 
 
             <androidx.appcompat.widget.LinearLayoutCompat
@@ -63,50 +62,50 @@
                     android:orientation="horizontal"
                     android:weightSum="3">
 
-                <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/tvFullAmount"
-                    style="@style/CustomFontBold"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@+id/tvCard"
-                    android:layout_marginLeft="@dimen/_5sdp"
-                    android:layout_weight="1"
-                    android:background="@drawable/background_square_border_grey"
-                    android:paddingVertical="@dimen/_10sdp"
-                    android:text="Full Amount"
-                    android:textAlignment="center"
-                    android:textColor="@color/txtColor"
-                    android:textSize="@dimen/_7mdpi" />
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/tvFullAmount"
+                        style="@style/CustomFontBold"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/tvCard"
+                        android:layout_marginLeft="@dimen/_5sdp"
+                        android:layout_weight="1"
+                        android:background="@drawable/background_square_border_grey"
+                        android:paddingVertical="@dimen/_10sdp"
+                        android:text="Full Amount"
+                        android:textAlignment="center"
+                        android:textColor="@color/txtColor"
+                        android:textSize="@dimen/_7mdpi" />
 
-                <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/tv2ways"
-                    style="@style/CustomFontBold"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@+id/tvCard"
-                    android:layout_marginLeft="@dimen/_5sdp"
-                    android:layout_weight="1"
-                    android:background="@drawable/background_square_border_grey"
-                    android:paddingVertical="@dimen/_10sdp"
-                    android:text="2 Ways"
-                    android:textAlignment="center"
-                    android:textColor="@color/txtColor"
-                    android:textSize="@dimen/_7mdpi" />
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/tv2ways"
+                        style="@style/CustomFontBold"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/tvCard"
+                        android:layout_marginLeft="@dimen/_5sdp"
+                        android:layout_weight="1"
+                        android:background="@drawable/background_square_border_grey"
+                        android:paddingVertical="@dimen/_10sdp"
+                        android:text="2 Ways"
+                        android:textAlignment="center"
+                        android:textColor="@color/txtColor"
+                        android:textSize="@dimen/_7mdpi" />
 
-                <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/tv3ways"
-                    style="@style/CustomFontBold"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@+id/tvCard"
-                    android:layout_marginLeft="@dimen/_5sdp"
-                    android:layout_weight="1"
-                    android:background="@drawable/background_square_border_grey"
-                    android:paddingVertical="@dimen/_10sdp"
-                    android:text="3 Ways"
-                    android:textAlignment="center"
-                    android:textColor="@color/txtColor"
-                    android:textSize="@dimen/_7mdpi" />
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/tv3ways"
+                        style="@style/CustomFontBold"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/tvCard"
+                        android:layout_marginLeft="@dimen/_5sdp"
+                        android:layout_weight="1"
+                        android:background="@drawable/background_square_border_grey"
+                        android:paddingVertical="@dimen/_10sdp"
+                        android:text="3 Ways"
+                        android:textAlignment="center"
+                        android:textColor="@color/txtColor"
+                        android:textSize="@dimen/_7mdpi" />
 
                 </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -117,83 +116,84 @@
                     android:orientation="horizontal"
                     android:weightSum="3">
 
-                <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/tv4ways"
-                    style="@style/CustomFontBold"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@+id/tvCard"
-                    android:layout_marginLeft="@dimen/_5sdp"
-                    android:layout_weight="1"
-                    android:background="@drawable/background_square_border_grey"
-                    android:paddingVertical="@dimen/_10sdp"
-                    android:text="4 Ways"
-                    android:textAlignment="center"
-                    android:textColor="@color/txtColor"
-                    android:textSize="@dimen/_7mdpi" />
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/tv4ways"
+                        style="@style/CustomFontBold"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/tvCard"
+                        android:layout_marginLeft="@dimen/_5sdp"
+                        android:layout_weight="1"
+                        android:background="@drawable/background_square_border_grey"
+                        android:paddingVertical="@dimen/_10sdp"
+                        android:text="4 Ways"
+                        android:textAlignment="center"
+                        android:textColor="@color/txtColor"
+                        android:textSize="@dimen/_7mdpi" />
 
-                <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/tv5ways"
-                    style="@style/CustomFontBold"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@+id/tvCard"
-                    android:layout_marginLeft="@dimen/_5sdp"
-                    android:layout_weight="1"
-                    android:background="@drawable/background_square_border_grey"
-                    android:paddingVertical="@dimen/_10sdp"
-                    android:text="5 Ways"
-                    android:textAlignment="center"
-                    android:textColor="@color/txtColor"
-                    android:textSize="@dimen/_7mdpi" />
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/tv5ways"
+                        style="@style/CustomFontBold"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/tvCard"
+                        android:layout_marginLeft="@dimen/_5sdp"
+                        android:layout_weight="1"
+                        android:background="@drawable/background_square_border_grey"
+                        android:paddingVertical="@dimen/_10sdp"
+                        android:text="5 Ways"
+                        android:textAlignment="center"
+                        android:textColor="@color/txtColor"
+                        android:textSize="@dimen/_7mdpi" />
 
-                <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/tv6ways"
-                    style="@style/CustomFontBold"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@+id/tvCard"
-                    android:layout_marginLeft="@dimen/_5sdp"
-                    android:layout_weight="1"
-                    android:background="@drawable/background_square_border_grey"
-                    android:paddingVertical="@dimen/_10sdp"
-                    android:text="6 Ways"
-                    android:textAlignment="center"
-                    android:textColor="@color/txtColor"
-                    android:textSize="@dimen/_7mdpi" />
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/tv6ways"
+                        style="@style/CustomFontBold"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/tvCard"
+                        android:layout_marginLeft="@dimen/_5sdp"
+                        android:layout_weight="1"
+                        android:background="@drawable/background_square_border_grey"
+                        android:paddingVertical="@dimen/_10sdp"
+                        android:text="6 Ways"
+                        android:textAlignment="center"
+                        android:textColor="@color/txtColor"
+                        android:textSize="@dimen/_7mdpi" />
 
                 </androidx.appcompat.widget.LinearLayoutCompat>
 
 
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/tvCustom"
-                style="@style/CustomFontBold"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginLeft="@dimen/_3sdp"
-                android:layout_marginTop="@dimen/_5sdp"
-                android:layout_marginRight="@dimen/_1sdp"
-                android:background="@drawable/background_square_border_grey"
-                android:gravity="center_horizontal"
-                android:paddingVertical="@dimen/_10sdp"
-                android:text="Custom"
-                android:textAlignment="center"
-                android:textColor="@color/txtColor"
-                android:textSize="@dimen/_7mdpi" />
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tvCustom"
+                    style="@style/CustomFontBold"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginLeft="@dimen/_3sdp"
+                    android:layout_marginTop="@dimen/_5sdp"
+                    android:layout_marginRight="@dimen/_1sdp"
+                    android:background="@drawable/background_square_border_grey"
+                    android:gravity="center_horizontal"
+                    android:paddingVertical="@dimen/_10sdp"
+                    android:text="Custom"
+                    android:textAlignment="center"
+                    android:textColor="@color/txtColor"
+                    android:textSize="@dimen/_7mdpi" />
 
 
-            <androidx.appcompat.widget.LinearLayoutCompat
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/llCash"
-                android:layout_marginLeft="@dimen/_5sdp"
-                android:layout_marginTop="@dimen/_20sdp"
-                android:background="@drawable/button_selected"
-                android:gravity="center_horizontal"
-                android:orientation="horizontal"
-                android:paddingVertical="@dimen/_10sdp">
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:id="@+id/linear_paycash"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/llCash"
+                    android:layout_marginLeft="@dimen/_5sdp"
+                    android:layout_marginTop="@dimen/_20sdp"
+                    android:background="@drawable/button_selected"
+                    android:gravity="center_horizontal"
+                    android:orientation="horizontal"
+                    android:paddingVertical="@dimen/_10sdp">
 
                     <androidx.appcompat.widget.AppCompatImageView
                         android:layout_width="wrap_content"

@@ -18,6 +18,7 @@ import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.OPEN_ORDER
 import com.android.pos.data.remote.Constants.ORDER_TYPE
 import com.android.pos.data.remote.Constants.TAKEOUT
+import com.android.pos.data.remote.Constants.WHOLE_AMOUNT
 import com.android.pos.databinding.FragmentCartBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.adapter.DineInAdapter
@@ -316,7 +317,15 @@ class CartFragment : Fragment(), MyCallback, DineInAdapter.DineInCallback {
             if (cartAdapter.cartList.isNotEmpty()) {
 
                 prefProvider.setValue(ORDER_TYPE, prefProvider.getValue(ORDER_TYPE, TAKEOUT))
-
+                prefProvider.setValue("PaidAmount", "")
+                prefProvider.setValue(WHOLE_AMOUNT, "")
+                prefProvider.setValueInt("cardCount", 0)
+                prefProvider.setValue(Constants.SUB_TOTAL, "")
+                prefProvider.setValue(Constants.CASH_DISCOUNT_SURCHARGE, "")
+                prefProvider.setValue(Constants.TOTAL_DISCOUNT, "")
+                prefProvider.setValue(Constants.TIP, "")
+                prefProvider.setValue(Constants.TAX_CHARGE, "")
+                prefProvider.setValue(Constants.SERVICE_CHARGE, "")
                 findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_paymentBoldPosFragment)
             } else {
                 AlertUtils.showCustomAlertWithListenerWithOK(
@@ -331,7 +340,15 @@ class CartFragment : Fragment(), MyCallback, DineInAdapter.DineInCallback {
             if (cartAdapter.cartList.isNotEmpty()) {
 
                 prefProvider.setValue(ORDER_TYPE, OPEN_ORDER)
-
+                prefProvider.setValue("PaidAmount", "")
+                prefProvider.setValue(WHOLE_AMOUNT, "")
+                prefProvider.setValueInt("cardCount", 0)
+                prefProvider.setValue(Constants.SUB_TOTAL, "")
+                prefProvider.setValue(Constants.CASH_DISCOUNT_SURCHARGE, "")
+                prefProvider.setValue(Constants.TOTAL_DISCOUNT, "")
+                prefProvider.setValue(Constants.TIP, "")
+                prefProvider.setValue(Constants.TAX_CHARGE, "")
+                prefProvider.setValue(Constants.SERVICE_CHARGE, "")
                 if (prefProvider.getValue(ORDER_TYPE, "") != Constants.DINE_IN) {
 
                     var ordertype = ""

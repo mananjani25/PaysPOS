@@ -23,6 +23,7 @@ import com.android.pos.data.model.requestModel.SpitByOrderRequestModel
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.ORDER_TYPE
 import com.android.pos.data.remote.Constants.TAKEOUT
+import com.android.pos.data.remote.Constants.WHOLE_AMOUNT
 import com.android.pos.databinding.FragmentPayFullAmountBinding
 import com.android.pos.di.ApiModule1
 import com.android.pos.di.MagtekModule
@@ -80,6 +81,7 @@ class PayFullAmountFragment(val bundle: Bundle?) : Fragment(), ItemListner, magt
     private var cartItems: List<TbItem>? = null
     var subTotalPrice = 0.0
     var totalTax = 0.0
+    private var WholetotalPrice: Double = 0.0
     var tipID = null
     var totalServiceCharge = 0.0
     private var future_delivery_date: String = ""
@@ -130,9 +132,83 @@ class PayFullAmountFragment(val bundle: Bundle?) : Fragment(), ItemListner, magt
             orderOfflineId = bundle.getString("orderOfflineId").toString()
         }
 
-        observeShowProgress()
+
+        if (prefProvider.getValue(WHOLE_AMOUNT, "").isEmpty()) {
+            WholetotalPrice = viewModel.totalPrice
+            prefProvider.setValue(WHOLE_AMOUNT, String.format("%.2f", viewModel.totalPrice))
+        } else {
+            WholetotalPrice = prefProvider.getValue(WHOLE_AMOUNT, "").toDouble()
+        }
+
+        if (prefProvider.getValue(Constants.SUB_TOTAL, "").isEmpty()) {
+            prefProvider.setValue(
+                Constants.SUB_TOTAL,
+                String.format("%.2f", viewModel.subTotalPrice)
+            )
+        } else {
+            subTotalPrice = prefProvider.getValue(Constants.SUB_TOTAL, "").toDouble()
+        }
+
+        if (prefProvider.getValue(Constants.TAX_CHARGE, "").isEmpty()) {
+            prefProvider.setValue(Constants.TAX_CHARGE, String.format("%.2f", viewModel.totalTax))
+        } else {
+            totalTax = prefProvider.getValue(Constants.TAX_CHARGE, "").toDouble()
+        }
+
+
+        if (prefProvider.getValue(Constants.SERVICE_CHARGE, "").isEmpty()) {
+            prefProvider.setValue(
+                Constants.SERVICE_CHARGE,
+                String.format("%.2f", viewModel.totalServiceCharge)
+            )
+        } else {
+            totalServiceCharge = prefProvider.getValue(Constants.SERVICE_CHARGE, "").toDouble()
+        }
+
+
+        if (prefProvider.getValue(Constants.TOTAL_DISCOUNT, "").isEmpty()) {
+            prefProvider.setValue(
+                Constants.TOTAL_DISCOUNT,
+                String.format("%.2f", viewModel.totalDiscount)
+            )
+        } else {
+            totalDiscount = prefProvider.getValue(Constants.TOTAL_DISCOUNT, "").toDouble()
+        }
+
+
+        if (prefProvider.getValue(Constants.TIP, "").isEmpty()) {
+            prefProvider.setValue(Constants.TIP, String.format("%.2f", viewModel.tip))
+        } else {
+            tipAmount = prefProvider.getValue(Constants.TIP, "").toDouble()
+        }
+
+
+        if (MethodUtils.isEnableCashDiscount(requireContext())) {
+            if (prefProvider.getValue(Constants.CASH_DISCOUNT_SURCHARGE, "").isEmpty()) {
+                cashDiscountSurcharge = MethodUtils.calculateCashDiscount(
+                    WholetotalPrice,
+                    prefProvider,
+                    requireContext()
+                )
+                prefProvider.setValue(
+                    Constants.CASH_DISCOUNT_SURCHARGE,
+                    String.format("%.2f", cashDiscountSurcharge)
+                )
+            } else {
+                cashDiscountSurcharge =
+                    prefProvider.getValue(Constants.CASH_DISCOUNT_SURCHARGE, "").toDouble()
+            }
+        } else {
+            cashDiscountSurcharge = 0.0
+            prefProvider.getValue(
+                cashDiscountSurcharge.toString(),
+                String.format("%.2f", cashDiscountSurcharge))
+        }
+
         getCartData()
-        observeData()
+        observeShowProgress()
+
+
 
         return binding.root
     }
@@ -142,11 +218,6 @@ class PayFullAmountFragment(val bundle: Bundle?) : Fragment(), ItemListner, magt
 
 
         cartList = viewModel.cartModel
-        totalPrice = viewModel.totalPrice
-        subTotalPrice = viewModel.subTotalPrice
-        totalServiceCharge = viewModel.totalServiceCharge
-        totalTax = viewModel.totalTax
-
         Log.e("ORDER_TYPE", prefProvider.getValue(ORDER_TYPE, TAKEOUT))
 
         viewModel.ordertypelist.forEach {
@@ -154,37 +225,35 @@ class PayFullAmountFragment(val bundle: Bundle?) : Fragment(), ItemListner, magt
                 paymentviewModel.setOrderTypeId(it.id)
             }
         }
-        if (MethodUtils.isEnableCashDiscount(requireContext())) {
-            cashDiscountSurcharge = MethodUtils.calculateCashDiscount(
-                viewModel.totalPrice,
-                prefProvider,
-                requireContext()
-            )
-        }
         paymentviewModel.saveActualValue(
-            totalPrice,
-            subTotalPrice,
-            totalTax,
-            totalServiceCharge,
-            tipAmount,
-            totalDiscount,
-            MethodUtils.calculateCashDiscount(totalPrice, prefProvider, requireContext()),
-            totalPrice
+            viewModel.totalPrice,
+            viewModel.subTotalPrice,
+            viewModel.totalTax,
+            viewModel.totalServiceCharge,
+            viewModel.tip,
+            viewModel.totalDiscount,
+            MethodUtils.calculateCashDiscount(viewModel.totalPrice, prefProvider, requireContext()),
+            viewModel.totalPrice
         )
 
         MethodUtils.getCashPaymentOptionList(
-            totalPrice,
+            WholetotalPrice,
             binding.tvCash1,
             binding.tvCash2,
             binding.tvCash3
         )
-        MethodUtils.setPriceTextView(binding.txtPayCash, totalPrice)
-        binding.txtPayCash.text = "Pay Cash (" + binding.txtPayCash.text + ")"
-        MethodUtils.setPriceTextView(binding.tvCreditCard, totalPrice)
-        binding.tvCreditCard.text = "Card (" + binding.tvCreditCard.text + ")"
+        MethodUtils.setPriceTextView(binding.tvCash, WholetotalPrice)
+        binding.tvCash.text = "Cash (" + binding.tvCash.text + ")"
+        MethodUtils.setPriceTextView(binding.tvCard, WholetotalPrice)
+        binding.tvCard.text = "Card (" + binding.tvCard.text + ")"
 
     }
 
+
+    override fun onResume() {
+        super.onResume()
+        Log.d(TAG, "onResume: ")
+    }
 
     private fun onClick() {
         binding.llManualCardEntry.setOnClickListener {
@@ -199,8 +268,10 @@ class PayFullAmountFragment(val bundle: Bundle?) : Fragment(), ItemListner, magt
 
 
         binding.llPaycash.setOnClickListener {
-            paymentAmount = totalPrice
+            paymentAmount = WholetotalPrice
+            observeData()
             makeCashPayment()
+
         }
 
         binding.tvCash1.setOnClickListener {
@@ -224,7 +295,7 @@ class PayFullAmountFragment(val bundle: Bundle?) : Fragment(), ItemListner, magt
             binding.tvPaymentLink.setTextColor(resources.getColor(R.color.txtColor))
 
             val device = prefProvider.getValueInt(Constants.MAGTEK_HARDWARE, 0)
-
+            observeData()
             if (device == 0) {
                 magtekPaymentCall()
             } else {
@@ -322,7 +393,7 @@ class PayFullAmountFragment(val bundle: Bundle?) : Fragment(), ItemListner, magt
                 if (splitAfterAmount != 0.0) {
                     putDouble("totalprice", (splitAfterAmount + tipAmount))
                 } else {
-                    putDouble("totalprice", ((totalPrice + tipAmount)))
+                    putDouble("totalprice", ((WholetotalPrice + tipAmount)))
                 }
             }
             findNavController().navigate(
@@ -368,25 +439,35 @@ class PayFullAmountFragment(val bundle: Bundle?) : Fragment(), ItemListner, magt
 
     }
 
+    override fun onStop() {
+        super.onStop()
+        Log.d(TAG, "onStop: ")
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+        Log.d(TAG, "onDetach: ")
+    }
+
     private fun observeData() {
 
         paymentviewModel.data.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
-                when (paymentType) {
-                    "Cash" -> {
+                when {
+                    paymentType == "Cash" -> {
                         Log.e("TipAmount 4:: ", tipAmount.toString())
 
                         val bundle = Bundle()
                         bundle.putBoolean("isDineIn", false)
 
                         if (remainingAmount == 0.0) {
-                            bundle.putDouble("PaidAmount", totalPrice)
+                            bundle.putDouble("PaidAmount", WholetotalPrice)
                         } else {
                             bundle.putDouble("PaidAmount", remainingAmount)
                         }
 
 
-                        bundle.putDouble("WholetotalPrice", totalPrice)
+                        bundle.putDouble("WholetotalPrice", WholetotalPrice)
                         bundle.putDouble(
                             "remainingAmount",
                             0.0
@@ -414,20 +495,20 @@ class PayFullAmountFragment(val bundle: Bundle?) : Fragment(), ItemListner, magt
 
 
                     }
-                    "Card" -> {
+                    paymentType == "Card" -> {
                         Log.e("TipAmount 4:: ", tipAmount.toString())
 
                         val bundle = Bundle()
                         bundle.putBoolean("isDineIn", false)
 
                         if (remainingAmount == 0.0) {
-                            bundle.putDouble("PaidAmount", totalPrice)
+                            bundle.putDouble("PaidAmount", WholetotalPrice)
                         } else {
                             bundle.putDouble("PaidAmount", remainingAmount)
                         }
 
 
-                        bundle.putDouble("WholetotalPrice", totalPrice)
+                        bundle.putDouble("WholetotalPrice", WholetotalPrice)
                         bundle.putDouble(
                             "remainingAmount",
                             0.0
@@ -456,9 +537,11 @@ class PayFullAmountFragment(val bundle: Bundle?) : Fragment(), ItemListner, magt
 
                     }
                 }
+
             }
         }
     }
+
 
     private fun observeShowProgress() {
 
@@ -476,7 +559,7 @@ class PayFullAmountFragment(val bundle: Bundle?) : Fragment(), ItemListner, magt
 
     private fun makePaymentCreditCard() {
         paymentType = "Card"
-        paymentAmount = totalPrice
+        paymentAmount = WholetotalPrice
         Log.e(TAG, "cartList:  ${Gson().toJson(cartList)}")
         Log.e(TAG, "cartListcartItems:  ${Gson().toJson(cartItems)}")
         val myRequest = cartList?.let {
@@ -503,7 +586,7 @@ class PayFullAmountFragment(val bundle: Bundle?) : Fragment(), ItemListner, magt
         }
         Log.e(TAG, "myRequestOriginal ${Gson().toJson(myRequest)}")
         if (myRequest != null) {
-            paymentviewModel.totalPayAmount(totalPrice)
+            paymentviewModel.totalPayAmount(WholetotalPrice)
             val orderId = prefProvider.getValueInt("ORDER_ID", -1)
             Log.e(TAG, "orderIdmyRequestOriginal ${orderId}")
             if (orderId == -1) {
@@ -569,7 +652,7 @@ class PayFullAmountFragment(val bundle: Bundle?) : Fragment(), ItemListner, magt
 
         Log.e("ORDER TYPE 1", prefProvider.getValue(ORDER_TYPE, TAKEOUT))
         if (myRequest != null) {
-            paymentviewModel.totalPayAmount(totalPrice)
+            paymentviewModel.totalPayAmount(WholetotalPrice)
             val orderId = prefProvider.getValueInt("ORDER_ID", -1)
             Log.e(TAG, "orderIdmyRequestOriginal ${orderId}")
             if (orderId == -1) {
