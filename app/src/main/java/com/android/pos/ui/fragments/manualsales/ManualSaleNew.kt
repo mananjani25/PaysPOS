@@ -193,6 +193,36 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                             cartList?.get(0)?.items,
                             binding.txtTotalAmount
                         )
+
+                        binding.txtSubTotal.text = "$" + String.format(
+                            "%.2f",
+                            viewModel.subTotalPrice
+                        )
+                        binding.txtServiceCharge.text = "$" + String.format(
+                            "%.2f",
+                            viewModel.totalServiceCharge
+                        )
+                        binding.txtDiscount.text = "- $" + String.format(
+                            "%.2f",
+                            viewModel.totalDiscount
+                        )
+                        //txtTotalAmount.text = binding.txtTotalAmount.text.toString()
+                        binding.txtTotalTax.text = "$" + String.format(
+                            "%.2f",
+                            viewModel.totalTax
+                        )
+                        binding.txtTotal.text = "$" + String.format(
+                            "%.2f",
+                            viewModel.totalPrice
+                        )
+                        binding.tvDiscount.text = "$" + String.format(
+                            "%.2f",
+                            viewModel.totalDiscount
+                        )
+                        binding.txtTotalAmount.text = "$" + String.format(
+                            "%.2f",
+                            viewModel.totalPrice
+                        )
                     } else {
 
                         cartAdapter.clearList()
@@ -460,7 +490,6 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
 
             if (binding.txtTotalAmount.text.toString() != "$0.00" && cartList?.isNotEmpty() == true) {
                 /*  isPayClicked = true
-
                   dashboardViewModel.mAllWords(
                       prefProvider.getValue(Constants.ORDER_TYPE, "").toString()
                   ).observe(
@@ -602,31 +631,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                 binding.llKeypad.txtAmount.setText("0.00")
             }
 
-            binding.txtSubTotal.text = "$" + String.format(
-                "%.2f",
-                viewModel.subTotalPrice
-            )
-            binding.txtServiceCharge.text = "$" + String.format(
-                "%.2f",
-                viewModel.totalServiceCharge
-            )
-            binding.txtDiscount.text = "- $" + String.format(
-                "%.2f",
-                viewModel.totalDiscount
-            )
-            //txtTotalAmount.text = binding.txtTotalAmount.text.toString()
-            binding.txtTotalTax.text = "$" + String.format(
-                "%.2f",
-                viewModel.totalTax
-            )
-            binding.txtTotal.text = "$" + String.format(
-                "%.2f",
-                viewModel.totalPrice
-            )
-            binding.tvDiscount.text = "$" + String.format(
-                "%.2f",
-                viewModel.totalDiscount
-            )
+
         }
         binding.llKeypad.manualKeypad.tvBack.setOnClickListener {
             if (binding.llKeypad.txtAmount.text.toString().isNotEmpty()) {
@@ -783,8 +788,8 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
 
 
 
-      /*  binding.layoutMenu.txtProducts.setTextColor(resources.getColor(R.color.txtColor))
-        binding.layoutMenu.txtKeypad.setTextColor(resources.getColor(R.color.txt_color_blue))*/
+        /*  binding.layoutMenu.txtProducts.setTextColor(resources.getColor(R.color.txtColor))
+          binding.layoutMenu.txtKeypad.setTextColor(resources.getColor(R.color.txt_color_blue))*/
 
     }
 
@@ -1318,10 +1323,8 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                     positiveButton(getString(R.string.tv_delete)) {
                         // Do positive stuff here
                         val item = cartAdapter.getItem(pos)
-
                         Log.e(TAG, "item ${Gson().toJson(item)}")
                         viewModel.cartLogic(cartList, item, Constants.DELETE)
-
                     }
                     negativeButton(R.string.tv_cancel) {
                         // Do negative stuff here
@@ -1341,7 +1344,6 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
             }
             R.id.txt_rename -> {
                 Log.e(TAG, "pospospos  ${pos}")
-
                 cartItemModel = cartAdapter.getItem(pos)
                 val bundle: Bundle = bundleOf("item_name" to cartItemModel.name)
                 cartAdapter.viewBinderHelper.closeLayout(pos.toString())
@@ -1349,9 +1351,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                     R.id.action_manualSaleNew_to_itemRenameDialog,
                     bundle
                 )
-
             }*/
         }
     }
 }
-
