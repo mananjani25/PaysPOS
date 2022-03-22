@@ -2,11 +2,13 @@ package com.android.pos.ui.adapter
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.os.Bundle
 import android.util.Log
 import android.view.ContextMenu
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.widget.PopupMenu
 import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.navigation.fragment.NavHostFragment.findNavController
 import androidx.navigation.fragment.findNavController
@@ -121,11 +123,35 @@ class DineInAdapter : RecyclerView.Adapter<DineInAdapter.MyViewHolder>(), MyCall
             }
 
             binding.imgOrderMenu.setOnClickListener {
+                val popupMenu = PopupMenu(itemView.context, it)
+                popupMenu.menuInflater.inflate(R.menu.assign_customer_menu, popupMenu.menu)
+
+                popupMenu.setOnMenuItemClickListener { menuItem ->
+                    when (menuItem.itemId) {
+                        R.id.assign_customer -> {
+                            if (list.get(layoutPosition).customer != null) {
+                                //list.get(layoutPosition).customer = null
+                                listner.onCustomerClicked(layoutPosition, true)
+                                binding.llCustomerDialog.visibility = View.GONE
+
+                            } else {
+                                listner.onCustomerClicked(layoutPosition, false)
+                            }
+
+                        }
+                    }
+                    true
+                }
+                popupMenu.show()
+
+
+/*
                 if (binding.llCustomerDialog.visibility == View.VISIBLE) {
                     binding.llCustomerDialog.visibility = View.GONE
                 } else {
                     binding.llCustomerDialog.visibility = View.VISIBLE
                 }
+*/
             }
 
             binding.constraintHeader.setOnClickListener {

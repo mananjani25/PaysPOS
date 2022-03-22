@@ -45,7 +45,8 @@ class DashboardCategoryBoldPOS : Fragment(), ItemListner {
     var ordertypelist: ArrayList<TbOrderType> = arrayListOf()
     var isupdate = false
     var orderDiscount = 0.0
-
+    var dineInResult:Bundle?=null
+    var resultData:TbCustomer?=null
     @Inject
     lateinit var prefProvider: PrefProvider
     override fun onCreateView(
@@ -119,10 +120,24 @@ class DashboardCategoryBoldPOS : Fragment(), ItemListner {
         }
         syncData()
         requireActivity().window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+
+
+
+/*
+        setFragmentResultListener("request_key_customer_dine_in") { _, bundle ->
+            result = bundle
+            resultData = bundle.getParcelable<TbCustomer>("data")
+            if (result != null) {
+                Log.e(TAG,"REQUEST_KEY_CUSTOMER_DINE_IN$result")
+            }
+        }
+*/
+
         loadCartFragment(CartFragment())
         loadCategoryFragment(CategoryFragment(this))
         binding.layoutHeader.txtUserName.text =
             prefProvider.getValue(EMPLOYEE_NAME, "").toString()
+
 
     }
 
