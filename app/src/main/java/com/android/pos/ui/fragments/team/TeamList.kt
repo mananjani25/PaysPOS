@@ -6,6 +6,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
@@ -21,6 +22,7 @@ import com.android.pos.ui.activities.MainActivity
 import com.android.pos.ui.adapter.TeamsAdapter
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.ProgressUtils
+import com.android.pos.utils.SwipeHelper
 import com.android.pos.utils.SwipeHelperNew
 import com.android.pos.utils.callback.CustomCallback
 import com.android.pos.utils.callback.OperationCallback
@@ -116,7 +118,8 @@ class TeamList : Fragment(), CustomCallback, OperationCallback {
         binding.rvEmployeeList.adapter = adapter
 
 
-        object : SwipeHelperNew(activity, binding.rvEmployeeList) {
+        object : SwipeHelper(activity, binding.rvEmployeeList) {
+/*
             override fun getMovementFlags(
                 recyclerView: RecyclerView,
                 viewHolder: RecyclerView.ViewHolder
@@ -129,6 +132,7 @@ class TeamList : Fragment(), CustomCallback, OperationCallback {
                 return makeMovementFlags(0, ItemTouchHelper.LEFT)
 
             }
+*/
 
             override fun instantiateUnderlayButton(
                 viewHolder: RecyclerView.ViewHolder?,
@@ -137,8 +141,8 @@ class TeamList : Fragment(), CustomCallback, OperationCallback {
 
                 underlayButtons.add(UnderlayButton(
                     "Delete",
-                    0,
-                    Color.parseColor("#FF3C30")
+                    ContextCompat.getColor(requireContext(), R.color.swipe_text_color_d),
+                    ContextCompat.getColor(requireContext(), R.color.white_swipe)
                 ) { pos ->
 
                     alert(
