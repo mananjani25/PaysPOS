@@ -2,7 +2,10 @@ package com.android.pos.ui.dialog
 
 import android.app.Dialog
 import android.content.Context
+import android.graphics.Color
 import android.graphics.Point
+import android.graphics.drawable.ColorDrawable
+import android.graphics.drawable.InsetDrawable
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -15,21 +18,24 @@ import androidx.fragment.app.setFragmentResult
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.data.model.responseModel.GetTipReponse
+import com.android.pos.data.remote.Constants
 import com.android.pos.databinding.DailogAddTipsBinding
+import com.android.pos.di.PrefProvider
 import com.android.pos.ui.adapter.DialogTipsListAdapter
 import com.android.pos.ui.fragments.settings.tip.TipListViewModel
+import com.android.pos.utils.AmountTextWatcher
 import com.android.pos.utils.MethodUtils
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 import java.text.NumberFormat
 import java.util.*
+import javax.inject.Inject
 
 @AndroidEntryPoint
-class AddTipsDialog : DialogFragment(), DialogTipsListAdapter.DiscountInterface,
-    TextWatcher {
+class AddTipsDialog : DialogFragment(), DialogTipsListAdapter.DiscountInterface {
 
     private var tipID: Int? = null
-    private var totalTip: Double = 0.0
+    private var totalTip: Double = 0.00
     private var totalPrice: Double = 0.0
     private lateinit var binding: DailogAddTipsBinding
     private val viewModel by activityViewModels<TipListViewModel>()
@@ -37,6 +43,9 @@ class AddTipsDialog : DialogFragment(), DialogTipsListAdapter.DiscountInterface,
     private lateinit var tipsListAdapter: DialogTipsListAdapter
     private var tipModel: GetTipReponse.Data? = null
     var selectedListPos: Int = -1
+
+    @Inject
+    lateinit var prefProvider: PrefProvider
     private var isFromDetails = false
 
 
@@ -48,19 +57,25 @@ class AddTipsDialog : DialogFragment(), DialogTipsListAdapter.DiscountInterface,
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        if (arguments!=null){
-            if (arguments?.getDouble("totalPrice")!=null) totalPrice = requireArguments().getDouble("totalPrice")
-            if (arguments?.getDouble("totalTip")!=null) totalTip = requireArguments().getDouble("totalTip")
+        if (arguments != null) {
+            if (arguments?.getDouble("totalPrice") != null) totalPrice =
+                requireArguments().getDouble("totalPrice")
+            if (arguments?.getDouble("totalTip") != null) totalTip =
+                requireArguments().getDouble("totalTip")
         }
+        dialog?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN)
+        val back = ColorDrawable(Color.WHITE)
+        val inset = InsetDrawable(back, 150, 100, 150, 100)
+        dialog?.window?.setBackgroundDrawable(inset);
 
         binding.txtTitle.text = getString(R.string.add_tips)
 
         tipsListAdapter = DialogTipsListAdapter()
         binding.rvDiscountList.adapter = tipsListAdapter
 
-        binding.edtAmount.setText(MethodUtils.roundOffAmountString(totalTip))
 
-        binding.edtAmount.addTextChangedListener(this)
+        binding.edtAmount.addTextChangedListener(AmountTextWatcher(binding.edtAmount, true))
+        binding.edtAmount.setText("" + totalTip)
 
         setDiscountList()
         setupData()
@@ -69,24 +84,29 @@ class AddTipsDialog : DialogFragment(), DialogTipsListAdapter.DiscountInterface,
     }
 
     private fun onClick() {
-        binding.txtRemoveDiscount.setOnClickListener {
 
-            // removeDiscount()
-        }
 
         binding.llKeypad.txt10.setOnClickListener {
             val rate = binding.llKeypad.txt10.text.toString().trim()
                 .substring(0, binding.llKeypad.txt10.text.toString().length - 1).toDouble()
 
-            val price = MethodUtils.percentageCalculation(totalPrice, rate)
-            binding.edtAmount.removeTextChangedListener(this)
+            val price = MethodUtils.percentageCalculation(
+                prefProvider.getValue(
+                    Constants.WHOLE_AMOUNT,
+                    "0.0"
+                ).toDouble(), rate
+            )
             binding.edtAmount.setText(MethodUtils.roundOffAmountString(price))
         }
         binding.llKeypad.txt20.setOnClickListener {
             val rate = binding.llKeypad.txt20.text.toString().trim()
                 .substring(0, binding.llKeypad.txt20.text.toString().length - 1).toDouble()
-            val price = MethodUtils.percentageCalculation(totalPrice, rate)
-            binding.edtAmount.removeTextChangedListener(this)
+            val price = MethodUtils.percentageCalculation(
+                prefProvider.getValue(
+                    Constants.WHOLE_AMOUNT,
+                    "0.0"
+                ).toDouble(), rate
+            )
             binding.edtAmount.setText(MethodUtils.roundOffAmountString(price))
         }
         binding.llKeypad.txt30.setOnClickListener {
@@ -95,9 +115,13 @@ class AddTipsDialog : DialogFragment(), DialogTipsListAdapter.DiscountInterface,
             val rate = binding.llKeypad.txt30.text.toString().trim()
                 .substring(0, binding.llKeypad.txt30.text.toString().length - 1).toDouble()
 
-            val price = MethodUtils.percentageCalculation(totalPrice, rate)
+            val price = MethodUtils.percentageCalculation(
+                prefProvider.getValue(
+                    Constants.WHOLE_AMOUNT,
+                    "0.0"
+                ).toDouble(), rate
+            )
 
-            binding.edtAmount.removeTextChangedListener(this)
             binding.edtAmount.setText(MethodUtils.roundOffAmountString(price))
         }
     }
@@ -204,10 +228,10 @@ class AddTipsDialog : DialogFragment(), DialogTipsListAdapter.DiscountInterface,
 
             var amount = 0.0
 
-            val stAmount = binding.edtAmount.text.toString().trim()
+            val stAmount = binding.edtAmount.text.toString().replace("$", "")
 
             if (stAmount.isNotEmpty() && stAmount != "0.00") {
-                amount = binding.edtAmount.text.toString().trim().toDouble()
+                amount = binding.edtAmount.text.toString().replace("$", "").trim().toDouble()
             }
 
             val result = Bundle().apply {
@@ -215,7 +239,7 @@ class AddTipsDialog : DialogFragment(), DialogTipsListAdapter.DiscountInterface,
                 tipID?.let { putInt("tipId", tipID ?: 0) }
 
             }
-            setFragmentResult("request_key_tips", result)
+            requireActivity().supportFragmentManager.setFragmentResult("request_key_tips", result)
             findNavController().navigateUp()
         }
     }
@@ -240,7 +264,8 @@ class AddTipsDialog : DialogFragment(), DialogTipsListAdapter.DiscountInterface,
         tipModel.apply { model }
         tipID = model.id
 
-        val tipCalculation = (totalPrice * model.rate) / 100
+        val tipCalculation =
+            (prefProvider.getValue(Constants.WHOLE_AMOUNT, "0.0").toDouble() * model.rate) / 100
 
         binding.edtAmount.setText(MethodUtils.roundOffAmountString(tipCalculation))
         selectedListPos = pos
@@ -260,40 +285,6 @@ class AddTipsDialog : DialogFragment(), DialogTipsListAdapter.DiscountInterface,
 
     private fun removeLastCharacter(str: String): String {
         return str.substring(0, str.length - 1)
-    }
-
-    override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-
-    }
-
-    var current = ""
-    override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-
-        if (s.toString() != current) {
-            binding.edtAmount.removeTextChangedListener(this)
-
-
-            val cleanString: String = s!!.replace("""[$,.%]""".toRegex(), "")
-
-
-            val parsed = cleanString.toDouble()
-
-            val formatted = NumberFormat.getCurrencyInstance(Locale.US).format((parsed / 100))
-
-
-            current = formatted
-
-            binding.edtAmount.setText(formatted.replace("""[$,%]""".toRegex(), ""))
-            binding.edtAmount.setSelection(formatted.replace("""[$,%]""".toRegex(), "").length)
-
-
-
-            binding.edtAmount.addTextChangedListener(this)
-        }
-    }
-
-    override fun afterTextChanged(s: Editable?) {
-
     }
 
 

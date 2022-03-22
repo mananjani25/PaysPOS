@@ -36,7 +36,7 @@ class SplitCustomAmountFragment() : Fragment(), ItemListner {
     var isSelectedCount = 1
     private var splitValue: Int = -1
     var tipAmount = 0.0
-    var tipID = null
+    var tipID = 0
     var cashDiscountSurcharge = 0.0
     var cardActualAmount = 0.0
     private var remainingAmount: Double = 0.0
@@ -178,13 +178,52 @@ class SplitCustomAmountFragment() : Fragment(), ItemListner {
 
             isSelectedCount = bundle.getInt("split")
             binding.tvCustom.text = "Custom ($isSelectedCount Ways)"
+            tipsetupGlobal(tipAmount, isSelectedCount)
+        }
+        requireActivity().supportFragmentManager.setFragmentResultListener(
+            "request_key_tips",
+            viewLifecycleOwner
+        ) { requestKey: String, bundle: Bundle ->
+            tipAmount = bundle.getDouble("tipAmount")
+            tipID = bundle.getInt("tipId")
+            tipAmountCalculation()
+        }
+
+    }
+
+
+    private fun tipAmountCalculation() {
+        if (tipAmount == 0.00) {
             MethodUtils.setPriceTextView(
                 binding.tvAmount,
-                prefProvider.getValue(Constants.WHOLE_AMOUNT, "0.0").toDouble() / isSelectedCount
+                prefProvider.getValue(Constants.WHOLE_AMOUNT, "0.0").toDouble()
             )
+        } else {
+            MethodUtils.setPriceTextView(
+                binding.tvAmount,
+                prefProvider.getValue(Constants.WHOLE_AMOUNT, "0.0").toDouble() + tipAmount
+            )
+            binding.tvAmount.text =
+                binding.tvAmount.text.toString() + " (" + tipAmount + " Tip Added)"
         }
     }
 
+    fun tipsetupGlobal(tipAmount: Double, isSelectCount: Int) {
+        if (tipAmount == 0.0) {
+            MethodUtils.setPriceTextView(
+                binding.tvAmount,
+                prefProvider.getValue(Constants.WHOLE_AMOUNT, "0.0").toDouble() / isSelectCount
+            )
+        } else {
+            MethodUtils.setPriceTextView(
+                binding.tvAmount,
+                (prefProvider.getValue(Constants.WHOLE_AMOUNT, "0.0")
+                    .toDouble() / isSelectCount) + tipAmount
+            )
+            binding.tvAmount.text =
+                binding.tvAmount.text.toString() + " (" + MethodUtils.roundOffAmount(tipAmount) + " Tip Added)"
+        }
+    }
 
     private fun observeData() {
         paymentviewModel.data.observe(viewLifecycleOwner) { event ->
@@ -328,10 +367,7 @@ class SplitCustomAmountFragment() : Fragment(), ItemListner {
             binding.tvCustom.setTextColor(resources.getColor(R.color.txtColor))
             binding.tvCustom.text = "Custom"
             isSelectedCount = 1
-            MethodUtils.setPriceTextView(
-                binding.tvAmount,
-                prefProvider.getValue(Constants.WHOLE_AMOUNT, "0.0").toDouble()
-            )
+            tipsetupGlobal(tipAmount, isSelectedCount)
             binding.tvFullAMounttxt.visibility = View.VISIBLE
         }
 
@@ -353,10 +389,7 @@ class SplitCustomAmountFragment() : Fragment(), ItemListner {
             binding.tvCustom.setTextColor(resources.getColor(R.color.txtColor))
             binding.tvCustom.text = "Custom"
             isSelectedCount = 2
-            MethodUtils.setPriceTextView(
-                binding.tvAmount,
-                prefProvider.getValue(Constants.WHOLE_AMOUNT, "0.0").toDouble() / 2
-            )
+            tipsetupGlobal(tipAmount, isSelectedCount)
             binding.tvFullAMounttxt.visibility = View.INVISIBLE
 
         }
@@ -378,10 +411,7 @@ class SplitCustomAmountFragment() : Fragment(), ItemListner {
             binding.tvCustom.setTextColor(resources.getColor(R.color.txtColor))
             binding.tvCustom.text = "Custom"
             isSelectedCount = 3
-            MethodUtils.setPriceTextView(
-                binding.tvAmount,
-                prefProvider.getValue(Constants.WHOLE_AMOUNT, "0.0").toDouble() / 3
-            )
+            tipsetupGlobal(tipAmount, isSelectedCount)
             binding.tvFullAMounttxt.visibility = View.INVISIBLE
         }
         binding.tv4ways.setOnClickListener {
@@ -402,10 +432,7 @@ class SplitCustomAmountFragment() : Fragment(), ItemListner {
             binding.tvCustom.setTextColor(resources.getColor(R.color.txtColor))
             binding.tvCustom.text = "Custom"
             isSelectedCount = 4
-            MethodUtils.setPriceTextView(
-                binding.tvAmount,
-                prefProvider.getValue(Constants.WHOLE_AMOUNT, "0.0").toDouble() / 4
-            )
+            tipsetupGlobal(tipAmount, isSelectedCount)
             binding.tvFullAMounttxt.visibility = View.INVISIBLE
         }
         binding.tv5ways.setOnClickListener {
@@ -426,10 +453,7 @@ class SplitCustomAmountFragment() : Fragment(), ItemListner {
             binding.tvCustom.setTextColor(resources.getColor(R.color.txtColor))
             binding.tvCustom.text = "Custom"
             isSelectedCount = 5
-            MethodUtils.setPriceTextView(
-                binding.tvAmount,
-                prefProvider.getValue(Constants.WHOLE_AMOUNT, "0.0").toDouble() / 5
-            )
+            tipsetupGlobal(tipAmount, isSelectedCount)
             binding.tvFullAMounttxt.visibility = View.INVISIBLE
         }
         binding.tv6ways.setOnClickListener {
@@ -450,10 +474,7 @@ class SplitCustomAmountFragment() : Fragment(), ItemListner {
             binding.tvCustom.setTextColor(resources.getColor(R.color.txtColor))
             binding.tvCustom.text = "Custom"
             isSelectedCount = 6
-            MethodUtils.setPriceTextView(
-                binding.tvAmount,
-                prefProvider.getValue(Constants.WHOLE_AMOUNT, "0.0").toDouble() / 6
-            )
+            tipsetupGlobal(tipAmount, isSelectedCount)
             binding.tvFullAMounttxt.visibility = View.INVISIBLE
         }
         binding.tvCustom.setOnClickListener {
