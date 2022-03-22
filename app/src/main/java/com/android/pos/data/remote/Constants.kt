@@ -473,6 +473,7 @@ object Constants {
     const val TOTAL_DISCOUNT = "totalDiscount"
     const val IS_NEXT_AMOUNT = "is_next_amount"
     const val SAVE_SPLIT_BUNDLE = "save_split_bundle"
+    const val WHOLE_AMOUNT = "whole_amount"
 
 
     const val CASH_DISCOUNT_SURCHARGE_ACTUAL = "cashDiscountSurchargeactual"

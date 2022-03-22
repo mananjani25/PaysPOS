@@ -79,6 +79,7 @@ class DashBoardCategoryViewModel @Inject constructor(
     var nonCashAdj: Double = 0.0
     var totalServiceCharge = 0.0
     var totalDiscount = 0.0
+    var tip = 0.0
     var cartModel: CartModel? = null
     var assignCustomer: TbCustomer? = null
     var orderItemDiscount = 0.0

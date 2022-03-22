@@ -348,13 +348,7 @@ class PaymentViewModel @Inject constructor(
                     if (response?.status == 200) {
 
                         resource.data?.let {
-                            if (prefProvider.getValueboolean(IS_PRINTER_QUEUE_ENABLE, false)) {
-                                _queueStart.value = Event(createOrderResponse)
-                            } else {
-                                _data.value = Event(createOrderResponse)
-                            }
-
-
+                            _data.value = Event(createOrderResponse)
                         }
 
                     } else {

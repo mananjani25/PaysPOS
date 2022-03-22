@@ -44,6 +44,7 @@ import com.android.pos.data.remote.Constants.SUB_TOTAL_DINEIN
 import com.android.pos.data.remote.Constants.TAKEOUT
 import com.android.pos.data.remote.Constants.TOTAL_PRICE_DINEIN
 import com.android.pos.data.remote.Constants.VENUE_LOGO
+import com.android.pos.data.remote.Constants.WHOLE_AMOUNT
 import com.android.pos.data.remote.Constants.getReceiptFormatDateFromUTCServer
 import com.android.pos.databinding.FragmentOrderCompletBinding
 import com.android.pos.di.PrefProvider
@@ -160,18 +161,18 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
     }
 
     private fun observeSplitList() {
-        viewModel.allSplitList.observe(viewLifecycleOwner, {
+        viewModel.allSplitList.observe(viewLifecycleOwner) {
             if (it.isNotEmpty()) {
                 splitList = arrayListOf()
                 splitList = it.toCollection(arrayListOf())
                 splitAdapter.setList(it.toCollection(arrayListOf()))
 
             }
-        })
+        }
     }
 
     private fun getKitchenReceiptSettings() {
-        viewModel.getKitchenReceiptSettings().observe(viewLifecycleOwner, {
+        viewModel.getKitchenReceiptSettings().observe(viewLifecycleOwner) {
 
             if (it != null) {
                 kitchenSettingModel = it
@@ -179,30 +180,30 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     getKitchenPrinters()
                 }
             }
-        })
+        }
     }
 
     private fun getCustomerReceiptSettings() {
-        viewModel.getCustomerReceiptSettings().observe(viewLifecycleOwner, {
+        viewModel.getCustomerReceiptSettings().observe(viewLifecycleOwner) {
             if (it != null) {
                 customerSettingModel = it
 
 
             }
 
-        })
+        }
 
     }
 
     private fun observeTipsList() {
-        viewModel.getTipsList().observe(viewLifecycleOwner, {
+        viewModel.getTipsList().observe(viewLifecycleOwner) {
             if (it.isNotEmpty()) {
                 tipsList = it
 
             }
 
 
-        })
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -214,7 +215,6 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         tipAmount = requireArguments().getDouble("TipAmount")
         isDineIn = requireArguments().getBoolean("isDineIn")
         if (isDineIn) {
-
             paidAmount = requireArguments().getDouble("PaidAmount")
             WholetotalPrice = requireArguments().getDouble("WholetotalPrice")
             remainingAmount = requireArguments().getDouble("remainingAmount")
@@ -239,10 +239,6 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             totalTaxAmount = requireArguments().getDouble(Constants.DINE_IN_TAX)
             totalDiscount = requireArguments().getDouble(Constants.DINE_IN_DISCOUNT)
             serviceCharge = requireArguments().getDouble(Constants.DINE_IN_SERVICECHARGE)
-
-
-            //  paidAmount = paidAmount - tipAmount
-
         } else {
 
             cartList = requireArguments().getParcelable("cartList")
@@ -281,7 +277,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 binding.llHome.visibility = View.GONE
                 binding.llNoReceipt.text = "Next Payment"
                 binding.txtHome.text = "Next Payment"
-                binding.llNoReceipt.background = requireContext().getDrawable(R.color.black)
+                binding.llNoReceipt.background = requireContext().getDrawable(R.drawable.background_square_border_grey)
 
                 var title = "Split "
                 viewModel.addSplitToDatabase(
@@ -3127,7 +3123,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             splitValue,
             prefProvider.getValueInt("ORDER_ID", -1),
             0.0,
-            prefProvider.getValue("WholeTotal", "0.0").toDouble(),
+            prefProvider.getValue(WHOLE_AMOUNT, "0.0").toDouble(),
             isSplitByNo,
             isSplitByAmount,
             isCustomCash,
