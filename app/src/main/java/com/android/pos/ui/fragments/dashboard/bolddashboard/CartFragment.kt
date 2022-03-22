@@ -10,7 +10,9 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.Observer
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.data.entities.*
@@ -32,6 +34,8 @@ import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.callback.MyCallback
 import com.android.pos.utils.extensions.alert
+import com.android.pos.utils.extensions.gone
+import com.android.pos.utils.extensions.visible
 import com.android.pos.utils.statusUtils.Resource
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
@@ -145,9 +149,15 @@ class CartFragment : Fragment(), MyCallback, DineInAdapter.DineInCallback {
 
         initListeners()
         setCartAdapter()
-        addObserver()
+
+
+        if (isAdded)
+            addObserver()
 
         getDineInData()
+
+
+
         if (prefProvider.getValueInt(Constants.CUSTOMER_ID, -1) != -1) {
             displayCustomer()
         }
@@ -209,6 +219,8 @@ class CartFragment : Fragment(), MyCallback, DineInAdapter.DineInCallback {
 
     private fun getDineInCartList() {
         dineInCartAdapter = DineInAdapter()
+        dineInCartAdapter.setListner(this)
+
         binding.rvCartList.adapter = dineInCartAdapter
         val numOfGuest: Int by lazy {
             updateBundle!!.getInt("numberOfGuest")
@@ -611,8 +623,7 @@ class CartFragment : Fragment(), MyCallback, DineInAdapter.DineInCallback {
 
 
     private fun setCartAdapter() {
-        dineInCartAdapter = DineInAdapter()
-        dineInCartAdapter.setListner(this)
+
         cartAdapter = CartAdapter()
         binding.rvCartList.adapter = cartAdapter
     }
@@ -628,17 +639,56 @@ class CartFragment : Fragment(), MyCallback, DineInAdapter.DineInCallback {
     }
 
     override fun onHeaderSelected(position: Int) {
-
+        prefProvider.setValueInt(Constants.DINE_INGUEST_SELECTED, position)
+        Log.d(TAG, "onHeaderSelected: header position : $position")
     }
 
     override fun onItemSelected(headerPosition: Int, position: Int, item: TbItem) {
     }
 
     override fun onCustomerClicked(position: Int, isRemoved: Boolean) {
+        if (isRemoved) {
+            if (cartlist.get(0).dineInList?.size!! >= position) {
+                val dineIn = cartlist.get(0).dineInList
+                dineIn?.get(position)?.customer = null
+                viewModel.dineInCartUpdate(cartlist, dineIn!!)
+            }
+
+        } else {
+
+            val bundle = bundleOf("DINE_IN" to true, "position" to position)
+            findNavController().navigate(
+                R.id.action_dashboardCategoryBoldPOS_to_assignCustomerOrderFragment, bundle
+            )
+        }
+
+
     }
+
 
     override fun onItemDelete(position: Int, itemPosition: Int, data: TbItem) {
-    }
 
+        alert(
+            getString(R.string.app_name),
+            getString(R.string.delete_item_message)
+        ) {
+            positiveButton(getString(R.string.tv_delete)) {
+                // Do positive stuff here
+                cartlist.get(0).orderType = Constants.DINE_IN
+
+                viewModel.cartLogic(
+                    cartlist,
+                    data,
+                    Constants.DELETE,
+                    dineInList = dineInCartAdapter.getList()
+                )
+
+
+            }
+            negativeButton(R.string.tv_cancel) {
+                // Do negative stuff heref
+            }
+        }
+    }
 
 }

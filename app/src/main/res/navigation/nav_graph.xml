@@ -1318,6 +1318,8 @@
         <action
             android:id="@+id/action_dashboardCategoryBoldPOS_to_dineInFragment"
             app:destination="@id/dineInFragment"/>
+
+
     </fragment>
 
     <fragment
