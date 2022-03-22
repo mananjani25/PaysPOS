@@ -20,6 +20,7 @@ import com.android.pos.data.remote.Constants.TERMINAL_ID
 import com.android.pos.databinding.FragmentAddItemBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.adapter.VariationDashboardListAdapter
+import com.android.pos.ui.adapter.boldpos.ModifiersAdapter
 import com.android.pos.ui.adapter.boldpos.VariationListAdapter
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.android.pos.utils.MethodUtils
@@ -40,6 +41,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment() {
     private val viewModel by activityViewModels<DashBoardCategoryViewModel>()
     private val TAG = "AddItemFragment"
     private lateinit var variationAdapter: VariationListAdapter
+    private lateinit var modifiersAdapter: ModifiersAdapter
 
     @Inject
     lateinit var prefProvider: PrefProvider
@@ -243,6 +245,29 @@ class AddItemFragment(val listner: ItemListner) : Fragment() {
                 }
             }
 
+
+        }
+
+        if (item.modifier_set_ids.isNotEmpty()) {
+            modifiersAdapter = ModifiersAdapter(viewModel, item.itemId, viewLifecycleOwner)
+            binding.rvModifiersList.adapter = modifiersAdapter
+
+            val intArray = IntArray(item.modifier_set_ids.size) { i ->
+                item.modifier_set_ids[i]
+            }
+
+            viewModel.modifierSet(intArray).observe(requireActivity(), {
+                if (it.data != null && it.data.isNotEmpty()) {
+                    binding.rvModifiersList.visibility = View.VISIBLE
+                    it.data.let { it1 -> modifiersAdapter.add(it1) }
+
+
+                    modifiersAdapter.setData(item.modifiers)
+
+
+                } else binding.rvModifiersList.visibility = View.GONE
+
+            })
 
         }
 

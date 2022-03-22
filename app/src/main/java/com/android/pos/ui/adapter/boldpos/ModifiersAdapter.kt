@@ -6,7 +6,7 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.data.entities.Modifier
 import com.android.pos.data.entities.ModifierSet
-import com.android.pos.databinding.ViewModifiersBoldBinding
+import com.android.pos.databinding.ViewBoldVariationsBinding
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 
 class ModifiersAdapter(
@@ -18,14 +18,14 @@ class ModifiersAdapter(
     var selectedModifierList = ArrayList<Modifier>()
 
 
-    inner class MyViewHolder(private var binding: ViewModifiersBoldBinding) :
+    inner class MyViewHolder(private var binding: ViewBoldVariationsBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
         fun bind(item: ModifierSet) {
+            binding.txtVariation.text = item.name
 
 
         }
-
 
     }
 
@@ -34,7 +34,7 @@ class ModifiersAdapter(
         viewType: Int
     ): ModifiersAdapter.MyViewHolder {
         val inflater = LayoutInflater.from(parent.context)
-        val binding = ViewModifiersBoldBinding.inflate(inflater, parent, false)
+        val binding = ViewBoldVariationsBinding.inflate(inflater, parent, false)
         return MyViewHolder(binding)
 
     }
@@ -49,5 +49,69 @@ class ModifiersAdapter(
 
     }
 
+    fun add(modifierSet: List<ModifierSet>) {
+        this.filterList = modifierSet as ArrayList<ModifierSet>
+        notifyDataSetChanged()
+
+    }
+
+    fun getItem(pos: Int): ModifierSet {
+        return filterList[pos]
+    }
+
+
+    fun getAll(): ArrayList<ModifierSet> {
+        return filterList
+    }
+
+    fun getSelectedModifiers(): ArrayList<Modifier> {
+        selectedModifierList.clear()
+        filterList.forEach { modifierSet ->
+            modifierSet.modifiers.forEach {
+                if (it.isChecked) {
+                    it.modifierSetId = modifierSet.id
+                    selectedModifierList.add(it)
+                }
+            }
+        }
+        return selectedModifierList
+    }
+
+    fun setData(modifiers: List<Modifier>) {
+
+
+        filterList.forEach { modifierSet ->
+            modifierSet.modifiers.forEach { modifierSet_Modifier ->
+                modifiers.forEach {
+                    if (modifierSet_Modifier.id == it.id) {
+                        modifierSet_Modifier.isChecked = true
+                    }
+                }
+            }
+        }
+
+        notifyDataSetChanged()
+
+    }
+
+
+    private fun maxLogic(
+        maxCount: Int,
+        modifiers: List<Modifier>
+    ): Boolean {
+
+        if (maxCount == 0) {
+            return true
+        }
+        var totalMinMax = 0
+
+        modifiers.forEach {
+            if (it.isChecked) {
+                totalMinMax += 1
+            }
+        }
+
+        return maxCount >= totalMinMax
+    }
 
 }

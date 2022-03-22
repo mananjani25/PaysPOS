@@ -42,6 +42,7 @@ object FileUtils {
     const val HIDDEN_PREFIX = "."
 
 
+
     /**
      * Gets the extension of a file name, like ".png" or ".jpg".
      *
