@@ -14,6 +14,7 @@ import com.android.pos.R
 import com.android.pos.databinding.FragmentPaymentBoldPosBinding
 import com.android.pos.ui.fragments.checkout.CheckoutDetailsFragmentNew
 import com.android.pos.ui.fragments.dashboard.bolddashboard.CartFragment
+import com.android.pos.utils.TAG
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -57,7 +58,12 @@ class PaymentBoldPosFragment : Fragment() {
         }
 
         listeners()
-
+        requireActivity().supportFragmentManager.setFragmentResultListener(
+            "request_key_tips",
+            viewLifecycleOwner
+        ) { requestKey: String, bundle: Bundle ->
+            Log.d(TAG, "onViewCreated: "+bundle)
+        }
     }
 
     private fun listeners() {

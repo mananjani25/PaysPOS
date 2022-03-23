@@ -13,6 +13,7 @@ import android.widget.LinearLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.setFragmentResultListener
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.data.entities.CartModel
@@ -83,7 +84,7 @@ class PayFullAmountFragment(val bundle: Bundle?) : Fragment(), ItemListner, magt
     var subTotalPrice = 0.0
     var totalTax = 0.0
     private var WholetotalPrice: Double = 0.0
-    var tipID = null
+    var tipID = 0
     var totalServiceCharge = 0.0
     private var future_delivery_date: String = ""
     private var future_delivery_time: String = ""
@@ -191,11 +192,44 @@ class PayFullAmountFragment(val bundle: Bundle?) : Fragment(), ItemListner, magt
 
         getCartData()
         observeShowProgress()
+        callback()
 
 //
 //        if (isNextPayment) {
 //            splitAllAMounts(splitValue)
 //        }
+    }
+
+    private fun callback() {
+        requireActivity().supportFragmentManager.setFragmentResultListener("request_key_tips",viewLifecycleOwner) { requestKey: String, bundle: Bundle ->
+            tipAmount = bundle.getDouble("tipAmount")
+            tipID = bundle.getInt("tipId")
+
+            tipAmountCalculation()
+        }
+
+    }
+
+    private fun tipAmountCalculation() {
+        if (tipAmount == 0.00) {
+            MethodUtils.setPriceTextView(binding.tvCash, WholetotalPrice)
+            binding.tvCash.text = "Cash (" + binding.tvCash.text + ")"
+            MethodUtils.setPriceTextView(binding.tvCard, WholetotalPrice)
+            binding.tvCard.text = "Card (" + binding.tvCard.text + ")"
+        } else {
+            MethodUtils.setPriceTextView(binding.tvCash, WholetotalPrice + tipAmount)
+            binding.tvCash.text =
+                "Cash (" + binding.tvCash.text + ") (" + MethodUtils.roundOffAmount(tipAmount) + " Tip Added)"
+            MethodUtils.setPriceTextView(binding.tvCard, WholetotalPrice + tipAmount)
+            binding.tvCard.text =
+                "Card (" + binding.tvCard.text + ") (" + MethodUtils.roundOffAmount(tipAmount) + " Tip Added)"
+            MethodUtils.getCashPaymentOptionList(
+                WholetotalPrice+tipAmount,
+                binding.tvCash1,
+                binding.tvCash2,
+                binding.tvCash3
+            )
+        }
     }
 
     private fun splitAllAMounts(splitValue: Int) {
