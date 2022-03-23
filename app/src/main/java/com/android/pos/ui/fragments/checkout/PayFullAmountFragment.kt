@@ -13,11 +13,13 @@ import android.widget.LinearLayout
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.setFragmentResultListener
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.data.entities.CartModel
 import com.android.pos.data.entities.RedeemLoyaltyInfo
 import com.android.pos.data.entities.TbItem
+import com.android.pos.data.model.requestModel.PaymentAttributes
 import com.android.pos.data.model.requestModel.SpitByOrderPaymentModel
 import com.android.pos.data.model.requestModel.SpitByOrderRequestModel
 import com.android.pos.data.remote.Constants
@@ -82,7 +84,7 @@ class PayFullAmountFragment(val bundle: Bundle?) : Fragment(), ItemListner, magt
     var subTotalPrice = 0.0
     var totalTax = 0.0
     private var WholetotalPrice: Double = 0.0
-    var tipID = null
+    var tipID = 0
     var totalServiceCharge = 0.0
     private var future_delivery_date: String = ""
     private var future_delivery_time: String = ""
@@ -190,11 +192,44 @@ class PayFullAmountFragment(val bundle: Bundle?) : Fragment(), ItemListner, magt
 
         getCartData()
         observeShowProgress()
+        callback()
 
 //
 //        if (isNextPayment) {
 //            splitAllAMounts(splitValue)
 //        }
+    }
+
+    private fun callback() {
+        requireActivity().supportFragmentManager.setFragmentResultListener("request_key_tips",viewLifecycleOwner) { requestKey: String, bundle: Bundle ->
+            tipAmount = bundle.getDouble("tipAmount")
+            tipID = bundle.getInt("tipId")
+
+            tipAmountCalculation()
+        }
+
+    }
+
+    private fun tipAmountCalculation() {
+        if (tipAmount == 0.00) {
+            MethodUtils.setPriceTextView(binding.tvCash, WholetotalPrice)
+            binding.tvCash.text = "Cash (" + binding.tvCash.text + ")"
+            MethodUtils.setPriceTextView(binding.tvCard, WholetotalPrice)
+            binding.tvCard.text = "Card (" + binding.tvCard.text + ")"
+        } else {
+            MethodUtils.setPriceTextView(binding.tvCash, WholetotalPrice + tipAmount)
+            binding.tvCash.text =
+                "Cash (" + binding.tvCash.text + ") (" + MethodUtils.roundOffAmount(tipAmount) + " Tip Added)"
+            MethodUtils.setPriceTextView(binding.tvCard, WholetotalPrice + tipAmount)
+            binding.tvCard.text =
+                "Card (" + binding.tvCard.text + ") (" + MethodUtils.roundOffAmount(tipAmount) + " Tip Added)"
+            MethodUtils.getCashPaymentOptionList(
+                WholetotalPrice+tipAmount,
+                binding.tvCash1,
+                binding.tvCash2,
+                binding.tvCash3
+            )
+        }
     }
 
     private fun splitAllAMounts(splitValue: Int) {
@@ -632,8 +667,7 @@ class PayFullAmountFragment(val bundle: Bundle?) : Fragment(), ItemListner, magt
                 val aa = SpitByOrderRequestModel(
                     orderId,
                     true,
-                    paymentReq!!,
-                    SpitByOrderPaymentModel(listOf(paymentReq))
+                    SpitByOrderPaymentModel(listOf(paymentReq) as List<PaymentAttributes>)
                 )
 
                 paymentviewModel.splitByOrder(aa, false)
@@ -698,8 +732,7 @@ class PayFullAmountFragment(val bundle: Bundle?) : Fragment(), ItemListner, magt
                 val aa = SpitByOrderRequestModel(
                     orderId,
                     true,
-                    paymentReq!!,
-                    SpitByOrderPaymentModel(listOf(paymentReq))
+                    SpitByOrderPaymentModel(listOf(paymentReq) as List<PaymentAttributes>)
                 )
 
                 paymentviewModel.splitByOrder(aa, false)
@@ -845,7 +878,7 @@ class PayFullAmountFragment(val bundle: Bundle?) : Fragment(), ItemListner, magt
 
         val jsonArray1 = magtekModule.m_scra?.let {
             magtekRequestUtils.processCardSwipe(
-                (paymentAmount * 100).toInt(),
+                (WholetotalPrice * 100).toInt(),
                 magtekModule.m_scra!!.ksn,
                 magtekModule.m_scra!!.magnePrint,
                 magtekModule.m_scra!!.magnePrintStatus,
@@ -918,7 +951,7 @@ class PayFullAmountFragment(val bundle: Bundle?) : Fragment(), ItemListner, magt
         ProgressUtils.dismissProgressDialog()
 
         val jsonArray1 = magtekRequestUtils.processData(
-            (paymentAmount * 100).toInt(),
+            (WholetotalPrice * 100).toInt(),
             TLVParser.getHexString(data),
             Constants.SALE
         )
@@ -1048,7 +1081,7 @@ class PayFullAmountFragment(val bundle: Bundle?) : Fragment(), ItemListner, magt
         val transaction = Transaction(
             60,
             paymentMethods,
-            "1.0",
+            MethodUtils.roundOffAmountString(paymentAmount),
             "",
             true,
             true,

@@ -17,6 +17,7 @@ import com.android.pos.data.remote.Constants.PAYMENT_ID
 import com.android.pos.data.remote.Constants.TAKEOUT
 import com.android.pos.data.repositories.PosRepository
 import com.android.pos.di.PrefProvider
+import com.android.pos.ui.fragments.magtek.PaymentResponse
 import com.android.pos.utils.Event
 import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.TimeFormatUtils
@@ -29,7 +30,7 @@ import java.util.*
 import javax.inject.Inject
 
 @HiltViewModel
-class PaymentViewModel @Inject constructor(
+open class PaymentViewModel @Inject constructor(
     private val posRepository: PosRepository,
     private val appDatabase: AppDatabase,
     private val prefProvider: PrefProvider
@@ -444,7 +445,9 @@ class PaymentViewModel @Inject constructor(
             }
         }*/
         orderAttributeRequestModel.offlineId =
-            if (isUpdateOrder) orderOfflineId.toString() else randomOfflineId()
+            if (isUpdateOrder) orderOfflineId.toString() else MethodUtils.randomOfflineId(
+                prefProvider.getValueInt(Constants.LOCATION_ID, -1).toString()
+            )
         Log.e(TAG, "openOrderType: " + cartModel.orderType)
         orderAttributeRequestModel.paymentStatus = if (isPaid) 1 else 0
         orderAttributeRequestModel.serviceChargeEnabled = true
@@ -570,7 +573,9 @@ class PaymentViewModel @Inject constructor(
         orderAttributeRequestModel.terminalId = cartModel.terminalId
         orderAttributeRequestModel.note = cartModel.note
         orderAttributeRequestModel.offlineId =
-            if (isUpdateOrder) orderOfflineId.toString() else randomOfflineId()
+            if (isUpdateOrder) orderOfflineId.toString() else MethodUtils.randomOfflineId(
+                prefProvider.getValueInt(Constants.LOCATION_ID, -1).toString()
+            )
         Log.e(TAG, "openOrderType: " + cartModel.orderType)
         orderAttributeRequestModel.openOrderType = cartModel.orderType
         orderAttributeRequestModel.orderTypeId = cartModel.orderTypeId
@@ -712,8 +717,12 @@ class PaymentViewModel @Inject constructor(
             }
         }
 
+        orderAttributeRequestModel.magensaResponse = magensaResponse.toString()
+
         orderAttributeRequestModel.offlineId =
-            if (isUpdateOrder) orderOfflineId.toString() else randomOfflineId()
+            if (isUpdateOrder) orderOfflineId.toString() else MethodUtils.randomOfflineId(
+                prefProvider.getValueInt(Constants.LOCATION_ID, -1).toString()
+            )
 
         orderAttributeRequestModel.paymentStatus = if (isPaid) 1 else 0
         orderAttributeRequestModel.serviceChargeEnabled = true
@@ -1054,7 +1063,9 @@ class PaymentViewModel @Inject constructor(
             orderItemsAttribute.price = item.price
             orderItemsAttribute.quantity = item.itemQuantity
             orderItemsAttribute.terminalId = cartModel.terminalId
-            orderItemsAttribute.timestamp = randomOfflineId()
+            orderItemsAttribute.timestamp = MethodUtils.randomOfflineId(
+                prefProvider.getValueInt(Constants.LOCATION_ID, -1).toString()
+            )
             orderItemsAttribute.totalPrice =
                 MethodUtils.roundOffAmountDouble(item.price * item.itemQuantity)
             orderItemsAttribute.orderItemTaxesAttributes = orderItemTaxesAttributes(item)
@@ -1329,7 +1340,9 @@ class PaymentViewModel @Inject constructor(
             cashDiscountFee = 0.0
 
             employeeId = cartModel.employeeID
-            offlineId = if (isUpdateOrder) paymentOfflineId.toString() else randomOfflineId()
+            offlineId = if (isUpdateOrder) paymentOfflineId.toString() else MethodUtils.randomOfflineId(
+                prefProvider.getValueInt(Constants.LOCATION_ID, -1).toString()
+            )
             payableType = "Order"
             paymentType = paymentTypeStatus
             serviceChargeAmount = MethodUtils.roundOffAmountDouble(totalServiceCharge)
@@ -1385,6 +1398,46 @@ class PaymentViewModel @Inject constructor(
             val totalDC = MethodUtils.roundOffAmountDouble(tipAmount)
             val totalAM = totalPP /*- totalDC*/
             amount = totalAM
+            if (magensaResponse != null) {
+                val model = Gson().fromJson(
+                    magensaResponse,
+                    PaymentResponse.PaymentResponseItem::class.java
+                )
+                Log.e("magensaResponse", Gson().toJson(model))
+
+
+                if (model.dataOutput != null) {
+                    Log.e("dataOutput", Gson().toJson(model))
+                    cardNumber = model.dataOutput.PANLast4
+                    var cardN = ""
+                    model.dataOutput.additionalOutputData?.forEach {
+                        Log.e("additionalOutputData", it.key)
+                        if (it.key == "CardType") {
+                            cardN = it.value
+                        }
+                    }
+                    cardName = cardN
+
+                }
+
+                if (model.cardSwipeOutput != null) {
+                    Log.e("cardSwipeOutput", Gson().toJson(model))
+                    cardNumber = model.cardSwipeOutput.pANLast4
+                    var cardN = ""
+                    model.cardSwipeOutput.additionalOutputData?.forEach {
+                        if (it.key == "CardType") {
+                            cardN = it.value
+                        }
+                    }
+
+                    cardName = cardN
+                }
+
+
+
+
+                cardType = 0
+            }
 //            cardName = ""
 //            cardNumber = ""
 //            cardType = 0
@@ -1400,7 +1453,9 @@ class PaymentViewModel @Inject constructor(
             cashDiscountFee = 0.0
             cash_discount_type = cashdiscountType
             employeeId = cartModel.employeeID
-            offlineId = if (isUpdateOrder) paymentOfflineId.toString() else randomOfflineId()
+            offlineId = if (isUpdateOrder) paymentOfflineId.toString() else MethodUtils.randomOfflineId(
+                prefProvider.getValueInt(Constants.LOCATION_ID, -1).toString()
+            )
             payableType = "Order"
             paymentType = paymentTypeStatus
             serviceChargeAmount = totalServiceCharge
@@ -1434,29 +1489,6 @@ class PaymentViewModel @Inject constructor(
         }
     }
 
-    private fun randomOfflineId(): String {
-
-        val locationId = prefProvider.getValueInt(Constants.LOCATION_ID, -1).toString()
-        val timestamp = System.currentTimeMillis().toString()
-        val ss = locationId + timestamp.takeLast(4)
-        val reqLent = 12 - ss.length
-        val Alphabet = getSaltString(reqLent)
-        val timeStampFinal = Alphabet + ss
-        Log.e("timeStampFinal", timeStampFinal)
-
-        return timeStampFinal
-    }
-
-    protected open fun getSaltString(reqLent: Int): String? {
-        val SALTCHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"
-        val salt = StringBuilder()
-        val rnd = Random()
-        while (salt.length < reqLent) { // length of the random string.
-            val index = (rnd.nextFloat() * SALTCHARS.length).toInt()
-            salt.append(SALTCHARS[index])
-        }
-        return salt.toString()
-    }
 
     fun totalPayAmount(paymentAmount: Double) {
 
@@ -1575,8 +1607,8 @@ class PaymentViewModel @Inject constructor(
     }
 
     fun setMagensaResponse(response: String?) {
+
         magensaResponse = response
 
     }
-
 }

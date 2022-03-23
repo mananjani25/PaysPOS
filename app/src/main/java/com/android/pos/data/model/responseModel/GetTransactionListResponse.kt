@@ -106,6 +106,9 @@ data class GetTransactionListResponse(
                 val refundedQuantity: String,
                 @SerializedName("refunded_amount")
                 val refundedAmount: Double,
+                @SerializedName("magensa_response")
+                val magensaResponse: String?
+
             )
         }
 

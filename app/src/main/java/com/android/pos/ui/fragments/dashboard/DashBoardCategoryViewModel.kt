@@ -699,7 +699,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
 
     @SuppressLint("SetTextI18n")
-    fun itemCalculation(
+        fun itemCalculation(
         cartList: List<CartModel>?,
         txtTotalAmount: AppCompatTextView,
         context: Context
@@ -2036,6 +2036,14 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 posRepository.addOrderType(it.data.orderTypes)
                                 posRepository.addAllCountryList(it.data.phoneCountrylist)
                                 _callCashDiscount.value = Event(true)
+
+                                if (it.data.magensaSettings.isNotEmpty()) {
+                                    prefProvider.setValue(
+                                        Constants.MAGENSA_SETTINGS,
+                                        Gson().toJson(it.data.magensaSettings[0])
+                                    )
+                                } else prefProvider.setValue(Constants.MAGENSA_SETTINGS, "")
+
 
                             }
 

@@ -9,12 +9,13 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.setFragmentResultListener
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.databinding.FragmentPaymentBoldPosBinding
-
 import com.android.pos.ui.fragments.checkout.CheckoutDetailsFragmentNew
 import com.android.pos.ui.fragments.dashboard.bolddashboard.CartFragment
+import com.android.pos.utils.TAG
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -58,7 +59,11 @@ class PaymentBoldPosFragment : Fragment() {
         }
 
         listeners()
-
+        setFragmentResultListener(
+            "request_key_tips"
+        ) { requestKey: String, bundle: Bundle ->
+            Log.d(TAG, "onViewCreated: " + bundle)
+        }
     }
 
     private fun listeners() {
@@ -97,5 +102,7 @@ class PaymentBoldPosFragment : Fragment() {
         fm.beginTransaction().replace(binding.frameLayout.id, fragment).commit()
         // binding.frameLayout?.let { fm.beginTransaction().replace(it, fragment).commit() }
     }
+
+
 
 }

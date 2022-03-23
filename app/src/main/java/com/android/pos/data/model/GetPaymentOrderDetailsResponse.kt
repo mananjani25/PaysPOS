@@ -33,6 +33,7 @@ class GetPaymentOrderDetailsResponse(
         @SerializedName("transaction_id") val transaction_id: String,
         @SerializedName("card_type") val card_type: String,
         @SerializedName("card_name") val card_name: String,
+        @SerializedName("magensa_response_data") val magensa_response_data: String,
         @SerializedName("card_number") val card_number: String,
         @SerializedName("cash_discount_type") val cash_discount_type: String,
         @SerializedName("employee_id") val employee_id: Int,

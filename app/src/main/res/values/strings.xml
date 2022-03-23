@@ -764,6 +764,9 @@
     <string name="add_customer2">+ Add Customer</string>
     <string name="card">Card</string>
     <string name="add_custom_amount">Add Custom Amount</string>
+    <string name="pay_full_amount">PAY FULL AMOUNT</string>
+    <string name="split_custom_amount">SPLIT CUSTOM AMOUNT</string>
+    <string name="next_payment">Next Payment</string>
 
 
 </resources>
