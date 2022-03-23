@@ -260,7 +260,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
          }
  */
 
-        val fragment = AddItemFragment.newInstance(item, this, cartList)
+        val fragment = AddItemFragment.newInstance(item, this, cartList, false)
         loadCategoryFragment(fragment)
     }
 
@@ -387,6 +387,8 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
 
     override fun onItemUpdate(item: TbItem) {
         Log.e(TAG, "dashboardPosItem:  ${Gson().toJson(item)}")
+        var frag: Fragment = AddItemFragment.newInstance(item, this, cartList, true)
+        loadCategoryFragment(frag)
     }
 
 

@@ -18,6 +18,8 @@ object Constants {
 
     const val QRCODE_STATIC_URL = "https://tgb.possoft.io/receipt/TGTT5M019451"
 
+    const val IS_UPDATE_ITEM = "isUpdateItem"
+
     //SharedPref Keys
     const val AUTH_TOKEN = "authToken"
     const val TERMINAL_ID = "terminalId"
