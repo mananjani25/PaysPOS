@@ -18,6 +18,7 @@ import com.android.pos.R
 import com.android.pos.data.entities.CartModel
 import com.android.pos.data.entities.RedeemLoyaltyInfo
 import com.android.pos.data.entities.TbItem
+import com.android.pos.data.model.requestModel.PaymentAttributes
 import com.android.pos.data.model.requestModel.SpitByOrderPaymentModel
 import com.android.pos.data.model.requestModel.SpitByOrderRequestModel
 import com.android.pos.data.remote.Constants
@@ -607,8 +608,7 @@ class PayFullAmountFragment(val bundle: Bundle?) : Fragment(), ItemListner, magt
                 val aa = SpitByOrderRequestModel(
                     orderId,
                     true,
-                    paymentReq!!,
-                    SpitByOrderPaymentModel(listOf(paymentReq))
+                    SpitByOrderPaymentModel(listOf(paymentReq) as List<PaymentAttributes>)
                 )
 
                 paymentviewModel.splitByOrder(aa, false)
@@ -673,8 +673,7 @@ class PayFullAmountFragment(val bundle: Bundle?) : Fragment(), ItemListner, magt
                 val aa = SpitByOrderRequestModel(
                     orderId,
                     true,
-                    paymentReq!!,
-                    SpitByOrderPaymentModel(listOf(paymentReq))
+                    SpitByOrderPaymentModel(listOf(paymentReq) as List<PaymentAttributes>)
                 )
 
                 paymentviewModel.splitByOrder(aa, false)
@@ -1023,7 +1022,7 @@ class PayFullAmountFragment(val bundle: Bundle?) : Fragment(), ItemListner, magt
         val transaction = Transaction(
             60,
             paymentMethods,
-            "1.0",
+            MethodUtils.roundOffAmountString(paymentAmount),
             "",
             true,
             true,

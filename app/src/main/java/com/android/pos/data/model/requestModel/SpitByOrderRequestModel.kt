@@ -8,6 +8,6 @@ data class SpitByOrderRequestModel(
 
     var id: Int? = null,
     var completed_all_payments: Boolean = false,
-    var amount_tab: PaymentAttributes,
-    var order: SpitByOrderPaymentModel
+    var amount_tab: SpitByOrderPaymentModel
+    /*var order: SpitByOrderPaymentModel*/
 ): Parcelable
