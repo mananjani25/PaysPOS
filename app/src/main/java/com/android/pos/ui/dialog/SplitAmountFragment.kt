@@ -10,10 +10,13 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.setFragmentResult
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
+import com.android.pos.data.remote.Constants
 import com.android.pos.databinding.DailogSplitAmountBinding
+import com.android.pos.di.PrefProvider
 import dagger.hilt.android.AndroidEntryPoint
 import java.text.NumberFormat
 import java.util.*
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class SplitAmountFragment : DialogFragment(), View.OnClickListener, TextWatcher {
@@ -24,6 +27,9 @@ class SplitAmountFragment : DialogFragment(), View.OnClickListener, TextWatcher 
     private var splitValue: Int = -1
     private lateinit var binding: DailogSplitAmountBinding
     var current = ""
+
+    @Inject
+    lateinit var prefProvider: PrefProvider
 
     companion object {
         fun newInstance() = SplitAmountFragment()
@@ -42,8 +48,8 @@ class SplitAmountFragment : DialogFragment(), View.OnClickListener, TextWatcher 
     }
 
     private fun setupData() {
-        totalPrice = requireArguments().getDouble("totalPrice")
-        splitValue = requireArguments().getInt("splitValue")
+        totalPrice = prefProvider.getValue(Constants.WHOLE_AMOUNT, "0.0").toDouble()
+//        splitValue = requireArguments().getInt("splitValue")
 
         binding.edtAmount.addTextChangedListener(this)
         binding.txtCustom.setOnClickListener(this)
@@ -92,20 +98,20 @@ class SplitAmountFragment : DialogFragment(), View.OnClickListener, TextWatcher 
 
         when (v?.id) {
             R.id.txtContinue -> {
-
-                if (isCustom) {
-                    val ss = binding.edtSplitNo.text.toString().trim()
-                    if (ss.isNotEmpty()) {
-                        splitValue = ss.toInt()
-                    }
-                } else {
-
-                    val stSplitAmount = binding.edtAmount.text.toString().trim()
-                    if (stSplitAmount.isNotEmpty()) {
-                        val cleanString: String = stSplitAmount.replace("""[$]""".toRegex(), "")
-                        splitAmount = cleanString.trim().toDouble()
-                    }
+                val ss = binding.edtSplitNo.text.toString().trim()
+                if (ss.isNotEmpty()) {
+                    splitValue = ss.toInt()
                 }
+//                if (isCustom) {
+//
+//                } else {
+//
+//                    val stSplitAmount = binding.edtAmount.text.toString().trim()
+//                    if (stSplitAmount.isNotEmpty()) {
+//                        val cleanString: String = stSplitAmount.replace("""[$]""".toRegex(), "")
+//                        splitAmount = cleanString.trim().toDouble()
+//                    }
+//                }
 
                 gotoBack()
             }
@@ -145,7 +151,7 @@ class SplitAmountFragment : DialogFragment(), View.OnClickListener, TextWatcher 
             putInt("split", splitValue)
             putDouble("splitByAmount", splitAmount)
         }
-        setFragmentResult("request_key_split", result)
+        requireActivity().supportFragmentManager.setFragmentResult("request_key_split", result)
         findNavController().navigateUp()
     }
 
@@ -156,39 +162,40 @@ class SplitAmountFragment : DialogFragment(), View.OnClickListener, TextWatcher 
         if (s.toString() != current) {
             binding.edtAmount.removeTextChangedListener(this)
 
-            val cleanString: String = s!!.replace("""[$,.]""".toRegex(), "")
+            try {
+                val cleanString: String = s!!.replace("""[$,.]""".toRegex(), "")
+                val parsed = cleanString.trim().toDouble()
+                val formatted = NumberFormat.getCurrencyInstance(Locale.US).format((parsed / 100))
 
-            val parsed = cleanString.trim().toDouble()
-            val formatted = NumberFormat.getCurrencyInstance(Locale.US).format((parsed / 100))
+                current = formatted
+                binding.edtAmount.setText(formatted.replace("""[,]""".toRegex(), ""))
+                binding.edtAmount.setSelection(formatted.replace("""[,]""".toRegex(), "").length)
 
-            current = formatted
-            binding.edtAmount.setText(formatted.replace("""[,]""".toRegex(), ""))
-            binding.edtAmount.setSelection(formatted.replace("""[,]""".toRegex(), "").length)
+                val enterPrice = binding.edtAmount.text!!.replace("""[$]""".toRegex(), "").toDouble()
 
-            val enterPrice = binding.edtAmount.text!!.replace("""[$]""".toRegex(), "").toDouble()
+                var remainAmount = 0.0
 
-            var remainAmount = 0.0
+                if (enterPrice > totalPrice) {
 
-            if (enterPrice > totalPrice) {
+                    (getString(R.string.symbole) + String.format(
+                        "%.2f",
+                        totalPrice
+                    )).also { binding.edtAmount.setText(it) }
 
-                (getString(R.string.symbole) + String.format(
-                    "%.2f",
-                    totalPrice
-                )).also { binding.edtAmount.setText(it) }
+                } else {
 
-            } else {
+                    remainAmount = totalPrice - enterPrice
+                }
 
-                remainAmount = totalPrice - enterPrice
+
+                val remainAmountFormat =
+                    getString(R.string.symbole) + String.format("%.2f", remainAmount)
+                val totalAmountFormat = getString(R.string.symbole) + String.format("%.2f", totalPrice)
+
+                binding.txtValue.text =
+                    "$remainAmountFormat of $totalAmountFormat will remain after this payment."
+            } catch (e: Exception) {
             }
-
-
-            val remainAmountFormat =
-                getString(R.string.symbole) + String.format("%.2f", remainAmount)
-            val totalAmountFormat = getString(R.string.symbole) + String.format("%.2f", totalPrice)
-
-            binding.txtValue.text =
-                "$remainAmountFormat of $totalAmountFormat will remain after this payment."
-
             binding.edtAmount.addTextChangedListener(this)
         }
     }
