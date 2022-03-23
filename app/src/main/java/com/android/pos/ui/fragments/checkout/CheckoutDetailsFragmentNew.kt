@@ -584,8 +584,6 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
             totalDiscount = String.format("%.2f", totalDiscount / isSelectedCount).toDouble()
             cashDiscountSurcharge =
                 String.format("%.2f", cashDiscountSurcharge / isSelectedCount).toDouble()
-            makePaymentCreditCard()
-
             if (device == 0) {
                 magtekPaymentCall()
             } else {
