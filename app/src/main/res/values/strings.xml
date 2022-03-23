@@ -449,6 +449,7 @@
     <string name="add_a_note">Add a note</string>
     <string name="rename_item">Rename Item</string>
     <string name="item_name">Custom Item Name</string>
+    <string name="item_name_">Item Name</string>
     <string name="add_customer_to_sale">Add Customer to Sale</string>
     <string name="add_to_cart">Add to Cart</string>
     <string name="direct_pay">Direct Pay</string>
