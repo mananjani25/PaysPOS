@@ -615,6 +615,8 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
 
                         transactionAdapter.showLoading(true)
                     }
+
+
                 } else {
                     Log.e(TAG, "itemCount ${transactionAdapter.itemCount}")
                     /* binding.rvTeamTimeSheet.visibility = View.GONE

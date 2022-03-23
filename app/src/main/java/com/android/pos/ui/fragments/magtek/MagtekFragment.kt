@@ -176,6 +176,9 @@ class MagtekFragment : Fragment(), ItemCallback, magtekCallback {
         binding.imgBack.setOnClickListener {
             findNavController().navigateUp()
         }
+        binding.txtHome.setOnClickListener {
+            findNavController().navigate(R.id.action_magtekFragment_to_dashboardCategoryBoldPOS)
+        }
 
         mContaxt = requireContext()
         mScanning = false

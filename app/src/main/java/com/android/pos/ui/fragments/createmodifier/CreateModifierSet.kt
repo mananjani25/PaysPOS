@@ -3,9 +3,7 @@ package com.android.pos.ui.fragments.createmodifier
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.text.method.KeyListener
 import android.util.Log
-import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -33,7 +31,7 @@ import java.text.NumberFormat
 import java.util.*
 
 @AndroidEntryPoint
-class CreateModifierSet : Fragment() {
+class CreateModifierSet : Fragment(), TextWatcher {
     private var modifierSet: ModifierSet? = null
     private var isEdit: Boolean = false
     private lateinit var adapter: ModifierAdapter
@@ -68,6 +66,8 @@ class CreateModifierSet : Fragment() {
         binding.header.txtTitle.text = getString(R.string.new_modifier_set)
         binding.header.txtSave.text = getString(R.string.save)
 
+        binding.edtModifier.addTextChangedListener(this)
+        binding.edtPrice.addTextChangedListener(this)
 
         val resultDialogKey = getNavigationResultLiveData<ArrayList<TbItem>>(Constants.DIALOG_KEY)
         resultDialogKey?.observe(viewLifecycleOwner) {
@@ -191,99 +191,36 @@ class CreateModifierSet : Fragment() {
             )
             navControll.popBackStack()
         }
-
-        binding.edtModifier.setOnKeyListener(object : KeyListener, View.OnKeyListener {
-            override fun getInputType(): Int {
-              return 0
-            }
-
-            override fun onKeyDown(
-                view: View?,
-                text: Editable?,
-                keyCode: Int,
-                event: KeyEvent?
-            ): Boolean {
-
-                return false
-            }
-
-            override fun onKeyUp(
-                view: View?,
-                text: Editable?,
-                keyCode: Int,
-                event: KeyEvent?
-            ): Boolean {
-                return false
-            }
-
-            override fun onKeyOther(view: View?, text: Editable?, event: KeyEvent?): Boolean {
-                return false
-            }
-
-            override fun clearMetaKeyState(view: View?, content: Editable?, states: Int) {
-
-            }
-
-            override fun onKey(v: View?, keyCode: Int, event: KeyEvent?): Boolean {
-                if ((event?.action == KeyEvent.ACTION_DOWN) && (keyCode == KeyEvent.KEYCODE_ENTER)
-                ) {
-                    addModifierset(true)
-                    return true
-                }
-                return false
-            }
-
-        })
-        binding.edtPrice.setOnKeyListener(object : KeyListener, View.OnKeyListener {
-            override fun getInputType(): Int {
-               return 0
-            }
-
-            override fun onKeyDown(
-                view: View?,
-                text: Editable?,
-                keyCode: Int,
-                event: KeyEvent?
-            ): Boolean {
-
-                return false
-            }
-
-            override fun onKeyUp(
-                view: View?,
-                text: Editable?,
-                keyCode: Int,
-                event: KeyEvent?
-            ): Boolean {
-                return false
-            }
-
-            override fun onKeyOther(view: View?, text: Editable?, event: KeyEvent?): Boolean {
-                return false
-            }
-
-            override fun clearMetaKeyState(view: View?, content: Editable?, states: Int) {
-
-            }
-
-            override fun onKey(v: View?, keyCode: Int, event: KeyEvent?): Boolean {
-                if ((event?.action == KeyEvent.ACTION_DOWN) &&
-                    (keyCode == KeyEvent.KEYCODE_ENTER)
-                ) {
-                    addModifierset(false)
-                    return true
-                }
-                return false
-            }
-
-        })
     }
 
-    private fun addModifierset(isModifier: Boolean) {
-        if (isModifier) {
-            if (binding.edtModifier.text.toString() != null && binding.edtModifier.text.toString()
-                    .isNotEmpty()
-            ) {
+    private fun observeShowProgress() {
+
+        viewModel.showProgress.observe(viewLifecycleOwner) { event ->
+            event.getContentIfNotHandled()?.let {
+                if (it) {
+                    ProgressUtils.showProgressDialog(requireActivity())
+                } else {
+                    ProgressUtils.dismissProgressDialog()
+                }
+            }
+        }
+
+    }
+
+    private fun setupSnackbar() {
+        binding.root.liveSnackBar(this, viewModel.snackbarText, Snackbar.LENGTH_SHORT)
+    }
+
+    override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+    }
+
+    override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+
+        if (s.hashCode() == binding.edtModifier.text.hashCode()) {
+            // do other things
+            binding.edtModifier.removeTextChangedListener(this)
+
+            if (s != null && s.length == 1) {
                 val model = Modifier().apply {
                     name = binding.edtModifier.text.toString().trim()
                     price = 0.00
@@ -292,14 +229,15 @@ class CreateModifierSet : Fragment() {
             }
             binding.edtModifier.text?.clear()
             binding.edtModifier.clearFocus()
+            binding.edtModifier.addTextChangedListener(this)
+        }
 
-        } else {
+        if (s.hashCode() == binding.edtPrice.text.hashCode()) {
+            binding.edtPrice.removeTextChangedListener(this)
 
-            if (binding.edtPrice.text.toString() != null && binding.edtPrice.text.toString()
-                    .isNotEmpty()
-            ) {
+            if (s != null && s.length == 1) {
 
-                val parsed = binding.edtPrice.text.toString().trim().toDouble()
+                val parsed = s.toString().toDouble()
                 val formatted = NumberFormat.getCurrencyInstance(Locale.US).format((parsed / 100))
                 val model = Modifier().apply {
                     name = ""
@@ -309,33 +247,19 @@ class CreateModifierSet : Fragment() {
             }
             binding.edtPrice.text?.clear()
             binding.edtPrice.clearFocus()
+            binding.edtPrice.addTextChangedListener(this)
         }
 
         viewModel.setModifiers(adapter.getAll())
-    }
-
-    private fun observeShowProgress() {
-
-        viewModel.showProgress.observe(viewLifecycleOwner, { event ->
-            event.getContentIfNotHandled()?.let {
-                if (it) {
-                    ProgressUtils.showProgressDialog(requireActivity())
-                } else {
-                    ProgressUtils.dismissProgressDialog()
-                }
-            }
-        })
 
     }
 
-    private fun setupSnackbar() {
-        binding.root.liveSnackBar(this, viewModel.snackbarText, Snackbar.LENGTH_SHORT)
+    override fun afterTextChanged(s: Editable?) {
     }
-
 
     private fun observeData() {
 
-        viewModel.data.observe(viewLifecycleOwner, { event ->
+        viewModel.data.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let { message ->
 
                 activity?.let {
@@ -355,6 +279,6 @@ class CreateModifierSet : Fragment() {
 
 
             }
-        })
+        }
     }
 }

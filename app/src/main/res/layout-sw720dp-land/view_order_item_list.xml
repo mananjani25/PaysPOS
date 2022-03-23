@@ -29,7 +29,7 @@
                     android:layout_height="wrap_content"
                     android:text="Three layer ice cream"
                     android:textColor="@color/white"
-                    android:textSize="@dimen/_7mdpi" />
+                    android:textSize="@dimen/_6mdpi" />
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/tvModifierName"

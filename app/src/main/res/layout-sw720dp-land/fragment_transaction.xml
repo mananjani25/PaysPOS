@@ -39,7 +39,7 @@
             android:orientation="horizontal">
 
             <androidx.appcompat.widget.AppCompatTextView
-                style="@style/CustomFontSemiBold"
+                style="@style/CustomFontBold"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -48,10 +48,10 @@
                 android:text="@string/tv_date_time"
                 android:textAllCaps="true"
                 android:textColor="@color/white"
-                android:textSize="@dimen/text_size_medium" />
+                android:textSize="@dimen/text_size_normal" />
 
             <androidx.appcompat.widget.AppCompatTextView
-                style="@style/CustomFontSemiBold"
+                style="@style/CustomFontBold"
                 android:layout_width="0dp"
                 android:layout_gravity="center"
                 android:layout_height="wrap_content"
@@ -59,11 +59,11 @@
                 android:gravity="center"
                 android:text="@string/tv_order_type"
                 android:textColor="@color/white"
-                android:textSize="@dimen/text_size_medium"
+                android:textSize="@dimen/text_size_normal"
                 android:textAllCaps="true"/>
 
             <androidx.appcompat.widget.AppCompatTextView
-                style="@style/CustomFontSemiBold"
+                style="@style/CustomFontBold"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -71,11 +71,11 @@
                 android:text="@string/tv_total_amount"
                 android:layout_gravity="center"
                 android:textColor="@color/white"
-                android:textSize="@dimen/text_size_medium"
+                android:textSize="@dimen/text_size_normal"
                 android:textAllCaps="true"/>
 
             <androidx.appcompat.widget.AppCompatTextView
-                style="@style/CustomFontSemiBold"
+                style="@style/CustomFontBold"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -83,11 +83,11 @@
                 android:gravity="center"
                 android:text="@string/tv_tip_amount"
                 android:textColor="@color/white"
-                android:textSize="@dimen/text_size_medium"
+                android:textSize="@dimen/text_size_normal"
                 android:textAllCaps="true"/>
 
             <androidx.appcompat.widget.AppCompatTextView
-                style="@style/CustomFontMediumStyle"
+                style="@style/CustomFontBold"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -95,11 +95,11 @@
                 android:layout_gravity="center"
                 android:text="Customer"
                 android:textColor="@color/white"
-                android:textSize="@dimen/text_size_medium"
+                android:textSize="@dimen/text_size_normal"
                 android:textAllCaps="true"/>
 
             <androidx.appcompat.widget.AppCompatTextView
-                style="@style/CustomFontMediumStyle"
+                style="@style/CustomFontBold"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -111,7 +111,7 @@
                 android:textSize="@dimen/_5mdpi" />
 
             <androidx.appcompat.widget.AppCompatTextView
-                style="@style/CustomFontMediumStyle"
+                style="@style/CustomFontBold"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -123,7 +123,7 @@
                 android:textSize="@dimen/text_size_large" />
 
             <androidx.appcompat.widget.AppCompatTextView
-                style="@style/CustomFontSemiBold"
+                style="@style/CustomFontBold"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -131,20 +131,21 @@
                 android:layout_gravity="center"
                 android:text="@string/tv_transaction_receipt_id"
                 android:textColor="@color/white"
-                android:textSize="@dimen/text_size_medium"
+                android:textSize="@dimen/text_size_normal"
                 android:textAllCaps="true"/>
 
             <androidx.appcompat.widget.AppCompatTextView
-                style="@style/CustomFontMediumStyle"
+                style="@style/CustomFontBold"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:layout_gravity="center"
                 android:gravity="center"
-                android:visibility="gone"
+                android:visibility="visible"
                 android:text="@string/tv_terminal_id"
+                app:textAllCaps="true"
                 android:textColor="@color/white"
-                android:textSize="@dimen/text_size_large" />
+                android:textSize="@dimen/text_size_normal" />
 
         </LinearLayout>
 

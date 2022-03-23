@@ -113,6 +113,10 @@ class MagtekProFragment : Fragment(), ItemCallback, IDeviceListCallback {
             findNavController().navigateUp()
         }
 
+        binding.txtHome.setOnClickListener {
+            findNavController().navigate(R.id.action_magtekFragment_to_dashboardCategoryBoldPOS)
+        }
+
         mContaxt = requireContext()
 
 
