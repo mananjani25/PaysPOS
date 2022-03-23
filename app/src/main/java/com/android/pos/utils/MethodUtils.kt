@@ -412,6 +412,29 @@ class MethodUtils {
             }
         }
 
+
+        fun randomOfflineId(locationId: String): String {
+
+            val timestamp = System.currentTimeMillis().toString()
+            val ss = locationId + timestamp.takeLast(4)
+            val reqLent = 12 - ss.length
+            val Alphabet = getSaltString(reqLent)
+            val timeStampFinal = Alphabet + ss
+            Log.e("timeStampFinal", timeStampFinal)
+
+            return timeStampFinal
+        }
+
+        open fun getSaltString(reqLent: Int): String? {
+            val SALTCHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"
+            val salt = StringBuilder()
+            val rnd = Random()
+            while (salt.length < reqLent) { // length of the random string.
+                val index = (rnd.nextFloat() * SALTCHARS.length).toInt()
+                salt.append(SALTCHARS[index])
+            }
+            return salt.toString()
+        }
     }
 
 

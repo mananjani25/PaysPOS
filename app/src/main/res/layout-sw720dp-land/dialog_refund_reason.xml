@@ -86,7 +86,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/_3sdp"
                     android:text="@string/tv_refund_to"
-                    android:textColor="@color/black"
+                    android:textColor="@color/txtColor"
                     android:textSize="@dimen/_5mdpi" />
 
                 <LinearLayout
@@ -135,7 +135,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="@dimen/_3sdp"
                     android:text="@string/tv_reason_for_refund"
-                    android:textColor="@color/black"
+                    android:textColor="@color/txtColor"
                     android:textSize="@dimen/_5mdpi" />
 
 

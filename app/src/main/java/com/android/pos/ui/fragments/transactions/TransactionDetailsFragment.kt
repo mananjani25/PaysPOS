@@ -104,10 +104,10 @@ class TransactionDetailsFragment : Fragment() {
             }
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
 
-        viewModel.serviceCharges.observe(requireActivity(), {
+        viewModel.serviceCharges.observe(requireActivity()) {
             serviceChargesList = it.data as ArrayList<TbServiceCharge>?
 
-        })
+        }
         return binding.root
     }
 
@@ -190,12 +190,11 @@ class TransactionDetailsFragment : Fragment() {
                     isSplitPayment = true
                 }
 
-                binding.llNotes.visibility = View.VISIBLE
-                if (it.data.order.note.isNotEmpty()) {
-                    binding.tvNote.text=it.data.order.note
-                }else{
-                    binding.tvNote.text = ""
-                }
+                if (paymentDetailsResponse.data.payment_type == "Card")
+                    binding.txtCardDetails.text =
+                        paymentDetailsResponse.data.card_name + " " + paymentDetailsResponse.data.card_number
+
+
                 binding.tvDate.text =
                     convertCurrentDate(
                         it.data.order.created_at,
@@ -324,7 +323,7 @@ class TransactionDetailsFragment : Fragment() {
 
     private fun observeShowProgress() {
 
-        viewModel.showProgress.observe(viewLifecycleOwner, { event ->
+        viewModel.showProgress.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
                 if (it) {
                     ProgressUtils.showProgressDialog(requireActivity())
@@ -332,7 +331,7 @@ class TransactionDetailsFragment : Fragment() {
                     ProgressUtils.dismissProgressDialog()
                 }
             }
-        })
+        }
 
     }
 
@@ -342,20 +341,17 @@ class TransactionDetailsFragment : Fragment() {
     }
 
     private fun getCustomerReceiptSettings() {
-        viewModel.getCustomerReceiptSettings().observe(viewLifecycleOwner, {
+        viewModel.getCustomerReceiptSettings().observe(viewLifecycleOwner) {
             if (it != null) {
                 customerSettingModel = it
-
-
             }
-
-        })
+        }
 
     }
 
     private fun getCustomerPrinters() {
 
-        viewModel.getCustomerPrinterList().observe(viewLifecycleOwner, {
+        viewModel.getCustomerPrinterList().observe(viewLifecycleOwner) {
             when (it.status) {
                 Status.SUCCESS -> {
                     ProgressUtils.dismissProgressDialog()
@@ -364,14 +360,8 @@ class TransactionDetailsFragment : Fragment() {
 
                         customerList.forEach {
                             initPrinter(it, Constants.CUSTOMER)
-
-
                         }
-
-
                     }
-
-
                 }
                 Status.ERROR -> {
 
@@ -385,7 +375,7 @@ class TransactionDetailsFragment : Fragment() {
 
             }
 
-        })
+        }
 
     }
 
@@ -989,38 +979,38 @@ class TransactionDetailsFragment : Fragment() {
 
 
 
-                builder.addTextLineSpace(30)
-                builder.addFeedUnit(30)
+            builder.addTextLineSpace(30)
+            builder.addFeedUnit(30)
 
-                builder.addTextFont(Builder.FONT_E)
-                // builder.addTextAlign(Builder.ALIGN_LEFT)
-                builder.addTextLang(Builder.LANG_EN)
-                addCustomerTextSize(builder, customerSettingModel.fonts)
-                builder.addTextStyle(
-                    Builder.FALSE,
-                    Builder.FALSE,
-                    Builder.TRUE,
-                    Builder.COLOR_1
+            builder.addTextFont(Builder.FONT_E)
+            // builder.addTextAlign(Builder.ALIGN_LEFT)
+            builder.addTextLang(Builder.LANG_EN)
+            addCustomerTextSize(builder, customerSettingModel.fonts)
+            builder.addTextStyle(
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.TRUE,
+                Builder.COLOR_1
+            )
+            var totalAmt =
+                MethodUtils.roundOffAmountDouble(paymentDetailsResponse.data.amount + paymentDetailsResponse.data.tips)
+            /* if (receiptModel?.order?.totalDiscount != 0.0) {
+                 totalAmt =
+                     (totalAmt - MethodUtils.roundOffAmountDouble(receiptModel?.order?.totalDiscount!!))
+
+             }*/
+
+            builder.addText(
+                padLine(
+                    "Total Price",
+                    "$" + MethodUtils.roundOffAmountString(totalAmt),
+                    if (customerSettingModel.fonts == Constants.LARGE) {
+                        24
+                    } else {
+                        48
+                    }
                 )
-                var totalAmt =
-                    MethodUtils.roundOffAmountDouble(paymentDetailsResponse.data.amount + paymentDetailsResponse.data.tips)
-                /* if (receiptModel?.order?.totalDiscount != 0.0) {
-                     totalAmt =
-                         (totalAmt - MethodUtils.roundOffAmountDouble(receiptModel?.order?.totalDiscount!!))
-
-                 }*/
-
-                builder.addText(
-                    padLine(
-                        "Total Price",
-                        "$" + MethodUtils.roundOffAmountString(totalAmt),
-                        if (customerSettingModel.fonts == Constants.LARGE) {
-                            24
-                        } else {
-                            48
-                        }
-                    )
-                )
+            )
 
 
 

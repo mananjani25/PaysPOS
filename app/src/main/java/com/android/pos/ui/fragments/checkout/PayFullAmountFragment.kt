@@ -844,7 +844,7 @@ class PayFullAmountFragment(val bundle: Bundle?) : Fragment(), ItemListner, magt
 
         val jsonArray1 = magtekModule.m_scra?.let {
             magtekRequestUtils.processCardSwipe(
-                (paymentAmount * 100).toInt(),
+                (WholetotalPrice * 100).toInt(),
                 magtekModule.m_scra!!.ksn,
                 magtekModule.m_scra!!.magnePrint,
                 magtekModule.m_scra!!.magnePrintStatus,
@@ -917,7 +917,7 @@ class PayFullAmountFragment(val bundle: Bundle?) : Fragment(), ItemListner, magt
         ProgressUtils.dismissProgressDialog()
 
         val jsonArray1 = magtekRequestUtils.processData(
-            (paymentAmount * 100).toInt(),
+            (WholetotalPrice * 100).toInt(),
             TLVParser.getHexString(data),
             Constants.SALE
         )

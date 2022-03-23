@@ -19,8 +19,8 @@
         android:id="@+id/linearCompact"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:background="@color/bg_color">
+        android:background="@color/bg_color"
+        android:orientation="vertical">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -44,8 +44,8 @@
                     app:srcCompat="@drawable/ic_arrow_back" />
 
                 <TextView
-                    style="@style/CustomFontBold"
                     android:id="@+id/txtSubTitle"
+                    style="@style/CustomFontBold"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
@@ -115,11 +115,11 @@
                     <androidx.appcompat.widget.LinearLayoutCompat
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginRight="0.5dp"
                         android:background="@color/grayBackgroundColor"
                         android:orientation="horizontal"
-                        android:paddingVertical="@dimen/_7sdp"
                         android:paddingHorizontal="@dimen/_5sdp"
-                        android:layout_marginRight="0.5dp"
+                        android:paddingVertical="@dimen/_7sdp"
                         android:weightSum="5">
 
                         <androidx.appcompat.widget.AppCompatTextView
@@ -177,11 +177,11 @@
                         android:id="@+id/rvOrderItems"
                         android:layout_width="match_parent"
                         android:layout_height="@dimen/_170sdp"
+                        android:layout_marginRight="0.5dp"
                         android:layout_marginBottom="@dimen/_5sdp"
                         android:background="@color/grayBackgroundColor"
                         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                        tools:listitem="@layout/view_order_item_list"
-                        android:layout_marginRight="0.5dp"/>
+                        tools:listitem="@layout/view_order_item_list" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -192,7 +192,6 @@
                         <LinearLayout
                             android:layout_width="wrap_content"
                             android:layout_height="match_parent"
-                            android:layout_alignParentStart="true"
                             android:layout_weight="1"
                             android:orientation="vertical">
 
@@ -523,34 +522,7 @@
                     </LinearLayout>
 
 
-                    <LinearLayout
-                        android:id="@+id/llRefundAmount"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/_3sdp"
-                        android:orientation="horizontal"
-                        android:padding="@dimen/_2sdp"
-                        android:visibility="gone">
 
-                        <androidx.appcompat.widget.AppCompatTextView
-                            style="@style/CustomFontBold"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="@dimen/_3sdp"
-                            android:text="@string/tv_refunded_amount"
-                            android:textColor="@color/colorRed"
-                            android:textSize="@dimen/_5mdpi" />
-
-                        <androidx.appcompat.widget.AppCompatTextView
-                            style="@style/CustomFontBold"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginRight="@dimen/_5sdp"
-                            android:gravity="end"
-                            android:text="@{@string/symbole +``+String.format(@string/format,orderDetails.data.order.refund_detail.refunded_amount)}"
-                            android:textColor="@color/colorRed"
-                            android:textSize="@dimen/_5mdpi" />
-                    </LinearLayout>
 
 
                 </LinearLayout>
@@ -590,10 +562,10 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/_5sdp"
                         android:layout_marginBottom="@dimen/_1sdp"
                         android:orientation="horizontal"
-                        android:padding="@dimen/_2sdp"
-                        android:layout_marginTop="@dimen/_5sdp">
+                        android:padding="@dimen/_2sdp">
 
                         <androidx.appcompat.widget.AppCompatTextView
                             style="@style/CustomFontBold"
@@ -703,8 +675,7 @@
                         android:layout_marginBottom="@dimen/_1sdp"
                         android:orientation="horizontal"
                         android:padding="@dimen/_2sdp"
-                        android:visibility="gone"
-                        >
+                        android:visibility="gone">
 
                         <androidx.appcompat.widget.AppCompatTextView
                             style="@style/CustomFontMediumStyle"
@@ -807,6 +778,34 @@
                             android:textSize="@dimen/text_size_medium" />
                     </LinearLayout>
 
+                    <LinearLayout
+                        android:id="@+id/llRefundAmount"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/_3sdp"
+                        android:orientation="horizontal"
+                        android:padding="@dimen/_2sdp"
+                        android:visibility="gone">
+
+                        <androidx.appcompat.widget.AppCompatTextView
+                            style="@style/CustomFontBold"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/_3sdp"
+                            android:text="@string/tv_refunded_amount"
+                            android:textColor="@color/colorRed"
+                            android:textSize="@dimen/text_size_medium" />
+
+                        <androidx.appcompat.widget.AppCompatTextView
+                            style="@style/CustomFontBold"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginRight="@dimen/_5sdp"
+                            android:gravity="end"
+                            android:text="@{@string/symbole +``+String.format(@string/format,orderDetails.data.order.refund_detail.refunded_amount)}"
+                            android:textColor="@color/colorRed"
+                            android:textSize="@dimen/text_size_medium" />
+                    </LinearLayout>
 
 
                 </LinearLayout>
@@ -826,8 +825,7 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        >
+                        android:orientation="vertical">
 
                         <androidx.appcompat.widget.AppCompatTextView
                             style="@style/CustomFontSemiBold"
@@ -853,21 +851,20 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
-                        android:padding="@dimen/_3sdp"
-                        >
+                        android:padding="@dimen/_3sdp">
 
                         <ImageView
                             android:layout_width="@dimen/_8sdp"
-                            android:adjustViewBounds="true"
                             android:layout_height="wrap_content"
+                            android:adjustViewBounds="true"
                             android:src="@drawable/ic_check_circle_green" />
 
                         <androidx.appcompat.widget.LinearLayoutCompat
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:orientation="vertical"
                             android:layout_marginStart="@dimen/_3sdp"
-                            >
+                            android:orientation="vertical">
+
                             <androidx.appcompat.widget.AppCompatTextView
                                 android:id="@+id/tvTransactionTime"
                                 style="@style/CustomFontSemiBold"
@@ -875,10 +872,12 @@
                                 android:layout_height="wrap_content"
                                 android:textColor="@color/txtColor"
                                 android:textSize="@dimen/_5mdpi" />
+
                             <androidx.appcompat.widget.AppCompatTextView
                                 android:id="@+id/tvTransactionDate"
                                 style="@style/CustomFontSemiBold"
                                 android:layout_width="wrap_content"
+                                tools:text="01:08 PM \nMar-23-2022"
                                 android:layout_height="wrap_content"
                                 android:textColor="@color/cool_grey"
                                 android:textSize="@dimen/_5mdpi" />
@@ -886,25 +885,43 @@
                         </androidx.appcompat.widget.LinearLayoutCompat>
 
 
-                        <androidx.appcompat.widget.AppCompatTextView
-                            style="@style/CustomFontBold"
+                        <androidx.appcompat.widget.LinearLayoutCompat
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="@dimen/_3sdp"
-                            android:gravity="end"
-                            android:text="@{orderDetails.data.payment_type}"
-                            android:textColor="@color/txtColor"
-                            android:textSize="@dimen/_5mdpi" />
+                            android:orientation="vertical">
+
+                            <androidx.appcompat.widget.AppCompatTextView
+                                style="@style/CustomFontBold"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="@dimen/_3sdp"
+                                android:gravity="end"
+                                android:text="@{orderDetails.data.payment_type}"
+                                android:textColor="@color/txtColor"
+                                android:textSize="@dimen/_5mdpi" />
+
+                            <androidx.appcompat.widget.AppCompatTextView
+                                android:id="@+id/txtCardDetails"
+                                style="@style/CustomFontBold"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="@dimen/_3sdp"
+                                android:gravity="end"
+                                tools:text="Credit Card \n7007"
+                                android:textColor="@color/txtColor"
+                                android:textSize="@dimen/_5mdpi" />
+
+                        </androidx.appcompat.widget.LinearLayoutCompat>
+
                     </LinearLayout>
 
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:padding="@dimen/_3sdp"
                         android:layout_marginStart="1dp"
-                        >
+                        android:orientation="horizontal"
+                        android:padding="@dimen/_3sdp">
 
                         <ImageView
                             android:layout_width="@dimen/_7sdp"
@@ -925,6 +942,7 @@
                                 android:text="@{@string/symbole +``+String.format(@string/format,(orderDetails.data.amount + orderDetails.data.tips))}"
                                 android:textColor="@color/txtColor"
                                 android:textSize="@dimen/_5mdpi" />
+
                             <androidx.appcompat.widget.AppCompatTextView
                                 style="@style/CustomFontSemiBold"
                                 android:layout_width="wrap_content"
@@ -935,7 +953,6 @@
                                 android:textSize="@dimen/_5mdpi" />
 
                         </androidx.appcompat.widget.LinearLayoutCompat>
-
 
 
                     </LinearLayout>
