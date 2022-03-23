@@ -17,6 +17,7 @@ import com.android.pos.data.remote.Constants.ADD
 import com.android.pos.data.remote.Constants.ORDER_TYPE
 import com.android.pos.data.remote.Constants.TAKEOUT
 import com.android.pos.data.remote.Constants.TERMINAL_ID
+import com.android.pos.data.remote.Constants.UPDATE
 import com.android.pos.databinding.FragmentAddItemBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.adapter.VariationDashboardListAdapter
@@ -42,6 +43,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment() {
     private val TAG = "AddItemFragment"
     private lateinit var variationAdapter: VariationListAdapter
     private lateinit var modifiersAdapter: ModifiersAdapter
+    private var isUpdateItem: Boolean = false
 
     @Inject
     lateinit var prefProvider: PrefProvider
@@ -51,10 +53,12 @@ class AddItemFragment(val listner: ItemListner) : Fragment() {
         fun newInstance(
             item: TbItem,
             callback: ItemListner,
-            cartListModel: ArrayList<CartModel>
+            cartListModel: ArrayList<CartModel>,
+            isItemUpdate: Boolean
         ): AddItemFragment {
             val bundle: Bundle = Bundle()
             bundle.putParcelable("item", item)
+            bundle.putBoolean(Constants.IS_UPDATE_ITEM, isItemUpdate)
             bundle.putSerializable("cartList", cartListModel)
             val frag = AddItemFragment(callback)
             frag.arguments = bundle
@@ -70,9 +74,11 @@ class AddItemFragment(val listner: ItemListner) : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentAddItemBinding.inflate(inflater, container, false)
+        getServiceCharges()
         binding.lifecycleOwner = this
         variationAdapter = VariationListAdapter()
         binding.rvVariationList.adapter = variationAdapter
+        isUpdateItem = requireArguments().getBoolean(Constants.IS_UPDATE_ITEM)
 
         return binding.root
     }
@@ -105,32 +111,41 @@ class AddItemFragment(val listner: ItemListner) : Fragment() {
         }
 
         binding.txtDone.setOnClickListener {
-            item.itemQuantity = qty
-            Log.e(TAG, "cartListAddItem:  ${Gson().toJson(cartList)}")
 
-            if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == Constants.OPEN_ORDER) {
 
-                if (cartList.isEmpty()) {
-                    val model = CartModel()
-                    model.employeeID =
-                        prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
-                    model.terminalId = prefProvider.getValueInt(TERMINAL_ID, 0)
-                    model.orderType = prefProvider.getValue(ORDER_TYPE, TAKEOUT)
-                    model.locationId = prefProvider.getValueInt(Constants.LOCATION_ID, 1)
-                    model.serviceCharge = serviceChargesList
-                    viewModel.ordertypelist.forEach {
-                        if (it.orderType == Constants.OPEN_ORDER) {
-                            model.orderTypeId = it.id
+                item.itemQuantity = qty
+                Log.e(TAG, "cartListAddItem:  ${Gson().toJson(cartList)}")
+
+                if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == Constants.OPEN_ORDER) {
+
+                    if (cartList.isEmpty()) {
+                        val model = CartModel()
+                        model.employeeID =
+                            prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
+                        model.terminalId = prefProvider.getValueInt(TERMINAL_ID, 0)
+                        model.orderType = prefProvider.getValue(ORDER_TYPE, TAKEOUT)
+                        model.locationId = prefProvider.getValueInt(Constants.LOCATION_ID, 1)
+                        model.serviceCharge = serviceChargesList
+                        viewModel.ordertypelist.forEach {
+                            if (it.orderType == Constants.OPEN_ORDER) {
+                                model.orderTypeId = it.id
+                            }
                         }
+                        cartList.add(model)
                     }
-                    cartList.add(model)
+
+                } else {
+                    createCart()
                 }
 
-            } else {
-                createCart()
+            if (isUpdateItem){
+                viewModel.cartLogic(cartList, item, UPDATE)
+            }
+            else {
+
+                viewModel.cartLogic(cartList, item, ADD)
             }
 
-            viewModel.cartLogic(cartList, item, ADD)
             listner.onCancelItemSelected()
 
         }
@@ -271,6 +286,12 @@ class AddItemFragment(val listner: ItemListner) : Fragment() {
 
         }
 
+        if (isUpdateItem) {
+            qty = item.itemQuantity
+            binding.txtQuantity.text = ""+qty
+
+        }
+
     }
 
     private fun showPriceTitle(
@@ -363,5 +384,20 @@ class AddItemFragment(val listner: ItemListner) : Fragment() {
         return false
     }
 
+
+    private fun getServiceCharges() {
+
+        serviceChargesObserve = Observer {
+
+            if (it.status == Status.SUCCESS) {
+                Log.e(TAG, "getServiceCharge:  ${Gson().toJson(it.data)}")
+                serviceChargesList = it.data
+
+            }
+
+        }
+
+        viewModel.serviceCharges.observe(requireActivity(), serviceChargesObserve!!)
+    }
 
 }

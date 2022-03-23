@@ -13,7 +13,6 @@ import androidx.fragment.app.setFragmentResultListener
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.databinding.FragmentPaymentBoldPosBinding
-
 import com.android.pos.ui.fragments.checkout.CheckoutDetailsFragmentNew
 import com.android.pos.ui.fragments.dashboard.bolddashboard.CartFragment
 import com.android.pos.utils.TAG
@@ -103,5 +102,7 @@ class PaymentBoldPosFragment : Fragment() {
         fm.beginTransaction().replace(binding.frameLayout.id, fragment).commit()
         // binding.frameLayout?.let { fm.beginTransaction().replace(it, fragment).commit() }
     }
+
+
 
 }

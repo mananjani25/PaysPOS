@@ -79,8 +79,8 @@ class   OrderAttributeRequestModel {
     @SerializedName("total_amount")
     var totalAmount: Double = 0.0
 
-//    @SerializedName("total_cash_discount")
-//    var totalCashDiscount: Double = 0.0
+    @SerializedName("magensa_response")
+    var magensaResponse: String = ""
 
     @SerializedName("cash_discount_or_surcharge")
     var cash_discount_or_surcharge: Double = 0.0
@@ -491,7 +491,7 @@ class PaymentAttributes : Parcelable {
     var cardNumber: String = ""
 
     @SerializedName("card_type")
-    var cardType: String = ""
+    var cardType: Int = 0
 
     @SerializedName("cash_discount_or_surcharge")
     var cash_discount_or_surcharge: Double = 0.0

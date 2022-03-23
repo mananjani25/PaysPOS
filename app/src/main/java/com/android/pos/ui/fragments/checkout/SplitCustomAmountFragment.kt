@@ -13,6 +13,7 @@ import com.android.pos.R
 import com.android.pos.data.entities.CartModel
 import com.android.pos.data.entities.RedeemLoyaltyInfo
 import com.android.pos.data.entities.TbItem
+import com.android.pos.data.model.requestModel.PaymentAttributes
 import com.android.pos.data.model.requestModel.SpitByOrderPaymentModel
 import com.android.pos.data.model.requestModel.SpitByOrderRequestModel
 import com.android.pos.data.remote.Constants
@@ -530,7 +531,8 @@ class SplitCustomAmountFragment() : Fragment(), ItemListner {
                 redeemLoyaltyInfo,
                 cashDiscountSurcharge,
                 true,
-                paymentType, cashDiscountType,
+                paymentType,
+                cashDiscountType,
                 tipID
             )
         }
@@ -551,8 +553,7 @@ class SplitCustomAmountFragment() : Fragment(), ItemListner {
                 val aa = SpitByOrderRequestModel(
                     orderId,
                     true,
-                    paymentReq!!,
-                    SpitByOrderPaymentModel(listOf(paymentReq))
+                    SpitByOrderPaymentModel(listOf(paymentReq) as List<PaymentAttributes>)
                 )
 
                 paymentviewModel.splitByOrder(aa, false)

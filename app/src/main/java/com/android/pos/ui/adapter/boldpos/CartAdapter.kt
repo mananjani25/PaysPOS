@@ -34,6 +34,15 @@ class CartAdapter : RecyclerView.Adapter<CartAdapter.MyViewHolder>() {
 
         }
 
+        init {
+
+            binding.root.setOnClickListener {
+                mCallback.onItemClickListener(it,cartList[bindingAdapterPosition])
+            }
+        }
+
+
+
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): CartAdapter.MyViewHolder {

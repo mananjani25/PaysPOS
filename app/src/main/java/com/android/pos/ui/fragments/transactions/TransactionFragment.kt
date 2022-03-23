@@ -27,8 +27,11 @@ import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.KEY
 import com.android.pos.data.remote.Constants.TRANSACTION_DETAIL
 import com.android.pos.databinding.FragmentTransactionBinding
+import com.android.pos.di.ApiModule1
 import com.android.pos.ui.activities.MainActivity
 import com.android.pos.ui.adapter.TransactionAdapter
+import com.android.pos.ui.fragments.magtek.MagtekRequestUtils
+import com.android.pos.ui.fragments.magtek.PaymentResponse
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.callback.ItemCallback
@@ -37,9 +40,15 @@ import com.android.pos.utils.extensions.liveSnackBar
 import com.android.pos.utils.extensions.showAlert
 import com.android.pos.utils.statusUtils.Status
 import com.google.android.material.snackbar.Snackbar
+import com.google.gson.Gson
+import com.google.gson.JsonArray
 import dagger.hilt.android.AndroidEntryPoint
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import java.text.SimpleDateFormat
 import java.util.*
+import javax.inject.Inject
 import kotlin.collections.ArrayList
 import kotlin.math.abs
 
@@ -68,7 +77,13 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
     val myCalendar2 = Calendar.getInstance()
     val myCalendar3 = Calendar.getInstance()
     private var spinnerTouched = false
-    val TAG="TransactionFragment"
+    val TAG = "TransactionFragment"
+
+    @Inject
+    lateinit var magtekRequestUtils: MagtekRequestUtils
+
+    @Inject
+    lateinit var apiModule1: ApiModule1
 
     private var employeeTimeSheet = ArrayList<GetTransactionListResponse.Data.Payment>()
 
@@ -200,7 +215,8 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
         setFragmentResultListener("request_key_tips") { requestKey: String, bundle: Bundle ->
             tipAmount = bundle.getDouble("tipAmount")
 
-            singleTransaction?.let { viewModel.orderUpdateTip(it.orderId, tipAmount) }
+
+            magtekCall(tipAmount)
 
         }
 
@@ -283,6 +299,10 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
                 }
         }
         return binding.root
+    }
+
+    private fun tipCall() {
+        singleTransaction?.let { viewModel.orderUpdateTip(it.orderId, tipAmount) }
     }
 
     private fun apiCallTimeSheet() {
@@ -381,7 +401,7 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
     }
 
     private fun startDatePickerObserver() {
-        viewModel.startDateSelection.observe(requireActivity(), { event ->
+        viewModel.startDateSelection.observe(requireActivity()) { event ->
             event.getContentIfNotHandled()?.let {
                 currentPage = 1
                 DatePickerDialog(
@@ -392,11 +412,11 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
                 ).show()
             }
 
-        })
+        }
     }
 
     private fun endDatePickerObserver() {
-        viewModel.endDateSelection.observe(requireActivity(), { event ->
+        viewModel.endDateSelection.observe(requireActivity()) { event ->
             event.getContentIfNotHandled()?.let {
                 currentPage = 1
                 DatePickerDialog(
@@ -406,7 +426,7 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
 
                 ).show()
             }
-        })
+        }
     }
 
 
@@ -574,7 +594,7 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
     }
 
     private fun getEmployeesTimeSheetObserver() {
-        viewModel.data.observe(viewLifecycleOwner, { event ->
+        viewModel.data.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let { timeSheet ->
                 if (timeSheet.data.payments.isNotEmpty()) {
                     binding.txtNodata.visibility = View.GONE
@@ -596,10 +616,10 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
                         transactionAdapter.showLoading(true)
                     }
                 } else {
-                    Log.e(TAG,"itemCount ${transactionAdapter.itemCount}")
-                   /* binding.rvTeamTimeSheet.visibility = View.GONE
-                    binding.txtNodata.visibility = View.VISIBLE
-                    binding.txtNodata.text = timeSheet.message*/
+                    Log.e(TAG, "itemCount ${transactionAdapter.itemCount}")
+                    /* binding.rvTeamTimeSheet.visibility = View.GONE
+                     binding.txtNodata.visibility = View.VISIBLE
+                     binding.txtNodata.text = timeSheet.message*/
                     if (transactionAdapter.itemCount == 0) {
                         binding.rvTeamTimeSheet.visibility = View.GONE
                         binding.txtNodata.visibility = View.VISIBLE
@@ -629,12 +649,12 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
 
 
             }
-        })
+        }
 
     }
 
     private fun getRoleListObserver() {
-        viewModel.getTeamRoleList.observe(viewLifecycleOwner, {
+        viewModel.getTeamRoleList.observe(viewLifecycleOwner) {
             it?.let { resource ->
                 when (resource.status) {
                     Status.SUCCESS -> {
@@ -666,12 +686,12 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
                     }
                 }
             }
-        })
+        }
     }
 
     private fun loadTeams() {
 
-        viewModel.employeeData.observe(viewLifecycleOwner, {
+        viewModel.employeeData.observe(viewLifecycleOwner) {
             it?.let { resource ->
                 when (resource.status) {
                     Status.SUCCESS -> {
@@ -721,12 +741,12 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
                     }
                 }
             }
-        })
+        }
     }
 
     private fun loadTerminals() {
 
-        viewModel.getTerminalListDatabse.observe(viewLifecycleOwner, {
+        viewModel.getTerminalListDatabse.observe(viewLifecycleOwner) {
             it?.let { resource ->
                 when (resource.status) {
                     Status.SUCCESS -> {
@@ -769,12 +789,12 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
                     }
                 }
             }
-        })
+        }
     }
 
     private fun getOrderType() {
 
-        viewModel.orderTypes.observe(viewLifecycleOwner, {
+        viewModel.orderTypes.observe(viewLifecycleOwner) {
             it?.let { resource ->
                 when (resource.status) {
                     Status.SUCCESS -> {
@@ -808,7 +828,7 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
                     }
                 }
             }
-        })
+        }
     }
 
 
@@ -841,7 +861,7 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
 
     private fun observeShowProgress() {
 
-        viewModel.showProgress.observe(viewLifecycleOwner, { event ->
+        viewModel.showProgress.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
                 if (currentPage == 1) {
                     if (it) {
@@ -851,13 +871,13 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
                     }
                 }
             }
-        })
+        }
 
     }
 
 
     private fun navigate() {
-        viewModel.transactionDetails.observe(viewLifecycleOwner, { event ->
+        viewModel.transactionDetails.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
                 val bundle = Bundle().apply {
                     putInt("orderId", it.orderDetails.id)
@@ -865,36 +885,51 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
                     putBoolean("isFromTrans", true)
                     putString("orderType", it.orderDetails.orderType)
 
-                    putString("selectedorderType", binding.includeView.spOrders.selectedItemPosition.toString())
-                    putString("selectedtransactionType", binding.includeView.spTransactionTypes.selectedItemPosition.toString())
-                    putString("selectedroleType", binding.includeView.spRoles.selectedItemPosition.toString())
-                    putString("selectedemployeeType", binding.includeView.spEmployees.selectedItemPosition.toString())
-                    putString("selectedterminalType", binding.includeView.spTerminals.selectedItemPosition.toString())
+                    putString(
+                        "selectedorderType",
+                        binding.includeView.spOrders.selectedItemPosition.toString()
+                    )
+                    putString(
+                        "selectedtransactionType",
+                        binding.includeView.spTransactionTypes.selectedItemPosition.toString()
+                    )
+                    putString(
+                        "selectedroleType",
+                        binding.includeView.spRoles.selectedItemPosition.toString()
+                    )
+                    putString(
+                        "selectedemployeeType",
+                        binding.includeView.spEmployees.selectedItemPosition.toString()
+                    )
+                    putString(
+                        "selectedterminalType",
+                        binding.includeView.spTerminals.selectedItemPosition.toString()
+                    )
                 }
                 findNavController().navigate(
                     R.id.action_transactionFragment_to_transactionDetailsFragment,
                     bundle
                 )
             }
-        })
+        }
 
     }
 
     private fun orderUpdateTips() {
-        viewModel.data1.observe(viewLifecycleOwner, { event ->
+        viewModel.data1.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
 
                 binding.root.showAlert(it.message)
 
             }
-        })
+        }
 
-        viewModel.data2.observe(viewLifecycleOwner, { event ->
+        viewModel.data2.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
 
                 transactionAdapter.updateTip(selectedPos, it)
             }
-        })
+        }
 
     }
 
@@ -910,5 +945,188 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
             R.id.action_transactionFragment_to_addTipsDialog,
             bundle
         )
+
+
+    }
+
+    private fun magtekCall(refundAmount: Double) {
+
+        val model = Gson().fromJson(
+            singleTransaction?.orderDetails?.magensaResponse,
+            PaymentResponse.PaymentResponseItem::class.java
+        )
+
+
+        val jsonArray: JsonArray?
+
+        when {
+
+            Constants.FIRST_DATA_GATEWAY == magtekRequestUtils.gatewayName() -> {
+
+                val amount = singleTransaction?.amount?.plus(refundAmount)
+
+                jsonArray =
+                    model.transactionOutput?.token?.let { it1 ->
+                        amount?.times(100)?.let {
+                            magtekRequestUtils.processTokenFirstData(
+                                it.toInt(),
+                                it1,
+                                model.customerTransactionID ?: "",
+                                model.transactionOutput.transactionOutputDetails[0].value,
+                                Constants.CAPTURE
+                            )
+                        }
+                    }
+
+                networkCall(jsonArray, 0)
+            }
+
+            // not support CAPTURE
+            Constants.ELAVON_GATEWAY == magtekRequestUtils.gatewayName() -> {
+
+                jsonArray =
+                    model.transactionOutput?.token?.let { it1 ->
+                        magtekRequestUtils.processTokenElavon(
+                            (refundAmount * 100).toInt(),
+                            it1,
+                            model.customerTransactionID ?: "",
+                            model.transactionOutput.transactionOutputDetails[0].value
+
+                        )
+                    }
+
+                networkCall(jsonArray, 0)
+            }
+
+            Constants.EPX_GATEWAY == magtekRequestUtils.gatewayName() -> {
+
+                jsonArray = model.transactionOutput?.transactionID?.let { it1 ->
+                    singleTransaction?.amount?.times(100)?.let {
+                        magtekRequestUtils.processReferenceIDEPXForce(
+                            it.toInt(),
+                            model.customerTransactionID ?: "", it1, Constants.CAPTURE,
+                            (tipAmount * 100).toInt().toString()
+                        )
+                    }
+                }
+                networkCall(jsonArray, 1)
+            }
+
+            Constants.VANIT_EXORESS_GATEWAY == magtekRequestUtils.gatewayName() -> {
+
+                jsonArray = model.transactionOutput?.transactionID?.let { it1 ->
+                    magtekRequestUtils.processReferenceIDCapture(
+                        (refundAmount * 100).toInt(),
+                        model.customerTransactionID ?: "", it1,
+                        model.transactionOutput.authCode,
+                        ""
+                    )
+                }
+                networkCall(jsonArray, 1)
+            }
+
+            Constants.CHASE_GATEWAY == magtekRequestUtils.gatewayName() -> {
+
+                val amount = singleTransaction?.amount?.plus(refundAmount)
+
+                jsonArray = amount?.times(100)?.let {
+                    magtekRequestUtils.processTokenChase(
+                        it.toInt(),
+                        model.transactionOutput?.token ?: "",
+                        model.customerTransactionID ?: "",
+                        model.transactionOutput?.authCode ?: "",
+                        Constants.CAPTURE
+                    )
+                }
+
+                networkCall(jsonArray, 0)
+            }
+            Constants.HEARTLAND_GATEWAY == magtekRequestUtils.gatewayName() -> {
+
+                val amount = singleTransaction?.amount?.plus(refundAmount)
+
+                jsonArray = model.transactionOutput?.transactionID?.let { it1 ->
+                    amount?.times(100)?.let {
+                        magtekRequestUtils.processReferenceIdHeartlandCapture(
+                            it.toInt(),
+                            model.customerTransactionID ?: "",
+                            it1,
+                            model.transactionOutput.authCode,
+                            (tipAmount * 100).toInt().toString()
+                        )
+                    }
+                }
+                networkCall(jsonArray, 1)
+            }
+            Constants.TSYS_GATEWAY == magtekRequestUtils.gatewayName() -> {
+
+                val amount = singleTransaction?.amount?.plus(refundAmount)
+
+                jsonArray = model.transactionOutput?.transactionID?.let { it1 ->
+                    amount?.times(100)?.let {
+                        magtekRequestUtils.processReferenceIDTSYSCapture(
+                            it.toInt(),
+                            model.customerTransactionID ?: "",
+                            it1,
+                            (tipAmount * 100).toInt().toString()
+                        )
+                    }
+                }
+                networkCall(jsonArray, 1)
+            }
+
+
+        }
+    }
+
+    private fun networkCall(jsonArray1: JsonArray?, i: Int) {
+
+        ProgressUtils.showProgressDialog(requireActivity())
+
+        val call = if (i == 1) {
+            jsonArray1?.let { apiModule1.getRetrofit1().processReferenceID(it) }
+        } else {
+            jsonArray1?.let { apiModule1.getRetrofit1().processToken(it) }
+        }
+
+        call!!.enqueue(object : Callback<PaymentResponse> {
+
+            override fun onResponse(
+                call: Call<PaymentResponse>,
+                response: Response<PaymentResponse>
+            ) {
+                ProgressUtils.dismissProgressDialog()
+                if (response.isSuccessful) {
+                    Log.e("onResponse", Gson().toJson(response.body()))
+                    if (response.body() != null && response.body()!![0].transactionOutput != null) {
+
+                        if (response.body()!![0].transactionOutput?.isTransactionApproved == true) {
+
+                            tipCall()
+
+                        } else {
+                            AlertUtils.showCustomAlert(
+                                requireContext(),
+                                response.body()!![0].transactionOutput?.transactionMessage
+                            )
+                        }
+
+
+                    } else {
+                        if (response.body()!![0].mPPGv4WSFault != null)
+                            AlertUtils.showCustomAlert(
+                                requireContext(),
+                                response.body()!![0].mPPGv4WSFault?.faultCode + "\n" +
+                                        response.body()!![0].mPPGv4WSFault?.faultReason
+                            )
+                    }
+                }
+            }
+
+            override fun onFailure(call: Call<PaymentResponse>, t: Throwable) {
+
+                ProgressUtils.dismissProgressDialog()
+            }
+        })
     }
 }

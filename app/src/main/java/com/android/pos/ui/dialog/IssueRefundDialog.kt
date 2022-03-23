@@ -220,6 +220,11 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
                     val bundle = Bundle().apply {
                         putParcelable("refundData", refundData)
                         putDouble("refundAmount", subTotalPrice)
+                        putString("paymentType", paymentOrderDetailsResponse.data.payment_type)
+                        putString(
+                            "magensa_response_data",
+                            paymentOrderDetailsResponse.data.magensa_response_data
+                        )
                     }
                     findNavController().navigate(
                         R.id.action_issueRefundFragment_to_reasonForRefundDialog,
@@ -237,6 +242,10 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
                     val bundle = Bundle().apply {
                         putParcelable("refundData", refundData)
                         putDouble("refundAmount", totalItemPrice)
+                        putString(
+                            "magensa_response_data",
+                            paymentOrderDetailsResponse.data.magensa_response_data
+                        )
                         Log.d("subTotalPriceRefund", "::$totalItemPrice")
                     }
                     findNavController().navigate(

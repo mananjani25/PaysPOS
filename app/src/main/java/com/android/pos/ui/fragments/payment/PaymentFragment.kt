@@ -18,10 +18,7 @@ import com.android.pos.data.entities.CashDiscountModel
 import com.android.pos.data.entities.RedeemLoyaltyInfo
 import com.android.pos.data.entities.TbItem
 import com.android.pos.data.model.SplitBundleModel
-import com.android.pos.data.model.requestModel.CreateQueuePrinterRequestModel
-import com.android.pos.data.model.requestModel.OrderAttributeRequestModel
-import com.android.pos.data.model.requestModel.SpitByOrderPaymentModel
-import com.android.pos.data.model.requestModel.SpitByOrderRequestModel
+import com.android.pos.data.model.requestModel.*
 import com.android.pos.data.model.responseModel.CreateOrderResponse
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.CASH_DISCOUNT_SURCHARGE
@@ -1205,8 +1202,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                     val aa = SpitByOrderRequestModel(
                         orderId,
                         true,
-                        paymentReq!!,
-                        SpitByOrderPaymentModel(listOf(paymentReq))
+                        SpitByOrderPaymentModel(listOf(paymentReq) as List<PaymentAttributes>)
                     )
 
                     viewModel.splitByOrder(aa, false)
@@ -1254,8 +1250,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                         val aa = SpitByOrderRequestModel(
                             orderId,
                             false,
-                            paymentReq!!,
-                            SpitByOrderPaymentModel(listOf(paymentReq))
+                            SpitByOrderPaymentModel(listOf(paymentReq) as List<PaymentAttributes>)
                         )
 
 
@@ -1306,8 +1301,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                     val aa = SpitByOrderRequestModel(
                         orderId,
                         true,
-                        paymentReq!!,
-                        SpitByOrderPaymentModel(listOf(paymentReq))
+                        SpitByOrderPaymentModel(listOf(paymentReq) as List<PaymentAttributes>)
                     )
 
                     viewModel.splitByOrder(aa, false)
@@ -1330,7 +1324,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                 orderOfflineId
             )
 
-        var isLastPayment = prefProvider.getValueboolean("isLastPayment", false)
+        val isLastPayment = prefProvider.getValueboolean("isLastPayment", false)
         if (isSplitByNo && !isLastPayment && isCustomCash) {
 
             val myRequest = cartList?.let {
@@ -1375,8 +1369,8 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                     val aa = SpitByOrderRequestModel(
                         orderId,
                         true,
-                        paymentReq!!,
-                        SpitByOrderPaymentModel(listOf(paymentReq))
+
+                        SpitByOrderPaymentModel(listOf(paymentReq) as List<PaymentAttributes>)
                     )
 
 
@@ -1429,8 +1423,8 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                     val aa = SpitByOrderRequestModel(
                         orderId,
                         true,
-                        paymentReq!!,
-                        SpitByOrderPaymentModel(listOf(paymentReq))
+
+                        SpitByOrderPaymentModel(listOf(paymentReq) as List<PaymentAttributes>)
                     )
 
 
@@ -1482,8 +1476,8 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                         val aa = SpitByOrderRequestModel(
                             orderId,
                             false,
-                            paymentReq!!,
-                            SpitByOrderPaymentModel(listOf(paymentReq))
+
+                            SpitByOrderPaymentModel(listOf(paymentReq) as List<PaymentAttributes>)
                         )
 
 
@@ -1534,8 +1528,8 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                     val aa = SpitByOrderRequestModel(
                         orderId,
                         true,
-                        paymentReq!!,
-                        SpitByOrderPaymentModel(listOf(paymentReq))
+
+                        SpitByOrderPaymentModel(listOf(paymentReq) as List<PaymentAttributes>)
                     )
 
                     viewModel.splitByOrder(aa, false)
@@ -1588,8 +1582,8 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                     val aa = SpitByOrderRequestModel(
                         orderId,
                         true,
-                        paymentReq!!,
-                        SpitByOrderPaymentModel(listOf(paymentReq))
+
+                        SpitByOrderPaymentModel(listOf(paymentReq) as List<PaymentAttributes>)
                     )
 
                     viewModel.splitByOrder(aa, false)
@@ -1602,7 +1596,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
 
     private fun observeShowProgress() {
 
-        viewModel.showProgress.observe(viewLifecycleOwner, { event ->
+        viewModel.showProgress.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
                 if (it) {
                     ProgressUtils.showProgressDialog(requireActivity())
@@ -1610,18 +1604,18 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                     ProgressUtils.dismissProgressDialog()
                 }
             }
-        })
+        }
 
     }
 
     private fun observeQueueStart() {
-        viewModel.QueueStart.observe(viewLifecycleOwner, { event ->
+        viewModel.QueueStart.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
                 createQueuePrinter(it)
 
 
             }
-        })
+        }
     }
 
     fun setPaymentAttriButes(type: String, split: Int) {
@@ -1637,7 +1631,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
 
     private fun observeData() {
 
-        viewModel.data.observe(viewLifecycleOwner, { event ->
+        viewModel.data.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
 
                 Log.e("observe : splitValue", splitValue.toString())
@@ -2100,12 +2094,12 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                     }
                 }
             }
-        })
+        }
 
     }
 
     private fun queuePrinterObserver() {
-        viewModel.queuePrinter.observe(requireActivity(), {
+        viewModel.queuePrinter.observe(requireActivity()) {
             it.getContentIfNotHandled()?.let { data ->
                 activity?.let {
                     AlertUtils.showCustomAlertWithListenerWithOK(
@@ -2117,6 +2111,6 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                 }
 
             }
-        })
+        }
     }
 }

@@ -1730,7 +1730,6 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
                 var splitOrderRequest = SpitByOrderRequestModel(
                     orderId,
                     completePayment,
-                    paymentReq!!,
                     SpitByOrderPaymentModel(listOf(paymentReq))
                 )
                 paymentViewModel.splitByOrder(splitOrderRequest, true)
@@ -1775,7 +1774,6 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
                 var splitOrderRequest = SpitByOrderRequestModel(
                     orderId,
                     completePayment,
-                    paymentReq!!,
                     SpitByOrderPaymentModel(listOf(paymentReq))
                 )
                 paymentViewModel.splitByOrder(splitOrderRequest, true)

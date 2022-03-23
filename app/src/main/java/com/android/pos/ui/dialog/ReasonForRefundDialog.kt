@@ -2,6 +2,7 @@ package com.android.pos.ui.dialog
 
 import android.graphics.Point
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.DialogFragment
@@ -9,25 +10,33 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.data.model.requestModel.RefundRequestModel
-import com.android.pos.data.model.responseModel.GetOrderDetailsResponse
-import com.android.pos.data.remote.Constants.DIALOG_KEY_VARIATION_DETAILS
-import com.android.pos.data.remote.Constants.IS_CLOCKOUT
-import com.android.pos.data.remote.Constants.IS_REFUND
+import com.android.pos.data.remote.Constants
+import com.android.pos.data.remote.Constants.REFUND1
 import com.android.pos.databinding.DialogRefundReasonBinding
+import com.android.pos.di.ApiModule1
 import com.android.pos.di.PrefProvider
+import com.android.pos.ui.fragments.magtek.MagtekRequestUtils
+import com.android.pos.ui.fragments.magtek.PaymentResponse
 import com.android.pos.ui.fragments.transactions.TransactionDetailsViewModel
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.extensions.liveSnackBar
-import com.android.pos.utils.extensions.setNavigationResult
 import com.google.android.material.snackbar.Snackbar
+import com.google.gson.Gson
+import com.google.gson.JsonArray
 import dagger.hilt.android.AndroidEntryPoint
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import javax.inject.Inject
 
 
 @AndroidEntryPoint
 class ReasonForRefundDialog : DialogFragment() {
 
+
+    private var paymentType: String = ""
+    private var magensa_response_data: String = ""
     private var refundAmount: Double = 0.0
     private lateinit var binding: DialogRefundReasonBinding
     private lateinit var refundData: RefundRequestModel
@@ -35,6 +44,12 @@ class ReasonForRefundDialog : DialogFragment() {
 
     @Inject
     lateinit var prefProvider: PrefProvider
+
+    @Inject
+    lateinit var magtekRequestUtils: MagtekRequestUtils
+
+    @Inject
+    lateinit var apiModule1: ApiModule1
 
     companion object {
         fun newInstance() = ReasonForRefundDialog()
@@ -53,6 +68,8 @@ class ReasonForRefundDialog : DialogFragment() {
 
         refundData = arguments?.getParcelable("refundData")!!
         refundAmount = arguments?.getDouble("refundAmount")!!
+        magensa_response_data = arguments?.getString("magensa_response_data").toString()
+        paymentType = arguments?.getString("paymentType").toString()
 
 
         binding.tvTagRefundAmount.text = requireActivity()?.getString(R.string.tv_refund) + " " +
@@ -68,11 +85,118 @@ class ReasonForRefundDialog : DialogFragment() {
 
 
         binding.txtDone.setOnClickListener {
-            viewModel.refundPaymentApiCall(
-                refundAmount,
-                refundData,
-                binding.edtReasonForRefund.text.toString()
-            )
+
+            if (paymentType == "Card") {
+
+                val model = Gson().fromJson(
+                    magensa_response_data,
+                    PaymentResponse.PaymentResponseItem::class.java
+                )
+
+                val jsonArray: JsonArray?
+
+                when {
+
+                    Constants.FIRST_DATA_GATEWAY == magtekRequestUtils.gatewayName() -> {
+                        jsonArray =
+                            model.transactionOutput?.token?.let { it1 ->
+                                magtekRequestUtils.processTokenFirstData(
+                                    (refundAmount * 100).toInt(),
+                                    it1,
+                                    model.customerTransactionID ?: "",
+                                    model.transactionOutput.transactionOutputDetails[0].value,
+                                    REFUND1
+                                )
+                            }
+
+                        networkCall(jsonArray, 0)
+                    }
+
+
+                    Constants.ELAVON_GATEWAY == magtekRequestUtils.gatewayName() -> {
+                        jsonArray =
+                            model.transactionOutput?.token?.let { it1 ->
+                                magtekRequestUtils.processTokenElavon(
+                                    (refundAmount * 100).toInt(),
+                                    it1,
+                                    model.customerTransactionID ?: "",
+                                    model.transactionOutput.transactionOutputDetails[0].value
+
+                                )
+                            }
+
+                        networkCall(jsonArray, 0)
+                    }
+
+                    Constants.EPX_GATEWAY == magtekRequestUtils.gatewayName() -> {
+
+                        jsonArray = model.transactionOutput?.transactionID?.let { it1 ->
+                            magtekRequestUtils.processReferenceIDEPX(
+                                (refundAmount * 100).toInt(),
+                                model.customerTransactionID ?: "", it1, REFUND1
+                            )
+                        }
+                        networkCall(jsonArray, 1)
+                    }
+
+                    Constants.VANIT_EXORESS_GATEWAY == magtekRequestUtils.gatewayName() -> {
+
+                        jsonArray = model.transactionOutput?.transactionID?.let { it1 ->
+                            magtekRequestUtils.processReferenceIDRefund(
+                                (refundAmount * 100).toInt(),
+                                model.customerTransactionID ?: "", it1,
+                                model.transactionOutput.authCode
+                            )
+                        }
+                        networkCall(jsonArray, 1)
+                    }
+
+                    Constants.CHASE_GATEWAY == magtekRequestUtils.gatewayName() -> {
+
+                        jsonArray = magtekRequestUtils.processTokenChase(
+                            (refundAmount * 100).toInt(),
+                            model.transactionOutput?.token ?: "",
+                            model.customerTransactionID ?: "",
+                            model.transactionOutput?.authCode ?: "",
+                            REFUND1
+                        )
+
+                        networkCall(jsonArray, 0)
+                    }
+                    Constants.HEARTLAND_GATEWAY == magtekRequestUtils.gatewayName() -> {
+
+                        jsonArray = model.transactionOutput?.transactionID?.let { it1 ->
+                            magtekRequestUtils.processReferenceIHeartland(
+                                (refundAmount * 100).toInt(),
+                                model.customerTransactionID ?: "",
+                                it1,
+                                model.transactionOutput.authCode,
+                                REFUND1
+                            )
+                        }
+                        networkCall(jsonArray, 1)
+                    }
+                    Constants.TSYS_GATEWAY == magtekRequestUtils.gatewayName() -> {
+
+                        jsonArray = model.transactionOutput?.transactionID?.let { it1 ->
+                            magtekRequestUtils.processReferenceIDTSYS(
+                                (refundAmount * 100).toInt(),
+                                model.customerTransactionID ?: "", it1, REFUND1
+                            )
+                        }
+                        networkCall(jsonArray, 1)
+                    }
+
+
+
+
+                }
+
+
+            } else {
+                refundCall()
+            }
+
         }
 
         setupSnackbar()
@@ -84,6 +208,56 @@ class ReasonForRefundDialog : DialogFragment() {
         }
 
         return binding.root
+    }
+
+    private fun networkCall(jsonArray1: JsonArray?, i: Int) {
+
+        ProgressUtils.showProgressDialog(requireActivity())
+
+        val call = if (i == 1) {
+            jsonArray1?.let { apiModule1.getRetrofit1().processReferenceID(it) }
+        } else {
+            jsonArray1?.let { apiModule1.getRetrofit1().processToken(it) }
+        }
+
+
+        call!!.enqueue(object : Callback<PaymentResponse> {
+
+            override fun onResponse(
+                call: Call<PaymentResponse>,
+                response: Response<PaymentResponse>
+            ) {
+                ProgressUtils.dismissProgressDialog()
+                if (response.isSuccessful) {
+                    Log.e("onResponse", Gson().toJson(response.body()))
+                    if (response.body() != null && response.body()!![0].transactionOutput != null && response.body()!![0].transactionOutput?.isTransactionApproved == true) {
+
+                        refundCall()
+
+                    } else {
+                        if (response.body()!![0].mPPGv4WSFault != null)
+                            AlertUtils.showCustomAlert(
+                                requireContext(),
+                                response.body()!![0].mPPGv4WSFault?.faultCode + "\n" +
+                                        response.body()!![0].mPPGv4WSFault?.faultReason
+                            )
+                    }
+                }
+            }
+
+            override fun onFailure(call: Call<PaymentResponse>, t: Throwable) {
+
+                ProgressUtils.dismissProgressDialog()
+            }
+        })
+    }
+
+    private fun refundCall() {
+        viewModel.refundPaymentApiCall(
+            refundAmount,
+            refundData,
+            binding.edtReasonForRefund.text.toString()
+        )
     }
 
     override fun onResume() {
@@ -105,7 +279,7 @@ class ReasonForRefundDialog : DialogFragment() {
 
     private fun observeShowProgress() {
 
-        viewModel.showProgress.observe(viewLifecycleOwner, { event ->
+        viewModel.showProgress.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
                 if (it) {
                     ProgressUtils.showProgressDialog(requireActivity())
@@ -113,13 +287,13 @@ class ReasonForRefundDialog : DialogFragment() {
                     ProgressUtils.dismissProgressDialog()
                 }
             }
-        })
+        }
 
     }
 
     private fun navigate() {
 
-        viewModel.dataRefundDone.observe(viewLifecycleOwner, { event ->
+        viewModel.dataRefundDone.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let { createTaxResponse ->
                 activity?.let {
                     AlertUtils.showCustomAlertWithListenerWithOK(
@@ -139,7 +313,7 @@ class ReasonForRefundDialog : DialogFragment() {
                     }
                 }
             }
-        })
+        }
 
     }
 

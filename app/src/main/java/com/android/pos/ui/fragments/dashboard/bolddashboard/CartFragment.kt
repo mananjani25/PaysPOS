@@ -6,7 +6,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.PopupMenu
-import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.activityViewModels
@@ -28,6 +27,7 @@ import com.android.pos.ui.fragments.payment.PaymentViewModel
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.ProgressUtils
+import com.android.pos.utils.callback.ItemClickListner
 import com.android.pos.utils.callback.MyCallback
 import com.android.pos.utils.extensions.alert
 import com.android.pos.utils.statusUtils.Resource
@@ -39,7 +39,7 @@ import javax.inject.Inject
 
 
 @AndroidEntryPoint
-class CartFragment : Fragment(), MyCallback, DineInAdapter.DineInCallback {
+class CartFragment(val itemClickListner:ItemClickListner?) : Fragment(), MyCallback, DineInAdapter.DineInCallback {
     private lateinit var binding: FragmentCartBinding
     var fragmentId: Int? = null
     var checkoutHeaderId: Int = 0
@@ -66,6 +66,7 @@ class CartFragment : Fragment(), MyCallback, DineInAdapter.DineInCallback {
     private var assignCustomer: TbCustomer? = null
     private var openORderType: String = ""
 
+
     @Inject
     lateinit var prefProvider: PrefProvider
     private val TAG = "CartFragment"
@@ -73,8 +74,9 @@ class CartFragment : Fragment(), MyCallback, DineInAdapter.DineInCallback {
 
     companion object {
         fun newInstacne(isFromPayment: Boolean): CartFragment {
-            val bundle = bundleOf("isFromPayment" to isFromPayment)
-            val frag = CartFragment()
+            val bundle = Bundle()
+            bundle.putBoolean("isFromPayment",isFromPayment)
+            val frag = CartFragment(null)
             frag.arguments = bundle
             return frag
 
@@ -169,12 +171,12 @@ class CartFragment : Fragment(), MyCallback, DineInAdapter.DineInCallback {
                 )
 
             } else {
-              //  prefProvider.setValue(ORDER_TYPE, TAKEOUT)
+                //  prefProvider.setValue(ORDER_TYPE, TAKEOUT)
                 Log.e("ORDER_TYPE", "Updated check")
             }
         } else {
             isOrderUpdate = false
-         //   prefProvider.setValue(ORDER_TYPE, TAKEOUT)
+            //   prefProvider.setValue(ORDER_TYPE, TAKEOUT)
             Log.e("ORDER_TYPE", "Updated check1")
         }
 
@@ -187,7 +189,6 @@ class CartFragment : Fragment(), MyCallback, DineInAdapter.DineInCallback {
     }
 
     private fun addObserver() {
-
 
 
         Log.e("ORDER_TYPE", prefProvider.getValue(ORDER_TYPE, TAKEOUT))
@@ -495,6 +496,7 @@ class CartFragment : Fragment(), MyCallback, DineInAdapter.DineInCallback {
     private fun setCartAdapter() {
         cartAdapter = CartAdapter()
         binding.rvCartList.adapter = cartAdapter
+        cartAdapter.setCallback(this)
     }
 
 
@@ -504,6 +506,9 @@ class CartFragment : Fragment(), MyCallback, DineInAdapter.DineInCallback {
     }
 
     override fun onItemClickListener(view: View?, data: TbItem, position: Int?) {
+        Log.e(TAG, "itemClicked  ${Gson().toJson(data)}")
+        itemClickListner?.onItemUpdate(data)
+
 
     }
 
