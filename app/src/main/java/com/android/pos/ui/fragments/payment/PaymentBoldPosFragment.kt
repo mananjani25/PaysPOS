@@ -9,6 +9,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.setFragmentResultListener
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.databinding.FragmentPaymentBoldPosBinding
@@ -58,11 +59,10 @@ class PaymentBoldPosFragment : Fragment() {
         }
 
         listeners()
-        requireActivity().supportFragmentManager.setFragmentResultListener(
-            "request_key_tips",
-            viewLifecycleOwner
+        setFragmentResultListener(
+            "request_key_tips"
         ) { requestKey: String, bundle: Bundle ->
-            Log.d(TAG, "onViewCreated: "+bundle)
+            Log.d(TAG, "onViewCreated: " + bundle)
         }
     }
 

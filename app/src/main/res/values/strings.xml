@@ -765,6 +765,9 @@
     <string name="add_custom_amount">Add Custom Amount</string>
     <string name="card_reader_device_list">Card Reader Device List</string>
     <string name="refresh">Refresh</string>
+    <string name="pay_full_amount">PAY FULL AMOUNT</string>
+    <string name="split_custom_amount">SPLIT CUSTOM AMOUNT</string>
+    <string name="next_payment">Next Payment</string>
 
 
 </resources>

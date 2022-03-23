@@ -4,64 +4,591 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:ignore="MissingDefaultResource">
 
-    <androidx.appcompat.widget.LinearLayoutCompat
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/bg_color"
-        android:orientation="vertical">
+        android:layout_height="match_parent">
+
+        <RelativeLayout
+            android:id="@+id/relative_main"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:id="@+id/tab_linear"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_20sdp"
+                android:background="@color/backgroundColor"
+                android:gravity="center">
+
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:id="@+id/linear_tab1"
+                    android:layout_width="@dimen/_100sdp"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/tab1"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/_19sdp"
+                        android:layout_gravity="center"
+                        android:gravity="center"
+                        android:text="@string/pay_full_amount"
+                        android:textAllCaps="true"
+                        android:textColor="@color/txt_color_blue"
+                        android:textSize="@dimen/_5sdp"
+                        android:textStyle="bold" />
+
+                    <View
+                        android:id="@+id/view1"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/_1sdp"
+                        android:layout_marginHorizontal="@dimen/_15sdp"
+                        android:background="@color/txt_color_blue" />
+                </androidx.appcompat.widget.LinearLayoutCompat>
+
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:id="@+id/linear_tab2"
+                    android:layout_width="@dimen/_100sdp"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/tab2"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/_19sdp"
+                        android:layout_gravity="center"
+                        android:gravity="center"
+                        android:text="@string/split_custom_amount"
+                        android:textAllCaps="true"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/_5sdp"
+                        android:textStyle="bold" />
+
+
+                    <View
+                        android:id="@+id/view2"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/_1sdp"
+                        android:layout_marginHorizontal="@dimen/_8sdp"
+                        android:background="@color/backgroundColor" />
+                </androidx.appcompat.widget.LinearLayoutCompat>
+            </androidx.appcompat.widget.LinearLayoutCompat>
+
+
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_below="@id/tab_linear"
+                android:background="@color/bg_color"
+                android:orientation="vertical">
+
+
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:id="@+id/payment_linear_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:visibility="visible">
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="@dimen/_5sdp"
+                        android:background="@color/bg_color"
+                        android:orientation="vertical"
+                        android:padding="@dimen/_10sdp">
+
+
+                        <TextView
+                            android:id="@+id/tvCard"
+                            style="@style/CustomFontBold"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="@dimen/_15sdp"
+                            android:text="@string/card"
+                            android:textColor="@color/txtColor"
+                            android:textSize="@dimen/_7mdpi" />
+
+
+                        <androidx.appcompat.widget.LinearLayoutCompat
+                            android:id="@+id/llCard"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@+id/tvCard"
+                            android:layout_marginTop="11dp"
+                            android:orientation="horizontal"
+                            android:weightSum="2">
+
+
+                            <androidx.appcompat.widget.LinearLayoutCompat
+                                android:id="@+id/llCreditCard"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:background="@drawable/background_square_border_grey"
+                                android:gravity="center_horizontal"
+                                android:orientation="horizontal"
+                                android:paddingVertical="@dimen/_5sdp">
+
+                                <androidx.appcompat.widget.AppCompatImageView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_horizontal"
+                                    android:padding="@dimen/_3sdp"
+                                    android:src="@drawable/ic_credit_card" />
+
+
+                                <androidx.appcompat.widget.AppCompatTextView
+                                    android:id="@+id/tvCreditCard"
+                                    style="@style/CustomFontBold"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_below="@+id/tvCard"
+                                    android:layout_gravity="center_vertical"
+                                    android:layout_marginLeft="@dimen/_5sdp"
+                                    android:text="@string/card"
+                                    android:textColor="@color/txtColor"
+                                    android:textSize="@dimen/_7mdpi" />
+
+
+                            </androidx.appcompat.widget.LinearLayoutCompat>
+
+
+                            <androidx.appcompat.widget.LinearLayoutCompat
+                                android:id="@+id/llManualCardEntry"
+                                android:layout_width="0dp"
+                                android:layout_height="@dimen/_31sdp"
+                                android:layout_marginLeft="@dimen/_5sdp"
+                                android:layout_weight="1"
+                                android:background="@drawable/background_square_border_grey"
+                                android:gravity="center_horizontal"
+                                android:orientation="horizontal">
+
+                                <androidx.appcompat.widget.AppCompatImageView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_horizontal|center_vertical"
+                                    android:src="@drawable/ic_manual_card" />
+
+
+                                <androidx.appcompat.widget.AppCompatTextView
+                                    android:id="@+id/tvManualCard"
+                                    style="@style/CustomFontBold"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_below="@+id/tvCard"
+                                    android:layout_gravity="center_vertical"
+                                    android:layout_marginLeft="@dimen/_5sdp"
+                                    android:text="@string/manual_credit_card_entry"
+                                    android:textColor="@color/txtColor"
+                                    android:textSize="@dimen/_7mdpi" />
+
+
+                            </androidx.appcompat.widget.LinearLayoutCompat>
+
+
+                        </androidx.appcompat.widget.LinearLayoutCompat>
+
+                        <TextView
+                            android:id="@+id/tvCash"
+                            style="@style/CustomFontBold"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@+id/llCard"
+                            android:layout_marginTop="@dimen/_10sdp"
+                            android:layout_marginEnd="@dimen/_15sdp"
+                            android:text="@string/tv_cash_payment"
+                            android:textColor="@color/txtColor"
+                            android:textSize="@dimen/_7mdpi" />
+
+                        <androidx.appcompat.widget.LinearLayoutCompat
+                            android:id="@+id/llCash"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@+id/tvCash"
+                            android:layout_marginTop="@dimen/_5sdp"
+                            android:orientation="horizontal"
+                            android:weightSum="3">
+
+                            <androidx.appcompat.widget.AppCompatTextView
+                                android:id="@+id/tvCash1"
+                                style="@style/CustomFontSemiBold"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_below="@+id/tvCard"
+                                android:layout_gravity="center_vertical"
+                                android:layout_weight="1"
+                                android:background="@drawable/background_square_border_grey"
+                                android:gravity="center_horizontal"
+                                android:paddingVertical="@dimen/_10sdp"
+                                android:text="$10"
+                                android:textColor="@color/txtColor"
+                                android:textSize="@dimen/_7mdpi" />
+
+                            <androidx.appcompat.widget.AppCompatTextView
+                                android:id="@+id/tvCash2"
+                                style="@style/CustomFontSemiBold"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_below="@+id/tvCard"
+                                android:layout_gravity="center_vertical"
+                                android:layout_marginLeft="@dimen/_5sdp"
+                                android:layout_weight="1"
+                                android:background="@drawable/background_square_border_grey"
+                                android:gravity="center_horizontal"
+                                android:paddingVertical="@dimen/_10sdp"
+                                android:text="$20"
+                                android:textColor="@color/txtColor"
+                                android:textSize="@dimen/_7mdpi" />
+
+                            <androidx.appcompat.widget.AppCompatTextView
+                                android:id="@+id/tvCash3"
+                                style="@style/CustomFontSemiBold"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_below="@+id/tvCard"
+                                android:layout_gravity="center_vertical"
+                                android:layout_marginLeft="@dimen/_5sdp"
+                                android:layout_weight="1"
+                                android:background="@drawable/background_square_border_grey"
+                                android:gravity="center_horizontal"
+                                android:paddingVertical="@dimen/_10sdp"
+                                android:text="$20"
+                                android:textColor="@color/txtColor"
+                                android:textSize="@dimen/_7mdpi" />
+
+                        </androidx.appcompat.widget.LinearLayoutCompat>
+
+                        <androidx.appcompat.widget.LinearLayoutCompat
+                            android:id="@+id/llcustom"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@+id/llCash"
+                            android:layout_marginTop="@dimen/_10sdp"
+                            android:orientation="horizontal"
+                            android:weightSum="3">
+
+
+                            <androidx.appcompat.widget.AppCompatTextView
+                                android:id="@+id/tvCustomAmount"
+                                style="@style/CustomFontSemiBold"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_below="@+id/tvCard"
+                                android:layout_gravity="center_vertical"
+                                android:layout_weight="0.8"
+                                android:background="@drawable/background_square_border_grey"
+                                android:gravity="center_horizontal"
+                                android:paddingVertical="@dimen/_10sdp"
+                                android:text="Custom"
+                                android:textColor="@color/txtColor"
+                                android:textSize="@dimen/_7mdpi" />
+
+
+                            <androidx.appcompat.widget.LinearLayoutCompat
+                                android:id="@+id/llPaycash"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_below="@+id/llCash"
+                                android:layout_marginLeft="@dimen/_6sdp"
+                                android:layout_weight="2.2"
+                                android:background="@drawable/button_selected"
+                                android:gravity="center_horizontal"
+                                android:orientation="horizontal"
+                                android:paddingVertical="@dimen/_10sdp">
+
+                                <androidx.appcompat.widget.AppCompatImageView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_horizontal" />
+
+
+                                <androidx.appcompat.widget.AppCompatTextView
+                                    android:id="@+id/txt_pay_cash"
+                                    style="@style/CustomFontSemiBold"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_below="@+id/tvCard"
+                                    android:layout_gravity="center_vertical"
+                                    android:layout_marginLeft="@dimen/_5sdp"
+                                    android:text="Pay Cash"
+                                    android:textColor="@color/white"
+                                    android:textSize="@dimen/_7mdpi" />
+
+
+                            </androidx.appcompat.widget.LinearLayoutCompat>
+
+                        </androidx.appcompat.widget.LinearLayoutCompat>
+
+
+                        <TextView
+                            android:id="@+id/tvOther"
+                            style="@style/CustomFontSemiBold"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@+id/llcustom"
+                            android:layout_marginTop="@dimen/_10sdp"
+                            android:layout_marginEnd="@dimen/_15sdp"
+                            android:text="@string/tv_other"
+                            android:textColor="@color/txtColor"
+                            android:textSize="@dimen/_7mdpi" />
+
+                        <androidx.appcompat.widget.LinearLayoutCompat
+                            android:id="@+id/llPaymentLink"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@+id/tvOther"
+                            android:layout_marginTop="@dimen/_5sdp"
+                            android:orientation="horizontal"
+                            android:weightSum="3">
+
+                            <androidx.appcompat.widget.AppCompatTextView
+                                android:id="@+id/tvPaymentLink"
+                                style="@style/CustomFontSemiBold"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_below="@+id/tvCard"
+                                android:layout_gravity="center_vertical"
+                                android:layout_weight="1"
+                                android:background="@drawable/background_square_border_grey"
+                                android:gravity="center_horizontal"
+                                android:orientation="horizontal"
+                                android:paddingVertical="@dimen/_10sdp"
+                                android:text="Text Payment Link"
+                                android:textColor="@color/txtColor"
+                                android:textSize="@dimen/_7mdpi" />
+
+
+                        </androidx.appcompat.widget.LinearLayoutCompat>
+
+                    </RelativeLayout>
+                </androidx.appcompat.widget.LinearLayoutCompat>
+
+
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:id="@+id/split_linear_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:visibility="gone">
+
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@color/bg_color"
+                        android:orientation="vertical"
+                        android:padding="@dimen/_10sdp">
+
+
+                        <TextView
+                            android:id="@+id/tvAmount"
+                            style="@style/CustomFontBold"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_centerHorizontal="true"
+                            android:layout_gravity="center_horizontal"
+                            android:layout_marginLeft="@dimen/_5sdp"
+                            android:layout_marginTop="@dimen/_10sdp"
+                            android:layout_weight="1"
+                            android:text="$24.00"
+                            android:textAlignment="center"
+                            android:textColor="@color/txtColor"
+                            android:textSize="@dimen/_10mdpi" />
+
+                        <TextView
+                            android:id="@+id/tvFullAMounttxt"
+                            style="@style/CustomFontMediumStyle"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@+id/tvAmount"
+                            android:layout_centerHorizontal="true"
+                            android:layout_gravity="center_horizontal"
+                            android:layout_marginLeft="@dimen/_5sdp"
+                            android:layout_weight="1"
+                            android:text="Full Amount"
+                            android:textAlignment="center"
+                            android:textColor="@color/cool_grey"
+                            android:textSize="@dimen/_5mdpi" />
+
+
+                        <androidx.appcompat.widget.LinearLayoutCompat
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@+id/tvFullAMounttxt"
+                            android:layout_marginTop="@dimen/_10sdp"
+
+                            android:orientation="vertical">
+
+                            <androidx.appcompat.widget.LinearLayoutCompat
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:weightSum="3">
+
+                                <androidx.appcompat.widget.AppCompatTextView
+                                    android:id="@+id/tvFullAmount"
+                                    style="@style/CustomFontBold"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_below="@+id/tvCard"
+                                    android:layout_weight="1"
+                                    android:background="@drawable/background_square_border_grey"
+                                    android:paddingVertical="@dimen/_10sdp"
+                                    android:text="Full Amount"
+                                    android:textAlignment="center"
+                                    android:textColor="@color/txtColor"
+                                    android:textSize="@dimen/_7mdpi" />
+
+                                <androidx.appcompat.widget.AppCompatTextView
+                                    android:id="@+id/tv2ways"
+                                    style="@style/CustomFontBold"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_below="@+id/tvCard"
+                                    android:layout_marginLeft="@dimen/_5sdp"
+                                    android:layout_weight="1"
+                                    android:background="@drawable/background_square_border_grey"
+                                    android:paddingVertical="@dimen/_10sdp"
+                                    android:text="2 Ways"
+                                    android:textAlignment="center"
+                                    android:textColor="@color/txtColor"
+                                    android:textSize="@dimen/_7mdpi" />
+
+                                <androidx.appcompat.widget.AppCompatTextView
+                                    android:id="@+id/tv3ways"
+                                    style="@style/CustomFontBold"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_below="@+id/tvCard"
+                                    android:layout_marginLeft="@dimen/_5sdp"
+                                    android:layout_weight="1"
+                                    android:background="@drawable/background_square_border_grey"
+                                    android:paddingVertical="@dimen/_10sdp"
+                                    android:text="3 Ways"
+                                    android:textAlignment="center"
+                                    android:textColor="@color/txtColor"
+                                    android:textSize="@dimen/_7mdpi" />
+
+                            </androidx.appcompat.widget.LinearLayoutCompat>
+
+                            <androidx.appcompat.widget.LinearLayoutCompat
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="@dimen/_5sdp"
+                                android:orientation="horizontal"
+                                android:weightSum="3">
+
+                                <androidx.appcompat.widget.AppCompatTextView
+                                    android:id="@+id/tv4ways"
+                                    style="@style/CustomFontBold"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_below="@+id/tvCard"
+                                    android:layout_weight="1"
+                                    android:background="@drawable/background_square_border_grey"
+                                    android:paddingVertical="@dimen/_10sdp"
+                                    android:text="4 Ways"
+                                    android:textAlignment="center"
+                                    android:textColor="@color/txtColor"
+                                    android:textSize="@dimen/_7mdpi" />
+
+                                <androidx.appcompat.widget.AppCompatTextView
+                                    android:id="@+id/tv5ways"
+                                    style="@style/CustomFontBold"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_below="@+id/tvCard"
+                                    android:layout_marginLeft="@dimen/_5sdp"
+                                    android:layout_weight="1"
+                                    android:background="@drawable/background_square_border_grey"
+                                    android:paddingVertical="@dimen/_10sdp"
+                                    android:text="5 Ways"
+                                    android:textAlignment="center"
+                                    android:textColor="@color/txtColor"
+                                    android:textSize="@dimen/_7mdpi" />
+
+                                <androidx.appcompat.widget.AppCompatTextView
+                                    android:id="@+id/tv6ways"
+                                    style="@style/CustomFontBold"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_below="@+id/tvCard"
+                                    android:layout_marginLeft="@dimen/_5sdp"
+                                    android:layout_weight="1"
+                                    android:background="@drawable/background_square_border_grey"
+                                    android:paddingVertical="@dimen/_10sdp"
+                                    android:text="6 Ways"
+                                    android:textAlignment="center"
+                                    android:textColor="@color/txtColor"
+                                    android:textSize="@dimen/_7mdpi" />
+
+                            </androidx.appcompat.widget.LinearLayoutCompat>
+
+
+                            <androidx.appcompat.widget.AppCompatTextView
+                                android:id="@+id/tvCustom"
+                                style="@style/CustomFontBold"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_centerInParent="true"
+                                android:layout_gravity="center_horizontal"
+
+                                android:layout_marginTop="@dimen/_5sdp"
+
+                                android:background="@drawable/background_square_border_grey"
+                                android:gravity="center_horizontal"
+                                android:paddingVertical="@dimen/_10sdp"
+                                android:text="Custom"
+                                android:textAlignment="center"
+                                android:textColor="@color/txtColor"
+                                android:textSize="@dimen/_7mdpi" />
+
+
+                            <androidx.appcompat.widget.LinearLayoutCompat
+                                android:id="@+id/linear_next_split"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_below="@+id/llCash"
+                                android:layout_marginHorizontal="@dimen/_3sdp"
+                                android:layout_marginTop="@dimen/_20sdp"
+                                android:background="@drawable/button_selected"
+                                android:gravity="center_horizontal"
+                                android:orientation="horizontal"
+                                android:paddingVertical="@dimen/_10sdp">
+
+                                <androidx.appcompat.widget.AppCompatImageView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_horizontal" />
+
+
+                                <androidx.appcompat.widget.AppCompatTextView
+                                    style="@style/CustomFontBold"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_below="@+id/tvCard"
+                                    android:layout_gravity="center_vertical"
+                                    android:layout_marginLeft="@dimen/_5sdp"
+                                    android:text="Next"
+                                    android:textColor="@color/white"
+                                    android:textSize="@dimen/_7mdpi" />
+
+
+                            </androidx.appcompat.widget.LinearLayoutCompat>
+
+                        </androidx.appcompat.widget.LinearLayoutCompat>
+
+
+                    </RelativeLayout>
+                </androidx.appcompat.widget.LinearLayoutCompat>
+
+
+            </androidx.appcompat.widget.LinearLayoutCompat>
+        </RelativeLayout>
 
         <FrameLayout
             android:id="@+id/frameLayoutId"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:visibility="gone" />
+    </RelativeLayout>
 
-
-        <LinearLayout
-            android:id="@+id/llRoot"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:visibility="visible">
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_height="74dp"
-                android:background="@color/backgroundColor">
-
-
-                <com.google.android.material.tabs.TabLayout
-                    android:id="@+id/tabLayout"
-                    style="@style/MyTabLayout"
-                    android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
-                    android:layout_centerInParent="true"
-                    android:isScrollContainer="true"
-                    app:tabGravity="center"
-                    app:tabIndicator="@color/btnColor"
-                    app:tabIndicatorColor="@color/btnColor"
-                    app:tabIndicatorGravity="bottom"
-                    app:tabMode="scrollable"
-
-                    app:tabSelectedTextColor="@color/btnColor"
-                    app:tabTextAppearance="@style/MyTabTextAppearance"
-                    app:tabTextColor="@color/txtColor" />
-
-            </RelativeLayout>
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="@color/view" />
-
-            <androidx.viewpager.widget.ViewPager
-                android:id="@+id/frameLayout"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="@dimen/_10sdp" />
-
-        </LinearLayout>
-
-
-    </androidx.appcompat.widget.LinearLayoutCompat>
 </layout>

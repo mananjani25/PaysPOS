@@ -265,8 +265,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         if (!isDineIn) {
             if (isSpilt) {
                 saveDataInPrefrences()
-                binding.constraintSplit.visibility = View.VISIBLE
-                binding.viewSplitLine.visibility = View.VISIBLE
+                binding.linearSplitLayout.visibility = View.VISIBLE
+                binding.linerContent.visibility = View.VISIBLE
                 binding.txtRemainingAmount.visibility = View.VISIBLE
                 binding.txtRemainingAmountLabel.visibility = View.VISIBLE
                 if (!remainingAmount.toString().contains("$")) {
@@ -276,8 +276,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 }
                 binding.llHome.visibility = View.GONE
                 binding.llNoReceipt.text = "Next Payment"
-                binding.txtHome.text = "Next Payment"
-                binding.llNoReceipt.background = requireContext().getDrawable(R.drawable.background_square_border_grey)
+                binding.linearTopHeaderSplit.visibility = View.VISIBLE
+                binding.txtHome.visibility = View.GONE
+
+                binding.llNoReceipt.background =
+                    requireContext().getDrawable(R.drawable.background_square_border_grey)
 
                 var title = "Split "
                 viewModel.addSplitToDatabase(
@@ -350,15 +353,15 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     }
                 }
             } else {
+                binding.linerContent.visibility = View.VISIBLE
                 binding.llHome.visibility = View.VISIBLE
                 binding.txtHome.visibility = View.VISIBLE
+                binding.linearTopHeaderSplit.visibility = View.GONE
                 binding.llNoReceipt.visibility = View.VISIBLE
-                binding.viewSplitLine.visibility = View.GONE
-                binding.constraintSplit.visibility = View.GONE
+                binding.linearSplitLayout.visibility = View.GONE
                 binding.txtRemainingAmount.visibility = View.GONE
                 binding.txtRemainingAmountLabel.visibility = View.GONE
                 binding.llNoReceipt.text = getString(R.string.no_receipt)
-                binding.txtHome.text = getString(R.string.tv_home)
                 viewModel.deleteSplitDb()
                 binding.txtTitle.text =
                     MethodUtils.roundOffAmount(paidAmount + tipAmount)
@@ -384,8 +387,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             }
         } else {
             if (isSpilt) {
-                binding.constraintSplit.visibility = View.VISIBLE
-                binding.viewSplitLine.visibility = View.VISIBLE
+                binding.linearSplitLayout.visibility = View.VISIBLE
+                binding.linerContent.visibility = View.VISIBLE
                 binding.txtRemainingAmount.visibility = View.VISIBLE
                 binding.txtRemainingAmountLabel.visibility = View.VISIBLE
                 if (!remainingAmount.toString().contains("$")) {
@@ -396,7 +399,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                 binding.llHome.visibility = View.GONE
                 binding.llNoReceipt.text = "Next Payment"
-                binding.txtHome.text = "Next Payment"
+                binding.linearTopHeaderSplit.visibility = View.VISIBLE
+                binding.txtHome.visibility = View.GONE
                 binding.llNoReceipt.background = requireContext().getDrawable(R.color.black)
                 var title = "Split "
                 viewModel.addSplitToDatabase(
@@ -444,24 +448,27 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     if (isLastPayment) {
                         binding.llHome.visibility = View.VISIBLE
                         binding.txtHome.visibility = View.VISIBLE
+                        binding.linearTopHeaderSplit.visibility = View.GONE
                         binding.llCheckOut.visibility = View.GONE
                     } else {
                         binding.llHome.visibility = View.GONE
                         binding.txtHome.visibility = View.GONE
+                        binding.linearTopHeaderSplit.visibility = View.VISIBLE
                         binding.llCheckOut.visibility = View.VISIBLE
                     }
                 } else {
                     binding.llHome.visibility = View.VISIBLE
                     binding.txtHome.visibility = View.VISIBLE
+                    binding.linearTopHeaderSplit.visibility = View.GONE
                     binding.llCheckOut.visibility = View.GONE
                 }
+
+                binding.linearSplitLayout.visibility = View.GONE
+                binding.linerContent.visibility = View.VISIBLE
                 binding.llNoReceipt.visibility = View.VISIBLE
-                binding.viewSplitLine.visibility = View.GONE
-                binding.constraintSplit.visibility = View.GONE
                 binding.txtRemainingAmount.visibility = View.GONE
                 binding.txtRemainingAmountLabel.visibility = View.GONE
                 binding.llNoReceipt.text = getString(R.string.no_receipt)
-                binding.txtHome.text = getString(R.string.tv_home)
                 viewModel.deleteSplitDb()
                 binding.txtTitle.text =
                     MethodUtils.roundOffAmount(paidAmount)
@@ -495,7 +502,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             }
         }
 
-
+        binding.txtNextbutton.setOnClickListener(this)
         binding.txtHome.setOnClickListener(this)
         binding.txtAddCustomer.setOnClickListener(this)
         binding.llMessage.setOnClickListener(this)
@@ -557,6 +564,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             R.id.txtHome -> {
                 moveToDashboard()
             }
+            R.id.txt_nextbutton -> {
+            moveToNextPayment()
+            }
             R.id.llHome -> {
                 moveToDashboard()
             }
@@ -591,6 +601,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                 type = "Message"
                 binding.linerContent.visibility = View.VISIBLE
+                binding.linearSplitLayout.visibility = View.GONE
                 binding.llSendReceipt.visibility = View.VISIBLE
                 binding.edtEmail.visibility = View.GONE
                 binding.imgBack.visibility = View.VISIBLE
@@ -598,7 +609,6 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 binding.llOptions.visibility = View.GONE
                 binding.txtHome.visibility = View.GONE
                 binding.txtAddCustomer.visibility = View.GONE
-                binding.constraintSplit.visibility = View.GONE
                 binding.viewSplitLine.visibility = View.GONE
                 binding.tvMessage.setText(getString(R.string.please_enter_customer_contact_number))
                 MethodUtils.hideKeyboard(requireActivity())
@@ -691,6 +701,52 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             R.id.imgBack -> {
                 backpress()
             }
+        }
+    }
+
+    private fun moveToNextPayment() {
+        if (isDineIn) {
+            val navController = findNavController()
+            var bundle = Bundle()
+            bundle.putBoolean("isNextPayment", true)
+            bundle.putInt("splitvalue", splitValue)
+            bundle.putInt("orderId", orderID)
+            bundle.putDouble("splitPaidAmount", paymentAmount)
+            bundle.putDouble("remainingAmount", remainingAmount)
+            bundle.putBoolean("isSplitByNo", isSplitByNo)
+            bundle.putBoolean("isSplitByAmount", isSplitByAmount)
+            bundle.putBoolean("isCustomCash", isCustomCash)
+            bundle.putParcelable(PRINT_DATA_DINE_IN, getDineInOrderDetails)
+            bundle.putParcelableArrayList(DINE_IN_ADAPTER_LIST, dineInList)
+            bundle.putDouble("subTotalPrice", subTotalWT)
+            bundle.putDouble("totalServiceCharge", serviceCharge)
+            bundle.putDouble("totalDiscount", totalDiscount)
+            bundle.putDouble("divideCashDiscount", totalDiscount)
+            bundle.putDouble("totalTax", totalTaxAmount)
+            prefProvider.setValueInt(PAYMENT_ID, 0)
+            navController.previousBackStackEntry?.savedStateHandle?.set("data", bundle)
+            navController.popBackStack()
+        } else {
+            val navController = findNavController()
+            var bundle = Bundle()
+            bundle.putBoolean("isNextPayment", true)
+            bundle.putDouble("splitPaidAmount", paymentAmount)
+            bundle.putDouble("remainingAmount", remainingAmount)
+            if (isSplitByAmount) {
+                bundle.putInt("splitvalue", splitValue)
+                bundle.putBoolean("isSplitByNo", isSplitByNo)
+                bundle.putBoolean("isSplitByAmount", isSplitByAmount)
+            } else {
+                bundle.putInt("splitvalue", splitValue)
+                bundle.putBoolean("isSplitByNo", isSplitByNo)
+                bundle.putBoolean("isSplitByAmount", isSplitByAmount)
+            }
+            bundle.putBoolean("isCustomCash", isCustomCash)
+            Log.e(TAG, "ORDER_ID:  ${prefProvider.getValueInt("ORDER_ID", -1)}")
+            saveDataInPrefrences()
+            prefProvider.setValueInt(PAYMENT_ID, 0)
+            navController.previousBackStackEntry?.savedStateHandle?.set("data", bundle)
+            navController.popBackStack()
         }
     }
 
