@@ -70,6 +70,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentAddItemBinding.inflate(inflater, container, false)
+        getServiceCharges()
         binding.lifecycleOwner = this
         variationAdapter = VariationListAdapter()
         binding.rvVariationList.adapter = variationAdapter
@@ -363,5 +364,20 @@ class AddItemFragment(val listner: ItemListner) : Fragment() {
         return false
     }
 
+
+    private fun getServiceCharges() {
+
+        serviceChargesObserve = Observer {
+
+            if (it.status == Status.SUCCESS) {
+                Log.e(TAG, "getServiceCharge:  ${Gson().toJson(it.data)}")
+                serviceChargesList = it.data
+
+            }
+
+        }
+
+        viewModel.serviceCharges.observe(requireActivity(), serviceChargesObserve!!)
+    }
 
 }

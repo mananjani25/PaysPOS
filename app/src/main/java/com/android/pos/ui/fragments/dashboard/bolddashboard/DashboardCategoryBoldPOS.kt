@@ -26,6 +26,7 @@ import com.android.pos.di.PrefProvider
 import com.android.pos.ui.adapter.VariationDashboardListAdapter
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.android.pos.ui.fragments.payment.PaymentViewModel
+import com.android.pos.utils.callback.ItemClickListner
 import com.android.pos.utils.callback.ItemListner
 import com.android.pos.utils.statusUtils.Resource
 import com.android.pos.utils.statusUtils.Status
@@ -34,7 +35,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class DashboardCategoryBoldPOS : Fragment(), ItemListner {
+class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
     private var cartList: ArrayList<CartModel> = arrayListOf()
     private lateinit var binding: FragmentDashboardCategoryBoldPosBinding
     private val viewModel by activityViewModels<DashBoardCategoryViewModel>()
@@ -48,6 +49,8 @@ class DashboardCategoryBoldPOS : Fragment(), ItemListner {
 
     @Inject
     lateinit var prefProvider: PrefProvider
+
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -119,7 +122,7 @@ class DashboardCategoryBoldPOS : Fragment(), ItemListner {
         }
         syncData()
         requireActivity().window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
-        loadCartFragment(CartFragment())
+        loadCartFragment(CartFragment(this))
         loadCategoryFragment(CategoryFragment(this))
         binding.layoutHeader.txtUserName.text =
             prefProvider.getValue(EMPLOYEE_NAME, "").toString()
@@ -299,7 +302,7 @@ class DashboardCategoryBoldPOS : Fragment(), ItemListner {
             prefProvider.getValue(ORDER_TYPE, TAKEOUT),
             prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
         ).observe(requireActivity()) {
-            Log.e(TAG, "MAllWords:::  ${Gson().toJson(it)}" )
+            Log.e(TAG, "MAllWords:::  ${Gson().toJson(it)}")
             if (it.isEmpty()) {
                 cartList.clear()
                 cartList = arrayListOf()
@@ -342,6 +345,7 @@ class DashboardCategoryBoldPOS : Fragment(), ItemListner {
         serviceChargesObserve = Observer {
 
             if (it.status == Status.SUCCESS) {
+                Log.e(TAG, "getServiceCharge:  ${Gson().toJson(it.data)}")
                 serviceChargesList = it.data
 
             }
@@ -379,6 +383,10 @@ class DashboardCategoryBoldPOS : Fragment(), ItemListner {
         }
 
         return false
+    }
+
+    override fun onItemUpdate(item: TbItem) {
+        Log.e(TAG, "dashboardPosItem:  ${Gson().toJson(item)}")
     }
 
 
