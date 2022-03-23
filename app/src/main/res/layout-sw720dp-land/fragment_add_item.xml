@@ -148,6 +148,55 @@
             app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
             app:spanCount="4" />
 
+        <include
+            android:id="@+id/dividerLine2"
+            layout="@layout/divider"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_marginTop="@dimen/_5sdp"
+            android:layout_marginBottom="@dimen/_5sdp" />
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/_2sdp"
+            android:layout_marginTop="@dimen/_5sdp"
+            android:layout_marginEnd="@dimen/_2sdp"
+            android:orientation="horizontal">
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/txtAddDiscount"
+                style="@style/CustomFontBold"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/_2sdp"
+                android:layout_marginEnd="@dimen/_4sdp"
+                android:layout_weight="1"
+                android:background="@color/btnColorDark"
+                android:gravity="center"
+                android:padding="@dimen/_5sdp"
+                android:text="@string/add_discount"
+                android:textColor="@color/white"
+                android:textSize="@dimen/_7mdpi" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/txtAddNote"
+                style="@style/CustomFontBold"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/_2sdp"
+                android:layout_marginEnd="@dimen/_4sdp"
+                android:layout_weight="1"
+                android:background="@color/btnColorDark"
+                android:gravity="center"
+                android:padding="@dimen/_5sdp"
+                android:text="@string/add_note"
+                android:textColor="@color/white"
+                android:textSize="@dimen/_7mdpi" />
+
+
+        </LinearLayout>
 
     </LinearLayout>
 </layout>
