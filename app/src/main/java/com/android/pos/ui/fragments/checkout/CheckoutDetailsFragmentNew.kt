@@ -17,6 +17,7 @@ import com.android.pos.data.entities.CartModel
 import com.android.pos.data.entities.RedeemLoyaltyInfo
 import com.android.pos.data.entities.TbItem
 import com.android.pos.data.model.requestModel.OrderRequestModel
+import com.android.pos.data.model.requestModel.PaymentAttributes
 import com.android.pos.data.model.requestModel.SpitByOrderPaymentModel
 import com.android.pos.data.model.requestModel.SpitByOrderRequestModel
 import com.android.pos.data.remote.Constants
@@ -924,8 +925,7 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
             val aa = SpitByOrderRequestModel(
                 orderId,
                 true,
-                paymentReq!!,
-                SpitByOrderPaymentModel(listOf(paymentReq))
+                SpitByOrderPaymentModel(listOf(paymentReq) as List<PaymentAttributes>)
             )
 
             paymentviewModel.splitByOrder(aa, false)

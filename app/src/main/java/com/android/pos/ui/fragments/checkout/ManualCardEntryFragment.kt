@@ -36,16 +36,16 @@ class ManualCardEntryFragment : Fragment(), ItemListner {
     }
 
 
-
-
     private fun onClick() {
-
+//        binding.imgBack.setOnClickListener {
+//            childFragmentManager.popBackStack()
+//        }
     }
 
     override fun onItemSelected(item: TbItem) {
-       /* Log.e(TAG, "getitem:  ${Gson().toJson(item)}")
-        val fragment = AddItemFragment.newInstance(item)
-        loadCategoryFragment(fragment)*/
+        /* Log.e(TAG, "getitem:  ${Gson().toJson(item)}")
+         val fragment = AddItemFragment.newInstance(item)
+         loadCategoryFragment(fragment)*/
 
     }
 
