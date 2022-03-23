@@ -180,15 +180,6 @@ class SplitCustomAmountFragment() : Fragment(), ItemListner {
             binding.tvCustom.text = "Custom ($isSelectedCount Ways)"
             tipsetupGlobal(tipAmount, isSelectedCount)
         }
-        requireActivity().supportFragmentManager.setFragmentResultListener(
-            "request_key_tips",
-            viewLifecycleOwner
-        ) { requestKey: String, bundle: Bundle ->
-            tipAmount = bundle.getDouble("tipAmount")
-            tipID = bundle.getInt("tipId")
-            tipAmountCalculation()
-        }
-
     }
 
 
