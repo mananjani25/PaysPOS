@@ -1,6 +1,9 @@
 package com.android.pos.ui.dialog
 
+import android.graphics.Color
 import android.graphics.Point
+import android.graphics.drawable.ColorDrawable
+import android.graphics.drawable.InsetDrawable
 import android.os.Bundle
 import android.view.*
 import androidx.databinding.DataBindingUtil
@@ -35,25 +38,32 @@ class CustomAmountFragment : DialogFragment() {
         binding.edtAmount.addTextChangedListener(AmountTextWatcher(binding.edtAmount, false))
         if (arguments != null)
             totalprice = requireArguments().getDouble("totalprice")
-/*
+
         binding.txtAmount.text = "$ " + String.format(
             "%.2f",
             totalprice
         ) + " Cash"
-*/
+
+        dialog?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN)
+        val back = ColorDrawable(Color.WHITE)
+        val inset = InsetDrawable(back, 150, 100, 150, 100)
+        dialog?.window?.setBackgroundDrawable(inset);
 
         binding.imgBack.setOnClickListener {
             dismiss()
         }
         binding.txtSend.setOnClickListener {
-            if (binding.edtAmount.text.toString().isNotEmpty()){
+            if (binding.edtAmount.text.toString().isNotEmpty()) {
                 var custom_amount = binding.edtAmount.text.toString().replace("$", "").toDouble()
                 if (custom_amount > totalprice) {
                     val result = Bundle().apply {
                         putDouble("amount", custom_amount)
                         putDouble("totalAmount", totalprice)
                     }
-                    setFragmentResult("request_for_customAmount", result)
+                    requireActivity().supportFragmentManager.setFragmentResult(
+                        "request_for_customAmount",
+                        result
+                    )
                     findNavController().navigateUp()
                 } else {
                     AlertUtils.showCustomAlertWithListenerWithOK(
@@ -134,6 +144,9 @@ class CustomAmountFragment : DialogFragment() {
         binding.tvDZero.setOnClickListener {
             calculateValue("00", false)
         }
+        binding.txtClear.setOnClickListener {
+            binding.edtAmount.setText("00")
+        }
 
     }
 
@@ -147,10 +160,10 @@ class CustomAmountFragment : DialogFragment() {
             binding.edtAmount.append(number)
         }
     }
+
     private fun removeLastCharacter(str: String): String {
         return str.substring(0, str.length - 1)
     }
-
 
 
     override fun onResume() {

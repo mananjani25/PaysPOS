@@ -8,13 +8,12 @@
     <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:background="@color/bg_color">
+        android:background="@color/bg_color"
+        android:orientation="vertical">
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:paddingVertical="@dimen/_4sdp">
+            android:layout_height="@dimen/_25sdp">
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/imgBack"
@@ -22,8 +21,8 @@
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
                 android:layout_gravity="center"
-                android:padding="@dimen/_6sdp"
                 android:background="?attr/selectableItemBackground"
+                android:padding="@dimen/_6sdp"
                 app:srcCompat="@drawable/ic_cancel_black" />
 
             <androidx.appcompat.widget.AppCompatTextView
@@ -47,16 +46,19 @@
 
         <androidx.appcompat.widget.LinearLayoutCompat
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:layout_marginHorizontal="@dimen/_10sdp"
+            android:layout_marginTop="@dimen/_10sdp"
             android:orientation="vertical"
-            android:padding="@dimen/_10sdp"
+
             android:visibility="visible">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="@dimen/_20sdp"
                 android:layout_marginBottom="@dimen/_2sdp"
-                android:padding="@dimen/_9sdp"
                 android:background="@drawable/background_square_border_grey">
 
                 <TextView
@@ -64,11 +66,10 @@
                     style="@style/CustomFontSemiBold"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/_10sdp"
                     android:text="$"
-                    android:visibility="gone"
                     android:textColor="@color/btnColor"
                     android:textSize="@dimen/_7mdpi"
+                    android:visibility="gone"
                     app:layout_constraintBottom_toBottomOf="@+id/edtAmount"
                     app:layout_constraintEnd_toStartOf="@+id/edtAmount"
                     app:layout_constraintTop_toTopOf="@+id/edtAmount" />
@@ -81,6 +82,7 @@
                     android:layout_marginStart="@dimen/_10sdp"
                     android:layout_marginEnd="@dimen/_10sdp"
                     android:background="@null"
+                    android:digits="0123456789"
                     android:hint="$0.00"
                     android:maxLength="11"
                     android:textColor="@color/btnColor"
@@ -91,7 +93,6 @@
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
                     app:textAllCaps="true"
-                    android:digits="0123456789"
 
                     />
 
@@ -118,34 +119,34 @@
                     android:layout_marginEnd="@dimen/_5sdp"
                     android:orientation="horizontal"
                     android:paddingVertical="@dimen/_3sdp"
+                    android:visibility="gone"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    android:visibility="gone">
+                    app:layout_constraintTop_toTopOf="parent">
 
                     <TextView
                         android:id="@+id/txtCurrencyPercentage"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="@dimen/_2sdp"
+                        android:background="@drawable/background_square_border_grey"
                         android:paddingVertical="@dimen/_4sdp"
                         android:paddingStart="@dimen/_7sdp"
                         android:paddingEnd="@dimen/_7sdp"
                         android:text="%"
-                        android:background="@drawable/background_square_border_grey"
-                        android:textColor="@color/txtColor"/>
+                        android:textColor="@color/txtColor" />
 
                     <TextView
                         android:id="@+id/txtCurrencyDollar"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginStart="@dimen/_2sdp"
+                        android:background="@drawable/background_square_border_grey"
                         android:paddingVertical="@dimen/_4sdp"
                         android:paddingStart="@dimen/_7sdp"
                         android:paddingEnd="@dimen/_7sdp"
                         android:text="$"
-                        android:background="@drawable/background_square_border_grey"
-                        android:textColor="@color/txtColor"/>
+                        android:textColor="@color/txtColor" />
 
 
                 </LinearLayout>
@@ -155,7 +156,7 @@
             <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 xmlns:tools="http://schemas.android.com/tools"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:background="@color/bg_color"
                 android:gravity="center"
                 android:orientation="vertical"
@@ -165,69 +166,69 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:gravity="center"
                     android:layout_marginTop="@dimen/_5sdp"
+                    android:gravity="center"
                     android:orientation="horizontal">
 
                     <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/tvOne"
                         style="@style/CustomFontRegularStyle"
                         android:layout_width="0dp"
-                        android:layout_height="@dimen/_30sdp"
+                        android:layout_height="@dimen/_25sdp"
                         android:layout_weight="1"
                         android:background="@drawable/background_square_border_grey"
                         android:gravity="center"
                         android:padding="@dimen/_5sdp"
                         android:text="@string/buttonOne"
                         android:textColor="@color/txtColor"
-                        android:textSize="@dimen/_6mdpi"
-                        />
+                        android:textSize="@dimen/_6mdpi" />
 
                     <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/tvTwo"
                         style="@style/CustomFontRegularStyle"
                         android:layout_width="0dp"
-                        android:layout_height="@dimen/_30sdp"
+                        android:layout_height="@dimen/_25sdp"
+
+                        android:layout_marginLeft="@dimen/_5sdp"
                         android:layout_weight="1"
                         android:background="@drawable/background_square_border_grey"
                         android:gravity="center"
                         android:padding="@dimen/_5sdp"
                         android:text="@string/buttonTwo"
                         android:textColor="@color/txtColor"
-                        android:textSize="@dimen/_6mdpi"
-                        android:layout_marginLeft="@dimen/_5sdp"/>
+                        android:textSize="@dimen/_6mdpi" />
 
                     <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/tvThree"
                         style="@style/CustomFontRegularStyle"
                         android:layout_width="0dp"
-                        android:layout_height="@dimen/_30sdp"
+                        android:layout_height="@dimen/_25sdp"
+
+                        android:layout_marginHorizontal="@dimen/_5sdp"
                         android:layout_weight="1"
                         android:background="@drawable/background_square_border_grey"
                         android:gravity="center"
                         android:padding="@dimen/_5sdp"
                         android:text="@string/buttonThree"
                         android:textColor="@color/txtColor"
-                        android:textSize="@dimen/_6mdpi"
-                        android:layout_marginHorizontal="@dimen/_5sdp"/>
+                        android:textSize="@dimen/_6mdpi" />
 
                     <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/txt10"
                         style="@style/CustomFontBold"
                         android:layout_width="0dp"
-                        android:layout_weight="1"
-                        android:layout_height="@dimen/_30sdp"
+                        android:layout_height="@dimen/_25sdp"
                         android:layout_alignParentEnd="true"
+
                         android:layout_gravity="center"
+                        android:layout_weight="1"
                         android:background="@color/btnColor"
                         android:gravity="center"
                         android:text="10%"
                         android:textColor="@color/white"
-                        android:textSize="@dimen/_7mdpi"
-                        />
+                        android:textSize="@dimen/_7mdpi" />
 
                 </LinearLayout>
-
 
 
                 <LinearLayout
@@ -242,62 +243,62 @@
                         android:id="@+id/tvFour"
                         style="@style/CustomFontRegularStyle"
                         android:layout_width="0dp"
-                        android:layout_height="@dimen/_30sdp"
+                        android:layout_height="@dimen/_25sdp"
+
                         android:layout_weight="1"
                         android:background="@drawable/background_square_border_grey"
                         android:gravity="center"
                         android:padding="@dimen/_5sdp"
                         android:text="@string/buttonFour"
                         android:textColor="@color/txtColor"
-                        android:textSize="@dimen/_6mdpi"
-                        />
+                        android:textSize="@dimen/_6mdpi" />
 
                     <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/tvFive"
                         style="@style/CustomFontRegularStyle"
                         android:layout_width="0dp"
-                        android:layout_height="@dimen/_30sdp"
+                        android:layout_height="@dimen/_25sdp"
+
+                        android:layout_marginLeft="@dimen/_5sdp"
                         android:layout_weight="1"
                         android:background="@drawable/background_square_border_grey"
                         android:gravity="center"
                         android:padding="@dimen/_5sdp"
                         android:text="@string/buttonFive"
                         android:textColor="@color/txtColor"
-                        android:textSize="@dimen/_6mdpi"
-                        android:layout_marginLeft="@dimen/_5sdp"
-                        />
+                        android:textSize="@dimen/_6mdpi" />
 
                     <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/tvSix"
                         style="@style/CustomFontRegularStyle"
                         android:layout_width="0dp"
-                        android:layout_height="@dimen/_30sdp"
+                        android:layout_height="@dimen/_25sdp"
+
+                        android:layout_marginHorizontal="@dimen/_5sdp"
                         android:layout_weight="1"
                         android:background="@drawable/background_square_border_grey"
                         android:gravity="center"
                         android:padding="@dimen/_5sdp"
                         android:text="@string/buttonSix"
                         android:textColor="@color/txtColor"
-                        android:textSize="@dimen/_6mdpi"
-                        android:layout_marginHorizontal="@dimen/_5sdp"/>
+                        android:textSize="@dimen/_6mdpi" />
 
                     <androidx.appcompat.widget.AppCompatTextView
-                        style="@style/CustomFontBold"
                         android:id="@+id/txt20"
+                        style="@style/CustomFontBold"
                         android:layout_width="0dp"
-                        android:layout_weight="1"
-                        android:layout_height="@dimen/_30sdp"
+                        android:layout_height="@dimen/_25sdp"
                         android:layout_alignParentEnd="true"
+
                         android:layout_gravity="center"
+                        android:layout_weight="1"
                         android:background="@color/btnColor"
                         android:gravity="center"
                         android:text="20%"
                         android:textColor="@color/white"
-                        android:textSize="@dimen/_7mdpi"
-                        />
+                        android:textSize="@dimen/_7mdpi" />
 
                 </LinearLayout>
-
 
 
                 <LinearLayout
@@ -312,63 +313,63 @@
                         android:id="@+id/tvSeven"
                         style="@style/CustomFontRegularStyle"
                         android:layout_width="0dp"
-                        android:layout_height="@dimen/_30sdp"
+                        android:layout_height="@dimen/_25sdp"
+
                         android:layout_weight="1"
                         android:background="@drawable/background_square_border_grey"
                         android:gravity="center"
                         android:padding="@dimen/_5sdp"
                         android:text="@string/buttonSeven"
                         android:textColor="@color/txtColor"
-                        android:textSize="@dimen/_6mdpi"
-                        />
+                        android:textSize="@dimen/_6mdpi" />
 
                     <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/tvEight"
                         style="@style/CustomFontRegularStyle"
                         android:layout_width="0dp"
-                        android:layout_height="@dimen/_30sdp"
+                        android:layout_height="@dimen/_25sdp"
+
+                        android:layout_marginLeft="@dimen/_5sdp"
                         android:layout_weight="1"
                         android:background="@drawable/background_square_border_grey"
                         android:gravity="center"
                         android:padding="@dimen/_5sdp"
                         android:text="@string/buttonEight"
                         android:textColor="@color/txtColor"
-                        android:textSize="@dimen/_6mdpi"
-                        android:layout_marginLeft="@dimen/_5sdp"/>
+                        android:textSize="@dimen/_6mdpi" />
 
                     <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/tvNine"
                         style="@style/CustomFontRegularStyle"
                         android:layout_width="0dp"
-                        android:layout_height="@dimen/_30sdp"
+                        android:layout_height="@dimen/_25sdp"
+
+                        android:layout_marginHorizontal="@dimen/_5sdp"
                         android:layout_weight="1"
                         android:background="@drawable/background_square_border_grey"
                         android:gravity="center"
                         android:padding="@dimen/_5sdp"
                         android:text="@string/buttonNine"
                         android:textColor="@color/txtColor"
-                        android:textSize="@dimen/_6mdpi"
-                        android:layout_marginHorizontal="@dimen/_5sdp"/>
+                        android:textSize="@dimen/_6mdpi" />
 
                     <androidx.appcompat.widget.AppCompatTextView
-                        style="@style/CustomFontBold"
                         android:id="@+id/txt30"
+                        style="@style/CustomFontBold"
                         android:layout_width="0dp"
-                        android:layout_weight="1"
-                        android:layout_height="@dimen/_30sdp"
+                        android:layout_height="@dimen/_25sdp"
                         android:layout_alignParentEnd="true"
+
                         android:layout_gravity="center"
+                        android:layout_weight="1"
                         android:background="@color/btnColor"
                         android:gravity="center"
                         android:text="30%"
                         android:textColor="@color/white"
-                        android:textSize="@dimen/_7mdpi"
-                        />
+                        android:textSize="@dimen/_7mdpi" />
 
 
                 </LinearLayout>
-
-
 
 
                 <LinearLayout
@@ -384,298 +385,89 @@
                         android:id="@+id/txtClear"
                         style="@style/CustomFontRegularStyle"
                         android:layout_width="0dp"
-                        android:layout_height="@dimen/_30sdp"
+                        android:layout_height="@dimen/_25sdp"
+
                         android:layout_weight="1"
                         android:background="@drawable/background_square_border_grey"
                         android:gravity="center"
                         android:padding="@dimen/_5sdp"
                         android:text="@string/clear"
                         android:textColor="@color/txtColor"
-                        android:textSize="@dimen/_6mdpi"
-                        />
-
+                        android:textSize="@dimen/_6mdpi" />
 
 
                     <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/tvZero"
                         style="@style/CustomFontRegularStyle"
                         android:layout_width="0dp"
-                        android:layout_height="@dimen/_30sdp"
+                        android:layout_height="@dimen/_25sdp"
+
+                        android:layout_marginLeft="@dimen/_5sdp"
                         android:layout_weight="1"
                         android:background="@drawable/background_square_border_grey"
                         android:gravity="center"
                         android:padding="@dimen/_5sdp"
                         android:text="0"
                         android:textColor="@color/txtColor"
-                        android:textSize="@dimen/_6mdpi"
-                        android:layout_marginLeft="@dimen/_5sdp"/>
+                        android:textSize="@dimen/_6mdpi" />
 
                     <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/tvDZero"
                         style="@style/CustomFontRegularStyle"
                         android:layout_width="0dp"
-                        android:layout_height="@dimen/_30sdp"
+                        android:layout_height="@dimen/_25sdp"
+
+                        android:layout_marginLeft="@dimen/_5sdp"
                         android:layout_weight="1"
                         android:background="@drawable/background_square_border_grey"
                         android:gravity="center"
                         android:padding="@dimen/_5sdp"
                         android:text="00"
                         android:textColor="@color/txtColor"
-                        android:textSize="@dimen/_6mdpi"
-                        android:layout_marginLeft="@dimen/_5sdp"/>
+                        android:textSize="@dimen/_6mdpi" />
 
 
                     <ImageView
                         android:id="@+id/tvClear"
                         style="@style/CustomFontRegularStyle"
                         android:layout_width="0dp"
-                        android:layout_height="@dimen/_30sdp"
+                        android:layout_height="@dimen/_25sdp"
+                        android:layout_marginLeft="@dimen/_5sdp"
                         android:layout_weight="1"
                         android:background="@drawable/background_square_border_grey"
-                        android:padding="@dimen/_5sdp"
-                        android:src="@drawable/ic_cancel_black"
-                        android:layout_marginLeft="@dimen/_5sdp"/>
+                        android:padding="@dimen/_8sdp"
+                        android:src="@drawable/backspase"
+                        app:tint="@color/txtColor" />
                 </LinearLayout>
 
             </LinearLayout>
-            <androidx.appcompat.widget.LinearLayoutCompat
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/_10sdp"
-                android:layout_marginTop="@dimen/_10sdp"
-                android:layout_marginEnd="@dimen/_10sdp"
-                android:orientation="horizontal"
-                android:visibility="gone">
-
-                <androidx.appcompat.widget.AppCompatTextView
-                    style="@style/CustomFontBold"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_marginEnd="@dimen/_10sdp"
-                    android:layout_weight="1"
-                    android:background="@drawable/background_drawer_button"
-                    android:gravity="center"
-                    android:minLines="2"
-                    android:padding="@dimen/_5sdp"
-                    android:text="$5"
-                    android:textColor="@color/btnColorDark_"
-                    android:textSize="@dimen/_5mdpi" />
-
-                <androidx.appcompat.widget.AppCompatTextView
-                    style="@style/CustomFontBold"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_marginEnd="@dimen/_10sdp"
-                    android:layout_weight="1"
-                    android:background="@drawable/background_drawer_button"
-                    android:gravity="center"
-                    android:minLines="2"
-                    android:padding="@dimen/_5sdp"
-                    android:text="$10"
-                    android:textColor="@color/btnColorDark_"
-                    android:textSize="@dimen/_5mdpi" />
-
-                <androidx.appcompat.widget.AppCompatTextView
-                    style="@style/CustomFontBold"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_weight="1"
-                    android:background="@drawable/background_drawer_button"
-                    android:gravity="center"
-                    android:minLines="2"
-                    android:padding="@dimen/_5sdp"
-                    android:text="$15"
-                    android:textColor="@color/btnColorDark_"
-                    android:textSize="@dimen/_5mdpi" />
-
-            </androidx.appcompat.widget.LinearLayoutCompat>
-
-            <androidx.appcompat.widget.LinearLayoutCompat
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/_10sdp"
-                android:layout_marginTop="@dimen/_5sdp"
-                android:layout_marginEnd="@dimen/_10sdp"
-                android:orientation="horizontal"
-                android:visibility="gone">
 
 
-                <androidx.appcompat.widget.LinearLayoutCompat
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="@dimen/_10sdp"
-                    android:layout_weight="1"
-                    android:background="@drawable/background_drawer_button"
-                    android:orientation="vertical"
-                    android:padding="@dimen/_5sdp">
-
-                    <androidx.appcompat.widget.AppCompatTextView
-                        style="@style/CustomFontMediumStyle"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_weight="1"
-                        android:gravity="center"
-                        android:text="Staff Meal"
-                        android:textColor="@color/txtColor"
-                        android:textSize="@dimen/_5mdpi" />
-
-                    <androidx.appcompat.widget.AppCompatTextView
-                        style="@style/CustomFontBold"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_weight="1"
-                        android:gravity="center"
-                        android:text="$10"
-                        android:textColor="@color/btnColorDark_"
-                        android:textSize="@dimen/_5mdpi" />
-
-                </androidx.appcompat.widget.LinearLayoutCompat>
 
 
-                <androidx.appcompat.widget.LinearLayoutCompat
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="@dimen/_10sdp"
-                    android:layout_weight="1"
-                    android:background="@drawable/background_drawer_button"
-                    android:orientation="vertical"
-                    android:padding="@dimen/_5sdp">
-
-                    <androidx.appcompat.widget.AppCompatTextView
-                        style="@style/CustomFontMediumStyle"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_weight="1"
-                        android:gravity="center"
-                        android:text="Staff Meal"
-                        android:textColor="@color/txtColor"
-                        android:textSize="@dimen/_5mdpi" />
-
-                    <androidx.appcompat.widget.AppCompatTextView
-                        style="@style/CustomFontBold"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_weight="1"
-                        android:gravity="center"
-                        android:text="$10"
-                        android:textColor="@color/btnColorDark_"
-                        android:textSize="@dimen/_5mdpi" />
-
-                </androidx.appcompat.widget.LinearLayoutCompat>
-
-                <androidx.appcompat.widget.LinearLayoutCompat
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:background="@drawable/background_drawer_button"
-                    android:orientation="vertical"
-                    android:padding="@dimen/_5sdp">
-
-                    <androidx.appcompat.widget.AppCompatTextView
-                        style="@style/CustomFontMediumStyle"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_weight="1"
-                        android:gravity="center"
-                        android:text="Staff Meal"
-                        android:textColor="@color/txtColor"
-                        android:textSize="@dimen/_5mdpi" />
-
-                    <androidx.appcompat.widget.AppCompatTextView
-                        style="@style/CustomFontBold"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_weight="1"
-                        android:gravity="center"
-                        android:text="$10"
-                        android:textColor="@color/btnColorDark_"
-                        android:textSize="@dimen/_5mdpi" />
-
-                </androidx.appcompat.widget.LinearLayoutCompat>
-
-            </androidx.appcompat.widget.LinearLayoutCompat>
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/txtSend"
                 style="@style/CustomFontBold"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/_30sdp"
+                android:layout_height="@dimen/_20sdp"
                 android:layout_gravity="center"
                 android:layout_marginTop="@dimen/_10sdp"
-                android:layout_weight="1"
                 android:background="@drawable/button_selected"
+                android:clickable="true"
+                android:enabled="true"
+                android:focusable="true"
                 android:gravity="center"
                 android:padding="@dimen/_5sdp"
                 android:text="Continue"
-                android:clickable="true"
-                android:focusable="true"
-                android:enabled="true"
                 android:textColor="@color/white"
                 android:textSize="@dimen/_5mdpi"
-                android:visibility="visible"/>
+                android:visibility="visible" />
 
 
         </androidx.appcompat.widget.LinearLayoutCompat>
 
-      <!--  <androidx.appcompat.widget.LinearLayoutCompat
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="@dimen/_10sdp"
-            android:paddingStart="@dimen/_30sdp"
-            android:paddingEnd="@dimen/_30sdp"
-            android:visibility="visible">
 
-
-
-            <androidx.appcompat.widget.AppCompatEditText
-                android:id="@+id/edtAmount"
-                style="@style/CustomFontSemiBold"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:hint="0.00"
-                android:digits="0123456789"
-                android:layout_gravity="center"
-                android:maxLength="11"
-                android:minWidth="@dimen/_250sdp"
-                android:layout_marginTop="@dimen/_20sdp"
-                android:background="@drawable/background_square_border_grey"
-                android:imeOptions="actionDone"
-                android:inputType="numberDecimal"
-                android:padding="@dimen/_7sdp"
-                android:textColor="@color/txtColor"
-                android:textColorHint="@color/hintColor"
-                android:textSize="@dimen/_6mdpi"
-                />
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/txt_send"
-                style="@style/CustomFontSemiBold"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_gravity="center"
-                android:layout_marginTop="@dimen/_10sdp"
-                android:background="@color/btnColorDark_"
-                android:gravity="center"
-                android:minWidth="@dimen/_250sdp"
-                android:paddingStart="@dimen/_15sdp"
-                android:paddingTop="@dimen/_5sdp"
-                android:paddingEnd="@dimen/_15sdp"
-                android:paddingBottom="@dimen/_5sdp"
-                android:text="Send"
-                android:textColor="@color/white"
-                android:textSize="@dimen/_6mdpi" />
-
-        </androidx.appcompat.widget.LinearLayoutCompat>-->
 
 
     </androidx.appcompat.widget.LinearLayoutCompat>

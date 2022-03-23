@@ -1,5 +1,6 @@
 package com.android.pos.ui.fragments.checkout
 
+import android.annotation.SuppressLint
 import android.bluetooth.BluetoothDevice
 import android.os.Bundle
 import android.text.InputType
@@ -11,6 +12,7 @@ import android.widget.EditText
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.setFragmentResultListener
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.data.entities.CartModel
@@ -109,6 +111,7 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
     lateinit var prefProvider: PrefProvider
 
     private var splitAfterAmount: Double = 0.0
+    private var custom_paymentAmount = 0.0
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -142,6 +145,7 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
         callback()
     }
 
+    @SuppressLint("SetTextI18n")
     private fun callback() {
         requireActivity().supportFragmentManager.setFragmentResultListener(
             "request_key_tips",
@@ -160,6 +164,17 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
             binding.tvCustom.text = "Custom ($isSelectedCount Ways)"
             tipsetupGlobal(tipAmount, isSelectedCount)
         }
+        requireActivity().supportFragmentManager.setFragmentResultListener(
+            "request_for_customAmount",
+            viewLifecycleOwner
+        ) { requestKey: String, bundle: Bundle ->
+            val amounnt = bundle.getDouble("amount")
+            val totalPrice = bundle.getDouble("totalAmount")
+            MethodUtils.setPriceTextView(binding.tvCustomAmount, amounnt)
+            custom_paymentAmount = amounnt
+            binding.tvCustomAmount.text = "Custom (" + binding.tvCustomAmount.text.toString() + ")"
+        }
+
 
     }
 
@@ -333,7 +348,11 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
                         bundle.putBoolean("isDineIn", false)
 
                         if (remainingAmount == 0.0) {
-                            bundle.putDouble("PaidAmount", paymentAmount)
+                            if (custom_paymentAmount != 0.0) {
+                                bundle.putDouble("PaidAmount", custom_paymentAmount)
+                            } else {
+                                bundle.putDouble("PaidAmount", paymentAmount)
+                            }
                         } else {
                             bundle.putDouble("PaidAmount", remainingAmount)
                         }
@@ -341,15 +360,30 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
                         var wholePrice =
                             prefProvider.getValue(Constants.WHOLE_AMOUNT, "0.0").toDouble()
                         bundle.putDouble("WholetotalPrice", wholePrice)
-                        var remainingValue = wholePrice - paymentAmount
-                        bundle.putDouble(
-                            "remainingAmount",
-                            remainingValue
-                        )
-                        prefProvider.setValue(Constants.WHOLE_AMOUNT, remainingValue.toString())
+                        var remainingValue = 0.0
+                        if (custom_paymentAmount != 0.0) {
+                            remainingValue = custom_paymentAmount - paymentAmount
+                            bundle.putDouble(
+                                "remainingAmount",
+                                remainingValue
+                            )
+                            prefProvider.setValue(
+                                Constants.WHOLE_AMOUNT,
+                                (wholePrice - paymentAmount).toString()
+                            )
+                        } else {
+                            remainingValue = wholePrice - paymentAmount
+                            bundle.putDouble(
+                                "remainingAmount",
+                                remainingValue
+                            )
+                            prefProvider.setValue(Constants.WHOLE_AMOUNT, remainingValue.toString())
+                        }
+
                         if (remainingValue == 0.0) {
                             bundle.putBoolean("isSpilt", false)
                             bundle.putBoolean("isSplitByNo", false)
+                            bundle.putBoolean("isCustomCash", false)
                             splitAllAmounts(Constants.SUB_TOTAL, 0.0)
                             splitAllAmounts(Constants.TOTAL_DISCOUNT, 0.0)
                             splitAllAmounts(Constants.TAX_CHARGE, 0.0)
@@ -357,14 +391,38 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
                             splitAllAmounts(Constants.CASH_DISCOUNT_SURCHARGE, 0.0)
                             splitAllAmounts(Constants.TIP, 0.0)
                         } else {
-                            bundle.putBoolean("isSpilt", true)
-                            bundle.putBoolean("isSplitByNo", true)
-                            splitAllAmounts(Constants.SUB_TOTAL, subTotalPrice)
-                            splitAllAmounts(Constants.TOTAL_DISCOUNT, totalDiscount)
-                            splitAllAmounts(Constants.TAX_CHARGE, totalTax)
-                            splitAllAmounts(Constants.SERVICE_CHARGE, totalServiceCharge)
-                            splitAllAmounts(Constants.CASH_DISCOUNT_SURCHARGE, 0.0)
-                            splitAllAmounts(Constants.TIP, 0.0)
+                            if (custom_paymentAmount != 0.0 && isSelectedCount != 1) {
+                                bundle.putBoolean("isSpilt", true)
+                                bundle.putBoolean("isSplitByNo", true)
+                                bundle.putBoolean("isCustomCash", true)
+                                splitAllAmounts(Constants.SUB_TOTAL, subTotalPrice)
+                                splitAllAmounts(Constants.TOTAL_DISCOUNT, totalDiscount)
+                                splitAllAmounts(Constants.TAX_CHARGE, totalTax)
+                                splitAllAmounts(Constants.SERVICE_CHARGE, totalServiceCharge)
+                                splitAllAmounts(Constants.CASH_DISCOUNT_SURCHARGE, 0.0)
+                                splitAllAmounts(Constants.TIP, 0.0)
+                            } else if (custom_paymentAmount != 0.0) {
+                                bundle.putBoolean("isSpilt", false)
+                                bundle.putBoolean("isSplitByNo", false)
+                                bundle.putBoolean("isCustomCash", true)
+                                splitAllAmounts(Constants.SUB_TOTAL, subTotalPrice)
+                                splitAllAmounts(Constants.TOTAL_DISCOUNT, totalDiscount)
+                                splitAllAmounts(Constants.TAX_CHARGE, totalTax)
+                                splitAllAmounts(Constants.SERVICE_CHARGE, totalServiceCharge)
+                                splitAllAmounts(Constants.CASH_DISCOUNT_SURCHARGE, 0.0)
+                                splitAllAmounts(Constants.TIP, 0.0)
+                            } else {
+                                bundle.putBoolean("isSpilt", true)
+                                bundle.putBoolean("isSplitByNo", true)
+                                bundle.putBoolean("isCustomCash", false)
+                                splitAllAmounts(Constants.SUB_TOTAL, subTotalPrice)
+                                splitAllAmounts(Constants.TOTAL_DISCOUNT, totalDiscount)
+                                splitAllAmounts(Constants.TAX_CHARGE, totalTax)
+                                splitAllAmounts(Constants.SERVICE_CHARGE, totalServiceCharge)
+                                splitAllAmounts(Constants.CASH_DISCOUNT_SURCHARGE, 0.0)
+                                splitAllAmounts(Constants.TIP, 0.0)
+                            }
+
                         }
 
 
@@ -461,17 +519,13 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
             makeCashPayment()
 
         }
-
-        binding.tvCash1.setOnClickListener {
-
-        }
         binding.llCreditCard.setOnClickListener {
             binding.llCreditCard.setBackgroundDrawable(resources.getDrawable(R.drawable.button_selected))
             binding.llManualCardEntry.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
             binding.tvCash1.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
             binding.tvCash2.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
             binding.tvCash3.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
-            binding.tvCustom.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
+            binding.tvCustomAmount.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
             binding.tvPaymentLink.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
 
             binding.tvCreditCard.setTextColor(resources.getColor(R.color.white))
@@ -479,7 +533,7 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
             binding.tvCash1.setTextColor(resources.getColor(R.color.txtColor))
             binding.tvCash2.setTextColor(resources.getColor(R.color.txtColor))
             binding.tvCash3.setTextColor(resources.getColor(R.color.txtColor))
-            binding.tvCustom.setTextColor(resources.getColor(R.color.txtColor))
+            binding.tvCustomAmount.setTextColor(resources.getColor(R.color.txtColor))
             binding.tvPaymentLink.setTextColor(resources.getColor(R.color.txtColor))
 
             val device = prefProvider.getValueInt(Constants.MAGTEK_HARDWARE, 0)
@@ -504,7 +558,7 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
             binding.tvCash1.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
             binding.tvCash2.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
             binding.tvCash3.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
-            binding.tvCustom.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
+            binding.tvCustomAmount.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
             binding.tvPaymentLink.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
 
             binding.tvManualCard.setTextColor(resources.getColor(R.color.white))
@@ -512,7 +566,7 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
             binding.tvCash1.setTextColor(resources.getColor(R.color.txtColor))
             binding.tvCash2.setTextColor(resources.getColor(R.color.txtColor))
             binding.tvCash3.setTextColor(resources.getColor(R.color.txtColor))
-            binding.tvCustom.setTextColor(resources.getColor(R.color.txtColor))
+            binding.tvCustomAmount.setTextColor(resources.getColor(R.color.txtColor))
             binding.tvPaymentLink.setTextColor(resources.getColor(R.color.txtColor))
             binding.frameLayoutId.visibility = View.VISIBLE
             binding.relativeMain.visibility = View.GONE
@@ -524,7 +578,7 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
             binding.llManualCardEntry.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
             binding.tvCash2.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
             binding.tvCash3.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
-            binding.tvCustom.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
+            binding.tvCustomAmount.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
             binding.tvPaymentLink.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
 
             binding.tvCash1.setTextColor(resources.getColor(R.color.white))
@@ -532,8 +586,10 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
             binding.tvManualCard.setTextColor(resources.getColor(R.color.txtColor))
             binding.tvCash2.setTextColor(resources.getColor(R.color.txtColor))
             binding.tvCash3.setTextColor(resources.getColor(R.color.txtColor))
-            binding.tvCustom.setTextColor(resources.getColor(R.color.txtColor))
+            binding.tvCustomAmount.setTextColor(resources.getColor(R.color.txtColor))
             binding.tvPaymentLink.setTextColor(resources.getColor(R.color.txtColor))
+            custom_paymentAmount =
+                binding.tvCash1.text.toString().replace("$", "").trim().toDouble()
         }
         binding.tvCash2.setOnClickListener {
             binding.tvCash2.setBackgroundDrawable(resources.getDrawable(R.drawable.button_selected))
@@ -541,7 +597,7 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
             binding.llManualCardEntry.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
             binding.tvCash1.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
             binding.tvCash3.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
-            binding.tvCustom.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
+            binding.tvCustomAmount.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
             binding.tvPaymentLink.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
 
             binding.tvCash2.setTextColor(resources.getColor(R.color.white))
@@ -549,8 +605,10 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
             binding.tvManualCard.setTextColor(resources.getColor(R.color.txtColor))
             binding.tvCash1.setTextColor(resources.getColor(R.color.txtColor))
             binding.tvCash3.setTextColor(resources.getColor(R.color.txtColor))
-            binding.tvCustom.setTextColor(resources.getColor(R.color.txtColor))
+            binding.tvCustomAmount.setTextColor(resources.getColor(R.color.txtColor))
             binding.tvPaymentLink.setTextColor(resources.getColor(R.color.txtColor))
+            custom_paymentAmount =
+                binding.tvCash2.text.toString().replace("$", "").trim().toDouble()
         }
         binding.tvCash3.setOnClickListener {
             binding.tvCash3.setBackgroundDrawable(resources.getDrawable(R.drawable.button_selected))
@@ -558,7 +616,7 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
             binding.llManualCardEntry.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
             binding.tvCash1.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
             binding.tvCash2.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
-            binding.tvCustom.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
+            binding.tvCustomAmount.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
             binding.tvPaymentLink.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
 
             binding.tvCash3.setTextColor(resources.getColor(R.color.white))
@@ -566,12 +624,14 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
             binding.tvManualCard.setTextColor(resources.getColor(R.color.txtColor))
             binding.tvCash1.setTextColor(resources.getColor(R.color.txtColor))
             binding.tvCash2.setTextColor(resources.getColor(R.color.txtColor))
-            binding.tvCustom.setTextColor(resources.getColor(R.color.txtColor))
+            binding.tvCustomAmount.setTextColor(resources.getColor(R.color.txtColor))
             binding.tvPaymentLink.setTextColor(resources.getColor(R.color.txtColor))
+            custom_paymentAmount =
+                binding.tvCash3.text.toString().replace("$", "").trim().toDouble()
         }
-        binding.tvCustom.setOnClickListener {
+        binding.tvCustomAmount.setOnClickListener {
 
-            binding.tvCustom.setBackgroundDrawable(resources.getDrawable(R.drawable.button_selected))
+            binding.tvCustomAmount.setBackgroundDrawable(resources.getDrawable(R.drawable.button_selected))
             binding.llCreditCard.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
             binding.llManualCardEntry.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
             binding.tvCash1.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
@@ -579,7 +639,7 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
             binding.tvCash3.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
             binding.tvPaymentLink.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
 
-            binding.tvCustom.setTextColor(resources.getColor(R.color.white))
+            binding.tvCustomAmount.setTextColor(resources.getColor(R.color.white))
             binding.tvCreditCard.setTextColor(resources.getColor(R.color.txtColor))
             binding.tvManualCard.setTextColor(resources.getColor(R.color.txtColor))
             binding.tvCash1.setTextColor(resources.getColor(R.color.txtColor))
@@ -588,12 +648,7 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
             binding.tvPaymentLink.setTextColor(resources.getColor(R.color.txtColor))
 
             val bundleVal = Bundle().apply {
-
-                if (splitAfterAmount != 0.0) {
-                    putDouble("totalprice", (splitAfterAmount + tipAmount))
-                } else {
-                    putDouble("totalprice", ((WholetotalPrice + tipAmount)))
-                }
+                putDouble("totalprice", ((WholetotalPrice + tipAmount)))
             }
             findNavController().navigate(
                 R.id.action_paymentBoldPosFragment_to_customAmountFragment,
@@ -608,7 +663,7 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
             binding.tvCash1.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
             binding.tvCash2.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
             binding.tvCash3.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
-            binding.tvCustom.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
+            binding.tvCustomAmount.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
 
             binding.tvPaymentLink.setTextColor(resources.getColor(R.color.white))
             binding.tvCreditCard.setTextColor(resources.getColor(R.color.txtColor))
@@ -616,7 +671,7 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
             binding.tvCash1.setTextColor(resources.getColor(R.color.txtColor))
             binding.tvCash2.setTextColor(resources.getColor(R.color.txtColor))
             binding.tvCash3.setTextColor(resources.getColor(R.color.txtColor))
-            binding.tvCustom.setTextColor(resources.getColor(R.color.txtColor))
+            binding.tvCustomAmount.setTextColor(resources.getColor(R.color.txtColor))
         }
     }
 
@@ -754,30 +809,37 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
 
     private fun tipAmountCalculation() {
         if (tipAmount == 0.00) {
-            MethodUtils.setPriceTextView(binding.tvCash, WholetotalPrice)
+            MethodUtils.setPriceTextView(binding.tvCash, WholetotalPrice / isSelectedCount)
             binding.tvCash.text = "Cash (" + binding.tvCash.text + ")"
-            MethodUtils.setPriceTextView(binding.tvCard, WholetotalPrice)
+            MethodUtils.setPriceTextView(binding.tvCard, WholetotalPrice / isSelectedCount)
             binding.tvCard.text = "Card (" + binding.tvCard.text + ")"
             MethodUtils.setPriceTextView(
                 binding.tvAmount,
                 prefProvider.getValue(Constants.WHOLE_AMOUNT, "0.0").toDouble()
             )
         } else {
-            MethodUtils.setPriceTextView(binding.tvCash, WholetotalPrice + tipAmount)
+            MethodUtils.setPriceTextView(
+                binding.tvCash,
+                (WholetotalPrice / isSelectedCount) + tipAmount
+            )
             binding.tvCash.text =
                 "Cash (" + binding.tvCash.text + ") (" + MethodUtils.roundOffAmount(tipAmount) + " Tip Added)"
-            MethodUtils.setPriceTextView(binding.tvCard, WholetotalPrice + tipAmount)
+            MethodUtils.setPriceTextView(
+                binding.tvCard,
+                (WholetotalPrice / isSelectedCount) + tipAmount
+            )
             binding.tvCard.text =
                 "Card (" + binding.tvCard.text + ") (" + MethodUtils.roundOffAmount(tipAmount) + " Tip Added)"
             MethodUtils.getCashPaymentOptionList(
-                WholetotalPrice + tipAmount,
+                (WholetotalPrice / isSelectedCount) + tipAmount,
                 binding.tvCash1,
                 binding.tvCash2,
                 binding.tvCash3
             )
             MethodUtils.setPriceTextView(
                 binding.tvAmount,
-                prefProvider.getValue(Constants.WHOLE_AMOUNT, "0.0").toDouble() + tipAmount
+                (prefProvider.getValue(Constants.WHOLE_AMOUNT, "0.0")
+                    .toDouble() / isSelectedCount) + tipAmount
             )
             binding.tvAmount.text =
                 binding.tvAmount.text.toString() + " (" + tipAmount + " Tip Added)"
@@ -906,7 +968,11 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
         Log.e(TAG, "myRequestOriginal ${Gson().toJson(myRequest)}")
         Log.e("ORDER TYPE 1", prefProvider.getValue(Constants.ORDER_TYPE, Constants.TAKEOUT))
         if (myRequest != null) {
-            paymentviewModel.totalPayAmount(viewModel.totalPrice)
+            if (custom_paymentAmount != 0.0) {
+                paymentviewModel.totalPayAmount(custom_paymentAmount)
+            } else {
+                paymentviewModel.totalPayAmount(viewModel.totalPrice)
+            }
             paymentAttributesRequest(myRequest)
         }
     }
