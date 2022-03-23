@@ -109,31 +109,8 @@ class PayFullAmountFragment(val bundle: Bundle?) : Fragment(), ItemListner, magt
 
     private var splitAfterAmount: Double = 0.0
 
-
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
-
-        binding = FragmentPayFullAmountBinding.inflate(inflater, container, false)
-        binding.lifecycleOwner = this
-
-        magtekModule.setCallback(this)
-        onClick()
-        frameLayoutId = bundle?.getInt("frameLayoutId")!!
-        llRoot = bundle.getInt("llRoot")
-        orderId = bundle.getInt("orderId")
-
-        Log.e("orderId :: ", orderId.toString())
-
-        if (orderId != -1 && orderId != 0) {
-            paymentId = bundle.getInt("paymentId")
-            paymentOfflineId = bundle.getString("paymentOfflineId").toString()
-            orderOfflineId = bundle.getString("orderOfflineId").toString()
-        }
-
-
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         if (prefProvider.getValue(WHOLE_AMOUNT, "").isEmpty()) {
             WholetotalPrice = viewModel.totalPrice
             prefProvider.setValue(WHOLE_AMOUNT, String.format("%.2f", viewModel.totalPrice))
@@ -215,7 +192,51 @@ class PayFullAmountFragment(val bundle: Bundle?) : Fragment(), ItemListner, magt
         getCartData()
         observeShowProgress()
 
+//
+//        if (isNextPayment) {
+//            splitAllAMounts(splitValue)
+//        }
+    }
 
+    private fun splitAllAMounts(splitValue: Int) {
+        subTotalPrice /= splitValue
+        totalDiscount /= splitValue
+        totalTax /= splitValue
+        totalServiceCharge /= splitValue
+    }
+
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View? {
+
+        binding = FragmentPayFullAmountBinding.inflate(inflater, container, false)
+        binding.lifecycleOwner = this
+
+        magtekModule.setCallback(this)
+        onClick()
+        frameLayoutId = bundle?.getInt("frameLayoutId")!!
+        llRoot = bundle.getInt("llRoot")
+        orderId = bundle.getInt("orderId")
+
+        Log.e("orderId :: ", orderId.toString())
+
+        if (orderId != -1 && orderId != 0) {
+            paymentId = bundle.getInt("paymentId")
+            paymentOfflineId = bundle.getString("paymentOfflineId").toString()
+            orderOfflineId = bundle.getString("orderOfflineId").toString()
+        }
+//
+//        var navController = findNavController()
+//        navController.currentBackStackEntry?.savedStateHandle?.getLiveData<Bundle>("data")
+//            ?.observe(viewLifecycleOwner) {
+//                isNextPayment = it.getBoolean("isNextPayment")
+//                remainingAmount =
+//                    String.format("%.2f", it.getDouble("remainingAmount", 0.0)).toDouble()
+//                splitValue = it.getInt("splitvalue", -1)
+//                splitAllAMounts(splitValue)
+//            }
 
         return binding.root
     }
@@ -570,7 +591,11 @@ class PayFullAmountFragment(val bundle: Bundle?) : Fragment(), ItemListner, magt
         Log.e(TAG, "cartList:  ${Gson().toJson(cartList)}")
         Log.e(TAG, "cartListcartItems:  ${Gson().toJson(cartItems)}")
         val myRequest = cartList?.let {
-
+            Log.d("yash", "makeCashPayment: total Price : $paymentAmount")
+            Log.d("yash", "makeCashPayment: sub_total   : $subTotalPrice")
+            Log.d("yash", "makeCashPayment: totaltax    : $totalTax")
+            Log.d("yash", "makeCashPayment: total disc  : $totalDiscount")
+            Log.d("yash", "makeCashPayment: total serv  : $totalServiceCharge")
             paymentviewModel.createOrderRequestForCard(
                 it,
                 subTotalPrice,

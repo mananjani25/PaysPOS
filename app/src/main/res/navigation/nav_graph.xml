@@ -576,8 +576,8 @@
         </action>
         <action
             android:id="@+id/action_customer_to_menuFragment2"
-            app:popUpToInclusive="true"
-            app:destination="@id/menuFragment" />
+            app:destination="@id/menuFragment"
+            app:popUpToInclusive="true" />
     </fragment>
     <action
         android:id="@+id/action_global_customer"
@@ -648,6 +648,15 @@
             app:launchSingleTop="true" />
     </fragment>
 
+    <fragment
+        android:id="@+id/splitFragment"
+        android:name="com.android.pos.ui.fragments.checkout.SplitCustomAmountFragment"
+        android:label="SplitCustomAmount">
+
+        <action
+            android:id="@+id/action_splitFragment_to_splitdialog"
+            app:destination="@id/splitAmountFragment" />
+    </fragment>
     <fragment
         android:id="@+id/paymentFragment"
         android:name="com.android.pos.ui.fragments.payment.PaymentFragment"
@@ -852,8 +861,8 @@
             app:destination="@id/menuFragment" />
         <action
             android:id="@+id/action_orders_to_dashboardCategoryBoldPOS"
-            app:popUpToInclusive="true"
-            app:destination="@id/dashboardCategoryBoldPOS" />
+            app:destination="@id/dashboardCategoryBoldPOS"
+            app:popUpToInclusive="true" />
         <action
             android:id="@+id/action_orders_to_paymentBoldPosFragment"
             app:destination="@id/paymentBoldPosFragment" />
@@ -1255,7 +1264,7 @@
         android:id="@+id/dummyFragment"
         android:name="com.android.pos.ui.fragments.DummyFragment"
         android:label="DummyFragment"
-        tools:layout="@layout/fragment_dummy" >
+        tools:layout="@layout/fragment_dummy">
         <action
             android:id="@+id/action_dummyFragment_to_orders"
             app:destination="@id/orders"
@@ -1275,7 +1284,7 @@
             android:id="@+id/action_dashboardCategoryBoldPOS_to_menuFragment"
             app:destination="@id/menuFragment" />
         <action
-                android:id="@+id/action_dashboardCategoryBoldPOS_to_transactionFragment"
+            android:id="@+id/action_dashboardCategoryBoldPOS_to_transactionFragment"
             app:destination="@id/transactionFragment"
             app:enterAnim="@anim/nav_default_enter_anim" />
         <action
@@ -1318,7 +1327,7 @@
     <fragment
         android:id="@+id/paymentBoldPosFragment"
         android:name="com.android.pos.ui.fragments.payment.PaymentBoldPosFragment"
-        android:label="PaymentBoldPosFragment" >
+        android:label="PaymentBoldPosFragment">
         <action
             android:id="@+id/action_paymentBoldPosFragment_to_orderComplete"
             app:destination="@id/orderCompleteFragment"
@@ -1327,6 +1336,10 @@
             android:id="@+id/action_paymentBoldPosFragment_to_addTipDialog"
             app:destination="@id/addTipsDialog"
             app:enterAnim="@anim/nav_default_enter_anim" />
+
+        <action
+            android:id="@+id/action_splitFragment_to_splitdialog"
+            app:destination="@id/splitAmountFragment" />
         <action
             android:id="@+id/action_paymentBoldPosFragment_to_addDiscountDialogFragment"
             app:destination="@id/addDiscountDialog"

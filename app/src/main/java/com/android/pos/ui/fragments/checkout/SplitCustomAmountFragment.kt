@@ -6,8 +6,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.setFragmentResultListener
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.data.entities.CartModel
@@ -20,8 +20,6 @@ import com.android.pos.data.remote.Constants
 import com.android.pos.databinding.FragmentSplitCustomAmountBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
-import com.android.pos.ui.fragments.dashboard.bolddashboard.CartFragment
-import com.android.pos.ui.fragments.dashboard.bolddashboard.CategoryFragment
 import com.android.pos.ui.fragments.payment.PaymentViewModel
 import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.callback.ItemListner
@@ -61,6 +59,7 @@ class SplitCustomAmountFragment() : Fragment(), ItemListner {
     var totalDiscount = 0.0
     var subTotalPrice = 0.0
     var totalTax = 0.0
+    private var isNextPayment: Boolean = false
     private var WholetotalPrice: Double = 0.0
 
     @Inject
@@ -80,6 +79,7 @@ class SplitCustomAmountFragment() : Fragment(), ItemListner {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         onClick()
+        callback()
         cartList = viewModel.cartModel
         if (prefProvider.getValue(Constants.WHOLE_AMOUNT, "").isEmpty()) {
             WholetotalPrice = viewModel.totalPrice
@@ -171,6 +171,22 @@ class SplitCustomAmountFragment() : Fragment(), ItemListner {
 
     }
 
+    private fun callback() {
+        requireActivity().supportFragmentManager.setFragmentResultListener(
+            "request_key_split",
+            viewLifecycleOwner
+        ) { requestKey: String, bundle: Bundle ->
+
+            isSelectedCount = bundle.getInt("split")
+            binding.tvCustom.text = "Custom ($isSelectedCount Ways)"
+            MethodUtils.setPriceTextView(
+                binding.tvAmount,
+                prefProvider.getValue(Constants.WHOLE_AMOUNT, "0.0").toDouble() / isSelectedCount
+            )
+        }
+    }
+
+
     private fun observeData() {
         paymentviewModel.data.observe(viewLifecycleOwner) { event ->
 
@@ -197,13 +213,31 @@ class SplitCustomAmountFragment() : Fragment(), ItemListner {
                             "remainingAmount",
                             remainingValue
                         )
-
                         prefProvider.setValue(Constants.WHOLE_AMOUNT, remainingValue.toString())
+                        if (remainingValue == 0.0) {
+                            bundle.putBoolean("isSpilt", false)
+                            bundle.putBoolean("isSplitByNo", false)
+                            splitAllAmounts(Constants.SUB_TOTAL, 0.0)
+                            splitAllAmounts(Constants.TOTAL_DISCOUNT, 0.0)
+                            splitAllAmounts(Constants.TAX_CHARGE, 0.0)
+                            splitAllAmounts(Constants.SERVICE_CHARGE, 0.0)
+                            splitAllAmounts(Constants.CASH_DISCOUNT_SURCHARGE, 0.0)
+                            splitAllAmounts(Constants.TIP, 0.0)
+                        } else {
+                            bundle.putBoolean("isSpilt", true)
+                            bundle.putBoolean("isSplitByNo", true)
+                            splitAllAmounts(Constants.SUB_TOTAL, split_subtotal)
+                            splitAllAmounts(Constants.TOTAL_DISCOUNT, split_totaldiscount)
+                            splitAllAmounts(Constants.TAX_CHARGE, split_totaltax)
+                            splitAllAmounts(Constants.SERVICE_CHARGE, split_servicecharge)
+                            splitAllAmounts(Constants.CASH_DISCOUNT_SURCHARGE, 0.0)
+                            splitAllAmounts(Constants.TIP, 0.0)
+                        }
+
+
                         bundle.putInt("orderID", it.data.order.id ?: 0)
                         bundle.putParcelable("receiptData", it.data)
                         bundle.putInt("splitValue", isSelectedCount)
-                        bundle.putBoolean("isSpilt", true)
-                        bundle.putBoolean("isSplitByNo", true)
                         bundle.putBoolean("isSplitByAmount", false)
                         bundle.putString("paymentType", "Cash")
                         bundle.putParcelable("cartList", cartList)
@@ -222,6 +256,11 @@ class SplitCustomAmountFragment() : Fragment(), ItemListner {
                 }
             }
         }
+    }
+
+    public fun splitAllAmounts(TAG: String, amount: Double) {
+        var remainingValue = prefProvider.getValue(TAG, "").toDouble() - amount
+        prefProvider.setValue(TAG, String.format("%.2f", remainingValue))
     }
 
     private fun setData() {
@@ -288,6 +327,7 @@ class SplitCustomAmountFragment() : Fragment(), ItemListner {
             binding.tv5ways.setTextColor(resources.getColor(R.color.txtColor))
             binding.tv6ways.setTextColor(resources.getColor(R.color.txtColor))
             binding.tvCustom.setTextColor(resources.getColor(R.color.txtColor))
+            binding.tvCustom.text = "Custom"
             isSelectedCount = 1
             MethodUtils.setPriceTextView(
                 binding.tvAmount,
@@ -312,6 +352,7 @@ class SplitCustomAmountFragment() : Fragment(), ItemListner {
             binding.tv5ways.setTextColor(resources.getColor(R.color.txtColor))
             binding.tv6ways.setTextColor(resources.getColor(R.color.txtColor))
             binding.tvCustom.setTextColor(resources.getColor(R.color.txtColor))
+            binding.tvCustom.text = "Custom"
             isSelectedCount = 2
             MethodUtils.setPriceTextView(
                 binding.tvAmount,
@@ -336,6 +377,7 @@ class SplitCustomAmountFragment() : Fragment(), ItemListner {
             binding.tv5ways.setTextColor(resources.getColor(R.color.txtColor))
             binding.tv6ways.setTextColor(resources.getColor(R.color.txtColor))
             binding.tvCustom.setTextColor(resources.getColor(R.color.txtColor))
+            binding.tvCustom.text = "Custom"
             isSelectedCount = 3
             MethodUtils.setPriceTextView(
                 binding.tvAmount,
@@ -359,6 +401,7 @@ class SplitCustomAmountFragment() : Fragment(), ItemListner {
             binding.tv5ways.setTextColor(resources.getColor(R.color.txtColor))
             binding.tv6ways.setTextColor(resources.getColor(R.color.txtColor))
             binding.tvCustom.setTextColor(resources.getColor(R.color.txtColor))
+            binding.tvCustom.text = "Custom"
             isSelectedCount = 4
             MethodUtils.setPriceTextView(
                 binding.tvAmount,
@@ -382,6 +425,7 @@ class SplitCustomAmountFragment() : Fragment(), ItemListner {
             binding.tv4ways.setTextColor(resources.getColor(R.color.txtColor))
             binding.tv6ways.setTextColor(resources.getColor(R.color.txtColor))
             binding.tvCustom.setTextColor(resources.getColor(R.color.txtColor))
+            binding.tvCustom.text = "Custom"
             isSelectedCount = 5
             MethodUtils.setPriceTextView(
                 binding.tvAmount,
@@ -405,6 +449,7 @@ class SplitCustomAmountFragment() : Fragment(), ItemListner {
             binding.tv4ways.setTextColor(resources.getColor(R.color.txtColor))
             binding.tv5ways.setTextColor(resources.getColor(R.color.txtColor))
             binding.tvCustom.setTextColor(resources.getColor(R.color.txtColor))
+            binding.tvCustom.text = "Custom"
             isSelectedCount = 6
             MethodUtils.setPriceTextView(
                 binding.tvAmount,
@@ -428,7 +473,11 @@ class SplitCustomAmountFragment() : Fragment(), ItemListner {
             binding.tv4ways.setTextColor(resources.getColor(R.color.txtColor))
             binding.tv5ways.setTextColor(resources.getColor(R.color.txtColor))
             binding.tv6ways.setTextColor(resources.getColor(R.color.txtColor))
-            isSelectedCount = 1
+            var bundle = Bundle()
+            bundle.putDouble("totalPrice", WholetotalPrice)
+            bundle.putInt("splitValue", isSelectedCount)
+
+            findNavController().navigate(R.id.action_splitFragment_to_splitdialog)
         }
     }
 
@@ -449,7 +498,11 @@ class SplitCustomAmountFragment() : Fragment(), ItemListner {
         Log.e(TAG, "cartList:  ${Gson().toJson(cartList)}")
         paymentviewModel.saveOrder(false)
         val myRequest = cartList?.let {
-
+            Log.d("yash", "makeCashPayment: total Price : $split_totalprice")
+            Log.d("yash", "makeCashPayment: sub_total   : $split_subtotal")
+            Log.d("yash", "makeCashPayment: totaltax    : $split_totaltax")
+            Log.d("yash", "makeCashPayment: total disc  : $split_totaldiscount")
+            Log.d("yash", "makeCashPayment: total serv  : $split_servicecharge")
             paymentviewModel.createOrderRequest(
                 it,
                 split_subtotal,
