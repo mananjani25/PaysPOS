@@ -6,8 +6,10 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.navigation.fragment.findNavController
 import com.android.pos.data.entities.TbItem
 import com.android.pos.databinding.FragmentManualCardEntryBinding
+
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.android.pos.utils.callback.ItemListner
 import dagger.hilt.android.AndroidEntryPoint
@@ -34,15 +36,16 @@ class ManualCardEntryFragment : Fragment(), ItemListner {
     }
 
 
-
-
     private fun onClick() {
+//        binding.imgBack.setOnClickListener {
+//            childFragmentManager.popBackStack()
+//        }
     }
 
     override fun onItemSelected(item: TbItem) {
-       /* Log.e(TAG, "getitem:  ${Gson().toJson(item)}")
-        val fragment = AddItemFragment.newInstance(item)
-        loadCategoryFragment(fragment)*/
+        /* Log.e(TAG, "getitem:  ${Gson().toJson(item)}")
+         val fragment = AddItemFragment.newInstance(item)
+         loadCategoryFragment(fragment)*/
 
     }
 
