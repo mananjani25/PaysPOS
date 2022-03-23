@@ -158,7 +158,7 @@ class CartFragment : Fragment(), MyCallback, DineInAdapter.DineInCallback {
             removeObserver()
         }
 
-        if (isAdded){
+        if (isAdded) {
             addDineInObserver()
             addObserver()
             //addObserver()
@@ -197,12 +197,12 @@ class CartFragment : Fragment(), MyCallback, DineInAdapter.DineInCallback {
                 )
 
             } else {
-              //  prefProvider.setValue(ORDER_TYPE, TAKEOUT)
+                //  prefProvider.setValue(ORDER_TYPE, TAKEOUT)
                 Log.e("ORDER_TYPE", "Updated check")
             }
         } else {
             isOrderUpdate = false
-         //   prefProvider.setValue(ORDER_TYPE, TAKEOUT)
+            //   prefProvider.setValue(ORDER_TYPE, TAKEOUT)
             Log.e("ORDER_TYPE", "Updated check1")
         }
 
@@ -213,14 +213,18 @@ class CartFragment : Fragment(), MyCallback, DineInAdapter.DineInCallback {
         }
 
     }
+
     private fun removeObserver() {
 
-        viewModel.mAllWords(prefProvider.getValue(ORDER_TYPE, ""),prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)).removeObserver(nameObserver)
+        viewModel.mAllWords(
+            prefProvider.getValue(ORDER_TYPE, ""),
+            prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
+        ).removeObserver(nameObserver)
         //  addObserver()
     }
 
     private fun getDineInData() {
-        if (updateBundle!=null){
+        if (updateBundle != null) {
             if (updateBundle?.getBoolean("isFromDineIn") == true) {
                 getDineInCartList()
             } else if (updateBundle?.getBoolean("is_dine_in_edit") == true) {
@@ -260,7 +264,6 @@ class CartFragment : Fragment(), MyCallback, DineInAdapter.DineInCallback {
             }
 
         }
-
 
 
         val dineInList: ArrayList<DineInModel> = arrayListOf()
@@ -307,7 +310,7 @@ class CartFragment : Fragment(), MyCallback, DineInAdapter.DineInCallback {
             var dineInList = arguments?.getParcelableArrayList<DineInModel>("dine_in_list")
 
             if (dineInList?.isNotEmpty() == true) {
-              //  binding.layoutCart.txtOrderType.setText("Dine In")
+                //  binding.layoutCart.txtOrderType.setText("Dine In")
 
                 dineInCartAdapter = DineInAdapter()
                 dineInCartAdapter.setListner(this)
@@ -349,9 +352,13 @@ class CartFragment : Fragment(), MyCallback, DineInAdapter.DineInCallback {
 
         }
     }
+
     private fun addDineInObserver() {
 
-        viewModel.mAllWords(prefProvider.getValue(ORDER_TYPE, ""),prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)).observe(
+        viewModel.mAllWords(
+            prefProvider.getValue(ORDER_TYPE, ""),
+            prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
+        ).observe(
             requireActivity(), nameObserver
         )
 
@@ -711,6 +718,7 @@ class CartFragment : Fragment(), MyCallback, DineInAdapter.DineInCallback {
             }
         }
     }
+
     private fun bindData(it: List<CartModel>?) {
         Log.e("bindData", "YesAdded")
         dineInCartAdapter = DineInAdapter()
@@ -727,8 +735,8 @@ class CartFragment : Fragment(), MyCallback, DineInAdapter.DineInCallback {
             if (prefProvider.getValue(ORDER_TYPE, "") == Constants.DINE_IN) {
                 viewModel.setServiceCharges(serviceChargesList)
                 cartlist.get(0).serviceCharge = serviceChargesList
-               // binding.rvCartList.visibility = View.GONE
-               // binding.rvCartDineIn.visibility = View.VISIBLE
+                // binding.rvCartList.visibility = View.GONE
+                // binding.rvCartDineIn.visibility = View.VISIBLE
                 binding.linearButtonView.visibility = View.VISIBLE
 
                 val dineList: List<DineInModel>? =
@@ -776,17 +784,18 @@ class CartFragment : Fragment(), MyCallback, DineInAdapter.DineInCallback {
                 }
 
                 val list1 = cartlist.get(0).dineInList
-                var result:TbCustomer?=null
-                if (arguments!=null){
+                var result: TbCustomer? = null
+                if (arguments != null) {
                     val data = arguments?.getBundle("updateBundle")
-                    if (data!=null)
-                     result = data?.getParcelable<TbCustomer>("data")
+                    if (data != null)
+                        result = data?.getParcelable<TbCustomer>("data")
                 }
 
-                if (result!=null){
+                if (result != null) {
                     if (list1?.isNotEmpty() == true) {
 
-                        var position = arguments?.getInt("position") as Int
+                        var position =
+                            arguments?.getBundle("updateBundle")?.getInt("position") as Int
 
                         val dineInList = list1
                         if (dineInList.size >= position && position != 0) {
@@ -813,8 +822,8 @@ class CartFragment : Fragment(), MyCallback, DineInAdapter.DineInCallback {
             } else {
 
 
-              //  binding.rvCartList.visibility = View.VISIBLE
-              //  binding.rvCartDineIn.visibility = View.GONE
+                //  binding.rvCartList.visibility = View.VISIBLE
+                //  binding.rvCartDineIn.visibility = View.GONE
                 if (cartlist[0].items?.isEmpty() == true) {
                     binding.linearButtonView.gone()
                 } else
@@ -834,7 +843,7 @@ class CartFragment : Fragment(), MyCallback, DineInAdapter.DineInCallback {
             Log.e("!_@_", "rlSave -------- $orderType ")
             if (orderType == TAKEOUT || orderType == Constants.DINE_IN) {
                 Log.e("!_@_", "rlSave -- GONE ")
-               // binding.layoutCart.rlSave.visibility = View.GONE
+                // binding.layoutCart.rlSave.visibility = View.GONE
                 if (prefProvider.getValue(ORDER_TYPE, "").toString() == Constants.DINE_IN) {
                     binding.txtTotal.visibility = View.GONE
                     binding.tvPayNow.visibility = View.GONE
@@ -874,7 +883,7 @@ class CartFragment : Fragment(), MyCallback, DineInAdapter.DineInCallback {
                 requireContext()
             )
 
-          //  binding.rvCartList.gone()
+            //  binding.rvCartList.gone()
             binding.linearButtonView.gone()
 
 
