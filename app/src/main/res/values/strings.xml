@@ -763,6 +763,8 @@
     <string name="add_customer2">+ Add Customer</string>
     <string name="card">Card</string>
     <string name="add_custom_amount">Add Custom Amount</string>
+    <string name="card_reader_device_list">Card Reader Device List</string>
+    <string name="refresh">Refresh</string>
 
 
 </resources>
