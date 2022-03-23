@@ -39,6 +39,7 @@ import com.android.pos.di.PrefProvider
 import com.android.pos.di.RolePermission
 import com.android.pos.ui.adapter.ManualSaleCartAdapter
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
+import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.AmountTextWatcher
 import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.callback.ManualSaleOptionsCustomCallback
@@ -364,7 +365,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
 
                     dashboardViewModel.addCart(mainCartList[0])
 
-                    viewModel.deleteCart(prefProvider.getValueInt(EMPLOYEE_ID,0))
+                    viewModel.deleteCart(prefProvider.getValueInt(EMPLOYEE_ID, 0))
 
                     dashboardViewModel.mAllWords(
                         prefProvider.getValue(Constants.ORDER_TYPE, "").toString(),
@@ -489,14 +490,8 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
         binding.btnPay.setOnClickListener {
 
             if (binding.txtTotalAmount.text.toString() != "$0.00" && cartList?.isNotEmpty() == true) {
-                /*  isPayClicked = true
-                  dashboardViewModel.mAllWords(
-                      prefProvider.getValue(Constants.ORDER_TYPE, "").toString()
-                  ).observe(
-                      viewLifecycleOwner, nameObserver
-                  )
-  */
-                val bundle = Bundle()
+
+               /* val bundle = Bundle()
                 Log.e(
                     "!_@_",
                     "Total Price: ${viewModel.redeemLoyaltyInfo.getAmountToBePaid() ?: 0.0}"
@@ -514,11 +509,34 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                 bundle.putString(
                     "redeemLoyalty",
                     Gson().toJson(viewModel.redeemLoyaltyInfo)
-                )
+                )*/
 
-                findNavController().navigate(R.id.action_manualSaleNew_to_paymentFragment, bundle)
+                dashboardViewModel.totalPrice=viewModel.redeemLoyaltyInfo.getAmountToBePaid() ?: 0.0
+                dashboardViewModel.totalTax=viewModel.totalTax
+                dashboardViewModel.totalDiscount=viewModel.totalDiscount
+                //dashboardViewModel.serviceCharge=viewModel.serviceCharge
+                prefProvider.setValue(Constants.ORDER_TYPE, prefProvider.getValue(Constants.ORDER_TYPE, TAKEOUT))
+                prefProvider.setValue("PaidAmount", "")
+                prefProvider.setValue(Constants.WHOLE_AMOUNT, "")
+                prefProvider.setValueInt("cardCount", 0)
+                prefProvider.setValue(Constants.SUB_TOTAL, "")
+                prefProvider.setValue(Constants.CASH_DISCOUNT_SURCHARGE, "")
+                prefProvider.setValue(Constants.TOTAL_DISCOUNT, "")
+                prefProvider.setValue(Constants.TIP, "")
+                prefProvider.setValue(Constants.TAX_CHARGE, "")
+                prefProvider.setValue(Constants.SERVICE_CHARGE, "")
+                findNavController().navigate(R.id.action_manualSaleCart_to_paymentBoldPosFragment)
+            } else {
+
+                AlertUtils.showCustomAlertWithListenerWithOK(
+                    requireContext(),
+                    resources.getString(R.string.please_add_Atleast_one_item_in_cart)
+                ) { _, _ ->
+                }
             }
+
         }
+
 
         binding.footer.linearMore.setOnClickListener {
             findNavController().navigate(R.id.action_manualSaleNew_to_menuFragment)
@@ -785,7 +803,6 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
         cartAdapter.setCallBack(this)
         cartAdapter.setItemCallBack(this)
         binding.rvSaleCart.adapter = cartAdapter
-
 
 
         /*  binding.layoutMenu.txtProducts.setTextColor(resources.getColor(R.color.txtColor))

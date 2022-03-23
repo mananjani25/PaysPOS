@@ -30,7 +30,7 @@ class ManualSaleViewModel @Inject constructor(
     private lateinit var aa: LiveData<Int>
     private val TAG = "ManualSaleViewModel"
 
-    val serviceCharge = posRepository.serviceChargeList()
+    var serviceCharge = posRepository.serviceChargeList()
 
     val returnedVal = posRepository.getManualCategoryId()
     val activeLoyaltyProgramLiveData = posRepository.getActiveLoyaltyProgramFromDb()

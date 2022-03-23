@@ -735,6 +735,12 @@
         tools:layout="@layout/fragment_manual_sale_new">
 
         <action
+            android:id="@+id/action_manualSaleCart_to_paymentBoldPosFragment"
+            app:destination="@id/paymentBoldPosFragment"
+            app:enterAnim="@anim/nav_default_enter_anim" />
+
+
+        <action
             android:id="@+id/action_manualSaleNew_to_passcode"
             app:destination="@id/passcode"
             app:enterAnim="@anim/nav_default_enter_anim" />
