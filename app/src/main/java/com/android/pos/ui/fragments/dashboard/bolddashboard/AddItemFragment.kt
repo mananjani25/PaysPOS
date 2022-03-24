@@ -143,26 +143,28 @@ class AddItemFragment(val listner: ItemListner) : Fragment() {
 
 
 
-            if (minMaxValidationCheck(adapter)) {
+            if (item.modifier_set_ids.isNotEmpty()) {
+                if (minMaxValidationCheck(adapter)) {
 
-                val modifiers = adapter?.getSelectedModifiers()
-                if (modifiers != null) {
-                    modifiers.forEach {
-                        it.itemQuantity = item.itemQuantity
+                    val modifiers = adapter?.getSelectedModifiers()
+                    if (modifiers != null) {
+                        modifiers.forEach {
+                            it.itemQuantity = item.itemQuantity
+                        }
+                        item.modifiers = modifiers
+
+
                     }
-                    item.modifiers = modifiers
+                } else {
+                    AlertUtils.showCustomAlert(
+                        binding.root.context,
+                        binding.root.context.getString(R.string.you_can_add)
+                    )
 
-
+                    return@setOnClickListener
                 }
-            } else {
-                AlertUtils.showCustomAlert(
-                    binding.root.context,
-                    binding.root.context.getString(R.string.you_can_add)
-                )
 
-                return@setOnClickListener
             }
-
             if (isUpdateItem) {
                 viewModel.cartLogic(cartList, item, Constants.UPDATE)
             } else {
