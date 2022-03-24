@@ -46,7 +46,8 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
     var ordertypelist: ArrayList<TbOrderType> = arrayListOf()
     var isupdate = false
     var orderDiscount = 0.0
-
+    var dineInResult:Bundle?=null
+    var resultData:TbCustomer?=null
     @Inject
     lateinit var prefProvider: PrefProvider
 
@@ -123,9 +124,24 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
         syncData()
         requireActivity().window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         loadCartFragment(CartFragment(this))
+
+
+
+/*
+        setFragmentResultListener("request_key_customer_dine_in") { _, bundle ->
+            result = bundle
+            resultData = bundle.getParcelable<TbCustomer>("data")
+            if (result != null) {
+                Log.e(TAG,"REQUEST_KEY_CUSTOMER_DINE_IN$result")
+            }
+        }
+*/
+
+        loadCartFragment(CartFragment())
         loadCategoryFragment(CategoryFragment(this))
         binding.layoutHeader.txtUserName.text =
             prefProvider.getValue(EMPLOYEE_NAME, "").toString()
+
 
     }
 
@@ -168,7 +184,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
 
         }
         binding.layoutHeader.txtDineIn.setOnClickListener {
-
+            findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_dineInFragment)
         }
         binding.layoutHeader.imgDrawer.setOnClickListener {
             findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_menuFragment)
