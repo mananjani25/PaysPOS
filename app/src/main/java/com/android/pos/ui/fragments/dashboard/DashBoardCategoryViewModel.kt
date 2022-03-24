@@ -460,7 +460,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 }
                             }
                         }
-                        Log.e(TAG, "DeleteIndex  ${index}")
+                        Log.e(TAG,"DeleteIndex  ${index}")
                         if (index != -1) {
                             val model = cartList[0].items?.get(index)
                             if (model != null) {
@@ -469,7 +469,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                     model.isEdited = item.isEdited
                                     model.isDestroy = true
                                 } else {
-                                    Log.e(TAG, "listRemoveItem")
+                                    Log.e(TAG,"listRemoveItem")
                                     list.remove(model)
                                 }
                             }
