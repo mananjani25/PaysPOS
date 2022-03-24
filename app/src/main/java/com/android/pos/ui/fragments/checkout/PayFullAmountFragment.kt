@@ -758,14 +758,16 @@ class PayFullAmountFragment(val bundle: Bundle?) : Fragment(), ItemListner, magt
 
                 } else {
 
-                    if (magtekModule.m_scra?.isDeviceConnected == true) {
 
-                        magtekModule.startTransactionWithLED()
-                    } else {
+
+//                    if (magtekModule.m_scra?.isDeviceConnected == true) {
+//
+//                        magtekModule.startTransactionWithLED()
+//                    } else {
                         ProgressUtils.showProgressDialog(requireActivity())
                         magtekModule.setupInit()
                         magtekModule.openDevice(it.data.mcAddress)
-                    }
+//                    }
 
 
                 }
