@@ -351,8 +351,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
 
                 } else if (type == DELETE) {
-                    Log.e(TAG, "HeaderPos:  ${dineInList.get(0).selectedPosition}")
-                    Log.e(TAG, "ItemPos: ${dineInList.get(0).itemPosition}")
+
                     var dine = dineInList.toMutableList()
 
                     dine.get(0).headerPosition?.let {
@@ -461,6 +460,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 }
                             }
                         }
+                        Log.e(TAG,"DeleteIndex  ${index}")
                         if (index != -1) {
                             val model = cartList[0].items?.get(index)
                             if (model != null) {
@@ -469,7 +469,8 @@ class DashBoardCategoryViewModel @Inject constructor(
                                     model.isEdited = item.isEdited
                                     model.isDestroy = true
                                 } else {
-                                    list.remove(item)
+                                    Log.e(TAG,"listRemoveItem")
+                                    list.remove(model)
                                 }
                             }
                         } else {
@@ -930,13 +931,13 @@ class DashBoardCategoryViewModel @Inject constructor(
                     serviceChargeCalculationModel(cartModel)
                     subTotalPrice -= cartModel.discountPrice
 
-
+                    totalDiscount += cartModel.discountPrice
 
                     cartModel.items!!.forEach {
-                        if (!it.isManualSales) {
-                            totalDiscount += (it.discountPrice * it.itemQuantity)
+                        totalDiscount += if (!it.isManualSales) {
+                            (it.discountPrice * it.itemQuantity)
                         } else {
-                            totalDiscount += it.discountPrice
+                            it.discountPrice
                         }
                     }
 
