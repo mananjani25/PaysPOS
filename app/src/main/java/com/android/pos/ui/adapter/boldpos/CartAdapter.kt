@@ -58,10 +58,14 @@ class CartAdapter : RecyclerView.Adapter<CartAdapter.MyViewHolder>() {
     }
 
     fun setList(list: ArrayList<TbItem>) {
-        cartList.clear()
-        cartList = arrayListOf()
-        cartList.addAll(list)
+
+        cartList = list
         notifyDataSetChanged()
+
+//        cartList.clear()
+//        cartList = arrayListOf()
+//        cartList.addAll(list)
+//        notifyDataSetChanged()
     }
 
     fun clearList() {

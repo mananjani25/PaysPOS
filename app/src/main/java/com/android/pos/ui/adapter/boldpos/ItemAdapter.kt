@@ -7,23 +7,27 @@ import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.data.entities.TbItem
 import com.android.pos.databinding.ViewCategoryItemBoldBinding
 import com.android.pos.ui.adapter.CategoryItemAdapter1
+import com.android.pos.utils.MethodUtils
+import com.android.pos.utils.extensions.visible
 
 class ItemAdapter(
     val context: Context,
     var list: ArrayList<TbItem?>,
-    val listner: CategoryItemAdapter1.CategoryItemList
+    val listener: CategoryItemAdapter1.CategoryItemList
 ) : RecyclerView.Adapter<ItemAdapter.MyViewHolder>() {
     inner class MyViewHolder(private val binding: ViewCategoryItemBoldBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(model: TbItem?) {
-            binding.txtCategoryName.setText("" + model?.name)
+            binding.txtCategoryName.text = "" + model?.name
+            binding.txtPrice.visible()
+            binding.txtPrice.text = model?.price?.let { MethodUtils.roundOffAmount(it) }
 
         }
 
         init {
 
             binding.txtCategoryName.setOnClickListener {
-                list[bindingAdapterPosition]?.let { listner.onClick(it) }
+                list[bindingAdapterPosition]?.let { listener.onClick(it) }
 
             }
         }
