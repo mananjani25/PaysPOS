@@ -245,6 +245,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment() {
 
     private fun setData() {
         binding.txtItem.text = "" + item?.name
+        binding.txtPrice.text = MethodUtils.roundOffAmount(item.price)
 
         viewModel.getItemsbyId(item.itemId).observe(viewLifecycleOwner) {
 
