@@ -201,6 +201,8 @@ class CartFragment(val itemClickListner:ItemClickListner?) : Fragment(), MyCallb
             if (it.isNotEmpty()) {
                 it[0].items?.toCollection(arrayListOf())
                     ?.let { it1 -> cartAdapter.setList(it1) }
+
+                cartlist = it as ArrayList<CartModel>
                 viewModel.itemCalculationCartModel(
                     it[0],
                     binding.txtTotal,
@@ -212,6 +214,7 @@ class CartFragment(val itemClickListner:ItemClickListner?) : Fragment(), MyCallb
                 binding.txtServiceCharge.text =
                     MethodUtils.roundOffAmount(viewModel.totalServiceCharge)
                 binding.tvPayNow.text = "Pay " + MethodUtils.roundOffAmount(viewModel.totalPrice)
+                Log.e("totalDiscount", viewModel.totalDiscount.toString())
                 binding.txtDiscount.text = MethodUtils.roundOffAmount(viewModel.totalDiscount)
             } else {
                 cartAdapter.clearList()

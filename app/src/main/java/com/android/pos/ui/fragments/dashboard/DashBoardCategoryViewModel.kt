@@ -931,13 +931,13 @@ class DashBoardCategoryViewModel @Inject constructor(
                     serviceChargeCalculationModel(cartModel)
                     subTotalPrice -= cartModel.discountPrice
 
-
+                    totalDiscount += cartModel.discountPrice
 
                     cartModel.items!!.forEach {
-                        if (!it.isManualSales) {
-                            totalDiscount += (it.discountPrice * it.itemQuantity)
+                        totalDiscount += if (!it.isManualSales) {
+                            (it.discountPrice * it.itemQuantity)
                         } else {
-                            totalDiscount += it.discountPrice
+                            it.discountPrice
                         }
                     }
 
