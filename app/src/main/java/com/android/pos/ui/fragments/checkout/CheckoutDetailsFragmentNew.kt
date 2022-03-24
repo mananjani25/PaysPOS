@@ -896,8 +896,8 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
         if (tipAmount == 0.00) {
             MethodUtils.setPriceTextView(binding.tvCash, WholetotalPrice / isSelectedCount)
             MethodUtils.setPriceTextView(binding.tvCash0, WholetotalPrice / isSelectedCount)
-            binding.tvCash.text = "Cash (" + binding.tvCash.text + ")"
             MethodUtils.setPriceTextView(binding.tvCard, WholetotalPrice / isSelectedCount)
+            binding.tvCash.text = "Cash (" + binding.tvCash.text + ")"
             binding.tvCard.text = "Card (" + binding.tvCard.text + ")"
             MethodUtils.setPriceTextView(
                 binding.tvAmount,
@@ -910,6 +910,10 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
             )
             MethodUtils.setPriceTextView(
                 binding.tvCash0,
+                (WholetotalPrice / isSelectedCount) + tipAmount
+            )
+            MethodUtils.setPriceTextView(
+                binding.tvCard,
                 (WholetotalPrice / isSelectedCount) + tipAmount
             )
             binding.tvCash.text =
