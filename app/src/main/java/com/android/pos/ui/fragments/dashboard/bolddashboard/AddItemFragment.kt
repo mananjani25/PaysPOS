@@ -227,9 +227,9 @@ class AddItemFragment(val listner: ItemListner) : Fragment() {
                     model.orderTypeId = it.id
                 }
             }
-            cartList.add(0,model)
+            cartList.add(0, model)
             Log.e(TAG, "CartIsEmpty::")
-           // viewModel.createEmptyCart(model)
+            // viewModel.createEmptyCart(model)
             return cartList
         }
 
