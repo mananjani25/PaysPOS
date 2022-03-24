@@ -6,7 +6,9 @@ import android.graphics.Typeface
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
-import android.view.*
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.TextView
 import androidx.core.widget.TextViewCompat
@@ -19,7 +21,6 @@ import com.android.pos.R
 import com.android.pos.data.model.MergeFloorModel
 import com.android.pos.data.model.MergeTableListModel
 import com.android.pos.data.model.MergeTableModel
-import com.android.pos.data.model.requestModel.OrderAttributeRequestModel
 import com.android.pos.data.model.responseModel.GetFloorPlanDetailResponse
 import com.android.pos.data.model.responseModel.GetOrderDetailsResponse
 import com.android.pos.data.remote.Constants.OCCUPIED
@@ -28,11 +29,7 @@ import com.android.pos.ui.adapter.MergeTableFloorSelectAdapter
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.ProgressUtils
 import dagger.hilt.android.AndroidEntryPoint
-import java.util.*
-import java.util.stream.Collector
 import java.util.stream.Collectors
-import kotlin.collections.ArrayList
-import kotlin.collections.HashMap
 
 @AndroidEntryPoint
 class MergeTableFragment : Fragment() {
@@ -111,7 +108,7 @@ class MergeTableFragment : Fragment() {
             findNavController().popBackStack()
         }
         binding.layoutHeader.txtTransaction.setOnClickListener {
-            findNavController().navigate(R.id.action_mergetablefragment_to_transactionlistfragment)
+           // findNavController().navigate(R.id.action_mergetablefragment_to_transactionlistfragment)
         }
         binding.layoutHeader.txthome.setOnClickListener {
             findNavController().popBackStack(

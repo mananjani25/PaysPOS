@@ -189,10 +189,10 @@ class DineInFragment : Fragment() {
                                     arrayListOf()
                                 )
                             )
-                            findNavController().navigate(
+                           /* findNavController().navigate(
                                 R.id.action_dineInFragment_to_mergetablefragment,
                                 bundle
-                            )
+                            )*/
 
                         } else {
                             AlertUtils.showCustomAlertWithListenerWithOK(

@@ -137,7 +137,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
         }
 */
 
-        loadCartFragment(CartFragment())
+        loadCartFragment(CartFragment(null))
         loadCategoryFragment(CategoryFragment(this))
         binding.layoutHeader.txtUserName.text =
             prefProvider.getValue(EMPLOYEE_NAME, "").toString()
