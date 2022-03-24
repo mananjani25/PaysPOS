@@ -39,7 +39,8 @@ import javax.inject.Inject
 
 
 @AndroidEntryPoint
-class CartFragment(val itemClickListner:ItemClickListner?) : Fragment(), MyCallback, DineInAdapter.DineInCallback {
+class CartFragment(val itemClickListner: ItemClickListner?) : Fragment(), MyCallback,
+    DineInAdapter.DineInCallback {
     private lateinit var binding: FragmentCartBinding
     var fragmentId: Int? = null
     var checkoutHeaderId: Int = 0
@@ -65,7 +66,7 @@ class CartFragment(val itemClickListner:ItemClickListner?) : Fragment(), MyCallb
     private lateinit var dineInCartAdapter: DineInAdapter
     private var assignCustomer: TbCustomer? = null
     private var openORderType: String = ""
-
+    var cashDiscountSurcharge = 0.0
 
     @Inject
     lateinit var prefProvider: PrefProvider
@@ -75,7 +76,7 @@ class CartFragment(val itemClickListner:ItemClickListner?) : Fragment(), MyCallb
     companion object {
         fun newInstacne(isFromPayment: Boolean): CartFragment {
             val bundle = Bundle()
-            bundle.putBoolean("isFromPayment",isFromPayment)
+            bundle.putBoolean("isFromPayment", isFromPayment)
             val frag = CartFragment(null)
             frag.arguments = bundle
             return frag
@@ -216,12 +217,16 @@ class CartFragment(val itemClickListner:ItemClickListner?) : Fragment(), MyCallb
                 binding.tvPayNow.text = "Pay " + MethodUtils.roundOffAmount(viewModel.totalPrice)
                 Log.e("totalDiscount", viewModel.totalDiscount.toString())
                 binding.txtDiscount.text = MethodUtils.roundOffAmount(viewModel.totalDiscount)
+                binding.txtNoncashAdj.text =
+                    MethodUtils.roundOffAmount(viewModel.cashdiscountAmount)
             } else {
                 cartAdapter.clearList()
                 binding.txtTotal.text = MethodUtils.roundOffAmount(0.0)
                 binding.txtSubTotal.text = MethodUtils.roundOffAmount(0.0)
                 binding.txtTax.text = MethodUtils.roundOffAmount(0.0)
                 binding.txtDiscount.text = MethodUtils.roundOffAmount(0.0)
+                binding.txtNoncashAdj.text =
+                    MethodUtils.roundOffAmount(0.0)
                 binding.txtServiceCharge.text =
                     MethodUtils.roundOffAmount(0.0)
                 binding.tvPayNow.text = "Pay " + MethodUtils.roundOffAmount(0.0)

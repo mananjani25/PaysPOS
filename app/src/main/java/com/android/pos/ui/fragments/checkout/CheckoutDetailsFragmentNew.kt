@@ -367,7 +367,8 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
                         var remainingValue = 0.0
                         if (custom_paymentAmount != 0.0) {
                             if (custom_paymentAmount != 0.0 && isSelectedCount != 1) {
-                                var splitChange = custom_paymentAmount - paymentAmount
+                                var splitChange =
+                                    custom_paymentAmount - paymentAmount + cashDiscountSurcharge
                                 bundle.putDouble(
                                     "splitChange", String.format("%.2f", splitChange).toDouble()
                                 )
@@ -378,14 +379,21 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
                                 )
                             } else {
                                 if (custom_paymentAmount >= wholePrice) {
-                                    remainingValue = custom_paymentAmount - wholePrice
+                                    remainingValue =
+                                        custom_paymentAmount - wholePrice
+                                    bundle.putDouble(
+                                        "remainingAmount",
+                                        remainingValue + cashDiscountSurcharge
+                                    )
                                 } else {
-                                    remainingValue = wholePrice - custom_paymentAmount
+                                    remainingValue =
+                                        wholePrice - custom_paymentAmount
+                                    bundle.putDouble(
+                                        "remainingAmount",
+                                        remainingValue - cashDiscountSurcharge
+                                    )
                                 }
-                                bundle.putDouble(
-                                    "remainingAmount",
-                                    remainingValue
-                                )
+
                             }
 
                             prefProvider.setValue(
@@ -393,7 +401,7 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
                                 String.format("%.2f", (wholePrice - remainingValue)).toString()
                             )
                         } else {
-                            remainingValue = wholePrice - paymentAmount
+                            remainingValue = wholePrice - (paymentAmount + cashDiscountSurcharge)
                             bundle.putDouble(
                                 "remainingAmount",
                                 remainingValue
@@ -425,7 +433,10 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
                                 splitAllAmounts(Constants.TOTAL_DISCOUNT, totalDiscount)
                                 splitAllAmounts(Constants.TAX_CHARGE, totalTax)
                                 splitAllAmounts(Constants.SERVICE_CHARGE, totalServiceCharge)
-                                splitAllAmounts(Constants.CASH_DISCOUNT_SURCHARGE, 0.0)
+                                splitAllAmounts(
+                                    Constants.CASH_DISCOUNT_SURCHARGE,
+                                    cashDiscountSurcharge
+                                )
                                 splitAllAmounts(Constants.TIP, 0.0)
                             } else if (custom_paymentAmount != 0.0) {
                                 bundle.putBoolean("isSpilt", false)
@@ -489,7 +500,7 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
                             prefProvider.getValue(Constants.WHOLE_AMOUNT, "0.0").toDouble()
                         bundle.putDouble("WholetotalPrice", wholePrice)
                         var remainingValue = 0.0
-                        remainingValue = wholePrice - paymentAmount
+                        remainingValue = wholePrice - paymentAmount - cashDiscountSurcharge
                         bundle.putDouble(
                             "remainingAmount",
                             remainingValue
@@ -516,7 +527,10 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
                             splitAllAmounts(Constants.TOTAL_DISCOUNT, totalDiscount)
                             splitAllAmounts(Constants.TAX_CHARGE, totalTax)
                             splitAllAmounts(Constants.SERVICE_CHARGE, totalServiceCharge)
-                            splitAllAmounts(Constants.CASH_DISCOUNT_SURCHARGE, 0.0)
+                            splitAllAmounts(
+                                Constants.CASH_DISCOUNT_SURCHARGE,
+                                cashDiscountSurcharge
+                            )
                             splitAllAmounts(Constants.TIP, 0.0)
                         }
 
@@ -571,7 +585,9 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
             totalDiscount = String.format("%.2f", totalDiscount / isSelectedCount).toDouble()
             cashDiscountSurcharge =
                 String.format("%.2f", cashDiscountSurcharge / isSelectedCount).toDouble()
-
+            if (cashDiscountType == "CashDiscount") {
+                paymentAmount -= cashDiscountSurcharge
+            }
             makeCashPayment()
 
         }
@@ -601,6 +617,10 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
             totalDiscount = String.format("%.2f", totalDiscount / isSelectedCount).toDouble()
             cashDiscountSurcharge =
                 String.format("%.2f", cashDiscountSurcharge / isSelectedCount).toDouble()
+
+            if (cashDiscountType == "SurCharge") {
+                paymentAmount += cashDiscountSurcharge
+            }
             if (device == 0) {
                 magtekPaymentCall()
             } else {
@@ -822,29 +842,26 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
             tipAmount = prefProvider.getValue(Constants.TIP, "").toDouble()
         }
 
-
-        if (MethodUtils.isEnableCashDiscount(requireContext())) {
-            if (prefProvider.getValue(Constants.CASH_DISCOUNT_SURCHARGE, "").isEmpty()) {
-                cashDiscountSurcharge = MethodUtils.calculateCashDiscount(
-                    WholetotalPrice,
-                    prefProvider,
-                    requireContext()
-                )
-                prefProvider.setValue(
-                    Constants.CASH_DISCOUNT_SURCHARGE,
-                    String.format("%.2f", cashDiscountSurcharge)
-                )
-            } else {
-                cashDiscountSurcharge =
-                    prefProvider.getValue(Constants.CASH_DISCOUNT_SURCHARGE, "0.0").toDouble()
-            }
+        if (prefProvider.getValue(Constants.TIP, "").isEmpty()) {
+            tipAmount = viewModel.tip
+            prefProvider.setValue(Constants.TIP, String.format("%.2f", viewModel.tip))
         } else {
-            cashDiscountSurcharge = 0.0
+            tipAmount = prefProvider.getValue(Constants.TIP, "").toDouble()
+        }
+        if (prefProvider.getValue(Constants.CASH_DISCOUNT_SURCHARGE, "").isEmpty()) {
+            cashDiscountSurcharge = viewModel.cashdiscountAmount
             prefProvider.setValue(
                 Constants.CASH_DISCOUNT_SURCHARGE,
-                String.format("%.2f", cashDiscountSurcharge)
+                String.format("%.2f", viewModel.cashdiscountAmount)
             )
+        } else {
+            cashDiscountSurcharge =
+                prefProvider.getValue(Constants.CASH_DISCOUNT_SURCHARGE, "").toDouble()
         }
+        cashDiscountType = viewModel.cashDiscountType
+
+
+
 
         cartList = viewModel.cartModel
         Log.e("ORDER_TYPE", prefProvider.getValue(Constants.ORDER_TYPE, Constants.TAKEOUT))

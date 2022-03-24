@@ -46,7 +46,8 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
     var ordertypelist: ArrayList<TbOrderType> = arrayListOf()
     var isupdate = false
     var orderDiscount = 0.0
-
+    var cashDiscountType = ""
+    lateinit var cashDiscountModel: CashDiscountModel
     @Inject
     lateinit var prefProvider: PrefProvider
 
@@ -297,7 +298,51 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
     }
 
     private fun addObserver() {
+        viewModel.callCashDiscount.observe(viewLifecycleOwner) { event ->
+            event.getContentIfNotHandled()?.let {
+                if (it) {
+                    viewModel.getCashDiscountDetails(active = 1)
+                        ?.observe(viewLifecycleOwner) { cashDiscountData ->
+                            if (cashDiscountData != null) {
+                                cashDiscountModel = cashDiscountData
+                                prefProvider.setValueboolean(
+                                    Constants.CASHDIS_SURCHARGEENABLE,
+                                    true
+                                )
+                                prefProvider.setValue(
+                                    Constants.AMOUNT_TYPE,
+                                    cashDiscountData.amount_type
+                                )
+                                prefProvider.setValue(
+                                    Constants.OPTION_TYPE,
+                                    cashDiscountData.option_type
+                                )
+                                prefProvider.setValue(
+                                    Constants.RATE_OR_AMOUNT,
+                                    cashDiscountData.rate_or_amount.toString()
+                                )
+                                prefProvider.setValueboolean(Constants.CASH_DIS_STORED, true)
+                                cashDiscountType = cashDiscountData.option_type
+                                Log.d(TAG, "onCreateView: " + cashDiscountModel.rate_or_amount)
+                            } else {
+                                prefProvider.setValueboolean(
+                                    Constants.CASHDIS_SURCHARGEENABLE,
+                                    false
+                                )
+                                prefProvider.setValue(Constants.AMOUNT_TYPE, "")
+                                prefProvider.setValue(Constants.OPTION_TYPE, "")
+                                prefProvider.setValue(
+                                    Constants.RATE_OR_AMOUNT,
+                                    "0"
+                                )
+                                prefProvider.setValueboolean(Constants.CASH_DIS_STORED, true)
+                                cashDiscountType = ""
+                            }
+                        }
 
+                }
+            }
+        }
         viewModel.mAllWords(
             prefProvider.getValue(ORDER_TYPE, TAKEOUT),
             prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
