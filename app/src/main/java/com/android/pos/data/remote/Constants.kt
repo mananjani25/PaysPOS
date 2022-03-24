@@ -426,6 +426,8 @@ object Constants {
     var SPLIT_PAY_AMOUNT_DINE_IN = "split_pay_amount_dine_in"
     var SPLIT_NO_DINE_IN = "split_no_dine_in"
 
+
+    var SPLIT_ENABLE = "split_enable"
     //api constants
     const val EMP_NAME = "Employee Name"
     const val AMT_BY_CASH = "Amount by Cash"

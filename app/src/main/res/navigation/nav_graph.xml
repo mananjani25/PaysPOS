@@ -1367,11 +1367,21 @@
     <fragment
         android:id="@+id/magtekFragment"
         android:name="com.android.pos.ui.fragments.magtek.MagtekFragment"
-        android:label="MagtekFragment" />
+        android:label="MagtekFragment">
+        <action
+            android:id="@+id/action_magtekFragment_to_dashboardCategoryBoldPOS"
+            app:destination="@id/dashboardCategoryBoldPOS"
+            app:popUpToInclusive="true" />
+    </fragment>
     <fragment
         android:id="@+id/magtekProFragment"
         android:name="com.android.pos.ui.fragments.magtekPro.MagtekProFragment"
-        android:label="MagtekProFragment" />
+        android:label="MagtekProFragment">
+        <action
+            android:id="@+id/action_magtekProFragment_to_dashboardCategoryBoldPOS"
+            app:destination="@id/dashboardCategoryBoldPOS"
+            app:popUpToInclusive="true" />
+    </fragment>
 
 
 </navigation>

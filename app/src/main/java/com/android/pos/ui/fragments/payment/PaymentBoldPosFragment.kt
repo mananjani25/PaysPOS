@@ -12,11 +12,16 @@ import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.setFragmentResultListener
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
+import com.android.pos.data.remote.Constants
+import com.android.pos.data.remote.Constants.SPLIT_ENABLE
 import com.android.pos.databinding.FragmentPaymentBoldPosBinding
+import com.android.pos.di.PrefProvider
 import com.android.pos.ui.fragments.checkout.CheckoutDetailsFragmentNew
 import com.android.pos.ui.fragments.dashboard.bolddashboard.CartFragment
+import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.TAG
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class PaymentBoldPosFragment : Fragment() {
@@ -24,6 +29,9 @@ class PaymentBoldPosFragment : Fragment() {
     private var orderOfflineId: String = ""
     private var paymentOfflineId: String = ""
     private var paymentId: Int = -1
+
+    @Inject
+    lateinit var prefProvider: PrefProvider
     private lateinit var binding: FragmentPaymentBoldPosBinding
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -55,7 +63,12 @@ class PaymentBoldPosFragment : Fragment() {
         }, 100)
 
         binding.layoutHeaderCheckout.imgDrawer.setOnClickListener {
-            findNavController().popBackStack()
+            Log.d(TAG, "onViewCreated: "+prefProvider.getValueboolean(SPLIT_ENABLE,false))
+            if (prefProvider.getValueboolean(Constants.SPLIT_ENABLE, false)) {
+                AlertUtils.showCustomAlert(requireContext(), "Please complete all payment.")
+            } else {
+                findNavController().popBackStack()
+            }
         }
 
         listeners()
@@ -102,7 +115,6 @@ class PaymentBoldPosFragment : Fragment() {
         fm.beginTransaction().replace(binding.frameLayout.id, fragment).commit()
         // binding.frameLayout?.let { fm.beginTransaction().replace(it, fragment).commit() }
     }
-
 
 
 }
