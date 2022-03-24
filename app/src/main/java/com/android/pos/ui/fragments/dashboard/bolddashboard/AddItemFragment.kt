@@ -7,13 +7,13 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.Observer
-import com.android.pos.data.entities.CartModel
-import com.android.pos.data.entities.TbItem
-import com.android.pos.data.entities.TbServiceCharge
-import com.android.pos.data.entities.VariationsAttribute
+import com.android.pos.R
+import com.android.pos.data.entities.*
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.ADD
+import com.android.pos.data.remote.Constants.DELETE
 import com.android.pos.data.remote.Constants.ORDER_TYPE
 import com.android.pos.data.remote.Constants.TAKEOUT
 import com.android.pos.data.remote.Constants.TERMINAL_ID
@@ -149,6 +149,67 @@ class AddItemFragment(val listner: ItemListner) : Fragment() {
 
         }
 
+        binding.txtAddDiscount.setOnClickListener {
+            setFragmentResultListener("request_key_discount_details") { requestKey: String, bundle: Bundle ->
+                val result = bundle.getParcelable<TbDiscount>("data")
+                if (result != null) {
+                    if (result.discountType == requireContext().getString(R.string.disc_percentage)) {
+
+                        item.discountPrice = calculateDiscountPercentage(
+                            totalPrice(item),
+                            result.percentage
+                        )
+                        //discountPrice = item.discountPrice / item.itemQuantity
+                        item.discountId = result.id
+                        item.discountType = result.discountType
+                        item.isManualSales = false
+                        /*txtTitle.text = data.name + "  $" + String.format(
+                            "%.2f",
+                            (totalPrice(data) - data.discountPrice)
+                        )*/
+
+                    } else if (item.price > result.percentage) {
+
+                        item.discountPrice = result.percentage
+                        item.discountId = 0
+                        item.discountType = result.discountType
+                        item.isManualSales = false
+                        //discountPrice = data.discountPrice / data.itemQuantity
+
+                        //viewModel.cartLogic(cartList, data, Constants.UPDATE)
+                        /* txtTitle.text = data.name + "  $" + String.format(
+                             "%.2f",
+                             (totalPrice(data) - data.discountPrice)
+                         )
+ */
+                    }
+
+                } else {
+                    item.discountPrice = 0.0
+                    item.discountType = ""
+                    item.isManualSales = false
+                    item.discountId = 0
+                    // discountPrice = data.discountPrice
+                }
+
+            }
+
+
+            val bundle = Bundle().apply {
+                putBoolean("isFromDetails", true)
+                putParcelable("model", item)
+            }
+        }
+
+        binding.txtRemoveItem.setOnClickListener {
+
+            item.isEdited = false
+            viewModel.cartLogic(cartList, item, DELETE)
+            listner.onCancelItemSelected()
+
+        }
+
+
     }
 
     private fun createCart(): ArrayList<CartModel>? {
@@ -166,9 +227,9 @@ class AddItemFragment(val listner: ItemListner) : Fragment() {
                     model.orderTypeId = it.id
                 }
             }
-            cartList.add(model)
+            cartList.add(0,model)
             Log.e(TAG, "CartIsEmpty::")
-            viewModel.createEmptyCart(model)
+           // viewModel.createEmptyCart(model)
             return cartList
         }
 
@@ -291,7 +352,11 @@ class AddItemFragment(val listner: ItemListner) : Fragment() {
         if (isUpdateItem) {
             qty = item.itemQuantity
             binding.txtQuantity.text = "" + qty
+            binding.txtRemoveItem.visibility = View.VISIBLE
+            binding.txtDone.text = "Update"
 
+        } else {
+            binding.txtRemoveItem.visibility = View.GONE
         }
 
     }
@@ -401,5 +466,10 @@ class AddItemFragment(val listner: ItemListner) : Fragment() {
 
         viewModel.serviceCharges.observe(requireActivity(), serviceChargesObserve!!)
     }
+
+    private fun calculateDiscountPercentage(originalPrice: Double, percentage: Double): Double {
+        return MethodUtils.roundOffAmountDouble((originalPrice * percentage) / 100)
+    }
+
 
 }

@@ -1320,6 +1320,10 @@
         <action
             android:id="@+id/action_dashboardCategoryBoldPOS_to_addDiscountDialog"
             app:destination="@id/addDiscountDialog" />
+        <action
+            android:id="@+id/action_dashboardCategoryBoldPOS_to_addDiscountDialog2"
+            app:destination="@id/addDiscountDialog"
+            app:enterAnim="@anim/nav_default_enter_anim" />
 
 
     </fragment>
