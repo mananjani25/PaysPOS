@@ -470,7 +470,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                     model.isDestroy = true
                                 } else {
                                     Log.e(TAG,"listRemoveItem")
-                                    list.remove(item)
+                                    list.remove(model)
                                 }
                             }
                         } else {
