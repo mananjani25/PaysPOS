@@ -700,7 +700,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
 
     @SuppressLint("SetTextI18n")
-        fun itemCalculation(
+    fun itemCalculation(
         cartList: List<CartModel>?,
         txtTotalAmount: AppCompatTextView,
         context: Context

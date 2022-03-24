@@ -4,8 +4,8 @@
 
     <stroke
         android:width="0.5dp"
-        android:color="@color/colorNewBorder" />
-    <solid android:color="@color/bg_color" />
+        android:color="@color/switchTrackColor" />
+    <solid android:color="@color/switchTrackColor" />
 
 
 </shape>
