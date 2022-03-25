@@ -108,7 +108,7 @@ class MergeTableFragment : Fragment() {
             findNavController().popBackStack()
         }
         binding.layoutHeader.txtTransaction.setOnClickListener {
-           // findNavController().navigate(R.id.action_mergetablefragment_to_transactionlistfragment)
+            // findNavController().navigate(R.id.action_mergetablefragment_to_transactionlistfragment)
         }
         binding.layoutHeader.txthome.setOnClickListener {
             findNavController().popBackStack(
