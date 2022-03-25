@@ -139,6 +139,7 @@ class CartFragment(val itemClickListner:ItemClickListner?) : Fragment(), MyCallb
     }
 
     private fun setUpData() {
+        Log.e(TAG,"isFromPayment:  $isFromPayment")
         if (isFromPayment) {
             binding.linearButtonView.visibility = View.GONE
             binding.imgOrderMenu.visibility = View.INVISIBLE
@@ -762,9 +763,7 @@ class CartFragment(val itemClickListner:ItemClickListner?) : Fragment(), MyCallb
             if (prefProvider.getValue(ORDER_TYPE, "") == Constants.DINE_IN) {
                 viewModel.setServiceCharges(serviceChargesList)
                 cartlist.get(0).serviceCharge = serviceChargesList
-                // binding.rvCartList.visibility = View.GONE
-                // binding.rvCartDineIn.visibility = View.VISIBLE
-                binding.linearButtonView.visibility = View.VISIBLE
+
 
                 val dineList: List<DineInModel>? =
                     cartlist.get(0).dineInList
@@ -775,7 +774,8 @@ class CartFragment(val itemClickListner:ItemClickListner?) : Fragment(), MyCallb
 
                 }
 
-                if (cartlist[0].items?.isNotEmpty() == true) {
+                if (cartlist[0].items?.isNotEmpty() == true)
+                {
 
                     val dineList = cartlist[0].dineInList ?: dineInCartAdapter.getList()
                     // mannual sale added in dineinn //yash
@@ -851,10 +851,6 @@ class CartFragment(val itemClickListner:ItemClickListner?) : Fragment(), MyCallb
 
                 //  binding.rvCartList.visibility = View.VISIBLE
                 //  binding.rvCartDineIn.visibility = View.GONE
-                if (cartlist[0].items?.isEmpty() == true) {
-                    binding.linearButtonView.gone()
-                } else
-                    binding.linearButtonView.visible()
 
                 Log.e(TAG, "cartlist[0].items > ${cartlist[0].items?.size}")
                 Log.e(TAG, "viewModel.destroyedList > ${viewModel.destroyedList.size}")
@@ -884,21 +880,13 @@ class CartFragment(val itemClickListner:ItemClickListner?) : Fragment(), MyCallb
                 } else {
                     binding.txtDineInProceed.visibility = View.GONE
                     binding.rvCartList.visible()
-                    if (cartlist[0].items?.isEmpty() == true) {
-                        binding.linearButtonView.gone()
-                    } else
-                        binding.linearButtonView.visible()
-                    //  binding.linearButtonView.visible()
+
                 }
             } else {
                 Log.e("!_@_", "rlSave -- VISIBLE ")
                 binding.tvSave.visibility = View.VISIBLE
                 binding.rvCartList.visible()
-                //  binding.linearButtonView.visible()
-                if (cartlist[0].items?.isEmpty() == true) {
-                    binding.linearButtonView.gone()
-                } else
-                    binding.linearButtonView.visible()
+
             }
 
 
@@ -911,7 +899,7 @@ class CartFragment(val itemClickListner:ItemClickListner?) : Fragment(), MyCallb
             )
 
             //  binding.rvCartList.gone()
-            binding.linearButtonView.gone()
+
 
 
         }
