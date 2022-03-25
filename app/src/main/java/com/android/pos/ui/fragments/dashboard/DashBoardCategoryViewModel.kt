@@ -953,10 +953,6 @@ class DashBoardCategoryViewModel @Inject constructor(
                             prefProvider,
                             context
                         )
-                        prefProvider.setValue(
-                            Constants.CASH_DISCOUNT_SURCHARGE,
-                            String.format("%.2f", cashdiscountAmount)
-                        )
                     } else {
                         cashdiscountAmount = 0.0
                     }

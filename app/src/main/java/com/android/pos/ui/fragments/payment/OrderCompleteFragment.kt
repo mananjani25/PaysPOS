@@ -5013,7 +5013,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         prefProvider.setValue(Constants.CUSTOMER_NAME, "")
         prefProvider.setValueInt(Constants.CUSTOMER_ID, -1)
         prefProvider.setValue("PaidAmount", "")
-        prefProvider.setValue("WholeTotal", "")
+        prefProvider.setValue(WHOLE_AMOUNT, "")
         prefProvider.setValue(SUB_TOTAL, "")
         prefProvider.setValue(Constants.CASH_DISCOUNT_SURCHARGE, "")
         prefProvider.setValue(Constants.TOTAL_DISCOUNT, "")

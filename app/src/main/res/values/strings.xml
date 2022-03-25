@@ -769,6 +769,7 @@
     <string name="pay_full_amount">PAY FULL AMOUNT</string>
     <string name="split_custom_amount">SPLIT CUSTOM AMOUNT</string>
     <string name="next_payment">Next Payment</string>
+    <string name="balance_due">Balance Due</string>
 
 
 </resources>
