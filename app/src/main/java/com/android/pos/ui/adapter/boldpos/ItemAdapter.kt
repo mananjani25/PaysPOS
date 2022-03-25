@@ -26,7 +26,7 @@ class ItemAdapter(
 
         init {
 
-            binding.txtCategoryName.setOnClickListener {
+            binding.linearItem.setOnClickListener {
                 list[bindingAdapterPosition]?.let { listener.onClick(it) }
 
             }
