@@ -264,7 +264,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
             prefProvider.setValue(CUSTOMER_NAME, customer.first_name + " " + customer.last_name)
             customer.id?.let { prefProvider.setValueInt(Constants.CUSTOMER_ID, it) }
 
-            binding.txtCustomerName.text = customer.first_name + " " + customer.last_name
+            binding.txtAddCustomer.text = customer.first_name + " " + customer.last_name
             binding.txtCrtNewCustomer.text = "Remove Customer"
 
             //set loyalty
@@ -471,7 +471,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
             }
         }
         binding.relAddCustomer.setOnClickListener {
-            dialogMenu()
+            findNavController().navigate(R.id.action_manualSaleNew_to_assignCustomerOrderFragment)
         }
 
         binding.layoutMenu.txtProducts.setOnClickListener {
