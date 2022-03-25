@@ -30,8 +30,10 @@ class CartAdapter : RecyclerView.Adapter<CartAdapter.MyViewHolder>() {
             binding.txtName.text = item.name
             binding.txtQuantity.text = "X" + item.itemQuantity
             binding.txtEachQntPrice.text = MethodUtils.roundOffAmount((item.price))
-            binding.txtTotalPrice.text =
-                MethodUtils.roundOffAmount((item.price * item.itemQuantity))
+            MethodUtils.setPriceTextView(binding.txtEachQntPrice, totalEachPrice(item))
+
+            MethodUtils.setPriceTextView(binding.txtTotalPrice, totalPrice(item))
+
 
             if (item.modifiers.isNotEmpty()) {
                 binding.rvModifiers.visibility = View.VISIBLE
@@ -43,16 +45,14 @@ class CartAdapter : RecyclerView.Adapter<CartAdapter.MyViewHolder>() {
             }
 
 
-
         }
 
         init {
 
             binding.root.setOnClickListener {
-                mCallback.onItemClickListener(it,cartList[bindingAdapterPosition])
+                mCallback.onItemClickListener(it, cartList[bindingAdapterPosition])
             }
         }
-
 
 
     }
@@ -103,5 +103,45 @@ class CartAdapter : RecyclerView.Adapter<CartAdapter.MyViewHolder>() {
 
         notifyDataSetChanged()
     }
+
+    private fun totalPrice(model: TbItem): Double {
+
+        return if (model.modifiers.isNotEmpty()) {
+
+            var totalPrice = 0.0
+
+            val mList = model.modifiers
+            mList.forEach { items ->
+                totalPrice += items.price * items.itemQuantity
+            }
+
+            (model.price * model.itemQuantity) + totalPrice
+        } else {
+
+            model.price * model.itemQuantity
+
+        }
+    }
+
+
+    private fun totalEachPrice(model: TbItem): Double {
+        return if (model.modifiers.isNotEmpty()) {
+
+            var totalPrice = 0.0
+
+            val mList = model.modifiers
+            mList.forEach { items ->
+                totalPrice += items.price * 1
+            }
+
+            (model.price * 1) + totalPrice
+        } else {
+
+            model.price * 1
+
+        }
+
+    }
+
 
 }
