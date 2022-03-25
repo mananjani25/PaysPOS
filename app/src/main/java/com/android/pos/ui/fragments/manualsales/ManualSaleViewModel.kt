@@ -54,7 +54,7 @@ class ManualSaleViewModel @Inject constructor(
         return posRepository.getManualSaleList(employee_id)
     }
 
-    private fun addCart(cartModel: CartModel) {
+    fun addCart(cartModel: CartModel) {
         viewModelScope.launch {
             posRepository.addItemCart(cartModel)
         }

@@ -15,6 +15,7 @@ import androidx.appcompat.widget.AppCompatEditText
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.appcompat.widget.LinearLayoutCompat
+import androidx.appcompat.widget.PopupMenu
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -290,8 +291,8 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
         prefProvider.setValue(CUSTOMER_NAME, "")
         prefProvider.setValueInt(Constants.CUSTOMER_ID, -1)
         prefProvider.setValueboolean(Constants.LOYALTY_ADDED, false)
-        binding.txtCustomerName.text = "Add Customer"
-        binding.txtCrtNewCustomer.text = "Add Customer"
+        binding.txtAddCustomer.text = "Add Customer"
+      //  binding.txtCrtNewCustomer.text = "Add Customer"
         binding.txtLoyaltyPoints.gone()
         refreshItemCalculation()
     }
@@ -448,7 +449,46 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
         }
 
         binding.imgOrderMenu.setOnClickListener {
-            hideClearCart()
+
+            val popupMenu = PopupMenu(requireContext(), it)
+            popupMenu.menuInflater.inflate(R.menu.manual_sale_menu, popupMenu.menu)
+
+            popupMenu.setOnMenuItemClickListener { menuItem ->
+                when (menuItem.itemId) {
+                    R.id.menu_clear_cart -> {
+                        if (cartList?.isNotEmpty() == true) {
+                            alert(
+                                getString(R.string.app_name),
+                                getString(R.string.delete_items_message)
+                            ) {
+                                positiveButton(getString(R.string.tv_delete)) {
+                                    viewModel.deleteCart(prefProvider.getValueInt(EMPLOYEE_ID, 0))
+                                    prefProvider.setValueInt(Constants.CUSTOMER_ID, -1)
+                                    binding.txtTotalAmount.text = "$0.00"
+
+                                }
+                                negativeButton(R.string.tv_cancel) {
+
+                                }
+                            }
+                          //  hideClearCart()
+                        }
+
+                    }
+                    R.id.menu_remove_customer -> {
+
+                        if (cartList?.isNotEmpty() == true && cartList!![0].customer != null) {
+                            cartList!![0].customer = null
+                            viewModel.addCart(cartList!![0])
+                        }
+                        clearCustomer()
+
+                    }
+                }
+                true
+            }
+            popupMenu.show()
+            // hideClearCart()
         }
 
         binding.txtClearCart.setOnClickListener {
