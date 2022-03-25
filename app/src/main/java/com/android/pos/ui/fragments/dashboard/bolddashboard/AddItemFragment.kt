@@ -12,18 +12,18 @@ import androidx.lifecycle.Observer
 import com.android.pos.R
 import com.android.pos.data.entities.*
 import com.android.pos.data.remote.Constants
-import com.android.pos.data.remote.Constants.ADD
 import com.android.pos.data.remote.Constants.DELETE
 import com.android.pos.data.remote.Constants.ORDER_TYPE
 import com.android.pos.data.remote.Constants.TAKEOUT
 import com.android.pos.data.remote.Constants.TERMINAL_ID
-import com.android.pos.data.remote.Constants.UPDATE
 import com.android.pos.databinding.FragmentAddItemBinding
 import com.android.pos.di.PrefProvider
+import com.android.pos.ui.adapter.ItemModifierSetAdapter
 import com.android.pos.ui.adapter.VariationDashboardListAdapter
 import com.android.pos.ui.adapter.boldpos.ModifiersAdapter
 import com.android.pos.ui.adapter.boldpos.VariationListAdapter
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
+import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.callback.ItemListner
 import com.android.pos.utils.statusUtils.Resource
@@ -44,6 +44,8 @@ class AddItemFragment(val listner: ItemListner) : Fragment() {
     private lateinit var variationAdapter: VariationListAdapter
     private lateinit var modifiersAdapter: ModifiersAdapter
     private var isUpdateItem: Boolean = false
+
+    private lateinit var adapter: ItemModifierSetAdapter
 
     @Inject
     lateinit var prefProvider: PrefProvider
@@ -138,11 +140,36 @@ class AddItemFragment(val listner: ItemListner) : Fragment() {
                 createCart()
             }
 
+
+
+
+            if (item.modifier_set_ids.isNotEmpty()) {
+                if (minMaxValidationCheck(adapter)) {
+
+                    val modifiers = adapter?.getSelectedModifiers()
+                    if (modifiers != null) {
+                        modifiers.forEach {
+                            it.itemQuantity = item.itemQuantity
+                        }
+                        item.modifiers = modifiers
+
+
+                    }
+                } else {
+                    AlertUtils.showCustomAlert(
+                        binding.root.context,
+                        binding.root.context.getString(R.string.you_can_add)
+                    )
+
+                    return@setOnClickListener
+                }
+
+            }
             if (isUpdateItem) {
-                viewModel.cartLogic(cartList, item, UPDATE)
+                viewModel.cartLogic(cartList, item, Constants.UPDATE)
             } else {
 
-                viewModel.cartLogic(cartList, item, ADD)
+                viewModel.cartLogic(cartList, item, Constants.ADD)
             }
 
             listner.onCancelItemSelected()
@@ -227,9 +254,9 @@ class AddItemFragment(val listner: ItemListner) : Fragment() {
                     model.orderTypeId = it.id
                 }
             }
-            cartList.add(0,model)
+            cartList.add(0, model)
             Log.e(TAG, "CartIsEmpty::")
-           // viewModel.createEmptyCart(model)
+            // viewModel.createEmptyCart(model)
             return cartList
         }
 
@@ -245,6 +272,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment() {
 
     private fun setData() {
         binding.txtItem.text = "" + item?.name
+        binding.txtPrice.text = MethodUtils.roundOffAmount(item.price)
 
         viewModel.getItemsbyId(item.itemId).observe(viewLifecycleOwner) {
 
@@ -324,8 +352,8 @@ class AddItemFragment(val listner: ItemListner) : Fragment() {
         }
 
         if (item.modifier_set_ids.isNotEmpty()) {
-            modifiersAdapter = ModifiersAdapter(viewModel, item.itemId, viewLifecycleOwner)
-            binding.rvModifiersList.adapter = modifiersAdapter
+            adapter = ItemModifierSetAdapter(viewModel, item.itemId, viewLifecycleOwner)
+            binding.rvModifiersList.adapter = adapter
 
             val intArray = IntArray(item.modifier_set_ids.size) { i ->
                 item.modifier_set_ids[i]
@@ -334,15 +362,22 @@ class AddItemFragment(val listner: ItemListner) : Fragment() {
             viewModel.modifierSet(intArray).observe(requireActivity(), {
                 if (it.data != null && it.data.isNotEmpty()) {
                     binding.rvModifiersList.visibility = View.VISIBLE
-                    it.data.let { it1 -> modifiersAdapter.add(it1) }
+
+                    Log.e(TAG, "modifiersSetDAta:  ${Gson().toJson(it.data)}")
+                    it.data.let { it1 -> adapter.add(it1) }
 
 
-                    modifiersAdapter.setData(item.modifiers)
+                    adapter.setData(item.modifiers)
 
 
                 } else binding.rvModifiersList.visibility = View.GONE
 
             })
+
+            variationAdapter?.showVariationPriceClick = { it: VariationsAttribute ->
+
+            }
+
 
         } else {
             binding.rvModifiersList.visibility = View.GONE
@@ -471,5 +506,56 @@ class AddItemFragment(val listner: ItemListner) : Fragment() {
         return MethodUtils.roundOffAmountDouble((originalPrice * percentage) / 100)
     }
 
+
+    private fun minMaxValidationCheck(adapter: ItemModifierSetAdapter?): Boolean {
+
+        if (adapter != null) {
+            val list = adapter.getAll()
+            if (list.size == 1) {
+                list.forEach {
+                    return (it.min_required == 0) || minLogic(
+                        it.min_required,
+                        it.modifiers
+                    )
+                }
+            } else {
+
+                var min_required = 0
+
+                val mlist = ArrayList<Modifier>()
+
+                list.forEach {
+                    min_required += it.min_required
+                    mlist.addAll(it.modifiers)
+                }
+
+                return (min_required == 0) || minLogic(
+                    min_required,
+                    mlist
+                )
+
+            }
+        }
+        return true
+    }
+
+    private fun minLogic(
+        maxCount: Int,
+        modifiers: List<Modifier>
+    ): Boolean {
+
+        if (maxCount == 0) {
+            return true
+        }
+        var totalMinMax = 0
+
+        modifiers.forEach {
+            if (it.isChecked) {
+                totalMinMax += 1
+            }
+        }
+
+        return maxCount <= totalMinMax
+    }
 
 }
