@@ -43,6 +43,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
+import kotlin.collections.ArrayList
 
 
 @AndroidEntryPoint
@@ -108,7 +109,6 @@ class CartFragment(val itemClickListner:ItemClickListner?) : Fragment(), MyCallb
         if (arguments?.getBundle("updateBundle") != null) {
             updateBundle = arguments?.getBundle("updateBundle")
         }
-
 
         if (arguments?.getBoolean("isFromPayment") != null) {
             isFromPayment = arguments?.getBoolean("isFromPayment")!!
@@ -626,13 +626,44 @@ class CartFragment(val itemClickListner:ItemClickListner?) : Fragment(), MyCallb
             positiveButton(getString(R.string.tv_delete)) {
                 // Do positive stuff here
                 prefProvider.setValueInt(Constants.DINE_INGUEST_SELECTED, 0)
-                clearCustomer()
-                viewModel.deleteCart()
-                cartlist.clear()
-                prefProvider.setValue(ORDER_TYPE, TAKEOUT)
-                prefProvider.setValueboolean(Constants.LOYALTY_ADDED, false)
 
+                if (prefProvider.getValue(ORDER_TYPE, "").toString() == Constants.DINE_IN) {
 
+                    val dList = dineInCartAdapter.getList()
+                    if (dList.isNotEmpty()) {
+                        dList[1].floorPlanTable?.id?.let {
+
+                            if (dList[1]?.floorPlanTable?.status.toString() == Constants.MERGED) {
+                                viewModel.getTableStatus(it, Constants.MERGED)
+                            } else {
+                                viewModel.getTableStatus(
+                                    it, "Available"
+                                )
+                            }
+                        }
+                    }
+                    viewModel.deleteCart()
+                    isOrderUpdate = false
+
+                    if (prefProvider.getValue(ORDER_TYPE, "").toString() != "") {
+                        prefProvider.setValue(ORDER_TYPE, "")
+                    }
+                    val dineInList=ArrayList<DineInModel>()
+                    dineInCartAdapter.setList(dineInList)
+                    dineInCartAdapter.notifyDataSetChanged()
+                    binding.tvPayNow.text="Pay"
+                    clearCustomer()
+
+                    prefProvider.setValueboolean(Constants.DINE_IN_UPDATE, false)
+
+                }
+                else{
+                    clearCustomer()
+                    viewModel.deleteCart()
+                    cartlist.clear()
+                    prefProvider.setValue(ORDER_TYPE, TAKEOUT)
+                    prefProvider.setValueboolean(Constants.LOYALTY_ADDED, false)
+                }
             }
             negativeButton(R.string.tv_cancel) {
                 // Do negative stuff here
