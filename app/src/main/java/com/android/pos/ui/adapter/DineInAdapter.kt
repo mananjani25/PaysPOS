@@ -2,26 +2,19 @@ package com.android.pos.ui.adapter
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.os.Bundle
 import android.util.Log
-import android.view.ContextMenu
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.PopupMenu
-import androidx.core.content.ContentProviderCompat.requireContext
-import androidx.navigation.fragment.NavHostFragment.findNavController
-import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.R
 import com.android.pos.data.entities.TbItem
 import com.android.pos.data.model.DineInModel
-import com.android.pos.data.remote.Constants
 import com.android.pos.databinding.ViewDineInItemBinding
 import com.android.pos.ui.activities.SwipeHelper
 import com.android.pos.utils.callback.MyCallback
-import com.android.pos.utils.extensions.alert
 import com.google.gson.Gson
 
 class DineInAdapter : RecyclerView.Adapter<DineInAdapter.MyViewHolder>(), MyCallback {
@@ -277,4 +270,11 @@ class DineInAdapter : RecyclerView.Adapter<DineInAdapter.MyViewHolder>(), MyCall
             })
     }
 
+
+     fun clearList(){
+        list.clear()
+        list = arrayListOf()
+        notifyDataSetChanged()
+
+    }
 }
