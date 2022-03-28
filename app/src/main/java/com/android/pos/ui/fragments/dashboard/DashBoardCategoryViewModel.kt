@@ -7,6 +7,7 @@ import android.graphics.BitmapFactory
 import android.util.Base64
 import android.util.Log
 import androidx.appcompat.widget.AppCompatTextView
+import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -78,6 +79,8 @@ class DashBoardCategoryViewModel @Inject constructor(
     var totalTax = 0.0
     var nonCashAdj: Double = 0.0
     var totalServiceCharge = 0.0
+    var cashdiscountAmount = 0.0
+    var cashDiscountType = ""
     var totalDiscount = 0.0
     var tip = 0.0
     var cartModel: CartModel? = null
@@ -460,7 +463,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 }
                             }
                         }
-                        Log.e(TAG,"DeleteIndex  ${index}")
+                        Log.e(TAG, "DeleteIndex  ${index}")
                         if (index != -1) {
                             val model = cartList[0].items?.get(index)
                             if (model != null) {
@@ -469,7 +472,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                     model.isEdited = item.isEdited
                                     model.isDestroy = true
                                 } else {
-                                    Log.e(TAG,"listRemoveItem")
+                                    Log.e(TAG, "listRemoveItem")
                                     list.remove(model)
                                 }
                             }
@@ -944,6 +947,17 @@ class DashBoardCategoryViewModel @Inject constructor(
                     totalPrice = (subTotalPrice + totalTax + totalServiceCharge)
 
 
+                    if (MethodUtils.isEnableCashDiscount(context)) {
+                        cashdiscountAmount = MethodUtils.calculateCashDiscount(
+                            totalPrice,
+                            prefProvider,
+                            context
+                        )
+                    } else {
+                        cashdiscountAmount = 0.0
+                    }
+
+                    cashDiscountType = prefProvider.getValue(Constants.OPTION_TYPE, "")
                     //loyalty point and price calculation
                     amountToBePaid = totalPrice
 
