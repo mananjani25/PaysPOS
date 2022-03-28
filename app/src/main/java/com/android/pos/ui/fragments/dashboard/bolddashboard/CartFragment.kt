@@ -573,9 +573,9 @@ class CartFragment(val itemClickListner:ItemClickListner?) : Fragment(), MyCallb
                                 viewModel.totalPrice
                             }
 
-                        cartlist.openOrderType = Constants.PICK_UP
+                        cartList.openOrderType = Constants.PICK_UP
                         if (!isOrderUpdate)
-                            cartlist.customer = assignCustomer
+                            cartList.customer = assignCustomer
 
                         val formatterdate = SimpleDateFormat("yyyy-MM-dd")
                         val formattertime = SimpleDateFormat("hh:mm a")
@@ -584,7 +584,7 @@ class CartFragment(val itemClickListner:ItemClickListner?) : Fragment(), MyCallb
                         future_delivery_time = formattertime.format(date)
 
                         val request = viewModelPayment.createOpenOrderRequest(
-                            cartlist,
+                            cartList,
                             viewModel.subTotalPrice,
                             totalAmountTobeSave,
                             viewModel.totalServiceCharge,
@@ -593,7 +593,7 @@ class CartFragment(val itemClickListner:ItemClickListner?) : Fragment(), MyCallb
                             future_delivery_date,
                             future_delivery_time,
                             false,
-                            viewModel.totalDiscount + cartlist.discountPrice,
+                            viewModel.totalDiscount + cartList.discountPrice,
                             0.00,
                             -1,
                             viewModel.redeemLoyaltyInfo,
