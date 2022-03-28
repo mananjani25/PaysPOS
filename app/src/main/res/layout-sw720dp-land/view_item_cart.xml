@@ -33,7 +33,7 @@
                     android:layout_height="wrap_content"
                     tools:text="Item Name"
                     android:textColor="@color/txtColor"
-                    android:textSize="@dimen/_5mdpi" />
+                    android:textSize="@dimen/_6mdpi" />
 
                 <TextView
                     android:id="@+id/txtNote"
@@ -63,7 +63,7 @@
                 android:gravity="start"
                 android:text="Qty"
                 android:textColor="@color/txtColor"
-                android:textSize="@dimen/_5mdpi" />
+                android:textSize="@dimen/_6mdpi" />
 
             <TextView
                 android:id="@+id/txtEachQntPrice"
@@ -75,7 +75,7 @@
                 android:gravity="end"
                 android:text="Each"
                 android:textColor="@color/txtColor"
-                android:textSize="@dimen/_5mdpi" />
+                android:textSize="@dimen/_6mdpi" />
 
             <LinearLayout
                 android:layout_weight="0.7"
@@ -92,7 +92,7 @@
                     android:gravity="end"
                     android:text="Total"
                     android:textColor="@color/txtColor"
-                    android:textSize="@dimen/_5mdpi" />
+                    android:textSize="@dimen/_6mdpi" />
 
                 <TextView
                     android:id="@+id/tvDiscountRate"

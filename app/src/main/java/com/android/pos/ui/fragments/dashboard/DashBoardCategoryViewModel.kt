@@ -58,6 +58,7 @@ import java.net.HttpURLConnection
 import java.net.URL
 import java.util.*
 import javax.inject.Inject
+import kotlin.collections.ArrayList
 import kotlin.collections.set
 
 
@@ -2168,5 +2169,28 @@ class DashBoardCategoryViewModel @Inject constructor(
             }
 
         })
+    }
+
+    fun createCart(cartList: ArrayList<CartModel>): ArrayList<CartModel> {
+        if (cartList.isEmpty()) {
+            val model = CartModel()
+            model.employeeID =
+                prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
+            model.terminalId = prefProvider.getValueInt(Constants.TERMINAL_ID, 0)
+            model.orderType = Constants.TAKEOUT
+            model.locationId = prefProvider.getValueInt(Constants.LOCATION_ID, 1)
+            model.serviceCharge = serviceChargesList
+            // model.orderTypeId = 1
+            ordertypelist.forEach {
+                if (it.orderType.lowercase() == Constants.TAKEOUT.lowercase()) {
+                    model.orderTypeId = it.id
+                }
+            }
+            cartList.add(0, model)
+            Log.e(TAG, "CartIsEmpty::")
+            return cartList
+        }
+
+        return cartList
     }
 }

@@ -139,7 +139,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment() {
                 }
 
             } else {
-                createCart()
+                viewModel.createCart(cartList)
             }
 
 
@@ -216,7 +216,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment() {
 
     }
 
-    private fun createCart(): ArrayList<CartModel>? {
+    fun createCart(): ArrayList<CartModel>? {
         if (cartList.isEmpty()) {
             val model = CartModel()
             model.employeeID =

@@ -20,10 +20,8 @@ import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.EMPLOYEE_NAME
 import com.android.pos.data.remote.Constants.ORDER_TYPE
 import com.android.pos.data.remote.Constants.TAKEOUT
-import com.android.pos.data.remote.Constants.TERMINAL_ID
 import com.android.pos.databinding.FragmentDashboardCategoryBoldPosBinding
 import com.android.pos.di.PrefProvider
-import com.android.pos.ui.adapter.VariationDashboardListAdapter
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.android.pos.ui.fragments.payment.PaymentViewModel
 import com.android.pos.utils.MethodUtils
@@ -47,8 +45,8 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
     var ordertypelist: ArrayList<TbOrderType> = arrayListOf()
     var isupdate = false
     var orderDiscount = 0.0
-    var dineInResult:Bundle?=null
-    var resultData:TbCustomer?=null
+    var dineInResult: Bundle? = null
+    var resultData: TbCustomer? = null
     var cashDiscountType = ""
     lateinit var cashDiscountModel: CashDiscountModel
 
@@ -341,56 +339,21 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
         Log.e(TAG, "getitem:  ${Gson().toJson(item)}")
         Log.e(TAG, "OrderTYpe:  ${prefProvider.getValue(ORDER_TYPE, TAKEOUT)}")
 
-        /*
-        if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == Constants.OPEN_ORDER) {
+        if (item.modifiers.isNotEmpty() || item.variationsAttributes.isNotEmpty()) {
+            val fragment = AddItemFragment.newInstance(item, this, cartList, false)
+            loadCategoryFragment(fragment)
+        } else {
 
-             if (cartList.isEmpty()) {
-                 val model = CartModel()
-                 model.employeeID =
-                     prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
-                 model.terminalId = prefProvider.getValueInt(TERMINAL_ID, 0)
-                 model.orderType = prefProvider.getValue(ORDER_TYPE, TAKEOUT)
-                 model.locationId = prefProvider.getValueInt(Constants.LOCATION_ID, 1)
-                 model.serviceCharge = serviceChargesList
-                 viewModel.ordertypelist.forEach {
-                     if (it.orderType == Constants.OPEN_ORDER) {
-                         model.orderTypeId = it.id
-                     }
-                 }
-                 cartList.add(model)
-             }
-
-         } else {
-             createCart()
-         }
- */
-
-        val fragment = AddItemFragment.newInstance(item, this, cartList, false)
-        loadCategoryFragment(fragment)
-    }
-
-    private fun createCart(): ArrayList<CartModel>? {
-        if (cartList.isEmpty()) {
-            val model = CartModel()
-            model.employeeID =
-                prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
-            model.terminalId = prefProvider.getValueInt(TERMINAL_ID, 0)
-            model.orderType = TAKEOUT
-            model.locationId = prefProvider.getValueInt(Constants.LOCATION_ID, 1)
-            model.serviceCharge = serviceChargesList
-            // model.orderTypeId = 1
-            viewModel.ordertypelist.forEach {
-                if (it.orderType.lowercase() == TAKEOUT.lowercase()) {
-                    model.orderTypeId = it.id
-                }
+            if (cartList.isEmpty()) {
+                viewModel.createCart(cartList)
             }
-            cartList.add(model)
-            viewModel.addCart(cartList[0])
-            return cartList
+            item.itemQuantity = 1
+            viewModel.cartLogic(cartList, item, Constants.ADD)
         }
-
-        return cartList
     }
+
+
+
 
     override fun onCancelItemSelected() {
         loadCategoryFragment(CategoryFragment(this))
@@ -505,38 +468,9 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
     }
 
 
-    private fun checkItemQty(
-        data: TbItem,
-        variationAdapter: VariationDashboardListAdapter?
-    ): Boolean {
-
-        if (data.variationsAttributes.isNotEmpty()) {
-
-            val stockQty = variationAdapter?.getItem()?.stockQty
-
-            return if (stockQty?.isNotEmpty() == true) {
-
-                stockQty.toInt() >= 1
-
-            } else {
-                false
-            }
-
-        } else {
-
-            return if (data.isManualSales) {
-                true
-            } else {
-                data.quantity >= 1
-            }
-        }
-
-        return false
-    }
-
     override fun onItemUpdate(item: TbItem) {
         Log.e(TAG, "dashboardPosItem:  ${Gson().toJson(item)}")
-        var frag: Fragment = AddItemFragment.newInstance(item, this, cartList, true)
+        val frag: Fragment = AddItemFragment.newInstance(item, this, cartList, true)
         loadCategoryFragment(frag)
     }
 

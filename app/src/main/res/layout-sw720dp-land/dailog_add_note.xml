@@ -90,6 +90,7 @@
                 android:digits="@string/disable_emoji_string"
                 android:inputType="textCapWords"
                 android:padding="@dimen/_7sdp"
+                android:textColor="@color/viewTextColor"
                 android:textColorHint="@color/hintColor"
                 android:textSize="@dimen/_6mdpi" />
 
