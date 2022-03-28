@@ -28,6 +28,7 @@ import com.android.pos.di.PrefProvider
 import com.android.pos.ui.adapter.DineInAdapter
 import com.android.pos.ui.adapter.boldpos.CartAdapter
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
+import com.android.pos.ui.fragments.manualsales.ManualSaleViewModel
 import com.android.pos.ui.fragments.payment.PaymentViewModel
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.MethodUtils
@@ -66,6 +67,7 @@ class CartFragment(val itemClickListner:ItemClickListner?) : Fragment(), MyCallb
     var cartlist: ArrayList<CartModel> = arrayListOf()
     private val viewModel by activityViewModels<DashBoardCategoryViewModel>()
     private val viewModelPayment by activityViewModels<PaymentViewModel>()
+    private val viewModelManualSale by activityViewModels<ManualSaleViewModel>()
     var updateBundle: Bundle? = null
     var isFromPayment: Boolean = false
     private var serviceChargesObserve: Observer<Resource<List<TbServiceCharge>>>? = null
@@ -165,6 +167,11 @@ class CartFragment(val itemClickListner:ItemClickListner?) : Fragment(), MyCallb
         if (isAdded) {
             addDineInObserver()
             addObserver()
+
+            viewModelManualSale.cartList(prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)).observe(requireActivity()){
+                Log.e(TAG,"cartListItems${it}")
+            }
+
             //addObserver()
         }
 

@@ -448,6 +448,69 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
             }
         }
 
+        binding.btnPay.setOnClickListener {
+            if (binding.txtTotalAmount.text.toString() != "$0.00" && cartList?.isNotEmpty() == true) {
+/*
+                if (cartList?.isNotEmpty() == true) {
+                    dashboardViewModel.mAllWords(
+                        prefProvider.getValue(Constants.ORDER_TYPE, TAKEOUT).toString(),
+                        prefProvider.getValueInt(
+                            Constants.EMPLOYEE_ID, 0
+                        )
+                    ).observe(
+                        viewLifecycleOwner, nameObserver
+                    )
+                }
+*/
+
+                 val bundle=Bundle().apply {
+                     putString(Constants.REDIRECT_FROM,Constants.MANUAL_SALE)
+                     putDouble(
+                         "totalPrice",
+                         viewModel.redeemLoyaltyInfo.getAmountToBePaid() ?: 0.0
+                     )
+                     putDouble("subTotalPrice", viewModel.subTotalPrice)
+                     putDouble("totalTax", viewModel.totalTax)
+                     putDouble("totalDiscount", viewModel.totalDiscount)
+                     putDouble("totalServiceCharge", viewModel.totalServiceCharge)
+                     cartList?.get(0)?.customer = assignCustomer
+                     putParcelable("cartList", cartList?.get(0))
+                     putString(
+                         "redeemLoyalty",
+                         Gson().toJson(viewModel.redeemLoyaltyInfo)
+                     )
+
+                 }
+
+
+
+                /*dashboardViewModel.totalPrice=viewModel.redeemLoyaltyInfo.getAmountToBePaid() ?: 0.0
+                dashboardViewModel.totalTax=viewModel.totalTax
+                dashboardViewModel.totalDiscount=viewModel.totalDiscount
+                //dashboardViewModel.serviceCharge=viewModel.serviceCharge
+                prefProvider.setValue(Constants.ORDER_TYPE, prefProvider.getValue(Constants.ORDER_TYPE, TAKEOUT))
+                prefProvider.setValue("PaidAmount", "")
+                prefProvider.setValue(Constants.WHOLE_AMOUNT, "")
+                prefProvider.setValueInt("cardCount", 0)
+                prefProvider.setValue(Constants.SUB_TOTAL, "")
+                prefProvider.setValue(Constants.CASH_DISCOUNT_SURCHARGE, "")
+                prefProvider.setValue(Constants.TOTAL_DISCOUNT, "")
+                prefProvider.setValue(Constants.TIP, "")
+                prefProvider.setValue(Constants.TAX_CHARGE, "")
+                prefProvider.setValue(Constants.SERVICE_CHARGE, "")*/
+                findNavController().navigate(R.id.action_manualSaleCart_to_paymentBoldPosFragment,bundle)
+            } else {
+
+                AlertUtils.showCustomAlertWithListenerWithOK(
+                    requireContext(),
+                    resources.getString(R.string.please_add_Atleast_one_item_in_cart)
+                ) { _, _ ->
+                }
+            }
+
+        }
+
+
         binding.imgOrderMenu.setOnClickListener {
 
             val popupMenu = PopupMenu(requireContext(), it)
@@ -527,55 +590,6 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
             }
         }
 
-        binding.btnPay.setOnClickListener {
-
-            if (binding.txtTotalAmount.text.toString() != "$0.00" && cartList?.isNotEmpty() == true) {
-
-               /* val bundle = Bundle()
-                Log.e(
-                    "!_@_",
-                    "Total Price: ${viewModel.redeemLoyaltyInfo.getAmountToBePaid() ?: 0.0}"
-                )
-                bundle.putDouble(
-                    "totalPrice",
-                    viewModel.redeemLoyaltyInfo.getAmountToBePaid() ?: 0.0
-                )
-                bundle.putDouble("subTotalPrice", viewModel.subTotalPrice)
-                bundle.putDouble("totalTax", viewModel.totalTax)
-                bundle.putDouble("totalDiscount", viewModel.totalDiscount)
-                bundle.putDouble("totalServiceCharge", viewModel.totalServiceCharge)
-                cartList?.get(0)?.customer = assignCustomer
-                bundle.putParcelable("cartList", cartList?.get(0))
-                bundle.putString(
-                    "redeemLoyalty",
-                    Gson().toJson(viewModel.redeemLoyaltyInfo)
-                )*/
-
-                dashboardViewModel.totalPrice=viewModel.redeemLoyaltyInfo.getAmountToBePaid() ?: 0.0
-                dashboardViewModel.totalTax=viewModel.totalTax
-                dashboardViewModel.totalDiscount=viewModel.totalDiscount
-                //dashboardViewModel.serviceCharge=viewModel.serviceCharge
-                prefProvider.setValue(Constants.ORDER_TYPE, prefProvider.getValue(Constants.ORDER_TYPE, TAKEOUT))
-                prefProvider.setValue("PaidAmount", "")
-                prefProvider.setValue(Constants.WHOLE_AMOUNT, "")
-                prefProvider.setValueInt("cardCount", 0)
-                prefProvider.setValue(Constants.SUB_TOTAL, "")
-                prefProvider.setValue(Constants.CASH_DISCOUNT_SURCHARGE, "")
-                prefProvider.setValue(Constants.TOTAL_DISCOUNT, "")
-                prefProvider.setValue(Constants.TIP, "")
-                prefProvider.setValue(Constants.TAX_CHARGE, "")
-                prefProvider.setValue(Constants.SERVICE_CHARGE, "")
-                findNavController().navigate(R.id.action_manualSaleCart_to_paymentBoldPosFragment)
-            } else {
-
-                AlertUtils.showCustomAlertWithListenerWithOK(
-                    requireContext(),
-                    resources.getString(R.string.please_add_Atleast_one_item_in_cart)
-                ) { _, _ ->
-                }
-            }
-
-        }
 
 
         binding.footer.linearMore.setOnClickListener {

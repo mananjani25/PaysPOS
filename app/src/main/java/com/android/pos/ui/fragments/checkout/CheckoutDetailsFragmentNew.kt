@@ -764,112 +764,139 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
         fm.beginTransaction().replace(R.id.frameLayoutId, fragment).commit()
     }
 
-    fun getDataFromPref() {
-        if (prefProvider.getValue(Constants.WHOLE_AMOUNT, "").isEmpty()) {
-            WholetotalPrice = viewModel.totalPrice
-            prefProvider.setValue(
-                Constants.WHOLE_AMOUNT,
-                String.format("%.2f", viewModel.totalPrice)
-            )
-        } else {
-            WholetotalPrice = prefProvider.getValue(Constants.WHOLE_AMOUNT, "").toDouble()
-        }
+     fun getDataFromPref() {
+         if (prefProvider.getValue(Constants.TIP, "").isEmpty()) {
+             tipAmount = viewModel.tip
+             prefProvider.setValue(Constants.TIP, String.format("%.2f", viewModel.tip))
+         } else {
+             tipAmount = prefProvider.getValue(Constants.TIP, "").toDouble()
+         }
 
-        if (prefProvider.getValue(Constants.SUB_TOTAL, "").isEmpty()) {
-            subTotalPrice = viewModel.subTotalPrice
-            prefProvider.setValue(
-                Constants.SUB_TOTAL,
-                String.format("%.2f", viewModel.subTotalPrice)
-            )
-        } else {
-            subTotalPrice = prefProvider.getValue(Constants.SUB_TOTAL, "").toDouble()
-        }
-
-        if (prefProvider.getValue(Constants.TAX_CHARGE, "").isEmpty()) {
-            totalTax = viewModel.totalTax
-            prefProvider.setValue(Constants.TAX_CHARGE, String.format("%.2f", viewModel.totalTax))
-        } else {
-            totalTax = prefProvider.getValue(Constants.TAX_CHARGE, "").toDouble()
-        }
-
-
-        if (prefProvider.getValue(Constants.SERVICE_CHARGE, "").isEmpty()) {
-            totalServiceCharge = viewModel.totalServiceCharge
-            prefProvider.setValue(
-                Constants.SERVICE_CHARGE,
-                String.format("%.2f", viewModel.totalServiceCharge)
-            )
-        } else {
-            totalServiceCharge = prefProvider.getValue(Constants.SERVICE_CHARGE, "").toDouble()
-        }
+         if (MethodUtils.isEnableCashDiscount(requireContext())) {
+             if (prefProvider.getValue(Constants.CASH_DISCOUNT_SURCHARGE, "").isEmpty()) {
+                 cashDiscountSurcharge = MethodUtils.calculateCashDiscount(
+                     WholetotalPrice,
+                     prefProvider,
+                     requireContext()
+                 )
+                 prefProvider.setValue(
+                     Constants.CASH_DISCOUNT_SURCHARGE,
+                     String.format("%.2f", cashDiscountSurcharge)
+                 )
+             } else {
+                 cashDiscountSurcharge =
+                     prefProvider.getValue(Constants.CASH_DISCOUNT_SURCHARGE, "0.0").toDouble()
+             }
+         } else {
+             cashDiscountSurcharge = 0.0
+             prefProvider.setValue(
+                 Constants.CASH_DISCOUNT_SURCHARGE,
+                 String.format("%.2f", cashDiscountSurcharge)
+             )
+         }
 
 
-        if (prefProvider.getValue(Constants.TOTAL_DISCOUNT, "").isEmpty()) {
-            totalDiscount = viewModel.totalDiscount
-            prefProvider.setValue(
-                Constants.TOTAL_DISCOUNT,
-                String.format("%.2f", viewModel.totalDiscount)
-            )
-        } else {
-            totalDiscount = prefProvider.getValue(Constants.TOTAL_DISCOUNT, "").toDouble()
-        }
+         if (arguments?.getString(Constants.REDIRECT_FROM).equals(Constants.MANUAL_SALE)){
+             WholetotalPrice= arguments?.getDouble("totalPrice")!!
+             subTotalPrice= arguments?.getDouble("subTotalPrice")!!
+             totalTax= arguments?.getDouble("totalTax")!!
+             totalServiceCharge= arguments?.getDouble("totalServiceCharge")!!
+             totalDiscount= arguments?.getDouble("totalDiscount")!!
+             MethodUtils.setPriceTextView(
+                 binding.tvAmount,
+                 WholetotalPrice
+             )
+             cartList = arguments?.getParcelable("cartList")!!
 
 
-        if (prefProvider.getValue(Constants.TIP, "").isEmpty()) {
-            tipAmount = viewModel.tip
-            prefProvider.setValue(Constants.TIP, String.format("%.2f", viewModel.tip))
-        } else {
-            tipAmount = prefProvider.getValue(Constants.TIP, "").toDouble()
-        }
+             paymentviewModel.saveActualValue(
+                 WholetotalPrice,
+                 subTotalPrice,
+                 totalTax,
+                 totalServiceCharge,
+                 viewModel.tip,
+                 totalDiscount,
+                 MethodUtils.calculateCashDiscount(totalPrice, prefProvider, requireContext()),
+                 totalPrice
+             )
 
 
-        if (MethodUtils.isEnableCashDiscount(requireContext())) {
-            if (prefProvider.getValue(Constants.CASH_DISCOUNT_SURCHARGE, "").isEmpty()) {
-                cashDiscountSurcharge = MethodUtils.calculateCashDiscount(
-                    WholetotalPrice,
-                    prefProvider,
-                    requireContext()
-                )
-                prefProvider.setValue(
-                    Constants.CASH_DISCOUNT_SURCHARGE,
-                    String.format("%.2f", cashDiscountSurcharge)
-                )
-            } else {
-                cashDiscountSurcharge =
-                    prefProvider.getValue(Constants.CASH_DISCOUNT_SURCHARGE, "0.0").toDouble()
-            }
-        } else {
-            cashDiscountSurcharge = 0.0
-            prefProvider.setValue(
-                Constants.CASH_DISCOUNT_SURCHARGE,
-                String.format("%.2f", cashDiscountSurcharge)
-            )
-        }
+         }
+         else{
+             if (prefProvider.getValue(Constants.WHOLE_AMOUNT, "").isEmpty()) {
+                 WholetotalPrice = viewModel.totalPrice
+                 prefProvider.setValue(
+                     Constants.WHOLE_AMOUNT,
+                     String.format("%.2f", viewModel.totalPrice)
+                 )
+             } else {
+                 WholetotalPrice = prefProvider.getValue(Constants.WHOLE_AMOUNT, "").toDouble()
+             }
 
-        cartList = viewModel.cartModel
-        Log.e("ORDER_TYPE", prefProvider.getValue(Constants.ORDER_TYPE, Constants.TAKEOUT))
+             if (prefProvider.getValue(Constants.SUB_TOTAL, "").isEmpty()) {
+                 subTotalPrice = viewModel.subTotalPrice
+                 prefProvider.setValue(
+                     Constants.SUB_TOTAL,
+                     String.format("%.2f", viewModel.subTotalPrice)
+                 )
+             } else {
+                 subTotalPrice = prefProvider.getValue(Constants.SUB_TOTAL, "").toDouble()
+             }
 
-        viewModel.ordertypelist.forEach {
-            if (prefProvider.getValue(Constants.ORDER_TYPE, Constants.TAKEOUT) == it.orderType) {
-                paymentviewModel.setOrderTypeId(it.id)
-            }
-        }
-        paymentviewModel.saveActualValue(
-            viewModel.totalPrice,
-            viewModel.subTotalPrice,
-            viewModel.totalTax,
-            viewModel.totalServiceCharge,
-            viewModel.tip,
-            viewModel.totalDiscount,
-            MethodUtils.calculateCashDiscount(viewModel.totalPrice, prefProvider, requireContext()),
-            viewModel.totalPrice
-        )
+             if (prefProvider.getValue(Constants.TAX_CHARGE, "").isEmpty()) {
+                 totalTax = viewModel.totalTax
+                 prefProvider.setValue(Constants.TAX_CHARGE, String.format("%.2f", viewModel.totalTax))
+             } else {
+                 totalTax = prefProvider.getValue(Constants.TAX_CHARGE, "").toDouble()
+             }
+
+
+             if (prefProvider.getValue(Constants.SERVICE_CHARGE, "").isEmpty()) {
+                 totalServiceCharge = viewModel.totalServiceCharge
+                 prefProvider.setValue(
+                     Constants.SERVICE_CHARGE,
+                     String.format("%.2f", viewModel.totalServiceCharge)
+                 )
+             } else {
+                 totalServiceCharge = prefProvider.getValue(Constants.SERVICE_CHARGE, "").toDouble()
+             }
+
+
+             if (prefProvider.getValue(Constants.TOTAL_DISCOUNT, "").isEmpty()) {
+                 totalDiscount = viewModel.totalDiscount
+                 prefProvider.setValue(
+                     Constants.TOTAL_DISCOUNT,
+                     String.format("%.2f", viewModel.totalDiscount)
+                 )
+             } else {
+                 totalDiscount = prefProvider.getValue(Constants.TOTAL_DISCOUNT, "").toDouble()
+             }
+
+             MethodUtils.setPriceTextView(
+                 binding.tvAmount,
+                 prefProvider.getValue(Constants.WHOLE_AMOUNT, "0.0").toDouble()
+             )
+
+             cartList = viewModel.cartModel
+             viewModel.ordertypelist.forEach {
+                 if (prefProvider.getValue(Constants.ORDER_TYPE, Constants.TAKEOUT) == it.orderType) {
+                     paymentviewModel.setOrderTypeId(it.id)
+                 }
+             }
+             paymentviewModel.saveActualValue(
+                 viewModel.totalPrice,
+                 viewModel.subTotalPrice,
+                 viewModel.totalTax,
+                 viewModel.totalServiceCharge,
+                 viewModel.tip,
+                 viewModel.totalDiscount,
+                 MethodUtils.calculateCashDiscount(viewModel.totalPrice, prefProvider, requireContext()),
+                 viewModel.totalPrice
+             )
+
+         }
 
         setupPaymentScreen(isSelectedCount)
-        MethodUtils.setPriceTextView(
-            binding.tvAmount,
-            prefProvider.getValue(Constants.WHOLE_AMOUNT, "0.0").toDouble()
-        )
         val formatterdate = SimpleDateFormat("yyyy-MM-dd")
         val formattertime = SimpleDateFormat("hh:mm a")
         val date = Date()

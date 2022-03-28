@@ -522,4 +522,8 @@ object Constants {
     const val REJECT = 7
 
     const val MAGTEK_HARDWARE = "MegtekHardware"
+
+    const val REDIRECT_FROM = "redirect_from"
+    const val MANUAL_SALE = "manual_sale"
+
 }
