@@ -31,8 +31,10 @@ class CartAdapter : RecyclerView.Adapter<CartAdapter.MyViewHolder>() {
             binding.txtName.text = item.name
             binding.txtQuantity.text = "x" + item.itemQuantity
             binding.txtEachQntPrice.text = MethodUtils.roundOffAmount((item.price))
-            binding.txtTotalPrice.text =
-                MethodUtils.roundOffAmount((item.price * item.itemQuantity))
+            MethodUtils.setPriceTextView(binding.txtEachQntPrice, totalEachPrice(item))
+
+            MethodUtils.setPriceTextView(binding.txtTotalPrice, totalPrice(item))
+
 
             if (item.discountPrice != 0.0) {
                 binding.tvDiscountRate.visibility = View.VISIBLE
@@ -94,7 +96,6 @@ class CartAdapter : RecyclerView.Adapter<CartAdapter.MyViewHolder>() {
     }
 
     fun setList(list: ArrayList<TbItem>) {
-
         cartList = list
         notifyDataSetChanged()
 
@@ -146,5 +147,26 @@ class CartAdapter : RecyclerView.Adapter<CartAdapter.MyViewHolder>() {
 
         }
     }
+
+
+    private fun totalEachPrice(model: TbItem): Double {
+        return if (model.modifiers.isNotEmpty()) {
+
+            var totalPrice = 0.0
+
+            val mList = model.modifiers
+            mList.forEach { items ->
+                totalPrice += items.price * 1
+            }
+
+            (model.price * 1) + totalPrice
+        } else {
+
+            model.price * 1
+
+        }
+
+    }
+
 
 }

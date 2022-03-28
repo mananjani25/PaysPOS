@@ -51,6 +51,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
     var resultData:TbCustomer?=null
     var cashDiscountType = ""
     lateinit var cashDiscountModel: CashDiscountModel
+
     @Inject
     lateinit var prefProvider: PrefProvider
 
@@ -71,6 +72,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
         resultListener()
         addObserver()
+
         getServiceCharges()
         syncData()
         binding.lifecycleOwner = this

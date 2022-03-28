@@ -1,18 +1,22 @@
 package com.android.pos.ui.adapter
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.data.entities.Modifier
 import com.android.pos.databinding.ViewCartModifierBinding
+import com.google.gson.Gson
 
 class CartItemModifierAdapter :
     RecyclerView.Adapter<CartItemModifierAdapter.MyViewHolder>() {
     var list = ArrayList<Modifier>()
+    private val TAG = "CartItemModifierAdapter"
 
     inner class MyViewHolder(private val binding: ViewCartModifierBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(item: Modifier) {
+            Log.e(TAG,"itemModifiers:  ${Gson().toJson(item)}")
             binding.model = item
             binding.executePendingBindings()
         }

@@ -117,6 +117,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment() {
 
 
             item.itemQuantity = qty
+
             Log.e(TAG, "cartListAddItem:  ${Gson().toJson(cartList)}")
 
             if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == Constants.OPEN_ORDER) {
@@ -147,10 +148,12 @@ class AddItemFragment(val listner: ItemListner) : Fragment() {
             if (item.modifier_set_ids.isNotEmpty()) {
                 if (minMaxValidationCheck(adapter)) {
 
-                    val modifiers = adapter?.getSelectedModifiers()
+                    val modifiers = adapter.getSelectedModifiers()
+                    Log.e(TAG, "selectedmodifiers  ${Gson().toJson(modifiers)}")
+                    Log.e(TAG, "getQuantity  ${qty}")
                     if (modifiers != null) {
                         modifiers.forEach {
-                            it.itemQuantity = item.itemQuantity
+                            it.itemQuantity = qty
                         }
                         item.modifiers = modifiers
 
@@ -166,6 +169,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment() {
                 }
 
             }
+
             if (isUpdateItem) {
                 viewModel.cartLogic(cartList, item, Constants.UPDATE)
             } else {
