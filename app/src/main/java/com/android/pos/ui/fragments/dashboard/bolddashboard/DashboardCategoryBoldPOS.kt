@@ -50,8 +50,6 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
     var resultData:TbCustomer?=null
     var cashDiscountType = ""
     lateinit var cashDiscountModel: CashDiscountModel
-    var dineInResult: Bundle? = null
-    var resultData: TbCustomer? = null
 
     @Inject
     lateinit var prefProvider: PrefProvider
