@@ -530,6 +530,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
             prefProvider.setValue(Constants.ORDER_TYPE, TAKEOUT)
             prefProvider.setValue(Constants.CUSTOMER_NAME, "")
+            prefProvider.setValue(Constants.PREF_CUSTOMER, "")
             prefProvider.setValueInt(Constants.CUSTOMER_ID, -1)
             viewModel.deleteCart()
         }
@@ -5019,6 +5020,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         prefProvider.setValueInt(Constants.CUSTOMER_ID, -1)
         prefProvider.setValue("PaidAmount", "")
         prefProvider.setValue(WHOLE_AMOUNT, "")
+        prefProvider.setValue(Constants.PREF_CUSTOMER, "")
         prefProvider.setValue(SUB_TOTAL, "")
         prefProvider.setValue(Constants.CASH_DISCOUNT_SURCHARGE, "")
         prefProvider.setValue(Constants.TOTAL_DISCOUNT, "")

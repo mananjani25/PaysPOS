@@ -218,7 +218,7 @@ class AssignCustomerOrderFragment : Fragment(), ItemCallback {
         if (isFromDineIn == true) {
             findNavController().navigate(R.id.action_assignCustomerOrderFragment_to_dashboard_category_new,result)
         } else {
-            setFragmentResult("request_key_customer", result)
+            requireActivity().supportFragmentManager.setFragmentResult("request_key_customer", result)
             val navController = findNavController()
             navController.previousBackStackEntry?.savedStateHandle?.set(
                 Constants.KEY,

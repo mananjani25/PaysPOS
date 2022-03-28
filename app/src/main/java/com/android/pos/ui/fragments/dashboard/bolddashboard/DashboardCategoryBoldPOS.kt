@@ -46,10 +46,11 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
     var ordertypelist: ArrayList<TbOrderType> = arrayListOf()
     var isupdate = false
     var orderDiscount = 0.0
-    var dineInResult:Bundle?=null
-    var resultData:TbCustomer?=null
+    var dineInResult: Bundle? = null
+    var resultData: TbCustomer? = null
     var cashDiscountType = ""
     lateinit var cashDiscountModel: CashDiscountModel
+
     @Inject
     lateinit var prefProvider: PrefProvider
 
@@ -70,9 +71,22 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
         resultListener()
         addObserver()
+        getLoyaltyPrograms()
         getServiceCharges()
         binding.lifecycleOwner = this
         return binding.root
+    }
+
+    private fun getLoyaltyPrograms() {
+        Log.e("Loyalty", "getLoyaltyPrograms called..")
+        viewModel.activeLoyaltyProgram = prefProvider.getActiveLoyaltyData()
+        viewModel.activeLoyaltyProgramLiveData.observe(requireActivity()) {
+            if (it.status == Status.SUCCESS && it.data != null) {
+                Log.e("Loyalty", "getLoyaltyPrograms fetched..")
+                prefProvider.saveActiveLoyaltyData(it.data)
+                viewModel.activeLoyaltyProgram = it.data
+            }
+        }
     }
 
     private fun resultListener() {
@@ -126,7 +140,6 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
         syncData()
         requireActivity().window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         loadCartFragment(CartFragment(this))
-
 
 
 /*

@@ -47,7 +47,8 @@ import kotlin.collections.ArrayList
 
 
 @AndroidEntryPoint
-class CartFragment(val itemClickListner:ItemClickListner?) : Fragment(), MyCallback, DineInAdapter.DineInCallback {
+class CartFragment(val itemClickListner: ItemClickListner?) : Fragment(), MyCallback,
+    DineInAdapter.DineInCallback {
     private lateinit var binding: FragmentCartBinding
     var fragmentId: Int? = null
     var checkoutHeaderId: Int = 0
@@ -89,7 +90,7 @@ class CartFragment(val itemClickListner:ItemClickListner?) : Fragment(), MyCallb
     companion object {
         fun newInstacne(isFromPayment: Boolean): CartFragment {
             val bundle = Bundle()
-            bundle.putBoolean("isFromPayment",isFromPayment)
+            bundle.putBoolean("isFromPayment", isFromPayment)
             val frag = CartFragment(null)
             frag.arguments = bundle
             return frag
@@ -155,7 +156,8 @@ class CartFragment(val itemClickListner:ItemClickListner?) : Fragment(), MyCallb
         initListeners()
         setCartAdapter()
         getDineInData()
-
+        callback()
+        setupLoyalytyPoints()
         nameObserver = Observer {
 
             bindData(it)
@@ -217,6 +219,26 @@ class CartFragment(val itemClickListner:ItemClickListner?) : Fragment(), MyCallb
             binding.tvSave.text = getString(R.string.save)
         }
 
+    }
+
+    private fun setupLoyalytyPoints() {
+        binding.checkloylaty.setOnCheckedChangeListener { _, p1 ->
+            viewModel.redeemLoyaltyInfo.needToApplyLoyalty = p1
+            prefProvider.setValueboolean(Constants.LOYALTY_ADDED, p1)
+            addObserver()
+        }
+
+    }
+
+    private fun callback() {
+        requireActivity().supportFragmentManager.setFragmentResultListener(
+            "request_key_customer",
+            viewLifecycleOwner
+        ) { requestKey: String, bundle: Bundle ->
+            var data: TbCustomer = bundle.getParcelable<TbCustomer>("data") as TbCustomer
+            viewModel.assignCustomer = data
+            viewModel.selectedCustomer = data
+        }
     }
 
     private fun removeObserver() {
@@ -399,6 +421,33 @@ class CartFragment(val itemClickListner:ItemClickListner?) : Fragment(), MyCallb
                 binding.txtDiscount.text = MethodUtils.roundOffAmount(viewModel.totalDiscount)
                 binding.txtNoncashAdj.text =
                     MethodUtils.roundOffAmount(viewModel.cashdiscountAmount)
+                var data: TbCustomer? = prefProvider.getCustomerData()
+                if (data != null) {
+                    if (viewModel.loyaltyPointCondition(data)) {
+                        binding.liinearInfoLayout.layoutParams.height =
+                            resources.getDimension(R.dimen._70sdp).toInt()
+                        binding.relativeLoylatyPoints.visibility = View.VISIBLE
+                        binding.lblLoyaltyPoints.visibility = View.VISIBLE
+                        Log.e(TAG, "InsideLoyalty")
+                        Log.e(TAG, Gson().toJson(viewModel.redeemLoyaltyInfo))
+                        binding.txtLoyaltyAmount.text =
+                            "- $${
+                                String.format(
+                                    "%.2f",
+                                    viewModel.redeemLoyaltyInfo.usedLoyaltyAmount
+                                )
+                            }"
+                        binding.txtLoyaltyPoints.text =
+                            "${viewModel.redeemLoyaltyInfo.usedLoyaltyPoints}"
+                        binding.checkloylaty.isChecked =
+                            viewModel.redeemLoyaltyInfo.needToApplyLoyalty
+                    } else {
+                        binding.liinearInfoLayout.layoutParams.height =
+                            resources.getDimension(R.dimen._40sdp).toInt()
+                        binding.relativeLoylatyPoints.visibility = View.GONE
+                        binding.lblLoyaltyPoints.visibility = View.GONE
+                    }
+                }
             } else {
                 cartAdapter.clearList()
                 binding.txtTotal.text = MethodUtils.roundOffAmount(0.0)
@@ -410,6 +459,20 @@ class CartFragment(val itemClickListner:ItemClickListner?) : Fragment(), MyCallb
                 binding.txtServiceCharge.text =
                     MethodUtils.roundOffAmount(0.0)
                 binding.tvPayNow.text = "Pay " + MethodUtils.roundOffAmount(0.0)
+                var data: TbCustomer? = prefProvider.getCustomerData()
+                if (data != null) {
+                    if (viewModel.loyaltyPointCondition(data)) {
+                        binding.liinearInfoLayout.layoutParams.height =
+                            resources.getDimension(R.dimen._70sdp).toInt()
+                        binding.relativeLoylatyPoints.visibility = View.VISIBLE
+                        binding.lblLoyaltyPoints.visibility = View.VISIBLE
+                    } else {
+                        binding.liinearInfoLayout.layoutParams.height =
+                            resources.getDimension(R.dimen._40sdp).toInt()
+                        binding.relativeLoylatyPoints.visibility = View.GONE
+                        binding.lblLoyaltyPoints.visibility = View.GONE
+                    }
+                }
             }
         }
 
@@ -437,15 +500,20 @@ class CartFragment(val itemClickListner:ItemClickListner?) : Fragment(), MyCallb
 
     private fun clearCustomer() {
         prefProvider.setValue(Constants.CUSTOMER_NAME, "")
+        prefProvider.setValue(Constants.PREF_CUSTOMER, "")
         prefProvider.setValueInt(Constants.CUSTOMER_ID, -1)
+        binding.liinearInfoLayout.layoutParams.height =
+            resources.getDimension(R.dimen._40sdp).toInt()
+        binding.relativeLoylatyPoints.visibility = View.GONE
+        binding.lblLoyaltyPoints.visibility = View.GONE
         displayCustomer()
         refreshItemCalculation()
     }
 
 
     private fun refreshItemCalculation() {
-        viewModel.itemCalculation(
-            cartlist,
+        viewModel.itemCalculationCartModel(
+            cartlist[0],
             binding.txtTotal,
             requireContext()
         )
@@ -654,16 +722,15 @@ class CartFragment(val itemClickListner:ItemClickListner?) : Fragment(), MyCallb
                     if (prefProvider.getValue(ORDER_TYPE, "").toString() != "") {
                         prefProvider.setValue(ORDER_TYPE, "")
                     }
-                    val dineInList=ArrayList<DineInModel>()
+                    val dineInList = ArrayList<DineInModel>()
                     dineInCartAdapter.setList(dineInList)
                     dineInCartAdapter.notifyDataSetChanged()
-                    binding.tvPayNow.text="Pay"
+                    binding.tvPayNow.text = "Pay"
                     clearCustomer()
 
                     prefProvider.setValueboolean(Constants.DINE_IN_UPDATE, false)
 
-                }
-                else{
+                } else {
                     clearCustomer()
                     viewModel.deleteCart()
                     cartlist.clear()
@@ -811,8 +878,7 @@ class CartFragment(val itemClickListner:ItemClickListner?) : Fragment(), MyCallb
 
                 }
 
-                if (cartlist[0].items?.isNotEmpty() == true)
-                {
+                if (cartlist[0].items?.isNotEmpty() == true) {
 
                     val dineList = cartlist[0].dineInList ?: dineInCartAdapter.getList()
                     // mannual sale added in dineinn //yash
@@ -936,7 +1002,6 @@ class CartFragment(val itemClickListner:ItemClickListner?) : Fragment(), MyCallb
             )
 
             //  binding.rvCartList.gone()
-
 
 
         }
