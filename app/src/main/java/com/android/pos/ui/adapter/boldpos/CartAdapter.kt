@@ -2,10 +2,12 @@ package com.android.pos.ui.adapter.boldpos
 
 import android.util.Log
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.data.entities.TbItem
 import com.android.pos.databinding.ViewItemCartBinding
+import com.android.pos.ui.adapter.CartItemModifierAdapter
 import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.callback.MyCallback
 
@@ -30,6 +32,16 @@ class CartAdapter : RecyclerView.Adapter<CartAdapter.MyViewHolder>() {
             binding.txtEachQntPrice.text = MethodUtils.roundOffAmount((item.price))
             binding.txtTotalPrice.text =
                 MethodUtils.roundOffAmount((item.price * item.itemQuantity))
+
+            if (item.modifiers.isNotEmpty()) {
+                binding.rvModifiers.visibility = View.VISIBLE
+                val adapter = CartItemModifierAdapter()
+                binding.rvModifiers.adapter = adapter
+                adapter.addAll(item.modifiers)
+            } else {
+                binding.rvModifiers.visibility = View.GONE
+            }
+
 
 
         }
