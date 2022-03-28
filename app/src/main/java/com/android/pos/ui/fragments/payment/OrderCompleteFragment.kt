@@ -601,7 +601,12 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                 type = "Message"
                 binding.linerContent.visibility = View.VISIBLE
-                binding.linearSplitLayout.visibility = View.GONE
+                if (isSpilt) {
+                    binding.linearSplitLayout.visibility = View.VISIBLE
+                } else {
+                    binding.linearSplitLayout.visibility = View.GONE
+
+                }
                 binding.llSendReceipt.visibility = View.VISIBLE
                 binding.edtEmail.visibility = View.GONE
                 binding.imgBack.visibility = View.VISIBLE

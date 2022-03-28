@@ -399,7 +399,7 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
 
                             prefProvider.setValue(
                                 Constants.WHOLE_AMOUNT,
-                                String.format("%.2f", (wholePrice - remainingValue)).toString()
+                                String.format("%.2f",remainingValue).toString()
                             )
                         } else {
                             remainingValue = wholePrice - (paymentAmount + cashDiscountSurcharge)
