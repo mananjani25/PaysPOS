@@ -70,7 +70,6 @@ class CartAdapter : RecyclerView.Adapter<CartAdapter.MyViewHolder>() {
     }
 
     fun setList(list: ArrayList<TbItem>) {
-
         cartList = list
         notifyDataSetChanged()
 

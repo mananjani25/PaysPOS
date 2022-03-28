@@ -46,8 +46,9 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
     var ordertypelist: ArrayList<TbOrderType> = arrayListOf()
     var isupdate = false
     var orderDiscount = 0.0
-    var dineInResult:Bundle?=null
-    var resultData:TbCustomer?=null
+    var dineInResult: Bundle? = null
+    var resultData: TbCustomer? = null
+
     @Inject
     lateinit var prefProvider: PrefProvider
 
@@ -68,6 +69,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
         resultListener()
         addObserver()
+
         getServiceCharges()
         binding.lifecycleOwner = this
         return binding.root
@@ -124,7 +126,6 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
         syncData()
         requireActivity().window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         loadCartFragment(CartFragment(this))
-
 
 
 /*

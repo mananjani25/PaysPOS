@@ -35,7 +35,6 @@ import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.callback.ItemClickListner
 import com.android.pos.utils.callback.MyCallback
 import com.android.pos.utils.extensions.alert
-import com.android.pos.utils.extensions.gone
 import com.android.pos.utils.extensions.visible
 import com.android.pos.utils.statusUtils.Resource
 import com.google.gson.Gson
@@ -46,7 +45,8 @@ import javax.inject.Inject
 
 
 @AndroidEntryPoint
-class CartFragment(val itemClickListner:ItemClickListner?) : Fragment(), MyCallback, DineInAdapter.DineInCallback {
+class CartFragment(val itemClickListner: ItemClickListner?) : Fragment(), MyCallback,
+    DineInAdapter.DineInCallback {
     private lateinit var binding: FragmentCartBinding
     var fragmentId: Int? = null
     var checkoutHeaderId: Int = 0
@@ -87,7 +87,7 @@ class CartFragment(val itemClickListner:ItemClickListner?) : Fragment(), MyCallb
     companion object {
         fun newInstacne(isFromPayment: Boolean): CartFragment {
             val bundle = Bundle()
-            bundle.putBoolean("isFromPayment",isFromPayment)
+            bundle.putBoolean("isFromPayment", isFromPayment)
             val frag = CartFragment(null)
             frag.arguments = bundle
             return frag
@@ -139,7 +139,7 @@ class CartFragment(val itemClickListner:ItemClickListner?) : Fragment(), MyCallb
     }
 
     private fun setUpData() {
-        Log.e(TAG,"isFromPayment:  $isFromPayment")
+        Log.e(TAG, "isFromPayment:  $isFromPayment")
         if (isFromPayment) {
             binding.linearButtonView.visibility = View.GONE
             binding.imgOrderMenu.visibility = View.INVISIBLE
@@ -201,12 +201,12 @@ class CartFragment(val itemClickListner:ItemClickListner?) : Fragment(), MyCallb
                 )
 
             } else {
-              //  prefProvider.setValue(ORDER_TYPE, TAKEOUT)
+                //  prefProvider.setValue(ORDER_TYPE, TAKEOUT)
                 Log.e("ORDER_TYPE", "Updated check")
             }
         } else {
             isOrderUpdate = false
-         //   prefProvider.setValue(ORDER_TYPE, TAKEOUT)
+            //   prefProvider.setValue(ORDER_TYPE, TAKEOUT)
             Log.e("ORDER_TYPE", "Updated check1")
         }
 
@@ -462,6 +462,9 @@ class CartFragment(val itemClickListner:ItemClickListner?) : Fragment(), MyCallb
             popupMenu.setOnMenuItemClickListener { menuItem ->
                 when (menuItem.itemId) {
                     R.id.menu_clear_cart -> {
+                        if (prefProvider.getValue(ORDER_TYPE, "")
+                                .toString() == Constants.DINE_IN
+                        ) dineInCartAdapter.clearList()
                         clearCart()
                     }
                     R.id.menu_remove_customer -> {
@@ -489,7 +492,7 @@ class CartFragment(val itemClickListner:ItemClickListner?) : Fragment(), MyCallb
 
                     }
                     R.id.menu_note -> {
-                        clearCart()
+
                     }
                 }
                 true
@@ -626,11 +629,47 @@ class CartFragment(val itemClickListner:ItemClickListner?) : Fragment(), MyCallb
             positiveButton(getString(R.string.tv_delete)) {
                 // Do positive stuff here
                 prefProvider.setValueInt(Constants.DINE_INGUEST_SELECTED, 0)
-                clearCustomer()
-                viewModel.deleteCart()
-                cartlist.clear()
-                prefProvider.setValue(ORDER_TYPE, TAKEOUT)
-                prefProvider.setValueboolean(Constants.LOYALTY_ADDED, false)
+                if (prefProvider.getValue(ORDER_TYPE, "").toString() == Constants.DINE_IN) {
+                    Log.e(TAG, "DineInClearTable")
+
+
+                    viewModel.deleteCart()
+                    isOrderUpdate = false
+                    dineInCartAdapter.clearList()
+                    binding.rvCartDineIn.visibility = View.GONE
+
+                    /*  Log.e(TAG, "DineInList:  ${Gson().toJson(dList)}")
+                      if (dList.isNotEmpty()) {
+                          dList[1].floorPlanTable?.id?.let {
+
+                              if (dList[1]?.floorPlanTable?.status.toString() == Constants.MERGED) {
+                                  viewModel.getTableStatus(it, Constants.MERGED)
+                              } else {
+                                  viewModel.getTableStatus(
+                                      it, "Available"
+                                  )
+                              }
+                          }
+                      }
+  */
+
+                    if (prefProvider.getValue(ORDER_TYPE, "").toString() != "") {
+                        prefProvider.setValue(ORDER_TYPE, TAKEOUT)
+                    }
+
+                    clearCustomer()
+
+                    prefProvider.setValueboolean(Constants.DINE_IN_UPDATE, false)
+                    clearUpdateFlag()
+
+                } else {
+
+                    clearCustomer()
+                    viewModel.deleteCart()
+                    cartlist.clear()
+                    prefProvider.setValue(ORDER_TYPE, TAKEOUT)
+                    prefProvider.setValueboolean(Constants.LOYALTY_ADDED, false)
+                }
 
 
             }
@@ -753,6 +792,7 @@ class CartFragment(val itemClickListner:ItemClickListner?) : Fragment(), MyCallb
         dineInCartAdapter.setListner(this)
         cartlist = it as ArrayList<CartModel>
         viewModel.destroyedList.clear()
+        Log.e(TAG, "cartlist:  ${Gson().toJson(cartlist)}")
 
         if (cartlist.isNotEmpty()) {
             cartlist[0].items?.filter { item -> item.isDestroy }?.let {
@@ -769,13 +809,14 @@ class CartFragment(val itemClickListner:ItemClickListner?) : Fragment(), MyCallb
                     cartlist.get(0).dineInList
 
 
-                if (dineList != null) {
+                if (dineList?.isNotEmpty() == true) {
                     dineInCartAdapter.setList(dineList.toCollection(arrayListOf()))
 
+                } else {
+                    dineInCartAdapter.clearList()
                 }
 
-                if (cartlist[0].items?.isNotEmpty() == true)
-                {
+                if (cartlist[0].items?.isNotEmpty() == true) {
 
                     val dineList = cartlist[0].dineInList ?: dineInCartAdapter.getList()
                     // mannual sale added in dineinn //yash
@@ -864,7 +905,7 @@ class CartFragment(val itemClickListner:ItemClickListner?) : Fragment(), MyCallb
 
             val orderType = prefProvider.getValue(ORDER_TYPE, "")
             Log.e("!_@_", "rlSave -------- $orderType ")
-            if (orderType == TAKEOUT || orderType == Constants.DINE_IN) {
+            if (orderType == Constants.DINE_IN) {
                 Log.e("!_@_", "rlSave -- GONE ")
                 // binding.layoutCart.rlSave.visibility = View.GONE
                 if (prefProvider.getValue(ORDER_TYPE, "").toString() == Constants.DINE_IN) {
@@ -898,12 +939,19 @@ class CartFragment(val itemClickListner:ItemClickListner?) : Fragment(), MyCallb
                 requireContext()
             )
 
-            //  binding.rvCartList.gone()
 
+            binding.rvCartDineIn.visibility = View.GONE
 
 
         }
 
+        try {
+            if (cartlist.size == 0) {
+                dineInCartAdapter.clearList()
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
 
         if (prefProvider.getValueInt("ORDER_ID", -1) != -1) {
             Log.e(TAG, "ManualSale ORderIDNOt Null")
@@ -921,6 +969,16 @@ class CartFragment(val itemClickListner:ItemClickListner?) : Fragment(), MyCallb
 
             //gotoPayment()
         }
+
+
     }
+
+    private fun clearUpdateFlag() {
+        isOrderUpdate = false
+        prefProvider.setValueboolean(Constants.IS_ORDER_UPDATE, value = false)
+        requireArguments().remove("update")
+
+    }
+
 
 }
