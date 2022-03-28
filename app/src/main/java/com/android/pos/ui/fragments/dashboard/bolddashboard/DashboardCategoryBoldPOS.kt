@@ -72,6 +72,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
         resultListener()
         addObserver()
         getServiceCharges()
+        syncData()
         binding.lifecycleOwner = this
         return binding.root
     }
@@ -208,7 +209,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
         if (arguments != null) {
             isupdate = arguments?.getBoolean("update")!!
         }
-        syncData()
+
         requireActivity().window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         loadCartFragment(CartFragment(this))
 
@@ -226,7 +227,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
         loadCartFragment(CartFragment(this))
         loadCategoryFragment(CategoryFragment(this))
         binding.layoutHeader.txtUserName.text =
-            prefProvider.getValue(EMPLOYEE_NAME, "").toString()
+            prefProvider.getValue(EMPLOYEE_NAME, "")
 
 
     }

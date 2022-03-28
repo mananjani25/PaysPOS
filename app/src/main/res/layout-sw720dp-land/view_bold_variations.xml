@@ -10,7 +10,7 @@
 
         <TextView
             android:id="@+id/txtVariation"
-            style="@style/CustomFontBold"
+            style="@style/CustomFontSemiBold"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
@@ -18,10 +18,12 @@
             android:background="@drawable/categories_selector"
             android:gravity="center"
             android:paddingStart="@dimen/_4sdp"
-            android:paddingTop="@dimen/_10sdp"
+            android:paddingTop="@dimen/_8sdp"
             android:paddingEnd="@dimen/_4sdp"
-            android:paddingBottom="@dimen/_10sdp"
-            android:text="FOOD"
+            android:paddingBottom="@dimen/_8sdp"
+            tools:text="FOOD"
+            android:minLines="2"
+            android:maxLines="2"
             android:textColor="@color/txtColor"
             android:textSize="@dimen/_7mdpi" />
 

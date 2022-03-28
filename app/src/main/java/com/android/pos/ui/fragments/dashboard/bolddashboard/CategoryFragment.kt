@@ -177,10 +177,10 @@ class CategoryFragment(val listner: ItemListner) : Fragment(), CategoryTabAdapte
 
 
     private fun setAdapter() {
-        var list: ArrayList<CategoryParentModel> = arrayListOf()
-        var listCategories: ArrayList<CategoryTabModel> = arrayListOf()
+        val list: ArrayList<CategoryParentModel> = arrayListOf()
+        val listCategories: ArrayList<CategoryTabModel> = arrayListOf()
         for (i in 0 until 8) {
-            listCategories.add(CategoryTabModel(0, "Drinks", if (i == 0) true else false, 0))
+            listCategories.add(CategoryTabModel(0, "Drinks", i == 0, 0))
         }
         list.add(CategoryParentModel(listCategories))
         list.add(CategoryParentModel(listCategories))
@@ -190,12 +190,12 @@ class CategoryFragment(val listner: ItemListner) : Fragment(), CategoryTabAdapte
         binding.rvCategoryParent.adapter = categoryParentAdapter
         binding.rvCategoryParent.layoutManager =
             LinearLayoutManager(requireContext(), RecyclerView.HORIZONTAL, false)
-        var snapHelper = PagerSnapHelper()
+        val snapHelper = PagerSnapHelper()
         snapHelper.attachToRecyclerView(binding.rvCategoryParent)
 
-        var tabList: ArrayList<CategoryTabModel> = arrayListOf()
+        val tabList: ArrayList<CategoryTabModel> = arrayListOf()
         for (i in 0 until list.size) {
-            tabList.add(CategoryTabModel(0, "", if (i == 0) true else false, 0))
+            tabList.add(CategoryTabModel(0, "", i == 0, 0))
         }
 
         binding.rvTabLayout.adapter = CategoryTabAdapter(tabList)
