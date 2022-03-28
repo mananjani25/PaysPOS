@@ -42,6 +42,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
+import kotlin.collections.ArrayList
 
 
 @AndroidEntryPoint
@@ -108,7 +109,6 @@ class CartFragment(val itemClickListner: ItemClickListner?) : Fragment(), MyCall
         if (arguments?.getBundle("updateBundle") != null) {
             updateBundle = arguments?.getBundle("updateBundle")
         }
-
 
         if (arguments?.getBoolean("isFromPayment") != null) {
             isFromPayment = arguments?.getBoolean("isFromPayment")!!
@@ -672,6 +672,44 @@ class CartFragment(val itemClickListner: ItemClickListner?) : Fragment(), MyCall
                 }
 
 
+
+                if (prefProvider.getValue(ORDER_TYPE, "").toString() == Constants.DINE_IN) {
+
+                    val dList = dineInCartAdapter.getList()
+                    if (dList.isNotEmpty()) {
+                        dList[1].floorPlanTable?.id?.let {
+
+                            if (dList[1]?.floorPlanTable?.status.toString() == Constants.MERGED) {
+                                viewModel.getTableStatus(it, Constants.MERGED)
+                            } else {
+                                viewModel.getTableStatus(
+                                    it, "Available"
+                                )
+                            }
+                        }
+                    }
+                    viewModel.deleteCart()
+                    isOrderUpdate = false
+
+                    if (prefProvider.getValue(ORDER_TYPE, "").toString() != "") {
+                        prefProvider.setValue(ORDER_TYPE, "")
+                    }
+                    val dineInList=ArrayList<DineInModel>()
+                    dineInCartAdapter.setList(dineInList)
+                    dineInCartAdapter.notifyDataSetChanged()
+                    binding.tvPayNow.text="Pay"
+                    clearCustomer()
+
+                    prefProvider.setValueboolean(Constants.DINE_IN_UPDATE, false)
+
+                }
+                else{
+                    clearCustomer()
+                    viewModel.deleteCart()
+                    cartlist.clear()
+                    prefProvider.setValue(ORDER_TYPE, TAKEOUT)
+                    prefProvider.setValueboolean(Constants.LOYALTY_ADDED, false)
+                }
             }
             negativeButton(R.string.tv_cancel) {
                 // Do negative stuff here
@@ -905,7 +943,7 @@ class CartFragment(val itemClickListner: ItemClickListner?) : Fragment(), MyCall
 
             val orderType = prefProvider.getValue(ORDER_TYPE, "")
             Log.e("!_@_", "rlSave -------- $orderType ")
-            if (orderType == Constants.DINE_IN) {
+            if (orderType == TAKEOUT || orderType == Constants.DINE_IN) {
                 Log.e("!_@_", "rlSave -- GONE ")
                 // binding.layoutCart.rlSave.visibility = View.GONE
                 if (prefProvider.getValue(ORDER_TYPE, "").toString() == Constants.DINE_IN) {
@@ -939,19 +977,12 @@ class CartFragment(val itemClickListner: ItemClickListner?) : Fragment(), MyCall
                 requireContext()
             )
 
+            //  binding.rvCartList.gone()
 
-            binding.rvCartDineIn.visibility = View.GONE
 
 
         }
 
-        try {
-            if (cartlist.size == 0) {
-                dineInCartAdapter.clearList()
-            }
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
 
         if (prefProvider.getValueInt("ORDER_ID", -1) != -1) {
             Log.e(TAG, "ManualSale ORderIDNOt Null")
