@@ -463,26 +463,22 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                 }
 */
 
-                 val bundle=Bundle().apply {
-                     putString(Constants.REDIRECT_FROM,Constants.MANUAL_SALE)
-                     putDouble(
-                         "totalPrice",
-                         viewModel.redeemLoyaltyInfo.getAmountToBePaid() ?: 0.0
-                     )
-                     putDouble("subTotalPrice", viewModel.subTotalPrice)
-                     putDouble("totalTax", viewModel.totalTax)
-                     putDouble("totalDiscount", viewModel.totalDiscount)
-                     putDouble("totalServiceCharge", viewModel.totalServiceCharge)
-                     cartList?.get(0)?.customer = assignCustomer
-                     putParcelable("cartList", cartList?.get(0))
-                     putString(
-                         "redeemLoyalty",
-                         Gson().toJson(viewModel.redeemLoyaltyInfo)
-                     )
-
-                 }
-
-
+                 val bundle = Bundle()
+                 bundle.putString(Constants.REDIRECT_FROM,Constants.MANUAL_SALE)
+                 bundle.putDouble(
+                     "totalPrice",
+                     viewModel.redeemLoyaltyInfo.getAmountToBePaid() ?: 0.0
+                 )
+                 bundle.putDouble("subTotalPrice", viewModel.subTotalPrice)
+                 bundle.putDouble("totalTax", viewModel.totalTax)
+                 bundle.putDouble("totalDiscount", viewModel.totalDiscount)
+                 bundle.putDouble("totalServiceCharge", viewModel.totalServiceCharge)
+                 cartList?.get(0)?.customer = assignCustomer
+                 bundle.putParcelable("cartList", cartList?.get(0))
+                 bundle.putString(
+                     "redeemLoyalty",
+                     Gson().toJson(viewModel.redeemLoyaltyInfo)
+                 )
 
                 /*dashboardViewModel.totalPrice=viewModel.redeemLoyaltyInfo.getAmountToBePaid() ?: 0.0
                 dashboardViewModel.totalTax=viewModel.totalTax

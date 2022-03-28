@@ -407,16 +407,28 @@ class CartFragment(val itemClickListner:ItemClickListner?) : Fragment(), MyCallb
                 binding.txtNoncashAdj.text =
                     MethodUtils.roundOffAmount(viewModel.cashdiscountAmount)
             } else {
-                cartAdapter.clearList()
-                binding.txtTotal.text = MethodUtils.roundOffAmount(0.0)
-                binding.txtSubTotal.text = MethodUtils.roundOffAmount(0.0)
-                binding.txtTax.text = MethodUtils.roundOffAmount(0.0)
-                binding.txtDiscount.text = MethodUtils.roundOffAmount(0.0)
-                binding.txtNoncashAdj.text =
-                    MethodUtils.roundOffAmount(0.0)
-                binding.txtServiceCharge.text =
-                    MethodUtils.roundOffAmount(0.0)
-                binding.tvPayNow.text = "Pay " + MethodUtils.roundOffAmount(0.0)
+                var  manualSalecartList:CartModel?=null
+                if (arguments?.getParcelable<CartModel>("cartList")!=null)
+                    manualSalecartList = arguments?.getParcelable<CartModel>("cartList")
+
+                if (manualSalecartList!=null){
+                    manualSalecartList.items?.toCollection(arrayListOf())
+                        ?.let { it1 -> cartAdapter.setList(it1) }
+                }
+                else{
+                    cartAdapter.clearList()
+                    binding.txtTotal.text = MethodUtils.roundOffAmount(0.0)
+                    binding.txtSubTotal.text = MethodUtils.roundOffAmount(0.0)
+                    binding.txtTax.text = MethodUtils.roundOffAmount(0.0)
+                    binding.txtDiscount.text = MethodUtils.roundOffAmount(0.0)
+                    binding.txtNoncashAdj.text =
+                        MethodUtils.roundOffAmount(0.0)
+                    binding.txtServiceCharge.text =
+                        MethodUtils.roundOffAmount(0.0)
+                    binding.tvPayNow.text = "Pay " + MethodUtils.roundOffAmount(0.0)
+                }
+
+
             }
         }
 

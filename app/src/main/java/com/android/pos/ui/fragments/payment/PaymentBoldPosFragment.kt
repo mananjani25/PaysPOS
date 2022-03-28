@@ -97,6 +97,7 @@ class PaymentBoldPosFragment : Fragment() {
             // putInt("dashboardHeaderId", binding.layoutHeader.rlRoot.id)
         }
         frag.arguments = result
+        frag.arguments = arguments
         fm.beginTransaction().replace(binding.frameLayoutCart.id, frag).commit()
     }
 
