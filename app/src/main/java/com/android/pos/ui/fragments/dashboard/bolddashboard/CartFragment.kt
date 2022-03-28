@@ -78,6 +78,7 @@ class CartFragment(val itemClickListner: ItemClickListner?) : Fragment(), MyCall
 
     private var dineInFloorTableModel: GetFloorPlanResponse.Data.FloorPlanTable? = null
 
+    var cashDiscountSurcharge = 0.0
 
     @Inject
     lateinit var prefProvider: PrefProvider
@@ -87,7 +88,7 @@ class CartFragment(val itemClickListner: ItemClickListner?) : Fragment(), MyCall
     companion object {
         fun newInstacne(isFromPayment: Boolean): CartFragment {
             val bundle = Bundle()
-            bundle.putBoolean("isFromPayment", isFromPayment)
+            bundle.putBoolean("isFromPayment",isFromPayment)
             val frag = CartFragment(null)
             frag.arguments = bundle
             return frag
@@ -108,6 +109,7 @@ class CartFragment(val itemClickListner: ItemClickListner?) : Fragment(), MyCall
         if (arguments?.getBundle("updateBundle") != null) {
             updateBundle = arguments?.getBundle("updateBundle")
         }
+
 
         if (arguments?.getBoolean("isFromPayment") != null) {
             isFromPayment = arguments?.getBoolean("isFromPayment")!!
@@ -138,7 +140,6 @@ class CartFragment(val itemClickListner: ItemClickListner?) : Fragment(), MyCall
     }
 
     private fun setUpData() {
-        Log.e(TAG, "isFromPayment:  $isFromPayment")
         if (isFromPayment) {
             binding.linearButtonView.visibility = View.GONE
             binding.imgOrderMenu.visibility = View.INVISIBLE
@@ -371,6 +372,7 @@ class CartFragment(val itemClickListner: ItemClickListner?) : Fragment(), MyCall
 
 
         Log.e("ORDER_TYPE", prefProvider.getValue(ORDER_TYPE, TAKEOUT))
+
         viewModel.mAllWords(
             prefProvider.getValue(ORDER_TYPE, TAKEOUT),
             prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
@@ -394,12 +396,16 @@ class CartFragment(val itemClickListner: ItemClickListner?) : Fragment(), MyCall
                 binding.tvPayNow.text = "Pay " + MethodUtils.roundOffAmount(viewModel.totalPrice)
                 Log.e("totalDiscount", viewModel.totalDiscount.toString())
                 binding.txtDiscount.text = MethodUtils.roundOffAmount(viewModel.totalDiscount)
+                binding.txtNoncashAdj.text =
+                    MethodUtils.roundOffAmount(viewModel.cashdiscountAmount)
             } else {
                 cartAdapter.clearList()
                 binding.txtTotal.text = MethodUtils.roundOffAmount(0.0)
                 binding.txtSubTotal.text = MethodUtils.roundOffAmount(0.0)
                 binding.txtTax.text = MethodUtils.roundOffAmount(0.0)
                 binding.txtDiscount.text = MethodUtils.roundOffAmount(0.0)
+                binding.txtNoncashAdj.text =
+                    MethodUtils.roundOffAmount(0.0)
                 binding.txtServiceCharge.text =
                     MethodUtils.roundOffAmount(0.0)
                 binding.tvPayNow.text = "Pay " + MethodUtils.roundOffAmount(0.0)
@@ -545,10 +551,10 @@ class CartFragment(val itemClickListner: ItemClickListner?) : Fragment(), MyCall
                     }
 
                     if (viewModel.restrictedAmount(binding.txtTotal)) {
-                        val cartlist = viewModel.generateCombinedItems(viewModel.cartModel!!)
-                        cartlist.openOrderType = Constants.PICK_UP
-                        cartlist.orderType = ordertype
-                        cartlist.orderTypeId = ordertypeId
+                        val cartList = viewModel.generateCombinedItems(viewModel.cartModel!!)
+                        cartList.openOrderType = Constants.PICK_UP
+                        cartList.orderType = ordertype
+                        cartList.orderTypeId = ordertypeId
 
 
                         viewModelPayment.updateOrder(
@@ -566,9 +572,9 @@ class CartFragment(val itemClickListner: ItemClickListner?) : Fragment(), MyCall
                                 viewModel.totalPrice
                             }
 
-                        cartlist.openOrderType = Constants.PICK_UP
+                        cartList.openOrderType = Constants.PICK_UP
                         if (!isOrderUpdate)
-                            cartlist.customer = assignCustomer
+                            cartList.customer = assignCustomer
 
                         val formatterdate = SimpleDateFormat("yyyy-MM-dd")
                         val formattertime = SimpleDateFormat("hh:mm a")
@@ -577,7 +583,7 @@ class CartFragment(val itemClickListner: ItemClickListner?) : Fragment(), MyCall
                         future_delivery_time = formattertime.format(date)
 
                         val request = viewModelPayment.createOpenOrderRequest(
-                            cartlist,
+                            cartList,
                             viewModel.subTotalPrice,
                             totalAmountTobeSave,
                             viewModel.totalServiceCharge,
@@ -586,7 +592,7 @@ class CartFragment(val itemClickListner: ItemClickListner?) : Fragment(), MyCall
                             future_delivery_date,
                             future_delivery_time,
                             false,
-                            viewModel.totalDiscount + cartlist.discountPrice,
+                            viewModel.totalDiscount + cartList.discountPrice,
                             0.00,
                             -1,
                             viewModel.redeemLoyaltyInfo,
@@ -825,7 +831,6 @@ class CartFragment(val itemClickListner: ItemClickListner?) : Fragment(), MyCall
         dineInCartAdapter.setListner(this)
         cartlist = it as ArrayList<CartModel>
         viewModel.destroyedList.clear()
-        Log.e(TAG, "cartlist:  ${Gson().toJson(cartlist)}")
 
         if (cartlist.isNotEmpty()) {
             cartlist[0].items?.filter { item -> item.isDestroy }?.let {

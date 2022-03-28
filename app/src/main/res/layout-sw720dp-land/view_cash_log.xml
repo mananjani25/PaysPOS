@@ -63,7 +63,7 @@
                     android:layout_height="wrap_content"
                     android:textColor="@color/hint_color"
                     android:textSize="@dimen/text_size_medium"
-                    android:layout_marginLeft="@dimen/_28sdp"
+                    android:gravity="center"
                     app:layout_constraintRight_toRightOf="@+id/txtDateTime"
                     app:layout_constraintLeft_toLeftOf="@+id/txtDateTime"
                     app:layout_constraintTop_toBottomOf="@+id/txtDateTime"/>
@@ -96,7 +96,8 @@
                     style="@style/CustomFontSemiBold"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-
+                    android:layout_gravity="center"
+                    android:gravity="center"
                     android:text="@{viewModel.orderTypeName}"
                     android:textColor="@color/txtColor"
                     android:textSize="@dimen/text_size_medium"
@@ -111,7 +112,9 @@
                     android:textColor="@color/hint_color"
                     android:textSize="@dimen/text_size_medium"
                     tools:text="@string/employee_name"
-                    android:layout_marginLeft="@dimen/_5sdp"/>
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    />
 
             </LinearLayout>
 

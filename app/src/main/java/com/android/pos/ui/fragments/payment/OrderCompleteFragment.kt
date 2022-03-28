@@ -599,7 +599,12 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                 type = "Message"
                 binding.linerContent.visibility = View.VISIBLE
-                binding.linearSplitLayout.visibility = View.GONE
+                if (isSpilt) {
+                    binding.linearSplitLayout.visibility = View.VISIBLE
+                } else {
+                    binding.linearSplitLayout.visibility = View.GONE
+
+                }
                 binding.llSendReceipt.visibility = View.VISIBLE
                 binding.edtEmail.visibility = View.GONE
                 binding.imgBack.visibility = View.VISIBLE
@@ -5011,7 +5016,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         prefProvider.setValue(Constants.CUSTOMER_NAME, "")
         prefProvider.setValueInt(Constants.CUSTOMER_ID, -1)
         prefProvider.setValue("PaidAmount", "")
-        prefProvider.setValue("WholeTotal", "")
+        prefProvider.setValue(WHOLE_AMOUNT, "")
         prefProvider.setValue(SUB_TOTAL, "")
         prefProvider.setValue(Constants.CASH_DISCOUNT_SURCHARGE, "")
         prefProvider.setValue(Constants.TOTAL_DISCOUNT, "")

@@ -320,7 +320,7 @@
                             android:layout_marginTop="@dimen/_1sdp"
                             android:orientation="horizontal"
                             android:padding="@dimen/_1sdp"
-                            android:visibility="gone">
+                            android:visibility="visible">
 
                             <androidx.appcompat.widget.AppCompatTextView
                                 style="@style/CustomFontMediumStyle"
@@ -328,12 +328,12 @@
                                 android:layout_height="wrap_content"
                                 android:layout_alignParentStart="true"
                                 android:layout_marginStart="@dimen/_3sdp"
-                                android:text="Balance Due"
+                                android:text="@string/balance_due"
                                 android:textColor="@color/dark_gray"
                                 android:textSize="@dimen/_6mdpi" />
 
                             <androidx.appcompat.widget.AppCompatTextView
-                                android:id="@+id/txt_cashAmounntDiscount"
+                                android:id="@+id/txt_noncashAdj"
                                 style="@style/CustomFontSemiBold"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
@@ -348,8 +348,8 @@
                         <RelativeLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="@dimen/_3sdp"
-                            android:layout_marginBottom="@dimen/_10sdp"
+                            android:layout_marginTop="@dimen/_1sdp"
+
                             android:orientation="horizontal"
                             android:padding="@dimen/_1sdp">
 
@@ -376,68 +376,10 @@
                                 android:textSize="@dimen/text_size_medium" />
                         </RelativeLayout>
 
-                        <RelativeLayout
-                            android:id="@+id/llDiscount"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="@dimen/_3sdp"
-                            android:orientation="horizontal"
-                            android:padding="@dimen/_2sdp"
-                            android:visibility="gone">
-
-                            <androidx.appcompat.widget.AppCompatTextView
-                                style="@style/CustomFontMediumStyle"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_alignParentStart="true"
-                                android:layout_marginStart="@dimen/_3sdp"
-                                android:text="@string/tv_discount"
-                                android:textColor="@color/txtColor"
-                                android:textSize="@dimen/_6mdpi" />
-
-                            <androidx.appcompat.widget.AppCompatTextView
-                                android:id="@+id/txt_discount"
-                                style="@style/CustomFontSemiBold"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_alignParentEnd="true"
-                                android:layout_marginRight="@dimen/_5sdp"
-                                android:gravity="end"
-                                android:text=""
-                                android:textColor="@color/colorRed"
-                                android:textSize="@dimen/text_size_medium" />
-                        </RelativeLayout>
 
 
-                        <LinearLayout
-                            android:id="@+id/liinear_noncashAdj"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="@dimen/_3sdp"
-                            android:orientation="horizontal"
-                            android:padding="@dimen/_2sdp"
-                            android:visibility="gone">
 
-                            <androidx.appcompat.widget.AppCompatTextView
-                                style="@style/CustomFontMediumStyle"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginStart="@dimen/_3sdp"
-                                android:text="@string/non_cash_adj"
-                                android:textColor="@color/txtColor"
-                                android:textSize="@dimen/_6mdpi" />
 
-                            <androidx.appcompat.widget.AppCompatTextView
-                                android:id="@+id/txt_NonCashAdjamount"
-                                style="@style/CustomFontSemiBold"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:layout_marginRight="@dimen/_5sdp"
-                                android:gravity="end"
-                                android:text="0.0"
-                                android:textColor="@color/txtColor"
-                                android:textSize="@dimen/_5mdpi" />
-                        </LinearLayout>
 
 
                     </androidx.appcompat.widget.LinearLayoutCompat>
