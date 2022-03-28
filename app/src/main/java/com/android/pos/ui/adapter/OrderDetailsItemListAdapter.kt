@@ -32,7 +32,7 @@ class OrderDetailsItemListAdapter :
         val context = itemBinding.root.context
         itemBinding.tvItemName.text = taxList[position].itemName
         itemBinding.tvQuantity.text = "" + taxList[position].quantity
-        itemBinding.tvTotal.text = "$" + taxList[position].totalPrice
+
 
         var totalPrice = taxList[position].price * taxList[position].quantity
         var modifierPrices = 0.0
@@ -41,12 +41,23 @@ class OrderDetailsItemListAdapter :
         }
         totalPrice += modifierPrices
 
-       /* itemBinding.tvRate.text = context.getString(R.string.symbole) + " " + String.format(
-            context.getString(R.string.format),
-            totalPrice
-        )*/
+        /* itemBinding.tvRate.text = context.getString(R.string.symbole) + " " + String.format(
+             context.getString(R.string.format),
+             totalPrice
+         )*/
 
-        itemBinding.tvRate.text = MethodUtils.roundOffAmount(totalPrice)
+        itemBinding.tvTotal.text = MethodUtils.roundOffAmount(totalPrice)
+
+        var total_rate = 0.0
+        total_rate += taxList[position].price
+        if (taxList[position].orderItemModifiers.isNotEmpty() && taxList[position].orderItemModifiers != null)
+            taxList[position].orderItemModifiers.forEach {
+                total_rate += it.price
+            }
+
+
+        itemBinding.tvRate.text = "$$total_rate"
+
 
         val modifierNames = taxList[position].orderItemModifiers.map {
             it.name + " (" + itemBinding.root.context.getString(R.string.symbole) + " " + String.format(

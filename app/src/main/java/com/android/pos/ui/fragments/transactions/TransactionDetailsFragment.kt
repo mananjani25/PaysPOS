@@ -279,19 +279,12 @@ class TransactionDetailsFragment : Fragment() {
                     if (paymentDetailsResponse.data.payment_type == "Card") {
                         if (paymentDetailsResponse.data.cash_discount_type == "SurCharge") {
                             binding.linearCashDiscount.visibility = View.GONE
-                            binding.liinearNoncashAdj.visibility = View.VISIBLE
-                            binding.txtNonCashAdjamount.text = "+ $ " + String.format(
-                                "%.2f",
-                                paymentDetailsResponse.data.cash_discount_or_surcharge
-                            )
                         } else {
                             binding.linearCashDiscount.visibility = View.GONE
-                            binding.liinearNoncashAdj.visibility = View.GONE
                         }
                     } else {
                         if (paymentDetailsResponse.data.cash_discount_type == "CashDiscount") {
                             binding.linearCashDiscount.visibility = View.VISIBLE
-                            binding.liinearNoncashAdj.visibility = View.GONE
                             binding.txtCashAmounntDiscount.setTextColor(
                                 ContextCompat.getColor(
                                     requireContext(),
@@ -304,12 +297,10 @@ class TransactionDetailsFragment : Fragment() {
                             )
                         } else {
                             binding.linearCashDiscount.visibility = View.GONE
-                            binding.liinearNoncashAdj.visibility = View.GONE
                         }
                     }
                 } else {
                     binding.linearCashDiscount.visibility = View.GONE
-                    binding.liinearNoncashAdj.visibility = View.GONE
                 }
 
 
