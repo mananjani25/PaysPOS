@@ -26,6 +26,7 @@ import com.android.pos.di.PrefProvider
 import com.android.pos.ui.adapter.VariationDashboardListAdapter
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.android.pos.ui.fragments.payment.PaymentViewModel
+import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.callback.ItemClickListner
 import com.android.pos.utils.callback.ItemListner
 import com.android.pos.utils.statusUtils.Resource
@@ -46,8 +47,9 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
     var ordertypelist: ArrayList<TbOrderType> = arrayListOf()
     var isupdate = false
     var orderDiscount = 0.0
-    var dineInResult:Bundle?=null
-    var resultData:TbCustomer?=null
+    var dineInResult: Bundle? = null
+    var resultData: TbCustomer? = null
+
     @Inject
     lateinit var prefProvider: PrefProvider
 
@@ -103,6 +105,67 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
 
             }
         }
+
+
+        setFragmentResultListener("request_key_discount_details") { requestKey: String, bundle: Bundle ->
+            val result = bundle.getParcelable<TbDiscount>("data")
+            val item = bundle.getParcelable<TbItem>("item")
+            if (result != null) {
+                when (result.discountType) {
+                    requireContext().getString(R.string.disc_percentage) -> {
+
+                        item?.discountPrice = item?.let { totalPrice(it) }?.let {
+                            calculateDiscountPercentage(
+                                it,
+                                result.percentage
+                            )
+                        }!!
+                        //discountPrice = item.discountPrice / item.itemQuantity
+                        item.discountId = result.id
+                        item.discountType = result.discountType
+                        item.isManualSales = false
+                        viewModel.cartLogic(cartList, item, Constants.UPDATE)
+
+                    }
+                    "Amount" -> {
+
+                        item?.discountPrice = result.percentage
+                        item?.discountId = 0
+                        item?.discountType = result.discountType
+                        item?.isManualSales = false
+
+                        viewModel.cartLogic(cartList, item, Constants.UPDATE)
+                    }
+                    else -> {
+                        item?.discountPrice = result.percentage
+                        item?.discountId = 0
+                        item?.discountType = result.discountType
+                        item?.isManualSales = false
+
+                        viewModel.cartLogic(cartList, item, Constants.UPDATE)
+
+                    }
+                }
+
+            } else {
+                item?.discountPrice = 0.0
+                item?.discountType = ""
+                item?.isManualSales = false
+                item?.discountId = 0
+                // discountPrice = data.discountPrice
+            }
+
+        }
+
+
+        setFragmentResultListener("request_key_note") { requestKey: String, bundle: Bundle ->
+            val note = bundle.getString("note")
+            val singleItem = bundle.getParcelable<TbItem>("item")
+
+            singleItem?.note = note.toString()
+            singleItem?.let { viewModel.cartLogic(cartList, it, Constants.UPDATE) }
+        }
+
     }
 
     private fun setUpCustomer(result: TbCustomer, bundle: Bundle) {
@@ -112,6 +175,29 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
         }
 
 
+    }
+
+    private fun calculateDiscountPercentage(originalPrice: Double, percentage: Double): Double {
+        return MethodUtils.roundOffAmountDouble((originalPrice * percentage) / 100)
+    }
+
+    private fun totalPrice(model: TbItem): Double {
+
+        return if (model.modifiers.isNotEmpty()) {
+
+            var totalPrice = 0.0
+
+            val mList = model.modifiers
+            mList.forEach { items ->
+                totalPrice += items.price * items.itemQuantity
+            }
+
+            (model.price * model.itemQuantity) + totalPrice
+        } else {
+
+            model.price * model.itemQuantity
+
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -124,7 +210,6 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
         syncData()
         requireActivity().window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         loadCartFragment(CartFragment(this))
-
 
 
 /*

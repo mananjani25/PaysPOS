@@ -7,6 +7,7 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import com.android.pos.data.entities.TbItem
 import com.android.pos.data.model.responseModel.NoteResponse
 import com.android.pos.databinding.DailogAddNoteBinding
 import com.android.pos.ui.adapter.NotesListAdapter
@@ -20,6 +21,7 @@ import dagger.hilt.android.AndroidEntryPoint
 @AndroidEntryPoint
 class AddNoteDialog : DialogFragment(), ItemCallback {
 
+    private var item: TbItem? = null
     private lateinit var binding: DailogAddNoteBinding
     private lateinit var noteListadapter: NotesListAdapter
     private val viewModel by viewModels<NoteListViewModel>()
@@ -51,10 +53,10 @@ class AddNoteDialog : DialogFragment(), ItemCallback {
 
     private fun setupData() {
 
-        val note = requireArguments().getString("note")
+        item = requireArguments().getParcelable("item")
 
         with(binding) {
-            edtNote.setText(note)
+            edtNote.setText(item?.note)
         }
 
         binding.txtSave.setOnClickListener {
@@ -71,6 +73,7 @@ class AddNoteDialog : DialogFragment(), ItemCallback {
     private fun addNote() {
         val result = Bundle().apply {
             putString("note", binding.edtNote.text.toString().trim())
+            putParcelable("item", item)
         }
         setFragmentResult("request_key_note", result)
         findNavController().navigateUp()
@@ -78,9 +81,7 @@ class AddNoteDialog : DialogFragment(), ItemCallback {
 
 
     private fun noteList() {
-        viewModel.getTaxList.observe(viewLifecycleOwner, {
-
-
+        viewModel.getTaxList.observe(viewLifecycleOwner) {
             it?.let { resource ->
                 when (resource.status) {
                     Status.SUCCESS -> {
@@ -96,7 +97,7 @@ class AddNoteDialog : DialogFragment(), ItemCallback {
                     }
                 }
             }
-        })
+        }
     }
 
     private fun setTaxData(taxList: List<NoteResponse.Data>) {

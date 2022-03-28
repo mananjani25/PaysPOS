@@ -1,5 +1,6 @@
 package com.android.pos.ui.adapter.boldpos
 
+import android.graphics.Paint
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -28,10 +29,35 @@ class CartAdapter : RecyclerView.Adapter<CartAdapter.MyViewHolder>() {
         fun bind(item: TbItem, pos: Int) {
             Log.e(TAG, "itemprice:  ${item.price}")
             binding.txtName.text = item.name
-            binding.txtQuantity.text = "X" + item.itemQuantity
+            binding.txtQuantity.text = "x" + item.itemQuantity
             binding.txtEachQntPrice.text = MethodUtils.roundOffAmount((item.price))
             binding.txtTotalPrice.text =
                 MethodUtils.roundOffAmount((item.price * item.itemQuantity))
+
+            if (item.discountPrice != 0.0) {
+                binding.tvDiscountRate.visibility = View.VISIBLE
+                binding.txtTotalPrice.paintFlags =
+                    binding.txtTotalPrice.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
+                var dPrice = 0.0
+                dPrice = if (!item.isManualSales) {
+                    totalPrice(item) - (item.discountPrice * item.itemQuantity)
+                } else {
+                    totalPrice(item) - item.discountPrice
+                }
+                MethodUtils.setPriceTextView(binding.tvDiscountRate, dPrice)
+            } else {
+                binding.txtTotalPrice.paintFlags = 0
+                binding.tvDiscountRate.text = ""
+                binding.tvDiscountRate.visibility = View.GONE
+
+            }
+
+            if (item.note.isEmpty()) {
+                binding.txtNote.visibility = View.GONE
+            } else {
+                binding.txtNote.visibility = View.VISIBLE
+                binding.txtNote.text = "Note: " + item.note
+            }
 
             if (item.modifiers.isNotEmpty()) {
                 binding.rvModifiers.visibility = View.VISIBLE
@@ -43,16 +69,14 @@ class CartAdapter : RecyclerView.Adapter<CartAdapter.MyViewHolder>() {
             }
 
 
-
         }
 
         init {
 
             binding.root.setOnClickListener {
-                mCallback.onItemClickListener(it,cartList[bindingAdapterPosition])
+                mCallback.onItemClickListener(it, cartList[bindingAdapterPosition])
             }
         }
-
 
 
     }
@@ -102,6 +126,25 @@ class CartAdapter : RecyclerView.Adapter<CartAdapter.MyViewHolder>() {
         }
 
         notifyDataSetChanged()
+    }
+
+    private fun totalPrice(model: TbItem): Double {
+
+        return if (model.modifiers.isNotEmpty()) {
+
+            var totalPrice = 0.0
+
+            val mList = model.modifiers
+            mList.forEach { items ->
+                totalPrice += items.price * items.itemQuantity
+            }
+
+            (model.price * model.itemQuantity) + totalPrice
+        } else {
+
+            model.price * model.itemQuantity
+
+        }
     }
 
 }

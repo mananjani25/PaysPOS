@@ -1321,12 +1321,11 @@
             android:id="@+id/action_dashboardCategoryBoldPOS_to_addDiscountDialog"
             app:destination="@id/addDiscountDialog" />
         <action
-            android:id="@+id/action_dashboardCategoryBoldPOS_to_addDiscountDialog2"
-            app:destination="@id/addDiscountDialog"
-            app:enterAnim="@anim/nav_default_enter_anim" />
-        <action
             android:id="@+id/action_dashboardCategoryBoldPOS_to_dineInFragment"
             app:destination="@id/dineInFragment"/>
+        <action
+            android:id="@+id/action_dashboardCategoryBoldPOS_to_addNoteDialog"
+            app:destination="@id/addNoteDialog" />
 
 
     </fragment>

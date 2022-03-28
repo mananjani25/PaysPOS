@@ -414,6 +414,9 @@ class DashBoardCategoryViewModel @Inject constructor(
                                         if (item.isEdited) {
                                             model.isEdited = item.isEdited
                                         }
+
+                                        itemDiscountApply(model, item)
+
                                     }
                                     list[index] = model
                                 } else {
@@ -428,6 +431,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                             if (item.isEdited) {
                                                 model.isEdited = item.isEdited
                                             }
+                                            itemDiscountApply(model, item)
                                         }
 
                                         list[index] = model
@@ -437,6 +441,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                             if (item.isEdited) {
                                                 model.isEdited = item.isEdited
                                             }
+                                            itemDiscountApply(model, item)
                                         }
                                         list[index] = model
                                     }
@@ -460,7 +465,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 }
                             }
                         }
-                        Log.e(TAG,"DeleteIndex  ${index}")
+                        Log.e(TAG, "DeleteIndex  ${index}")
                         if (index != -1) {
                             val model = cartList[0].items?.get(index)
                             if (model != null) {
@@ -469,7 +474,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                     model.isEdited = item.isEdited
                                     model.isDestroy = true
                                 } else {
-                                    Log.e(TAG,"listRemoveItem")
+                                    Log.e(TAG, "listRemoveItem")
                                     list.remove(model)
                                 }
                             }
@@ -507,6 +512,14 @@ class DashBoardCategoryViewModel @Inject constructor(
 
 
         }
+    }
+
+    private fun itemDiscountApply(model: TbItem, item: TbItem) {
+        model.discountPrice = item.discountPrice
+        model.discountType = item.discountType
+        model.discountId = item.discountId
+        model.isManualSales = item.isManualSales
+        model.note = item.note
     }
 
     fun addItemToCart(
@@ -718,7 +731,7 @@ class DashBoardCategoryViewModel @Inject constructor(
         totalServiceCharge = 0.0
         var amountToBePaid = 0.0
         if (cartList != null && cartList.isNotEmpty()) {
-            if (cartList.get(0).orderType == DINE_IN) {
+            if (cartList[0].orderType == DINE_IN) {
 
                 cartList[0].dineInList?.forEach { dine ->
 

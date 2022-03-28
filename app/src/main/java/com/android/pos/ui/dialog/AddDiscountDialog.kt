@@ -398,6 +398,7 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
 
                 val result = Bundle().apply {
                     putParcelable("data", discount)
+                    putParcelable("item", defaultModel)
                 }
 
 
@@ -452,6 +453,7 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
                     }
                 val result = Bundle().apply {
                     putParcelable("data", discountModel)
+                    putParcelable("item", defaultModel)
                 }
                 when {
                     isFromDetails -> {
@@ -480,6 +482,7 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
         val discount = TbDiscount("", "", -1, 0, "", 0.0, "")
         val result = Bundle().apply {
             putParcelable("data", discount)
+            putParcelable("item", defaultModel)
         }
 
 

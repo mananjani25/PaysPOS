@@ -23,15 +23,13 @@
                 android:layout_gravity="center"
                 android:background="?attr/selectableItemBackground"
                 android:padding="@dimen/_6sdp"
-                app:srcCompat="@drawable/ic_cancel_black"
-                app:tint="@color/viewTextColor" />
+                app:srcCompat="@drawable/ic_cancel_black" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 style="@style/CustomFontSemiBold"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true"
-                android:layout_centerVertical="true"
+                android:layout_centerInParent="true"
                 android:layout_gravity="center"
                 android:gravity="center"
                 android:text="Add Note"
@@ -86,14 +84,12 @@
                 style="@style/CustomFontSemiBold"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="@dimen/_5sdp"
                 android:background="@drawable/edt_border_light_gray"
                 android:hint="@string/add_a_note"
                 android:imeOptions="actionDone"
                 android:digits="@string/disable_emoji_string"
                 android:inputType="textCapWords"
                 android:padding="@dimen/_7sdp"
-                android:textColor="@color/txtColor"
                 android:textColorHint="@color/hintColor"
                 android:textSize="@dimen/_6mdpi" />
 
