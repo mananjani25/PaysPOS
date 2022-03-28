@@ -50,6 +50,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
     var resultData:TbCustomer?=null
     var cashDiscountType = ""
     lateinit var cashDiscountModel: CashDiscountModel
+
     @Inject
     lateinit var prefProvider: PrefProvider
 
@@ -70,6 +71,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
         resultListener()
         addObserver()
+
         getServiceCharges()
         binding.lifecycleOwner = this
         return binding.root
@@ -126,7 +128,6 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
         syncData()
         requireActivity().window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         loadCartFragment(CartFragment(this))
-
 
 
 /*
