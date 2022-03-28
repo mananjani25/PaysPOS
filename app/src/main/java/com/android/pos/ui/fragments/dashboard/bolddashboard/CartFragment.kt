@@ -42,7 +42,6 @@ import dagger.hilt.android.AndroidEntryPoint
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
-import kotlin.collections.ArrayList
 
 
 @AndroidEntryPoint
@@ -155,18 +154,18 @@ class CartFragment(val itemClickListner: ItemClickListner?) : Fragment(), MyCall
         setCartAdapter()
         getDineInData()
 
-        nameObserver = Observer {
+        /* nameObserver = Observer {
 
-            bindData(it)
+             bindData(it)
 
-            removeObserver()
-        }
+             removeObserver()
+         }*/
 
-        if (isAdded) {
-            addDineInObserver()
-            addObserver()
-            //addObserver()
-        }
+        /*  if (isAdded) {*/
+/*            addDineInObserver()*/
+        addObserver()
+        //addObserver()
+        /*}*/
 
 
 
@@ -462,9 +461,6 @@ class CartFragment(val itemClickListner: ItemClickListner?) : Fragment(), MyCall
             popupMenu.setOnMenuItemClickListener { menuItem ->
                 when (menuItem.itemId) {
                     R.id.menu_clear_cart -> {
-                        if (prefProvider.getValue(ORDER_TYPE, "")
-                                .toString() == Constants.DINE_IN
-                        ) dineInCartAdapter.clearList()
                         clearCart()
                     }
                     R.id.menu_remove_customer -> {
@@ -694,16 +690,15 @@ class CartFragment(val itemClickListner: ItemClickListner?) : Fragment(), MyCall
                     if (prefProvider.getValue(ORDER_TYPE, "").toString() != "") {
                         prefProvider.setValue(ORDER_TYPE, "")
                     }
-                    val dineInList=ArrayList<DineInModel>()
+                    val dineInList = ArrayList<DineInModel>()
                     dineInCartAdapter.setList(dineInList)
                     dineInCartAdapter.notifyDataSetChanged()
-                    binding.tvPayNow.text="Pay"
+                    binding.tvPayNow.text = "Pay"
                     clearCustomer()
 
                     prefProvider.setValueboolean(Constants.DINE_IN_UPDATE, false)
 
-                }
-                else{
+                } else {
                     clearCustomer()
                     viewModel.deleteCart()
                     cartlist.clear()
@@ -978,7 +973,6 @@ class CartFragment(val itemClickListner: ItemClickListner?) : Fragment(), MyCall
             )
 
             //  binding.rvCartList.gone()
-
 
 
         }

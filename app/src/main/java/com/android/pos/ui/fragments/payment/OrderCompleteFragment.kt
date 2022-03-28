@@ -18,7 +18,6 @@ import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.data.entities.CartModel
 import com.android.pos.data.entities.RedeemLoyaltyInfo
-import com.android.pos.data.entities.TbCustomer
 import com.android.pos.data.entities.TbItem
 import com.android.pos.data.model.DineInModel
 import com.android.pos.data.model.SplitBundleModel
@@ -35,7 +34,6 @@ import com.android.pos.data.remote.Constants.GUEST_POSITION
 import com.android.pos.data.remote.Constants.KITCHEN
 import com.android.pos.data.remote.Constants.LARGE
 import com.android.pos.data.remote.Constants.OPEN_ORDER
-import com.android.pos.data.remote.Constants.OPEN_ORDER_
 import com.android.pos.data.remote.Constants.PAYMENT_ID
 import com.android.pos.data.remote.Constants.PRINT_DATA_DINE_IN
 import com.android.pos.data.remote.Constants.SAVE_SPLIT_BUNDLE
@@ -565,7 +563,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 moveToDashboard()
             }
             R.id.txt_nextbutton -> {
-            moveToNextPayment()
+                moveToNextPayment()
             }
             R.id.llHome -> {
                 moveToDashboard()
