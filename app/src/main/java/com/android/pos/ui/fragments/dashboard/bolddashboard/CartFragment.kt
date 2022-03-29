@@ -19,6 +19,7 @@ import com.android.pos.data.model.DineInModel
 import com.android.pos.data.model.responseModel.GetFloorPlanResponse
 import com.android.pos.data.model.responseModel.GetOrderDetailsResponse
 import com.android.pos.data.remote.Constants
+import com.android.pos.data.remote.Constants.DINE_IN
 import com.android.pos.data.remote.Constants.OPEN_ORDER
 import com.android.pos.data.remote.Constants.ORDER_TYPE
 import com.android.pos.data.remote.Constants.TAKEOUT
@@ -88,7 +89,7 @@ class CartFragment(val itemClickListner: ItemClickListner?) : Fragment(), MyCall
     companion object {
         fun newInstacne(isFromPayment: Boolean): CartFragment {
             val bundle = Bundle()
-            bundle.putBoolean("isFromPayment",isFromPayment)
+            bundle.putBoolean("isFromPayment", isFromPayment)
             val frag = CartFragment(null)
             frag.arguments = bundle
             return frag
@@ -378,37 +379,42 @@ class CartFragment(val itemClickListner: ItemClickListner?) : Fragment(), MyCall
             prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
         ).observe(requireActivity()) {
             Log.e(TAG, "listSize  ${Gson().toJson(it)}")
-            if (it.isNotEmpty()) {
-                it[0].items?.toCollection(arrayListOf())
-                    ?.let { it1 -> cartAdapter.setList(it1) }
+            if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == DINE_IN) {
 
-                cartlist = it as ArrayList<CartModel>
-                viewModel.itemCalculationCartModel(
-                    it[0],
-                    binding.txtTotal,
-                    requireContext()
-                )
-                viewModel.setCartModel(it)
-                binding.txtSubTotal.text = MethodUtils.roundOffAmount(viewModel.subTotalPrice)
-                binding.txtTax.text = MethodUtils.roundOffAmount(viewModel.totalTax)
-                binding.txtServiceCharge.text =
-                    MethodUtils.roundOffAmount(viewModel.totalServiceCharge)
-                binding.tvPayNow.text = "Pay " + MethodUtils.roundOffAmount(viewModel.totalPrice)
-                Log.e("totalDiscount", viewModel.totalDiscount.toString())
-                binding.txtDiscount.text = MethodUtils.roundOffAmount(viewModel.totalDiscount)
-                binding.txtNoncashAdj.text =
-                    MethodUtils.roundOffAmount(viewModel.cashdiscountAmount)
             } else {
-                cartAdapter.clearList()
-                binding.txtTotal.text = MethodUtils.roundOffAmount(0.0)
-                binding.txtSubTotal.text = MethodUtils.roundOffAmount(0.0)
-                binding.txtTax.text = MethodUtils.roundOffAmount(0.0)
-                binding.txtDiscount.text = MethodUtils.roundOffAmount(0.0)
-                binding.txtNoncashAdj.text =
-                    MethodUtils.roundOffAmount(0.0)
-                binding.txtServiceCharge.text =
-                    MethodUtils.roundOffAmount(0.0)
-                binding.tvPayNow.text = "Pay " + MethodUtils.roundOffAmount(0.0)
+                if (it.isNotEmpty()) {
+                    it[0].items?.toCollection(arrayListOf())
+                        ?.let { it1 -> cartAdapter.setList(it1) }
+
+                    cartlist = it as ArrayList<CartModel>
+                    viewModel.itemCalculationCartModel(
+                        it[0],
+                        binding.txtTotal,
+                        requireContext()
+                    )
+                    viewModel.setCartModel(it)
+                    binding.txtSubTotal.text = MethodUtils.roundOffAmount(viewModel.subTotalPrice)
+                    binding.txtTax.text = MethodUtils.roundOffAmount(viewModel.totalTax)
+                    binding.txtServiceCharge.text =
+                        MethodUtils.roundOffAmount(viewModel.totalServiceCharge)
+                    binding.tvPayNow.text =
+                        "Pay " + MethodUtils.roundOffAmount(viewModel.totalPrice)
+                    Log.e("totalDiscount", viewModel.totalDiscount.toString())
+                    binding.txtDiscount.text = MethodUtils.roundOffAmount(viewModel.totalDiscount)
+                    binding.txtNoncashAdj.text =
+                        MethodUtils.roundOffAmount(viewModel.cashdiscountAmount)
+                } else {
+                    cartAdapter.clearList()
+                    binding.txtTotal.text = MethodUtils.roundOffAmount(0.0)
+                    binding.txtSubTotal.text = MethodUtils.roundOffAmount(0.0)
+                    binding.txtTax.text = MethodUtils.roundOffAmount(0.0)
+                    binding.txtDiscount.text = MethodUtils.roundOffAmount(0.0)
+                    binding.txtNoncashAdj.text =
+                        MethodUtils.roundOffAmount(0.0)
+                    binding.txtServiceCharge.text =
+                        MethodUtils.roundOffAmount(0.0)
+                    binding.tvPayNow.text = "Pay " + MethodUtils.roundOffAmount(0.0)
+                }
             }
         }
 
@@ -637,7 +643,7 @@ class CartFragment(val itemClickListner: ItemClickListner?) : Fragment(), MyCall
 
                     viewModel.deleteCart()
                     isOrderUpdate = false
-                    dineInCartAdapter.clearList()
+                    dineInCartAdapter?.clearList()
                     binding.rvCartDineIn.visibility = View.GONE
 
                     /*  Log.e(TAG, "DineInList:  ${Gson().toJson(dList)}")

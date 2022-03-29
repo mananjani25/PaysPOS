@@ -7,7 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
@@ -118,7 +117,6 @@ class AddItemFragment(val listner: ItemListner) : Fragment() {
 
             item.itemQuantity = qty
 
-            Log.e(TAG, "cartListAddItem:  ${Gson().toJson(cartList)}")
 
             if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == Constants.OPEN_ORDER) {
 
@@ -471,6 +469,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment() {
             if (it.status == Status.SUCCESS) {
                 Log.e(TAG, "getServiceCharge:  ${Gson().toJson(it.data)}")
                 serviceChargesList = it.data
+                viewModel.serviceChargesList = it.data ?: arrayListOf()
 
             }
 

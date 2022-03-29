@@ -7,7 +7,6 @@ import android.graphics.BitmapFactory
 import android.util.Base64
 import android.util.Log
 import androidx.appcompat.widget.AppCompatTextView
-import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -58,7 +57,6 @@ import java.net.HttpURLConnection
 import java.net.URL
 import java.util.*
 import javax.inject.Inject
-import kotlin.collections.ArrayList
 import kotlin.collections.set
 
 
@@ -791,7 +789,6 @@ class DashBoardCategoryViewModel @Inject constructor(
                         }
 
                         taxCalculation(item)
-                        Log.d("yash", "TaxCalculation: " + totalTax)
 
                         item.modifiers.forEach {
                             subTotalPrice += (it.price * it.itemQuantity)
@@ -924,6 +921,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                     )
                 )
 
+                Log.e(TAG, "cartModelcartModel:  ${Gson().toJson(cartModel)}")
                 if (cartModel.items?.isEmpty() == false) {
 
 
@@ -936,7 +934,6 @@ class DashBoardCategoryViewModel @Inject constructor(
                         }
 
                         taxCalculation(item)
-                        Log.d("yash", "TaxCalculation: " + totalTax)
 
                         item.modifiers.forEach {
                             subTotalPrice += (it.price * it.itemQuantity)

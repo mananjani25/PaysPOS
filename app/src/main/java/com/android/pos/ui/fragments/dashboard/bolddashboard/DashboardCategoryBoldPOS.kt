@@ -353,8 +353,6 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
     }
 
 
-
-
     override fun onCancelItemSelected() {
         loadCategoryFragment(CategoryFragment(this))
 
@@ -459,6 +457,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
             if (it.status == Status.SUCCESS) {
                 Log.e(TAG, "getServiceCharge:  ${Gson().toJson(it.data)}")
                 serviceChargesList = it.data
+                viewModel.serviceChargesList = it.data ?: arrayListOf()
 
             }
 
