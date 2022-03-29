@@ -517,6 +517,9 @@ class DashBoardCategoryViewModel @Inject constructor(
                                         if (item.isEdited) {
                                             model.isEdited = item.isEdited
                                         }
+
+                                        itemDiscountApply(model, item)
+
                                     }
                                     list[index] = model
                                 } else {
@@ -531,6 +534,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                             if (item.isEdited) {
                                                 model.isEdited = item.isEdited
                                             }
+                                            itemDiscountApply(model, item)
                                         }
 
                                         list[index] = model
@@ -540,6 +544,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                             if (item.isEdited) {
                                                 model.isEdited = item.isEdited
                                             }
+                                            itemDiscountApply(model, item)
                                         }
                                         list[index] = model
                                     }
@@ -610,6 +615,14 @@ class DashBoardCategoryViewModel @Inject constructor(
 
 
         }
+    }
+
+    private fun itemDiscountApply(model: TbItem, item: TbItem) {
+        model.discountPrice = item.discountPrice
+        model.discountType = item.discountType
+        model.discountId = item.discountId
+        model.isManualSales = item.isManualSales
+        model.note = item.note
     }
 
     fun addItemToCart(
@@ -821,7 +834,7 @@ class DashBoardCategoryViewModel @Inject constructor(
         totalServiceCharge = 0.0
         var amountToBePaid = 0.0
         if (cartList != null && cartList.isNotEmpty()) {
-            if (cartList.get(0).orderType == DINE_IN) {
+            if (cartList[0].orderType == DINE_IN) {
 
                 cartList[0].dineInList?.forEach { dine ->
 
@@ -877,7 +890,6 @@ class DashBoardCategoryViewModel @Inject constructor(
                         }
 
                         taxCalculation(item)
-                        Log.d("yash", "TaxCalculation: " + totalTax)
 
                         item.modifiers.forEach {
                             subTotalPrice += (it.price * it.itemQuantity)
@@ -1010,6 +1022,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                     )
                 )
 
+                Log.e(TAG, "cartModelcartModel:  ${Gson().toJson(cartModel)}")
                 if (cartModel.items?.isEmpty() == false) {
 
 
@@ -1022,7 +1035,6 @@ class DashBoardCategoryViewModel @Inject constructor(
                         }
 
                         taxCalculation(item)
-                        Log.d("yash", "TaxCalculation: " + totalTax)
 
                         item.modifiers.forEach {
                             subTotalPrice += (it.price * it.itemQuantity)
@@ -2265,4 +2277,27 @@ class DashBoardCategoryViewModel @Inject constructor(
         mPosition = position
     }
 
+
+    fun createCart(cartList: ArrayList<CartModel>): ArrayList<CartModel> {
+        if (cartList.isEmpty()) {
+            val model = CartModel()
+            model.employeeID =
+                prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
+            model.terminalId = prefProvider.getValueInt(Constants.TERMINAL_ID, 0)
+            model.orderType = Constants.TAKEOUT
+            model.locationId = prefProvider.getValueInt(Constants.LOCATION_ID, 1)
+            model.serviceCharge = serviceChargesList
+            // model.orderTypeId = 1
+            ordertypelist.forEach {
+                if (it.orderType.lowercase() == Constants.TAKEOUT.lowercase()) {
+                    model.orderTypeId = it.id
+                }
+            }
+            cartList.add(0, model)
+            Log.e(TAG, "CartIsEmpty::")
+            return cartList
+        }
+
+        return cartList
+    }
 }

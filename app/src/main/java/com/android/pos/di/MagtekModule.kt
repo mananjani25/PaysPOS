@@ -49,7 +49,7 @@ open class MagtekModule @Inject constructor(
     private var mBluetoothAdapter: BluetoothAdapter? = null
     private val SCAN_PERIOD: Long = 5000
     private var mScanning = false
-    private lateinit var listner: magtekCallback
+    private var listner: magtekCallback? = null
 
     private val mTypes = arrayOf("Swipe", "Chip", "Contactless")
     private val mTypeChecked = booleanArrayOf(false, true, false)
@@ -164,14 +164,14 @@ open class MagtekModule @Inject constructor(
 
         when {
             "0500010000" == TLVParser.getHexString(bytes) -> {
-                listner.processStart("Request Canceled", true)
+                listner?.processStart("Request Canceled", true)
             }
             "0600910000" == TLVParser.getHexString(bytes) -> {
-                listner.processStart("Request Canceled", true)
+                listner?.processStart("Request Canceled", true)
             }
             "0200120000" == TLVParser.getHexString(bytes) -> {
                 if (!dataRecv) {
-                    listner.processStart("Card Error", true)
+                    listner?.processStart("Card Error", true)
                 } else dataRecv = false
             }
         }
@@ -208,7 +208,7 @@ open class MagtekModule @Inject constructor(
 //            setAcquirerResponse(response)
 //        }
 
-        listner.OnARQCReceived(data)
+        listner?.OnARQCReceived(data)
     }
 
     private fun setAcquirerResponse(response: ByteArray?) {
@@ -321,7 +321,7 @@ open class MagtekModule @Inject constructor(
 
     private fun OnCardDataReceived(imtCardData: IMTCardData) {
 
-        listner.OnCardDataReceived(imtCardData)
+        listner?.OnCardDataReceived(imtCardData)
     }
 
 
@@ -343,7 +343,7 @@ open class MagtekModule @Inject constructor(
 
     private fun OnDeviceConnectionStateChanged(mtConnectionState: MTConnectionState) {
 
-        listner.onConnect(mtConnectionState)
+        listner?.onConnect(mtConnectionState)
     }
 
     private fun onDeviceResponse(data: String) {
@@ -360,7 +360,7 @@ open class MagtekModule @Inject constructor(
         } else if (m_startTransactionActionPending) {
             m_startTransactionActionPending = false
 
-            listner.processStart("Please insert or swipe card", false)
+            listner?.processStart("Please insert or swipe card", false)
             startTransaction()
         }
 
@@ -511,7 +511,7 @@ open class MagtekModule @Inject constructor(
             if (pairedDevices.size > 0) {
                 for (device in pairedDevices) {
                     if (device.type == BluetoothDevice.DEVICE_TYPE_LE) {
-                        listner.onDeviceList(device)
+                        listner?.onDeviceList(device)
                     }
                 }
             }
@@ -528,20 +528,20 @@ open class MagtekModule @Inject constructor(
         }
         if (enable) {
 
-            listner.startScanning()
+            listner?.startScanning()
 
             stopScanning()
 
             // Stops scanning after a pre-defined scan period.
             mHandler!!.postDelayed({
                 stopScanning()
-                listner.stopScanning()
+                listner?.stopScanning()
             }, SCAN_PERIOD)
             mScanning = true
             val leScanner = mBluetoothAdapter!!.bluetoothLeScanner
             if (leScanner != null) {
                 if (mScanCallback == null) {
-                    mScanCallback = CustomScanCallback(listner)
+                    mScanCallback = listner?.let { CustomScanCallback(it) }
                 }
 
                 leScanner.startScan(mScanCallback)

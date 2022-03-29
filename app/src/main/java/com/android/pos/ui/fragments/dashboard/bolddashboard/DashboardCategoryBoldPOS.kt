@@ -20,12 +20,11 @@ import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.EMPLOYEE_NAME
 import com.android.pos.data.remote.Constants.ORDER_TYPE
 import com.android.pos.data.remote.Constants.TAKEOUT
-import com.android.pos.data.remote.Constants.TERMINAL_ID
 import com.android.pos.databinding.FragmentDashboardCategoryBoldPosBinding
 import com.android.pos.di.PrefProvider
-import com.android.pos.ui.adapter.VariationDashboardListAdapter
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.android.pos.ui.fragments.payment.PaymentViewModel
+import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.callback.ItemClickListner
 import com.android.pos.utils.callback.ItemListner
 import com.android.pos.utils.statusUtils.Resource
@@ -46,8 +45,8 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
     var ordertypelist: ArrayList<TbOrderType> = arrayListOf()
     var isupdate = false
     var orderDiscount = 0.0
-    var dineInResult:Bundle?=null
-    var resultData:TbCustomer?=null
+    var dineInResult: Bundle? = null
+    var resultData: TbCustomer? = null
     var cashDiscountType = ""
     lateinit var cashDiscountModel: CashDiscountModel
 
@@ -73,6 +72,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
         addObserver()
 
         getServiceCharges()
+        syncData()
         binding.lifecycleOwner = this
         return binding.root
     }
@@ -107,6 +107,67 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
 
             }
         }
+
+
+        setFragmentResultListener("request_key_discount_details") { requestKey: String, bundle: Bundle ->
+            val result = bundle.getParcelable<TbDiscount>("data")
+            val item = bundle.getParcelable<TbItem>("item")
+            if (result != null) {
+                when (result.discountType) {
+                    requireContext().getString(R.string.disc_percentage) -> {
+
+                        item?.discountPrice = item?.let { totalPrice(it) }?.let {
+                            calculateDiscountPercentage(
+                                it,
+                                result.percentage
+                            )
+                        }!!
+                        //discountPrice = item.discountPrice / item.itemQuantity
+                        item.discountId = result.id
+                        item.discountType = result.discountType
+                        item.isManualSales = false
+                        viewModel.cartLogic(cartList, item, Constants.UPDATE)
+
+                    }
+                    "Amount" -> {
+
+                        item?.discountPrice = result.percentage
+                        item?.discountId = 0
+                        item?.discountType = result.discountType
+                        item?.isManualSales = false
+
+                        viewModel.cartLogic(cartList, item, Constants.UPDATE)
+                    }
+                    else -> {
+                        item?.discountPrice = result.percentage
+                        item?.discountId = 0
+                        item?.discountType = result.discountType
+                        item?.isManualSales = false
+
+                        viewModel.cartLogic(cartList, item, Constants.UPDATE)
+
+                    }
+                }
+
+            } else {
+                item?.discountPrice = 0.0
+                item?.discountType = ""
+                item?.isManualSales = false
+                item?.discountId = 0
+                // discountPrice = data.discountPrice
+            }
+
+        }
+
+
+        setFragmentResultListener("request_key_note") { requestKey: String, bundle: Bundle ->
+            val note = bundle.getString("note")
+            val singleItem = bundle.getParcelable<TbItem>("item")
+
+            singleItem?.note = note.toString()
+            singleItem?.let { viewModel.cartLogic(cartList, it, Constants.UPDATE) }
+        }
+
     }
 
     private fun setUpCustomer(result: TbCustomer, bundle: Bundle) {
@@ -118,6 +179,29 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
 
     }
 
+    private fun calculateDiscountPercentage(originalPrice: Double, percentage: Double): Double {
+        return MethodUtils.roundOffAmountDouble((originalPrice * percentage) / 100)
+    }
+
+    private fun totalPrice(model: TbItem): Double {
+
+        return if (model.modifiers.isNotEmpty()) {
+
+            var totalPrice = 0.0
+
+            val mList = model.modifiers
+            mList.forEach { items ->
+                totalPrice += items.price * items.itemQuantity
+            }
+
+            (model.price * model.itemQuantity) + totalPrice
+        } else {
+
+            model.price * model.itemQuantity
+
+        }
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -125,7 +209,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
         if (arguments != null) {
             isupdate = arguments?.getBoolean("update")!!
         }
-        syncData()
+
         requireActivity().window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         loadCartFragment(CartFragment(this))
 
@@ -143,7 +227,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
         loadCartFragment(CartFragment(this))
         loadCategoryFragment(CategoryFragment(this))
         binding.layoutHeader.txtUserName.text =
-            prefProvider.getValue(EMPLOYEE_NAME, "").toString()
+            prefProvider.getValue(EMPLOYEE_NAME, "")
 
 
     }
@@ -256,56 +340,19 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
         Log.e(TAG, "getitem:  ${Gson().toJson(item)}")
         Log.e(TAG, "OrderTYpe:  ${prefProvider.getValue(ORDER_TYPE, TAKEOUT)}")
 
-        /*
-        if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == Constants.OPEN_ORDER) {
+        if (item.modifiers.isNotEmpty() || item.variationsAttributes.isNotEmpty()) {
+            val fragment = AddItemFragment.newInstance(item, this, cartList, false)
+            loadCategoryFragment(fragment)
+        } else {
 
-             if (cartList.isEmpty()) {
-                 val model = CartModel()
-                 model.employeeID =
-                     prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
-                 model.terminalId = prefProvider.getValueInt(TERMINAL_ID, 0)
-                 model.orderType = prefProvider.getValue(ORDER_TYPE, TAKEOUT)
-                 model.locationId = prefProvider.getValueInt(Constants.LOCATION_ID, 1)
-                 model.serviceCharge = serviceChargesList
-                 viewModel.ordertypelist.forEach {
-                     if (it.orderType == Constants.OPEN_ORDER) {
-                         model.orderTypeId = it.id
-                     }
-                 }
-                 cartList.add(model)
-             }
-
-         } else {
-             createCart()
-         }
- */
-
-        val fragment = AddItemFragment.newInstance(item, this, cartList, false)
-        loadCategoryFragment(fragment)
-    }
-
-    private fun createCart(): ArrayList<CartModel>? {
-        if (cartList.isEmpty()) {
-            val model = CartModel()
-            model.employeeID =
-                prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
-            model.terminalId = prefProvider.getValueInt(TERMINAL_ID, 0)
-            model.orderType = TAKEOUT
-            model.locationId = prefProvider.getValueInt(Constants.LOCATION_ID, 1)
-            model.serviceCharge = serviceChargesList
-            // model.orderTypeId = 1
-            viewModel.ordertypelist.forEach {
-                if (it.orderType.lowercase() == TAKEOUT.lowercase()) {
-                    model.orderTypeId = it.id
-                }
+            if (cartList.isEmpty()) {
+                viewModel.createCart(cartList)
             }
-            cartList.add(model)
-            viewModel.addCart(cartList[0])
-            return cartList
+            item.itemQuantity = 1
+            viewModel.cartLogic(cartList, item, Constants.ADD)
         }
-
-        return cartList
     }
+
 
     override fun onCancelItemSelected() {
         loadCategoryFragment(CategoryFragment(this))
@@ -411,6 +458,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
             if (it.status == Status.SUCCESS) {
                 Log.e(TAG, "getServiceCharge:  ${Gson().toJson(it.data)}")
                 serviceChargesList = it.data
+                viewModel.serviceChargesList = it.data ?: arrayListOf()
 
             }
 
@@ -420,38 +468,9 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
     }
 
 
-    private fun checkItemQty(
-        data: TbItem,
-        variationAdapter: VariationDashboardListAdapter?
-    ): Boolean {
-
-        if (data.variationsAttributes.isNotEmpty()) {
-
-            val stockQty = variationAdapter?.getItem()?.stockQty
-
-            return if (stockQty?.isNotEmpty() == true) {
-
-                stockQty.toInt() >= 1
-
-            } else {
-                false
-            }
-
-        } else {
-
-            return if (data.isManualSales) {
-                true
-            } else {
-                data.quantity >= 1
-            }
-        }
-
-        return false
-    }
-
     override fun onItemUpdate(item: TbItem) {
         Log.e(TAG, "dashboardPosItem:  ${Gson().toJson(item)}")
-        var frag: Fragment = AddItemFragment.newInstance(item, this, cartList, true)
+        val frag: Fragment = AddItemFragment.newInstance(item, this, cartList, true)
         loadCategoryFragment(frag)
     }
 

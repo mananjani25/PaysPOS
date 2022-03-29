@@ -7,8 +7,8 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.Observer
+import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.data.entities.*
 import com.android.pos.data.remote.Constants
@@ -117,7 +117,6 @@ class AddItemFragment(val listner: ItemListner) : Fragment() {
 
             item.itemQuantity = qty
 
-            Log.e(TAG, "cartListAddItem:  ${Gson().toJson(cartList)}")
 
             if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == Constants.OPEN_ORDER) {
 
@@ -138,7 +137,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment() {
                 }
 
             } else {
-                createCart()
+                viewModel.createCart(cartList)
             }
 
 
@@ -181,55 +180,27 @@ class AddItemFragment(val listner: ItemListner) : Fragment() {
         }
 
         binding.txtAddDiscount.setOnClickListener {
-            setFragmentResultListener("request_key_discount_details") { requestKey: String, bundle: Bundle ->
-                val result = bundle.getParcelable<TbDiscount>("data")
-                if (result != null) {
-                    if (result.discountType == requireContext().getString(R.string.disc_percentage)) {
-
-                        item.discountPrice = calculateDiscountPercentage(
-                            totalPrice(item),
-                            result.percentage
-                        )
-                        //discountPrice = item.discountPrice / item.itemQuantity
-                        item.discountId = result.id
-                        item.discountType = result.discountType
-                        item.isManualSales = false
-                        /*txtTitle.text = data.name + "  $" + String.format(
-                            "%.2f",
-                            (totalPrice(data) - data.discountPrice)
-                        )*/
-
-                    } else if (item.price > result.percentage) {
-
-                        item.discountPrice = result.percentage
-                        item.discountId = 0
-                        item.discountType = result.discountType
-                        item.isManualSales = false
-                        //discountPrice = data.discountPrice / data.itemQuantity
-
-                        //viewModel.cartLogic(cartList, data, Constants.UPDATE)
-                        /* txtTitle.text = data.name + "  $" + String.format(
-                             "%.2f",
-                             (totalPrice(data) - data.discountPrice)
-                         )
- */
-                    }
-
-                } else {
-                    item.discountPrice = 0.0
-                    item.discountType = ""
-                    item.isManualSales = false
-                    item.discountId = 0
-                    // discountPrice = data.discountPrice
-                }
-
-            }
-
 
             val bundle = Bundle().apply {
                 putBoolean("isFromDetails", true)
                 putParcelable("model", item)
             }
+            //
+            findNavController().navigate(
+                R.id.action_dashboardCategoryBoldPOS_to_addDiscountDialog,
+                bundle
+            )
+        }
+        binding.txtAddNote.setOnClickListener {
+
+            val bundle = Bundle().apply {
+                putParcelable("item", item)
+            }
+
+            findNavController().navigate(
+                R.id.action_dashboardCategoryBoldPOS_to_addNoteDialog,
+                bundle
+            )
         }
 
         binding.txtRemoveItem.setOnClickListener {
@@ -243,7 +214,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment() {
 
     }
 
-    private fun createCart(): ArrayList<CartModel>? {
+    fun createCart(): ArrayList<CartModel>? {
         if (cartList.isEmpty()) {
             val model = CartModel()
             model.employeeID =
@@ -498,6 +469,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment() {
             if (it.status == Status.SUCCESS) {
                 Log.e(TAG, "getServiceCharge:  ${Gson().toJson(it.data)}")
                 serviceChargesList = it.data
+                viewModel.serviceChargesList = it.data ?: arrayListOf()
 
             }
 

@@ -8,10 +8,6 @@
         android:title="Add Discount"
         tools:ignore="HardcodedText" />
     <item
-        android:id="@+id/menu_note"
-        android:title="Add Note"
-        tools:ignore="HardcodedText" />
-    <item
         android:id="@+id/menu_remove_customer"
         android:title="Remove Customer"
         tools:ignore="HardcodedText" />
