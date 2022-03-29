@@ -446,11 +446,63 @@ class CartFragment(val itemClickListner:ItemClickListner?) : Fragment(), MyCallb
                     binding.txtTax.text = MethodUtils.roundOffAmount(viewModel.totalTax)
                     binding.txtServiceCharge.text =
                         MethodUtils.roundOffAmount(viewModel.totalServiceCharge)
-                    binding.tvPayNow.text = "Pay " + MethodUtils.roundOffAmount(viewModel.totalPrice)
+                    binding.tvPayNow.text = "Pay " + binding.txtTotal.text.toString()
                     Log.e("totalDiscount", viewModel.totalDiscount.toString())
                     binding.txtDiscount.text = MethodUtils.roundOffAmount(viewModel.totalDiscount)
                     binding.txtNoncashAdj.text =
                         MethodUtils.roundOffAmount(viewModel.cashdiscountAmount)
+                    var data: TbCustomer? = prefProvider.getCustomerData()
+                    if (data != null) {
+                        if (viewModel.loyaltyPointCondition(data)) {
+                            if (isFromPayment) {
+                                if (viewModel.redeemLoyaltyInfo.needToApplyLoyalty) {
+                                    binding.liinearInfoLayout.layoutParams.height =
+                                        resources.getDimension(R.dimen._70sdp).toInt()
+                                    binding.relativeLoylatyPoints.visibility = View.VISIBLE
+                                    binding.lblLoyaltyPoints.visibility = View.VISIBLE
+                                    binding.txtLabelLoyaltyAmounts.visibility = View.VISIBLE
+                                    binding.checkloylaty.visibility = View.GONE
+                                    binding.txtLoyaltyAmount.text =
+                                        "- $${
+                                            String.format(
+                                                "%.2f",
+                                                viewModel.redeemLoyaltyInfo.usedLoyaltyAmount
+                                            )
+                                        }"
+                                    binding.txtLoyaltyPoints.text =
+                                        "${viewModel.redeemLoyaltyInfo.usedLoyaltyPoints}"
+                                } else {
+                                    binding.liinearInfoLayout.layoutParams.height =
+                                        resources.getDimension(R.dimen._40sdp).toInt()
+                                    binding.relativeLoylatyPoints.visibility = View.GONE
+                                    binding.lblLoyaltyPoints.visibility = View.GONE
+                                }
+                            } else {
+                                binding.liinearInfoLayout.layoutParams.height =
+                                    resources.getDimension(R.dimen._70sdp).toInt()
+                                binding.relativeLoylatyPoints.visibility = View.VISIBLE
+                                binding.lblLoyaltyPoints.visibility = View.VISIBLE
+                                Log.e(TAG, "InsideLoyalty")
+                                Log.e(TAG, Gson().toJson(viewModel.redeemLoyaltyInfo))
+                                binding.txtLoyaltyAmount.text =
+                                    "- $${
+                                        String.format(
+                                            "%.2f",
+                                            viewModel.redeemLoyaltyInfo.usedLoyaltyAmount
+                                        )
+                                    }"
+                                binding.txtLoyaltyPoints.text =
+                                    "${viewModel.redeemLoyaltyInfo.usedLoyaltyPoints}"
+                                binding.checkloylaty.isChecked =
+                                    viewModel.redeemLoyaltyInfo.needToApplyLoyalty
+                            }
+                        }
+                    }else{
+                        binding.liinearInfoLayout.layoutParams.height =
+                            resources.getDimension(R.dimen._40sdp).toInt()
+                        binding.relativeLoylatyPoints.visibility = View.GONE
+                        binding.lblLoyaltyPoints.visibility = View.GONE
+                    }
                 } else {
                     cartAdapter.clearList()
                     binding.txtTotal.text = MethodUtils.roundOffAmount(0.0)
@@ -462,6 +514,21 @@ class CartFragment(val itemClickListner:ItemClickListner?) : Fragment(), MyCallb
                     binding.txtServiceCharge.text =
                         MethodUtils.roundOffAmount(0.0)
                     binding.tvPayNow.text = "Pay " + MethodUtils.roundOffAmount(0.0)
+                    var data: TbCustomer? = prefProvider.getCustomerData()
+                    if (data != null) {
+                        if (viewModel.loyaltyPointCondition(data)) {
+                            binding.liinearInfoLayout.layoutParams.height =
+                                resources.getDimension(R.dimen._70sdp).toInt()
+                            binding.relativeLoylatyPoints.visibility = View.VISIBLE
+                            binding.lblLoyaltyPoints.visibility = View.VISIBLE
+                        } else {
+                            binding.liinearInfoLayout.layoutParams.height =
+                                resources.getDimension(R.dimen._40sdp).toInt()
+                            binding.relativeLoylatyPoints.visibility = View.GONE
+                            binding.lblLoyaltyPoints.visibility = View.GONE
+                        }
+                    }
+
                 }
             }
 

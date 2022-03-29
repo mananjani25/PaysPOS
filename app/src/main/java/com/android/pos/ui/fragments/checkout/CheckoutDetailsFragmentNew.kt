@@ -341,6 +341,7 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
     private fun observeData() {
         paymentviewModel.data.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
+                viewModel.redeemLoyaltyInfo = RedeemLoyaltyInfo()
                 prefProvider.setValueInt("ORDER_ID", it.data.order.id)
                 when {
                     paymentType == "Cash" -> {
@@ -822,6 +823,7 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
     }
 
     fun getDataFromPref() {
+        redeemLoyaltyInfo = viewModel.redeemLoyaltyInfo
         if (prefProvider.getValue(Constants.WHOLE_AMOUNT, "").isEmpty()) {
             WholetotalPrice = viewModel.totalPrice
             prefProvider.setValue(
