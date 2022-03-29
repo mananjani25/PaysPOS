@@ -377,11 +377,6 @@
                         </RelativeLayout>
 
 
-
-
-
-
-
                     </androidx.appcompat.widget.LinearLayoutCompat>
 
 
@@ -391,6 +386,7 @@
                     android:id="@+id/linear_button_view"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:visibility="gone"
                     android:weightSum="2">
 
                     <TextView
@@ -422,25 +418,42 @@
                         android:text="Pay $0.00"
                         android:textColor="@color/white"
                         android:textSize="@dimen/_7mdpi" />
+
+
+                </LinearLayout>
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/btnColorDark">
+
                     <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/txtDineInProceed"
                         style="@style/CustomFontBold"
-                        android:layout_width="0dp"
+                        android:layout_width="wrap_content"
+
                         android:layout_height="wrap_content"
                         android:layout_marginStart="@dimen/_2sdp"
                         android:layout_marginEnd="@dimen/_4sdp"
                         android:layout_weight="1"
-                        android:background="@color/btnColorDark"
+
                         android:gravity="center"
                         android:padding="@dimen/_5sdp"
-                        android:text="Pay $0.00"
+                        android:text="Proceed To Fire"
                         android:textColor="@color/white"
                         android:textSize="@dimen/_7mdpi"
-                        android:visibility="gone"/>
+                        android:visibility="visible" />
+
+                    <ImageView
+                        android:id="@+id/imgFire"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true"
+                        android:src="@drawable/fire_active" />
 
 
-
-                </LinearLayout>
+                </RelativeLayout>
 
 
             </LinearLayout>

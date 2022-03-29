@@ -381,6 +381,7 @@ class CartFragment(val itemClickListner: ItemClickListner?) : Fragment(), MyCall
             Log.e(TAG, "listSize  ${Gson().toJson(it)}")
             if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == DINE_IN) {
 
+
             } else {
                 if (it.isNotEmpty()) {
                     it[0].items?.toCollection(arrayListOf())
@@ -637,36 +638,29 @@ class CartFragment(val itemClickListner: ItemClickListner?) : Fragment(), MyCall
             positiveButton(getString(R.string.tv_delete)) {
                 // Do positive stuff here
                 prefProvider.setValueInt(Constants.DINE_INGUEST_SELECTED, 0)
-                if (prefProvider.getValue(ORDER_TYPE, "").toString() == Constants.DINE_IN) {
-                    Log.e(TAG, "DineInClearTable")
+                if (prefProvider.getValue(ORDER_TYPE, "").toString() == DINE_IN) {
 
+                    val dList = dineInCartAdapter.getList()
+                    if (dList.isNotEmpty()) {
+                        dList[1].floorPlanTable?.id?.let {
 
+                            if (dList[1]?.floorPlanTable?.status.toString() == Constants.MERGED) {
+                                viewModel.getTableStatus(it, Constants.MERGED)
+                            } else {
+                                viewModel.getTableStatus(
+                                    it, "Available"
+                                )
+                            }
+                        }
+                    }
                     viewModel.deleteCart()
                     isOrderUpdate = false
-                    dineInCartAdapter?.clearList()
-                    binding.rvCartDineIn.visibility = View.GONE
-
-                    /*  Log.e(TAG, "DineInList:  ${Gson().toJson(dList)}")
-                      if (dList.isNotEmpty()) {
-                          dList[1].floorPlanTable?.id?.let {
-
-                              if (dList[1]?.floorPlanTable?.status.toString() == Constants.MERGED) {
-                                  viewModel.getTableStatus(it, Constants.MERGED)
-                              } else {
-                                  viewModel.getTableStatus(
-                                      it, "Available"
-                                  )
-                              }
-                          }
-                      }
-  */
 
                     if (prefProvider.getValue(ORDER_TYPE, "").toString() != "") {
-                        prefProvider.setValue(ORDER_TYPE, TAKEOUT)
+                        prefProvider.setValue(ORDER_TYPE, "")
                     }
 
                     clearCustomer()
-
                     prefProvider.setValueboolean(Constants.DINE_IN_UPDATE, false)
                     clearUpdateFlag()
 
