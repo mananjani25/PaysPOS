@@ -33,5 +33,7 @@ interface CartDao {
     @Query("DELETE FROM CartModel where CartModel.isMaual = 1 AND CartModel.employeeID=:employee_Id")
     suspend fun deleteManualSale(employee_Id: Int)
 
+    @Query("select * from CartModel where CartModel.orderType = :orderType AND CartModel.isMaual = 1 AND CartModel.employeeID=:employee_Id")
+    fun getManualSaleItems(orderType: String, employee_Id: Int): LiveData<List<CartModel>>
 
 }

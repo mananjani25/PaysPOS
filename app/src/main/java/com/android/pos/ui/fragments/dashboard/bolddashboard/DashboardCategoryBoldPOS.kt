@@ -78,10 +78,23 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
         addObserver()
         getDineInData()
 
+        getLoyaltyPrograms()
         getServiceCharges()
         syncData()
         binding.lifecycleOwner = this
         return binding.root
+    }
+
+    private fun getLoyaltyPrograms() {
+        Log.e("Loyalty", "getLoyaltyPrograms called..")
+        viewModel.activeLoyaltyProgram = prefProvider.getActiveLoyaltyData()
+        viewModel.activeLoyaltyProgramLiveData.observe(requireActivity()) {
+            if (it.status == Status.SUCCESS && it.data != null) {
+                Log.e("Loyalty", "getLoyaltyPrograms fetched..")
+                prefProvider.saveActiveLoyaltyData(it.data)
+                viewModel.activeLoyaltyProgram = it.data
+            }
+        }
     }
 
     private fun resultListener() {
@@ -133,7 +146,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                         item.discountId = result.id
                         item.discountType = result.discountType
                         item.isManualSales = false
-                        viewModel.cartLogic(cartList, item, Constants.UPDATE)
+                        viewModel.cartLogic(cartList, item, Constants.UPDATE,false)
 
                     }
                     "Amount" -> {
@@ -143,7 +156,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                         item?.discountType = result.discountType
                         item?.isManualSales = false
 
-                        viewModel.cartLogic(cartList, item, Constants.UPDATE)
+                        viewModel.cartLogic(cartList, item, Constants.UPDATE,false)
                     }
                     else -> {
                         item?.discountPrice = result.percentage
@@ -151,7 +164,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                         item?.discountType = result.discountType
                         item?.isManualSales = false
 
-                        viewModel.cartLogic(cartList, item, Constants.UPDATE)
+                        viewModel.cartLogic(cartList, item, Constants.UPDATE,false)
 
                     }
                 }
@@ -172,7 +185,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
             val singleItem = bundle.getParcelable<TbItem>("item")
 
             singleItem?.note = note.toString()
-            singleItem?.let { viewModel.cartLogic(cartList, it, Constants.UPDATE) }
+            singleItem?.let { viewModel.cartLogic(cartList, it, Constants.UPDATE,false) }
         }
 
     }
@@ -218,8 +231,10 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
         }
 
         requireActivity().window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
-        loadCartFragment(CartFragment(this))
-
+        val customer = prefProvider.getCustomerData()
+        customer?.let {
+            viewModel.selectedCustomer = customer
+        }
 
 /*
         setFragmentResultListener("request_key_customer_dine_in") { _, bundle ->
@@ -324,6 +339,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
      }*/
         binding.layoutHeader.txtKeypad.setOnClickListener {
             //loadKeyPadFragment(KeyPadManualSaleFragment())
+            viewModel.deleteManualSaleCart()
             binding.layoutHeader.txtKeypad.setTextColor(resources.getColor(R.color.btnColor))
             binding.layoutHeader.txtKeypad.setTypeface(
                 binding.layoutHeader.txtKeypad.typeface,
@@ -355,7 +371,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                 viewModel.createCart(cartList)
             }
             item.itemQuantity = 1
-            viewModel.cartLogic(cartList, item, Constants.ADD)
+            viewModel.cartLogic(cartList, item, Constants.ADD,false)
         }
     }
 

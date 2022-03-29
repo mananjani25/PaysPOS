@@ -177,7 +177,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="0dp"
                     android:layout_marginRight="0.5dp"
-                    android:layout_marginBottom="@dimen/_5sdp"
                     android:layout_weight="2"
                     android:background="@color/grayBackgroundColor"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
@@ -185,21 +184,20 @@
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="200dp"
+                    android:layout_height="220dp"
                     android:orientation="horizontal"
                     android:weightSum="2">
 
                     <LinearLayout
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
-                        android:layout_weight="1"
                         android:layout_marginHorizontal="@dimen/_3sdp"
+                        android:layout_weight="1"
                         android:orientation="vertical">
 
                         <androidx.appcompat.widget.LinearLayoutCompat
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="@dimen/_3sdp"
                             android:gravity="center"
                             android:orientation="horizontal"
                             android:padding="@dimen/_2sdp">
@@ -207,9 +205,9 @@
                             <androidx.appcompat.widget.AppCompatTextView
                                 style="@style/CustomFontMediumStyle"
                                 android:layout_width="0dp"
-                                android:layout_weight="6.5"
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="@dimen/_3sdp"
+                                android:layout_weight="6.5"
                                 android:text="@string/payment_subtotal"
                                 android:textColor="@color/hint_color"
                                 android:textSize="@dimen/_5mdpi" />
@@ -228,16 +226,16 @@
                         <androidx.appcompat.widget.LinearLayoutCompat
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:orientation="horizontal"
                             android:gravity="center"
+                            android:orientation="horizontal"
                             android:padding="@dimen/_2sdp">
 
                             <androidx.appcompat.widget.AppCompatTextView
                                 style="@style/CustomFontMediumStyle"
                                 android:layout_width="0dp"
-                                android:layout_weight="6.5"
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="@dimen/_3sdp"
+                                android:layout_weight="6.5"
                                 android:text="@string/tv_tax"
                                 android:textColor="@color/hint_color"
                                 android:textSize="@dimen/_5mdpi" />
@@ -245,11 +243,11 @@
                             <androidx.appcompat.widget.AppCompatTextView
                                 style="@style/CustomFontSemiBold"
                                 android:layout_width="0dp"
-                                android:layout_weight="3.5"
                                 android:layout_height="wrap_content"
+                                android:layout_weight="3.5"
+                                android:gravity="right"
                                 android:text="@{@string/symbole +``+String.format(@string/format,orderDetails.data.tax_amount)}"
                                 android:textColor="@color/txtColor"
-                                android:gravity="right"
                                 android:textSize="@dimen/text_size_medium" />
                         </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -264,9 +262,9 @@
                             <androidx.appcompat.widget.AppCompatTextView
                                 style="@style/CustomFontMediumStyle"
                                 android:layout_width="0dp"
-                                android:layout_weight="6.5"
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="@dimen/_3sdp"
+                                android:layout_weight="6.5"
                                 android:text="Tip"
                                 android:textColor="@color/hint_color"
                                 android:textSize="@dimen/_5mdpi" />
@@ -274,11 +272,11 @@
                             <androidx.appcompat.widget.AppCompatTextView
                                 style="@style/CustomFontSemiBold"
                                 android:layout_width="0dp"
-                                android:layout_weight="3.5"
                                 android:layout_height="wrap_content"
+                                android:layout_weight="3.5"
+                                android:gravity="right"
                                 android:text="@{@string/symbole +``+String.format(@string/format,orderDetails.data.tips)}"
                                 android:textColor="@color/txtColor"
-                                android:gravity="right"
                                 android:textSize="@dimen/text_size_medium" />
                         </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -286,17 +284,17 @@
                             android:id="@+id/llRefundAmount"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:orientation="horizontal"
                             android:gravity="center"
+                            android:orientation="horizontal"
                             android:padding="@dimen/_2sdp"
                             android:visibility="gone">
 
                             <androidx.appcompat.widget.AppCompatTextView
                                 style="@style/CustomFontBold"
                                 android:layout_width="0dp"
-                                android:layout_weight="6.5"
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="@dimen/_3sdp"
+                                android:layout_weight="6.5"
                                 android:text="@string/tv_refunded_amount"
                                 android:textColor="@color/colorRed"
                                 android:textSize="@dimen/_5mdpi" />
@@ -304,41 +302,29 @@
                             <androidx.appcompat.widget.AppCompatTextView
                                 style="@style/CustomFontBold"
                                 android:layout_width="0dp"
-                                android:layout_weight="3.5"
                                 android:layout_height="wrap_content"
+                                android:layout_weight="3.5"
+                                android:gravity="right"
                                 android:text="@{@string/symbole +``+String.format(@string/format,orderDetails.data.order.refund_detail.refunded_amount)}"
                                 android:textColor="@color/colorRed"
-                                android:gravity="right"
                                 android:textSize="@dimen/text_size_medium" />
                         </androidx.appcompat.widget.LinearLayoutCompat>
 
-                    </LinearLayout>
-
-                    <View
-                        android:layout_width="1dp"
-                        android:layout_height="wrap_content"
-                        android:background="@color/grayBackgroundColor" />
-                    <LinearLayout
-                        android:layout_width="0dp"
-                        android:layout_weight="1"
-                        android:orientation="vertical"
-                        android:layout_marginHorizontal="@dimen/_3sdp"
-                        android:layout_height="match_parent">
                         <androidx.appcompat.widget.LinearLayoutCompat
+                            android:id="@+id/llLoyalty"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="@dimen/_3sdp"
                             android:orientation="horizontal"
-                            android:gravity="center"
-                            android:padding="@dimen/_2sdp">
+                            android:padding="@dimen/_2sdp"
+                            android:visibility="gone">
 
                             <androidx.appcompat.widget.AppCompatTextView
-                                style="@style/CustomFontMediumStyle"
+                                style="@style/CustomFontBold"
                                 android:layout_width="0dp"
-                                android:layout_weight="6.5"
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="@dimen/_3sdp"
-                                android:text="@string/tv_service_charge"
+                                android:layout_weight="6.5"
+                                android:text="@string/tv_loyalty_amount"
                                 android:textColor="@color/hint_color"
                                 android:textSize="@dimen/_5mdpi" />
 
@@ -347,11 +333,83 @@
                                 android:layout_width="0dp"
                                 android:layout_weight="3.5"
                                 android:layout_height="wrap_content"
-                                android:text="@{@string/symbole +``+String.format(@string/format,orderDetails.data.service_charge_amount)}"
-                                android:textColor="@color/txtColor"
-                                android:gravity="right"
+                                android:gravity="end"
+                                android:text="@{`- `+``+orderDetails.data.showFormattedValue(orderDetails.data.loyalty_amount)}"
+                                android:textColor="@color/colorRed"
                                 android:textSize="@dimen/text_size_medium" />
                         </androidx.appcompat.widget.LinearLayoutCompat>
+
+                        <androidx.appcompat.widget.LinearLayoutCompat
+                            android:id="@+id/llLoyaltyPoints"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:padding="@dimen/_2sdp"
+                            android:visibility="gone">
+
+                            <androidx.appcompat.widget.AppCompatTextView
+                                style="@style/CustomFontBold"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="@dimen/_3sdp"
+                                android:layout_weight="6.5"
+                                android:text="@string/tv_used_loyalty_points"
+                                android:textColor="@color/hint_color"
+                                android:textSize="@dimen/_5mdpi" />
+
+                            <androidx.appcompat.widget.AppCompatTextView
+                                style="@style/CustomFontSemiBold"
+                                android:layout_width="0dp"
+                                android:layout_weight="3.5"
+                                android:layout_height="wrap_content"
+                                android:gravity="end"
+                                android:text="@{``+orderDetails.data.used_reward_points}"
+                                android:textColor="@color/txtColor"
+                                android:textSize="@dimen/text_size_medium" />
+                        </androidx.appcompat.widget.LinearLayoutCompat>
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="1dp"
+                        android:layout_height="wrap_content"
+                        android:background="@color/grayBackgroundColor" />
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_marginHorizontal="@dimen/_3sdp"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <androidx.appcompat.widget.LinearLayoutCompat
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+
+                            android:gravity="center"
+                            android:orientation="horizontal"
+                            android:padding="@dimen/_2sdp">
+
+                            <androidx.appcompat.widget.AppCompatTextView
+                                style="@style/CustomFontMediumStyle"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="@dimen/_3sdp"
+                                android:layout_weight="6.5"
+                                android:text="@string/tv_service_charge"
+                                android:textColor="@color/hint_color"
+                                android:textSize="@dimen/_5mdpi" />
+
+                            <androidx.appcompat.widget.AppCompatTextView
+                                style="@style/CustomFontSemiBold"
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="3.5"
+                                android:gravity="right"
+                                android:text="@{@string/symbole +``+String.format(@string/format,orderDetails.data.service_charge_amount)}"
+                                android:textColor="@color/txtColor"
+                                android:textSize="@dimen/text_size_medium" />
+                        </androidx.appcompat.widget.LinearLayoutCompat>
+
                         <androidx.appcompat.widget.LinearLayoutCompat
                             android:id="@+id/linear_cash_Discount"
                             android:layout_width="match_parent"
@@ -364,10 +422,10 @@
                             <androidx.appcompat.widget.AppCompatTextView
                                 style="@style/CustomFontMediumStyle"
                                 android:layout_width="0dp"
-                                android:layout_weight="6.5"
                                 android:layout_height="wrap_content"
                                 android:layout_alignParentStart="true"
                                 android:layout_marginStart="@dimen/_3sdp"
+                                android:layout_weight="6.5"
                                 android:text="@string/balance_due"
                                 android:textColor="@color/hint_color"
                                 android:textSize="@dimen/_5mdpi" />
@@ -376,28 +434,29 @@
                                 android:id="@+id/txt_cashAmounntDiscount"
                                 style="@style/CustomFontSemiBold"
                                 android:layout_width="0dp"
+                                android:layout_height="wrap_content"
                                 android:layout_weight="3.5"
                                 android:gravity="right"
-                                android:layout_height="wrap_content"
                                 android:textColor="@color/txtColorGray"
                                 android:textSize="@dimen/text_size_medium" />
                         </androidx.appcompat.widget.LinearLayoutCompat>
+
                         <androidx.appcompat.widget.LinearLayoutCompat
                             android:id="@+id/llDiscount"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:orientation="horizontal"
                             android:gravity="center"
+                            android:orientation="horizontal"
                             android:padding="@dimen/_2sdp"
                             android:visibility="gone">
 
                             <androidx.appcompat.widget.AppCompatTextView
                                 style="@style/CustomFontMediumStyle"
                                 android:layout_width="0dp"
-                                android:layout_weight="6.5"
                                 android:layout_height="wrap_content"
                                 android:layout_alignParentStart="true"
                                 android:layout_marginStart="@dimen/_3sdp"
+                                android:layout_weight="6.5"
                                 android:text="@string/tv_discount"
                                 android:textColor="@color/hint_color"
                                 android:textSize="@dimen/_5mdpi" />
@@ -406,28 +465,29 @@
                                 android:id="@+id/txt_discount"
                                 style="@style/CustomFontSemiBold"
                                 android:layout_width="0dp"
-                                android:layout_weight="3.5"
                                 android:layout_height="wrap_content"
-                                android:text=""
+                                android:layout_weight="3.5"
                                 android:gravity="right"
+                                android:text=""
                                 android:textColor="@color/btnColor"
                                 android:textSize="@dimen/text_size_medium" />
                         </androidx.appcompat.widget.LinearLayoutCompat>
+
                         <androidx.appcompat.widget.LinearLayoutCompat
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:orientation="horizontal"
                             android:gravity="center"
+                            android:orientation="horizontal"
                             android:padding="@dimen/_2sdp">
 
 
                             <androidx.appcompat.widget.AppCompatTextView
                                 style="@style/CustomFontMediumStyle"
                                 android:layout_width="0dp"
-                                android:layout_weight="6.5"
                                 android:layout_height="wrap_content"
                                 android:layout_alignParentStart="true"
                                 android:layout_marginStart="@dimen/_3sdp"
+                                android:layout_weight="6.5"
                                 android:text="@string/tv_total"
                                 android:textColor="@color/txtColor"
                                 android:textSize="@dimen/text_size_medium" />
@@ -435,9 +495,9 @@
                             <androidx.appcompat.widget.AppCompatTextView
                                 style="@style/CustomFontBold"
                                 android:layout_width="0dp"
-                                android:gravity="right"
-                                android:layout_weight="3.5"
                                 android:layout_height="wrap_content"
+                                android:layout_weight="3.5"
+                                android:gravity="right"
                                 android:text="@{@string/symbole +``+String.format(@string/format,(orderDetails.data.amount + orderDetails.data.tips))}"
                                 android:textColor="@color/txtColor"
                                 android:textSize="@dimen/text_size_medium" />
@@ -445,69 +505,6 @@
                     </LinearLayout>
 
 
-
-
-
-
-                </LinearLayout>
-
-
-                <LinearLayout
-                    android:id="@+id/llLoyalty"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/_3sdp"
-                    android:orientation="horizontal"
-                    android:padding="@dimen/_2sdp"
-                    android:visibility="gone">
-
-                    <androidx.appcompat.widget.AppCompatTextView
-                        style="@style/CustomFontMediumStyle"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="@dimen/_3sdp"
-                        android:text="@string/tv_loyalty_amount"
-                        android:textColor="@color/txtColor"
-                        android:textSize="@dimen/text_size_medium" />
-
-                    <androidx.appcompat.widget.AppCompatTextView
-                        style="@style/CustomFontSemiBold"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginRight="@dimen/_5sdp"
-                        android:gravity="end"
-                        android:text="@{`- `+``+orderDetails.data.showFormattedValue(orderDetails.data.loyalty_amount)}"
-                        android:textColor="@color/txtColor"
-                        android:textSize="@dimen/_5mdpi" />
-                </LinearLayout>
-
-                <LinearLayout
-                    android:id="@+id/llLoyaltyPoints"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/_3sdp"
-                    android:orientation="horizontal"
-                    android:padding="@dimen/_2sdp"
-                    android:visibility="gone">
-
-                    <androidx.appcompat.widget.AppCompatTextView
-                        style="@style/CustomFontMediumStyle"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="@dimen/_3sdp"
-                        android:text="@string/tv_used_loyalty_points"
-                        android:textColor="@color/txtColor"
-                        android:textSize="@dimen/text_size_medium" />
-
-                    <androidx.appcompat.widget.AppCompatTextView
-                        style="@style/CustomFontSemiBold"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginRight="@dimen/_5sdp"
-                        android:gravity="end"
-                        android:text="@{``+orderDetails.data.used_reward_points}"
-                        android:textColor="@color/txtColor"
-                        android:textSize="@dimen/_5mdpi" />
                 </LinearLayout>
 
 
