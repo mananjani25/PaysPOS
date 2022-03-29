@@ -567,7 +567,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
         }
 
         cartList.get(0).orderType = Constants.DINE_IN
-        viewModel.cartLogic(cartList, null, Constants.ADD, dineInList = dineInList)
+        viewModel.cartLogic(cartList, null, Constants.ADD,false, dineInList = dineInList)
 
 
     }
