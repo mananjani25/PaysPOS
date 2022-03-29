@@ -535,6 +535,9 @@ class PosRepository @Inject constructor(
     fun getManualSaleList(employee_id: Int): LiveData<List<CartModel>> {
         return appDatabase.cartDao().manualItem(employee_id)
     }
+    fun getManualSaleItems(orderType: String, employee_Id: Int): LiveData<List<CartModel>> {
+        return appDatabase.cartDao().getManualSaleItems(orderType, employee_Id)
+    }
 
     fun getManualCategoryId(): LiveData<TbCategory> {
         return appDatabase.categoryDao().manualCategoryId

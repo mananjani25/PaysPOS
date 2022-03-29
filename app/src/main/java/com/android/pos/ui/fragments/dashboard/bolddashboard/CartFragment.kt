@@ -19,8 +19,11 @@ import com.android.pos.data.model.DineInModel
 import com.android.pos.data.model.responseModel.GetFloorPlanResponse
 import com.android.pos.data.model.responseModel.GetOrderDetailsResponse
 import com.android.pos.data.remote.Constants
+import com.android.pos.data.remote.Constants.MANUALSALE
+import com.android.pos.data.remote.Constants.MANUAL_SALE
 import com.android.pos.data.remote.Constants.OPEN_ORDER
 import com.android.pos.data.remote.Constants.ORDER_TYPE
+import com.android.pos.data.remote.Constants.REDIRECT_FROM
 import com.android.pos.data.remote.Constants.TAKEOUT
 import com.android.pos.data.remote.Constants.WHOLE_AMOUNT
 import com.android.pos.databinding.FragmentCartBinding
@@ -42,11 +45,11 @@ import dagger.hilt.android.AndroidEntryPoint
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
+import kotlin.collections.ArrayList
 
 
 @AndroidEntryPoint
-class CartFragment(val itemClickListner: ItemClickListner?) : Fragment(), MyCallback,
-    DineInAdapter.DineInCallback {
+class CartFragment(val itemClickListner:ItemClickListner?) : Fragment(), MyCallback, DineInAdapter.DineInCallback {
     private lateinit var binding: FragmentCartBinding
     var fragmentId: Int? = null
     var checkoutHeaderId: Int = 0
@@ -155,18 +158,18 @@ class CartFragment(val itemClickListner: ItemClickListner?) : Fragment(), MyCall
         setCartAdapter()
         getDineInData()
 
-        /* nameObserver = Observer {
+        nameObserver = Observer {
 
-             bindData(it)
+            bindData(it)
 
-             removeObserver()
-         }*/
+            removeObserver()
+        }
 
-        /*  if (isAdded) {*/
-/*            addDineInObserver()*/
-        addObserver()
-        //addObserver()
-        /*}*/
+        if (isAdded) {
+            addDineInObserver()
+            addObserver()
+            //addObserver()
+        }
 
 
 
@@ -305,7 +308,7 @@ class CartFragment(val itemClickListner: ItemClickListner?) : Fragment(), MyCall
         }
 
         cartlist.get(0).orderType = Constants.DINE_IN
-        viewModel.cartLogic(cartlist, null, Constants.ADD, dineInList = dineInList)
+        viewModel.cartLogic(cartlist, null, Constants.ADD,false, dineInList = dineInList)
 
     }
 
@@ -348,7 +351,7 @@ class CartFragment(val itemClickListner: ItemClickListner?) : Fragment(), MyCall
                 prefProvider.setValue(Constants.ORDER_TYPE_NAME, Constants.DINE_IN)
                 prefProvider.setValueInt(Constants.ORDER_TYPE_ID, 2)
 
-                viewModel.cartLogic(cartlist, null, Constants.ADD, dineInList = dineInList)
+                viewModel.cartLogic(cartlist, null, Constants.ADD,false, dineInList = dineInList)
                 viewModel.orderItemDiscount = arguments?.getDouble("totalDiscount") ?: 0.0
 
             }
@@ -373,43 +376,87 @@ class CartFragment(val itemClickListner: ItemClickListner?) : Fragment(), MyCall
 
         Log.e("ORDER_TYPE", prefProvider.getValue(ORDER_TYPE, TAKEOUT))
 
-        viewModel.mAllWords(
-            prefProvider.getValue(ORDER_TYPE, TAKEOUT),
-            prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
-        ).observe(requireActivity()) {
-            Log.e(TAG, "listSize  ${Gson().toJson(it)}")
-            if (it.isNotEmpty()) {
-                it[0].items?.toCollection(arrayListOf())
-                    ?.let { it1 -> cartAdapter.setList(it1) }
+        if (arguments?.getString(REDIRECT_FROM)== MANUAL_SALE){
+            viewModel.manualSaleItems(
+                prefProvider.getValue(ORDER_TYPE, TAKEOUT),
+                prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
+            ).observe(requireActivity()) {
+                Log.e(TAG, "listSize  ${Gson().toJson(it)}")
+                if (it.isNotEmpty()) {
+                    it[0].items?.toCollection(arrayListOf())
+                        ?.let { it1 -> cartAdapter.setList(it1) }
 
-                cartlist = it as ArrayList<CartModel>
-                viewModel.itemCalculationCartModel(
-                    it[0],
-                    binding.txtTotal,
-                    requireContext()
-                )
-                viewModel.setCartModel(it)
-                binding.txtSubTotal.text = MethodUtils.roundOffAmount(viewModel.subTotalPrice)
-                binding.txtTax.text = MethodUtils.roundOffAmount(viewModel.totalTax)
-                binding.txtServiceCharge.text =
-                    MethodUtils.roundOffAmount(viewModel.totalServiceCharge)
-                binding.tvPayNow.text = "Pay " + MethodUtils.roundOffAmount(viewModel.totalPrice)
-                Log.e("totalDiscount", viewModel.totalDiscount.toString())
-                binding.txtDiscount.text = MethodUtils.roundOffAmount(viewModel.totalDiscount)
-                binding.txtNoncashAdj.text =
-                    MethodUtils.roundOffAmount(viewModel.cashdiscountAmount)
-            } else {
-                cartAdapter.clearList()
-                binding.txtTotal.text = MethodUtils.roundOffAmount(0.0)
-                binding.txtSubTotal.text = MethodUtils.roundOffAmount(0.0)
-                binding.txtTax.text = MethodUtils.roundOffAmount(0.0)
-                binding.txtDiscount.text = MethodUtils.roundOffAmount(0.0)
-                binding.txtNoncashAdj.text =
-                    MethodUtils.roundOffAmount(0.0)
-                binding.txtServiceCharge.text =
-                    MethodUtils.roundOffAmount(0.0)
-                binding.tvPayNow.text = "Pay " + MethodUtils.roundOffAmount(0.0)
+                    cartlist = it as ArrayList<CartModel>
+                    viewModel.itemCalculationCartModel(
+                        it[0],
+                        binding.txtTotal,
+                        requireContext()
+                    )
+                    viewModel.setCartModel(it)
+                    binding.txtSubTotal.text = MethodUtils.roundOffAmount(viewModel.subTotalPrice)
+                    binding.txtTax.text = MethodUtils.roundOffAmount(viewModel.totalTax)
+                    binding.txtServiceCharge.text =
+                        MethodUtils.roundOffAmount(viewModel.totalServiceCharge)
+                    binding.tvPayNow.text = "Pay " + MethodUtils.roundOffAmount(viewModel.totalPrice)
+                    Log.e("totalDiscount", viewModel.totalDiscount.toString())
+                    binding.txtDiscount.text = MethodUtils.roundOffAmount(viewModel.totalDiscount)
+                    binding.txtNoncashAdj.text =
+                        MethodUtils.roundOffAmount(viewModel.cashdiscountAmount)
+                } else {
+                    cartAdapter.clearList()
+                    binding.txtTotal.text = MethodUtils.roundOffAmount(0.0)
+                    binding.txtSubTotal.text = MethodUtils.roundOffAmount(0.0)
+                    binding.txtTax.text = MethodUtils.roundOffAmount(0.0)
+                    binding.txtDiscount.text = MethodUtils.roundOffAmount(0.0)
+                    binding.txtNoncashAdj.text =
+                        MethodUtils.roundOffAmount(0.0)
+                    binding.txtServiceCharge.text =
+                        MethodUtils.roundOffAmount(0.0)
+                    binding.tvPayNow.text = "Pay " + MethodUtils.roundOffAmount(0.0)
+                }
             }
+
+        }
+        else{
+            viewModel.mAllWords(
+                prefProvider.getValue(ORDER_TYPE, TAKEOUT),
+                prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
+            ).observe(requireActivity()) {
+                Log.e(TAG, "listSize  ${Gson().toJson(it)}")
+                if (it.isNotEmpty()) {
+                    it[0].items?.toCollection(arrayListOf())
+                        ?.let { it1 -> cartAdapter.setList(it1) }
+
+                    cartlist = it as ArrayList<CartModel>
+                    viewModel.itemCalculationCartModel(
+                        it[0],
+                        binding.txtTotal,
+                        requireContext()
+                    )
+                    viewModel.setCartModel(it)
+                    binding.txtSubTotal.text = MethodUtils.roundOffAmount(viewModel.subTotalPrice)
+                    binding.txtTax.text = MethodUtils.roundOffAmount(viewModel.totalTax)
+                    binding.txtServiceCharge.text =
+                        MethodUtils.roundOffAmount(viewModel.totalServiceCharge)
+                    binding.tvPayNow.text = "Pay " + MethodUtils.roundOffAmount(viewModel.totalPrice)
+                    Log.e("totalDiscount", viewModel.totalDiscount.toString())
+                    binding.txtDiscount.text = MethodUtils.roundOffAmount(viewModel.totalDiscount)
+                    binding.txtNoncashAdj.text =
+                        MethodUtils.roundOffAmount(viewModel.cashdiscountAmount)
+                } else {
+                    cartAdapter.clearList()
+                    binding.txtTotal.text = MethodUtils.roundOffAmount(0.0)
+                    binding.txtSubTotal.text = MethodUtils.roundOffAmount(0.0)
+                    binding.txtTax.text = MethodUtils.roundOffAmount(0.0)
+                    binding.txtDiscount.text = MethodUtils.roundOffAmount(0.0)
+                    binding.txtNoncashAdj.text =
+                        MethodUtils.roundOffAmount(0.0)
+                    binding.txtServiceCharge.text =
+                        MethodUtils.roundOffAmount(0.0)
+                    binding.tvPayNow.text = "Pay " + MethodUtils.roundOffAmount(0.0)
+                }
+            }
+
         }
 
         viewModel.showProgress.observe(viewLifecycleOwner) { event ->
@@ -494,7 +541,7 @@ class CartFragment(val itemClickListner: ItemClickListner?) : Fragment(), MyCall
 
                     }
                     R.id.menu_note -> {
-
+                        clearCart()
                     }
                 }
                 true
@@ -631,49 +678,6 @@ class CartFragment(val itemClickListner: ItemClickListner?) : Fragment(), MyCall
             positiveButton(getString(R.string.tv_delete)) {
                 // Do positive stuff here
                 prefProvider.setValueInt(Constants.DINE_INGUEST_SELECTED, 0)
-                if (prefProvider.getValue(ORDER_TYPE, "").toString() == Constants.DINE_IN) {
-                    Log.e(TAG, "DineInClearTable")
-
-
-                    viewModel.deleteCart()
-                    isOrderUpdate = false
-                    dineInCartAdapter.clearList()
-                    binding.rvCartDineIn.visibility = View.GONE
-
-                    /*  Log.e(TAG, "DineInList:  ${Gson().toJson(dList)}")
-                      if (dList.isNotEmpty()) {
-                          dList[1].floorPlanTable?.id?.let {
-
-                              if (dList[1]?.floorPlanTable?.status.toString() == Constants.MERGED) {
-                                  viewModel.getTableStatus(it, Constants.MERGED)
-                              } else {
-                                  viewModel.getTableStatus(
-                                      it, "Available"
-                                  )
-                              }
-                          }
-                      }
-  */
-
-                    if (prefProvider.getValue(ORDER_TYPE, "").toString() != "") {
-                        prefProvider.setValue(ORDER_TYPE, TAKEOUT)
-                    }
-
-                    clearCustomer()
-
-                    prefProvider.setValueboolean(Constants.DINE_IN_UPDATE, false)
-                    clearUpdateFlag()
-
-                } else {
-
-                    clearCustomer()
-                    viewModel.deleteCart()
-                    cartlist.clear()
-                    prefProvider.setValue(ORDER_TYPE, TAKEOUT)
-                    prefProvider.setValueboolean(Constants.LOYALTY_ADDED, false)
-                }
-
-
 
                 if (prefProvider.getValue(ORDER_TYPE, "").toString() == Constants.DINE_IN) {
 
@@ -696,15 +700,16 @@ class CartFragment(val itemClickListner: ItemClickListner?) : Fragment(), MyCall
                     if (prefProvider.getValue(ORDER_TYPE, "").toString() != "") {
                         prefProvider.setValue(ORDER_TYPE, "")
                     }
-                    val dineInList = ArrayList<DineInModel>()
+                    val dineInList=ArrayList<DineInModel>()
                     dineInCartAdapter.setList(dineInList)
                     dineInCartAdapter.notifyDataSetChanged()
-                    binding.tvPayNow.text = "Pay"
+                    binding.tvPayNow.text="Pay"
                     clearCustomer()
 
                     prefProvider.setValueboolean(Constants.DINE_IN_UPDATE, false)
 
-                } else {
+                }
+                else{
                     clearCustomer()
                     viewModel.deleteCart()
                     cartlist.clear()
@@ -813,7 +818,7 @@ class CartFragment(val itemClickListner: ItemClickListner?) : Fragment(), MyCall
                 viewModel.cartLogic(
                     cartlist,
                     data,
-                    Constants.DELETE,
+                    Constants.DELETE,false,
                     dineInList = dineInCartAdapter.getList()
                 )
 
@@ -847,14 +852,13 @@ class CartFragment(val itemClickListner: ItemClickListner?) : Fragment(), MyCall
                     cartlist.get(0).dineInList
 
 
-                if (dineList?.isNotEmpty() == true) {
+                if (dineList != null) {
                     dineInCartAdapter.setList(dineList.toCollection(arrayListOf()))
 
-                } else {
-                    dineInCartAdapter.clearList()
                 }
 
-                if (cartlist[0].items?.isNotEmpty() == true) {
+                if (cartlist[0].items?.isNotEmpty() == true)
+                {
 
                     val dineList = cartlist[0].dineInList ?: dineInCartAdapter.getList()
                     // mannual sale added in dineinn //yash
@@ -885,7 +889,7 @@ class CartFragment(val itemClickListner: ItemClickListner?) : Fragment(), MyCall
 
                     }
 
-                    viewModel.cartLogic(cartlist, null, Constants.ADD, dineInList = dineList)
+                    viewModel.cartLogic(cartlist, null, Constants.ADD,false, dineInList = dineList)
 
                 }
 
@@ -980,6 +984,7 @@ class CartFragment(val itemClickListner: ItemClickListner?) : Fragment(), MyCall
             //  binding.rvCartList.gone()
 
 
+
         }
 
 
@@ -999,16 +1004,6 @@ class CartFragment(val itemClickListner: ItemClickListner?) : Fragment(), MyCall
 
             //gotoPayment()
         }
-
-
     }
-
-    private fun clearUpdateFlag() {
-        isOrderUpdate = false
-        prefProvider.setValueboolean(Constants.IS_ORDER_UPDATE, value = false)
-        requireArguments().remove("update")
-
-    }
-
 
 }

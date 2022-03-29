@@ -98,6 +98,7 @@ class PaymentBoldPosFragment : Fragment() {
         }
         frag.arguments = result
         frag.arguments = arguments
+
         fm.beginTransaction().replace(binding.frameLayoutCart.id, frag).commit()
     }
 
@@ -114,6 +115,7 @@ class PaymentBoldPosFragment : Fragment() {
         }
         fragment.arguments = bundle
         fragment.arguments = arguments
+
         fm.beginTransaction().replace(binding.frameLayout.id, fragment).commit()
         // binding.frameLayout?.let { fm.beginTransaction().replace(it, fragment).commit() }
     }

@@ -7,7 +7,6 @@ import android.graphics.BitmapFactory
 import android.util.Base64
 import android.util.Log
 import androidx.appcompat.widget.AppCompatTextView
-import androidx.core.content.ContentProviderCompat.requireContext
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -93,8 +92,10 @@ class DashBoardCategoryViewModel @Inject constructor(
     var destroyedList: ArrayList<TbItem> = arrayListOf()
     var ordertypelist: ArrayList<TbOrderType> = arrayListOf()
     var isOrderUpdate: Boolean = false
-
+    val returnedVal = posRepository.getManualCategoryId()
     var viewModelcartList: ArrayList<CartModel> = arrayListOf()
+    var serviceCharge = posRepository.serviceChargeList()
+    private var mPosition: Int = 0
 
     private val _updateOrder = MutableLiveData<Event<Any?>>()
     val updateOrder: LiveData<Event<Any?>> = _updateOrder
@@ -174,6 +175,16 @@ class DashBoardCategoryViewModel @Inject constructor(
         return posRepository.getCartList(orderType, employee_Id)
 
     }
+    fun manualSale(orderType: String, employee_Id: Int): LiveData<List<CartModel>> {
+
+        return posRepository.getCartList(orderType, employee_Id)
+
+    }
+    fun manualSaleItems(orderType: String, employee_Id: Int): LiveData<List<CartModel>> {
+
+        return posRepository.getManualSaleItems(orderType, employee_Id)
+
+    }
 
     var serviceChargesList: List<TbServiceCharge> = emptyList()
 
@@ -211,6 +222,20 @@ class DashBoardCategoryViewModel @Inject constructor(
         }
     }
 
+    fun deleteManualSaleCart() {
+        viewModelScope.launch {
+            totalPrice = 0.0
+            subTotalPrice = 0.0
+            totalTax = 0.0
+            totalDiscount = 0.0
+            totalServiceCharge = 0.0
+            totalCount = 0
+            posRepository.deleteManualSaleCart(prefProvider.getValueInt(EMPLOYEE_ID, 0))
+
+        }
+    }
+
+
     fun dineInCartUpdate(
         cartList: List<CartModel>?,
         dineInList: List<DineInModel>
@@ -231,16 +256,91 @@ class DashBoardCategoryViewModel @Inject constructor(
         return posRepository.getKitchenPrinters()
     }
 
+
+    fun manualSalecartLogic(cartList: List<CartModel>?, item: TbItem, type: String) {
+
+        if (cartList != null && cartList.isEmpty()) {
+
+            val model = addCartModel(item,true)
+            addCart(model)
+        } else {
+            val list = cartList?.get(0)?.items?.toMutableList()
+
+            if (list != null && list.isNotEmpty()) {
+
+
+                if (type == ADD) {
+                    list.add(item)
+                } else if (type == UPDATE) {
+
+
+                    if (mPosition != -1) {
+                        val model = cartList[0].items?.get(mPosition)
+
+                        if (model != null) {
+                            model.itemQuantity = item.itemQuantity
+                            if (item.isEdited) {
+                                model.isEdited = item.isEdited
+                            }
+                            list[mPosition] = model
+                        }
+                    }
+
+                } else if (type == DELETE) {
+
+                    if (mPosition != -1) {
+                        val model = cartList[0].items?.get(mPosition)
+                        if (model != null) {
+                            //delete from cart
+                            if (item.isEdited) {
+                                model.isEdited = item.isEdited
+                                model.isDestroy = true
+                            } else {
+                                list.remove(item)
+                            }
+                        }
+                    } else {
+                        //list.remove(item)
+                    }
+                }
+
+                val cartModel = cartList[0]
+                cartModel.items = list
+                addCart(cartModel)
+
+                if (list.isEmpty()) {
+                    // delete carts
+                    deleteCart()
+                }
+            } else {
+
+                if (type == DELETE) {
+                    deleteCart()
+                } else {
+                    val cartModel = cartList?.get(0)
+                    cartModel?.items = listOf(item)
+                    if (cartModel != null) {
+                        addCart(cartModel)
+                    }
+                }
+
+            }
+        }
+
+    }
+
+
     fun cartLogic(
         cartList: List<CartModel>?,
         item: TbItem?,
         type: String,
+        isManualSales:Boolean,
         dineInList: List<DineInModel> = arrayListOf()
     ) {
 
         if (cartList != null && cartList.isEmpty()) {
             // empty cart hoy to new cart create kare
-            val cartModel = item?.let { addCartModel(it) }
+            val cartModel = item?.let { addCartModel(it,isManualSales) }
             if (cartModel != null) {
                 addCart(cartModel)
             }
@@ -515,13 +615,13 @@ class DashBoardCategoryViewModel @Inject constructor(
     fun addItemToCart(
         cartList: List<CartModel>?,
         item: TbItem?,
-        type: String,
+        type: String,isManualSales: Boolean,
         dineInList: List<DineInModel> = arrayListOf()
     ) {
 
         if (cartList != null && cartList.isEmpty()) {
             // empty cart hoy to new cart create kare
-            val cartModel = item?.let { addCartModel(it) }
+            val cartModel = item?.let { addCartModel(it, isManualSales) }
             if (cartModel != null) {
                 addCart(cartModel)
             }
@@ -679,7 +779,7 @@ class DashBoardCategoryViewModel @Inject constructor(
         return variation
     }
 
-    fun addCartModel(item: TbItem): CartModel {
+    fun addCartModel(item: TbItem, isManualSales: Boolean): CartModel {
         val inventoryModelList = ArrayList<TbItem>()
         return CartModel().apply {
             terminalId = prefProvider.getValueInt(Constants.TERMINAL_ID, -1)
@@ -688,7 +788,7 @@ class DashBoardCategoryViewModel @Inject constructor(
             orderTypeId = prefProvider.getValueInt(Constants.ORDER_TYPE_ID, -1)
             orderType = prefProvider.getValue(Constants.ORDER_TYPE, "").toString()
             orderTypeName = prefProvider.getValue(Constants.ORDER_TYPE_NAME, "").toString()
-
+            isMaual = isManualSales
             serviceCharge = serviceChargesList
             customer = assignCustomer
             item.itemQuantity = item.itemQuantity
@@ -2156,4 +2256,13 @@ class DashBoardCategoryViewModel @Inject constructor(
 
         })
     }
+    fun saveManualSaleData(cartList: List<CartModel>) {
+
+        // prefProvider.setValue(Constants.ORDER_TYPE, Constants.TAKEOUT)
+        addCart(cartList[0])
+    }
+    fun setPosition(position: Int) {
+        mPosition = position
+    }
+
 }

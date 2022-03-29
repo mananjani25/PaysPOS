@@ -233,6 +233,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
      }*/
         binding.layoutHeader.txtKeypad.setOnClickListener {
             //loadKeyPadFragment(KeyPadManualSaleFragment())
+            viewModel.deleteManualSaleCart()
             binding.layoutHeader.txtKeypad.setTextColor(resources.getColor(R.color.btnColor))
             binding.layoutHeader.txtKeypad.setTypeface(
                 binding.layoutHeader.txtKeypad.typeface,
