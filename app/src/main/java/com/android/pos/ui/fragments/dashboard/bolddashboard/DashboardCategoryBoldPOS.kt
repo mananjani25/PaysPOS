@@ -70,11 +70,23 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
         resultListener()
         addObserver()
-
+        getLoyaltyPrograms()
         getServiceCharges()
         syncData()
         binding.lifecycleOwner = this
         return binding.root
+    }
+
+    private fun getLoyaltyPrograms() {
+        Log.e("Loyalty", "getLoyaltyPrograms called..")
+        viewModel.activeLoyaltyProgram = prefProvider.getActiveLoyaltyData()
+        viewModel.activeLoyaltyProgramLiveData.observe(requireActivity()) {
+            if (it.status == Status.SUCCESS && it.data != null) {
+                Log.e("Loyalty", "getLoyaltyPrograms fetched..")
+                prefProvider.saveActiveLoyaltyData(it.data)
+                viewModel.activeLoyaltyProgram = it.data
+            }
+        }
     }
 
     private fun resultListener() {
@@ -213,6 +225,10 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
         requireActivity().window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         loadCartFragment(CartFragment(this))
 
+        val customer = prefProvider.getCustomerData()
+        customer?.let {
+            viewModel.selectedCustomer = customer
+        }
 
 /*
         setFragmentResultListener("request_key_customer_dine_in") { _, bundle ->
