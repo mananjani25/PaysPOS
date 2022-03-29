@@ -90,15 +90,13 @@ class CartFragment(val itemClickListner:ItemClickListner?) : Fragment(), MyCallb
 
 
     companion object {
-        fun newInstacne(isFromPayment: Boolean): CartFragment {
-            val bundle = Bundle()
-            bundle.putBoolean("isFromPayment", isFromPayment)
-            val frag = CartFragment(null)
-            frag.arguments = bundle
-            return frag
-
-        }
-
+        @JvmStatic
+        fun newInstacne(isFromPayment: Boolean)=
+            CartFragment(null).apply {
+                arguments=Bundle().apply {
+                    putBoolean("isFromPayment", isFromPayment)
+                }
+            }
     }
 
     override fun onCreateView(
@@ -553,7 +551,6 @@ class CartFragment(val itemClickListner:ItemClickListner?) : Fragment(), MyCallb
 
         binding.tvPayNow.setOnClickListener {
             if (cartAdapter.cartList.isNotEmpty()) {
-
                 prefProvider.setValue(ORDER_TYPE, prefProvider.getValue(ORDER_TYPE, TAKEOUT))
                 prefProvider.setValue("PaidAmount", "")
                 prefProvider.setValue(WHOLE_AMOUNT, "")
