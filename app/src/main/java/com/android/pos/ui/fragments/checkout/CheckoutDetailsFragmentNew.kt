@@ -39,7 +39,9 @@ import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.TLVParser
 import com.android.pos.utils.callback.DeleteOptionCallback
 import com.android.pos.utils.callback.magtekCallback
+import com.android.pos.utils.extensions.gone
 import com.android.pos.utils.extensions.runOnUiThread
+import com.android.pos.utils.extensions.visible
 import com.android.pos.utils.statusUtils.Status
 import com.google.gson.Gson
 import com.google.gson.JsonArray
@@ -57,6 +59,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
     DeleteOptionCallback {
+    private var isManualCard: Boolean = false
     private lateinit var binding: FragmentCheckoutDetailsNewBinding
     private val TAG = "DashboardCategoryBold"
 
@@ -652,9 +655,12 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
             binding.tvCash3.setTextColor(resources.getColor(R.color.txtColor))
             binding.tvCustomAmount.setTextColor(resources.getColor(R.color.txtColor))
             binding.tvPaymentLink.setTextColor(resources.getColor(R.color.txtColor))
-            binding.frameLayoutId.visibility = View.VISIBLE
-            binding.relativeMain.visibility = View.GONE
-            loadManualCardEntryFragment(ManualCardEntryFragment())
+            binding.frameLayoutId.visible()
+            binding.relativeMain.gone()
+            binding.llManualCard.visible()
+
+            isManualCard = true
+            // loadManualCardEntryFragment(ManualCardEntryFragment())
         }
         binding.tvCash0.setOnClickListener {
             binding.tvCash0.setBackgroundDrawable(resources.getDrawable(R.drawable.button_selected))
@@ -785,6 +791,17 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
             binding.tvCash2.setTextColor(resources.getColor(R.color.txtColor))
             binding.tvCash3.setTextColor(resources.getColor(R.color.txtColor))
             binding.tvCustomAmount.setTextColor(resources.getColor(R.color.txtColor))
+        }
+
+
+        binding.imgBackManualCard.setOnClickListener {
+            isManualCard = false
+            binding.relativeMain.visible()
+            binding.llManualCard.gone()
+        }
+
+        binding.txtCharge.setOnClickListener {
+
         }
     }
 

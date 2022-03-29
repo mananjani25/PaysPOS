@@ -770,7 +770,11 @@
     <string name="split_custom_amount">SPLIT CUSTOM AMOUNT</string>
     <string name="next_payment">Next Payment</string>
     <string name="balance_due">Balance Due</string>
-
+    <string name="cvv">CVV</string>
+    <string name="mm_yy">MM/YY</string>
+    <string name="_1234_5678_xxxx_1121">1234 5678 XXXX 1121</string>
+    <string name="enter_card_number_here">Enter Card Number Here</string>
+    <string name="charge">Charge</string>
 
 
 </resources>
