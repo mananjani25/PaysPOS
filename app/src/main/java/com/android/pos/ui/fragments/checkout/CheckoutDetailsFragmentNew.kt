@@ -12,7 +12,6 @@ import android.widget.EditText
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.setFragmentResultListener
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.data.entities.CartModel
@@ -633,21 +632,6 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
 
         }
         binding.llCreditCard.setOnClickListener {
-            binding.llCreditCard.setBackgroundDrawable(resources.getDrawable(R.drawable.button_selected))
-            binding.llManualCardEntry.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
-            binding.tvCash1.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
-            binding.tvCash2.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
-            binding.tvCash3.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
-            binding.tvCustomAmount.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
-            binding.tvPaymentLink.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
-
-            binding.tvCreditCard.setTextColor(resources.getColor(R.color.white))
-            binding.tvManualCard.setTextColor(resources.getColor(R.color.txtColor))
-            binding.tvCash1.setTextColor(resources.getColor(R.color.txtColor))
-            binding.tvCash2.setTextColor(resources.getColor(R.color.txtColor))
-            binding.tvCash3.setTextColor(resources.getColor(R.color.txtColor))
-            binding.tvCustomAmount.setTextColor(resources.getColor(R.color.txtColor))
-            binding.tvPaymentLink.setTextColor(resources.getColor(R.color.txtColor))
 
             val device = prefProvider.getValueInt(Constants.MAGTEK_HARDWARE, 0)
             subTotalPrice = String.format("%.2f", subTotalPrice / isSelectedCount).toDouble()
@@ -669,27 +653,11 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
             }
         }
         binding.llManualCardEntry.setOnClickListener {
-            binding.llManualCardEntry.setBackgroundDrawable(resources.getDrawable(R.drawable.button_selected))
-            binding.llCreditCard.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
-            binding.tvCash1.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
-            binding.tvCash2.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
-            binding.tvCash3.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
-            binding.tvCustomAmount.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
-            binding.tvPaymentLink.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
-
-            binding.tvManualCard.setTextColor(resources.getColor(R.color.white))
-            binding.tvCreditCard.setTextColor(resources.getColor(R.color.txtColor))
-            binding.tvCash1.setTextColor(resources.getColor(R.color.txtColor))
-            binding.tvCash2.setTextColor(resources.getColor(R.color.txtColor))
-            binding.tvCash3.setTextColor(resources.getColor(R.color.txtColor))
-            binding.tvCustomAmount.setTextColor(resources.getColor(R.color.txtColor))
-            binding.tvPaymentLink.setTextColor(resources.getColor(R.color.txtColor))
             binding.frameLayoutId.visible()
             binding.relativeMain.gone()
             binding.llManualCard.visible()
-
             isManualCard = true
-            // loadManualCardEntryFragment(ManualCardEntryFragment())
+
         }
         binding.tvCash0.setOnClickListener {
             binding.tvCash0.setBackgroundDrawable(resources.getDrawable(R.drawable.button_selected))
@@ -831,7 +799,70 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
 
         binding.txtCharge.setOnClickListener {
 
+            Log.e("CARD DETAIL", binding.edtCardNumber.rawText.toString().trim())
+            Log.e("CARD DETAIL", binding.edtCVV.text.toString().trim())
+            Log.e("CARD DETAIL", binding.edtMMYY.rawText.toString().trim())
+
+            val cardNumber = binding.edtCardNumber.rawText.toString().trim()
+            val cardExpDate = binding.edtMMYY.rawText.toString().trim()
+            val cardCVV = binding.edtCVV.text.toString().trim()
+
+            when {
+                cardNumber.isEmpty() -> {
+                    errorDisplay("Please enter card number")
+                }
+                cardNumber.length < 16 -> {
+                    errorDisplay("Please enter valid card number")
+                }
+                cardExpDate.isEmpty() -> {
+                    errorDisplay("Please enter card expiration date")
+                }
+                cardExpDate.length < 4 -> {
+                    errorDisplay("Please enter valid card expiration date")
+                }
+                cardCVV.isEmpty() -> {
+                    errorDisplay("Please enter CVV number")
+                }
+                cardCVV.length < 3 -> {
+                    errorDisplay("Please enter valid CVV number")
+                }
+                else -> {
+
+                    Log.e("MM", cardExpDate.take(2))
+                    Log.e("YY", cardExpDate.takeLast(2))
+
+
+
+                    manualCardPaymentCall(
+                        cardNumber,
+                        cardExpDate.takeLast(2) + cardExpDate.take(2),
+                        cardCVV
+                    )
+                }
+            }
+
+
         }
+    }
+
+    private fun manualCardPaymentCall(
+        cardNumber: String,
+        expDate: String,
+        cardCVV: String
+    ) {
+
+        magtekRequestUtils.processManualEntry(
+            (paymentAmount * 100).toInt(),
+            cardNumber,
+            expDate,
+            cardCVV
+        )
+
+    }
+
+    private fun errorDisplay(msg: String) {
+
+        AlertUtils.showCustomAlert(requireContext(), msg)
     }
 
     private fun loadManualCardEntryFragment(fragment: Fragment) {

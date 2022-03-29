@@ -112,6 +112,7 @@
 
                         <androidx.appcompat.widget.LinearLayoutCompat
                             android:id="@+id/llCard"
+
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_below="@+id/tvCard"
@@ -125,7 +126,7 @@
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
-                                android:background="@drawable/background_square_border_grey"
+                                android:background="@drawable/background_txt_selector"
                                 android:gravity="center_horizontal"
                                 android:orientation="horizontal"
                                 android:paddingVertical="@dimen/_5sdp">
@@ -158,9 +159,9 @@
                                 android:id="@+id/llManualCardEntry"
                                 android:layout_width="0dp"
                                 android:layout_height="@dimen/_31sdp"
-                                android:layout_marginLeft="@dimen/_5sdp"
+                                android:layout_marginStart="@dimen/_5sdp"
                                 android:layout_weight="1"
-                                android:background="@drawable/background_square_border_grey"
+                                android:background="@drawable/background_txt_selector"
                                 android:gravity="center_horizontal"
                                 android:orientation="horizontal">
 
@@ -310,7 +311,7 @@
                                 android:layout_below="@+id/llCash"
                                 android:layout_marginLeft="@dimen/_6sdp"
                                 android:layout_weight="1"
-                                android:background="@drawable/button_selected"
+                                android:background="@drawable/btn_background_selector"
                                 android:gravity="center_horizontal"
                                 android:orientation="horizontal"
                                 android:paddingVertical="@dimen/_10sdp">
@@ -655,7 +656,7 @@
 
 
                 <com.santalu.maskedittext.MaskEditText
-                    android:id="@+id/edtMobileNumber"
+                    android:id="@+id/edtCardNumber"
                     style="@style/CustomFontBold"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -673,6 +674,7 @@
 
 
                 <com.santalu.maskedittext.MaskEditText
+                    android:id="@+id/edtMMYY"
                     style="@style/CustomFontBold"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -688,6 +690,7 @@
 
 
                 <androidx.appcompat.widget.AppCompatEditText
+                    android:id="@+id/edtCVV"
                     style="@style/CustomFontBold"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -722,7 +725,7 @@
                 android:layout_gravity="center_vertical"
                 android:layout_marginHorizontal="@dimen/_10sdp"
                 android:layout_marginTop="@dimen/_20sdp"
-                android:background="@drawable/button_selected"
+                android:background="@drawable/btn_background_selector"
                 android:gravity="center"
                 android:padding="@dimen/_9sdp"
                 android:text="@string/charge"
