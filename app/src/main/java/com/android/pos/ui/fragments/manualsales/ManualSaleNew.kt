@@ -523,9 +523,14 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                                 getString(R.string.delete_items_message)
                             ) {
                                 positiveButton(getString(R.string.tv_delete)) {
-                                    viewModel.deleteCart()
+                                    viewModel.deleteManualSaleCart()
                                     prefProvider.setValueInt(Constants.CUSTOMER_ID, -1)
                                     binding.txtTotalAmount.text = "$0.00"
+                                    binding.txtTotal.text = "$0.00"
+                                    binding.tvDiscount.text = "$0.00"
+                                    binding.txtSubTotal.text = "$0.00"
+                                    binding.txtTotalTax.text = "$0.00"
+                                    binding.txtServiceCharge.text = "$0.00"
 
                                 }
                                 negativeButton(R.string.tv_cancel) {
