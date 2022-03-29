@@ -657,7 +657,7 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
                 "%.2f",
                 getCalCashDiscWithAmount(WholetotalPrice, false) / isSelectedCount
             ).toDouble()
-            makePaymentCreditCard()
+//            makePaymentCreditCard()
             if (device == 0) {
                 magtekPaymentCall()
             } else {
