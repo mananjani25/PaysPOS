@@ -50,6 +50,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
     var resultData: TbCustomer? = null
     var cashDiscountType = ""
     lateinit var cashDiscountModel: CashDiscountModel
+
     @Inject
     lateinit var prefProvider: PrefProvider
 
@@ -140,7 +141,10 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
         requireActivity().window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         loadCartFragment(CartFragment(this))
 
-
+        val customer = prefProvider.getCustomerData()
+        customer?.let {
+            viewModel.selectedCustomer = customer
+        }
 
 /*
         setFragmentResultListener("request_key_customer_dine_in") { _, bundle ->

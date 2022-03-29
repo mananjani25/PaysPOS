@@ -352,6 +352,7 @@
                             android:layout_height="wrap_content"
                             android:layout_gravity="center"
                             android:visibility="gone"
+                            android:layout_marginTop="@dimen/_1sdp"
                             android:gravity="center"
                             android:orientation="horizontal">
 
@@ -362,12 +363,23 @@
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="@dimen/_4sdp"
                                 android:layoutDirection="rtl"
+                                android:visibility="visible"
                                 android:text="@string/loyalty_rewards"
                                 android:textColor="@color/dark_gray"
                                 android:textSize="@dimen/_6mdpi"
-
                                 />
 
+
+                            <androidx.appcompat.widget.AppCompatTextView
+                                android:id="@+id/txt_label_loyaltyAmounts"
+                                style="@style/CustomFontMediumStyle"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="@dimen/_4sdp"
+                                android:text="@string/loyalty_rewards"
+                                android:textColor="@color/dark_gray"
+                                android:visibility="gone"
+                                android:textSize="@dimen/_6mdpi" />
 
                             <androidx.appcompat.widget.AppCompatTextView
                                 android:id="@+id/txtLoyaltyAmount"

@@ -944,8 +944,30 @@ class DashBoardCategoryViewModel @Inject constructor(
                         }
                     }
 
-                    totalPrice = (subTotalPrice + totalTax + totalServiceCharge)
+                    var finalTotal = 0.0
+                    finalTotal = (subTotalPrice + totalTax + totalServiceCharge)
 
+
+
+                    cashDiscountType = prefProvider.getValue(Constants.OPTION_TYPE, "")
+                    //loyalty point and price calculation
+                    amountToBePaid = finalTotal
+                    if (selectedCustomer == null) {
+                        totalPrice = amountToBePaid
+                        MethodUtils.setPriceTextView(
+                            txtTotalAmount,
+                            amountToBePaid
+                        )
+                    } else {
+                        checkAppliedLoyaltyProgram(
+                            selectedCustomer,
+                                amountToBePaid,
+                            txtTotalAmount
+                        )
+                        redeemLoyaltyInfo.getAmountToBePaid()?.let {
+                            totalPrice = it
+                        }
+                    }
 
                     if (MethodUtils.isEnableCashDiscount(context)) {
                         cashdiscountAmount = MethodUtils.calculateCashDiscount(
@@ -957,27 +979,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                         cashdiscountAmount = 0.0
                     }
 
-                    cashDiscountType = prefProvider.getValue(Constants.OPTION_TYPE, "")
-                    //loyalty point and price calculation
-                    amountToBePaid = totalPrice
-
-
-                    if (selectedCustomer == null) {
-                        var fnAmount = amountToBePaid
-                        MethodUtils.setPriceTextView(
-                            txtTotalAmount,
-                            fnAmount
-                        )
-                    } else {
-                        var fnAmount = amountToBePaid
-                        checkAppliedLoyaltyProgram(
-                            selectedCustomer,
-                            fnAmount,
-                            txtTotalAmount
-                        )
-                    }
-
-                    Log.e("amountToBePaid", "" + amountToBePaid)
+                    Log.e("amountToBePaid", "" + totalPrice)
                 } else {
 
                     nonCashAdj = 0.0
