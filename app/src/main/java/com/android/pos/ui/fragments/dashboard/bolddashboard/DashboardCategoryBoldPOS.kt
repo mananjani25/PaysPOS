@@ -16,6 +16,9 @@ import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.data.entities.*
+import com.android.pos.data.model.DineInModel
+import com.android.pos.data.model.responseModel.GetFloorPlanResponse
+import com.android.pos.data.model.responseModel.GetOrderDetailsResponse
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.EMPLOYEE_NAME
 import com.android.pos.data.remote.Constants.ORDER_TYPE
@@ -41,6 +44,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
     private val viewModelPayment by activityViewModels<PaymentViewModel>()
     private var serviceChargesList: List<TbServiceCharge>? = null
     private var serviceChargesObserve: Observer<Resource<List<TbServiceCharge>>>? = null
+    private var dineInFloorTableModel: GetFloorPlanResponse.Data.FloorPlanTable? = null
     private val TAG = "DashboardCategoryBold"
     var ordertypelist: ArrayList<TbOrderType> = arrayListOf()
     var isupdate = false
@@ -49,6 +53,8 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
     var resultData: TbCustomer? = null
     var cashDiscountType = ""
     lateinit var cashDiscountModel: CashDiscountModel
+    private var orderFloorDetails: GetOrderDetailsResponse.Data.FloorPlanTable =
+        GetOrderDetailsResponse.Data.FloorPlanTable()
 
     @Inject
     lateinit var prefProvider: PrefProvider
@@ -70,6 +76,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
         resultListener()
         addObserver()
+        getDineInData()
 
         getServiceCharges()
         syncData()
@@ -474,4 +481,78 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
     }
 
 
+    private fun getDineInData() {
+
+        if (arguments?.getBoolean("isFromDineIn") == true) {
+
+            getDineInCartList()
+        }
+
+
+    }
+
+    private fun getDineInCartList() {
+        val numOfGuest: Int by lazy {
+            requireArguments().getInt("numberOfGuest")
+        }
+
+        dineInFloorTableModel = arguments?.getParcelable("floorplan")
+        Log.e(TAG, "dineInFloorTableModel:  ${Gson().toJson(dineInFloorTableModel)}")
+
+
+        var orderDEtails: GetOrderDetailsResponse.Data.FloorPlanTable? =
+            arguments?.getParcelable("tableDetails")
+        Log.e(TAG, "orderFloorDetails:  ${Gson().toJson(orderDEtails)}")
+        if (orderDEtails != null) {
+            orderFloorDetails = orderDEtails
+        }
+        if (orderFloorDetails.id == null) {
+            orderFloorDetails.apply {
+                id = dineInFloorTableModel?.id
+                chairCount = dineInFloorTableModel?.chairCount
+                floorPlanId = dineInFloorTableModel?.floorPlanId
+                tableName = dineInFloorTableModel?.tableName.toString()
+                status = dineInFloorTableModel?.status.toString()
+
+
+            }
+
+        }
+
+
+        val dineInList: java.util.ArrayList<DineInModel> = arrayListOf()
+        dineInList.add(DineInModel(0, true, 0, "Whole Table", floorPlanTable = orderFloorDetails))
+        for (i in 1..numOfGuest) {
+            dineInList.add(
+                DineInModel(
+                    0,
+                    false,
+                    0,
+                    "Guest $i",
+                    floorPlanTable = orderFloorDetails
+
+                )
+            )
+        }
+
+        if (cartList.isEmpty()) {
+            val cartModel = CartModel().apply {
+                terminalId = prefProvider.getValueInt(Constants.TERMINAL_ID, -1)
+                employeeID = prefProvider.getValueInt(Constants.EMPLOYEE_ID, -1)
+                locationId = prefProvider.getValueInt(Constants.LOCATION_ID, -1)
+                orderTypeId = prefProvider.getValueInt(Constants.ORDER_TYPE_ID, -1)
+                orderType = prefProvider.getValue(Constants.ORDER_TYPE, "").toString()
+                orderTypeName = prefProvider.getValue(Constants.ORDER_TYPE_NAME, "").toString()
+
+                serviceCharge = serviceChargesList
+
+            }
+            cartList.add(cartModel)
+        }
+
+        cartList.get(0).orderType = Constants.DINE_IN
+        viewModel.cartLogic(cartList, null, Constants.ADD, dineInList = dineInList)
+
+
+    }
 }

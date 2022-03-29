@@ -107,6 +107,7 @@ class CartFragment(val itemClickListner: ItemClickListner?) : Fragment(), MyCall
         binding = FragmentCartBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = this
         Log.e("bundleData", arguments.toString())
+        setCartAdapter()
 
         if (arguments?.getBundle("updateBundle") != null) {
             updateBundle = arguments?.getBundle("updateBundle")
@@ -163,20 +164,8 @@ class CartFragment(val itemClickListner: ItemClickListner?) : Fragment(), MyCall
 
         initListeners()
         setCartAdapter()
-        getDineInData()
-
-        /* nameObserver = Observer {
-
-             bindData(it)
-
-             removeObserver()
-         }*/
-
-        /*  if (isAdded) {*/
-/*            addDineInObserver()*/
+        //getDineInData()
         addObserver()
-        //addObserver()
-        /*}*/
 
 
 
@@ -256,7 +245,7 @@ class CartFragment(val itemClickListner: ItemClickListner?) : Fragment(), MyCall
 
         binding.rvCartList.adapter = dineInCartAdapter
         val numOfGuest: Int by lazy {
-            updateBundle!!.getInt("numberOfGuest")
+            requireArguments().getInt("numberOfGuest")
         }
 
         dineInFloorTableModel = arguments?.getParcelable("floorplan")
@@ -264,6 +253,7 @@ class CartFragment(val itemClickListner: ItemClickListner?) : Fragment(), MyCall
 
         var orderDEtails: GetOrderDetailsResponse.Data.FloorPlanTable? =
             arguments?.getParcelable("tableDetails")
+        Log.e(TAG, "orderFloorDetails:  ${Gson().toJson(orderDEtails)}")
         if (orderDEtails != null) {
             orderFloorDetails = orderDEtails
         }
@@ -282,7 +272,7 @@ class CartFragment(val itemClickListner: ItemClickListner?) : Fragment(), MyCall
 
 
         val dineInList: ArrayList<DineInModel> = arrayListOf()
-        dineInList.add(DineInModel(0, true, 0, "Whole Table"))
+        dineInList.add(DineInModel(0, true, 0, "Whole Table", floorPlanTable = orderFloorDetails))
         for (i in 1..numOfGuest) {
             dineInList.add(
                 DineInModel(
@@ -381,7 +371,6 @@ class CartFragment(val itemClickListner: ItemClickListner?) : Fragment(), MyCall
 
     private fun addObserver() {
 
-
         Log.e("ORDER_TYPE", prefProvider.getValue(ORDER_TYPE, TAKEOUT))
 
         viewModel.mAllWords(
@@ -389,25 +378,35 @@ class CartFragment(val itemClickListner: ItemClickListner?) : Fragment(), MyCall
             prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
         ).observe(requireActivity()) {
             Log.e(TAG, "listSize  ${Gson().toJson(it)}")
+            Log.e(TAG, "getOrderType:  ${prefProvider.getValue(ORDER_TYPE, TAKEOUT)}")
             if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == DINE_IN) {
-                cartlist = it as ArrayList<CartModel>
-                binding.linearButtonView.gone()
-                binding.relPreoceedToFire.visible()
-                //cartlist[0].serviceCharge = viewModel.serviceChargesList
-                /*val dineList: List<DineInModel>? =
-                    it[0].dineInList
-*/
+                if (it.isNotEmpty()) {
+                    binding.rvCartList.adapter = dineInCartAdapter
+                    cartlist = it as ArrayList<CartModel>
+                    binding.linearButtonView.gone()
+                    binding.relPreoceedToFire.visible()
 
-                /*if (dineList != null) {
-                    dineInCartAdapter = DineInAdapter()
-                    dineInCartAdapter.setListner(this)
-                    dineInCartAdapter?.setList(dineList.toCollection(arrayListOf()))
+                    if (it[0].dineInList?.isNotEmpty() == true) {
+                        var dineInList = it[0].dineInList
+
+                        dineInCartAdapter.setList(
+                            dineInList?.toCollection(arrayListOf()) ?: arrayListOf()
+                        )
+
+
+                    }
+
+                } else {
+                    binding.linearButtonView.visible()
+                    binding.relPreoceedToFire.gone()
+                    dineInCartAdapter.clearList()
 
                 }
-*/
-
             } else {
                 if (it.isNotEmpty()) {
+                    binding.linearButtonView.visible()
+                    binding.relPreoceedToFire.gone()
+                    binding.rvCartList.adapter = cartAdapter
                     it[0].items?.toCollection(arrayListOf())
                         ?.let { it1 -> cartAdapter.setList(it1) }
 
@@ -661,15 +660,15 @@ class CartFragment(val itemClickListner: ItemClickListner?) : Fragment(), MyCall
         ) {
             positiveButton(getString(R.string.tv_delete)) {
                 // Do positive stuff here
-                prefProvider.setValueInt(Constants.DINE_INGUEST_SELECTED, 0)
                 if (prefProvider.getValue(ORDER_TYPE, "").toString() == DINE_IN) {
+                    prefProvider.setValueInt(Constants.DINE_INGUEST_SELECTED, 0)
 
                     val dList = cartlist[0].dineInList ?: arrayListOf()
                     Log.e(TAG, "dList:  ${Gson().toJson(dList)}")
                     if (dList.isNotEmpty()) {
-                        dList[1].floorPlanTable?.id?.let {
+                        dList[0].floorPlanTable?.id?.let {
 
-                            if (dList[1]?.floorPlanTable?.status.toString() == Constants.MERGED) {
+                            if (dList[0]?.floorPlanTable?.status.toString() == Constants.MERGED) {
                                 viewModel.getTableStatus(it, Constants.MERGED)
                             } else {
                                 viewModel.getTableStatus(
@@ -680,6 +679,7 @@ class CartFragment(val itemClickListner: ItemClickListner?) : Fragment(), MyCall
                     }
                     viewModel.deleteCart()
                     isOrderUpdate = false
+                    dineInCartAdapter.clearList()
 
                     prefProvider.setValue(ORDER_TYPE, TAKEOUT)
 
@@ -687,14 +687,18 @@ class CartFragment(val itemClickListner: ItemClickListner?) : Fragment(), MyCall
                     clearCustomer()
                     prefProvider.setValueboolean(Constants.DINE_IN_UPDATE, false)
                     clearUpdateFlag()
+                    binding.linearButtonView.visible()
+                    binding.relPreoceedToFire.gone()
+
 
                 } else {
-
                     clearCustomer()
                     viewModel.deleteCart()
                     cartlist.clear()
                     prefProvider.setValue(ORDER_TYPE, TAKEOUT)
                     prefProvider.setValueboolean(Constants.LOYALTY_ADDED, false)
+
+
                 }
 
 
@@ -703,7 +707,7 @@ class CartFragment(val itemClickListner: ItemClickListner?) : Fragment(), MyCall
 
                     val dList = dineInCartAdapter.getList()
                     if (dList.isNotEmpty()) {
-                        dList[1].floorPlanTable?.id?.let {
+                        dList[0].floorPlanTable?.id?.let {
 
                             if (dList[1]?.floorPlanTable?.status.toString() == Constants.MERGED) {
                                 viewModel.getTableStatus(it, Constants.MERGED)
@@ -718,7 +722,7 @@ class CartFragment(val itemClickListner: ItemClickListner?) : Fragment(), MyCall
                     isOrderUpdate = false
 
                     if (prefProvider.getValue(ORDER_TYPE, "").toString() != "") {
-                        prefProvider.setValue(ORDER_TYPE, "")
+                        prefProvider.setValue(ORDER_TYPE, TAKEOUT)
                     }
                     val dineInList = ArrayList<DineInModel>()
                     dineInCartAdapter.setList(dineInList)
@@ -779,8 +783,9 @@ class CartFragment(val itemClickListner: ItemClickListner?) : Fragment(), MyCall
 
     private fun setCartAdapter() {
         cartAdapter = CartAdapter()
-        binding.rvCartList.adapter = cartAdapter
         cartAdapter.setCallback(this)
+        dineInCartAdapter = DineInAdapter()
+        dineInCartAdapter.setListner(this)
     }
 
 

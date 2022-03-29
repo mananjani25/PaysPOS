@@ -1823,7 +1823,6 @@ class DashBoardCategoryViewModel @Inject constructor(
                 Status.SUCCESS -> {
                     _showProgress.value = Event(false)
                     resource.data.let { response ->
-                        Log.e(TAG, "getTableStatusResponse:  ${Gson().toJson(response)}")
                         if (response?.status == 200) {
                             _tableStatusSuccess.value = Event(response.status)
 
