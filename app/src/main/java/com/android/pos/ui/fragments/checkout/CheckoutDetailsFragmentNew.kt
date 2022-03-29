@@ -1105,23 +1105,14 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
 
                 if (it.data == null) {
 
-//                    if (magtekModule.m_scra?.isDeviceConnected == true) {
-//                        magtekModule.startTransactionWithLED()
-//                    } else
-//                        showdialog()
-
                     AlertUtils.showCustomAlert(requireContext(), "Please connect device")
 
                 } else {
 
-                    if (magtekModule.m_scra?.isDeviceConnected == true) {
 
-                        magtekModule.startTransactionWithLED()
-                    } else {
-                        ProgressUtils.showProgressDialog(requireActivity())
-                        magtekModule.setupInit()
-                        magtekModule.openDevice(it.data.mcAddress)
-                    }
+                    ProgressUtils.showProgressDialog(requireActivity())
+                    magtekModule.setupInit()
+                    magtekModule.openDevice(it.data.mcAddress)
 
 
                 }

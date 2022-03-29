@@ -182,140 +182,7 @@ open class MagtekModule @Inject constructor(
     private fun OnARQCReceived(data: ByteArray) {
 
         dataRecv = true
-
-        Log.e("ARQC Received", TLVParser.getHexString(data))
-
-
-//        val parsedTLVList = TLVParser.parseEMVData(data, true, "")
-//
-//        if (parsedTLVList != null) {
-//            val macKSNString = TLVParser.getTagValue(parsedTLVList, "DFDF54")
-//            val macKSN = TLVParser.getByteArrayFromHexString(macKSNString)
-//            val macEncryptionTypeString = TLVParser.getTagValue(parsedTLVList, "DFDF55")
-//            val macEncryptionType = TLVParser.getByteArrayFromHexString(macEncryptionTypeString)
-//            val deviceSNString = TLVParser.getTagValue(parsedTLVList, "DFDF25")
-//            val deviceSN = TLVParser.getByteArrayFromHexString(deviceSNString)
-//
-//            val approved: Boolean = true
-//            var response: ByteArray? = null
-//            Log.e("m_emvMessageFormat", m_emvMessageFormat.toString())
-//            if (m_emvMessageFormat == 0) {
-//                response = buildAcquirerResponseFormat0(deviceSN, approved)
-//            } else if (m_emvMessageFormat == 1) {
-//                response =
-//                    buildAcquirerResponseFormat1(macKSN, macEncryptionType, deviceSN, approved)
-//            }
-//            setAcquirerResponse(response)
-//        }
-
         listner?.OnARQCReceived(data)
-    }
-
-    private fun setAcquirerResponse(response: ByteArray?) {
-        if (m_scra != null && response != null) {
-            Log.e("Sending Acquirer Res", TLVParser.getHexString(response))
-            m_scra!!.setAcquirerResponse(response)
-        }
-    }
-
-    private fun buildAcquirerResponseFormat0(
-        deviceSN: ByteArray?,
-        approved: Boolean
-    ): ByteArray? {
-        var response: ByteArray? = null
-        var lenSN = 0
-        if (deviceSN != null) lenSN = deviceSN.size
-        val snTag = byteArrayOf(0xDF.toByte(), 0xDF.toByte(), 0x25, lenSN.toByte())
-        val container = byteArrayOf(0xFA.toByte(), 0x06, 0x70, 0x04)
-        val approvedARC = byteArrayOf(0x8A.toByte(), 0x02, 0x30, 0x30)
-        val declinedARC = byteArrayOf(0x8A.toByte(), 0x02, 0x30, 0x35)
-        var len = 4 + snTag.size + lenSN + container.size + approvedARC.size
-        response = ByteArray(len)
-        var i = 0
-        len -= 2
-        response[i++] = (len shr 8 and 0xFF).toByte()
-        response[i++] = (len and 0xFF).toByte()
-        len -= 2
-        response[i++] = 0xF9.toByte()
-        response[i++] = len.toByte()
-        System.arraycopy(snTag, 0, response, i, snTag.size)
-        i += snTag.size
-        System.arraycopy(deviceSN, 0, response, i, deviceSN!!.size)
-        i += deviceSN.size
-        System.arraycopy(container, 0, response, i, container.size)
-        i += container.size
-        if (approved) {
-            System.arraycopy(approvedARC, 0, response, i, approvedARC.size)
-        } else {
-            System.arraycopy(declinedARC, 0, response, i, declinedARC.size)
-        }
-        return response
-    }
-
-    private fun buildAcquirerResponseFormat1(
-        macKSN: ByteArray?,
-        macEncryptionType: ByteArray?,
-        deviceSN: ByteArray?,
-        approved: Boolean
-    ): ByteArray? {
-        var response: ByteArray? = null
-        var lenMACKSN = 0
-        var lenMACEncryptionType = 0
-        var lenSN = 0
-        if (macKSN != null) {
-            lenMACKSN = macKSN.size
-        }
-        if (macEncryptionType != null) {
-            lenMACEncryptionType = macEncryptionType.size
-        }
-        if (deviceSN != null) {
-            lenSN = deviceSN.size
-        }
-        val macKSNTag = byteArrayOf(
-            0xDF.toByte(), 0xDF.toByte(), 0x54,
-            lenMACKSN.toByte()
-        )
-        val macEncryptionTypeTag = byteArrayOf(
-            0xDF.toByte(),
-            0xDF.toByte(), 0x55, lenMACEncryptionType.toByte()
-        )
-        val snTag = byteArrayOf(0xDF.toByte(), 0xDF.toByte(), 0x25, lenSN.toByte())
-        val container = byteArrayOf(0xFA.toByte(), 0x06, 0x70, 0x04)
-        val approvedARC = byteArrayOf(0x8A.toByte(), 0x02, 0x30, 0x30)
-        val declinedARC = byteArrayOf(0x8A.toByte(), 0x02, 0x30, 0x35)
-        val lenTLV =
-            4 + macKSNTag.size + lenMACKSN + macEncryptionTypeTag.size + lenMACEncryptionType + snTag.size + lenSN + container.size + approvedARC.size
-        var lenPadding = 0
-        if (lenTLV % 8 > 0) {
-            lenPadding = 8 - lenTLV % 8
-        }
-        val lenData = lenTLV + lenPadding + 4
-        response = ByteArray(lenData)
-        var i = 0
-        response[i++] = (lenData - 2 shr 8 and 0xFF).toByte()
-        response[i++] = (lenData - 2 and 0xFF).toByte()
-        response[i++] = 0xF9.toByte()
-        response[i++] = (lenTLV - 4).toByte()
-        System.arraycopy(macKSNTag, 0, response, i, macKSNTag.size)
-        i += macKSNTag.size
-        System.arraycopy(macKSN, 0, response, i, macKSN!!.size)
-        i += macKSN.size
-        System.arraycopy(macEncryptionTypeTag, 0, response, i, macEncryptionTypeTag.size)
-        i += macEncryptionTypeTag.size
-        System.arraycopy(macEncryptionType, 0, response, i, macEncryptionType!!.size)
-        i += macEncryptionType.size
-        System.arraycopy(snTag, 0, response, i, snTag.size)
-        i += snTag.size
-        System.arraycopy(deviceSN, 0, response, i, deviceSN!!.size)
-        i += deviceSN.size
-        System.arraycopy(container, 0, response, i, container.size)
-        i += container.size
-        if (approved) {
-            System.arraycopy(approvedARC, 0, response, i, approvedARC.size)
-        } else {
-            System.arraycopy(declinedARC, 0, response, i, declinedARC.size)
-        }
-        return response
     }
 
 
@@ -324,10 +191,6 @@ open class MagtekModule @Inject constructor(
         listner?.OnCardDataReceived(imtCardData)
     }
 
-
-    init {
-
-    }
 
     fun setupInit() {
 
@@ -366,21 +229,9 @@ open class MagtekModule @Inject constructor(
 
     }
 
-    private fun startTransaction() {
-        var type: Byte = 0
-        if (mTypeChecked[0]) {
-            type = type or 0x01.toByte()
-        }
-        if (mTypeChecked[1]) {
-            type = type or 0x02.toByte()
-        }
-        if (mTypeChecked[2]) {
-            type = type or 0x04.toByte()
-        }
-        startTransactionWithOptions(type)
-    }
 
-    private fun startTransactionWithOptions(cardType1: Byte) {
+     fun startTransaction() {
+        Log.e("[Start Transaction 2]", "Result=$")
         if (m_scra != null) {
             val timeLimit: Byte = 0x3C
 
@@ -405,9 +256,10 @@ open class MagtekModule @Inject constructor(
                 currencyCode,
                 reportingOption
             )
-            Log.e("[Start Transaction]", "Result=$result")
+            Log.e("[Start Transaction 3]", "Result=$result")
 
         }
+
     }
 
     private fun isQuickChipEnabled(): Boolean {
@@ -507,7 +359,7 @@ open class MagtekModule @Inject constructor(
         if (enable) {
             // Get a set of currently paired devices
             val pairedDevices = mBluetoothAdapter!!.bondedDevices
-            Log.e("pairedDevices",pairedDevices.size.toString())
+            Log.e("pairedDevices", pairedDevices.size.toString())
             if (pairedDevices.size > 0) {
                 for (device in pairedDevices) {
                     if (device.type == BluetoothDevice.DEVICE_TYPE_LE) {
