@@ -499,9 +499,9 @@ class CartFragment(val itemClickListner: ItemClickListner?) : Fragment(), MyCall
                         )
 
                     }
-                    R.id.menu_note -> {
+                    /*R.id.menu_note -> {
 
-                    }
+                    }*/
                 }
                 true
             }
