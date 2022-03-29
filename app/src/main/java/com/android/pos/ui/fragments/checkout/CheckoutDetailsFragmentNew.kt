@@ -122,6 +122,8 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
         binding = FragmentCheckoutDetailsNewBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = this
 
+        magtekModule.setCallback(this)
+
         orderId = arguments?.getInt("orderId")
 
         Log.e("orderId :: ", orderId.toString())

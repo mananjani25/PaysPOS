@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.*
 import android.util.Log
 import com.android.pos.ui.dialog.PayByGuestDialog
+import com.android.pos.ui.fragments.checkout.CheckoutDetailsFragmentNew
 import com.android.pos.ui.fragments.checkout.PayFullAmountFragment
 import com.android.pos.ui.fragments.payment.PaymentFragment
 import com.magtek.mobile.android.mtcms.MTParser
@@ -18,7 +19,7 @@ open class SessionManager @Inject constructor(@ApplicationContext private val mC
     IEventSubscriber, IConfigurationCallback,
     IFallbackAdapter {
     var device: IDevice? = null
-    private var mOutputFragment: PayFullAmountFragment? = null
+    private var mOutputFragment: CheckoutDetailsFragmentNew? = null
     private var mDevicesFragment: MagtekProFragment? = null
     private var mDineInFragment: PayByGuestDialog? = null
     private var mTransaction: Transaction? = null
@@ -32,7 +33,7 @@ open class SessionManager @Inject constructor(@ApplicationContext private val mC
     private val deviceConfiguration: IDeviceConfiguration
         get() = device!!.deviceConfiguration
 
-    fun setOutputFragment(outputFragment: PayFullAmountFragment?) {
+    fun setOutputFragment(outputFragment: CheckoutDetailsFragmentNew?) {
         mOutputFragment = outputFragment
     }
 
