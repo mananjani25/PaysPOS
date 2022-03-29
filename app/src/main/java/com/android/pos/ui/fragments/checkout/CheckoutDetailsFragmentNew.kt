@@ -1002,7 +1002,7 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
             } else {
                 return totalprice
             }
-        } else if (paymentType == "Card") {
+        } else {
             if (cashDiscountType == "SurCharge") {
                 return totalprice + cashDiscountSurcharge
             } else {
