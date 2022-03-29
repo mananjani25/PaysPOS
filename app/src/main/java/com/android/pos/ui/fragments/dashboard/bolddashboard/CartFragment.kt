@@ -36,6 +36,7 @@ import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.callback.ItemClickListner
 import com.android.pos.utils.callback.MyCallback
 import com.android.pos.utils.extensions.alert
+import com.android.pos.utils.extensions.gone
 import com.android.pos.utils.extensions.visible
 import com.android.pos.utils.statusUtils.Resource
 import com.google.gson.Gson
@@ -111,6 +112,13 @@ class CartFragment(val itemClickListner: ItemClickListner?) : Fragment(), MyCall
             updateBundle = arguments?.getBundle("updateBundle")
         }
 
+        if (arguments?.getBoolean("isFromDineIn") == true) {
+            Log.e(TAG, "YesIsFromDineIn")
+            // getDineInCartList()
+
+
+        }
+
 
         if (arguments?.getBoolean("isFromPayment") != null) {
             isFromPayment = arguments?.getBoolean("isFromPayment")!!
@@ -143,6 +151,7 @@ class CartFragment(val itemClickListner: ItemClickListner?) : Fragment(), MyCall
     private fun setUpData() {
         if (isFromPayment) {
             binding.linearButtonView.visibility = View.GONE
+            binding.relPreoceedToFire.visibility = View.GONE
             binding.imgOrderMenu.visibility = View.INVISIBLE
             binding.imgOrderMenu.isEnabled = false
             binding.imgOrderMenu.isClickable = false
@@ -231,6 +240,7 @@ class CartFragment(val itemClickListner: ItemClickListner?) : Fragment(), MyCall
     private fun getDineInData() {
         if (updateBundle != null) {
             if (updateBundle?.getBoolean("isFromDineIn") == true) {
+                Log.e(TAG, "YesGetDineInData")
                 getDineInCartList()
             } else if (updateBundle?.getBoolean("is_dine_in_edit") == true) {
                 checkDineInEditOrder()
@@ -380,7 +390,21 @@ class CartFragment(val itemClickListner: ItemClickListner?) : Fragment(), MyCall
         ).observe(requireActivity()) {
             Log.e(TAG, "listSize  ${Gson().toJson(it)}")
             if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == DINE_IN) {
+                cartlist = it as ArrayList<CartModel>
+                binding.linearButtonView.gone()
+                binding.relPreoceedToFire.visible()
+                //cartlist[0].serviceCharge = viewModel.serviceChargesList
+                /*val dineList: List<DineInModel>? =
+                    it[0].dineInList
+*/
 
+                /*if (dineList != null) {
+                    dineInCartAdapter = DineInAdapter()
+                    dineInCartAdapter.setListner(this)
+                    dineInCartAdapter?.setList(dineList.toCollection(arrayListOf()))
+
+                }
+*/
 
             } else {
                 if (it.isNotEmpty()) {
@@ -640,7 +664,8 @@ class CartFragment(val itemClickListner: ItemClickListner?) : Fragment(), MyCall
                 prefProvider.setValueInt(Constants.DINE_INGUEST_SELECTED, 0)
                 if (prefProvider.getValue(ORDER_TYPE, "").toString() == DINE_IN) {
 
-                    val dList = dineInCartAdapter.getList()
+                    val dList = cartlist[0].dineInList ?: arrayListOf()
+                    Log.e(TAG, "dList:  ${Gson().toJson(dList)}")
                     if (dList.isNotEmpty()) {
                         dList[1].floorPlanTable?.id?.let {
 
@@ -656,9 +681,8 @@ class CartFragment(val itemClickListner: ItemClickListner?) : Fragment(), MyCall
                     viewModel.deleteCart()
                     isOrderUpdate = false
 
-                    if (prefProvider.getValue(ORDER_TYPE, "").toString() != "") {
-                        prefProvider.setValue(ORDER_TYPE, "")
-                    }
+                    prefProvider.setValue(ORDER_TYPE, TAKEOUT)
+
 
                     clearCustomer()
                     prefProvider.setValueboolean(Constants.DINE_IN_UPDATE, false)

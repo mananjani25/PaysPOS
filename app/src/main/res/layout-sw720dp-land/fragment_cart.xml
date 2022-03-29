@@ -423,20 +423,23 @@
                 </LinearLayout>
 
                 <RelativeLayout
+                    android:id="@+id/relPreoceedToFire"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="@color/btnColorDark">
+                    android:layout_marginStart="@dimen/_4sdp"
+                    android:layout_marginEnd="@dimen/_4sdp"
+                    android:background="@color/btnColorDark"
+                    android:visibility="gone">
 
                     <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/txtDineInProceed"
                         style="@style/CustomFontBold"
                         android:layout_width="wrap_content"
-
                         android:layout_height="wrap_content"
+                        android:layout_centerInParent="true"
                         android:layout_marginStart="@dimen/_2sdp"
                         android:layout_marginEnd="@dimen/_4sdp"
                         android:layout_weight="1"
-
                         android:gravity="center"
                         android:padding="@dimen/_5sdp"
                         android:text="Proceed To Fire"
@@ -448,8 +451,8 @@
                         android:id="@+id/imgFire"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_alignParentEnd="true"
                         android:layout_centerVertical="true"
+                        android:layout_toEndOf="@+id/txtDineInProceed"
                         android:src="@drawable/fire_active" />
 
 
