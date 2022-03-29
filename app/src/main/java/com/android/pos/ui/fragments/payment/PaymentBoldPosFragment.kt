@@ -13,6 +13,7 @@ import androidx.fragment.app.setFragmentResultListener
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.data.remote.Constants
+import com.android.pos.data.remote.Constants.REDIRECT_FROM
 import com.android.pos.data.remote.Constants.SPLIT_ENABLE
 import com.android.pos.databinding.FragmentPaymentBoldPosBinding
 import com.android.pos.di.PrefProvider
@@ -57,6 +58,7 @@ class PaymentBoldPosFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
+
         loadCartFragment(CartFragment.newInstacne(true))
         Handler(Looper.getMainLooper()).postDelayed({ /* Create an Intent that will start the Menu-Activity. */
             loadCategoryFragment(CheckoutDetailsFragmentNew())
@@ -94,9 +96,12 @@ class PaymentBoldPosFragment : Fragment() {
             putInt("fragmentId", binding.frameLayout.id)
             putInt("checkoutHeaderId", binding.layoutHeaderCheckout.rlRoot.id)
             putBoolean("isFromPayment", true)
+            putString(REDIRECT_FROM, arguments?.getString(REDIRECT_FROM))
             // putInt("dashboardHeaderId", binding.layoutHeader.rlRoot.id)
         }
         frag.arguments = result
+        //frag.arguments = arguments
+
         fm.beginTransaction().replace(binding.frameLayoutCart.id, frag).commit()
     }
 
@@ -109,9 +114,12 @@ class PaymentBoldPosFragment : Fragment() {
             putInt("paymentId", paymentId)
             putString("orderOfflineId", orderOfflineId)
             putString("paymentOfflineId", paymentOfflineId)
+            putString(REDIRECT_FROM, arguments?.getString(REDIRECT_FROM))
 
         }
         fragment.arguments = bundle
+       // fragment.arguments = arguments
+
         fm.beginTransaction().replace(binding.frameLayout.id, fragment).commit()
         // binding.frameLayout?.let { fm.beginTransaction().replace(it, fragment).commit() }
     }

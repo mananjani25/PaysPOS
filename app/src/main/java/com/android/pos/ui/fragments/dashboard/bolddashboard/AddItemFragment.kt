@@ -169,10 +169,10 @@ class AddItemFragment(val listner: ItemListner) : Fragment() {
             }
 
             if (isUpdateItem) {
-                viewModel.cartLogic(cartList, item, Constants.UPDATE)
+                viewModel.cartLogic(cartList, item, Constants.UPDATE,false)
             } else {
 
-                viewModel.cartLogic(cartList, item, Constants.ADD)
+                viewModel.cartLogic(cartList, item, Constants.ADD,false)
             }
 
             listner.onCancelItemSelected()
@@ -206,7 +206,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment() {
         binding.txtRemoveItem.setOnClickListener {
 
             item.isEdited = false
-            viewModel.cartLogic(cartList, item, DELETE)
+            viewModel.cartLogic(cartList, item, DELETE,false)
             listner.onCancelItemSelected()
 
         }

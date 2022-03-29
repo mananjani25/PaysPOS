@@ -138,7 +138,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                         item.discountId = result.id
                         item.discountType = result.discountType
                         item.isManualSales = false
-                        viewModel.cartLogic(cartList, item, Constants.UPDATE)
+                        viewModel.cartLogic(cartList, item, Constants.UPDATE,false)
 
                     }
                     "Amount" -> {
@@ -148,7 +148,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                         item?.discountType = result.discountType
                         item?.isManualSales = false
 
-                        viewModel.cartLogic(cartList, item, Constants.UPDATE)
+                        viewModel.cartLogic(cartList, item, Constants.UPDATE,false)
                     }
                     else -> {
                         item?.discountPrice = result.percentage
@@ -156,7 +156,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                         item?.discountType = result.discountType
                         item?.isManualSales = false
 
-                        viewModel.cartLogic(cartList, item, Constants.UPDATE)
+                        viewModel.cartLogic(cartList, item, Constants.UPDATE,false)
 
                     }
                 }
@@ -177,7 +177,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
             val singleItem = bundle.getParcelable<TbItem>("item")
 
             singleItem?.note = note.toString()
-            singleItem?.let { viewModel.cartLogic(cartList, it, Constants.UPDATE) }
+            singleItem?.let { viewModel.cartLogic(cartList, it, Constants.UPDATE,false) }
         }
 
     }
@@ -331,6 +331,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
      }*/
         binding.layoutHeader.txtKeypad.setOnClickListener {
             //loadKeyPadFragment(KeyPadManualSaleFragment())
+            viewModel.deleteManualSaleCart()
             binding.layoutHeader.txtKeypad.setTextColor(resources.getColor(R.color.btnColor))
             binding.layoutHeader.txtKeypad.setTypeface(
                 binding.layoutHeader.txtKeypad.typeface,
@@ -362,7 +363,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                 viewModel.createCart(cartList)
             }
             item.itemQuantity = 1
-            viewModel.cartLogic(cartList, item, Constants.ADD)
+            viewModel.cartLogic(cartList, item, Constants.ADD,false)
         }
     }
 
