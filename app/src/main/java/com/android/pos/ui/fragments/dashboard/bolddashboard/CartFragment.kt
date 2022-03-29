@@ -725,17 +725,6 @@ class CartFragment(val itemClickListner: ItemClickListner?) : Fragment(), MyCall
 
     }
 
-    private fun refreshItemCalculation() {
-        if (cartlist.size > 0) {
-            viewModel.itemCalculationCartModel(
-                cartlist[0],
-                binding.txtTotal,
-                requireContext()
-            )
-        }
-
-    }
-
 
     private fun clearCustomer() {
         prefProvider.setValue(Constants.CUSTOMER_NAME, "")
