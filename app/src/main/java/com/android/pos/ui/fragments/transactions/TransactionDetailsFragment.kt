@@ -278,7 +278,17 @@ class TransactionDetailsFragment : Fragment() {
                 if (MethodUtils.isEnableCashDiscount(requireContext())) {
                     if (paymentDetailsResponse.data.payment_type == "Card") {
                         if (paymentDetailsResponse.data.cash_discount_type == "SurCharge") {
-                            binding.linearCashDiscount.visibility = View.GONE
+                            binding.linearCashDiscount.visibility = View.VISIBLE
+                            binding.txtCashAmounntDiscount.setTextColor(
+                                ContextCompat.getColor(
+                                    requireContext(),
+                                    R.color.colorRed
+                                )
+                            )
+                            binding.txtCashAmounntDiscount.text = "+ $ " + String.format(
+                                "%.2f",
+                                paymentDetailsResponse.data.cash_discount_or_surcharge
+                            )
                         } else {
                             binding.linearCashDiscount.visibility = View.GONE
                         }

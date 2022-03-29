@@ -91,7 +91,7 @@ class CartFragment(val itemClickListner: ItemClickListner?) : Fragment(), MyCall
         @JvmStatic
         fun newInstacne(isFromPayment: Boolean) =
             CartFragment(null).apply {
-                arguments = Bundle().apply {
+                arguments=Bundle().apply {
                     putBoolean("isFromPayment", isFromPayment)
                 }
             }
@@ -105,17 +105,9 @@ class CartFragment(val itemClickListner: ItemClickListner?) : Fragment(), MyCall
         binding = FragmentCartBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = this
         Log.e("bundleData", arguments.toString())
-        setCartAdapter()
 
         if (arguments?.getBundle("updateBundle") != null) {
             updateBundle = arguments?.getBundle("updateBundle")
-        }
-
-        if (arguments?.getBoolean("isFromDineIn") == true) {
-            Log.e(TAG, "YesIsFromDineIn")
-            // getDineInCartList()
-
-
         }
 
 
@@ -150,7 +142,6 @@ class CartFragment(val itemClickListner: ItemClickListner?) : Fragment(), MyCall
     private fun setUpData() {
         if (isFromPayment) {
             binding.linearButtonView.visibility = View.GONE
-            binding.relPreoceedToFire.visibility = View.GONE
             binding.imgOrderMenu.visibility = View.INVISIBLE
             binding.imgOrderMenu.isEnabled = false
             binding.imgOrderMenu.isClickable = false
@@ -165,7 +156,6 @@ class CartFragment(val itemClickListner: ItemClickListner?) : Fragment(), MyCall
         getDineInData()
         callback()
         setupLoyalytyPoints()
-        //getDineInData()
         addObserver()
 
 
@@ -264,7 +254,7 @@ class CartFragment(val itemClickListner: ItemClickListner?) : Fragment(), MyCall
 
         binding.rvCartList.adapter = dineInCartAdapter
         val numOfGuest: Int by lazy {
-            requireArguments().getInt("numberOfGuest")
+            updateBundle!!.getInt("numberOfGuest")
         }
 
         dineInFloorTableModel = arguments?.getParcelable("floorplan")
@@ -272,7 +262,6 @@ class CartFragment(val itemClickListner: ItemClickListner?) : Fragment(), MyCall
 
         var orderDEtails: GetOrderDetailsResponse.Data.FloorPlanTable? =
             arguments?.getParcelable("tableDetails")
-        Log.e(TAG, "orderFloorDetails:  ${Gson().toJson(orderDEtails)}")
         if (orderDEtails != null) {
             orderFloorDetails = orderDEtails
         }
@@ -291,7 +280,7 @@ class CartFragment(val itemClickListner: ItemClickListner?) : Fragment(), MyCall
 
 
         val dineInList: ArrayList<DineInModel> = arrayListOf()
-        dineInList.add(DineInModel(0, true, 0, "Whole Table", floorPlanTable = orderFloorDetails))
+        dineInList.add(DineInModel(0, true, 0, "Whole Table"))
         for (i in 1..numOfGuest) {
             dineInList.add(
                 DineInModel(
@@ -325,7 +314,7 @@ class CartFragment(val itemClickListner: ItemClickListner?) : Fragment(), MyCall
         }
 
         cartlist.get(0).orderType = Constants.DINE_IN
-        viewModel.cartLogic(cartlist, null, Constants.ADD, false, dineInList = dineInList)
+        viewModel.cartLogic(cartlist, null, Constants.ADD,false, dineInList = dineInList)
 
     }
 
@@ -368,7 +357,7 @@ class CartFragment(val itemClickListner: ItemClickListner?) : Fragment(), MyCall
                 prefProvider.setValue(Constants.ORDER_TYPE_NAME, Constants.DINE_IN)
                 prefProvider.setValueInt(Constants.ORDER_TYPE_ID, 2)
 
-                viewModel.cartLogic(cartlist, null, Constants.ADD, false, dineInList = dineInList)
+                viewModel.cartLogic(cartlist, null, Constants.ADD,false, dineInList = dineInList)
                 viewModel.orderItemDiscount = arguments?.getDouble("totalDiscount") ?: 0.0
 
             }
@@ -390,7 +379,10 @@ class CartFragment(val itemClickListner: ItemClickListner?) : Fragment(), MyCall
 
     private fun addObserver() {
 
-        if (arguments?.getString(REDIRECT_FROM) == MANUAL_SALE) {
+
+        Log.e("ORDER_TYPE", prefProvider.getValue(ORDER_TYPE, TAKEOUT))
+
+        if (arguments?.getString(REDIRECT_FROM)== MANUAL_SALE){
             viewModel.manualSaleItems(
                 prefProvider.getValue(ORDER_TYPE, TAKEOUT),
                 prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
@@ -411,8 +403,7 @@ class CartFragment(val itemClickListner: ItemClickListner?) : Fragment(), MyCall
                     binding.txtTax.text = MethodUtils.roundOffAmount(viewModel.totalTax)
                     binding.txtServiceCharge.text =
                         MethodUtils.roundOffAmount(viewModel.totalServiceCharge)
-                    binding.tvPayNow.text =
-                        "Pay " + MethodUtils.roundOffAmount(viewModel.totalPrice)
+                    binding.tvPayNow.text = "Pay " + MethodUtils.roundOffAmount(viewModel.totalPrice)
                     Log.e("totalDiscount", viewModel.totalDiscount.toString())
                     binding.txtDiscount.text = MethodUtils.roundOffAmount(viewModel.totalDiscount)
                     binding.txtNoncashAdj.text =
@@ -760,6 +751,18 @@ class CartFragment(val itemClickListner: ItemClickListner?) : Fragment(), MyCall
         refreshItemCalculation()
     }
 
+
+    private fun refreshItemCalculation() {
+        if (cartlist.size > 0) {
+            viewModel.itemCalculationCartModel(
+                cartlist[0],
+                binding.txtTotal,
+                requireContext()
+            )
+        }
+
+    }
+
     private fun initListeners() {
 
         binding.txtAddCustomer.setOnClickListener {
@@ -803,7 +806,9 @@ class CartFragment(val itemClickListner: ItemClickListner?) : Fragment(), MyCall
                         )
 
                     }
+                    /*R.id.menu_note -> {
 
+                    }*/
                 }
                 true
             }
