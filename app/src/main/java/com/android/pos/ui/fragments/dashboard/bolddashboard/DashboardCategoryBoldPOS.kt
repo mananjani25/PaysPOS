@@ -223,8 +223,6 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
         }
 
         requireActivity().window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
-        loadCartFragment(CartFragment(this))
-
         val customer = prefProvider.getCustomerData()
         customer?.let {
             viewModel.selectedCustomer = customer
