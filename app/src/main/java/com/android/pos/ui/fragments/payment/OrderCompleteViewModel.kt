@@ -181,6 +181,8 @@ class OrderCompleteViewModel @Inject constructor(
     val allSplitList = appDatabase.splitDao().allSplitList
 
 
+
+
     fun addSplitToDatabase(title: String, amount: Double, remainingAmt: Double) {
         val model =
             SplitDetailListModel(title = title, amount = amount, remainingAmt = remainingAmt)

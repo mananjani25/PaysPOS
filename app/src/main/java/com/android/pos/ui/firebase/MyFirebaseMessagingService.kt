@@ -13,6 +13,7 @@ import com.android.pos.R
 import com.android.pos.data.remote.Constants.SEND_CLOCKOUT_NOTIFICATION
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.activities.MainActivity
+import com.android.pos.utils.Pref
 import com.google.firebase.messaging.Constants
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
@@ -20,20 +21,21 @@ import javax.inject.Inject
 
 class MyFirebaseMessagingService : FirebaseMessagingService() {
     var type = ""
+
     @Inject
     lateinit var prefProvider: PrefProvider
 
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
         Log.d(TAG, "From: ${remoteMessage.from}")
 //        remoteMessage.data["type"]
-
+        prefProvider = PrefProvider(this)
         if (remoteMessage.data.isNotEmpty()) {
             type = remoteMessage.data["type"].toString()
             Log.d(TAG, "onMessageReceived: type : $type")
-            if(type == "Clock Out"){
+            if (type == "Clock Out") {
                 var intent = Intent()
                 intent.action = SEND_CLOCKOUT_NOTIFICATION
-                prefProvider.setValueboolean("clockOutFromNoti",true)
+                prefProvider.setValueboolean("clockOutFromNoti", true)
                 sendBroadcast(intent)
             }
             Log.d(TAG, "Message data payload: ${remoteMessage.data}")
