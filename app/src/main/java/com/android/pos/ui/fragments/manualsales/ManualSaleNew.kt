@@ -133,6 +133,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
         getTaxList()
         onClick()
         listener()
+        setUpToolbar()//created By Zeeshan
         callbackForDialog()
         binding.footer.linearEmpnameRole.setOnClickListener {
             var bundle = Bundle()
@@ -148,6 +149,42 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
         binding.layoutMenu.txtProducts.setOnClickListener {
             findNavController().popBackStack()
         }
+    }
+
+    //created By Zeeshaan
+    private fun setUpToolbar() {
+        binding.layoutHeader.txtKeypad.setTextColor(requireContext().resources.getColor(R.color.btnColor))
+        binding.layoutHeader.imgSync.visibility=View.GONE
+        binding.layoutHeader.txtTransaction.setOnClickListener {
+            findNavController().navigate(R.id.action_manualSalesNew_to_transactionFragment)
+
+        }
+        binding.layoutHeader.imgDrawer.setOnClickListener {
+            findNavController().navigate(R.id.action_manualSalesNew_to_menuFragment)
+
+        }
+        binding.layoutHeader.txtOpenOrder.setOnClickListener {
+            findNavController().navigate(R.id.action_manualSalesNew_to_orders)
+        }
+
+        binding.layoutHeader.linearSwitchUser.setOnClickListener {
+            var bundle = Bundle()
+            bundle.putBoolean("isSwap", true)
+            bundle.putBoolean("isDashboard", false)
+            findNavController().navigate(
+                R.id.action_manualSalesNew_to_passcode,
+                bundle
+            )
+        }
+        binding.layoutHeader.txtUserName.text =
+            prefProvider.getValue(Constants.EMPLOYEE_NAME, "")
+        binding.layoutHeader.ivLock.setOnClickListener {
+            findNavController().navigate(R.id.action_manualSalesNew_to_reportEODFragment)
+        }
+        binding.layoutHeader.txtDineIn.setOnClickListener {
+            findNavController().navigate(R.id.action_manualSalesNew_to_dineInFragment)
+        }
+
     }
 
 
@@ -246,12 +283,18 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
     }
 
     private fun listener() {
+
+
         setFragmentResultListener("request_key_customer") { requestKey: String, bundle: Bundle ->
             val result = bundle.getParcelable<TbCustomer>("data")
             if (result != null) {
                 setUpCustomer(result)
             }
         }
+
+
+
+
     }
 
 

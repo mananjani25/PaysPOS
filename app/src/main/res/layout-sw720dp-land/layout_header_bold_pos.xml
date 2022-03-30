@@ -132,9 +132,9 @@
 
 
             <LinearLayout
+                android:id="@+id/linear_switchUser"
                 android:layout_width="wrap_content"
                 android:layout_height="@dimen/_18sdp"
-                android:id="@+id/linear_switchUser"
                 android:contentDescription="@string/clock"
                 android:orientation="horizontal">
 
