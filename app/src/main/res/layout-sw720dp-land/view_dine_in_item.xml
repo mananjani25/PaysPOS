@@ -14,13 +14,14 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:background="@color/bg_color">
+        android:background="@color/bg_color"
+        android:orientation="vertical">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/constraintHeader"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:paddingVertical="@dimen/_2sdp">
 
             <ImageView
                 android:id="@+id/imgProfile"
@@ -48,13 +49,12 @@
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/imgOrderMenu"
-                android:layout_width="@dimen/_18sdp"
-                android:layout_height="@dimen/_12sdp"
+                android:layout_width="@dimen/_15sdp"
+                android:layout_height="@dimen/_9sdp"
                 android:layout_gravity="center"
-                android:layout_marginVertical="@dimen/_3sdp"
+                android:layout_marginVertical="@dimen/_2sdp"
                 android:layout_marginEnd="@dimen/_2sdp"
                 android:foreground="?attr/selectableItemBackground"
-                android:padding="@dimen/_2sdp"
                 android:tint="@color/white"
                 android:visibility="visible"
                 app:layout_constraintBottom_toBottomOf="parent"
