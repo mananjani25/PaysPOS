@@ -708,7 +708,19 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
 
         binding.txtCharge.setOnClickListener {
 
-            paymentAmount = WholetotalPrice + tipAmount
+            MethodUtils.hideKeyboard(requireActivity())
+
+            subTotalPrice = String.format("%.2f", subTotalPrice / isSelectedCount).toDouble()
+            totalServiceCharge =
+                String.format("%.2f", totalServiceCharge / isSelectedCount).toDouble()
+            totalTax = String.format("%.2f", totalTax / isSelectedCount).toDouble()
+            totalDiscount = String.format("%.2f", totalDiscount / isSelectedCount).toDouble()
+            cashDiscountSurcharge =
+                String.format("%.2f", cashDiscountSurcharge / isSelectedCount).toDouble()
+            paymentAmount = String.format(
+                "%.2f",
+                getCalCashDiscWithAmount(WholetotalPrice, false) / isSelectedCount
+            ).toDouble()
 
             val cardNumber = binding.edtCardNumber.rawText.toString().trim()
             val cardExpDate = binding.edtMMYY.rawText.toString().trim()
