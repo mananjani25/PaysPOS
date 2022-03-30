@@ -156,6 +156,10 @@ open class MagtekModule @Inject constructor(
 
         val message = TLVParser.getTextString(bytes, 0)
         Log.e("[Display Mes Request]", message)
+
+//        if (message == "DECLINED"){
+//            listner?.processStart("DECLINED", true)
+//        }
     }
 
     private fun OnTransactionStatus(bytes: ByteArray) {
@@ -500,6 +504,7 @@ open class MagtekModule @Inject constructor(
     open fun cancelTransaction() {
         if (m_scra != null) {
             val result = m_scra!!.cancelTransaction()
+            listner?.processStart("Cancel Transaction",true)
             Log.e("[Cancel Transaction]", "(Result=$result)")
         }
     }

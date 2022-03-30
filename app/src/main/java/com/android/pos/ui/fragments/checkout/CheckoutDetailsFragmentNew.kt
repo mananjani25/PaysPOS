@@ -124,7 +124,9 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
         binding = FragmentCheckoutDetailsNewBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = this
 
+        magtekModule.setupInit()
         magtekModule.setCallback(this)
+
 
         orderId = arguments?.getInt("orderId")
 
@@ -334,7 +336,7 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
             binding.tv4ways.setTextColor(resources.getColor(R.color.txtColor))
             binding.tv5ways.setTextColor(resources.getColor(R.color.txtColor))
             binding.tv6ways.setTextColor(resources.getColor(R.color.txtColor))
-            var bundle = Bundle()
+            val bundle = Bundle()
             bundle.putDouble("totalPrice", WholetotalPrice)
             bundle.putInt("splitValue", isSelectedCount)
 
@@ -589,11 +591,12 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
                         bundle.putDouble("noCashAdj", cashDiscountSurcharge)
                         bundle.putBoolean("isFromActiveOrder", false)
 
-
-                        findNavController().navigate(
-                            R.id.action_paymentBoldPosFragment_to_orderComplete,
-                            bundle
-                        )
+                        if (findNavController().currentDestination?.id == R.id.paymentBoldPosFragment) {
+                            findNavController().navigate(
+                                R.id.action_paymentBoldPosFragment_to_orderComplete,
+                                bundle
+                            )
+                        }
 
                     }
                 }
@@ -616,7 +619,7 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
 
     }
 
-    private fun cashPaymentWithVariation(){
+    private fun cashPaymentWithVariation() {
         paymentAmount = String.format("%.2f", WholetotalPrice / isSelectedCount).toDouble()
         subTotalPrice = String.format("%.2f", subTotalPrice / isSelectedCount).toDouble()
         totalServiceCharge =
@@ -630,6 +633,7 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
         }
         makeCashPayment()
     }
+
     private fun paymentClick() {
         binding.llCreditCard.setOnClickListener {
 
@@ -683,7 +687,6 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
             cashPaymentWithVariation()
         }
         binding.tvCustomAmount.setOnClickListener {
-
 
 
             val bundleVal = Bundle().apply {
@@ -1148,6 +1151,7 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
         val orderId = prefProvider.getValueInt("ORDER_ID", -1)
         Log.e(TAG, "orderIdmyRequestOriginal ${orderId}")
         if (orderId == -1) {
+            myRequest.completed_all_payments = isSelectedCount <= 1
             paymentviewModel.submit(myRequest)
         } else {
             val paymentReq = myRequest.order.paymentAttributes
@@ -1155,9 +1159,9 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
                 paymentReq.order_id = orderId
             }
 
+            // total amount - (hal pay amoutn + alredy pay )
             val aa = SpitByOrderRequestModel(
-                orderId,
-                true,
+                orderId, isSelectedCount <= 1,
                 SpitByOrderPaymentModel(listOf(paymentReq) as List<PaymentAttributes>)
             )
 
@@ -1173,14 +1177,7 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
             if (it.status == Status.SUCCESS) {
 
                 if (it.data == null) {
-
-//                    if (magtekModule.m_scra?.isDeviceConnected == true) {
-//                        magtekModule.startTransactionWithLED()
-//                    } else
-//                        showdialog()
-
                     AlertUtils.showCustomAlert(requireContext(), "Please connect device")
-
                 } else {
 
                     if (magtekModule.m_scra?.isDeviceConnected == true) {
@@ -1188,7 +1185,7 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
                         magtekModule.startTransactionWithLED()
                     } else {
                         ProgressUtils.showProgressDialog(requireActivity())
-                        magtekModule.setupInit()
+
                         magtekModule.openDevice(it.data.mcAddress)
                     }
 
@@ -1247,6 +1244,7 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
 
             ProgressUtils.dismissProgressDialog()
 
+
             if (requestCancel) {
                 AlertUtils.showCustomAlert(
                     requireContext(), message
@@ -1282,7 +1280,7 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
 
                     ProgressUtils.dismissProgressDialog()
 
-                    AlertUtils.showCustomAlert(requireContext(), "Connection error")
+                    //  AlertUtils.showCustomAlert(requireContext(), "Connection error")
                 }
                 else -> {
                 }
@@ -1345,7 +1343,7 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
 
                         if (response.body()!![0].transactionOutput?.isTransactionApproved == true) {
                             if (isDynamo())
-                                magtekModule.stopListner()
+                                magtekModule.closeDevice()
                             paymentviewModel.setMagensaResponse(Gson().toJson(response.body()!![0]))
                             makePaymentCreditCard()
                         } else {

@@ -334,7 +334,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment() {
                 item.modifier_set_ids[i]
             }
 
-            viewModel.modifierSet(intArray).observe(requireActivity(), {
+            viewModel.modifierSet(intArray).observe(requireActivity()) {
                 if (it.data != null && it.data.isNotEmpty()) {
                     binding.rvModifiersList.visibility = View.VISIBLE
 
@@ -347,7 +347,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment() {
 
                 } else binding.rvModifiersList.visibility = View.GONE
 
-            })
+            }
 
             variationAdapter?.showVariationPriceClick = { it: VariationsAttribute ->
 
