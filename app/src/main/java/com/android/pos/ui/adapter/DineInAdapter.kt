@@ -14,13 +14,14 @@ import com.android.pos.data.entities.TbItem
 import com.android.pos.data.model.DineInModel
 import com.android.pos.databinding.ViewDineInItemBinding
 import com.android.pos.ui.activities.SwipeHelper
+import com.android.pos.ui.adapter.boldpos.CartAdapter
 import com.android.pos.utils.callback.MyCallback
 import com.google.gson.Gson
 
 class DineInAdapter : RecyclerView.Adapter<DineInAdapter.MyViewHolder>(), MyCallback {
     private var list: ArrayList<DineInModel> = arrayListOf()
     private lateinit var listner: DineInCallback
-    private lateinit var itemAdapter: CartAdapter
+    private lateinit var itemAdapter: com.android.pos.ui.adapter.boldpos.CartAdapter
     private val TAG = "DineInAdapter"
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DineInAdapter.MyViewHolder {
@@ -61,7 +62,7 @@ class DineInAdapter : RecyclerView.Adapter<DineInAdapter.MyViewHolder>(), MyCall
             }
             if (layoutPosition == list.get(0).selectedPosition) {
                 binding.rvCart.visibility = View.VISIBLE
-                binding.constraintHeader.setBackground(binding.root.context.getDrawable(R.drawable.background_dine_in_selected))
+                binding.constraintHeader.setBackground(binding.root.context.getDrawable(R.color.btnColorDark))
                 binding.txtTableName.setTextColor(binding.root.context.resources.getColor(R.color.white))
                 binding.imgOrderMenu.setColorFilter(binding.root.context.resources.getColor(R.color.white))
 
@@ -74,12 +75,12 @@ class DineInAdapter : RecyclerView.Adapter<DineInAdapter.MyViewHolder>(), MyCall
             } else {
                 binding.rvCart.visibility = View.VISIBLE
                 binding.constraintHeader.setBackground(
-                    binding.root.context.getDrawable(R.drawable.background_dine_in_unselected)
+                    binding.root.context.getDrawable(R.drawable.background_dine_in_selected)
                 )
-                binding.txtTableName.setTextColor(binding.root.context.resources.getColor(R.color.black))
-                binding.imgOrderMenu.setColorFilter(binding.root.context.resources.getColor(R.color.black))
+                binding.txtTableName.setTextColor(binding.root.context.resources.getColor(R.color.white))
+                binding.imgOrderMenu.setColorFilter(binding.root.context.resources.getColor(R.color.white))
                 if (layoutPosition == 0) {
-                    binding.imgProfile.setColorFilter(binding.root.context.resources.getColor(R.color.black))
+                    binding.imgProfile.setColorFilter(binding.root.context.resources.getColor(R.color.white))
                 } else {
                     // binding.imgProfile.setColorFilter(binding.root.context.resources.getColor(R.color.white))
                     binding.imgProfile.colorFilter = null
@@ -271,7 +272,7 @@ class DineInAdapter : RecyclerView.Adapter<DineInAdapter.MyViewHolder>(), MyCall
     }
 
 
-     fun clearList(){
+    fun clearList() {
         list.clear()
         list = arrayListOf()
         notifyDataSetChanged()

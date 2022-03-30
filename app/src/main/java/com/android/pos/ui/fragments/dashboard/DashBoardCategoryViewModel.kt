@@ -71,6 +71,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 ) : ViewModel() {
 
 
+    val dineInHeaderPosition: Int = 0
     val TAG = "DashBoardCateViewModel"
     var totalPrice: Double = 0.0
     var totalCount = 0
