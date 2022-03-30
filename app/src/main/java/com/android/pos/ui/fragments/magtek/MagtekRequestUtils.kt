@@ -50,27 +50,24 @@ class MagtekRequestUtils @Inject constructor(
         val jsonArray = JsonArray()
 
 
-//        val processCardSwipeRequest = ProcessCardSwipeRequest(
-//            authentication = authentication(),
-//            cardSwipeInput = ProcessCardSwipeRequest.CardSwipeInput(
-//                encryptedCardSwipe = ProcessCardSwipeRequest.CardSwipeInput.EncryptedCardSwipe(
-//                    kSN = ksn,
-//                    magnePrint = magnePrint,
-//                    magnePrintStatus = magnePrintStatus,
-//                    track2 = track2
-//                )
-//            ),
-//            transactionInput = ProcessCardSwipeRequest.TransactionInput(
-//                amount = payableAmount,
-//                processorName = processorName(),
-//                transactionType = SALE
-//            )
-//        )
+        val processCardSwipeRequest = ManualEntryRequestItem(
+            authentication = authentication(),
+            manualEntryInput = ManualEntryRequestItem.ManualEntryInput(
+                cVV = cardCVV,
+                expirationDate = expDate,
+                pAN = cardNumber
+            ),
+            transactionInput = ProcessCardSwipeRequest.TransactionInput(
+                amount = payableAmount,
+                processorName = processorName(),
+                transactionType = SALE
+            )
+        )
 
-//        val jsonObject = Gson().toJson(processCardSwipeRequest)
-//        val jsonElement = Gson().fromJson(jsonObject, JsonObject::class.java)
-//
-//        jsonArray.add(jsonElement)
+        val jsonObject = Gson().toJson(processCardSwipeRequest)
+        val jsonElement = Gson().fromJson(jsonObject, JsonObject::class.java)
+
+        jsonArray.add(jsonElement)
 
         return jsonArray
     }

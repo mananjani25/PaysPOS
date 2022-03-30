@@ -22,4 +22,7 @@ interface ApiService1 {
 
     @POST("ProcessReferenceID")
     fun processReferenceID(@Body data: JsonArray): Call<PaymentResponse>
+
+    @POST("ProcessReferenceID")
+    fun processManualEntry(@Body data: JsonArray): Call<PaymentResponse>
 }

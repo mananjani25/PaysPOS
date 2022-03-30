@@ -851,12 +851,14 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
         cardCVV: String
     ) {
 
-        magtekRequestUtils.processManualEntry(
+        val jsonArray1 = magtekRequestUtils.processManualEntry(
             (paymentAmount * 100).toInt(),
             cardNumber,
             expDate,
             cardCVV
         )
+
+        networkCall(jsonArray1, 3)
 
     }
 
@@ -1399,10 +1401,16 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
         ProgressUtils.showProgressDialog(requireActivity())
 
         var call: Call<PaymentResponse>? = null
-        if (i == 1) {
-            call = jsonArray1?.let { apiModule1.getRetrofit1().processCardSwipe(it) }
-        } else if (i == 2) {
-            call = jsonArray1?.let { apiModule1.getRetrofit1().processData(it) }
+        when (i) {
+            1 -> {
+                call = jsonArray1?.let { apiModule1.getRetrofit1().processCardSwipe(it) }
+            }
+            2 -> {
+                call = jsonArray1?.let { apiModule1.getRetrofit1().processData(it) }
+            }
+            3 -> {
+                call = jsonArray1?.let { apiModule1.getRetrofit1().processManualEntry(it) }
+            }
         }
 
         call!!.enqueue(object : Callback<PaymentResponse> {
