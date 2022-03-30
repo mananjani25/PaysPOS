@@ -23,6 +23,6 @@ interface ApiService1 {
     @POST("ProcessReferenceID")
     fun processReferenceID(@Body data: JsonArray): Call<PaymentResponse>
 
-    @POST("ProcessReferenceID")
+    @POST("ProcessManualEntry")
     fun processManualEntry(@Body data: JsonArray): Call<PaymentResponse>
 }

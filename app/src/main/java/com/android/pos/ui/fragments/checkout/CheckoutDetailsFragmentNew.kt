@@ -661,110 +661,30 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
         }
 
         binding.tvCash0.setOnClickListener {
-            binding.tvCash0.setBackgroundDrawable(resources.getDrawable(R.drawable.button_action_hover))
-            binding.llCreditCard.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
-            binding.llManualCardEntry.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
-            binding.tvCash1.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
-            binding.tvCash3.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
-            binding.tvCash2.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
-            binding.tvCustomAmount.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
-            binding.tvPaymentLink.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
 
-            binding.tvCash0.setTextColor(resources.getColor(R.color.white))
-            binding.tvCreditCard.setTextColor(resources.getColor(R.color.txtColor))
-            binding.tvManualCard.setTextColor(resources.getColor(R.color.txtColor))
-            binding.tvCash1.setTextColor(resources.getColor(R.color.txtColor))
-            binding.tvCash3.setTextColor(resources.getColor(R.color.txtColor))
-            binding.tvCash2.setTextColor(resources.getColor(R.color.txtColor))
-            binding.tvCustomAmount.setTextColor(resources.getColor(R.color.txtColor))
-            binding.tvPaymentLink.setTextColor(resources.getColor(R.color.txtColor))
             custom_paymentAmount = 0.0
             cashPaymentWithVariation()
         }
         binding.tvCash1.setOnClickListener {
-            binding.tvCash1.setBackgroundDrawable(resources.getDrawable(R.drawable.button_action_hover))
-            binding.llCreditCard.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
-            binding.llManualCardEntry.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
-            binding.tvCash2.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
-            binding.tvCash3.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
-            binding.tvCustomAmount.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
-            binding.tvPaymentLink.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
-            binding.tvCash0.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
-            binding.tvCash0.setTextColor(resources.getColor(R.color.txtColor))
-            binding.tvCash1.setTextColor(resources.getColor(R.color.white))
-            binding.tvCreditCard.setTextColor(resources.getColor(R.color.txtColor))
-            binding.tvManualCard.setTextColor(resources.getColor(R.color.txtColor))
-            binding.tvCash2.setTextColor(resources.getColor(R.color.txtColor))
-            binding.tvCash3.setTextColor(resources.getColor(R.color.txtColor))
-            binding.tvCustomAmount.setTextColor(resources.getColor(R.color.txtColor))
-            binding.tvPaymentLink.setTextColor(resources.getColor(R.color.txtColor))
+
             custom_paymentAmount =
                 binding.tvCash1.text.toString().replace("$", "").trim().toDouble()
             cashPaymentWithVariation()
         }
         binding.tvCash2.setOnClickListener {
-            binding.tvCash2.setBackgroundDrawable(resources.getDrawable(R.drawable.button_action_hover))
-            binding.llCreditCard.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
-            binding.llManualCardEntry.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
-            binding.tvCash1.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
-            binding.tvCash3.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
-            binding.tvCustomAmount.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
-            binding.tvPaymentLink.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
-
-            binding.tvCash0.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
-            binding.tvCash0.setTextColor(resources.getColor(R.color.txtColor))
-            binding.tvCash2.setTextColor(resources.getColor(R.color.white))
-            binding.tvCreditCard.setTextColor(resources.getColor(R.color.txtColor))
-            binding.tvManualCard.setTextColor(resources.getColor(R.color.txtColor))
-            binding.tvCash1.setTextColor(resources.getColor(R.color.txtColor))
-            binding.tvCash3.setTextColor(resources.getColor(R.color.txtColor))
-            binding.tvCustomAmount.setTextColor(resources.getColor(R.color.txtColor))
-            binding.tvPaymentLink.setTextColor(resources.getColor(R.color.txtColor))
             custom_paymentAmount =
                 binding.tvCash2.text.toString().replace("$", "").trim().toDouble()
             cashPaymentWithVariation()
         }
         binding.tvCash3.setOnClickListener {
-            binding.tvCash3.setBackgroundDrawable(resources.getDrawable(R.drawable.button_action_hover))
-            binding.llCreditCard.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
-            binding.llManualCardEntry.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
-            binding.tvCash1.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
-            binding.tvCash2.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
-            binding.tvCustomAmount.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
-            binding.tvPaymentLink.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
 
-            binding.tvCash0.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
-            binding.tvCash0.setTextColor(resources.getColor(R.color.txtColor))
-            binding.tvCash3.setTextColor(resources.getColor(R.color.white))
-            binding.tvCreditCard.setTextColor(resources.getColor(R.color.txtColor))
-            binding.tvManualCard.setTextColor(resources.getColor(R.color.txtColor))
-            binding.tvCash1.setTextColor(resources.getColor(R.color.txtColor))
-            binding.tvCash2.setTextColor(resources.getColor(R.color.txtColor))
-            binding.tvCustomAmount.setTextColor(resources.getColor(R.color.txtColor))
-            binding.tvPaymentLink.setTextColor(resources.getColor(R.color.txtColor))
             custom_paymentAmount =
                 binding.tvCash3.text.toString().replace("$", "").trim().toDouble()
             cashPaymentWithVariation()
         }
         binding.tvCustomAmount.setOnClickListener {
 
-            binding.tvCustomAmount.setBackgroundDrawable(resources.getDrawable(R.drawable.button_action_hover))
-            binding.llCreditCard.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
-            binding.llManualCardEntry.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
-            binding.tvCash1.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
-            binding.tvCash2.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
-            binding.tvCash3.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
-            binding.tvPaymentLink.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
 
-            binding.tvCash0.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
-            binding.tvCash0.setTextColor(resources.getColor(R.color.txtColor))
-            binding.tvCustomAmount.setTextColor(resources.getColor(R.color.white))
-            binding.tvCreditCard.setTextColor(resources.getColor(R.color.txtColor))
-            binding.tvManualCard.setTextColor(resources.getColor(R.color.txtColor))
-            binding.tvCash1.setTextColor(resources.getColor(R.color.txtColor))
-            binding.tvCash2.setTextColor(resources.getColor(R.color.txtColor))
-            binding.tvCash3.setTextColor(resources.getColor(R.color.txtColor))
-            binding.tvPaymentLink.setTextColor(resources.getColor(R.color.txtColor))
 
             val bundleVal = Bundle().apply {
                 putDouble("totalprice", ((WholetotalPrice + tipAmount)))
@@ -776,23 +696,7 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
 
         }
         binding.tvPaymentLink.setOnClickListener {
-            binding.tvPaymentLink.setBackgroundDrawable(resources.getDrawable(R.drawable.button_action_hover))
-            binding.llCreditCard.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
-            binding.llManualCardEntry.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
-            binding.tvCash1.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
-            binding.tvCash2.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
-            binding.tvCash3.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
-            binding.tvCustomAmount.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
 
-            binding.tvCash0.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
-            binding.tvCash0.setTextColor(resources.getColor(R.color.txtColor))
-            binding.tvPaymentLink.setTextColor(resources.getColor(R.color.white))
-            binding.tvCreditCard.setTextColor(resources.getColor(R.color.txtColor))
-            binding.tvManualCard.setTextColor(resources.getColor(R.color.txtColor))
-            binding.tvCash1.setTextColor(resources.getColor(R.color.txtColor))
-            binding.tvCash2.setTextColor(resources.getColor(R.color.txtColor))
-            binding.tvCash3.setTextColor(resources.getColor(R.color.txtColor))
-            binding.tvCustomAmount.setTextColor(resources.getColor(R.color.txtColor))
         }
 
 
@@ -804,9 +708,7 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
 
         binding.txtCharge.setOnClickListener {
 
-            Log.e("CARD DETAIL", binding.edtCardNumber.rawText.toString().trim())
-            Log.e("CARD DETAIL", binding.edtCVV.text.toString().trim())
-            Log.e("CARD DETAIL", binding.edtMMYY.rawText.toString().trim())
+            paymentAmount = WholetotalPrice + tipAmount
 
             val cardNumber = binding.edtCardNumber.rawText.toString().trim()
             val cardExpDate = binding.edtMMYY.rawText.toString().trim()
