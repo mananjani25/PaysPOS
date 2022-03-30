@@ -362,7 +362,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
         Log.e(TAG, "getitem:  ${Gson().toJson(item)}")
         Log.e(TAG, "OrderTYpe:  ${prefProvider.getValue(ORDER_TYPE, TAKEOUT)}")
 
-        if (item.modifiers.isNotEmpty() || item.variationsAttributes.isNotEmpty()) {
+        if (item.modifier_set_ids.isNotEmpty() || item.variationsAttributes.isNotEmpty()) {
             val fragment = AddItemFragment.newInstance(item, this, cartList, false)
             loadCategoryFragment(fragment)
         } else {
