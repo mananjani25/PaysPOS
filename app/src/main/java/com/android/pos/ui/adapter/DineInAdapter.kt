@@ -62,7 +62,7 @@ class DineInAdapter : RecyclerView.Adapter<DineInAdapter.MyViewHolder>(), MyCall
             }
             if (layoutPosition == list.get(0).selectedPosition) {
                 binding.rvCart.visibility = View.VISIBLE
-                binding.constraintHeader.setBackground(binding.root.context.getDrawable(R.drawable.background_dine_in_selected))
+                binding.constraintHeader.setBackground(binding.root.context.getDrawable(R.color.btnColorDark))
                 binding.txtTableName.setTextColor(binding.root.context.resources.getColor(R.color.white))
                 binding.imgOrderMenu.setColorFilter(binding.root.context.resources.getColor(R.color.white))
 
@@ -75,12 +75,12 @@ class DineInAdapter : RecyclerView.Adapter<DineInAdapter.MyViewHolder>(), MyCall
             } else {
                 binding.rvCart.visibility = View.VISIBLE
                 binding.constraintHeader.setBackground(
-                    binding.root.context.getDrawable(R.drawable.background_dine_in_unselected)
+                    binding.root.context.getDrawable(R.drawable.background_dine_in_selected)
                 )
-                binding.txtTableName.setTextColor(binding.root.context.resources.getColor(R.color.black))
-                binding.imgOrderMenu.setColorFilter(binding.root.context.resources.getColor(R.color.black))
+                binding.txtTableName.setTextColor(binding.root.context.resources.getColor(R.color.white))
+                binding.imgOrderMenu.setColorFilter(binding.root.context.resources.getColor(R.color.white))
                 if (layoutPosition == 0) {
-                    binding.imgProfile.setColorFilter(binding.root.context.resources.getColor(R.color.black))
+                    binding.imgProfile.setColorFilter(binding.root.context.resources.getColor(R.color.white))
                 } else {
                     // binding.imgProfile.setColorFilter(binding.root.context.resources.getColor(R.color.white))
                     binding.imgProfile.colorFilter = null

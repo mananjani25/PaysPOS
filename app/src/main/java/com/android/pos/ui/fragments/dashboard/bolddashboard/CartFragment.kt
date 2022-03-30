@@ -435,7 +435,6 @@ class CartFragment(val itemClickListner: ItemClickListner?) : Fragment(), MyCall
 
 
                 if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == Constants.DINE_IN) {
-                    Log.e(TAG, "DINE_IN_ENTRY")
                     if (it.isNotEmpty()) {
                         binding.rvCartList.adapter = dineInCartAdapter
                         cartlist = it as ArrayList<CartModel>
