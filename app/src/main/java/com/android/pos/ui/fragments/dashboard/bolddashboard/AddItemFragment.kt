@@ -181,8 +181,10 @@ class AddItemFragment(val listner: ItemListner) : Fragment() {
 
                 if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == Constants.DINE_IN) {
                     val dineInList = cartList[0].dineInList
-                    dineInList!![0].selectedPosition = viewModel.dineInHeaderPosition
-                    viewModel.cartLogic(cartList, item, Constants.ADD, false, dineInList)
+                    if (dineInList?.isNotEmpty() == true && dineInList != null) {
+                        dineInList[0].selectedPosition = viewModel.dineInHeaderPosition
+                        viewModel.cartLogic(cartList, item, Constants.ADD, false, dineInList)
+                    }
                 } else {
 
                     viewModel.cartLogic(cartList, item, Constants.ADD, false)
