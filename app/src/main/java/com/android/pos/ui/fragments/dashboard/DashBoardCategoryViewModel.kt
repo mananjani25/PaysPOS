@@ -71,7 +71,6 @@ class DashBoardCategoryViewModel @Inject constructor(
 ) : ViewModel() {
 
 
-    var dineInHeaderPosition: Int = 0
     val TAG = "DashBoardCateViewModel"
     var totalPrice: Double = 0.0
     var totalCount = 0
@@ -176,13 +175,11 @@ class DashBoardCategoryViewModel @Inject constructor(
         return posRepository.getCartList(orderType, employee_Id)
 
     }
-
     fun manualSale(orderType: String, employee_Id: Int): LiveData<List<CartModel>> {
 
         return posRepository.getCartList(orderType, employee_Id)
 
     }
-
     fun manualSaleItems(orderType: String, employee_Id: Int): LiveData<List<CartModel>> {
 
         return posRepository.getManualSaleItems(orderType, employee_Id)
@@ -264,7 +261,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
         if (cartList != null && cartList.isEmpty()) {
 
-            val model = addCartModel(item, true)
+            val model = addCartModel(item,true)
             addCart(model)
         } else {
             val list = cartList?.get(0)?.items?.toMutableList()
@@ -337,13 +334,13 @@ class DashBoardCategoryViewModel @Inject constructor(
         cartList: List<CartModel>?,
         item: TbItem?,
         type: String,
-        isManualSales: Boolean,
+        isManualSales:Boolean,
         dineInList: List<DineInModel> = arrayListOf()
     ) {
 
         if (cartList != null && cartList.isEmpty()) {
             // empty cart hoy to new cart create kare
-            val cartModel = item?.let { addCartModel(it, isManualSales) }
+            val cartModel = item?.let { addCartModel(it,isManualSales) }
             if (cartModel != null) {
                 addCart(cartModel)
             }
@@ -631,7 +628,7 @@ class DashBoardCategoryViewModel @Inject constructor(
     fun addItemToCart(
         cartList: List<CartModel>?,
         item: TbItem?,
-        type: String, isManualSales: Boolean,
+        type: String,isManualSales: Boolean,
         dineInList: List<DineInModel> = arrayListOf()
     ) {
 
@@ -975,137 +972,128 @@ class DashBoardCategoryViewModel @Inject constructor(
         totalTax = 0.0
         totalServiceCharge = 0.0
         var amountToBePaid = 0.0
-        if (cartModel != null) {
-            if (cartModel.orderType == DINE_IN) {
+        if (cartModel.orderType == DINE_IN) {
 
-                cartModel.dineInList?.forEach { dine ->
+            cartModel.dineInList?.forEach { dine ->
 
-                    dine.items.forEach { item ->
-                        totalCount += item.itemQuantity
-                        if (!item.isManualSales) {
-                            subTotalPrice += (item.price * item.itemQuantity) - (item.discountPrice * item.itemQuantity)
-                        } else {
-                            subTotalPrice += (item.price * item.itemQuantity) - item.discountPrice
-                        }
-
-                        taxCalculation(item)
-
-                        item.modifiers.forEach {
-                            subTotalPrice += (it.price * it.itemQuantity)
-                        }
+                dine.items.forEach { item ->
+                    totalCount += item.itemQuantity
+                    subTotalPrice += if (!item.isManualSales) {
+                        (item.price * item.itemQuantity) - (item.discountPrice * item.itemQuantity)
+                    } else {
+                        (item.price * item.itemQuantity) - item.discountPrice
                     }
 
+                    taxCalculation(item)
 
+                    item.modifiers.forEach {
+                        subTotalPrice += (it.price * it.itemQuantity)
+                    }
                 }
+
+
+            }
+
+            serviceChargeCalculationModel(cartModel)
+            subTotalPrice -= (cartModel.discountPrice)
+
+
+            cartModel.dineInList?.forEach {
+                it.items.forEach {
+                    totalDiscount += if (!it.isManualSales) {
+                        (it.discountPrice * it.itemQuantity)
+                    } else {
+                        it.discountPrice
+                    }
+                }
+            }
+
+
+            totalPrice = (subTotalPrice + totalTax + totalServiceCharge)
+            amountToBePaid = totalPrice - totalDiscount
+
+            MethodUtils.setPriceTextView(txtTotalAmount, amountToBePaid)
+        } else {
+
+            if (cartModel.items?.isEmpty() == false) {
+
+
+                cartModel.items?.forEach { item ->
+                    totalCount += item.itemQuantity
+                    subTotalPrice += if (!item.isManualSales) {
+                        (item.price * item.itemQuantity) - (item.discountPrice * item.itemQuantity)
+                    } else {
+                        (item.price * item.itemQuantity) - item.discountPrice
+                    }
+
+                    taxCalculation(item)
+
+                    item.modifiers.forEach {
+                        subTotalPrice += (it.price * it.itemQuantity)
+
+                    }
+                }
+
 
                 serviceChargeCalculationModel(cartModel)
-                subTotalPrice -= (cartModel.discountPrice)
+                subTotalPrice -= cartModel.discountPrice
 
+                totalDiscount += cartModel.discountPrice
 
-                cartModel.dineInList?.forEach {
-                    it.items.forEach {
-                        if (!it.isManualSales) {
-                            totalDiscount += (it.discountPrice * it.itemQuantity)
-                        } else {
-                            totalDiscount += it.discountPrice
-                        }
+                cartModel.items!!.forEach {
+                    totalDiscount += if (!it.isManualSales) {
+                        (it.discountPrice * it.itemQuantity)
+                    } else {
+                        it.discountPrice
                     }
                 }
 
+                var finalTotal = 0.0
+                finalTotal = (subTotalPrice + totalTax + totalServiceCharge)
 
-                totalPrice = (subTotalPrice + totalTax + totalServiceCharge)
-                amountToBePaid = totalPrice - totalDiscount
 
-                MethodUtils.setPriceTextView(txtTotalAmount, amountToBePaid)
-            } else {
-                Log.d(
-                    TAG, "addObserver: " + prefProvider.getValue(
-                        Constants.ORDER_TYPE,
-                        Constants.TAKEOUT
+
+                cashDiscountType = prefProvider.getValue(Constants.OPTION_TYPE, "")
+                //loyalty point and price calculation
+                amountToBePaid = finalTotal
+                if (selectedCustomer == null) {
+                    totalPrice = amountToBePaid
+                    MethodUtils.setPriceTextView(
+                        txtTotalAmount,
+                        amountToBePaid
                     )
-                )
-
-                Log.e(TAG, "cartModelcartModel:  ${Gson().toJson(cartModel)}")
-                if (cartModel.items?.isEmpty() == false) {
-
-
-                    cartModel.items?.forEach { item ->
-                        totalCount += item.itemQuantity
-                        if (!item.isManualSales) {
-                            subTotalPrice += (item.price * item.itemQuantity) - (item.discountPrice * item.itemQuantity)
-                        } else {
-                            subTotalPrice += (item.price * item.itemQuantity) - item.discountPrice
-                        }
-
-                        taxCalculation(item)
-
-                        item.modifiers.forEach {
-                            subTotalPrice += (it.price * it.itemQuantity)
-
-                        }
-                    }
-
-
-                    serviceChargeCalculationModel(cartModel)
-                    subTotalPrice -= cartModel.discountPrice
-
-                    totalDiscount += cartModel.discountPrice
-
-                    cartModel.items!!.forEach {
-                        totalDiscount += if (!it.isManualSales) {
-                            (it.discountPrice * it.itemQuantity)
-                        } else {
-                            it.discountPrice
-                        }
-                    }
-
-                    var finalTotal = 0.0
-                    finalTotal = (subTotalPrice + totalTax + totalServiceCharge)
-
-
-
-                    cashDiscountType = prefProvider.getValue(Constants.OPTION_TYPE, "")
-                    //loyalty point and price calculation
-                    amountToBePaid = finalTotal
-                    if (selectedCustomer == null) {
-                        totalPrice = amountToBePaid
-                        MethodUtils.setPriceTextView(
-                            txtTotalAmount,
-                            amountToBePaid
-                        )
-                    } else {
-                        checkAppliedLoyaltyProgram(
-                            selectedCustomer,
-                            amountToBePaid,
-                            txtTotalAmount
-                        )
-                        redeemLoyaltyInfo.getAmountToBePaid()?.let {
-                            totalPrice = it
-                        }
-                    }
-
-                    if (MethodUtils.isEnableCashDiscount(context)) {
-                        cashdiscountAmount = MethodUtils.calculateCashDiscount(
-                            totalPrice,
-                            prefProvider,
-                            context
-                        )
-                    } else {
-                        cashdiscountAmount = 0.0
-                    }
-
-                    Log.e("amountToBePaid", "" + totalPrice)
                 } else {
-
-                    nonCashAdj = 0.0
-                    totalPrice = 0.0
-                    totalCount = 0
-                    subTotalPrice = 0.0
-                    totalDiscount = 0.0
-                    totalTax = 0.0
-                    totalServiceCharge = 0.0
-                    amountToBePaid = 0.0
+                    checkAppliedLoyaltyProgram(
+                        selectedCustomer,
+                            amountToBePaid,
+                        txtTotalAmount
+                    )
+                    redeemLoyaltyInfo.getAmountToBePaid()?.let {
+                        totalPrice = it
+                    }
                 }
+
+                if (MethodUtils.isEnableCashDiscount(context)) {
+                    cashdiscountAmount = MethodUtils.calculateCashDiscount(
+                        totalPrice,
+                        prefProvider,
+                        context
+                    )
+                } else {
+                    cashdiscountAmount = 0.0
+                }
+
+                Log.e("amountToBePaid", "" + totalPrice)
+            } else {
+
+                nonCashAdj = 0.0
+                totalPrice = 0.0
+                totalCount = 0
+                subTotalPrice = 0.0
+                totalDiscount = 0.0
+                totalTax = 0.0
+                totalServiceCharge = 0.0
+                amountToBePaid = 0.0
             }
         }
         //totalAmmount = totalPrice-cartList[0].discountPrice
@@ -2272,13 +2260,11 @@ class DashBoardCategoryViewModel @Inject constructor(
 
         })
     }
-
     fun saveManualSaleData(cartList: List<CartModel>) {
 
         // prefProvider.setValue(Constants.ORDER_TYPE, Constants.TAKEOUT)
         addCart(cartList[0])
     }
-
     fun setPosition(position: Int) {
         mPosition = position
     }

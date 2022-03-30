@@ -39,6 +39,40 @@ class MagtekRequestUtils @Inject constructor(
     //SALE, AUTHORIZE, CAPTURE, VOID, REFUND,FORCE, REJECT. In case of JSON payload, provide
     //enum-integer-value i.e., 1, 2, 3, 4, 5, 6, 7 respectively
 
+
+    fun processManualEntry(
+        payableAmount: Int,
+        cardNumber: String,
+        expDate: String,
+        cardCVV: String
+    ): JsonArray {
+
+        val jsonArray = JsonArray()
+
+
+        val processCardSwipeRequest = ManualEntryRequestItem(
+            authentication = authentication(),
+            manualEntryInput = ManualEntryRequestItem.ManualEntryInput(
+                cVV = cardCVV,
+                expirationDate = expDate,
+                pAN = cardNumber
+            ),
+            transactionInput = ProcessCardSwipeRequest.TransactionInput(
+                amount = payableAmount,
+                processorName = processorName(),
+                transactionType = SALE
+            )
+        )
+
+        val jsonObject = Gson().toJson(processCardSwipeRequest)
+        val jsonElement = Gson().fromJson(jsonObject, JsonObject::class.java)
+
+        jsonArray.add(jsonElement)
+
+        return jsonArray
+    }
+
+
     fun processCardSwipe(
         payableAmount: Int,
         ksn: String,
@@ -76,7 +110,7 @@ class MagtekRequestUtils @Inject constructor(
     }
 
 
-    fun processData(payableAmount: Int, data: String,transactionType : Int): JsonArray {
+    fun processData(payableAmount: Int, data: String, transactionType: Int): JsonArray {
 
         val jsonArray = JsonArray()
 

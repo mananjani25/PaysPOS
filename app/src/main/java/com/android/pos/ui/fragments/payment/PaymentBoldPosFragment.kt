@@ -59,7 +59,7 @@ class PaymentBoldPosFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
 
-        loadCartFragment(CartFragment.newInstacne(true))
+        loadCartFragment(CartFragment(null))
         Handler(Looper.getMainLooper()).postDelayed({ /* Create an Intent that will start the Menu-Activity. */
             loadCategoryFragment(CheckoutDetailsFragmentNew())
         }, 100)
