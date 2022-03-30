@@ -142,8 +142,8 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
         super.onViewCreated(view, savedInstanceState)
         getDataFromPref()
         setupTabDesign()
-        paymentonClick()
-        splitonClick()
+        paymentClick()
+        splitClick()
         observeShowProgress()
         observeData()
         callback()
@@ -154,7 +154,7 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
         requireActivity().supportFragmentManager.setFragmentResultListener(
             "request_key_tips",
             viewLifecycleOwner
-        ) { requestKey: String, bundle: Bundle ->
+        ) { _: String, bundle: Bundle ->
             tipAmount = bundle.getDouble("tipAmount")
             tipID = bundle.getInt("tipId")
             tipAmountCalculation()
@@ -162,7 +162,7 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
         requireActivity().supportFragmentManager.setFragmentResultListener(
             "request_key_split",
             viewLifecycleOwner
-        ) { requestKey: String, bundle: Bundle ->
+        ) { _: String, bundle: Bundle ->
 
             isSelectedCount = bundle.getInt("split")
             binding.tvCustom.text = "Custom ($isSelectedCount Ways)"
@@ -171,11 +171,11 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
         requireActivity().supportFragmentManager.setFragmentResultListener(
             "request_for_customAmount",
             viewLifecycleOwner
-        ) { requestKey: String, bundle: Bundle ->
-            val amounnt = bundle.getDouble("amount")
+        ) { _: String, bundle: Bundle ->
+            val amount = bundle.getDouble("amount")
             val totalPrice = bundle.getDouble("totalAmount")
-            MethodUtils.setPriceTextView(binding.tvCustomAmount, amounnt)
-            custom_paymentAmount = amounnt
+            MethodUtils.setPriceTextView(binding.tvCustomAmount, amount)
+            custom_paymentAmount = amount
             binding.tvCustomAmount.text = "Custom (" + binding.tvCustomAmount.text.toString() + ")"
             cashPaymentWithVariation()
         }
@@ -183,7 +183,7 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
 
     }
 
-    private fun splitonClick() {
+    private fun splitClick() {
 
         binding.linearNextSplit.setOnClickListener {
             loadPaymentLayout()
@@ -616,7 +616,7 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
 
     }
 
-    fun cashPaymentWithVariation(){
+    private fun cashPaymentWithVariation(){
         paymentAmount = String.format("%.2f", WholetotalPrice / isSelectedCount).toDouble()
         subTotalPrice = String.format("%.2f", subTotalPrice / isSelectedCount).toDouble()
         totalServiceCharge =
@@ -630,7 +630,7 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
         }
         makeCashPayment()
     }
-    private fun paymentonClick() {
+    private fun paymentClick() {
         binding.llCreditCard.setOnClickListener {
 
             val device = prefProvider.getValueInt(Constants.MAGTEK_HARDWARE, 0)
@@ -993,7 +993,7 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
 
     }
 
-    fun setupPaymentScreen(isSelectCount: Int) {
+    private fun setupPaymentScreen(isSelectCount: Int) {
         MethodUtils.getCashPaymentOptionList(
             getCalCashDiscWithAmount(WholetotalPrice, true) / isSelectCount,
             binding.tvCash1,
@@ -1072,30 +1072,30 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
         }
     }
 
-    public fun splitAllAmounts(TAG: String, amount: Double) {
+    private fun splitAllAmounts(TAG: String, amount: Double) {
         var remainingValue = prefProvider.getValue(TAG, "").toDouble() - amount
         prefProvider.setValue(TAG, String.format("%.2f", remainingValue))
         Log.d(TAG, "splitAllAmounts: " + prefProvider.getValue(TAG, "").toDouble())
     }
 
-    fun getCalCashDiscWithAmount(totalprice: Double, isCash: Boolean): Double {
-        if (isCash) {
+    private fun getCalCashDiscWithAmount(totalprice: Double, isCash: Boolean): Double {
+        return if (isCash) {
             if (cashDiscountType == "CashDiscount") {
-                return totalprice - cashDiscountSurcharge
+                totalprice - cashDiscountSurcharge
             } else {
-                return totalprice
+                totalprice
             }
         } else {
             if (cashDiscountType == "SurCharge") {
-                return totalprice + cashDiscountSurcharge
+                totalprice + cashDiscountSurcharge
             } else {
-                return totalprice
+                totalprice
             }
         }
         return totalprice
     }
 
-    fun tipsetupGlobal(tipAmount: Double, isSelectCount: Int) {
+    private fun tipsetupGlobal(tipAmount: Double, isSelectCount: Int) {
         if (tipAmount == 0.0) {
             MethodUtils.setPriceTextView(
                 binding.tvAmount,
@@ -1230,7 +1230,7 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
         }
     }
 
-    fun paymentAttributesRequest(myRequest: OrderRequestModel) {
+    private fun paymentAttributesRequest(myRequest: OrderRequestModel) {
         val orderId = prefProvider.getValueInt("ORDER_ID", -1)
         Log.e(TAG, "orderIdmyRequestOriginal ${orderId}")
         if (orderId == -1) {
