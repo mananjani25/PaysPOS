@@ -77,7 +77,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
         resultListener()
         addObserver()
         getDineInData()
-
+        navigateDineInOrder()
         getLoyaltyPrograms()
         getServiceCharges()
         syncData()
@@ -371,7 +371,14 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                 viewModel.createCart(cartList)
             }
             item.itemQuantity = 1
-            viewModel.cartLogic(cartList, item, Constants.ADD, false)
+
+            if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == Constants.DINE_IN) {
+                var dineInList = cartList[0].dineInList
+                dineInList!![0]?.selectedPosition = viewModel.dineInHeaderPosition
+                viewModel.cartLogic(cartList, item, Constants.ADD, false, dineInList = dineInList)
+            } else {
+                viewModel.cartLogic(cartList, item, Constants.ADD, false)
+            }
         }
     }
 
@@ -478,7 +485,6 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
         serviceChargesObserve = Observer {
 
             if (it.status == Status.SUCCESS) {
-                Log.e(TAG, "getServiceCharge:  ${Gson().toJson(it.data)}")
                 serviceChargesList = it.data
                 viewModel.serviceChargesList = it.data ?: arrayListOf()
 
@@ -559,10 +565,11 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                 orderTypeId = prefProvider.getValueInt(Constants.ORDER_TYPE_ID, -1)
                 orderType = prefProvider.getValue(Constants.ORDER_TYPE, "").toString()
                 orderTypeName = prefProvider.getValue(Constants.ORDER_TYPE_NAME, "").toString()
+                this.serviceCharge = viewModel.serviceChargesList
 
-                serviceCharge = serviceChargesList
 
             }
+
             cartList.add(cartModel)
         }
 
@@ -570,5 +577,33 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
         viewModel.cartLogic(cartList, null, Constants.ADD, false, dineInList = dineInList)
 
 
+    }
+
+    private fun navigateDineInOrder() {
+        viewModel._Basedata.observe(viewLifecycleOwner, { event ->
+            event.getContentIfNotHandled()?.let { baseResponse ->
+                if (baseResponse != null) {
+
+
+                    val bundle = Bundle()
+                    bundle.putDouble("totalPrice", baseResponse.order.totalAmount)
+                    bundle.putParcelable("cartList", cartList[0])
+                    bundle.putParcelable("dineInList", baseResponse)
+                    bundle.putBoolean("isGuestPaid", false)
+                    bundle.putInt("orderId", baseResponse.order.id)
+
+
+                    prefProvider.setValue(Constants.ORDER_TYPE, "")
+                    prefProvider.setValue(Constants.CUSTOMER_NAME, "")
+                    prefProvider.setValueInt(Constants.CUSTOMER_ID, -1)
+                    prefProvider.setValue(ORDER_TYPE, TAKEOUT)
+                    viewModel.deleteCart()
+                    findNavController().navigate(
+                        R.id.action_dashboardCategoryBoldPOS_to_dineInOrderTable,
+                        bundle
+                    )
+                }
+            }
+        })
     }
 }

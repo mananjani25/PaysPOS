@@ -8,13 +8,13 @@ import android.view.ViewGroup
 import androidx.appcompat.widget.PopupMenu
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.data.entities.*
 import com.android.pos.data.model.DineInModel
+import com.android.pos.data.model.DineInOrderDetailAttributes
 import com.android.pos.data.model.responseModel.GetFloorPlanResponse
 import com.android.pos.data.model.responseModel.GetOrderDetailsResponse
 import com.android.pos.data.remote.Constants
@@ -85,7 +85,6 @@ class CartFragment(val itemClickListner: ItemClickListner?) : Fragment(), MyCall
     @Inject
     lateinit var prefProvider: PrefProvider
     private val TAG = "CartFragment"
-
 
 
     override fun onCreateView(
@@ -367,7 +366,7 @@ class CartFragment(val itemClickListner: ItemClickListner?) : Fragment(), MyCall
 
         Log.e("ORDER_TYPE", prefProvider.getValue(ORDER_TYPE, TAKEOUT))
 
-        if (arguments?.getString(REDIRECT_FROM)== MANUAL_SALE){
+        if (arguments?.getString(REDIRECT_FROM) == MANUAL_SALE) {
             viewModel.manualSaleItems(
                 prefProvider.getValue(ORDER_TYPE, TAKEOUT),
                 prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
@@ -513,6 +512,23 @@ class CartFragment(val itemClickListner: ItemClickListner?) : Fragment(), MyCall
 
 
                         }
+                        viewModel.itemCalculationCartModel(
+                            it[0],
+                            binding.txtTotal,
+                            requireContext()
+                        )
+                        viewModel.setCartModel(it)
+                        binding.txtSubTotal.text =
+                            MethodUtils.roundOffAmount(viewModel.subTotalPrice)
+                        binding.txtTax.text = MethodUtils.roundOffAmount(viewModel.totalTax)
+                        binding.txtServiceCharge.text =
+                            MethodUtils.roundOffAmount(viewModel.totalServiceCharge)
+                        binding.tvPayNow.text = "Pay " + binding.txtTotal.text.toString()
+                        Log.e("totalDiscount", viewModel.totalDiscount.toString())
+                        binding.txtDiscount.text =
+                            MethodUtils.roundOffAmount(viewModel.totalDiscount)
+                        binding.txtNoncashAdj.text =
+                            MethodUtils.roundOffAmount(viewModel.cashdiscountAmount)
 
                     } else {
                         binding.linearButtonView.visible()
@@ -687,6 +703,7 @@ class CartFragment(val itemClickListner: ItemClickListner?) : Fragment(), MyCall
     override fun onHeaderSelected(position: Int) {
         prefProvider.setValueInt(Constants.DINE_INGUEST_SELECTED, position)
         Log.d(TAG, "onHeaderSelected: header position : $position")
+        viewModel.dineInHeaderPosition = position
     }
 
     override fun onItemSelected(headerPosition: Int, position: Int, item: TbItem) {
@@ -875,6 +892,14 @@ class CartFragment(val itemClickListner: ItemClickListner?) : Fragment(), MyCall
 
     private fun initListeners() {
 
+        binding.txtDineInProceed.setOnClickListener {
+            if (viewModel.restrictedAmount(binding.txtTotal)) {
+                createDineInOrder()
+            } else {
+                showMessage()
+            }
+        }
+
         binding.txtAddCustomer.setOnClickListener {
             if (isFromPayment) {
                 findNavController().navigate(R.id.action_paymentBoldPosFragment_to_assignCustomerOrderFragment)
@@ -1045,6 +1070,121 @@ class CartFragment(val itemClickListner: ItemClickListner?) : Fragment(), MyCall
         }
     }
 
+    private fun createDineInOrder() {
+        if (cartlist.isNotEmpty()) {
+            if (prefProvider.getValueboolean(Constants.DINE_IN_UPDATE, false)) {
+                var itemCount = 0
+                for (i in cartlist.indices) {
+                    for (j in cartlist[i].dineInList?.indices!!) {
+                        if (cartlist[i].dineInList?.get(j)?.items?.size!! > 0) {
+                            itemCount++
+                            break
+                        }
+                    }
+                    if (itemCount != 0) {
+                        break
+                    }
+
+                }
+
+                if (itemCount == 0) {
+                    AlertUtils.showCustomAlertWithListenerWithOK(
+                        requireContext(),
+                        getString(R.string.please_add_Atleast_one_item_in_cart)
+                    ) { _, _ ->
+                    }
+                } else {
+                    val request = viewModel.updateOrder(cartlist[0])
+
+                    prefProvider.setValueboolean(Constants.DINE_IN_UPDATE, false)
+                    prefProvider.setValueboolean(Constants.DINE_IN_LIST_EDIT, false)
+                    prefProvider.setValueboolean(Constants.DINE_IN_UPDATE, false)
+                    cartlist[0].orderId?.let { viewModel.updateOrderCall(it, request) }
+
+
+                }
+
+            } else {
+                val bundle = Bundle()
+                if (isOrderUpdate) {
+                    bundle.putBoolean("update", true)
+                    orderId?.let { bundle.putInt("orderId", it) }
+                    paymentId?.let { bundle.putInt("paymentId", it) }
+                    bundle.putString("paymentOfflineId", paymentOfflineId)
+                    bundle.putString("orderOfflineId", orderOfflineId)
+                }
+
+                var itemCount = 0
+                for (i in cartlist.indices) {
+                    for (j in cartlist[i].dineInList?.indices!!) {
+                        if (cartlist[i].dineInList?.get(j)?.items?.size!! > 0) {
+                            itemCount++
+                            break
+                        }
+                    }
+                    if (itemCount != 0) {
+                        createDineInRequest()
+                        break
+                    }
+                }
+
+                if (itemCount == 0) {
+                    bundle.clear()
+                    AlertUtils.showCustomAlertWithListenerWithOK(
+                        requireContext(),
+                        getString(R.string.please_add_Atleast_one_item_in_cart)
+                    ) { _, _ ->
+                    }
+
+                }
+            }
+        }
+    }
+
+    private fun createDineInRequest() {
+
+        var floorModel = DineInOrderDetailAttributes(
+            floorPlanId = dineInFloorTableModel?.floorPlanId,
+            floorPlanTableId = dineInFloorTableModel?.id,
+            tableType = dineInFloorTableModel?.tableType,
+            tableName = dineInFloorTableModel?.tableName,
+            tableNumber = dineInFloorTableModel?.tableNumber,
+            chairCount = dineInFloorTableModel?.chairCount,
+            floorPlanName = "",
+            totalGuestCount = dineInCartAdapter.getList().size + 1
+
+
+        )
+
+        if (floorModel.floorPlanId == null) {
+            floorModel.floorPlanId = cartlist.get(0).dineInList?.get(1)?.floorPlanTable?.floorPlanId
+            floorModel.floorPlanTableId = cartlist.get(0).dineInList?.get(1)?.floorPlanTable?.id
+            floorModel.tableType = cartlist.get(0).dineInList?.get(1)?.floorPlanTable?.tableType
+            floorModel.tableNumber = cartlist.get(0).dineInList?.get(1)?.floorPlanTable?.tableNumber
+            floorModel.chairCount = cartlist.get(0).dineInList?.get(1)?.floorPlanTable?.chairCount
+
+
+        }
+        val orderRequestModel = viewModel.createDineInOrderRequest(
+            cartModel = cartlist[0],
+            subTotalPrice = viewModel.subTotalPrice,
+            totalPrice = viewModel.totalPrice - cartlist[0].discountPrice,
+            totalServiceCharge = viewModel.totalServiceCharge,
+            totalTax = viewModel.totalTax,
+            ORDER_TYPE = Constants.DINE_IN,
+            "",
+            "",
+            false,
+            totalDiscount = viewModel.totalDiscount + cartlist[0].discountPrice,
+            0.0,
+            floorPlanDetails = floorModel
+        )
+
+        if (orderRequestModel != null) {
+            viewModel.submit(orderRequestModel)
+        }
+
+    }
 
 }
 

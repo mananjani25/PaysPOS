@@ -30,6 +30,7 @@ import com.android.pos.data.remote.Constants.DINE_IN_LIST_EDIT
 import com.android.pos.data.remote.Constants.DINE_IN_UPDATE
 import com.android.pos.data.remote.Constants.EMPLOYEE_ID
 import com.android.pos.data.remote.Constants.IS_PRINTER_QUEUE_ENABLE
+import com.android.pos.data.remote.Constants.ORDER_TYPE
 import com.android.pos.data.remote.Constants.SYSTEM_TIMEZONE
 import com.android.pos.data.remote.Constants.UPDATE
 import com.android.pos.data.remote.Constants.VENUE_LOGO
@@ -71,7 +72,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 ) : ViewModel() {
 
 
-    val dineInHeaderPosition: Int = 0
+    var dineInHeaderPosition: Int = 0
     val TAG = "DashBoardCateViewModel"
     var totalPrice: Double = 0.0
     var totalCount = 0
@@ -176,11 +177,13 @@ class DashBoardCategoryViewModel @Inject constructor(
         return posRepository.getCartList(orderType, employee_Id)
 
     }
+
     fun manualSale(orderType: String, employee_Id: Int): LiveData<List<CartModel>> {
 
         return posRepository.getCartList(orderType, employee_Id)
 
     }
+
     fun manualSaleItems(orderType: String, employee_Id: Int): LiveData<List<CartModel>> {
 
         return posRepository.getManualSaleItems(orderType, employee_Id)
@@ -262,7 +265,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
         if (cartList != null && cartList.isEmpty()) {
 
-            val model = addCartModel(item,true)
+            val model = addCartModel(item, true)
             addCart(model)
         } else {
             val list = cartList?.get(0)?.items?.toMutableList()
@@ -335,13 +338,13 @@ class DashBoardCategoryViewModel @Inject constructor(
         cartList: List<CartModel>?,
         item: TbItem?,
         type: String,
-        isManualSales:Boolean,
+        isManualSales: Boolean,
         dineInList: List<DineInModel> = arrayListOf()
     ) {
 
         if (cartList != null && cartList.isEmpty()) {
             // empty cart hoy to new cart create kare
-            val cartModel = item?.let { addCartModel(it,isManualSales) }
+            val cartModel = item?.let { addCartModel(it, isManualSales) }
             if (cartModel != null) {
                 addCart(cartModel)
             }
@@ -629,7 +632,7 @@ class DashBoardCategoryViewModel @Inject constructor(
     fun addItemToCart(
         cartList: List<CartModel>?,
         item: TbItem?,
-        type: String,isManualSales: Boolean,
+        type: String, isManualSales: Boolean,
         dineInList: List<DineInModel> = arrayListOf()
     ) {
 
@@ -857,7 +860,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                 }
 
-                serviceChargeCalculation(cartList)
+                calculateDineInServiceCharge(cartList[0])
                 subTotalPrice -= (cartList[0].discountPrice)
 
 
@@ -1066,7 +1069,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                 } else {
                     checkAppliedLoyaltyProgram(
                         selectedCustomer,
-                            amountToBePaid,
+                        amountToBePaid,
                         txtTotalAmount
                     )
                     redeemLoyaltyInfo.getAmountToBePaid()?.let {
@@ -1176,6 +1179,20 @@ class DashBoardCategoryViewModel @Inject constructor(
             }
 
         }
+    }
+
+    private fun calculateDineInServiceCharge(cartModel: CartModel) {
+        if (serviceChargesList.isNotEmpty() && serviceChargesList != null) {
+            Log.e(TAG, "dashboardserviceChargesList:  ${Gson().toJson(serviceChargesList)}")
+
+            serviceChargesList.forEach {
+                if (it.isEnabled) {
+                    totalServiceCharge += (subTotalPrice * it.percentage) / 100
+
+                }
+            }
+        }
+
     }
 
     private fun serviceChargeCalculationModel(cartModel: CartModel) {
@@ -2261,11 +2278,13 @@ class DashBoardCategoryViewModel @Inject constructor(
 
         })
     }
+
     fun saveManualSaleData(cartList: List<CartModel>) {
 
         // prefProvider.setValue(Constants.ORDER_TYPE, Constants.TAKEOUT)
         addCart(cartList[0])
     }
+
     fun setPosition(position: Int) {
         mPosition = position
     }
@@ -2277,7 +2296,7 @@ class DashBoardCategoryViewModel @Inject constructor(
             model.employeeID =
                 prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
             model.terminalId = prefProvider.getValueInt(Constants.TERMINAL_ID, 0)
-            model.orderType = Constants.TAKEOUT
+            model.orderType = prefProvider.getValue(ORDER_TYPE, Constants.TAKEOUT)
             model.locationId = prefProvider.getValueInt(Constants.LOCATION_ID, 1)
             model.serviceCharge = serviceChargesList
             // model.orderTypeId = 1

@@ -535,6 +535,7 @@ class PosRepository @Inject constructor(
     fun getManualSaleList(employee_id: Int): LiveData<List<CartModel>> {
         return appDatabase.cartDao().manualItem(employee_id)
     }
+
     fun getManualSaleItems(orderType: String, employee_Id: Int): LiveData<List<CartModel>> {
         return appDatabase.cartDao().getManualSaleItems(orderType, employee_Id)
     }
@@ -548,7 +549,7 @@ class PosRepository @Inject constructor(
         appDatabase.cartDao().add(cartModel)
     }
 
-    suspend fun createEmptyCart(cartModel: CartModel){
+    suspend fun createEmptyCart(cartModel: CartModel) {
         appDatabase.cartDao().add(cartModel)
     }
 
@@ -560,6 +561,7 @@ class PosRepository @Inject constructor(
     suspend fun deleteManualSaleCart(employee_id: Int) {
         appDatabase.cartDao().deleteManualSale(employee_id)
     }
+
     suspend fun updateModifierSort(allCategories: ArrayList<ModifierSet>) {
         appDatabase.modifierSetDao().addAll(allCategories)
     }

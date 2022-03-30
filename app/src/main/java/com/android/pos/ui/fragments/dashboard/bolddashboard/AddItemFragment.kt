@@ -171,6 +171,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment() {
             if (isUpdateItem) {
                 if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == Constants.DINE_IN) {
                     val dineInList = cartList[0].dineInList
+                    Log.e(TAG, "dineInList:  ${Gson().toJson(dineInList)}")
                     dineInList!![0].selectedPosition = viewModel.dineInHeaderPosition
                     viewModel.cartLogic(cartList, item, Constants.UPDATE, false, dineInList)
                 } else {
@@ -181,6 +182,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment() {
 
                 if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == Constants.DINE_IN) {
                     val dineInList = cartList[0].dineInList
+                    Log.e(TAG, "dineInList:  ${Gson().toJson(dineInList)}")
                     if (dineInList?.isNotEmpty() == true && dineInList != null) {
                         dineInList[0].selectedPosition = viewModel.dineInHeaderPosition
                         viewModel.cartLogic(cartList, item, Constants.ADD, false, dineInList)

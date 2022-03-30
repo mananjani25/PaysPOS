@@ -1326,6 +1326,10 @@
         <action
             android:id="@+id/action_dashboardCategoryBoldPOS_to_addNoteDialog"
             app:destination="@id/addNoteDialog" />
+        <action
+            android:id="@+id/action_dashboardCategoryBoldPOS_to_dineInOrderTable"
+            app:destination="@id/dineInOrderTable"
+            app:enterAnim="@anim/nav_default_enter_anim" />
 
 
     </fragment>
