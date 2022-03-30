@@ -5,6 +5,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.data.entities.VariationsAttribute
 import com.android.pos.databinding.ViewBoldVariationsBinding
+import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.callback.UpdateVariationCallback
 
 class VariationListAdapter() :
@@ -33,12 +34,13 @@ class VariationListAdapter() :
     override fun onBindViewHolder(holder: VariationListAdapter.MyViewHolder, position: Int) {
 
         val itemBinding = holder.noteItemBinding
-        itemBinding.txtVariation.setText("" + variationList[position].name)
-        if (mpos == position) {
-            itemBinding.txtVariation.isSelected = true
-        } else {
-            itemBinding.txtVariation.isSelected = false
+        itemBinding.txtVariation.text = variationList[position].name
+        itemBinding.txtPrice.text = variationList[position].price?.let {
+            MethodUtils.roundOffAmount(
+                it
+            )
         }
+        itemBinding.txtVariation.isSelected = mpos == position
 
 
     }

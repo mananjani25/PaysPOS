@@ -32,7 +32,7 @@
                 android:gravity="center"
                 android:text="@{model.name}"
                 android:textColor="@color/txtColor"
-                android:textSize="@dimen/_5mdpi"
+                android:textSize="@dimen/_6mdpi"
                 tools:text="Image one" />
 
             <androidx.appcompat.widget.AppCompatTextView
@@ -44,7 +44,7 @@
                 android:layout_marginStart="@dimen/_3sdp"
                 android:gravity="center"
                 android:textColor="@color/txtColor"
-                android:textSize="@dimen/_5mdpi"
+                android:textSize="@dimen/_6mdpi"
                 tools:text="Image one" />
         </androidx.appcompat.widget.LinearLayoutCompat>
 
