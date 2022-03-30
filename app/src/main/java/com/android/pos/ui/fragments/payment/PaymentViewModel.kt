@@ -129,9 +129,7 @@ open class PaymentViewModel @Inject constructor(
                                     )
                                 }
 
-                                if (orderRequestModel.order.openOrderType == Constants.OPEN_ORDER
-                                    || orderRequestModel.order.openOrderType == Constants.OPEN_ORDER
-                                ) {
+                                if (onlySave || orderRequestModel.completed_all_payments) {
                                     posRepository.deleteCart(
                                         prefProvider.getValueInt(
                                             Constants.EMPLOYEE_ID,
@@ -139,6 +137,7 @@ open class PaymentViewModel @Inject constructor(
                                         )
                                     )
                                 }
+
 
                                 if (onlySave) {
                                     _queueCreateSaveOrder.value = Event(true)
@@ -1340,9 +1339,10 @@ open class PaymentViewModel @Inject constructor(
             cashDiscountFee = 0.0
 
             employeeId = cartModel.employeeID
-            offlineId = if (isUpdateOrder) paymentOfflineId.toString() else MethodUtils.randomOfflineId(
-                prefProvider.getValueInt(Constants.LOCATION_ID, -1).toString()
-            )
+            offlineId =
+                if (isUpdateOrder) paymentOfflineId.toString() else MethodUtils.randomOfflineId(
+                    prefProvider.getValueInt(Constants.LOCATION_ID, -1).toString()
+                )
             payableType = "Order"
             paymentType = paymentTypeStatus
             serviceChargeAmount = MethodUtils.roundOffAmountDouble(totalServiceCharge)
@@ -1453,9 +1453,10 @@ open class PaymentViewModel @Inject constructor(
             cashDiscountFee = 0.0
             cash_discount_type = cashdiscountType
             employeeId = cartModel.employeeID
-            offlineId = if (isUpdateOrder) paymentOfflineId.toString() else MethodUtils.randomOfflineId(
-                prefProvider.getValueInt(Constants.LOCATION_ID, -1).toString()
-            )
+            offlineId =
+                if (isUpdateOrder) paymentOfflineId.toString() else MethodUtils.randomOfflineId(
+                    prefProvider.getValueInt(Constants.LOCATION_ID, -1).toString()
+                )
             payableType = "Order"
             paymentType = paymentTypeStatus
             serviceChargeAmount = totalServiceCharge
@@ -1536,6 +1537,15 @@ open class PaymentViewModel @Inject constructor(
                                     prefProvider.setValueInt(
                                         PAYMENT_ID,
                                         createOrderResponse.data.order.payments[createOrderResponse.data.order.payments.size - 1].id
+                                    )
+                                }
+
+                                if (myRequest.completed_all_payments) {
+                                    posRepository.deleteCart(
+                                        prefProvider.getValueInt(
+                                            Constants.EMPLOYEE_ID,
+                                            0
+                                        )
                                     )
                                 }
 

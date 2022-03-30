@@ -1039,7 +1039,7 @@ class CartFragment(val itemClickListner: ItemClickListner?) : Fragment(), MyCall
                             future_delivery_date,
                             future_delivery_time,
                             false,
-                            viewModel.totalDiscount + cartList.discountPrice,
+                            viewModel.totalDiscount,
                             0.00,
                             -1,
                             viewModel.redeemLoyaltyInfo,
