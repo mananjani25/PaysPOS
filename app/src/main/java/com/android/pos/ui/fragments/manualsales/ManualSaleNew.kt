@@ -408,7 +408,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
 
                     viewModel.addCart(mainCartList[0])
 
-                    viewModel.deleteCart()
+                    //viewModel.deleteCart()
 
                     viewModel.manualSale(
                         prefProvider.getValue(Constants.ORDER_TYPE, "").toString(),
