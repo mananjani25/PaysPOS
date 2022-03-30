@@ -91,7 +91,7 @@ class CartFragment(val itemClickListner: ItemClickListner?) : Fragment(), MyCall
         @JvmStatic
         fun newInstacne(isFromPayment: Boolean) =
             CartFragment(null).apply {
-                arguments=Bundle().apply {
+                arguments = Bundle().apply {
                     putBoolean("isFromPayment", isFromPayment)
                 }
             }
@@ -314,7 +314,7 @@ class CartFragment(val itemClickListner: ItemClickListner?) : Fragment(), MyCall
         }
 
         cartlist.get(0).orderType = Constants.DINE_IN
-        viewModel.cartLogic(cartlist, null, Constants.ADD,false, dineInList = dineInList)
+        viewModel.cartLogic(cartlist, null, Constants.ADD, false, dineInList = dineInList)
 
     }
 
@@ -357,7 +357,7 @@ class CartFragment(val itemClickListner: ItemClickListner?) : Fragment(), MyCall
                 prefProvider.setValue(Constants.ORDER_TYPE_NAME, Constants.DINE_IN)
                 prefProvider.setValueInt(Constants.ORDER_TYPE_ID, 2)
 
-                viewModel.cartLogic(cartlist, null, Constants.ADD,false, dineInList = dineInList)
+                viewModel.cartLogic(cartlist, null, Constants.ADD, false, dineInList = dineInList)
                 viewModel.orderItemDiscount = arguments?.getDouble("totalDiscount") ?: 0.0
 
             }
@@ -382,7 +382,7 @@ class CartFragment(val itemClickListner: ItemClickListner?) : Fragment(), MyCall
 
         Log.e("ORDER_TYPE", prefProvider.getValue(ORDER_TYPE, TAKEOUT))
 
-        if (arguments?.getString(REDIRECT_FROM)== MANUAL_SALE){
+        if (arguments?.getString(REDIRECT_FROM) == MANUAL_SALE) {
             viewModel.manualSaleItems(
                 prefProvider.getValue(ORDER_TYPE, TAKEOUT),
                 prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
@@ -403,7 +403,8 @@ class CartFragment(val itemClickListner: ItemClickListner?) : Fragment(), MyCall
                     binding.txtTax.text = MethodUtils.roundOffAmount(viewModel.totalTax)
                     binding.txtServiceCharge.text =
                         MethodUtils.roundOffAmount(viewModel.totalServiceCharge)
-                    binding.tvPayNow.text = "Pay " + MethodUtils.roundOffAmount(viewModel.totalPrice)
+                    binding.tvPayNow.text =
+                        "Pay " + MethodUtils.roundOffAmount(viewModel.totalPrice)
                     Log.e("totalDiscount", viewModel.totalDiscount.toString())
                     binding.txtDiscount.text = MethodUtils.roundOffAmount(viewModel.totalDiscount)
                     binding.txtNoncashAdj.text =
@@ -431,97 +432,76 @@ class CartFragment(val itemClickListner: ItemClickListner?) : Fragment(), MyCall
 
 
 
-                    if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == Constants.DINE_IN) {
-                        if (it.isNotEmpty()) {
-                            binding.rvCartList.adapter = dineInCartAdapter
-                            cartlist = it as ArrayList<CartModel>
-                            binding.linearButtonView.gone()
-                            binding.relPreoceedToFire.visible()
+                if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == Constants.DINE_IN) {
+                    if (it.isNotEmpty()) {
+                        binding.rvCartList.adapter = dineInCartAdapter
+                        cartlist = it as ArrayList<CartModel>
+                        binding.linearButtonView.gone()
+                        binding.relPreoceedToFire.visible()
 
-                            if (it[0].dineInList?.isNotEmpty() == true) {
-                                var dineInList = it[0].dineInList
+                        if (it[0].dineInList?.isNotEmpty() == true) {
+                            var dineInList = it[0].dineInList
 
-                                dineInCartAdapter.setList(
-                                    dineInList?.toCollection(arrayListOf()) ?: arrayListOf()
-                                )
+                            dineInCartAdapter.setList(
+                                dineInList?.toCollection(arrayListOf()) ?: arrayListOf()
+                            )
 
-
-                            }
-
-                        } else {
-                            binding.linearButtonView.visible()
-                            binding.relPreoceedToFire.gone()
-                            dineInCartAdapter.clearList()
 
                         }
+
                     } else {
+                        binding.linearButtonView.visible()
+                        binding.relPreoceedToFire.gone()
+                        dineInCartAdapter.clearList()
 
-                        if (it.isNotEmpty()) {
-                            binding.linearButtonView.visible()
-                            binding.relPreoceedToFire.gone()
-                            binding.rvCartList.adapter = cartAdapter
+                    }
+                } else {
 
-                            it[0].items?.toCollection(arrayListOf())
-                                ?.let { it1 -> cartAdapter.setList(it1) }
+                    if (it.isNotEmpty()) {
+                        binding.linearButtonView.visible()
+                        binding.relPreoceedToFire.gone()
+                        binding.rvCartList.adapter = cartAdapter
 
-                            cartlist = it as ArrayList<CartModel>
-                            viewModel.itemCalculationCartModel(
-                                it[0],
-                                binding.txtTotal,
-                                requireContext()
-                            )
-                            viewModel.setCartModel(it)
-                            binding.txtSubTotal.text =
-                                MethodUtils.roundOffAmount(viewModel.subTotalPrice)
-                            binding.txtTax.text = MethodUtils.roundOffAmount(viewModel.totalTax)
-                            binding.txtServiceCharge.text =
-                                MethodUtils.roundOffAmount(viewModel.totalServiceCharge)
-                            /*binding.tvPayNow.text =
-                                "Pay " + MethodUtils.roundOffAmount(viewModel.totalPrice)
-                            Log.e("totalDiscount", viewModel.totalDiscount.toString())
-                            binding.txtDiscount.text =
-                                MethodUtils.roundOffAmount(viewModel.totalDiscount)
-                            binding.txtNoncashAdj.text =
-                                MethodUtils.roundOffAmount(viewModel.cashdiscountAmount)
+                        it[0].items?.toCollection(arrayListOf())
+                            ?.let { it1 -> cartAdapter.setList(it1) }
+
+                        cartlist = it as ArrayList<CartModel>
+                        viewModel.itemCalculationCartModel(
+                            it[0],
+                            binding.txtTotal,
+                            requireContext()
+                        )
+                        viewModel.setCartModel(it)
+                        binding.txtSubTotal.text =
+                            MethodUtils.roundOffAmount(viewModel.subTotalPrice)
+                        binding.txtTax.text = MethodUtils.roundOffAmount(viewModel.totalTax)
+                        binding.txtServiceCharge.text =
+                            MethodUtils.roundOffAmount(viewModel.totalServiceCharge)
+                        /*binding.tvPayNow.text =
+                            "Pay " + MethodUtils.roundOffAmount(viewModel.totalPrice)
+                        Log.e("totalDiscount", viewModel.totalDiscount.toString())
+                        binding.txtDiscount.text =
+                            MethodUtils.roundOffAmount(viewModel.totalDiscount)
+                        binding.txtNoncashAdj.text =
+                            MethodUtils.roundOffAmount(viewModel.cashdiscountAmount)
 */
-                            binding.tvPayNow.text = "Pay " + binding.txtTotal.text.toString()
-                            Log.e("totalDiscount", viewModel.totalDiscount.toString())
-                            binding.txtDiscount.text = MethodUtils.roundOffAmount(viewModel.totalDiscount)
-                            binding.txtNoncashAdj.text =
-                                MethodUtils.roundOffAmount(viewModel.cashdiscountAmount)
-                            var data: TbCustomer? = prefProvider.getCustomerData()
-                            if (data != null) {
-                                if (viewModel.loyaltyPointCondition(data)) {
-                                    if (isFromPayment) {
-                                        if (viewModel.redeemLoyaltyInfo.needToApplyLoyalty) {
-                                            binding.liinearInfoLayout.layoutParams.height =
-                                                resources.getDimension(R.dimen._70sdp).toInt()
-                                            binding.relativeLoylatyPoints.visibility = View.VISIBLE
-                                            binding.lblLoyaltyPoints.visibility = View.VISIBLE
-                                            binding.txtLabelLoyaltyAmounts.visibility = View.VISIBLE
-                                            binding.checkloylaty.visibility = View.GONE
-                                            binding.txtLoyaltyAmount.text =
-                                                "- $${
-                                                    String.format(
-                                                        "%.2f",
-                                                        viewModel.redeemLoyaltyInfo.usedLoyaltyAmount
-                                                    )
-                                                }"
-                                            binding.txtLoyaltyPoints.text =
-                                                "${viewModel.redeemLoyaltyInfo.usedLoyaltyPoints}"
-                                        } else {
-                                            binding.liinearInfoLayout.layoutParams.height =
-                                                resources.getDimension(R.dimen._40sdp).toInt()
-                                            binding.relativeLoylatyPoints.visibility = View.GONE
-                                            binding.lblLoyaltyPoints.visibility = View.GONE
-                                        }
-                                    } else {
+                        binding.tvPayNow.text = "Pay " + binding.txtTotal.text.toString()
+                        Log.e("totalDiscount", viewModel.totalDiscount.toString())
+                        binding.txtDiscount.text =
+                            MethodUtils.roundOffAmount(viewModel.totalDiscount)
+                        binding.txtNoncashAdj.text =
+                            MethodUtils.roundOffAmount(viewModel.cashdiscountAmount)
+                        var data: TbCustomer? = prefProvider.getCustomerData()
+                        if (data != null) {
+                            if (viewModel.loyaltyPointCondition(data)) {
+                                if (isFromPayment) {
+                                    if (viewModel.redeemLoyaltyInfo.needToApplyLoyalty) {
                                         binding.liinearInfoLayout.layoutParams.height =
                                             resources.getDimension(R.dimen._70sdp).toInt()
                                         binding.relativeLoylatyPoints.visibility = View.VISIBLE
                                         binding.lblLoyaltyPoints.visibility = View.VISIBLE
-                                        Log.e(TAG, "InsideLoyalty")
-                                        Log.e(TAG, Gson().toJson(viewModel.redeemLoyaltyInfo))
+                                        binding.txtLabelLoyaltyAmounts.visibility = View.VISIBLE
+                                        binding.checkloylaty.visibility = View.GONE
                                         binding.txtLoyaltyAmount.text =
                                             "- $${
                                                 String.format(
@@ -531,51 +511,70 @@ class CartFragment(val itemClickListner: ItemClickListner?) : Fragment(), MyCall
                                             }"
                                         binding.txtLoyaltyPoints.text =
                                             "${viewModel.redeemLoyaltyInfo.usedLoyaltyPoints}"
-                                        binding.checkloylaty.isChecked =
-                                            viewModel.redeemLoyaltyInfo.needToApplyLoyalty
+                                    } else {
+                                        binding.liinearInfoLayout.layoutParams.height =
+                                            resources.getDimension(R.dimen._40sdp).toInt()
+                                        binding.relativeLoylatyPoints.visibility = View.GONE
+                                        binding.lblLoyaltyPoints.visibility = View.GONE
                                     }
+                                } else {
+                                    binding.liinearInfoLayout.layoutParams.height =
+                                        resources.getDimension(R.dimen._70sdp).toInt()
+                                    binding.relativeLoylatyPoints.visibility = View.VISIBLE
+                                    binding.lblLoyaltyPoints.visibility = View.VISIBLE
+                                    Log.e(TAG, "InsideLoyalty")
+                                    Log.e(TAG, Gson().toJson(viewModel.redeemLoyaltyInfo))
+                                    binding.txtLoyaltyAmount.text =
+                                        "- $${
+                                            String.format(
+                                                "%.2f",
+                                                viewModel.redeemLoyaltyInfo.usedLoyaltyAmount
+                                            )
+                                        }"
+                                    binding.txtLoyaltyPoints.text =
+                                        "${viewModel.redeemLoyaltyInfo.usedLoyaltyPoints}"
+                                    binding.checkloylaty.isChecked =
+                                        viewModel.redeemLoyaltyInfo.needToApplyLoyalty
                                 }
-                            }else{
+                            }
+                        } else {
+                            binding.liinearInfoLayout.layoutParams.height =
+                                resources.getDimension(R.dimen._40sdp).toInt()
+                            binding.relativeLoylatyPoints.visibility = View.GONE
+                            binding.lblLoyaltyPoints.visibility = View.GONE
+                        }
+
+
+                    } else {
+                        cartAdapter.clearList()
+                        binding.txtTotal.text = MethodUtils.roundOffAmount(0.0)
+                        binding.txtSubTotal.text = MethodUtils.roundOffAmount(0.0)
+                        binding.txtTax.text = MethodUtils.roundOffAmount(0.0)
+                        binding.txtDiscount.text = MethodUtils.roundOffAmount(0.0)
+                        binding.txtNoncashAdj.text =
+                            MethodUtils.roundOffAmount(0.0)
+                        binding.txtServiceCharge.text =
+                            MethodUtils.roundOffAmount(0.0)
+                        binding.tvPayNow.text = "Pay " + MethodUtils.roundOffAmount(0.0)
+                        var data: TbCustomer? = prefProvider.getCustomerData()
+                        if (data != null) {
+                            if (viewModel.loyaltyPointCondition(data)) {
+                                binding.liinearInfoLayout.layoutParams.height =
+                                    resources.getDimension(R.dimen._70sdp).toInt()
+                                binding.relativeLoylatyPoints.visibility = View.VISIBLE
+                                binding.lblLoyaltyPoints.visibility = View.VISIBLE
+                            } else {
                                 binding.liinearInfoLayout.layoutParams.height =
                                     resources.getDimension(R.dimen._40sdp).toInt()
                                 binding.relativeLoylatyPoints.visibility = View.GONE
                                 binding.lblLoyaltyPoints.visibility = View.GONE
                             }
-
-
-                        } else {
-                            cartAdapter.clearList()
-                            binding.txtTotal.text = MethodUtils.roundOffAmount(0.0)
-                            binding.txtSubTotal.text = MethodUtils.roundOffAmount(0.0)
-                            binding.txtTax.text = MethodUtils.roundOffAmount(0.0)
-                            binding.txtDiscount.text = MethodUtils.roundOffAmount(0.0)
-                            binding.txtNoncashAdj.text =
-                                MethodUtils.roundOffAmount(0.0)
-                            binding.txtServiceCharge.text =
-                                MethodUtils.roundOffAmount(0.0)
-                            binding.tvPayNow.text = "Pay " + MethodUtils.roundOffAmount(0.0)
-                            var data: TbCustomer? = prefProvider.getCustomerData()
-                            if (data != null) {
-                                if (viewModel.loyaltyPointCondition(data)) {
-                                    binding.liinearInfoLayout.layoutParams.height =
-                                        resources.getDimension(R.dimen._70sdp).toInt()
-                                    binding.relativeLoylatyPoints.visibility = View.VISIBLE
-                                    binding.lblLoyaltyPoints.visibility = View.VISIBLE
-                                } else {
-                                    binding.liinearInfoLayout.layoutParams.height =
-                                        resources.getDimension(R.dimen._40sdp).toInt()
-                                    binding.relativeLoylatyPoints.visibility = View.GONE
-                                    binding.lblLoyaltyPoints.visibility = View.GONE
-                                }
-                            }
-
-
                         }
+
 
                     }
 
-
-
+                }
 
 
             }
@@ -625,6 +624,7 @@ class CartFragment(val itemClickListner: ItemClickListner?) : Fragment(), MyCall
 
     override fun onHeaderSelected(position: Int) {
         prefProvider.setValueInt(Constants.DINE_INGUEST_SELECTED, position)
+        viewModel.dineInHeaderPosition = position
         Log.d(TAG, "onHeaderSelected: header position : $position")
     }
 

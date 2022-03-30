@@ -205,6 +205,7 @@ class CategoryFragment(val listner: ItemListner) : Fragment(), CategoryTabAdapte
 
     override fun onClick(item: TbItem) {
         Log.e(TAG, "selectedItem:  ${Gson().toJson(item)}")
+
         listner.onItemSelected(item)
 
 

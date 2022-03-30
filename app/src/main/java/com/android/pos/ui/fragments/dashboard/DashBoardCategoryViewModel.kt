@@ -71,6 +71,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 ) : ViewModel() {
 
 
+    var dineInHeaderPosition: Int = 0
     val TAG = "DashBoardCateViewModel"
     var totalPrice: Double = 0.0
     var totalCount = 0
@@ -175,11 +176,13 @@ class DashBoardCategoryViewModel @Inject constructor(
         return posRepository.getCartList(orderType, employee_Id)
 
     }
+
     fun manualSale(orderType: String, employee_Id: Int): LiveData<List<CartModel>> {
 
         return posRepository.getCartList(orderType, employee_Id)
 
     }
+
     fun manualSaleItems(orderType: String, employee_Id: Int): LiveData<List<CartModel>> {
 
         return posRepository.getManualSaleItems(orderType, employee_Id)
@@ -261,7 +264,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
         if (cartList != null && cartList.isEmpty()) {
 
-            val model = addCartModel(item,true)
+            val model = addCartModel(item, true)
             addCart(model)
         } else {
             val list = cartList?.get(0)?.items?.toMutableList()
@@ -334,13 +337,13 @@ class DashBoardCategoryViewModel @Inject constructor(
         cartList: List<CartModel>?,
         item: TbItem?,
         type: String,
-        isManualSales:Boolean,
+        isManualSales: Boolean,
         dineInList: List<DineInModel> = arrayListOf()
     ) {
 
         if (cartList != null && cartList.isEmpty()) {
             // empty cart hoy to new cart create kare
-            val cartModel = item?.let { addCartModel(it,isManualSales) }
+            val cartModel = item?.let { addCartModel(it, isManualSales) }
             if (cartModel != null) {
                 addCart(cartModel)
             }
@@ -628,7 +631,7 @@ class DashBoardCategoryViewModel @Inject constructor(
     fun addItemToCart(
         cartList: List<CartModel>?,
         item: TbItem?,
-        type: String,isManualSales: Boolean,
+        type: String, isManualSales: Boolean,
         dineInList: List<DineInModel> = arrayListOf()
     ) {
 
@@ -1073,7 +1076,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                     } else {
                         checkAppliedLoyaltyProgram(
                             selectedCustomer,
-                                amountToBePaid,
+                            amountToBePaid,
                             txtTotalAmount
                         )
                         redeemLoyaltyInfo.getAmountToBePaid()?.let {
@@ -2269,11 +2272,13 @@ class DashBoardCategoryViewModel @Inject constructor(
 
         })
     }
+
     fun saveManualSaleData(cartList: List<CartModel>) {
 
         // prefProvider.setValue(Constants.ORDER_TYPE, Constants.TAKEOUT)
         addCart(cartList[0])
     }
+
     fun setPosition(position: Int) {
         mPosition = position
     }

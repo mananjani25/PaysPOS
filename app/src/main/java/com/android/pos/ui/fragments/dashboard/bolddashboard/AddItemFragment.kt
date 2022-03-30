@@ -169,10 +169,24 @@ class AddItemFragment(val listner: ItemListner) : Fragment() {
             }
 
             if (isUpdateItem) {
-                viewModel.cartLogic(cartList, item, Constants.UPDATE,false)
+                if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == Constants.DINE_IN) {
+                    val dineInList = cartList[0].dineInList
+                    dineInList!![0].selectedPosition = viewModel.dineInHeaderPosition
+                    viewModel.cartLogic(cartList, item, Constants.UPDATE, false, dineInList)
+                } else {
+
+                    viewModel.cartLogic(cartList, item, Constants.UPDATE, false)
+                }
             } else {
 
-                viewModel.cartLogic(cartList, item, Constants.ADD,false)
+                if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == Constants.DINE_IN) {
+                    val dineInList = cartList[0].dineInList
+                    dineInList!![0].selectedPosition = viewModel.dineInHeaderPosition
+                    viewModel.cartLogic(cartList, item, Constants.ADD, false, dineInList)
+                } else {
+
+                    viewModel.cartLogic(cartList, item, Constants.ADD, false)
+                }
             }
 
             listner.onCancelItemSelected()
@@ -206,7 +220,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment() {
         binding.txtRemoveItem.setOnClickListener {
 
             item.isEdited = false
-            viewModel.cartLogic(cartList, item, DELETE,false)
+            viewModel.cartLogic(cartList, item, DELETE, false)
             listner.onCancelItemSelected()
 
         }

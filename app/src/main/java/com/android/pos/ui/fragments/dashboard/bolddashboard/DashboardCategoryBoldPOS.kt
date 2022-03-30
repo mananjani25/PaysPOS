@@ -20,6 +20,7 @@ import com.android.pos.data.model.DineInModel
 import com.android.pos.data.model.responseModel.GetFloorPlanResponse
 import com.android.pos.data.model.responseModel.GetOrderDetailsResponse
 import com.android.pos.data.remote.Constants
+import com.android.pos.data.remote.Constants.DINE_IN
 import com.android.pos.data.remote.Constants.EMPLOYEE_NAME
 import com.android.pos.data.remote.Constants.ORDER_TYPE
 import com.android.pos.data.remote.Constants.TAKEOUT
@@ -146,7 +147,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                         item.discountId = result.id
                         item.discountType = result.discountType
                         item.isManualSales = false
-                        viewModel.cartLogic(cartList, item, Constants.UPDATE,false)
+                        viewModel.cartLogic(cartList, item, Constants.UPDATE, false)
 
                     }
                     "Amount" -> {
@@ -156,7 +157,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                         item?.discountType = result.discountType
                         item?.isManualSales = false
 
-                        viewModel.cartLogic(cartList, item, Constants.UPDATE,false)
+                        viewModel.cartLogic(cartList, item, Constants.UPDATE, false)
                     }
                     else -> {
                         item?.discountPrice = result.percentage
@@ -164,7 +165,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                         item?.discountType = result.discountType
                         item?.isManualSales = false
 
-                        viewModel.cartLogic(cartList, item, Constants.UPDATE,false)
+                        viewModel.cartLogic(cartList, item, Constants.UPDATE, false)
 
                     }
                 }
@@ -185,7 +186,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
             val singleItem = bundle.getParcelable<TbItem>("item")
 
             singleItem?.note = note.toString()
-            singleItem?.let { viewModel.cartLogic(cartList, it, Constants.UPDATE,false) }
+            singleItem?.let { viewModel.cartLogic(cartList, it, Constants.UPDATE, false) }
         }
 
     }
@@ -359,9 +360,6 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
 
 
     override fun onItemSelected(item: TbItem) {
-        Log.e(TAG, "getitem:  ${Gson().toJson(item)}")
-        Log.e(TAG, "OrderTYpe:  ${prefProvider.getValue(ORDER_TYPE, TAKEOUT)}")
-
         if (item.modifiers.isNotEmpty() || item.variationsAttributes.isNotEmpty()) {
             val fragment = AddItemFragment.newInstance(item, this, cartList, false)
             loadCategoryFragment(fragment)
@@ -371,7 +369,15 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                 viewModel.createCart(cartList)
             }
             item.itemQuantity = 1
-            viewModel.cartLogic(cartList, item, Constants.ADD,false)
+            Log.e(TAG,"ItemClickedOrderType  ${prefProvider.getValue(ORDER_TYPE, TAKEOUT)}")
+            if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == DINE_IN) {
+                var dineInList = cartList[0].dineInList
+                dineInList!![0]?.selectedPosition = viewModel.dineInHeaderPosition
+                viewModel.cartLogic(cartList, item, Constants.ADD, false, dineInList = dineInList)
+            } else {
+
+                viewModel.cartLogic(cartList, item, Constants.ADD, false)
+            }
         }
     }
 
@@ -567,7 +573,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
         }
 
         cartList.get(0).orderType = Constants.DINE_IN
-        viewModel.cartLogic(cartList, null, Constants.ADD,false, dineInList = dineInList)
+        viewModel.cartLogic(cartList, null, Constants.ADD, false, dineInList = dineInList)
 
 
     }
