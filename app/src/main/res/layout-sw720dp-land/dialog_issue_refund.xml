@@ -32,10 +32,9 @@
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
                 android:layout_gravity="center"
-                android:padding="@dimen/_6sdp"
                 android:background="?attr/selectableItemBackground"
-                app:srcCompat="@drawable/ic_cancel_black"
-                 />
+                android:padding="@dimen/_6sdp"
+                app:srcCompat="@drawable/ic_cancel_black" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 style="@style/CustomFontSemiBold"
