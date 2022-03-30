@@ -14,13 +14,14 @@ import com.android.pos.data.entities.TbItem
 import com.android.pos.data.model.DineInModel
 import com.android.pos.databinding.ViewDineInItemBinding
 import com.android.pos.ui.activities.SwipeHelper
+import com.android.pos.ui.adapter.boldpos.CartAdapter
 import com.android.pos.utils.callback.MyCallback
 import com.google.gson.Gson
 
 class DineInAdapter : RecyclerView.Adapter<DineInAdapter.MyViewHolder>(), MyCallback {
     private var list: ArrayList<DineInModel> = arrayListOf()
     private lateinit var listner: DineInCallback
-    private lateinit var itemAdapter: CartAdapter
+    private lateinit var itemAdapter: com.android.pos.ui.adapter.boldpos.CartAdapter
     private val TAG = "DineInAdapter"
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DineInAdapter.MyViewHolder {
@@ -271,7 +272,7 @@ class DineInAdapter : RecyclerView.Adapter<DineInAdapter.MyViewHolder>(), MyCall
     }
 
 
-     fun clearList(){
+    fun clearList() {
         list.clear()
         list = arrayListOf()
         notifyDataSetChanged()

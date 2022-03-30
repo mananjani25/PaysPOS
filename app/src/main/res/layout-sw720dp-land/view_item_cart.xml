@@ -14,26 +14,26 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:paddingStart="@dimen/_6sdp"
-            android:paddingEnd="@dimen/_6sdp"
             android:paddingTop="@dimen/_4sdp"
+            android:paddingEnd="@dimen/_6sdp"
             android:paddingBottom="@dimen/_4sdp"
             android:weightSum="3.7">
 
 
             <LinearLayout
                 android:layout_width="0dp"
-                android:orientation="vertical"
+                android:layout_height="wrap_content"
                 android:layout_weight="2"
-                android:layout_height="wrap_content">
+                android:orientation="vertical">
 
                 <TextView
                     android:id="@+id/txtName"
                     style="@style/CustomFontSemiBold"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    tools:text="Item Name"
                     android:textColor="@color/txtColor"
-                    android:textSize="@dimen/_6mdpi" />
+                    android:textSize="@dimen/_6mdpi"
+                    tools:text="Item Name" />
 
                 <TextView
                     android:id="@+id/txtNote"
@@ -44,12 +44,12 @@
                     android:ellipsize="end"
                     android:gravity="start"
                     android:lines="1"
-                    tools:text="Item Name"
-                    android:visibility="gone"
                     android:maxLines="1"
                     android:singleLine="true"
                     android:textColor="@color/btnColor"
-                    android:textSize="@dimen/_5mdpi" />
+                    android:textSize="@dimen/_5mdpi"
+                    android:visibility="gone"
+                    tools:text="Item Name" />
 
             </LinearLayout>
 
@@ -78,9 +78,9 @@
                 android:textSize="@dimen/_6mdpi" />
 
             <LinearLayout
-                android:layout_weight="0.7"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_weight="0.7"
                 android:orientation="vertical">
 
                 <TextView
@@ -101,14 +101,12 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="end"
                     android:gravity="end"
-                    tools:text="@string/_0_00"
-                    android:visibility="visible"
                     android:textColor="@color/btnColor"
-                    android:textSize="@dimen/_5mdpi" />
+                    android:textSize="@dimen/_5mdpi"
+                    android:visibility="visible"
+                    tools:text="@string/_0_00" />
 
             </LinearLayout>
-
-
 
 
         </LinearLayout>

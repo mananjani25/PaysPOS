@@ -387,6 +387,7 @@ class CartFragment(val itemClickListner: ItemClickListner?) : Fragment(), MyCall
                 prefProvider.getValue(ORDER_TYPE, TAKEOUT),
                 prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
             ).observe(requireActivity()) {
+                Log.e(TAG, "MANUAL_SALE_ENTRY")
                 Log.e(TAG, "listSize  ${Gson().toJson(it)}")
                 if (it.isNotEmpty()) {
                     it[0].items?.toCollection(arrayListOf())
@@ -410,6 +411,7 @@ class CartFragment(val itemClickListner: ItemClickListner?) : Fragment(), MyCall
                     binding.txtNoncashAdj.text =
                         MethodUtils.roundOffAmount(viewModel.cashdiscountAmount)
                 } else {
+                    Log.e(TAG, "MANUAL_SALE_ENTRYCLEARCART")
                     cartAdapter.clearList()
                     binding.txtTotal.text = MethodUtils.roundOffAmount(0.0)
                     binding.txtSubTotal.text = MethodUtils.roundOffAmount(0.0)
@@ -433,6 +435,7 @@ class CartFragment(val itemClickListner: ItemClickListner?) : Fragment(), MyCall
 
 
                 if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == Constants.DINE_IN) {
+                    Log.e(TAG, "DINE_IN_ENTRY")
                     if (it.isNotEmpty()) {
                         binding.rvCartList.adapter = dineInCartAdapter
                         cartlist = it as ArrayList<CartModel>
@@ -458,9 +461,13 @@ class CartFragment(val itemClickListner: ItemClickListner?) : Fragment(), MyCall
                 } else {
 
                     if (it.isNotEmpty()) {
+                        Log.e(TAG, "TAKE_OUT_ENTRY")
                         binding.linearButtonView.visible()
                         binding.relPreoceedToFire.gone()
+
                         binding.rvCartList.adapter = cartAdapter
+                        binding.rvCartList.adapter?.notifyDataSetChanged()
+
 
                         it[0].items?.toCollection(arrayListOf())
                             ?.let { it1 -> cartAdapter.setList(it1) }
@@ -546,6 +553,7 @@ class CartFragment(val itemClickListner: ItemClickListner?) : Fragment(), MyCall
 
 
                     } else {
+                        Log.e(TAG, "TAKE_OUT_CART_CLEAR_LIST")
                         cartAdapter.clearList()
                         binding.txtTotal.text = MethodUtils.roundOffAmount(0.0)
                         binding.txtSubTotal.text = MethodUtils.roundOffAmount(0.0)
@@ -714,11 +722,8 @@ class CartFragment(val itemClickListner: ItemClickListner?) : Fragment(), MyCall
                 // Do positive stuff here
                 if (prefProvider.getValue(ORDER_TYPE, "").toString() == Constants.DINE_IN) {
                     prefProvider.setValueInt(Constants.DINE_INGUEST_SELECTED, 0)
-                    Log.e(TAG, "DineInClearTable")
-
 
                     val dList = cartlist[0].dineInList ?: arrayListOf()
-                    Log.e(TAG, "dList:  ${Gson().toJson(dList)}")
                     if (dList.isNotEmpty()) {
                         dList[0].floorPlanTable?.id?.let {
 
@@ -731,13 +736,10 @@ class CartFragment(val itemClickListner: ItemClickListner?) : Fragment(), MyCall
                             }
                         }
                     }
+                    prefProvider.setValue(ORDER_TYPE, TAKEOUT)
                     viewModel.deleteCart()
                     isOrderUpdate = false
                     dineInCartAdapter.clearList()
-
-                    prefProvider.setValue(ORDER_TYPE, TAKEOUT)
-
-
                     clearCustomer()
                     prefProvider.setValueboolean(Constants.DINE_IN_UPDATE, false)
                     clearUpdateFlag()
@@ -751,8 +753,6 @@ class CartFragment(val itemClickListner: ItemClickListner?) : Fragment(), MyCall
                     cartlist.clear()
                     prefProvider.setValue(ORDER_TYPE, TAKEOUT)
                     prefProvider.setValueboolean(Constants.LOYALTY_ADDED, false)
-
-
                 }
 
 
