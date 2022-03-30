@@ -177,6 +177,7 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
             MethodUtils.setPriceTextView(binding.tvCustomAmount, amounnt)
             custom_paymentAmount = amounnt
             binding.tvCustomAmount.text = "Custom (" + binding.tvCustomAmount.text.toString() + ")"
+            cashPaymentWithVariation()
         }
 
 
@@ -189,7 +190,7 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
             setupPaymentScreen(isSelectedCount)
         }
         binding.tvFullAmount.setOnClickListener {
-            binding.tvFullAmount.setBackgroundDrawable(resources.getDrawable(R.drawable.button_selected))
+            binding.tvFullAmount.setBackgroundDrawable(resources.getDrawable(R.drawable.button_action_hover))
             binding.tv2ways.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
             binding.tv3ways.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
             binding.tv4ways.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
@@ -208,10 +209,11 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
             isSelectedCount = 1
             tipsetupGlobal(tipAmount, isSelectedCount)
             binding.tvFullAMounttxt.visibility = View.VISIBLE
+
         }
 
         binding.tv2ways.setOnClickListener {
-            binding.tv2ways.setBackgroundDrawable(resources.getDrawable(R.drawable.button_selected))
+            binding.tv2ways.setBackgroundDrawable(resources.getDrawable(R.drawable.button_action_hover))
             binding.tvFullAmount.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
             binding.tv3ways.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
             binding.tv4ways.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
@@ -233,7 +235,7 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
 
         }
         binding.tv3ways.setOnClickListener {
-            binding.tv3ways.setBackgroundDrawable(resources.getDrawable(R.drawable.button_selected))
+            binding.tv3ways.setBackgroundDrawable(resources.getDrawable(R.drawable.button_action_hover))
             binding.tvFullAmount.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
             binding.tv2ways.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
             binding.tv4ways.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
@@ -254,7 +256,7 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
             binding.tvFullAMounttxt.visibility = View.INVISIBLE
         }
         binding.tv4ways.setOnClickListener {
-            binding.tv4ways.setBackgroundDrawable(resources.getDrawable(R.drawable.button_selected))
+            binding.tv4ways.setBackgroundDrawable(resources.getDrawable(R.drawable.button_action_hover))
             binding.tvFullAmount.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
             binding.tv2ways.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
             binding.tv3ways.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
@@ -275,7 +277,7 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
             binding.tvFullAMounttxt.visibility = View.INVISIBLE
         }
         binding.tv5ways.setOnClickListener {
-            binding.tv5ways.setBackgroundDrawable(resources.getDrawable(R.drawable.button_selected))
+            binding.tv5ways.setBackgroundDrawable(resources.getDrawable(R.drawable.button_action_hover))
             binding.tvFullAmount.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
             binding.tv2ways.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
             binding.tv3ways.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
@@ -296,7 +298,7 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
             binding.tvFullAMounttxt.visibility = View.INVISIBLE
         }
         binding.tv6ways.setOnClickListener {
-            binding.tv6ways.setBackgroundDrawable(resources.getDrawable(R.drawable.button_selected))
+            binding.tv6ways.setBackgroundDrawable(resources.getDrawable(R.drawable.button_action_hover))
             binding.tvFullAmount.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
             binding.tv2ways.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
             binding.tv3ways.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
@@ -317,7 +319,7 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
             binding.tvFullAMounttxt.visibility = View.INVISIBLE
         }
         binding.tvCustom.setOnClickListener {
-            binding.tvCustom.setBackgroundDrawable(resources.getDrawable(R.drawable.button_selected))
+            binding.tvCustom.setBackgroundDrawable(resources.getDrawable(R.drawable.button_action_hover))
             binding.tvFullAmount.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
             binding.tv2ways.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
             binding.tv3ways.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
@@ -614,23 +616,21 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
 
     }
 
-    private fun paymentonClick() {
-
-        binding.llPaycash.setOnClickListener {
-            paymentAmount = String.format("%.2f", WholetotalPrice / isSelectedCount).toDouble()
-            subTotalPrice = String.format("%.2f", subTotalPrice / isSelectedCount).toDouble()
-            totalServiceCharge =
-                String.format("%.2f", totalServiceCharge / isSelectedCount).toDouble()
-            totalTax = String.format("%.2f", totalTax / isSelectedCount).toDouble()
-            totalDiscount = String.format("%.2f", totalDiscount / isSelectedCount).toDouble()
-            cashDiscountSurcharge =
-                String.format("%.2f", cashDiscountSurcharge / isSelectedCount).toDouble()
-            if (cashDiscountType == "CashDiscount") {
-                paymentAmount -= cashDiscountSurcharge
-            }
-            makeCashPayment()
-
+    fun cashPaymentWithVariation(){
+        paymentAmount = String.format("%.2f", WholetotalPrice / isSelectedCount).toDouble()
+        subTotalPrice = String.format("%.2f", subTotalPrice / isSelectedCount).toDouble()
+        totalServiceCharge =
+            String.format("%.2f", totalServiceCharge / isSelectedCount).toDouble()
+        totalTax = String.format("%.2f", totalTax / isSelectedCount).toDouble()
+        totalDiscount = String.format("%.2f", totalDiscount / isSelectedCount).toDouble()
+        cashDiscountSurcharge =
+            String.format("%.2f", cashDiscountSurcharge / isSelectedCount).toDouble()
+        if (cashDiscountType == "CashDiscount") {
+            paymentAmount -= cashDiscountSurcharge
         }
+        makeCashPayment()
+    }
+    private fun paymentonClick() {
         binding.llCreditCard.setOnClickListener {
 
             val device = prefProvider.getValueInt(Constants.MAGTEK_HARDWARE, 0)
@@ -659,8 +659,9 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
             isManualCard = true
 
         }
+
         binding.tvCash0.setOnClickListener {
-            binding.tvCash0.setBackgroundDrawable(resources.getDrawable(R.drawable.button_selected))
+            binding.tvCash0.setBackgroundDrawable(resources.getDrawable(R.drawable.button_action_hover))
             binding.llCreditCard.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
             binding.llManualCardEntry.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
             binding.tvCash1.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
@@ -678,9 +679,10 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
             binding.tvCustomAmount.setTextColor(resources.getColor(R.color.txtColor))
             binding.tvPaymentLink.setTextColor(resources.getColor(R.color.txtColor))
             custom_paymentAmount = 0.0
+            cashPaymentWithVariation()
         }
         binding.tvCash1.setOnClickListener {
-            binding.tvCash1.setBackgroundDrawable(resources.getDrawable(R.drawable.button_selected))
+            binding.tvCash1.setBackgroundDrawable(resources.getDrawable(R.drawable.button_action_hover))
             binding.llCreditCard.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
             binding.llManualCardEntry.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
             binding.tvCash2.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
@@ -698,9 +700,10 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
             binding.tvPaymentLink.setTextColor(resources.getColor(R.color.txtColor))
             custom_paymentAmount =
                 binding.tvCash1.text.toString().replace("$", "").trim().toDouble()
+            cashPaymentWithVariation()
         }
         binding.tvCash2.setOnClickListener {
-            binding.tvCash2.setBackgroundDrawable(resources.getDrawable(R.drawable.button_selected))
+            binding.tvCash2.setBackgroundDrawable(resources.getDrawable(R.drawable.button_action_hover))
             binding.llCreditCard.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
             binding.llManualCardEntry.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
             binding.tvCash1.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
@@ -719,9 +722,10 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
             binding.tvPaymentLink.setTextColor(resources.getColor(R.color.txtColor))
             custom_paymentAmount =
                 binding.tvCash2.text.toString().replace("$", "").trim().toDouble()
+            cashPaymentWithVariation()
         }
         binding.tvCash3.setOnClickListener {
-            binding.tvCash3.setBackgroundDrawable(resources.getDrawable(R.drawable.button_selected))
+            binding.tvCash3.setBackgroundDrawable(resources.getDrawable(R.drawable.button_action_hover))
             binding.llCreditCard.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
             binding.llManualCardEntry.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
             binding.tvCash1.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
@@ -740,10 +744,11 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
             binding.tvPaymentLink.setTextColor(resources.getColor(R.color.txtColor))
             custom_paymentAmount =
                 binding.tvCash3.text.toString().replace("$", "").trim().toDouble()
+            cashPaymentWithVariation()
         }
         binding.tvCustomAmount.setOnClickListener {
 
-            binding.tvCustomAmount.setBackgroundDrawable(resources.getDrawable(R.drawable.button_selected))
+            binding.tvCustomAmount.setBackgroundDrawable(resources.getDrawable(R.drawable.button_action_hover))
             binding.llCreditCard.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
             binding.llManualCardEntry.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
             binding.tvCash1.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
@@ -771,7 +776,7 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
 
         }
         binding.tvPaymentLink.setOnClickListener {
-            binding.tvPaymentLink.setBackgroundDrawable(resources.getDrawable(R.drawable.button_selected))
+            binding.tvPaymentLink.setBackgroundDrawable(resources.getDrawable(R.drawable.button_action_hover))
             binding.llCreditCard.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
             binding.llManualCardEntry.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
             binding.tvCash1.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))

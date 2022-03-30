@@ -74,8 +74,14 @@ class DineInFragment : Fragment() {
         setUpRecyclerView()
         prefProvider.setValueboolean(DINE_IN_STATUS, false)
 
-        TextViewCompat.setTextAppearance(binding.layoutHeader.txtMerge,R.style.CustomFontRegularStyle)
-        TextViewCompat.setTextAppearance(binding.layoutHeader.txtDineinordere,R.style.CustomFontBold)
+        TextViewCompat.setTextAppearance(
+            binding.layoutHeader.txtMerge,
+            R.style.CustomFontRegularStyle
+        )
+        TextViewCompat.setTextAppearance(
+            binding.layoutHeader.txtDineinordere,
+            R.style.CustomFontBold
+        )
         binding.layoutHeader.txtMerge.setTextColor(resources.getColor(R.color.txtColor))
         binding.layoutHeader.txtDineinordere.setTextColor(resources.getColor(R.color.btnColor))
 
@@ -189,10 +195,10 @@ class DineInFragment : Fragment() {
                                     arrayListOf()
                                 )
                             )
-                           /* findNavController().navigate(
-                                R.id.action_dineInFragment_to_mergetablefragment,
-                                bundle
-                            )*/
+                            /* findNavController().navigate(
+                                 R.id.action_dineInFragment_to_mergetablefragment,
+                                 bundle
+                             )*/
 
                         } else {
                             AlertUtils.showCustomAlertWithListenerWithOK(
