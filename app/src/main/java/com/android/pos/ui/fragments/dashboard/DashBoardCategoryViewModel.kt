@@ -124,6 +124,7 @@ class DashBoardCategoryViewModel @Inject constructor(
     }
 
     val serviceCharges = posRepository.serviceChargeList()
+    val getOrderTypes = posRepository.getOrderTypes()
 
     val activeLoyaltyProgramLiveData = posRepository.getActiveLoyaltyProgramFromDb()
 

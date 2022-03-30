@@ -572,6 +572,8 @@ class PosRepository @Inject constructor(
     fun serviceChargeList() =
         performGetOperationDatabase(databaseQuery = { appDatabase.serviceChargeDao().allServiceCharge })
 
+    fun getOrderTypes() = performGetOperationDatabase(databaseQuery = { appDatabase.orderTypeDao().orderTypes })
+
     fun disocuntList() =
         performGetOperationDatabase(databaseQuery = { appDatabase.discountDao().allDiscount })
 
