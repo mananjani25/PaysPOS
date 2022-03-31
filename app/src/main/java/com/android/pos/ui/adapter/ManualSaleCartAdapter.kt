@@ -36,15 +36,13 @@ class ManualSaleCartAdapter : RecyclerView.Adapter<ManualSaleCartAdapter.MyViewH
 
 
 
-/*
             if (model.note.isNotEmpty()) {
-                binding.txtNoteMannualcart.visibility = View.VISIBLE
-                binding.txtNoteMannualcart.text = "Note: " + model.note
+                binding.txtNote.visibility = View.VISIBLE
+                binding.txtNote.text = "Note: " + model.note
             } else {
-                binding.txtNoteMannualcart.visibility = View.INVISIBLE
+                binding.txtNote.visibility = View.INVISIBLE
 
             }
-*/
             txtItem.text = list[pos].name
 /*
             if (list[pos].discountPrice != 0.0) {

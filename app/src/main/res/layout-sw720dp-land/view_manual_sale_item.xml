@@ -26,7 +26,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:padding="@dimen/_6sdp"
+            android:paddingHorizontal="@dimen/_6sdp"
+            android:paddingTop="@dimen/_6sdp"
             android:weightSum="3.7">
 
             <TextView
@@ -78,6 +79,26 @@
 
 
         </LinearLayout>
+
+        <TextView
+            android:id="@+id/txtNote"
+            style="@style/CustomFontRegularStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:ellipsize="end"
+            android:gravity="start"
+            android:lines="1"
+            android:maxLines="1"
+            android:singleLine="true"
+            android:textColor="@color/hint_color"
+            android:textSize="@dimen/_6mdpi"
+            android:visibility="gone"
+            android:paddingTop="@dimen/_1sdp"
+            android:paddingHorizontal="@dimen/_6sdp"
+
+            tools:text="Item Name" />
+
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvModifiers"
