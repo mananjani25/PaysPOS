@@ -11,10 +11,7 @@ import android.text.TextWatcher
 import android.util.Log
 import android.view.*
 import android.widget.*
-import androidx.appcompat.widget.AppCompatEditText
-import androidx.appcompat.widget.AppCompatImageView
-import androidx.appcompat.widget.AppCompatTextView
-import androidx.appcompat.widget.LinearLayoutCompat
+import androidx.appcompat.widget.*
 import androidx.appcompat.widget.PopupMenu
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -154,8 +151,8 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
     //created By Zeeshaan
     private fun setUpToolbar() {
         binding.layoutHeader.txtKeypad.setTextColor(requireContext().resources.getColor(R.color.btnColor))
-        binding.layoutHeader.imgSync.visibility=View.GONE
-        binding.layoutHeader.txtHome.visibility=View.VISIBLE
+        binding.layoutHeader.imgSync.visibility = View.GONE
+        binding.layoutHeader.txtHome.visibility = View.VISIBLE
         binding.layoutHeader.txtTransaction.setOnClickListener {
             findNavController().navigate(R.id.action_manualSalesNew_to_transactionFragment)
 
@@ -295,8 +292,6 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                 setUpCustomer(result)
             }
         }
-
-
 
 
     }
@@ -560,7 +555,8 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
 
             val popupMenu = PopupMenu(requireContext(), it)
             popupMenu.menuInflater.inflate(R.menu.manual_sale_menu, popupMenu.menu)
-
+            if (prefProvider.getValue(Constants.CUSTOMER_NAME, "").isEmpty())
+                popupMenu.menu.findItem(R.id.menu_remove_customer).isVisible = false
             popupMenu.setOnMenuItemClickListener { menuItem ->
                 when (menuItem.itemId) {
                     R.id.menu_clear_cart -> {
@@ -815,9 +811,9 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
 
             tabItemMOdel.taxes = taxList
             viewModel.ordertypelist.forEach {
-                if (it.orderType == TAKEOUT){
+                if (it.orderType == TAKEOUT) {
                     tabItemMOdel.orderItemId = it.id
-                    prefProvider.setValue(Constants.ORDER_TYPE,"TakeOut")
+                    prefProvider.setValue(Constants.ORDER_TYPE, "TakeOut")
                 }
             }
 
