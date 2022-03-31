@@ -717,8 +717,10 @@
                 </LinearLayout>
 
                 <LinearLayout
+                    android:id="@+id/linear_button_view"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:visibility="visible"
                     android:weightSum="2">
 
                     <TextView
@@ -750,6 +752,8 @@
                         android:text="Pay $0.00"
                         android:textColor="@color/white"
                         android:textSize="@dimen/_7mdpi" />
+
+
                 </LinearLayout>
 
 
@@ -772,17 +776,17 @@
 
                 <TextView
                     android:id="@+id/txtSave"
-                    style="@style/CustomFontBold"
+                    style="@style/CustomFontSemiBold"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_marginEnd="@dimen/_5sdp"
                     android:layout_weight="0.5"
                     android:background="@color/backgroundColor"
                     android:gravity="center"
-                    android:padding="@dimen/_5sdp"
+                    android:padding="@dimen/_4sdp"
                     android:text="@string/save"
                     android:textColor="@color/white"
-                    android:textSize="@dimen/_5mdpi" />
+                    android:textSize="@dimen/_7mdpi" />
 
 
                 <androidx.appcompat.widget.LinearLayoutCompat
@@ -795,21 +799,22 @@
                     android:padding="@dimen/_2sdp">
 
                     <androidx.appcompat.widget.AppCompatTextView
-                        style="@style/CustomFontSemiBold"
+                        style="@style/CustomFontBold"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
                         android:gravity="center"
                         android:text="@string/pay"
                         android:textColor="@color/white"
-                        android:textSize="@dimen/_5mdpi" />
+                        android:textSize="@dimen/_7mdpi" />
 
                     <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/txtTotalAmount"
                         style="@style/CustomFontBold"
+
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:padding="@dimen/_4sdp"
+                        android:padding="@dimen/_2sdp"
                         android:text="$0.00"
                         android:textColor="@color/white"
                         android:textSize="@dimen/_7mdpi" />
