@@ -20,6 +20,7 @@ import com.android.pos.data.model.DineInModel
 import com.android.pos.data.model.responseModel.GetFloorPlanResponse
 import com.android.pos.data.model.responseModel.GetOrderDetailsResponse
 import com.android.pos.data.remote.Constants
+import com.android.pos.data.remote.Constants.DINE_IN
 import com.android.pos.data.remote.Constants.EMPLOYEE_NAME
 import com.android.pos.data.remote.Constants.ORDER_TYPE
 import com.android.pos.data.remote.Constants.TAKEOUT
@@ -44,6 +45,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
     private val viewModelPayment by activityViewModels<PaymentViewModel>()
     private var serviceChargesList: List<TbServiceCharge>? = null
     private var serviceChargesObserve: Observer<Resource<List<TbServiceCharge>>>? = null
+    private var orderTypeObserver: Observer<Resource<List<TbOrderType>>>? = null
     private var dineInFloorTableModel: GetFloorPlanResponse.Data.FloorPlanTable? = null
     private val TAG = "DashboardCategoryBold"
     var ordertypelist: ArrayList<TbOrderType> = arrayListOf()
@@ -73,20 +75,21 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                     requireActivity().finish()
                 }
             }
+
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
+        getServiceCharges()
         resultListener()
         addObserver()
-        getDineInData()
+
         navigateDineInOrder()
         getLoyaltyPrograms()
-        getServiceCharges()
         syncData()
+
         binding.lifecycleOwner = this
         return binding.root
     }
 
     private fun getLoyaltyPrograms() {
-        Log.e("Loyalty", "getLoyaltyPrograms called..")
         viewModel.activeLoyaltyProgram = prefProvider.getActiveLoyaltyData()
         viewModel.activeLoyaltyProgramLiveData.observe(requireActivity()) {
             if (it.status == Status.SUCCESS && it.data != null) {
@@ -456,12 +459,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
 
         }
 
-        viewModel.orderTypes().observe(requireActivity()) {
-            if (it.data != null) {
-                ordertypelist = it.data as ArrayList<TbOrderType>
-                viewModel.setOrderTypeList(ordertypelist)
-            }
-        }
+
 
         viewModelPayment.QueueCreateSaveOrder.observe(requireActivity()) {
             it.getContentIfNotHandled()?.let {
@@ -488,11 +486,31 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                 serviceChargesList = it.data
                 viewModel.serviceChargesList = it.data ?: arrayListOf()
 
+                getOrderTypes()
             }
 
         }
 
         viewModel.serviceCharges.observe(requireActivity(), serviceChargesObserve!!)
+    }
+
+    private fun getOrderTypes() {
+
+        orderTypeObserver = Observer {
+            if (it.status == Status.SUCCESS) {
+                if (it.data != null) {
+                    ordertypelist = it.data.toCollection(arrayListOf())
+                    viewModel.setOrderTypeList(ordertypelist)
+
+
+                }
+                getDineInData()
+            }
+        }
+
+        viewModel.getOrderTypes.observe(requireActivity(), orderTypeObserver!!)
+
+
     }
 
 
@@ -504,13 +522,10 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
 
 
     private fun getDineInData() {
-
         if (arguments?.getBoolean("isFromDineIn") == true) {
-
+            Log.e(TAG, "isFromDineInTrue")
             getDineInCartList()
         }
-
-
     }
 
     private fun getDineInCartList() {
@@ -519,12 +534,10 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
         }
 
         dineInFloorTableModel = arguments?.getParcelable("floorplan")
-        Log.e(TAG, "dineInFloorTableModel:  ${Gson().toJson(dineInFloorTableModel)}")
-
 
         var orderDEtails: GetOrderDetailsResponse.Data.FloorPlanTable? =
             arguments?.getParcelable("tableDetails")
-        Log.e(TAG, "orderFloorDetails:  ${Gson().toJson(orderDEtails)}")
+
         if (orderDEtails != null) {
             orderFloorDetails = orderDEtails
         }
@@ -556,17 +569,23 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                 )
             )
         }
+        var orderTypeId = -1
+        Log.e(TAG, "ordertypelist:  ${Gson().toJson(ordertypelist)}")
+        ordertypelist.forEach {
+            if (it.orderType.lowercase() == DINE_IN.lowercase()) {
+                orderTypeId = it.id
+            }
+        }
 
         if (cartList.isEmpty()) {
             val cartModel = CartModel().apply {
                 terminalId = prefProvider.getValueInt(Constants.TERMINAL_ID, -1)
                 employeeID = prefProvider.getValueInt(Constants.EMPLOYEE_ID, -1)
                 locationId = prefProvider.getValueInt(Constants.LOCATION_ID, -1)
-                orderTypeId = prefProvider.getValueInt(Constants.ORDER_TYPE_ID, -1)
-                orderType = prefProvider.getValue(Constants.ORDER_TYPE, "").toString()
+                this.orderTypeId = orderTypeId
+                orderType = prefProvider.getValue(Constants.ORDER_TYPE, TAKEOUT).toString()
                 orderTypeName = prefProvider.getValue(Constants.ORDER_TYPE_NAME, "").toString()
                 this.serviceCharge = viewModel.serviceChargesList
-
 
             }
 

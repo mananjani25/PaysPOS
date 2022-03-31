@@ -9,7 +9,6 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.data.entities.TbServiceCharge
@@ -28,7 +27,6 @@ import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.statusUtils.Resource
-import com.android.pos.utils.statusUtils.Status
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -53,7 +51,6 @@ class DineInGuestFragment : Fragment(), GuestListAdapter.GuestListner {
         binding = FragmentDineInGuestBinding.inflate(inflater, container, false)
 
         dineInFloorTableModel = arguments?.getParcelable("dineInFloorTableObject")!!
-        getServiceCharges()
         tableStatusCheck()
         tableStatusSucess()
         observeShowProgress()
@@ -201,18 +198,5 @@ class DineInGuestFragment : Fragment(), GuestListAdapter.GuestListner {
         })
     }
 
-    private fun getServiceCharges() {
-
-        serviceChargesObserve = Observer {
-
-            if (it.status == Status.SUCCESS) {
-                viewModelDash.serviceChargesList = it.data ?: arrayListOf()
-
-            }
-
-        }
-
-        viewModelDash.serviceCharges.observe(requireActivity(), serviceChargesObserve!!)
-    }
 
 }
