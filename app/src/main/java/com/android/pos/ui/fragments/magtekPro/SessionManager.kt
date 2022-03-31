@@ -5,8 +5,6 @@ import android.graphics.*
 import android.util.Log
 import com.android.pos.ui.dialog.PayByGuestDialog
 import com.android.pos.ui.fragments.checkout.CheckoutDetailsFragmentNew
-import com.android.pos.ui.fragments.checkout.PayFullAmountFragment
-import com.android.pos.ui.fragments.payment.PaymentFragment
 import com.magtek.mobile.android.mtcms.MTParser
 import com.magtek.mobile.android.mtusdk.*
 import dagger.hilt.android.qualifiers.ApplicationContext
