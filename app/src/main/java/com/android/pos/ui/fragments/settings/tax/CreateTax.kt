@@ -84,9 +84,11 @@ class CreateTax : Fragment() {
             if (taxData.taxType == getString(R.string.disc_percentage)) {
                 binding.swtTaxType.isChecked = true
                 binding.swtTaxType.text = getString(R.string.disc_percentage)
+                binding.edtAmount.hint = resources.getString(R.string.add_tax__percentage)
             } else {
                 binding.swtTaxType.isChecked = false
                 binding.swtTaxType.text = getString(R.string.dollar_amount)
+                binding.edtAmount.hint = resources.getString(R.string.add_tax__dollor)
             }
         }
 

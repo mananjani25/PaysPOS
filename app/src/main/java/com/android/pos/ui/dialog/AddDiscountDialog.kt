@@ -1,7 +1,10 @@
 package com.android.pos.ui.dialog
 
 import android.annotation.SuppressLint
+import android.graphics.Color
 import android.graphics.Point
+import android.graphics.drawable.ColorDrawable
+import android.graphics.drawable.InsetDrawable
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -58,7 +61,10 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
         discountAdapter = DialogDiscountListAdapter()
         binding.rvDiscountList.adapter = discountAdapter
 
-
+        dialog?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN)
+        val back = ColorDrawable(Color.WHITE)
+        val inset = InsetDrawable(back, 150, 100, 150, 100)
+        dialog?.window?.setBackgroundDrawable(inset);
 
         isOrderDiscount = requireArguments().getBoolean("isOrderDiscount", false)
         if (isOrderDiscount) {

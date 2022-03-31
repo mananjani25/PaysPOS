@@ -812,6 +812,31 @@
             android:id="@+id/action_manualSaleNew_to_menuFragment"
             app:destination="@id/menuFragment"
             app:enterAnim="@anim/nav_default_enter_anim" />
+
+        <action
+            android:id="@+id/action_manualSalesNew_to_menuFragment"
+            app:destination="@id/menuFragment" />
+        <action
+            android:id="@+id/action_manualSalesNew_to_orders"
+            app:destination="@id/orders"
+            app:enterAnim="@anim/nav_default_enter_anim" />
+        <action
+            android:id="@+id/action_manualSalesNew_to_transactionFragment"
+            app:destination="@id/transactionFragment"
+            app:enterAnim="@anim/nav_default_enter_anim" />
+        <action
+            android:id="@+id/action_manualSalesNew_to_passcode"
+            app:destination="@id/passcode"
+            app:enterAnim="@anim/nav_default_enter_anim" />
+        <action
+            android:id="@+id/action_manualSalesNew_to_reportEODFragment"
+            app:destination="@id/reportEODFragment"
+            app:enterAnim="@anim/nav_default_enter_anim" />
+
+        <action
+            android:id="@+id/action_manualSalesNew_to_dineInFragment"
+            app:destination="@id/dineInFragment"/>
+
     </fragment>
     <dialog
         android:id="@+id/assignTeamMemberListDialog"

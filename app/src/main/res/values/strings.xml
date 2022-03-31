@@ -20,7 +20,7 @@
     <string name="tv_clock_in_out">Clock In/Out</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="tv_enter_your_passcode">Enter passcode</string>
+    <string name="tv_enter_your_passcode">enter passcode</string>
 
     <string name="loading">Loading…</string>
     <string name="no_internet">Internet is required for the application to work. Please enable the internet and try again.</string>
@@ -33,8 +33,8 @@
     <string name="phone">Mobile Number <font color='#E90C0C'>*</font></string>
     <string name="_phone">Mobile Number</string>
     <string name="_phone_number">Phone Number</string>
-    <string name="address_empty_validation">Please Enter Full Address</string>
-    <string name="birth_date_validation">Please Enter Birth Date</string>
+    <string name="address_empty_validation">Please enter Full Address</string>
+    <string name="birth_date_validation">Please enter Birth Date</string>
     `
     <string name="buttonOne">1</string>
     <string name="buttonTwo">2</string>
@@ -59,35 +59,35 @@
     <!--Validation messages-->
 
     <string name="email_validate">Please enter Email Address</string>
-    <string name="valid_email_validate">Please Enter Valid Email Address</string>
-    <string name="password_validate">Please Enter Password</string>
-    <string name="item_name_validate">Please Enter Item Name</string>
-    <string name="category_select_validate">Please Select Category Name</string>
-    <string name="item_price_validate">Please Enter Valid Price</string>
-    <string name="item_sku_validate">Please Enter SKU</string>
+    <string name="valid_email_validate">Please ente`r valid Email Address</string>
+    <string name="password_validate">Please enter Password</string>
+    <string name="item_name_validate">Please enter Item Name</string>
+    <string name="category_select_validate">Please select Category Name</string>
+    <string name="item_price_validate">Please enter valid Price</string>
+    <string name="item_sku_validate">Please enter SKU</string>
 
-    <string name="variation_name_validate">Please Enter Variation Name</string>
+    <string name="variation_name_validate">Please enter Variation Name</string>
 
-    <string name="category_name_validate">Please Enter Category Name</string>
-    <string name="modifier_name_validate">Please Enter Modifier Name</string>
-    <string name="option_name_validate">Please Enter Option Name</string>
-    <string name="display_option_name_validate">Please Enter Display Name</string>
+    <string name="category_name_validate">Please enter Category Name</string>
+    <string name="modifier_name_validate">Please enter Modifier Name</string>
+    <string name="option_name_validate">Please enter Option Name</string>
+    <string name="display_option_name_validate">Please enter Display Name</string>
 
-    <string name="tax_name_validate">Please Enter Tax Name</string>
-    <string name="note_name_validate">Please Enter Note Name</string>
-    <string name="tax_rate_validate">Please Enter Valid Tax Rate</string>
-    <string name="item_pricing_validate">Please Enter Item Pricing</string>
+    <string name="tax_name_validate">Please enter Tax Name</string>
+    <string name="note_name_validate">Please enter Note Name</string>
+    <string name="tax_rate_validate">Please enter valid Tax Rate</string>
+    <string name="item_pricing_validate">Please enter Item Pricing</string>
 
-    <string name="tip_name_validate">Please Enter Tip Name</string>
-    <string name="tip_rate_validate">Please Enter Valid Tip Rate</string>
+    <string name="tip_name_validate">Please enter Tip Name</string>
+    <string name="tip_rate_validate">Please enter valid Tip Rate</string>
 
-    <string name="discount_name_validate">Please Enter Discount Name</string>
-    <string name="discount_rate_validate">Please Enter Valid Discount Rate</string>
+    <string name="discount_name_validate">Please enter Discount Name</string>
+    <string name="discount_rate_validate">Please enter valid Discount Rate</string>
 
-    <string name="sercharge_name_validate">Please Enter Service Charge Name</string>
-    <string name="sercharge_rate_validate">Please Enter Valid Service Charge Rate</string>
+    <string name="sercharge_name_validate">Please enter Service Charge Name</string>
+    <string name="sercharge_rate_validate">Please enter valid Service Charge Rate</string>
 
-    <string name="role_name_validate">Please Enter Role Name</string>
+    <string name="role_name_validate">Please enter Role Name</string>
 
 
     <string name="delete_tax_message">Are you sure, you want to delete tax?</string>
@@ -164,6 +164,7 @@
     <string name="add_new_itemswithstar">Add New Item <font color='#E90C0C'>*</font></string>
     <string name="add_tax_name">Add Tax Name</string>
     <string name="add_tax__percentage">Add Tax Percentages (%)</string>
+    <string name="add_tax__dollor">Add Tax Dollar ($)</string>
     <string name="search_categories">Search Categories</string>
     <string name="create_category">Create Category</string>
     <string name="update_category">Update Category</string>
@@ -340,15 +341,15 @@
     <string name="disc_amount">Amount</string>
     <string name="dollar_amount">Dollar</string>
 
-    <string name="first_name_validate">Please Enter First Name</string>
-    <string name="last_name_validate">Please Enter Last Name</string>
-    <string name="phone_no_validate">Please Enter Mobile Number</string>
-    <string name="valid_phone_no_validate">Please Enter Valid Mobile Number</string>
+    <string name="first_name_validate">Please enter First Name</string>
+    <string name="last_name_validate">Please enter Last Name</string>
+    <string name="phone_no_validate">Please enter Mobile Number</string>
+    <string name="valid_phone_no_validate">Please enter valid Mobile Number</string>
 
-    <string name="modifier_empty_validation">Please Enter Modifier Name</string>
-    <string name="amount_empty_validation">Please Enter Item Price</string>
+    <string name="modifier_empty_validation">Please enter Modifier Name</string>
+    <string name="amount_empty_validation">Please enter Item Price</string>
 
-    <string name="company_name_validate">Please Enter Company Name</string>
+    <string name="company_name_validate">Please enter Company Name</string>
     <string name="tv_delete">Delete</string>
     <string name="symbole">$&#160;</string>
     <string name="percentage_symbol">%</string>
@@ -475,8 +476,8 @@
     <string name="print">Print</string>
     <string name="email_receipt">Email Receipt</string>
     <string name="phone_number">Mobile Number</string>
-    <string name="phone_validate">Please Enter Mobile Number</string>
-    <string name="valid_phone_validate">Please Enter Valid Mobile Number</string>
+    <string name="phone_validate">Please enter Mobile Number</string>
+    <string name="valid_phone_validate">Please enter valid Mobile Number</string>
     <string name="search_name">Search Name</string>
     <string name="tv_date_time">Date/Time</string>
     <string name="tv_total_amount">Total Amount</string>
@@ -495,6 +496,7 @@
     <string name="name_phone_email_or_company">Name, Phone, Email or Company</string>
     <string name="name_phone_email">Name, Phone, Email </string>
     <string name="add_custom_item_name">Add Custom Item Name</string>
+    <string name="add_custom_item">Add Custom Item</string>
     <string name="set_up_item_grid">Set up Item Grid</string>
     <string name="hardware">Hardware</string>
     <string name="security">Security</string>
@@ -669,9 +671,9 @@
     <string name="loyalty_target_">Loyalty Target<font color='#E90C0C'>*</font></string>
     <string name="loyalty_target">Loyalty Target</string>
     <string name="number_of_points_required_to_get_the_reward">(Number of points required to get the reward)</string>
-    <string name="error_loyalty_name_blank">Please Enter Loyalty Name</string>
-    <string name="error_loyalty_point_blank">Please Enter Loyalty Target</string>
-    <string name="error_loyalty_point_amount">Please Enter Loyalty Value</string>
+    <string name="error_loyalty_name_blank">Please enter Loyalty Name</string>
+    <string name="error_loyalty_point_blank">Please enter Loyalty Target</string>
+    <string name="error_loyalty_point_amount">Please enter Loyalty Value</string>
     <string name="create_tip">Create Tip</string>
     <string name="update_tip">Update Tip</string>
     <string name="create_loyalty_point">Create Loyalty Point</string>
@@ -773,7 +775,7 @@
     <string name="cvv">CVV</string>
     <string name="mm_yy">MM/YY</string>
     <string name="_1234_5678_xxxx_1121">1234 5678 XXXX 1121</string>
-    <string name="enter_card_number_here">Enter Card Number Here</string>
+    <string name="enter_card_number_here">enter Card Number Here</string>
     <string name="charge">Charge</string>
 
 

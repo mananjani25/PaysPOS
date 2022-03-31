@@ -4,8 +4,11 @@
     tools:ignore="MissingDefaultResource">
 
     <LinearLayout
-
+        android:layout_margin="@dimen/_4sdp"
+        android:background="@drawable/categories_selector"
         android:layout_width="match_parent"
+        android:orientation="vertical"
+        android:padding="@dimen/_5sdp"
         android:layout_height="wrap_content">
 
         <TextView
@@ -14,19 +17,24 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:layout_margin="@dimen/_4sdp"
-            android:background="@drawable/categories_selector"
             android:gravity="center"
-            android:paddingStart="@dimen/_4sdp"
-            android:paddingTop="@dimen/_8sdp"
-            android:paddingEnd="@dimen/_4sdp"
-            android:paddingBottom="@dimen/_8sdp"
             tools:text="FOOD"
-            android:minLines="2"
             android:maxLines="2"
             android:textColor="@color/txtColor"
             android:textSize="@dimen/_7mdpi" />
 
+        <TextView
+            android:id="@+id/txtPrice"
+            style="@style/CustomFontSemiBold"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            tools:text="FOOD"
+            android:padding="@dimen/_1sdp"
+            android:maxLines="2"
+            android:textColor="@color/txtColor"
+            android:textSize="@dimen/_6mdpi" />
 
     </LinearLayout>
 </layout>

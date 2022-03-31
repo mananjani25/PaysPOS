@@ -73,9 +73,8 @@ class AddNoteDialog : DialogFragment(), ItemCallback {
     private fun addNote() {
         val result = Bundle().apply {
             putString("note", binding.edtNote.text.toString().trim())
-            putParcelable("item", item)
         }
-        setFragmentResult("request_key_note", result)
+        requireActivity().supportFragmentManager.setFragmentResult("request_key_note", result)
         findNavController().navigateUp()
     }
 

@@ -30,7 +30,7 @@ class ItemModifierSetAdapter(
         fun bind(item: ModifierSet) {
             binding.model = item
 
-            viewModel.getMinMax(_itemId, item.id)?.observe(viewLifecycleOwner, { minMax ->
+            viewModel.getMinMax(_itemId, item.id)?.observe(viewLifecycleOwner) { minMax ->
 
                 if (minMax != null) {
                     if (minMax.maxAllowed == 0 && minMax.minRequired == 0) {
@@ -56,7 +56,7 @@ class ItemModifierSetAdapter(
                     binding.rvModifiers.adapter = adapter
                     adapter!!.addAll(item.modifiers)
                 }
-            })
+            }
 
 
 
