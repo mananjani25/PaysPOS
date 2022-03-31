@@ -708,6 +708,7 @@ class CartFragment(val itemClickListner: ItemClickListner?) : Fragment(), MyCall
 
     override fun onItemSelected(headerPosition: Int, position: Int, item: TbItem) {
         Log.e(TAG,"onDineinItemClick")
+        viewModel.dineInSelectedItemHeaderPos = headerPosition
 
         itemClickListner?.onItemUpdate(item)
         /* if (prefProvider.getValue(ORDER_TYPE, "") == Constants.DINE_IN) {

@@ -16,9 +16,8 @@ import com.android.pos.databinding.ViewDineInItemBinding
 import com.android.pos.ui.activities.SwipeHelper
 import com.android.pos.ui.adapter.boldpos.CartAdapter
 import com.android.pos.utils.callback.MyCallback
-import com.google.gson.Gson
 
-class DineInAdapter : RecyclerView.Adapter<DineInAdapter.MyViewHolder>(), MyCallback {
+class DineInAdapter : RecyclerView.Adapter<DineInAdapter.MyViewHolder>() {
     private var list: ArrayList<DineInModel> = arrayListOf()
     private lateinit var listner: DineInCallback
     private lateinit var itemAdapter: com.android.pos.ui.adapter.boldpos.CartAdapter
@@ -46,6 +45,7 @@ class DineInAdapter : RecyclerView.Adapter<DineInAdapter.MyViewHolder>(), MyCall
             binding.executePendingBindings()
             itemAdapter = CartAdapter()
             binding.rvCart.adapter = itemAdapter
+            itemAdapter.setCallback(this)
             //swipeListener(binding.rvCart, layoutPosition, binding.root.context)
             itemAdapter.addCart(model.items)
 
@@ -98,7 +98,7 @@ class DineInAdapter : RecyclerView.Adapter<DineInAdapter.MyViewHolder>(), MyCall
             }
             // list.get(0).headerPosition = layoutPosition
 
-            itemAdapter.setCallback(this)
+
         }
 
         init {
@@ -160,9 +160,10 @@ class DineInAdapter : RecyclerView.Adapter<DineInAdapter.MyViewHolder>(), MyCall
         }
 
         override fun onItemClickListener(view: View?, data: TbItem, position: Int?) {
+            Log.e(TAG, "ItemWithDine")
             list.get(0).itemPosition = position
             list.get(0).headerPosition = layoutPosition
-            position?.let { listner.onItemSelected(layoutPosition, it, data) }
+            listner.onItemSelected(layoutPosition, position ?: 0, data)
 
         }
 
@@ -226,9 +227,6 @@ class DineInAdapter : RecyclerView.Adapter<DineInAdapter.MyViewHolder>(), MyCall
         return this.list
     }
 
-    override fun onItemClickListener(view: View?, data: TbItem, position: Int?) {
-        Log.e(TAG, "DineInItem:  ${Gson().toJson(data)}")
-    }
 
     private fun swipeListener(recyclerView: RecyclerView, headerPosition: Int, context: Context) {
 
