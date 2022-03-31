@@ -73,6 +73,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
 
     var dineInHeaderPosition: Int = 0
+    var dineInSelectedItemHeaderPos : Int = 0
     val TAG = "DashBoardCateViewModel"
     var totalPrice: Double = 0.0
     var totalCount = 0
@@ -462,9 +463,9 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                     var dine = dineInList.toMutableList()
 
-                    dine.get(0).headerPosition?.let {
+                    dineInSelectedItemHeaderPos?.let {
                         dine.get(it).items.remove(
-                            dine.get(dine.get(0).headerPosition!!).items.get(
+                            dine.get(dineInSelectedItemHeaderPos).items.get(
                                 dine.get(0).itemPosition!!
                             )
                         )
