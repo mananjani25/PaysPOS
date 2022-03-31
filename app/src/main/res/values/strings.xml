@@ -496,6 +496,7 @@
     <string name="name_phone_email_or_company">Name, Phone, Email or Company</string>
     <string name="name_phone_email">Name, Phone, Email </string>
     <string name="add_custom_item_name">Add Custom Item Name</string>
+    <string name="add_custom_item">Add Custom Item</string>
     <string name="set_up_item_grid">Set up Item Grid</string>
     <string name="hardware">Hardware</string>
     <string name="security">Security</string>

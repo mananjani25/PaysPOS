@@ -16,28 +16,35 @@
            app:layout_constraintTop_toTopOf="parent"
            app:layout_constraintBottom_toBottomOf="parent"
            android:background="@color/view"/>
+        <include
+            android:id="@+id/layout_header"
+            layout="@layout/layout_header_bold_pos"
+            app:layout_constraintEnd_toStartOf="@+id/linearMenu"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"/>
 
         <include
             android:id="@+id/layoutMenu"
             layout="@layout/dashboard_toolbar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:visibility="visible"
+            android:visibility="gone"
             app:layout_constraintEnd_toStartOf="@+id/linearMenu"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent"
+            />
 
         <View
             android:id="@+id/view2"
             android:layout_width="match_parent"
             android:layout_height="1dp"
             app:layout_constraintLeft_toRightOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/layoutMenu"
+            app:layout_constraintTop_toBottomOf="@+id/layout_header"
             android:background="@color/view"/>
 
         <RelativeLayout
             android:id="@+id/linearMenu"
-            android:layout_width="@dimen/_200sdp"
+            android:layout_width="@dimen/_220sdp"
             android:layout_height="0dp"
             android:background="@color/bg_color"
             android:orientation="vertical"
@@ -180,7 +187,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="?attr/selectableItemBackground"
-                    android:paddingStart="@dimen/_4sdp"
                     android:paddingEnd="@dimen/_4sdp">
 
                     <RelativeLayout
@@ -194,8 +200,9 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_centerVertical="true"
-                            android:padding="@dimen/_5sdp"
-                            android:text="@string/current_order"
+                            android:paddingHorizontal="@dimen/_4sdp"
+                            android:paddingVertical="@dimen/_5sdp"
+                            android:text="@string/add_custom_item"
                             android:textColor="@color/txtColor"
                             android:textSize="@dimen/_6mdpi" />
 
@@ -346,7 +353,7 @@
                     android:layout_height="wrap_content"
                     android:background="@color/backgroundColor"
                     android:orientation="horizontal"
-                    android:padding="@dimen/_6sdp"
+                    android:padding="@dimen/_5mdpi"
                     android:weightSum="3.7">
 
                     <TextView
