@@ -75,6 +75,7 @@ class MainActivity : BaseScannerActivity() {
         }
 
     }
+
     private fun clockoutFromSystem() {
         prefProvider.setValueInt(Constants.EMPLOYEE_ID, 0)
         prefProvider.setValue(Constants.EMPLOYEE_NAME, "")
@@ -100,6 +101,7 @@ class MainActivity : BaseScannerActivity() {
         super.onDestroy()
         unregisterReceiver(broadcastReceiver)
     }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);

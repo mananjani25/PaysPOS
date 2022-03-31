@@ -7,7 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
@@ -230,7 +229,10 @@ class AddItemFragment(val listner: ItemListner) : Fragment() {
 
         }
 
-        requireActivity().supportFragmentManager.setFragmentResultListener("request_key_note",viewLifecycleOwner) { requestKey: String, bundle: Bundle ->
+        requireActivity().supportFragmentManager.setFragmentResultListener(
+            "request_key_note",
+            viewLifecycleOwner
+        ) { requestKey: String, bundle: Bundle ->
             val note = bundle.getString("note")
             item.note = note.toString()
         }
