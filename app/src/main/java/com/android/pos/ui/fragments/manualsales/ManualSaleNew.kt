@@ -155,6 +155,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
     private fun setUpToolbar() {
         binding.layoutHeader.txtKeypad.setTextColor(requireContext().resources.getColor(R.color.btnColor))
         binding.layoutHeader.imgSync.visibility=View.GONE
+        binding.layoutHeader.txtHome.visibility=View.VISIBLE
         binding.layoutHeader.txtTransaction.setOnClickListener {
             findNavController().navigate(R.id.action_manualSalesNew_to_transactionFragment)
 
@@ -183,6 +184,9 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
         }
         binding.layoutHeader.txtDineIn.setOnClickListener {
             findNavController().navigate(R.id.action_manualSalesNew_to_dineInFragment)
+        }
+        binding.layoutHeader.txtHome.setOnClickListener {
+            findNavController().navigateUp()
         }
 
     }
@@ -810,12 +814,12 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
             tabItemMOdel.categoryId = manualCategoryId
 
             tabItemMOdel.taxes = taxList
-/*
             viewModel.ordertypelist.forEach {
-                if (it.orderType == Constants.TAKEOUT)
+                if (it.orderType == TAKEOUT){
                     tabItemMOdel.orderItemId = it.id
+                    prefProvider.setValue(Constants.ORDER_TYPE,"TakeOut")
+                }
             }
-*/
 
             viewModel.manualSalecartLogic(cartList, tabItemMOdel, ADD)
             binding.llKeypad.edtItemName.text?.clear()
