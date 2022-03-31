@@ -55,9 +55,9 @@
                     android:paddingEnd="@dimen/_15sdp"
                     android:paddingBottom="@dimen/_7sdp"
                     android:text="Add"
-                    android:visibility="gone"
                     android:textColor="@color/white"
-                    android:textSize="@dimen/_6mdpi" />
+                    android:textSize="@dimen/_6mdpi"
+                    android:visibility="gone" />
             </RelativeLayout>
 
             <include layout="@layout/divider" />
@@ -66,15 +66,15 @@
             <androidx.appcompat.widget.LinearLayoutCompat
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/_10sdp"
+                android:layout_marginBottom="@dimen/_5sdp"
                 android:orientation="vertical"
                 android:padding="@dimen/_10sdp"
-                android:paddingStart="@dimen/_30sdp"
-                android:paddingEnd="@dimen/_30sdp"
                 android:visibility="visible">
 
                 <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="@dimen/_20sdp"
                     android:layout_marginBottom="@dimen/_2sdp"
                     android:background="@drawable/background_square_border_grey">
 
@@ -99,8 +99,8 @@
                         android:layout_marginStart="@dimen/_10sdp"
                         android:layout_marginEnd="@dimen/_10sdp"
                         android:background="@null"
-                        android:enabled="false"
                         android:digits="0123456789"
+                        android:enabled="false"
                         android:hint="0.00"
                         android:textColor="@color/txtColor"
                         android:textColorHint="@color/hintColor"
@@ -143,24 +143,24 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginEnd="@dimen/_2sdp"
+                            android:background="@drawable/background_square_border_grey"
                             android:paddingVertical="@dimen/_4sdp"
                             android:paddingStart="@dimen/_7sdp"
                             android:paddingEnd="@dimen/_7sdp"
                             android:text="%"
-                            android:background="@drawable/background_square_border_grey"
-                            android:textColor="@color/txtColor"/>
+                            android:textColor="@color/txtColor" />
 
                         <TextView
                             android:id="@+id/txtCurrencyDollar"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="@dimen/_2sdp"
+                            android:background="@drawable/background_square_border_grey"
                             android:paddingVertical="@dimen/_4sdp"
                             android:paddingStart="@dimen/_7sdp"
                             android:paddingEnd="@dimen/_7sdp"
                             android:text="$"
-                            android:background="@drawable/background_square_border_grey"
-                            android:textColor="@color/txtColor"/>
+                            android:textColor="@color/txtColor" />
 
 
                     </LinearLayout>
@@ -172,7 +172,9 @@
                     layout="@layout/layout_discount_keypad"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/_2sdp" />
+                    android:layout_marginTop="@dimen/_2sdp"
+                    android:paddingLeft="@dimen/_5sdp"
+                    android:paddingRight="@dimen/_5sdp" />
 
 
                 <androidx.recyclerview.widget.RecyclerView
@@ -181,6 +183,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/_5sdp"
                     tools:itemCount="3"
+                    android:orientation="horizontal"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     tools:listitem="@layout/view_dialog_discount_list" />
 
                 <androidx.appcompat.widget.LinearLayoutCompat
@@ -349,41 +353,46 @@
 
                 </androidx.appcompat.widget.LinearLayoutCompat>
 
-                <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/txtSave"
-                    style="@style/CustomFontBold"
+                <androidx.appcompat.widget.LinearLayoutCompat
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/_20sdp"
-                    android:layout_gravity="center"
-                    android:layout_marginTop="@dimen/_10sdp"
-                    android:layout_weight="1"
-                    android:background="@drawable/button_selected"
-                    android:gravity="center"
-                    android:padding="@dimen/_5sdp"
-                    android:text="Add"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:enabled="true"
-                    android:textColor="@color/white"
-                    android:textSize="@dimen/_5mdpi"
-                    android:visibility="visible"/>
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
 
-                <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/txtRemoveDiscount"
-                    style="@style/CustomFontBold"
-                    android:layout_width="match_parent"
-                    android:layout_height="@dimen/_20sdp"
-                    android:layout_gravity="center"
-                    android:layout_marginTop="@dimen/_10sdp"
-                    android:layout_weight="1"
-                    android:background="@color/btnColor"
-                    android:gravity="center"
-                    android:visibility="visible"
-                    android:padding="@dimen/_5sdp"
-                    android:text="@string/remove_discount"
-                    android:textColor="@color/white"
-                    android:textSize="@dimen/_5mdpi" />
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/txtSave"
+                        style="@style/CustomFontBold"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/_25sdp"
+                        android:layout_gravity="center"
+                        android:layout_weight="1"
+                        android:background="@drawable/button_selected"
+                        android:clickable="true"
+                        android:enabled="true"
+                        android:focusable="true"
+                        android:layout_marginRight="@dimen/_10sdp"
+                        android:gravity="center"
+                        android:padding="@dimen/_5sdp"
+                        android:text="Add"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/_5mdpi"
+                        android:visibility="visible" />
 
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/txtRemoveDiscount"
+                        style="@style/CustomFontBold"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/_25sdp"
+                        android:layout_gravity="center"
+                        android:layout_marginLeft="@dimen/_10sdp"
+                        android:layout_weight="1"
+                        android:background="@color/btnColor"
+                        android:gravity="center"
+                        android:padding="@dimen/_5sdp"
+                        android:text="@string/remove_discount"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/_5mdpi"
+                        android:visibility="visible" />
+                </androidx.appcompat.widget.LinearLayoutCompat>
             </androidx.appcompat.widget.LinearLayoutCompat>
 
 

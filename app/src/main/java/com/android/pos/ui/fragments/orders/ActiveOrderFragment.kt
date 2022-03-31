@@ -208,6 +208,17 @@ class ActiveOrderFragment(
         setupAdapter()
         getOpenOrders()
         observeShowProgress()
+        when (param1) {
+            "0" -> {
+                binding.txtOrderWillAppear.text = "Active order will appear here."
+            }
+            "1" -> {
+                binding.txtOrderWillAppear.text = "Completed order will appear here."
+            }
+            "2" -> {
+                binding.txtOrderWillAppear.text = "Cancelled order will appear here."
+            }
+        }
 
         searchFilter()
     }

@@ -807,18 +807,7 @@ class CartFragment(val itemClickListner: ItemClickListner?) : Fragment(), MyCall
                     binding.relPreoceedToFire.gone()
 
 
-                } else {
-                    clearCustomer()
-                    viewModel.deleteCart()
-                    cartlist.clear()
-                    prefProvider.setValue(ORDER_TYPE, TAKEOUT)
-                    prefProvider.setValueboolean(Constants.LOYALTY_ADDED, false)
-
-
                 }
-
-
-
                 if (prefProvider.getValue(ORDER_TYPE, "").toString() == Constants.DINE_IN) {
 
                     val dList = dineInCartAdapter.getList()
