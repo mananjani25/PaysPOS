@@ -30,7 +30,7 @@
                 android:layout_gravity="center"
                 android:padding="@dimen/_5sdp"
                 app:srcCompat="@drawable/ic_cancel_black"
-                app:tint="@color/viewTextColor" />
+                 />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tvTagRefundAmount"

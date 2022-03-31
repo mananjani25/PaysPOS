@@ -11,6 +11,7 @@ import com.android.pos.databinding.ViewItemCartBinding
 import com.android.pos.ui.adapter.CartItemModifierAdapter
 import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.callback.MyCallback
+import com.android.pos.utils.extensions.strike
 
 class CartAdapter : RecyclerView.Adapter<CartAdapter.MyViewHolder>() {
     var cartList = ArrayList<TbItem>()
@@ -38,8 +39,7 @@ class CartAdapter : RecyclerView.Adapter<CartAdapter.MyViewHolder>() {
 
             if (item.discountPrice != 0.0) {
                 binding.tvDiscountRate.visibility = View.VISIBLE
-                binding.txtTotalPrice.paintFlags =
-                    binding.txtTotalPrice.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
+                binding.txtTotalPrice.strike = true
                 var dPrice = 0.0
                 dPrice = if (!item.isManualSales) {
                     totalPrice(item) - (item.discountPrice * item.itemQuantity)
@@ -48,7 +48,7 @@ class CartAdapter : RecyclerView.Adapter<CartAdapter.MyViewHolder>() {
                 }
                 MethodUtils.setPriceTextView(binding.tvDiscountRate, dPrice)
             } else {
-                binding.txtTotalPrice.paintFlags = 0
+                binding.txtTotalPrice.strike = false
                 binding.tvDiscountRate.text = ""
                 binding.tvDiscountRate.visibility = View.GONE
 

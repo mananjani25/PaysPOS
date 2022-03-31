@@ -13,7 +13,6 @@ import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.data.model.InventoryItemModel
 import com.android.pos.data.remote.Constants.CREATECATEGORY
-import com.android.pos.data.remote.Constants.CREATEDISCOUNT
 import com.android.pos.data.remote.Constants.CREATEITEM
 import com.android.pos.data.remote.Constants.CREATEMODIFIER
 import com.android.pos.data.remote.Constants.CREATEOPTION
@@ -21,8 +20,6 @@ import com.android.pos.data.remote.Constants.KEY
 import com.android.pos.databinding.FragmentInventoryBinding
 import com.android.pos.ui.activities.MainActivity
 import com.android.pos.ui.adapter.InventoryAdapter
-import com.android.pos.ui.fragments.settings.discount.DiscountList
-import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -273,7 +270,7 @@ class Inventory : Fragment() {
 
         }
         binding.recyclerViewItemsList.adapter =
-            InventoryAdapter(requireContext(), list, object : InventoryAdapter.InventoryListner {
+            InventoryAdapter(requireContext(), list, true, object : InventoryAdapter.InventoryListner {
                 override fun onItemSelect(position: Int) {
                     Log.e(TAG, "position  $position")
                     changePosition(position)

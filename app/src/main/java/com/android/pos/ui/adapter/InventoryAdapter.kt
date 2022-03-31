@@ -11,10 +11,13 @@ import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.R
 import com.android.pos.data.model.InventoryItemModel
 import com.android.pos.databinding.ViewInventoryItemsBinding
+import com.android.pos.utils.extensions.gone
+import com.android.pos.utils.extensions.visible
 
 class InventoryAdapter(
     val context: Context,
     val list: ArrayList<InventoryItemModel>,
+    val isHide: Boolean,
     val listener: InventoryListner
 ) :
     RecyclerView.Adapter<InventoryAdapter.MyViewHolder>() {
@@ -29,6 +32,10 @@ class InventoryAdapter(
             } else {
                 binding.firstview.visibility = View.GONE
             }
+
+            if (isHide) {
+                binding.txtCount.gone()
+            }else  binding.txtCount.visible()
 
             if (item.isSelected) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {

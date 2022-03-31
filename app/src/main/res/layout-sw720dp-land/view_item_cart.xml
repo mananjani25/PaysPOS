@@ -102,7 +102,7 @@
                     android:layout_gravity="end"
                     android:gravity="end"
                     android:textColor="@color/btnColor"
-                    android:textSize="@dimen/_5mdpi"
+                    android:textSize="@dimen/_6mdpi"
                     android:visibility="visible"
                     tools:text="@string/_0_00" />
 
