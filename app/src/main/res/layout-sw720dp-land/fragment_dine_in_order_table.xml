@@ -13,23 +13,25 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
+            android:paddingVertical="@dimen/_4sdp"
             app:layout_constraintTop_toTopOf="parent">
 
             <TextView
                 android:id="@+id/txtHome"
-                style="@style/CustomFontMediumStyle"
+                style="@style/CustomFontBold"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentStart="true"
                 android:layout_marginEnd="@dimen/_10sdp"
                 android:padding="@dimen/_5sdp"
                 android:text="Home"
+                android:textAllCaps="true"
                 android:textColor="@color/txt_color_blue"
                 android:textSize="@dimen/_6mdpi" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/txtTitle"
-                style="@style/CustomFontMediumStyle"
+                style="@style/CustomFontBold"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
@@ -37,7 +39,7 @@
                 android:layout_weight="1"
                 android:gravity="center"
                 android:text="Table Details"
-                android:textColor="@color/viewTextColor"
+                android:textColor="@color/white"
                 android:textSize="@dimen/_6mdpi" />
 
             <ImageView
@@ -46,10 +48,11 @@
                 android:layout_height="@dimen/_15sdp"
                 android:layout_centerVertical="true"
                 android:layout_marginEnd="@dimen/_8sdp"
-                android:padding="@dimen/_2sdp"
                 android:layout_toStartOf="@+id/txtFloorPlan"
                 android:background="?attr/selectableItemBackground"
-                android:src="@drawable/print_all" />
+                android:padding="@dimen/_2sdp"
+                android:src="@drawable/print_all"
+                app:tint="@color/white" />
 
             <ImageView
                 android:id="@+id/imgMergeTable"
@@ -59,21 +62,22 @@
                 android:layout_marginEnd="@dimen/_8sdp"
                 android:layout_toStartOf="@+id/imgPrintAll"
                 android:padding="@dimen/_2sdp"
-
-                android:src="@drawable/merge" />
+                android:src="@drawable/merge"
+                app:tint="@color/white" />
 
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/txtFloorPlan"
-                style="@style/CustomFontMediumStyle"
+                style="@style/CustomFontBold"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
                 android:layout_centerInParent="true"
                 android:layout_marginEnd="@dimen/_4sdp"
                 android:gravity="center"
-                android:text="Floor Plan"
                 android:padding="@dimen/_6sdp"
+                android:text="Floor Plan"
+                android:textAllCaps="true"
                 android:textColor="@color/btnColor"
                 android:textSize="@dimen/_6mdpi" />
 
@@ -182,7 +186,12 @@
             android:id="@+id/footer"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:background="@color/backgroundColor"
             android:orientation="horizontal"
+            android:paddingStart="@dimen/_2sdp"
+            android:paddingEnd="@dimen/_2sdp"
+            android:paddingBottom="@dimen/_2sdp"
+            android:paddingTop="@dimen/_4sdp"
             app:layout_constrainedWidth="true"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -193,72 +202,82 @@
                 style="@style/CustomFontBold"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/_2sdp"
+                android:layout_marginStart="@dimen/_4sdp"
                 android:layout_weight="1"
-                android:background="@color/btnColorDark_"
+                android:background="@drawable/dine_in_footer_selector"
                 android:gravity="center"
                 android:minWidth="@dimen/_120sdp"
-                android:padding="@dimen/_6sdp"
+                android:padding="@dimen/_8sdp"
                 android:text="@string/tv_home"
                 android:textColor="@color/white"
-                android:textSize="@dimen/_5sdp" />
+                android:textSize="@dimen/_6ssp" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/txtFireAll"
                 style="@style/CustomFontBold"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/_2sdp"
+                android:layout_marginEnd="@dimen/_2sdp"
                 android:layout_weight="1"
-                android:background="@color/fire_all"
+                android:background="@drawable/dine_in_footer_selector"
                 android:gravity="center"
                 android:minWidth="@dimen/_120sdp"
-                android:padding="@dimen/_6sdp"
+                android:padding="@dimen/_8sdp"
                 android:text="Fire All"
                 android:textColor="@color/white"
-                android:textSize="@dimen/_5mdpi" />
+                android:textSize="@dimen/_6ssp" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/txtEditOrder"
                 style="@style/CustomFontBold"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/_2sdp"
+                android:layout_marginEnd="@dimen/_2sdp"
                 android:layout_weight="1"
-                android:background="@color/yellow_edit_order"
+                android:background="@drawable/dine_in_footer_selector"
                 android:gravity="center"
                 android:minWidth="@dimen/_120sdp"
-                android:padding="@dimen/_6sdp"
+                android:padding="@dimen/_8sdp"
                 android:text="@string/edit_order"
                 android:textColor="@color/white"
-                android:textSize="@dimen/_5mdpi" />
+                android:textSize="@dimen/_6ssp" />
 
 
             <androidx.appcompat.widget.LinearLayoutCompat
                 android:id="@+id/btnPayNew"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/_2sdp"
+                android:layout_marginEnd="@dimen/_4sdp"
                 android:layout_weight="1"
-                android:background="@color/green_pay_total"
+                android:background="@drawable/dine_in_footer_selector"
                 android:gravity="center">
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/txtPayNew"
-                    style="@style/CustomFontSemiBold"
+                    style="@style/CustomFontBold"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:gravity="center"
-                    android:padding="@dimen/_6sdp"
+                    android:padding="@dimen/_8sdp"
                     android:text="@string/pay_total"
                     android:textColor="@color/white"
-                    android:textSize="@dimen/_5mdpi" />
+                    android:textSize="@dimen/_5mdpi"
+                    android:visibility="gone" />
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/txtTotalAmountNew"
                     style="@style/CustomFontBold"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:padding="@dimen/_8sdp"
                     android:text="$0.00"
                     android:textColor="@color/white"
-                    android:textSize="@dimen/_7mdpi" />
+                    android:textSize="@dimen/_6ssp" />
 
                 <androidx.appcompat.widget.LinearLayoutCompat
                     android:id="@+id/llInfo1"
@@ -277,6 +296,7 @@
                         android:paddingStart="@dimen/_5sdp"
                         android:paddingEnd="@dimen/_5sdp"
                         android:tint="@color/white"
+                        android:visibility="gone"
                         app:srcCompat="@drawable/ic_info" />
 
                 </androidx.appcompat.widget.LinearLayoutCompat>
