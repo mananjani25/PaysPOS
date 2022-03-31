@@ -742,11 +742,6 @@ class CheckoutDineInFragmentNew : Fragment(), magtekCallback,
         AlertUtils.showCustomAlert(requireContext(), msg)
     }
 
-    private fun loadManualCardEntryFragment(fragment: Fragment) {
-        val fm: FragmentManager = requireActivity().supportFragmentManager
-        fm.beginTransaction().replace(R.id.frameLayoutId, fragment).commit()
-    }
-
     fun getDataFromPref() {
         redeemLoyaltyInfo = viewModel.redeemLoyaltyInfo
         prefProvider.setValue(Constants.ORDER_TYPE,Constants.TAKEOUT)

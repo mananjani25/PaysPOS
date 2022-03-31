@@ -107,6 +107,7 @@ class PasscodeViewModel @Inject constructor(
                                         EMPLOYEE_ROLE_ID,
                                         it.data.team_role_id ?: 0
                                     )
+                                    prefProvider.setValueboolean("clockOutFromNoti", false)
                                     prefProvider.setValue(PASSCODE, passcode)
                                     employeeLogin(data)
 

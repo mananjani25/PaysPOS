@@ -1000,9 +1000,8 @@ class DashBoardCategoryViewModel @Inject constructor(
             }
 
             serviceChargeCalculationModel(cartModel)
-            subTotalPrice -= (cartModel.discountPrice)
-
-
+            subTotalPrice -= cartModel.discountPrice
+            totalDiscount += cartModel.discountPrice
             cartModel.dineInList?.forEach {
                 it.items.forEach {
                     totalDiscount += if (!it.isManualSales) {
@@ -1014,10 +1013,39 @@ class DashBoardCategoryViewModel @Inject constructor(
             }
 
 
-            totalPrice = (subTotalPrice + totalTax + totalServiceCharge)
-            amountToBePaid = totalPrice - totalDiscount
+            var finalTotal = 0.0
+            finalTotal = (subTotalPrice + totalTax + totalServiceCharge)
+            cashDiscountType = prefProvider.getValue(Constants.OPTION_TYPE, "")
+            //loyalty point and price calculation
+            amountToBePaid = finalTotal
+            if (selectedCustomer == null) {
+                totalPrice = amountToBePaid
+                MethodUtils.setPriceTextView(
+                    txtTotalAmount,
+                    amountToBePaid
+                )
+            } else {
+                checkAppliedLoyaltyProgram(
+                    selectedCustomer,
+                    amountToBePaid,
+                    txtTotalAmount
+                )
+                redeemLoyaltyInfo.getAmountToBePaid()?.let {
+                    totalPrice = it
+                }
+            }
 
-            MethodUtils.setPriceTextView(txtTotalAmount, amountToBePaid)
+            if (MethodUtils.isEnableCashDiscount(context)) {
+                cashdiscountAmount = MethodUtils.calculateCashDiscount(
+                    totalPrice,
+                    prefProvider,
+                    context
+                )
+            } else {
+                cashdiscountAmount = 0.0
+            }
+
+
         } else {
 
             if (cartModel.items?.isEmpty() == false) {
@@ -2288,7 +2316,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     fun setPosition(position: Int) {
         mPosition = position
-        Log.e(TAG,"mSelectedPosition$mPosition")
+        Log.e(TAG, "mSelectedPosition$mPosition")
     }
 
 
