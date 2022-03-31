@@ -599,30 +599,23 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
     }
 
     private fun navigateDineInOrder() {
-        viewModel._Basedata.observe(viewLifecycleOwner, { event ->
+        viewModel._Basedata.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let { baseResponse ->
                 if (baseResponse != null) {
-
-
                     val bundle = Bundle()
                     bundle.putDouble("totalPrice", baseResponse.order.totalAmount)
                     bundle.putParcelable("cartList", cartList[0])
                     bundle.putParcelable("dineInList", baseResponse)
                     bundle.putBoolean("isGuestPaid", false)
                     bundle.putInt("orderId", baseResponse.order.id)
-
-
-                    prefProvider.setValue(Constants.ORDER_TYPE, "")
-                    prefProvider.setValue(Constants.CUSTOMER_NAME, "")
-                    prefProvider.setValueInt(Constants.CUSTOMER_ID, -1)
-                    prefProvider.setValue(ORDER_TYPE, TAKEOUT)
-                    viewModel.deleteCart()
+                    prefProvider.setValue(ORDER_TYPE, DINE_IN)
+//                    viewModel.deleteCart()
                     findNavController().navigate(
                         R.id.action_dashboardCategoryBoldPOS_to_dineInOrderTable,
                         bundle
                     )
                 }
             }
-        })
+        }
     }
 }

@@ -500,9 +500,13 @@ class CartFragment(val itemClickListner: ItemClickListner?) : Fragment(), MyCall
                     if (it.isNotEmpty()) {
                         binding.rvCartList.adapter = dineInCartAdapter
                         cartlist = it as ArrayList<CartModel>
-                        binding.linearButtonView.gone()
-                        binding.relPreoceedToFire.visible()
-
+                        if (isFromPayment) {
+                            binding.linearButtonView.gone()
+                            binding.relPreoceedToFire.gone()
+                        } else {
+                            binding.linearButtonView.gone()
+                            binding.relPreoceedToFire.visible()
+                        }
                         if (it[0].dineInList?.isNotEmpty() == true) {
                             var dineInList = it[0].dineInList
 
@@ -581,8 +585,13 @@ class CartFragment(val itemClickListner: ItemClickListner?) : Fragment(), MyCall
                         }
 
                     } else {
-                        binding.linearButtonView.gone()
-                        binding.relPreoceedToFire.gone()
+                        if (isFromPayment) {
+                            binding.linearButtonView.gone()
+                            binding.relPreoceedToFire.gone()
+                        } else {
+                            binding.linearButtonView.gone()
+                            binding.relPreoceedToFire.visible()
+                        }
                         dineInCartAdapter.clearList()
                         var data: TbCustomer? = prefProvider.getCustomerData()
                         if (data != null) {
@@ -598,7 +607,6 @@ class CartFragment(val itemClickListner: ItemClickListner?) : Fragment(), MyCall
                                 binding.lblLoyaltyPoints.visibility = View.GONE
                             }
                         }
-
 
 
                     }
@@ -843,22 +851,24 @@ class CartFragment(val itemClickListner: ItemClickListner?) : Fragment(), MyCall
                 if (prefProvider.getValue(ORDER_TYPE, "").toString() == Constants.DINE_IN) {
                     prefProvider.setValueInt(Constants.DINE_INGUEST_SELECTED, 0)
                     Log.e(TAG, "DineInClearTable")
+                    if (cartlist.size > 0) {
 
+                        val dList = cartlist[0].dineInList ?: arrayListOf()
+                        Log.e(TAG, "dList:  ${Gson().toJson(dList)}")
+                        if (dList.isNotEmpty()) {
+                            dList[0].floorPlanTable?.id?.let {
 
-                    val dList = cartlist[0].dineInList ?: arrayListOf()
-                    Log.e(TAG, "dList:  ${Gson().toJson(dList)}")
-                    if (dList.isNotEmpty()) {
-                        dList[0].floorPlanTable?.id?.let {
-
-                            if (dList[0]?.floorPlanTable?.status.toString() == Constants.MERGED) {
-                                viewModel.getTableStatus(it, Constants.MERGED)
-                            } else {
-                                viewModel.getTableStatus(
-                                    it, "Available"
-                                )
+                                if (dList[0]?.floorPlanTable?.status.toString() == Constants.MERGED) {
+                                    viewModel.getTableStatus(it, Constants.MERGED)
+                                } else {
+                                    viewModel.getTableStatus(
+                                        it, "Available"
+                                    )
+                                }
                             }
                         }
                     }
+
                     viewModel.deleteCart()
                     isOrderUpdate = false
                     dineInCartAdapter.clearList()
@@ -1220,6 +1230,14 @@ class CartFragment(val itemClickListner: ItemClickListner?) : Fragment(), MyCall
 
 
         }
+        viewModel.ordertypelist.forEach {
+            if (it.orderType.toLowerCase() == Constants.DINE_IN.toLowerCase()) {
+                cartlist[0].orderTypeId = it.id
+                cartlist[0].orderType = it.orderType
+            }
+        }
+        cartlist[0].openOrderType = Constants.PICK_UP
+
         val orderRequestModel = viewModel.createDineInOrderRequest(
             cartModel = cartlist[0],
             subTotalPrice = viewModel.subTotalPrice,

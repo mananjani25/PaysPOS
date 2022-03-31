@@ -308,7 +308,7 @@ class CheckoutDineInFragmentNew : Fragment(), magtekCallback,
 
                         val bundle = Bundle()
                         bundle.putBoolean("isDineIn", true)
-
+                        bundle.putBoolean("isTotalPayment", true)
                         if (remainingAmount == 0.0) {
                             if (custom_paymentAmount != 0.0) {
                                 bundle.putDouble("PaidAmount", custom_paymentAmount)
@@ -481,7 +481,7 @@ class CheckoutDineInFragmentNew : Fragment(), magtekCallback,
 
                         val bundle = Bundle()
                         bundle.putBoolean("isDineIn", true)
-
+                        bundle.putBoolean("isTotalPayment", true)
                         if (remainingAmount == 0.0) {
                             bundle.putDouble("PaidAmount", paymentAmount)
                         } else {
@@ -744,7 +744,7 @@ class CheckoutDineInFragmentNew : Fragment(), magtekCallback,
 
     fun getDataFromPref() {
         redeemLoyaltyInfo = viewModel.redeemLoyaltyInfo
-        prefProvider.setValue(Constants.ORDER_TYPE,Constants.TAKEOUT)
+        prefProvider.setValue(Constants.ORDER_TYPE,Constants.DINE_IN)
         if (prefProvider.getValue(Constants.WHOLE_AMOUNT, "").isEmpty()) {
             WholetotalPrice = viewModel.totalPrice
             prefProvider.setValue(
@@ -827,7 +827,7 @@ class CheckoutDineInFragmentNew : Fragment(), magtekCallback,
         Log.e("ORDER_TYPE", prefProvider.getValue(Constants.ORDER_TYPE, Constants.TAKEOUT))
 
         viewModel.ordertypelist.forEach {
-            if (prefProvider.getValue(Constants.ORDER_TYPE, Constants.TAKEOUT) == it.orderType) {
+            if (prefProvider.getValue(Constants.ORDER_TYPE, Constants.DINE_IN) == it.orderType) {
                 paymentviewModel.setOrderTypeId(it.id)
             }
         }
@@ -1023,7 +1023,7 @@ class CheckoutDineInFragmentNew : Fragment(), magtekCallback,
                 paymentAmount,
                 totalServiceCharge,
                 totalTax,
-                prefProvider.getValue(Constants.ORDER_TYPE, Constants.TAKEOUT),
+                Constants.DINE_IN,
                 future_delivery_date,
                 future_delivery_time,
                 true,
@@ -1045,6 +1045,7 @@ class CheckoutDineInFragmentNew : Fragment(), magtekCallback,
     }
 
     private fun makeCashPayment() {
+
         paymentType = "Cash"
 
         if (orderId != -1 && orderId != 0)
@@ -1070,7 +1071,7 @@ class CheckoutDineInFragmentNew : Fragment(), magtekCallback,
                 paymentAmount,
                 totalServiceCharge,
                 totalTax,
-                prefProvider.getValue(Constants.ORDER_TYPE, Constants.TAKEOUT),
+                Constants.DINE_IN,
                 future_delivery_date,
                 future_delivery_time,
                 true,
@@ -1085,7 +1086,7 @@ class CheckoutDineInFragmentNew : Fragment(), magtekCallback,
             )
         }
         Log.e(TAG, "myRequestOriginal ${Gson().toJson(myRequest)}")
-        Log.e("ORDER TYPE 1", prefProvider.getValue(Constants.ORDER_TYPE, Constants.TAKEOUT))
+
         if (myRequest != null) {
             if (custom_paymentAmount != 0.0) {
                 paymentviewModel.totalPayAmount(custom_paymentAmount)
