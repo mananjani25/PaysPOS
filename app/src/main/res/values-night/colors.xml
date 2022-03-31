@@ -116,7 +116,7 @@
     <color name="bg_printer_label">#585858</color>
 
     <color name="strokeColor">#535353</color>
-        <color name="switchTrackColor">#363636</color>
+    <color name="switchTrackColor">#363636</color>
     <color name="bgEditPrinter">#18181A</color>
     <color name="light_gray">#A9A9A9</color>
     <color name="dark_gray">#8F8F8F</color>

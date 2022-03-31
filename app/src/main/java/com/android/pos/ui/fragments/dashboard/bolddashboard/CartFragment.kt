@@ -531,7 +531,7 @@ class CartFragment(val itemClickListner: ItemClickListner?) : Fragment(), MyCall
                             MethodUtils.roundOffAmount(viewModel.cashdiscountAmount)
 
                     } else {
-                        binding.linearButtonView.visible()
+                        binding.linearButtonView.gone()
                         binding.relPreoceedToFire.gone()
                         dineInCartAdapter.clearList()
 
@@ -901,6 +901,8 @@ class CartFragment(val itemClickListner: ItemClickListner?) : Fragment(), MyCall
 
             val popupMenu = PopupMenu(requireContext(), it)
             popupMenu.menuInflater.inflate(R.menu.cart_menu, popupMenu.menu)
+            if (prefProvider.getValue(Constants.CUSTOMER_NAME, "").isEmpty())
+                popupMenu.menu.findItem(R.id.menu_remove_customer).isVisible = false
             popupMenu.setOnMenuItemClickListener { menuItem ->
                 when (menuItem.itemId) {
                     R.id.menu_clear_cart -> {

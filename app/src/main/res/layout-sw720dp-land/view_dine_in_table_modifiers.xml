@@ -55,7 +55,7 @@
                         android:gravity="start"
                         android:paddingStart="@dimen/_14sdp"
                         android:text="@{model.name}"
-                        android:textColor="@color/drawerBack"
+                        android:textColor="@color/txtColor"
                         android:textSize="@dimen/_5mdpi"
                         tools:text="Item" />
 
@@ -84,7 +84,7 @@
                         android:layout_gravity="start"
                         android:gravity="start"
                         android:text="@{``+model.itemQuantity}"
-                        android:textColor="@color/color88"
+                        android:textColor="@color/btnColorDark"
                         android:textSize="@dimen/_5mdpi"
                         tools:text="x 10" />
                 </LinearLayout>
@@ -111,7 +111,7 @@
                         android:layout_gravity="start"
                         android:gravity="start"
                         android:text=""
-                        android:textColor="@color/drawerBack"
+                        android:textColor="@color/txtColor"
                         android:textSize="@dimen/_5mdpi"
                         tools:text="Item" />
                 </LinearLayout>
@@ -141,7 +141,7 @@
                         android:layout_marginEnd="@dimen/_15sdp"
                         android:gravity="start"
                         android:text="@{@string/symbole +``+String.format(@string/format,(model.price * model.itemQuantity))}"
-                        android:textColor="@color/drawerBack"
+                        android:textColor="@color/txtColor"
                         android:textSize="@dimen/_5mdpi"
                         tools:text="$20.00" />
 

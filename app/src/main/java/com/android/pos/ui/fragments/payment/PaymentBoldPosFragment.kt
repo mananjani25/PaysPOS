@@ -13,11 +13,13 @@ import androidx.fragment.app.setFragmentResultListener
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.data.remote.Constants
+import com.android.pos.data.remote.Constants.ORDER_TYPE
 import com.android.pos.data.remote.Constants.REDIRECT_FROM
 import com.android.pos.data.remote.Constants.SPLIT_ENABLE
 import com.android.pos.databinding.FragmentPaymentBoldPosBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.fragments.checkout.CheckoutDetailsFragmentNew
+import com.android.pos.ui.fragments.checkout.CheckoutDineInFragmentNew
 import com.android.pos.ui.fragments.dashboard.bolddashboard.CartFragment
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.TAG
@@ -60,12 +62,18 @@ class PaymentBoldPosFragment : Fragment() {
 
 
         loadCartFragment(CartFragment(null))
-        Handler(Looper.getMainLooper()).postDelayed({ /* Create an Intent that will start the Menu-Activity. */
-            loadCategoryFragment(CheckoutDetailsFragmentNew())
-        }, 100)
+        if (prefProvider.getValue(ORDER_TYPE, "") == Constants.DINE_IN){
+            Handler(Looper.getMainLooper()).postDelayed({ /* Create an Intent that will start the Menu-Activity. */
+                loadCategoryFragment(CheckoutDineInFragmentNew())
+            }, 100)
+        }else{
+            Handler(Looper.getMainLooper()).postDelayed({ /* Create an Intent that will start the Menu-Activity. */
+                loadCategoryFragment(CheckoutDetailsFragmentNew())
+            }, 100)
 
+        }
         binding.layoutHeaderCheckout.imgDrawer.setOnClickListener {
-            Log.d(TAG, "onViewCreated: "+prefProvider.getValueboolean(SPLIT_ENABLE,false))
+            Log.d(TAG, "onViewCreated: " + prefProvider.getValueboolean(SPLIT_ENABLE, false))
             if (prefProvider.getValueboolean(Constants.SPLIT_ENABLE, false)) {
                 AlertUtils.showCustomAlert(requireContext(), "Please complete all payment.")
             } else {
@@ -118,7 +126,7 @@ class PaymentBoldPosFragment : Fragment() {
 
         }
         fragment.arguments = bundle
-       // fragment.arguments = arguments
+        // fragment.arguments = arguments
 
         fm.beginTransaction().replace(binding.frameLayout.id, fragment).commit()
         // binding.frameLayout?.let { fm.beginTransaction().replace(it, fragment).commit() }

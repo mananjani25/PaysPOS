@@ -71,7 +71,7 @@ class OrderDetailsItemListAdapter :
             itemBinding.tvModifierName.visibility = View.GONE
         } else {
             itemBinding.tvModifierName.visibility = View.VISIBLE
-            itemBinding.tvModifierName.text = TextUtils.join(",", modifierNames)
+            itemBinding.tvModifierName.text = TextUtils.join("\n", modifierNames)
         }
 
         itemBinding.executePendingBindings()

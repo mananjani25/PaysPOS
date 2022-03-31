@@ -2288,6 +2288,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     fun setPosition(position: Int) {
         mPosition = position
+        Log.e(TAG,"mSelectedPosition$mPosition")
     }
 
 

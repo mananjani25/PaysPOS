@@ -835,7 +835,7 @@
 
         <action
             android:id="@+id/action_manualSalesNew_to_dineInFragment"
-            app:destination="@id/dineInFragment"/>
+            app:destination="@id/dineInFragment" />
 
     </fragment>
     <dialog
@@ -1095,8 +1095,8 @@
             app:popUpTo="@id/dineInOrderTable"
             app:popUpToInclusive="true" />
         <action
-            android:id="@+id/action_dineInOrderTable_to_payByGuestDialog"
-            app:destination="@id/payByGuestDialog"
+            android:id="@+id/action_dineInOrderTable_to_checkoutDineIN"
+            app:destination="@id/paymentBoldPosFragment"
             app:enterAnim="@anim/nav_default_enter_anim" />
         <action
             android:id="@+id/action_dineInOrderTable_to_dashboardCategoryNew"
@@ -1109,6 +1109,11 @@
             app:enterAnim="@anim/nav_default_enter_anim"
             app:popUpTo="@id/dineInFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/checkoutDininFragment"
+        android:label="checkoutDineFrag"
+        android:name="com.android.pos.ui.fragments.checkout.CheckoutDineInFragmentNew"
+        />
     <fragment
         android:id="@+id/payByGuestDialog"
         android:name="com.android.pos.ui.dialog.PayByGuestDialog"
@@ -1347,7 +1352,7 @@
             app:destination="@id/addDiscountDialog" />
         <action
             android:id="@+id/action_dashboardCategoryBoldPOS_to_dineInFragment"
-            app:destination="@id/dineInFragment"/>
+            app:destination="@id/dineInFragment" />
         <action
             android:id="@+id/action_dashboardCategoryBoldPOS_to_addNoteDialog"
             app:destination="@id/addNoteDialog" />

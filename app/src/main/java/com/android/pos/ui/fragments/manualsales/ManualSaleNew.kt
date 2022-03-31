@@ -11,10 +11,7 @@ import android.text.TextWatcher
 import android.util.Log
 import android.view.*
 import android.widget.*
-import androidx.appcompat.widget.AppCompatEditText
-import androidx.appcompat.widget.AppCompatImageView
-import androidx.appcompat.widget.AppCompatTextView
-import androidx.appcompat.widget.LinearLayoutCompat
+import androidx.appcompat.widget.*
 import androidx.appcompat.widget.PopupMenu
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -154,7 +151,8 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
     //created By Zeeshaan
     private fun setUpToolbar() {
         binding.layoutHeader.txtKeypad.setTextColor(requireContext().resources.getColor(R.color.btnColor))
-        binding.layoutHeader.imgSync.visibility=View.GONE
+        binding.layoutHeader.imgSync.visibility = View.GONE
+        binding.layoutHeader.txtHome.visibility = View.VISIBLE
         binding.layoutHeader.txtTransaction.setOnClickListener {
             findNavController().navigate(R.id.action_manualSalesNew_to_transactionFragment)
 
@@ -183,6 +181,9 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
         }
         binding.layoutHeader.txtDineIn.setOnClickListener {
             findNavController().navigate(R.id.action_manualSalesNew_to_dineInFragment)
+        }
+        binding.layoutHeader.txtHome.setOnClickListener {
+            findNavController().navigateUp()
         }
 
     }
@@ -291,8 +292,6 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                 setUpCustomer(result)
             }
         }
-
-
 
 
     }
@@ -556,7 +555,8 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
 
             val popupMenu = PopupMenu(requireContext(), it)
             popupMenu.menuInflater.inflate(R.menu.manual_sale_menu, popupMenu.menu)
-
+            if (prefProvider.getValue(Constants.CUSTOMER_NAME, "").isEmpty())
+                popupMenu.menu.findItem(R.id.menu_remove_customer).isVisible = false
             popupMenu.setOnMenuItemClickListener { menuItem ->
                 when (menuItem.itemId) {
                     R.id.menu_clear_cart -> {
@@ -810,12 +810,12 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
             tabItemMOdel.categoryId = manualCategoryId
 
             tabItemMOdel.taxes = taxList
-/*
             viewModel.ordertypelist.forEach {
-                if (it.orderType == Constants.TAKEOUT)
+                if (it.orderType == TAKEOUT) {
                     tabItemMOdel.orderItemId = it.id
+                    prefProvider.setValue(Constants.ORDER_TYPE, "TakeOut")
+                }
             }
-*/
 
             viewModel.manualSalecartLogic(cartList, tabItemMOdel, ADD)
             binding.llKeypad.edtItemName.text?.clear()
@@ -829,7 +829,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
             val data = bundle.getString("item_name")
             cartItemModel.name = data.toString()
             cartItemModel?.let {
-                viewModel.cartLogic(cartList, it, Constants.UPDATE, true)
+                viewModel.manualSalecartLogic(cartList, it, Constants.UPDATE)
             }
 
 
@@ -840,10 +840,10 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
             cartItemModel.note = note.toString()
 
             cartItemModel?.let {
-                viewModel.cartLogic(
+                viewModel.manualSalecartLogic(
                     cartList,
                     it,
-                    Constants.UPDATE, true
+                    Constants.UPDATE
                 )
             }
         }
@@ -863,14 +863,14 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                     cartModel.isDiscountDefault = true
 
                     Log.e(TAG, "cartModelPArseMsd   ${Gson().toJson(cartModel)}")
-                    viewModel.cartLogic(cartList, cartModel, Constants.UPDATE, true)
+                    viewModel.manualSalecartLogic(cartList, cartModel, Constants.UPDATE)
 
                 } else if (result.discountType == "Amount") {
                     val cartModel = cartAdapter.getItem(pos)
                     cartModel.discountPrice = result.percentage
                     cartModel.isDiscountDefault = false
                     cartModel.discountType = result.discountType
-                    viewModel.cartLogic(cartList, cartModel, Constants.UPDATE, true)
+                    viewModel.manualSalecartLogic(cartList, cartModel, Constants.UPDATE)
 
 
 
@@ -880,7 +880,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                     cartModel.discountPrice = 0.0
                     cartModel.discountType = ""
                     cartModel.isManualSales = true
-                    viewModel.cartLogic(cartList, cartModel, Constants.UPDATE, true)
+                    viewModel.manualSalecartLogic(cartList, cartModel, Constants.UPDATE)
 
 
                 }
@@ -963,6 +963,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
     @SuppressLint("SetTextI18n")
     override fun onItemClicked(model: TbItem, position: Int) {
         Log.e(TAG, "Itemmodel: ${Gson().toJson(model)}")
+        Log.e(TAG, "ItemPosition: $position")
         val dialog = Dialog(requireContext())
         dialog.window?.requestFeature(Window.FEATURE_NO_TITLE)
         dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
@@ -1056,8 +1057,12 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
             model.price = String.format("%.2f", (itemCost)).toDouble()
 
             viewModel.setPosition(position)
+            Log.e(TAG, "Itemmodel: ${Gson().toJson(model)}")
 
-            viewModel.cartLogic(cartList, model, Constants.UPDATE, true)
+            Log.e(TAG, "ItemPosition: $position")
+
+            viewModel.manualSalecartLogic(cartList, model, Constants.UPDATE)
+
         }
 
         llPlus.setOnClickListener {
@@ -1076,11 +1081,12 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
 
         btnRemove.setOnClickListener {
             Log.e(TAG, "modelRemove:  ${Gson().toJson(model)}")
-            viewModel.cartLogic(cartList, model, Constants.DELETE, true)
+            viewModel.manualSalecartLogic(cartList, model, Constants.DELETE)
             dialog.dismiss()
         }
 
         btnAddDiscount.setOnClickListener {
+            viewModel.setPosition(position)
             setFragmentResultListener("request_key_discount_details") { requestKey: String, bundle: Bundle ->
                 val result = bundle.getParcelable<TbDiscount>("data")
                 if (result != null) {
@@ -1094,7 +1100,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                         model.discountId = result.id
                         model.discountType = result.discountType
                         model.isManualSales = true
-                        viewModel.cartLogic(cartList, model, Constants.UPDATE, true)
+                        viewModel.manualSalecartLogic(cartList, model, Constants.UPDATE)
                         txtTitle.text = model.name + "  $" + String.format(
                             "%.2f",
                             ((model.price * totalquantity) - model.discountPrice)
@@ -1107,7 +1113,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                         model.discountType = result.discountType
                         model.isManualSales = true
 
-                        viewModel.cartLogic(cartList, model, Constants.UPDATE, true)
+                        viewModel.manualSalecartLogic(cartList, model, Constants.UPDATE)
                         txtTitle.text = model.name + "  $" + String.format(
                             "%.2f",
                             ((model.price * totalquantity) - model.discountPrice)
@@ -1116,13 +1122,13 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                         model.discountPrice = 0.0
                         model.discountType = ""
                         model.isManualSales = true
-                        viewModel.cartLogic(cartList, model, Constants.UPDATE, true)
+                        viewModel.manualSalecartLogic(cartList, model, Constants.UPDATE)
                     }
                 } else {
                     model.discountPrice = 0.0
                     model.discountType = ""
                     model.isManualSales = true
-                    viewModel.cartLogic(cartList, model, Constants.UPDATE, true)
+                    viewModel.manualSalecartLogic(cartList, model, Constants.UPDATE)
 
 
                 }
@@ -1442,7 +1448,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                         // Do positive stuff here
                         val item = cartAdapter.getItem(pos)
                         Log.e(TAG, "item ${Gson().toJson(item)}")
-                        viewModel.cartLogic(cartList, item, Constants.DELETE)
+                        viewModel.manualSalecartLogic(cartList, item, Constants.DELETE)
                     }
                     negativeButton(R.string.tv_cancel) {
                         // Do negative stuff here
