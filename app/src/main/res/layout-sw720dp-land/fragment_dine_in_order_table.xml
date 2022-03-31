@@ -95,13 +95,13 @@
             android:id="@+id/linearHeaderNew"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/background_printer_labels"
+            android:background="@color/btnColorDark"
             android:orientation="horizontal"
             android:weightSum="5"
             app:layout_constraintTop_toBottomOf="@+id/viewLine">
 
             <androidx.appcompat.widget.AppCompatTextView
-                style="@style/CustomFontSemiBold"
+                style="@style/CustomFontBold"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
@@ -115,7 +115,7 @@
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/txtGuestItemName"
-                style="@style/CustomFontSemiBold"
+                style="@style/CustomFontBold"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
@@ -129,20 +129,20 @@
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/txtQuantity"
-                style="@style/CustomFontSemiBold"
+                style="@style/CustomFontBold"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_weight="0.65"
                 android:gravity="start"
                 android:text="Group Quantity"
-                android:textColor="@color/btnColor"
+                android:textColor="@color/txtColor"
                 android:textSize="@dimen/_5mdpi" />
 
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/txtStaffName"
-                style="@style/CustomFontSemiBold"
+                style="@style/CustomFontBold"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
@@ -155,7 +155,7 @@
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/txtPriceLabel"
-                style="@style/CustomFontSemiBold"
+                style="@style/CustomFontBold"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"

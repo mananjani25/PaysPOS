@@ -7,7 +7,8 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/btnColor">
+        android:background="@drawable/dine_in_order_footer_unselected"
+        android:paddingVertical="@dimen/_2sdp">
 
         <RelativeLayout
             android:id="@+id/linearHeader"
@@ -52,13 +53,14 @@
 
                     <TextView
                         android:id="@+id/txtTableName"
-                        style="@style/CustomFontMediumStyle"
+                        style="@style/CustomFontBold"
                         android:layout_width="match_parent"
                         android:layout_height="match_parent"
                         android:layout_gravity="center"
                         android:gravity="start|center_vertical"
                         android:paddingStart="@dimen/_12sdp"
                         android:text="Whole Table"
+
                         android:textColor="@color/white"
                         android:textSize="@dimen/_6mdpi" />
                 </LinearLayout>
@@ -83,7 +85,7 @@
                 android:layout_centerVertical="true"
                 android:layout_marginEnd="@dimen/_7sdp"
                 android:layout_toStartOf="@+id/llInfo1"
-                android:background="@drawable/bg_white"
+                android:background="@color/btnColorDark"
                 android:clickable="true"
                 android:gravity="center"
                 android:visibility="visible">

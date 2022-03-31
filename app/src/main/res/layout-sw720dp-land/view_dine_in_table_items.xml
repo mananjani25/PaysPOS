@@ -22,7 +22,8 @@
         <androidx.appcompat.widget.LinearLayoutCompat
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:paddingVertical="@dimen/_2sdp">
 
             <androidx.appcompat.widget.LinearLayoutCompat
                 android:layout_width="match_parent"
@@ -55,14 +56,14 @@
                     android:orientation="vertical">
 
                     <androidx.appcompat.widget.AppCompatTextView
-                        style="@style/CustomFontMediumStyle"
+                        style="@style/CustomFontRegularStyle"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="start"
                         android:gravity="start"
                         android:paddingStart="@dimen/_14sdp"
                         android:text="@{model.name}"
-                        android:textColor="@color/drawerBack"
+                        android:textColor="@color/txtColor"
                         android:textSize="@dimen/_5mdpi"
                         tools:text="Item" />
 
@@ -107,7 +108,7 @@
 
                         android:gravity="center"
                         android:text="@{``+model.itemQuantity}"
-                        android:textColor="@color/btnColor"
+                        android:textColor="@color/dark_btn_Color"
                         android:textSize="@dimen/_5mdpi"
                         tools:text="x 10" />
                 </LinearLayout>
@@ -129,13 +130,13 @@
 
                     <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/txtEmpName"
-                        style="@style/CustomFontMediumStyle"
+                        style="@style/CustomFontRegularStyle"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="start"
                         android:gravity="start"
-                        android:text="Vishal Patel"
-                        android:textColor="@color/drawerBack"
+                        android:text=""
+                        android:textColor="@color/txtColor"
                         android:textSize="@dimen/_5mdpi"
                         tools:text="Item" />
                 </LinearLayout>
@@ -159,19 +160,19 @@
 
                     <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/tvRate"
-                        style="@style/CustomFontBold"
+                        style="@style/CustomFontSemiBold"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="end"
                         android:layout_marginEnd="@dimen/_15sdp"
                         android:gravity="start"
-                        android:textColor="@color/drawerBack"
+                        android:textColor="@color/txtColor"
                         android:textSize="@dimen/_5mdpi"
                         tools:text="$20.00" />
 
                     <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/tvDiscountRate"
-                        style="@style/CustomFontBold"
+                        style="@style/CustomFontSemiBold"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="end"
