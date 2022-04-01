@@ -4,6 +4,7 @@
     tools:ignore="MissingDefaultResource">
 
     <LinearLayout
+        android:id="@+id/linearParent"
         android:layout_margin="@dimen/_4sdp"
         android:background="@drawable/categories_selector"
         android:layout_width="match_parent"

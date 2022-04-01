@@ -274,6 +274,5 @@ class DineInAdapter : RecyclerView.Adapter<DineInAdapter.MyViewHolder>() {
         list.clear()
         list = arrayListOf()
         notifyDataSetChanged()
-
     }
 }

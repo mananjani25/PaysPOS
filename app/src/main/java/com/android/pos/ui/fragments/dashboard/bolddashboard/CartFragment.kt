@@ -18,6 +18,8 @@ import com.android.pos.data.model.DineInOrderDetailAttributes
 import com.android.pos.data.model.responseModel.GetFloorPlanResponse
 import com.android.pos.data.model.responseModel.GetOrderDetailsResponse
 import com.android.pos.data.remote.Constants
+import com.android.pos.data.remote.Constants.DINE_IN_LIST_EDIT
+import com.android.pos.data.remote.Constants.DINE_IN_UPDATE
 import com.android.pos.data.remote.Constants.MANUAL_SALE
 import com.android.pos.data.remote.Constants.OPEN_ORDER
 import com.android.pos.data.remote.Constants.ORDER_TYPE
@@ -522,6 +524,13 @@ class CartFragment(val itemClickListner: ItemClickListner?) : Fragment(), MyCall
                             requireContext()
                         )
                         viewModel.setCartModel(it)
+                        if (prefProvider.getValueboolean(Constants.DINE_IN_UPDATE, false) == true) {
+
+                            binding.txtDineInProceed.setText("Update and Proceed")
+                        } else {
+                            binding.txtDineInProceed.setText("Proceed To Fire")
+                        }
+
                         binding.txtSubTotal.text =
                             MethodUtils.roundOffAmount(viewModel.subTotalPrice)
                         binding.txtTax.text = MethodUtils.roundOffAmount(viewModel.totalTax)
@@ -781,7 +790,7 @@ class CartFragment(val itemClickListner: ItemClickListner?) : Fragment(), MyCall
     }
 
     override fun onItemSelected(headerPosition: Int, position: Int, item: TbItem) {
-        Log.e(TAG,"onDineinItemClick")
+        Log.e(TAG, "onDineinItemClick")
         viewModel.dineInSelectedItemHeaderPos = headerPosition
 
         itemClickListner?.onItemUpdate(item)
@@ -970,7 +979,44 @@ class CartFragment(val itemClickListner: ItemClickListner?) : Fragment(), MyCall
 
         binding.txtDineInProceed.setOnClickListener {
             if (viewModel.restrictedAmount(binding.txtTotal)) {
-                createDineInOrder()
+                if (cartlist.isNotEmpty()) {
+                    if (prefProvider.getValueboolean(DINE_IN_UPDATE, false)) {
+                        var itemCount = 0
+                        for (i in cartlist.indices) {
+                            for (j in cartlist[i].dineInList?.indices!!) {
+                                if (cartlist[i].dineInList?.get(j)?.items?.size!! > 0) {
+                                    itemCount++
+                                    break
+                                }
+                            }
+                            if (itemCount != 0) {
+                                break
+                            }
+
+                        }
+
+                        if (itemCount == 0) {
+                            AlertUtils.showCustomAlertWithListenerWithOK(
+                                requireContext(),
+                                getString(R.string.please_add_Atleast_one_item_in_cart)
+                            ) { _, _ ->
+                            }
+                        } else {
+                            val request = viewModel.updateOrder(cartlist[0])
+
+                            prefProvider.setValueboolean(DINE_IN_UPDATE, false)
+                            prefProvider.setValueboolean(DINE_IN_LIST_EDIT, false)
+                            prefProvider.setValueboolean(DINE_IN_UPDATE, false)
+                            cartlist[0].orderId?.let { viewModel.updateOrderCall(it, request) }
+
+
+                        }
+
+                    } else {
+
+                        createDineInOrder()
+                    }
+                }
             } else {
                 showMessage()
             }
