@@ -56,7 +56,7 @@ class OrderDetailsItemListAdapter :
             }
 
 
-        itemBinding.tvRate.text = "$$total_rate"
+        itemBinding.tvRate.text = "$ $total_rate"
 
 
         val modifierNames = taxList[position].orderItemModifiers.map {
