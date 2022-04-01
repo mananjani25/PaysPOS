@@ -72,7 +72,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textColor="@color/txtColor"
-                    android:textSize="@dimen/_5mdpi"
+                    android:textSize="@dimen/_6mdpi"
                     tools:text="@string/tv_date_time"
                     android:layout_gravity="center"
                     android:gravity="center"/>
@@ -83,7 +83,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:textColor="@color/txtColor"
-                    android:textSize="@dimen/_5mdpi"
+                    android:textSize="@dimen/_6mdpi"
                     tools:text="@string/tv_date_time"
                     android:visibility="visible"
                     android:layout_gravity="center"
@@ -117,7 +117,7 @@
                 android:gravity="center"
                 android:text="@{viewModel.orderType}"
                 android:textColor="@color/btnColor"
-                android:textSize="@dimen/_5mdpi"
+                android:textSize="@dimen/_6mdpi"
                 android:visibility="gone"
                 tools:text="orderType" />
 
@@ -131,7 +131,7 @@
                 android:gravity="center"
                 android:text="@{@string/symbole +``+String.format(@string/format,viewModel.totalAmount)}"
                 android:textColor="@color/txtColor"
-                android:textSize="@dimen/_5mdpi"
+                android:textSize="@dimen/_6mdpi"
                 tools:text="Amount" />
 
             <androidx.appcompat.widget.AppCompatTextView
@@ -144,7 +144,7 @@
                 android:gravity="center"
                 android:text="@{@string/symbole +``+String.format(@string/format,viewModel.totalTips)}"
                 android:textColor="@color/txtColor"
-                android:textSize="@dimen/_5mdpi"
+                android:textSize="@dimen/_6mdpi"
                 android:visibility="gone" />
 
 
@@ -157,7 +157,7 @@
                 android:layout_weight="1"
                 android:gravity="center"
                 android:textColor="@color/txtColor"
-                android:textSize="@dimen/_5mdpi"
+                android:textSize="@dimen/_6mdpi"
                 tools:text="John Smith" />
 
             <androidx.appcompat.widget.AppCompatTextView
@@ -170,7 +170,7 @@
                 android:gravity="center"
                 android:text="@{viewModel.employee.name}"
                 android:textColor="@color/txtColor"
-                android:textSize="@dimen/_5mdpi"
+                android:textSize="@dimen/_6mdpi"
                 tools:text="Employee Name" />
 
 
