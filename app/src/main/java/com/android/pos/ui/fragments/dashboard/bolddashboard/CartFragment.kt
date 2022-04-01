@@ -257,7 +257,6 @@ class CartFragment(val itemClickListner: ItemClickListner?) : Fragment(), MyCall
                 tableName = dineInFloorTableModel?.tableName.toString()
                 status = dineInFloorTableModel?.status.toString()
 
-
             }
 
         }
@@ -832,6 +831,7 @@ class CartFragment(val itemClickListner: ItemClickListner?) : Fragment(), MyCall
                 )
 
 
+
             }
             negativeButton(R.string.tv_cancel) {
                 // Do negative stuff heref
@@ -928,8 +928,10 @@ class CartFragment(val itemClickListner: ItemClickListner?) : Fragment(), MyCall
                     clearCustomer()
                     viewModel.deleteCart()
                     cartlist.clear()
+                    isOrderUpdate=false
                     prefProvider.setValue(ORDER_TYPE, TAKEOUT)
                     prefProvider.setValueboolean(Constants.LOYALTY_ADDED, false)
+
                 }
             }
             negativeButton(R.string.tv_cancel) {
