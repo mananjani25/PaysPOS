@@ -74,6 +74,7 @@
                 android:drawablePadding="@dimen/_5sdp"
                 android:gravity="center"
                 android:hint="SEARCH"
+                android:visibility="gone"
                 android:imeOptions="actionDone"
                 android:inputType="text"
                 android:padding="@dimen/_5sdp"
