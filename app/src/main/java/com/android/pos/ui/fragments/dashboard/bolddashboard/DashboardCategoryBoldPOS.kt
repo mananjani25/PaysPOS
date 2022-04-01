@@ -80,10 +80,11 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
         getServiceCharges()
         resultListener()
         addObserver()
-
+        dineInUpdateOrder()
         navigateDineInOrder()
         getLoyaltyPrograms()
         syncData()
+        checkDineInEditOrder()
 
         binding.lifecycleOwner = this
         return binding.root
@@ -626,4 +627,80 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
             }
         }
     }
+
+    private fun checkDineInEditOrder() {
+        if (arguments?.getBoolean("is_dine_in_edit") == true) {
+            var dineInList = arguments?.getParcelableArrayList<DineInModel>("dine_in_list")
+
+            if (dineInList?.isNotEmpty() == true) {
+
+                if (cartList.isEmpty()) {
+                    var orderTypeIdN = 0
+                    ordertypelist.forEach {
+                        if (it.orderType == DINE_IN) {
+                            orderTypeIdN = it.id
+                        }
+                    }
+
+                    val cartModel = CartModel().apply {
+                        terminalId = prefProvider.getValueInt(Constants.TERMINAL_ID, -1)
+                        employeeID = prefProvider.getValueInt(Constants.EMPLOYEE_ID, -1)
+                        locationId = prefProvider.getValueInt(Constants.LOCATION_ID, -1)
+                        orderTypeId = orderTypeIdN
+                        orderType = DINE_IN
+                        orderTypeName = DINE_IN
+
+                        serviceCharge = serviceChargesList
+                        orderId = arguments?.getInt("orderId")
+
+                    }
+                    cartList.add(cartModel)
+                }
+
+                var orderTableData: GetOrderDetailsResponse.Data.FloorPlanTable? =
+                    arguments?.getParcelable("tableDetails")
+
+                dineInList.forEach {
+                    it.floorPlanTable = orderTableData
+                }
+
+                prefProvider.setValue(ORDER_TYPE, DINE_IN)
+                prefProvider.setValue(Constants.ORDER_TYPE_NAME, DINE_IN)
+                prefProvider.setValueInt(Constants.ORDER_TYPE_ID, 2)
+
+                viewModel.cartLogic(cartList, null, Constants.ADD, false, dineInList = dineInList)
+                viewModel.orderItemDiscount = arguments?.getDouble("totalDiscount") ?: 0.0
+
+            }
+
+
+        }
+    }
+
+    private fun dineInUpdateOrder() {
+
+
+        viewModel.updateOrder.observe(viewLifecycleOwner, { event ->
+            event.getContentIfNotHandled()?.let {
+
+                prefProvider.setValue(ORDER_TYPE, TAKEOUT)
+                viewModel.deleteCart()
+                val bundle = Bundle()
+                bundle.putParcelable("cartList", cartList[0])
+                bundle.putBoolean("isGuestPaid", false)
+
+                cartList[0].orderId?.let { it1 -> bundle.putInt("orderId", it1) }
+
+
+                findNavController().navigate(
+                    R.id.action_dashboardCategoryBoldPOS_to_dineInOrderTable,
+                    bundle
+                )
+
+            }
+        })
+
+    }
+
+
 }
