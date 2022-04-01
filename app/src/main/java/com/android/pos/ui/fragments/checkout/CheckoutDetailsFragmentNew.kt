@@ -380,12 +380,10 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
                             }
                             if (custom_paymentAmount != 0.0 && isSelectedCount != 1) {
                                 var splitChange = 0.0
-                                if (cashDiscountType == "CashDiscount") {
-                                    splitChange =
-                                        custom_paymentAmount - paymentAmount + cashDiscountSurcharge
+                                splitChange = if (cashDiscountType == "CashDiscount") {
+                                    custom_paymentAmount - paymentAmount + cashDiscountSurcharge
                                 } else {
-                                    splitChange =
-                                        custom_paymentAmount - paymentAmount
+                                    custom_paymentAmount - paymentAmount
                                 }
 
                                 bundle.putDouble(
@@ -420,11 +418,10 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
                                 String.format("%.2f", remainingValue).toString()
                             )
                         } else {
-                            if (cashDiscountType == "CashDiscount") {
-                                remainingValue =
-                                    wholePrice - (paymentAmount + cashDiscountSurcharge)
+                            remainingValue = if (cashDiscountType == "CashDiscount") {
+                                wholePrice - (paymentAmount + cashDiscountSurcharge)
                             } else {
-                                remainingValue = wholePrice - paymentAmount
+                                wholePrice - paymentAmount
                             }
                             bundle.putDouble(
                                 "remainingAmount",
@@ -535,14 +532,14 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
                             bundle.putDouble("PaidAmount", remainingAmount)
                         }
 
-                        var wholePrice =
+                        val wholePrice =
                             prefProvider.getValue(Constants.WHOLE_AMOUNT, "0.0").toDouble()
                         bundle.putDouble("WholetotalPrice", wholePrice)
                         var remainingValue = 0.0
-                        if (cashDiscountType == "SurCharge") {
-                            remainingValue = (wholePrice + cashDiscountSurcharge) - paymentAmount
+                        remainingValue = if (cashDiscountType == "SurCharge") {
+                            (wholePrice + cashDiscountSurcharge) - paymentAmount
                         } else {
-                            remainingValue = wholePrice - paymentAmount
+                            wholePrice - paymentAmount
                         }
 
                         bundle.putDouble(
@@ -990,7 +987,7 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
     }
 
     private fun splitAllAmounts(TAG: String, amount: Double) {
-        var remainingValue = prefProvider.getValue(TAG, "").toDouble() - amount
+        val remainingValue = prefProvider.getValue(TAG, "").toDouble() - amount
         prefProvider.setValue(TAG, String.format("%.2f", remainingValue))
         Log.d(TAG, "splitAllAmounts: " + prefProvider.getValue(TAG, "").toDouble())
     }

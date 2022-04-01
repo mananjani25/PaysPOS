@@ -120,9 +120,11 @@ class TransactionDetailsFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
         binding.imgBack.setOnClickListener {
-            val navControll = findNavController()
-            navControll.previousBackStackEntry?.savedStateHandle?.set(KEY, arguments)
-            navControll.popBackStack()
+//            val navControll = findNavController()
+//            navControll.previousBackStackEntry?.savedStateHandle?.set(KEY, arguments)
+//            navControll.popBackStack()
+
+            findNavController().popBackStack(R.id.transactionFragment, false)
         }
 
         binding.txtHome.setOnClickListener {
