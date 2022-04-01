@@ -20,9 +20,7 @@ import com.android.pos.data.remote.Constants.ACTIVE_ORDER
 import com.android.pos.data.remote.Constants.CANCELED_ORDER
 import com.android.pos.data.remote.Constants.COMPLETED_ORDER
 import com.android.pos.data.remote.Constants.KEY
-import com.android.pos.data.remote.Constants.UPCOMING_ORDER
 import com.android.pos.databinding.FragmentInventoryBinding
-import com.android.pos.ui.activities.MainActivity
 import com.android.pos.ui.adapter.InventoryAdapter
 import com.android.pos.utils.statusUtils.Status
 import dagger.hilt.android.AndroidEntryPoint
@@ -238,7 +236,7 @@ class Orders : Fragment() {
             }
         }
         binding.recyclerViewItemsList.adapter =
-            InventoryAdapter(requireContext(), list, object : InventoryAdapter.InventoryListner {
+            InventoryAdapter(requireContext(), list, false, object : InventoryAdapter.InventoryListner {
                 override fun onItemSelect(position: Int) {
                     Log.e(TAG, "position  $position")
                     changePosition(position)

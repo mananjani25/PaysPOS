@@ -183,6 +183,8 @@ class TransactionDetailsViewModel @Inject constructor(
         refundReason: String
     ) {
 
+        _showProgress.value = Event(true)
+
         val order = refundRequestModel.paymentRefund
 
         val cashLogRequest = order?.employeeId?.let {

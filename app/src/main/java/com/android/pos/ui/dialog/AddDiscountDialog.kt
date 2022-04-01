@@ -128,7 +128,7 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
                     selectedListPos = discountAdapter.selectedPosition
                 if (defaultModel.discountType == getString(R.string.disc_percentage)) {
                     if (discountAdapter.selectedPosition != -1) {
-                        var applydis = discountAdapter.discountList[selectedListPos].percentage
+                        val applydis = discountAdapter.discountList[selectedListPos].percentage
                         binding.edtAmount.setText(
                             MethodUtils.roundOffAmountString(
                                 Math.round(applydis)
@@ -366,8 +366,9 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
     private fun setupData() {
 
         binding.llKeypad.txtClear.setOnClickListener {
-
+            binding.edtAmount.removeTextChangedListener(this)
             binding.edtAmount.setText("0.00")
+            binding.edtAmount.addTextChangedListener(this)
 
             discountAdapter.clearSelectedItem()
             selectedListPos = -1
@@ -612,8 +613,6 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
 
         } else {
             binding.edtAmount.append(number)
-
-
         }
     }
 

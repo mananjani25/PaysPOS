@@ -781,6 +781,17 @@ class CartFragment(val itemClickListner: ItemClickListner?) : Fragment(), MyCall
     }
 
     override fun onItemSelected(headerPosition: Int, position: Int, item: TbItem) {
+        Log.e(TAG,"onDineinItemClick")
+        viewModel.dineInSelectedItemHeaderPos = headerPosition
+
+        itemClickListner?.onItemUpdate(item)
+        /* if (prefProvider.getValue(ORDER_TYPE, "") == Constants.DINE_IN) {
+             val dineinList = dineInCartAdapter.getList()
+             dineinList.get(0).selectedPosition = viewModel.dineInHeaderPosition
+
+             viewModel.cartLogic(cartlist, item, Constants.UPDATE, false, dineInList = dineinList)
+
+         }*/
     }
 
     override fun onCustomerClicked(position: Int, isRemoved: Boolean) {
@@ -977,6 +988,8 @@ class CartFragment(val itemClickListner: ItemClickListner?) : Fragment(), MyCall
 
             val popupMenu = PopupMenu(requireContext(), it)
             popupMenu.menuInflater.inflate(R.menu.cart_menu, popupMenu.menu)
+            if (prefProvider.getValue(Constants.CUSTOMER_NAME, "").isEmpty())
+                popupMenu.menu.findItem(R.id.menu_remove_customer).isVisible = false
             popupMenu.setOnMenuItemClickListener { menuItem ->
                 when (menuItem.itemId) {
                     R.id.menu_clear_cart -> {

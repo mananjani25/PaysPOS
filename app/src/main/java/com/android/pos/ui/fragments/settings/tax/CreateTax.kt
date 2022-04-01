@@ -125,7 +125,7 @@ class CreateTax : Fragment() {
 
         binding.header.txtSave.setOnClickListener {
 
-            var rate = binding.edtAmount.text.toString()
+            val rate = binding.edtAmount.text.toString()
             var rate_double = 0.0
             if (rate.isNotEmpty()) {
                 rate_double = MethodUtils.roundOffAmountDouble(rate.toDouble())

@@ -177,6 +177,19 @@
                 android:src="@drawable/ic_lock"
                 app:tint="@color/txtColor" />
 
+            <TextView
+                android:id="@+id/txtHome"
+                style="@style/CustomFontBold"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginEnd="@dimen/_15sdp"
+                android:text="@string/tv_home"
+                android:textAllCaps="true"
+                android:textColor="@color/btnColor"
+                android:textSize="@dimen/_6mdpi"  />
+
+
         </androidx.appcompat.widget.LinearLayoutCompat>
     </RelativeLayout>
 </layout>

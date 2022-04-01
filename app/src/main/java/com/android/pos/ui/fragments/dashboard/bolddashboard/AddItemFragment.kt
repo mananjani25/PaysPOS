@@ -7,7 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
@@ -173,7 +172,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment() {
                 if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == Constants.DINE_IN) {
                     val dineInList = cartList[0].dineInList
                     Log.e(TAG, "dineInList:  ${Gson().toJson(dineInList)}")
-                    dineInList!![0].selectedPosition = viewModel.dineInHeaderPosition
+                    dineInList!![0].headerPosition = viewModel.dineInSelectedItemHeaderPos
                     viewModel.cartLogic(cartList, item, Constants.UPDATE, false, dineInList)
                 } else {
 
@@ -225,12 +224,16 @@ class AddItemFragment(val listner: ItemListner) : Fragment() {
         binding.txtRemoveItem.setOnClickListener {
 
             item.isEdited = false
+            Log.e(TAG,"cartListItemDelete  ${Gson().toJson(cartList)}")
             viewModel.cartLogic(cartList, item, DELETE, false)
             listner.onCancelItemSelected()
 
         }
 
-        requireActivity().supportFragmentManager.setFragmentResultListener("request_key_note",viewLifecycleOwner) { requestKey: String, bundle: Bundle ->
+        requireActivity().supportFragmentManager.setFragmentResultListener(
+            "request_key_note",
+            viewLifecycleOwner
+        ) { requestKey: String, bundle: Bundle ->
             val note = bundle.getString("note")
             item.note = note.toString()
         }
