@@ -979,7 +979,7 @@ class CartFragment(val itemClickListner: ItemClickListner?) : Fragment(), MyCall
 
     private fun initListeners() {
 
-        binding.txtDineInProceed.setOnClickListener {
+        binding.relPreoceedToFire.setOnClickListener {
             if (viewModel.restrictedAmount(binding.txtTotal)) {
                 if (cartlist.isNotEmpty()) {
                     if (prefProvider.getValueboolean(DINE_IN_UPDATE, false)) {
