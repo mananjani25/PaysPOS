@@ -59,7 +59,6 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
 import javax.inject.Inject
-import kotlin.collections.ArrayList
 
 @AndroidEntryPoint
 class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
@@ -409,7 +408,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
             bundle.putInt("orderId", orderId ?: 0)
             bundle.putInt(GUEST_POSITION, 0)
-            prefProvider.setValue(Constants.ORDER_TYPE,Constants.DINE_IN)
+            prefProvider.setValue(Constants.ORDER_TYPE, Constants.DINE_IN)
 //            orderId?.let { it1 -> prefProvider.setValueInt("ORDER_ID", it1) }
 
             findNavController().navigate(
@@ -977,7 +976,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         } else {
             bundle.putBoolean("isLastPayment", false)
         }
-        prefProvider.setValue(Constants.ORDER_TYPE,Constants.DINE_IN)
+        prefProvider.setValue(Constants.ORDER_TYPE, Constants.DINE_IN)
         findNavController().navigate(
             R.id.action_dineInOrderTable_to_checkoutDineIN,
             bundle
