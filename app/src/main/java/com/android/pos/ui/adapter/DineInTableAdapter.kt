@@ -2,11 +2,14 @@ package com.android.pos.ui.adapter
 
 import android.annotation.SuppressLint
 import android.graphics.Paint
+import android.os.Build
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.RecyclerView
+import com.android.pos.R
 import com.android.pos.data.entities.TbItem
 import com.android.pos.data.entities.TbServiceCharge
 import com.android.pos.data.model.DineInModel
@@ -177,22 +180,23 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                 binding.txtTableName.setText(list.get(layoutPosition).title)
 
             }
-
+//            btnColorDark
+//            colorGreen/
             if (isPaid && !noItem) {
-                binding.btnPay.visibility = View.GONE
-                binding.btnPaid.visibility = View.VISIBLE
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    binding.btnPay.setBackgroundColor(binding.root.context.getColor(R.color.colorGreen))
+                    binding.txtPay.text = "Paid"
+                }
 
             } else if (list.get(position).isPaid) {
-                binding.btnPay.visibility = View.GONE
-                binding.btnPaid.visibility = View.VISIBLE
-
-
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    binding.btnPay.setBackgroundColor(binding.root.context.getColor(R.color.colorGreen))
+                    binding.txtPay.text = "Paid"
+                }
             } else if (noItem && guestAmt == 0.0) {
-                binding.btnPaid.visibility = View.GONE
                 binding.btnPay.visibility = View.GONE
             } else {
                 binding.btnPay.visibility = View.VISIBLE
-                binding.btnPaid.visibility = View.INVISIBLE
 
             }
             if (noItem) {
@@ -202,9 +206,10 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             }
 
             if (list[layoutPosition].title?.lowercase() == "Whole Table".lowercase() || list.get(0).totalGuestCount == 1) {
-                binding.btnPay.visibility = View.GONE
-                binding.btnPaid.visibility = View.INVISIBLE
-                //  binding.txtTotal.visibility = View.INVISIBLE
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    binding.btnPay.setBackgroundColor(binding.root.context.getColor(R.color.colorGreen))
+                    binding.txtPay.text = "Paid"
+                }
             } else {
                 // binding.txtTotal.visibility = View.VISIBLE
             }
@@ -243,7 +248,9 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             Log.e(TAG, "")
             if (list.get(0).orderDiscount > 0) {
                 guestOrderDisShare =
-                    (finalAmt * list.get(0).orderDiscount) / (list.get(0).orderTotalAmount + list.get(0).orderDiscount)
+                    (finalAmt * list.get(0).orderDiscount) / (list.get(0).orderTotalAmount + list.get(
+                        0
+                    ).orderDiscount)
 
                 Log.e("TODAY", "guestOrderDisShare  ${guestOrderDisShare}")
 
@@ -258,8 +265,10 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
             // Log.e(TAG,"guestDivided  ${list.get(0).guestDividedAmt}")
 
-
-            binding.txtPay.setText("Pay " + MethodUtils.roundOffAmount(finalAmt))
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                binding.btnPay.setBackgroundColor(binding.root.context.getColor(R.color.btnColorDark))
+            }
+            binding.txtPay.text = "Pay " + MethodUtils.roundOffAmount(finalAmt)
 
             binding.btnPay.setOnClickListener {
                 listner.onGuestPay(

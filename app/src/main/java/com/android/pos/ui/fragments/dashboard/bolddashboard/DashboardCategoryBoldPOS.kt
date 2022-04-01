@@ -375,14 +375,23 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                 viewModel.createCart(cartList)
             }
             item.itemQuantity = 1
+            if (cartList.size > 0) {
 
-            if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == Constants.DINE_IN) {
-                var dineInList = cartList[0].dineInList
-                dineInList!![0]?.selectedPosition = viewModel.dineInHeaderPosition
-                viewModel.cartLogic(cartList, item, Constants.ADD, false, dineInList = dineInList)
-            } else {
-                viewModel.cartLogic(cartList, item, Constants.ADD, false)
+                if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == Constants.DINE_IN) {
+                    var dineInList = cartList[0].dineInList
+                    dineInList!![0]?.selectedPosition = viewModel.dineInHeaderPosition
+                    viewModel.cartLogic(
+                        cartList,
+                        item,
+                        Constants.ADD,
+                        false,
+                        dineInList = dineInList
+                    )
+                } else {
+                    viewModel.cartLogic(cartList, item, Constants.ADD, false)
+                }
             }
+
         }
     }
 
