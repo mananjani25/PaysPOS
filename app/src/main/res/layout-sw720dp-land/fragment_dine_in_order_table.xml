@@ -269,6 +269,7 @@
                     android:textSize="@dimen/_5mdpi"
                     android:visibility="gone" />
 
+
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/txtTotalAmountNew"
                     style="@style/CustomFontBold"

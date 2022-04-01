@@ -1,5 +1,6 @@
 package com.android.pos.ui.adapter.boldpos
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
@@ -10,6 +11,8 @@ import com.android.pos.utils.callback.UpdateVariationCallback
 
 class VariationListAdapter() :
     RecyclerView.Adapter<VariationListAdapter.MyViewHolder>() {
+    private val TAG = "VariationListAdapter"
+
 
     var showVariationPriceClick: ((VariationsAttribute) -> Unit)? = null
     private var mpos: Int = 0
@@ -40,7 +43,9 @@ class VariationListAdapter() :
                 it
             )
         }
-        itemBinding.txtVariation.isSelected = mpos == position
+        Log.e(TAG,"mpos:  ${mpos}")
+
+        itemBinding.linearParent.isSelected = mpos == position
 
 
     }
