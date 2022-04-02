@@ -10,6 +10,7 @@ import com.android.pos.R
 import com.android.pos.data.entities.CartModel
 import com.android.pos.data.entities.TbItem
 import com.android.pos.data.model.ManualSaleCartModel
+import com.android.pos.databinding.ViewItemCartBinding
 import com.android.pos.databinding.ViewManualSaleItemBinding
 import com.android.pos.utils.CustomSwipeLayout.SwipeLayout
 import com.android.pos.utils.MethodUtils
@@ -24,14 +25,13 @@ class ManualSaleCartAdapter : RecyclerView.Adapter<ManualSaleCartAdapter.MyViewH
     var  viewBinderHelper :ViewBinderHelper = ViewBinderHelper()
 
     @SuppressLint("ClickableViewAccessibility")
-    inner class MyViewHolder(private val binding: ViewManualSaleItemBinding) :
+    inner class MyViewHolder(private val binding: ViewItemCartBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
-        private val txtItem: TextView = binding.root.findViewById(R.id.txtItem)
         fun bind(model: TbItem, pos: Int) {
            // viewBinderHelper.bind(binding.swipeLayout,absoluteAdapterPosition.toString())
             binding.txtQuantity.text = "x ${model.itemQuantity}"
-            binding.txtItemPrice.text = "$"+model.price
+            binding.txtEachQntPrice.text = "$"+model.price
             binding.txtTotalPrice.text = "$"+MethodUtils.roundOffAmountString((model.price * model.itemQuantity))
 
 
@@ -43,21 +43,19 @@ class ManualSaleCartAdapter : RecyclerView.Adapter<ManualSaleCartAdapter.MyViewH
                 binding.txtNote.visibility = View.INVISIBLE
 
             }
-            txtItem.text = list[pos].name
-/*
+            binding.txtName.text = list[pos].name
             if (list[pos].discountPrice != 0.0) {
-                binding.txtItemPrice.paintFlags =
-                    binding.txtItemPrice.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
+                binding.txtTotalPrice.paintFlags =
+                    binding.txtTotalPrice.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
                 val dPrice = (list[pos].price * list[pos].itemQuantity) - list[pos].discountPrice
 
-                MethodUtils.setPriceTextView(binding.txtDiscountPrice, dPrice)
+                MethodUtils.setPriceTextView(binding.tvDiscountRate, dPrice)
             } else {
-                binding.txtItemPrice.paintFlags = 0
-                binding.txtDiscountPrice.text = ""
+                binding.txtTotalPrice.paintFlags = 0
+                binding.tvDiscountRate.text = ""
             }
-*/
 
-            binding.model = model
+            //binding.model = model
             binding.executePendingBindings()
 
         }
@@ -87,7 +85,7 @@ class ManualSaleCartAdapter : RecyclerView.Adapter<ManualSaleCartAdapter.MyViewH
 //
 //                false
 //            }
-            binding.llRoot.setOnClickListener {
+            itemView.setOnClickListener {
                 listnerCall.onItemClicked(list[layoutPosition], layoutPosition)
             }
 
@@ -120,7 +118,7 @@ class ManualSaleCartAdapter : RecyclerView.Adapter<ManualSaleCartAdapter.MyViewH
         viewType: Int
     ): ManualSaleCartAdapter.MyViewHolder {
         val binding =
-            ViewManualSaleItemBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+            ViewItemCartBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return MyViewHolder(binding)
 
     }

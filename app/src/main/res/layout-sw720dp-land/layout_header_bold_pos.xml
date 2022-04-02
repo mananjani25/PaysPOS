@@ -187,7 +187,8 @@
                 android:text="@string/tv_home"
                 android:textAllCaps="true"
                 android:textColor="@color/btnColor"
-                android:textSize="@dimen/_6mdpi"  />
+                android:textSize="@dimen/_6mdpi"
+                android:visibility="gone"/>
 
 
         </androidx.appcompat.widget.LinearLayoutCompat>

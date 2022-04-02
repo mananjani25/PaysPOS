@@ -205,11 +205,8 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             }
 
             if (list[layoutPosition].title?.lowercase() == "Whole Table".lowercase() || list.get(0).totalGuestCount == 1) {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    binding.btnPay.setBackgroundColor(binding.root.context.getColor(R.color.colorGreen))
-                    binding.txtPay.text = "Paid"
-                    binding.btnPay.visibility  = View.GONE
-                }
+                binding.txtPay.visibility = View.GONE
+
             } else {
                 // binding.txtTotal.visibility = View.VISIBLE
             }

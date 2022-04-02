@@ -17,7 +17,6 @@
     </data>
 
     <androidx.appcompat.widget.LinearLayoutCompat
-        android:id="@+id/llRoot"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical">
@@ -26,19 +25,45 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:paddingHorizontal="@dimen/_6sdp"
-            android:paddingTop="@dimen/_6sdp"
+            android:paddingStart="@dimen/_6sdp"
+            android:paddingTop="@dimen/_4sdp"
+            android:paddingEnd="@dimen/_6sdp"
+            android:paddingBottom="@dimen/_4sdp"
             android:weightSum="3.7">
 
-            <TextView
-                android:id="@+id/txtItem"
-                style="@style/CustomFontSemiBold"
+
+            <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="2"
-                android:text="Item Name"
-                android:textColor="@color/txtColor"
-                android:textSize="@dimen/_5mdpi" />
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/txtName"
+                    style="@style/CustomFontSemiBold"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/txtColor"
+                    android:textSize="@dimen/_6mdpi"
+                    tools:text="Item Name" />
+
+                <TextView
+                    android:id="@+id/txtNote"
+                    style="@style/CustomFontRegularStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="start"
+                    android:ellipsize="end"
+                    android:gravity="start"
+                    android:lines="1"
+                    android:maxLines="1"
+                    android:singleLine="true"
+                    android:textColor="@color/btnColor"
+                    android:textSize="@dimen/_5mdpi"
+                    android:visibility="gone"
+                    tools:text="Item Name" />
+
+            </LinearLayout>
 
             <TextView
                 android:id="@+id/txtQuantity"
@@ -50,10 +75,10 @@
                 android:gravity="start"
                 android:text="Qty"
                 android:textColor="@color/txtColor"
-                android:textSize="@dimen/_5mdpi" />
+                android:textSize="@dimen/_6mdpi" />
 
             <TextView
-                android:id="@+id/txtItemPrice"
+                android:id="@+id/txtEachQntPrice"
                 style="@style/CustomFontSemiBold"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -62,43 +87,41 @@
                 android:gravity="end"
                 android:text="Each"
                 android:textColor="@color/txtColor"
-                android:textSize="@dimen/_5mdpi" />
+                android:textSize="@dimen/_6mdpi" />
 
-
-            <TextView
-                android:id="@+id/txtTotalPrice"
-                style="@style/CustomFontSemiBold"
+            <LinearLayout
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_gravity="end"
                 android:layout_weight="0.7"
-                android:gravity="end"
-                android:text="Total"
-                android:textColor="@color/txtColor"
-                android:textSize="@dimen/_5mdpi" />
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/txtTotalPrice"
+                    style="@style/CustomFontSemiBold"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end"
+                    android:gravity="end"
+                    android:text="Total"
+                    android:textColor="@color/txtColor"
+                    android:textSize="@dimen/_6mdpi" />
+
+                <TextView
+                    android:id="@+id/tvDiscountRate"
+                    style="@style/CustomFontSemiBold"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end"
+                    android:gravity="end"
+                    android:textColor="@color/btnColor"
+                    android:textSize="@dimen/_6mdpi"
+                    android:visibility="visible"
+                    tools:text="@string/_0_00" />
+
+            </LinearLayout>
 
 
         </LinearLayout>
-
-        <TextView
-            android:id="@+id/txtNote"
-            style="@style/CustomFontRegularStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="start"
-            android:ellipsize="end"
-            android:gravity="start"
-            android:lines="1"
-            android:maxLines="1"
-            android:singleLine="true"
-            android:textColor="@color/hint_color"
-            android:textSize="@dimen/_6mdpi"
-            android:visibility="gone"
-            android:paddingTop="@dimen/_1sdp"
-            android:paddingHorizontal="@dimen/_6sdp"
-
-            tools:text="Item Name" />
-
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvModifiers"
