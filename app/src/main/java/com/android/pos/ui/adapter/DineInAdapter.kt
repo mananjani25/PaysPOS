@@ -126,7 +126,7 @@ class DineInAdapter : RecyclerView.Adapter<DineInAdapter.MyViewHolder>() {
                             if (list.get(layoutPosition).customer != null) {
                                 //list.get(layoutPosition).customer = null
                                 listner.onCustomerClicked(layoutPosition, true)
-                                binding.llCustomerDialog.visibility = View.GONE
+                                    binding.llCustomerDialog.visibility = View.GONE
 
                             } else {
                                 listner.onCustomerClicked(layoutPosition, false)
@@ -163,7 +163,7 @@ class DineInAdapter : RecyclerView.Adapter<DineInAdapter.MyViewHolder>() {
             Log.e(TAG, "ItemWithDine")
             list.get(0).itemPosition = position
             list.get(0).headerPosition = layoutPosition
-            listner.onItemSelected(layoutPosition, position ?: 0, data)
+            listner.onItemSelected(bindingAdapterPosition, position ?: 0, data)
 
         }
 

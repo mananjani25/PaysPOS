@@ -9,6 +9,7 @@ import androidx.appcompat.widget.PopupMenu
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
@@ -618,6 +619,41 @@ class CartFragment(val itemClickListner: ItemClickListner?) : Fragment(), MyCall
 
 
                     }
+                    if (isAdded) {
+
+                        setFragmentResultListener("request_key_customer_dine_in") { _, bundle ->
+                            val result = bundle.getParcelable<TbCustomer>("data")
+                            if (result != null) {
+                                val list1 = cartlist.get(0).dineInList
+
+
+                                if (list1?.isNotEmpty() == true) {
+
+                                    var position = bundle.getInt("position")
+
+                                    val dineInList = list1
+                                    if (dineInList.size >= position && position != 0) {
+
+
+                                        dineInList.get(position).customer = result
+
+                                        Log.e(TAG, "UpdateCustomerPostition ${position}")
+                                        Log.e(
+                                            TAG,
+                                            "UpdateCustomer ${dineInList.get(position).customer}"
+                                        )
+
+                                        viewModel.dineInCartUpdate(
+                                            cartlist,
+                                            dineInList
+                                        )
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+
                 } else {
 
                     if (it.isNotEmpty()) {
@@ -791,6 +827,7 @@ class CartFragment(val itemClickListner: ItemClickListner?) : Fragment(), MyCall
     override fun onItemSelected(headerPosition: Int, position: Int, item: TbItem) {
         Log.e(TAG, "onDineinItemClick")
         viewModel.dineInSelectedItemHeaderPos = headerPosition
+        viewModel.dineInHeaderPosition = headerPosition
 
         itemClickListner?.onItemUpdate(item)
         /* if (prefProvider.getValue(ORDER_TYPE, "") == Constants.DINE_IN) {
@@ -803,6 +840,7 @@ class CartFragment(val itemClickListner: ItemClickListner?) : Fragment(), MyCall
     }
 
     override fun onCustomerClicked(position: Int, isRemoved: Boolean) {
+        Log.e(TAG, "onCustomerClicked  ${isRemoved}")
         if (isRemoved) {
             if (cartlist.get(0).dineInList?.size!! >= position) {
                 val dineIn = cartlist.get(0).dineInList
@@ -838,7 +876,6 @@ class CartFragment(val itemClickListner: ItemClickListner?) : Fragment(), MyCall
                     Constants.DELETE, false,
                     dineInList = dineInCartAdapter.getList()
                 )
-
 
 
             }
@@ -937,7 +974,7 @@ class CartFragment(val itemClickListner: ItemClickListner?) : Fragment(), MyCall
                     clearCustomer()
                     viewModel.deleteCart()
                     cartlist.clear()
-                    isOrderUpdate=false
+                    isOrderUpdate = false
                     prefProvider.setValue(ORDER_TYPE, TAKEOUT)
                     prefProvider.setValueboolean(Constants.LOYALTY_ADDED, false)
 
