@@ -1048,6 +1048,10 @@
             android:id="@+id/action_dineInFragment_to_mergeTableDialog"
             app:destination="@id/mergeTableDialog"
             app:enterAnim="@anim/nav_default_enter_anim" />
+        <action
+            android:id="@+id/action_dineInFragment_to_menuFragment"
+            app:destination="@id/menuFragment"
+            app:enterAnim="@anim/nav_default_enter_anim" />
     </fragment>
     <fragment
         android:id="@+id/dineInGuestFragment"
