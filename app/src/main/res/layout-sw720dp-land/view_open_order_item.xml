@@ -129,6 +129,7 @@
                 android:layout_gravity="center"
                 android:layout_weight="1"
                 android:gravity="center"
+                android:layout_marginRight="@dimen/_3sdp"
                 android:text="@{@string/symbole +``+String.format(@string/format,viewModel.totalAmount)}"
                 android:textColor="@color/txtColor"
                 android:textSize="@dimen/_6mdpi"
