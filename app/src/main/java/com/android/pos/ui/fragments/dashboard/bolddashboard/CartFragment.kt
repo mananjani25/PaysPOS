@@ -497,8 +497,6 @@ class CartFragment(val itemClickListner: ItemClickListner?) : Fragment(), MyCall
             ).observe(requireActivity()) {
                 Log.e(TAG, "listSize  ${Gson().toJson(it)}")
 
-
-
                 if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == Constants.DINE_IN) {
                     if (it.isNotEmpty()) {
                         Log.e(TAG, "cartListDine:  ${Gson().toJson(it)}")
@@ -881,7 +879,7 @@ class CartFragment(val itemClickListner: ItemClickListner?) : Fragment(), MyCall
                 // Do positive stuff here
                 if (prefProvider.getValue(ORDER_TYPE, "").toString() == Constants.DINE_IN) {
                     prefProvider.setValueInt(Constants.DINE_INGUEST_SELECTED, 0)
-                    Log.e(TAG, "DineInClearTable")
+
                     if (cartlist.size > 0) {
 
                         val dList = cartlist[0].dineInList ?: arrayListOf()

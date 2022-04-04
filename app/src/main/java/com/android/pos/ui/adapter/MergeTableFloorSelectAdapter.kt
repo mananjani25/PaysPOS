@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.app.AlertDialog
 import android.graphics.Color
 import android.graphics.Typeface
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -15,7 +14,6 @@ import com.android.pos.data.model.MergeFloorModel
 import com.android.pos.data.model.MergeTableListModel
 import com.android.pos.data.model.MergeTableModel
 import com.android.pos.databinding.ViewMergeTableListBinding
-import com.android.pos.utils.AlertUtils
 
 
 class MergeTableFloorSelectAdapter :
@@ -81,7 +79,7 @@ class MergeTableFloorSelectAdapter :
                 if (absoluteAdapterPosition >= 0 && absoluteAdapterPosition < selectedFloorTable.size) {
                     selectedFloorTable.removeAt(absoluteAdapterPosition)
                 }
-                binding.txtselectprimarytable.text = "Select Table to Merge"
+               // binding.txtselectprimarytable.text = "Select Table to Merge"
                 val textView = TextView(binding.root.context)
                 textView.text = "Select Floor Plan"
                 textView.setPadding(20, 20, 20, 20)
@@ -112,7 +110,7 @@ class MergeTableFloorSelectAdapter :
                 alertDialog.show()
 
             }
-            binding.txtselectprimarytable.setOnClickListener {
+           /* binding.txtselectprimarytable.setOnClickListener {
                 if (floorplanSecondaryId != 0) {
                     val textView = TextView(binding.root.context)
                     textView.text = "Select Table to Merge"
@@ -134,7 +132,7 @@ class MergeTableFloorSelectAdapter :
                                 addFloorPlanTableId(floorplanSecondaryId, tableId)
                             }
                         }
-                        binding.txtselectprimarytable.text = tabledefault[which]
+                      //  binding.txtselectprimarytable.text = tabledefault[which]
                     }
                     val alertDialog: AlertDialog = builder.create()
                     alertDialog.show()
@@ -147,7 +145,7 @@ class MergeTableFloorSelectAdapter :
                     }
                 }
 
-            }
+            }*/
 
             binding.imgDelete.setOnClickListener {
                 if (absoluteAdapterPosition != 0) {
