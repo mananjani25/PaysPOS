@@ -5,8 +5,7 @@
 
     <item
         android:id="@+id/assign_customer"
-        android:title="@string/assign_customer"
-        tools:ignore="HardcodedText" />
+        android:title="@string/assign_customer" />
 
 
 </menu>

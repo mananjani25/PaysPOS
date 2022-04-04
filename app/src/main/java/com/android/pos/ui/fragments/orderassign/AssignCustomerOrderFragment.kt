@@ -216,6 +216,7 @@ class AssignCustomerOrderFragment : Fragment(), ItemCallback {
         }
 
         if (isFromDineIn == true) {
+            Log.e(TAG, "isFromDineIn:  ${isFromDineIn}")
             setFragmentResult("request_key_customer_dine_in", result)
         } else {
             setFragmentResult("request_key_customer", result)
@@ -227,7 +228,6 @@ class AssignCustomerOrderFragment : Fragment(), ItemCallback {
             "FROM_CUSTOMER"
         )
         navController.popBackStack()
-
 
 
     }
