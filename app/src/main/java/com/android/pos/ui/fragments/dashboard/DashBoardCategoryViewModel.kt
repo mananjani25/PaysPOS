@@ -73,7 +73,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
 
     var dineInHeaderPosition: Int = 0
-    var dineInSelectedItemHeaderPos : Int = 0
+    var dineInSelectedItemHeaderPos: Int = 0
     val TAG = "DashBoardCateViewModel"
     var totalPrice: Double = 0.0
     var totalCount = 0
@@ -614,7 +614,6 @@ class DashBoardCategoryViewModel @Inject constructor(
                             addCart(cartModel)
                         }
                     }
-
 
 
                 }

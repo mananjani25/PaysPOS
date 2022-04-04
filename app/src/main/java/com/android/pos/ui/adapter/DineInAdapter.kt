@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.PopupMenu
+import androidx.core.view.get
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.R
@@ -119,6 +120,15 @@ class DineInAdapter : RecyclerView.Adapter<DineInAdapter.MyViewHolder>() {
             binding.imgOrderMenu.setOnClickListener {
                 val popupMenu = PopupMenu(itemView.context, it)
                 popupMenu.menuInflater.inflate(R.menu.assign_customer_menu, popupMenu.menu)
+                if (list[layoutPosition].customer == null) {
+                    popupMenu.menu.get(0).setTitle("Assign Customer")
+                } else {
+                    popupMenu.menu.get(0).setTitle("Remove Customer")
+                }
+
+
+
+
 
                 popupMenu.setOnMenuItemClickListener { menuItem ->
                     when (menuItem.itemId) {
@@ -163,7 +173,7 @@ class DineInAdapter : RecyclerView.Adapter<DineInAdapter.MyViewHolder>() {
             Log.e(TAG, "ItemWithDine")
             list.get(0).itemPosition = position
             list.get(0).headerPosition = layoutPosition
-            listner.onItemSelected(layoutPosition, position ?: 0, data)
+            listner.onItemSelected(bindingAdapterPosition, position ?: 0, data)
 
         }
 

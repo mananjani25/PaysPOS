@@ -85,14 +85,6 @@ class DineInFragment : Fragment() {
         binding.layoutHeader.txtMerge.setTextColor(resources.getColor(R.color.txtColor))
         binding.layoutHeader.txtDineinordere.setTextColor(resources.getColor(R.color.btnColor))
 
-        binding.layoutHeader.txtTransaction.setOnClickListener {
-            findNavController().navigate(R.id.action_dineInFragment_to_transactionFragment)
-        }
-
-
-        binding.layoutHeader.txtMerge.setOnClickListener {
-            loadFloorPlanDetails()
-        }
 
 
 
@@ -102,17 +94,37 @@ class DineInFragment : Fragment() {
             setFloorPlan(dineInFloorTablesList)
         }
 
+
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        onClick()
+
+
+    }
+
+    private fun onClick() {
+        binding.layoutHeader.txtTransaction.setOnClickListener {
+            findNavController().navigate(R.id.action_dineInFragment_to_transactionFragment)
+        }
+
+        binding.layoutHeader.txtMerge.setOnClickListener {
+            loadFloorPlanDetails()
+        }
         binding.layoutHeader.txthome.setOnClickListener {
-            findNavController().popBackStack(R.id.dashboardCategoryNew, false)
+            findNavController().popBackStack()
         }
         binding.layoutHeader.imgDrawer.setOnClickListener {
-            findNavController().popBackStack(
-                R.id.menuPOS,
-                false
+            findNavController().navigate(
+                R.id.action_dineInFragment_to_menuFragment
+
             )
 
         }
-        return binding.root
+
+
     }
 
 
@@ -195,10 +207,10 @@ class DineInFragment : Fragment() {
                                     arrayListOf()
                                 )
                             )
-                            /* findNavController().navigate(
-                                 R.id.action_dineInFragment_to_mergetablefragment,
+                             findNavController().navigate(
+                                 R.id.action_dineInFragment_to_mergeTableDialog,
                                  bundle
-                             )*/
+                             )
 
                         } else {
                             AlertUtils.showCustomAlertWithListenerWithOK(

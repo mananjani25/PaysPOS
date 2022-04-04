@@ -283,8 +283,9 @@ class MergeTableFragment : Fragment() {
                 ) { _, _ ->
 
                 }
-            }
+            } else {
 //            viewModel.mergeTable(primarytableId)
+            }
         }
 //        binding.save.setOnClickListener {
 //            var listSecondary = adapter.getList()

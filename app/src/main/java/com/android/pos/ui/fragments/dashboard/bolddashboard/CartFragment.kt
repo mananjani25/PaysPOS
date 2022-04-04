@@ -18,6 +18,7 @@ import com.android.pos.data.model.DineInOrderDetailAttributes
 import com.android.pos.data.model.responseModel.GetFloorPlanResponse
 import com.android.pos.data.model.responseModel.GetOrderDetailsResponse
 import com.android.pos.data.remote.Constants
+import com.android.pos.data.remote.Constants.DINE_IN
 import com.android.pos.data.remote.Constants.DINE_IN_LIST_EDIT
 import com.android.pos.data.remote.Constants.DINE_IN_UPDATE
 import com.android.pos.data.remote.Constants.MANUAL_SALE
@@ -120,6 +121,7 @@ class CartFragment(val itemClickListner: ItemClickListner?) : Fragment(), MyCall
     }
 
     private fun displayCustomer() {
+
 
         val name = prefProvider.getValue(Constants.CUSTOMER_NAME, "")
         Log.e("Customer Name", name)
@@ -499,6 +501,7 @@ class CartFragment(val itemClickListner: ItemClickListner?) : Fragment(), MyCall
 
                 if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == Constants.DINE_IN) {
                     if (it.isNotEmpty()) {
+                        Log.e(TAG, "cartListDine:  ${Gson().toJson(it)}")
                         binding.rvCartList.adapter = dineInCartAdapter
                         cartlist = it as ArrayList<CartModel>
                         if (isFromPayment) {
@@ -618,6 +621,8 @@ class CartFragment(val itemClickListner: ItemClickListner?) : Fragment(), MyCall
 
 
                     }
+
+
                 } else {
 
                     if (it.isNotEmpty()) {
@@ -736,6 +741,11 @@ class CartFragment(val itemClickListner: ItemClickListner?) : Fragment(), MyCall
 
                 }
 
+                if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == DINE_IN) {
+                    binding.txtAddCustomer.gone()
+                } else {
+                    binding.txtAddCustomer.visible()
+                }
 
             }
 
@@ -791,6 +801,7 @@ class CartFragment(val itemClickListner: ItemClickListner?) : Fragment(), MyCall
     override fun onItemSelected(headerPosition: Int, position: Int, item: TbItem) {
         Log.e(TAG, "onDineinItemClick")
         viewModel.dineInSelectedItemHeaderPos = headerPosition
+        viewModel.dineInHeaderPosition = headerPosition
 
         itemClickListner?.onItemUpdate(item)
         /* if (prefProvider.getValue(ORDER_TYPE, "") == Constants.DINE_IN) {
@@ -803,6 +814,7 @@ class CartFragment(val itemClickListner: ItemClickListner?) : Fragment(), MyCall
     }
 
     override fun onCustomerClicked(position: Int, isRemoved: Boolean) {
+        Log.e(TAG, "onCustomerClicked  ${isRemoved}")
         if (isRemoved) {
             if (cartlist.get(0).dineInList?.size!! >= position) {
                 val dineIn = cartlist.get(0).dineInList
@@ -838,7 +850,6 @@ class CartFragment(val itemClickListner: ItemClickListner?) : Fragment(), MyCall
                     Constants.DELETE, false,
                     dineInList = dineInCartAdapter.getList()
                 )
-
 
 
             }
@@ -937,7 +948,7 @@ class CartFragment(val itemClickListner: ItemClickListner?) : Fragment(), MyCall
                     clearCustomer()
                     viewModel.deleteCart()
                     cartlist.clear()
-                    isOrderUpdate=false
+                    isOrderUpdate = false
                     prefProvider.setValue(ORDER_TYPE, TAKEOUT)
                     prefProvider.setValueboolean(Constants.LOYALTY_ADDED, false)
 

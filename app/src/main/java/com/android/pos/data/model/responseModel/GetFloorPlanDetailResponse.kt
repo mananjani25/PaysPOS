@@ -89,7 +89,7 @@ data class GetFloorPlanDetailResponse(
         @SerializedName("order_service_charges") val order_service_charges: List<GetOrderDetailsResponse.Data.OrderServiceCharge>,
         @SerializedName("payments") val payments: List<GetOrderDetailsResponse.Data.Payment>,
         @SerializedName("employee") val employee: GetOrderDetailsResponse.Data.Employee,
-        @SerializedName("customer") val customer: String,
+        @SerializedName("customer") val customer: GetOrderDetailsResponse.Data.Customer,
         @SerializedName("order_type") val order_type: String,
         //@SerializedName("venue_details") val venue_details: VenueDetailsResponse.Data,
         @SerializedName("refund_detail") val refund_detail: GetOrderDetailsResponse.Data.RefundDetails,
