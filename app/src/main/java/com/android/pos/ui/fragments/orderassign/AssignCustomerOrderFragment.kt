@@ -216,16 +216,18 @@ class AssignCustomerOrderFragment : Fragment(), ItemCallback {
         }
 
         if (isFromDineIn == true) {
-            findNavController().navigate(R.id.action_assignCustomerOrderFragment_to_dashboard_category_new,result)
+            setFragmentResult("request_key_customer_dine_in", result)
         } else {
-            requireActivity().supportFragmentManager.setFragmentResult("request_key_customer", result)
-            val navController = findNavController()
-            navController.previousBackStackEntry?.savedStateHandle?.set(
-                Constants.KEY,
-                "FROM_CUSTOMER"
-            )
-            navController.popBackStack()
+            setFragmentResult("request_key_customer", result)
         }
+
+        val navController = findNavController()
+        navController.previousBackStackEntry?.savedStateHandle?.set(
+            Constants.KEY,
+            "FROM_CUSTOMER"
+        )
+        navController.popBackStack()
+
 
 
     }

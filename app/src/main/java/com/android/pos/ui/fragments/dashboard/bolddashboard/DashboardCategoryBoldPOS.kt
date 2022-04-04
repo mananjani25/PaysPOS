@@ -240,6 +240,41 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
             viewModel.selectedCustomer = customer
         }
 
+
+        if (isAdded) {
+
+            setFragmentResultListener("request_key_customer_dine_in") { _, bundle ->
+                val result = bundle.getParcelable<TbCustomer>("data")
+                if (result != null) {
+                    val list1 = cartList.get(0).dineInList
+
+
+                    if (list1?.isNotEmpty() == true) {
+
+                        var position = bundle.getInt("position")
+
+                        val dineInList = list1
+                        if (dineInList.size >= position && position != 0) {
+
+
+                            dineInList.get(position).customer = result
+
+                            Log.e(TAG, "UpdateCustomerPostition ${position}")
+                            Log.e(
+                                TAG,
+                                "UpdateCustomer ${dineInList.get(position).customer}"
+                            )
+
+                            viewModel.dineInCartUpdate(
+                                cartList,
+                                dineInList
+                            )
+                        }
+                    }
+                }
+            }
+        }
+
 /*
         setFragmentResultListener("request_key_customer_dine_in") { _, bundle ->
             result = bundle
