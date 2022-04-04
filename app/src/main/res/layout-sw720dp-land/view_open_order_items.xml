@@ -27,10 +27,9 @@
             android:layout_height="wrap_content"
             android:background="@color/backgroundColor"
             android:orientation="horizontal"
-            android:paddingStart="@dimen/_10sdp"
-            android:paddingEnd="@dimen/_10sdp"
             android:paddingTop="@dimen/_4sdp"
-            android:paddingBottom="@dimen/_4sdp">
+            android:paddingBottom="@dimen/_4sdp"
+            android:paddingStart="@dimen/_18sdp">
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/txtItemName"
@@ -38,8 +37,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:gravity="center"
-                android:layout_gravity="center"
+
                 android:text="@{model.itemName}"
                 android:textColor="@color/white"
                 android:textSize="@dimen/_6mdpi"
@@ -51,11 +49,12 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:gravity="center"
-                android:layout_gravity="center"
+                android:gravity="center_vertical"
+                android:layout_gravity="center_vertical"
                 android:text="@{@string/cross+``+model.quantity}"
                 android:textColor="@color/white"
                 android:textSize="@dimen/_6mdpi"
+                android:paddingEnd="@dimen/_5sdp"
                 tools:text="X 1" />
 
             <androidx.appcompat.widget.AppCompatTextView
@@ -64,8 +63,8 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:gravity="center"
-                android:layout_gravity="center"
+                android:gravity="center_vertical"
+                android:layout_gravity="center_vertical"
                 android:text="@{@string/symbole +``+String.format(@string/format,model.price)}"
                 android:textColor="@color/white"
                 android:textSize="@dimen/_6mdpi"
@@ -76,9 +75,9 @@
                 style="@style/CustomFontSemiBold"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
+                android:layout_gravity="center_vertical"
                 android:layout_weight="1"
-                android:gravity="center"
+                android:gravity="center_vertical"
                 android:text="@{@string/symbole +``+String.format(@string/format,model.totalPrice)}"
                 android:textColor="@color/white"
                 android:textSize="@dimen/_6mdpi"
@@ -89,9 +88,9 @@
                 style="@style/CustomFontRegularStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
+                android:layout_gravity="center_vertical"
                 android:layout_weight="1"
-                android:gravity="center"
+                android:gravity="center_vertical"
                 android:textColor="@color/white"
                 android:textSize="@dimen/_6mdpi"
                 tools:text="Terminal Name" />
@@ -101,9 +100,9 @@
                 style="@style/CustomFontRegularStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
+                android:layout_gravity="center_vertical"
                 android:layout_weight="1"
-                android:gravity="center"
+                android:gravity="center_vertical"
                 android:textColor="@color/white"
                 android:textSize="@dimen/_6mdpi"
                 tools:text="Terminal Name" />

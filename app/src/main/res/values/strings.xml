@@ -674,9 +674,9 @@
     <string name="error_loyalty_name_blank">Please enter Loyalty Name</string>
     <string name="error_loyalty_point_blank">Please enter Loyalty Target</string>
     <string name="error_loyalty_point_amount">Please enter Loyalty Value</string>
-    <string name="create_tip">Create Tip</string>
+    <string name="create_tip">Add Tip</string>
     <string name="update_tip">Update Tip</string>
-    <string name="create_loyalty_point">Create Loyalty Point</string>
+    <string name="create_loyalty_point">Add Loyalty Point</string>
     <string name="add_loyalty_point">Add Loyalty Point</string>
     <string name="update_loyalty_point">Update Loyalty Point</string>
     <string name="tip_after_split_alert">If you will split the bill, then your added tip will be removed, Are you sure, you want to split the bill?</string>
@@ -777,6 +777,7 @@
     <string name="_1234_5678_xxxx_1121">1234 5678 XXXX 1121</string>
     <string name="enter_card_number_here">enter Card Number Here</string>
     <string name="charge">Charge</string>
+    <string name="add_tip_">Add Tip(%)<font color='#E90C0C'>*</font></string>
 
 
 </resources>
