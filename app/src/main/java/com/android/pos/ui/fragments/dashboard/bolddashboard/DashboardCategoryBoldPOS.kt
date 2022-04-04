@@ -24,7 +24,6 @@ import com.android.pos.data.remote.Constants.DINE_IN
 import com.android.pos.data.remote.Constants.EMPLOYEE_NAME
 import com.android.pos.data.remote.Constants.ORDER_TYPE
 import com.android.pos.data.remote.Constants.TAKEOUT
-import com.android.pos.data.remote.Constants.UPDATE
 import com.android.pos.databinding.FragmentDashboardCategoryBoldPosBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
@@ -270,11 +269,8 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                                 "UpdateCustomer ${dineInList.get(position).customer}"
                             )
 
-                            viewModel.cartLogic(
+                            viewModel.dineInCartUpdate(
                                 cartList,
-                                null,
-                                UPDATE,
-                                false,
                                 dineInList
                             )
                         }
@@ -575,9 +571,15 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
 
 
     private fun getDineInData() {
-        if (arguments?.getBoolean("isFromDineIn") == true) {
-            Log.e(TAG, "isFromDineInTrue")
-            getDineInCartList()
+
+        if (findNavController().previousBackStackEntry?.destination?.id == R.id.dineInGuestFragment && arguments?.containsKey(
+                "isFromDineIn"
+            ) == true
+        ) {
+            if (arguments?.getBoolean("isFromDineIn") == true) {
+                Log.e(TAG, "isFromDineInTrue")
+                getDineInCartList()
+            }
         }
     }
 
@@ -622,7 +624,6 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
             )
         }
         var orderTypeId = -1
-        Log.e(TAG, "ordertypelist:  ${Gson().toJson(ordertypelist)}")
         ordertypelist.forEach {
             if (it.orderType.lowercase() == DINE_IN.lowercase()) {
                 orderTypeId = it.id
@@ -674,6 +675,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
 
     private fun checkDineInEditOrder() {
         if (arguments?.getBoolean("is_dine_in_edit") == true) {
+            Log.e(TAG, "isEditDineInOrder")
             var dineInList = arguments?.getParcelableArrayList<DineInModel>("dine_in_list")
 
             if (dineInList?.isNotEmpty() == true) {
