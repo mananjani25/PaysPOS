@@ -77,7 +77,7 @@ class ActiveOrderFragment(
     private lateinit var startTime: TimePickerDialog.OnTimeSetListener
     private lateinit var endTime: TimePickerDialog.OnTimeSetListener
 
-    val myCalendar = Calendar.getInstance()
+    val myCalendar =  Calendar.getInstance()
     val myCalendar1 = Calendar.getInstance()
     val myCalendar2 = Calendar.getInstance()
     val myCalendar3 = Calendar.getInstance()

@@ -218,7 +218,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_weight="3.5"
                                 android:gravity="right"
-                                android:text="@{@string/symbole +``+String.format(@string/format,orderDetails.data.sub_total)}"
+                                android:text="@{@string/symbole+String.format(@string/format,orderDetails.data.sub_total)}"
                                 android:textColor="@color/txtColor"
                                 android:textSize="@dimen/text_size_medium" />
                         </androidx.appcompat.widget.LinearLayoutCompat>
@@ -246,7 +246,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_weight="3.5"
                                 android:gravity="right"
-                                android:text="@{@string/symbole +``+String.format(@string/format,orderDetails.data.tax_amount)}"
+                                android:text="@{@string/symbole+String.format(@string/format,orderDetails.data.tax_amount)}"
                                 android:textColor="@color/txtColor"
                                 android:textSize="@dimen/text_size_medium" />
                         </androidx.appcompat.widget.LinearLayoutCompat>
@@ -275,7 +275,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_weight="3.5"
                                 android:gravity="right"
-                                android:text="@{@string/symbole +``+String.format(@string/format,orderDetails.data.tips)}"
+                                android:text="@{@string/symbole+String.format(@string/format,orderDetails.data.tips)}"
                                 android:textColor="@color/txtColor"
                                 android:textSize="@dimen/text_size_medium" />
                         </androidx.appcompat.widget.LinearLayoutCompat>
@@ -305,7 +305,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_weight="3.5"
                                 android:gravity="right"
-                                android:text="@{@string/symbole +``+String.format(@string/format,orderDetails.data.order.refund_detail.refunded_amount)}"
+                                android:text="@{@string/symbole+String.format(@string/format,orderDetails.data.order.refund_detail.refunded_amount)}"
                                 android:textColor="@color/colorRed"
                                 android:textSize="@dimen/text_size_medium" />
                         </androidx.appcompat.widget.LinearLayoutCompat>
@@ -405,7 +405,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_weight="3.5"
                                 android:gravity="right"
-                                android:text="@{@string/symbole +``+String.format(@string/format,orderDetails.data.service_charge_amount)}"
+                                android:text="@{@string/symbole+String.format(@string/format,orderDetails.data.service_charge_amount)}"
                                 android:textColor="@color/txtColor"
                                 android:textSize="@dimen/text_size_medium" />
                         </androidx.appcompat.widget.LinearLayoutCompat>
@@ -498,7 +498,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_weight="3.5"
                                 android:gravity="right"
-                                android:text="@{@string/symbole +``+String.format(@string/format,(orderDetails.data.amount + orderDetails.data.tips))}"
+                                android:text="@{@string/symbole+String.format(@string/format,(orderDetails.data.amount + orderDetails.data.tips))}"
                                 android:textColor="@color/txtColor"
                                 android:textSize="@dimen/text_size_medium" />
                         </androidx.appcompat.widget.LinearLayoutCompat>
@@ -895,7 +895,7 @@
                                 style="@style/CustomFontSemiBold"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="@{@string/symbole +``+String.format(@string/format,(orderDetails.data.amount + orderDetails.data.tips))}"
+                                android:text="@{@string/symbole+String.format(@string/format,(orderDetails.data.amount + orderDetails.data.tips))}"
                                 android:textColor="@color/txtColor"
                                 android:textSize="@dimen/_5mdpi" />
 

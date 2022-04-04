@@ -92,7 +92,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="start"
                     android:gravity="center"
-                    android:text="@{@string/symbole +` `+String.format(@string/format,itemSheetModel.totalAmount) }"
+                    android:text="@{@string/symbole+String.format(@string/format,itemSheetModel.totalAmount) }"
                     android:textColor="@color/txtColor"
                     android:textSize="@dimen/text_size_medium"
                     app:textAllCaps="true"
