@@ -571,17 +571,12 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
 
 
     private fun getDineInData() {
-
-        if (findNavController().previousBackStackEntry?.destination?.id == R.id.dineInGuestFragment && arguments?.containsKey(
-                "isFromDineIn"
-            ) == true
-        ) {
-            if (arguments?.getBoolean("isFromDineIn") == true) {
-                Log.e(TAG, "isFromDineInTrue")
-                getDineInCartList()
-            }
+        if (arguments?.getBoolean("isFromDineIn") == true) {
+            Log.e(TAG, "isFromDineInTrue")
+            getDineInCartList()
         }
     }
+
 
     private fun getDineInCartList() {
         val numOfGuest: Int by lazy {

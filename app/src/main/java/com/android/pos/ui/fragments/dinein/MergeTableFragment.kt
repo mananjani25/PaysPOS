@@ -24,7 +24,7 @@ import com.android.pos.data.model.MergeTableModel
 import com.android.pos.data.model.responseModel.GetFloorPlanDetailResponse
 import com.android.pos.data.model.responseModel.GetOrderDetailsResponse
 import com.android.pos.data.remote.Constants.OCCUPIED
-import com.android.pos.databinding.DialogMergeTableSelectionBinding
+import com.android.pos.databinding.DialogMergeTableSelectionNewBinding
 import com.android.pos.ui.adapter.MergeTableFloorSelectAdapter
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.ProgressUtils
@@ -33,7 +33,7 @@ import java.util.stream.Collectors
 
 @AndroidEntryPoint
 class MergeTableFragment : Fragment() {
-    private lateinit var binding: DialogMergeTableSelectionBinding
+    private lateinit var binding: DialogMergeTableSelectionNewBinding
     private var list: ArrayList<MergeTableListModel> = arrayListOf()
     private lateinit var adapter: MergeTableFloorSelectAdapter
     private var listFloorPlan: ArrayList<GetFloorPlanDetailResponse.Data>? = null
@@ -62,7 +62,7 @@ class MergeTableFragment : Fragment() {
     ): View? {
         binding = DataBindingUtil.inflate(
             inflater,
-            R.layout.dialog_merge_table_selection,
+            R.layout.dialog_merge_table_selection_new,
             container,
             false
         )
