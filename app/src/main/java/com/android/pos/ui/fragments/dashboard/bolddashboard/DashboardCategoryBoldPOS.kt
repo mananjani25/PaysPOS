@@ -24,6 +24,7 @@ import com.android.pos.data.remote.Constants.DINE_IN
 import com.android.pos.data.remote.Constants.EMPLOYEE_NAME
 import com.android.pos.data.remote.Constants.ORDER_TYPE
 import com.android.pos.data.remote.Constants.TAKEOUT
+import com.android.pos.data.remote.Constants.UPDATE
 import com.android.pos.databinding.FragmentDashboardCategoryBoldPosBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
@@ -77,9 +78,10 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
             }
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
+        addObserver()
         getServiceCharges()
         resultListener()
-        addObserver()
+
         dineInUpdateOrder()
         navigateDineInOrder()
         getLoyaltyPrograms()
@@ -246,14 +248,17 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
             setFragmentResultListener("request_key_customer_dine_in") { _, bundle ->
                 val result = bundle.getParcelable<TbCustomer>("data")
                 if (result != null) {
-                    val list1 = cartList.get(0).dineInList
+                    Log.e(TAG, "assignResult:  ${Gson().toJson(result)}")
+                    val dineInList = cartList.get(0).dineInList
+                    Log.e(TAG, "getdineInListSize:  ${dineInList?.size}")
 
 
-                    if (list1?.isNotEmpty() == true) {
+
+                    if (dineInList?.isNotEmpty() == true) {
 
                         var position = bundle.getInt("position")
+                        Log.e(TAG, "getCustomerAssignPos:  ${position}")
 
-                        val dineInList = list1
                         if (dineInList.size >= position && position != 0) {
 
 
@@ -265,8 +270,11 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                                 "UpdateCustomer ${dineInList.get(position).customer}"
                             )
 
-                            viewModel.dineInCartUpdate(
+                            viewModel.cartLogic(
                                 cartList,
+                                null,
+                                UPDATE,
+                                false,
                                 dineInList
                             )
                         }
@@ -637,6 +645,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
         }
 
         cartList.get(0).orderType = Constants.DINE_IN
+
         viewModel.cartLogic(cartList, null, Constants.ADD, false, dineInList = dineInList)
 
 

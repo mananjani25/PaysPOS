@@ -501,6 +501,7 @@ class CartFragment(val itemClickListner: ItemClickListner?) : Fragment(), MyCall
 
                 if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == Constants.DINE_IN) {
                     if (it.isNotEmpty()) {
+                        Log.e(TAG, "cartListDine:  ${Gson().toJson(it)}")
                         binding.rvCartList.adapter = dineInCartAdapter
                         cartlist = it as ArrayList<CartModel>
                         if (isFromPayment) {
