@@ -351,7 +351,7 @@
 
     <string name="company_name_validate">Please enter Company Name</string>
     <string name="tv_delete">Delete</string>
-    <string name="symbole">$&#160;</string>
+    <string name="symbole">$</string>
     <string name="percentage_symbol">%</string>
     <string name="dollar_symbol">$</string>
     <string name="format">%.2f</string>

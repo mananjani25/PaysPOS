@@ -34,7 +34,7 @@
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/txtItemName"
-                style="@style/CustomFontSemiBold"
+                style="@style/CustomFontRegularStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -47,7 +47,7 @@
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/txtQty"
-                style="@style/CustomFontSemiBold"
+                style="@style/CustomFontRegularStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -60,7 +60,7 @@
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/txtPrice"
-                style="@style/CustomFontSemiBold"
+                style="@style/CustomFontRegularStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
@@ -72,7 +72,7 @@
                 tools:text="$12.00" />
 
             <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/txtCustomerName"
+                android:id="@+id/CustomFontRegularStyle"
                 style="@style/CustomFontSemiBold"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
@@ -86,7 +86,7 @@
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/txtTerminalName"
-                style="@style/CustomFontSemiBold"
+                style="@style/CustomFontRegularStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
@@ -98,7 +98,7 @@
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/txtEmployeeName"
-                style="@style/CustomFontSemiBold"
+                style="@style/CustomFontRegularStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"

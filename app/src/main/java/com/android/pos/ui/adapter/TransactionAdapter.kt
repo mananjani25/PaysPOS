@@ -79,7 +79,7 @@ class TransactionAdapter(val viewModel: TransactionViewModel) :
             if (model.refundedAmount != 0.0) {
                 itemBinding.tvRefundedAmount.visibility = View.VISIBLE
                 itemBinding.tvRefundedAmount.text =
-                    "(Refunded " + context.getString(R.string.symbole) + " " + String.format(
+                    "(Refunded " + context.getString(R.string.symbole) + String.format(
                         context.getString(R.string.format),
                         model.refundedAmount
                     ) + ")"

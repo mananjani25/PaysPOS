@@ -56,11 +56,11 @@ class OrderDetailsItemListAdapter :
             }
 
 
-        itemBinding.tvRate.text = "$ $total_rate"
+        itemBinding.tvRate.text = "$$total_rate"
 
 
         val modifierNames = taxList[position].orderItemModifiers.map {
-            it.name + " (" + itemBinding.root.context.getString(R.string.symbole) + " " + String.format(
+            it.name + " (" + itemBinding.root.context.getString(R.string.symbole)  + String.format(
                 itemBinding.root.context.getString(
                     R.string.format
                 ), it.price
