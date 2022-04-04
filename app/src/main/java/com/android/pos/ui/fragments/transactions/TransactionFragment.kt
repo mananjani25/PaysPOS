@@ -214,9 +214,7 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
 
         setFragmentResultListener("request_key_tips") { requestKey: String, bundle: Bundle ->
             tipAmount = bundle.getDouble("tipAmount")
-
-
-            magtekCall(tipAmount)
+            tipCall()
 
         }
 
@@ -942,6 +940,7 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
 
         val bundle = Bundle()
         bundle.putDouble("totalTip", singleTransaction!!.tips)
+        bundle.putBoolean("isFromTransaction", true)
         singleTransaction?.amount?.let { bundle.putDouble("totalPrice", it) }
         findNavController().navigate(
             R.id.action_transactionFragment_to_addTipsDialog,

@@ -47,7 +47,7 @@ class AddTipsDialog : DialogFragment(), DialogTipsListAdapter.DiscountInterface 
     @Inject
     lateinit var prefProvider: PrefProvider
     private var isFromDetails = false
-
+    private var isFromTransaction = false
 
     companion object {
         fun newInstance() = AddTipsDialog()
@@ -62,7 +62,11 @@ class AddTipsDialog : DialogFragment(), DialogTipsListAdapter.DiscountInterface 
                 requireArguments().getDouble("totalPrice")
             if (arguments?.getDouble("totalTip") != null) totalTip =
                 requireArguments().getDouble("totalTip")
+            if (arguments?.getBoolean("isFromTransaction") != null) {
+                isFromTransaction = requireArguments().getBoolean("isFromTransaction", false)
+            }
         }
+
         dialog?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN)
         val back = ColorDrawable(Color.WHITE)
         val inset = InsetDrawable(back, 150, 100, 150, 100)
@@ -90,23 +94,38 @@ class AddTipsDialog : DialogFragment(), DialogTipsListAdapter.DiscountInterface 
             val rate = binding.llKeypad.txt10.text.toString().trim()
                 .substring(0, binding.llKeypad.txt10.text.toString().length - 1).toDouble()
 
-            val price = MethodUtils.percentageCalculation(
-                prefProvider.getValue(
-                    Constants.WHOLE_AMOUNT,
-                    "0.0"
-                ).toDouble(), rate
-            )
+            var price = 0.0
+            price = if (isFromTransaction) {
+                MethodUtils.percentageCalculation(
+                    totalPrice, rate
+                )
+            } else {
+                MethodUtils.percentageCalculation(
+                    prefProvider.getValue(
+                        Constants.WHOLE_AMOUNT,
+                        "0.0"
+                    ).toDouble(), rate
+                )
+            }
+
             binding.edtAmount.setText(MethodUtils.roundOffAmountString(price))
         }
         binding.llKeypad.txt20.setOnClickListener {
             val rate = binding.llKeypad.txt20.text.toString().trim()
                 .substring(0, binding.llKeypad.txt20.text.toString().length - 1).toDouble()
-            val price = MethodUtils.percentageCalculation(
-                prefProvider.getValue(
-                    Constants.WHOLE_AMOUNT,
-                    "0.0"
-                ).toDouble(), rate
-            )
+            var price = 0.0
+            price = if (isFromTransaction) {
+                MethodUtils.percentageCalculation(
+                    totalPrice, rate
+                )
+            } else {
+                MethodUtils.percentageCalculation(
+                    prefProvider.getValue(
+                        Constants.WHOLE_AMOUNT,
+                        "0.0"
+                    ).toDouble(), rate
+                )
+            }
             binding.edtAmount.setText(MethodUtils.roundOffAmountString(price))
         }
         binding.llKeypad.txt30.setOnClickListener {
@@ -115,13 +134,19 @@ class AddTipsDialog : DialogFragment(), DialogTipsListAdapter.DiscountInterface 
             val rate = binding.llKeypad.txt30.text.toString().trim()
                 .substring(0, binding.llKeypad.txt30.text.toString().length - 1).toDouble()
 
-            val price = MethodUtils.percentageCalculation(
-                prefProvider.getValue(
-                    Constants.WHOLE_AMOUNT,
-                    "0.0"
-                ).toDouble(), rate
-            )
-
+            var price = 0.0
+            price = if (isFromTransaction) {
+                MethodUtils.percentageCalculation(
+                    totalPrice, rate
+                )
+            } else {
+                MethodUtils.percentageCalculation(
+                    prefProvider.getValue(
+                        Constants.WHOLE_AMOUNT,
+                        "0.0"
+                    ).toDouble(), rate
+                )
+            }
             binding.edtAmount.setText(MethodUtils.roundOffAmountString(price))
         }
     }
@@ -239,7 +264,12 @@ class AddTipsDialog : DialogFragment(), DialogTipsListAdapter.DiscountInterface 
                 tipID?.let { putInt("tipId", tipID ?: 0) }
 
             }
-            requireActivity().supportFragmentManager.setFragmentResult("request_key_tips", result)
+            if(isFromTransaction){
+                setFragmentResult("request_key_tips", result)
+            }else{
+                requireActivity().supportFragmentManager.setFragmentResult("request_key_tips", result)
+            }
+
             findNavController().navigateUp()
         }
     }
@@ -263,10 +293,15 @@ class AddTipsDialog : DialogFragment(), DialogTipsListAdapter.DiscountInterface 
         Log.e(TAG, "SelectedItem:  ${Gson().toJson(model)}")
         tipModel.apply { model }
         tipID = model.id
-
-        val tipCalculation =
-            (prefProvider.getValue(Constants.WHOLE_AMOUNT, "0.0").toDouble() * model.rate) / 100
-
+        var tipCalculation = 0.0
+        if (isFromTransaction) {
+            tipCalculation = (totalPrice * model.rate) / 100
+        } else {
+            tipCalculation = (prefProvider.getValue(
+                Constants.WHOLE_AMOUNT,
+                "0.0"
+            ).toDouble() * model.rate) / 100
+        }
         binding.edtAmount.setText(MethodUtils.roundOffAmountString(tipCalculation))
         selectedListPos = pos
     }

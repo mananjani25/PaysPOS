@@ -238,9 +238,11 @@ class CreateTax : Fragment() {
         if (isChecked) {
             binding.swtTaxType.text = getString(R.string.disc_percentage)
             binding.edtAmount.setText("")
+            binding.edtAmount.hint = resources.getString(R.string.add_tax__percentage)
             viewModel.discountType(getString(R.string.disc_percentage))
         } else {
             binding.swtTaxType.text = getString(R.string.dollar_amount)
+            binding.edtAmount.hint = resources.getString(R.string.add_tax__dollor)
             binding.edtAmount.setText("")
             viewModel.discountType(getString(R.string.dollar_amount))
         }
