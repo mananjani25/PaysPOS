@@ -24,6 +24,8 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/_5sdp"
             android:layout_weight="1"
+            android:paddingVertical="@dimen/_1sdp"
+
             android:background="@drawable/background_square_border_grey">
 
             <androidx.appcompat.widget.AppCompatTextView
@@ -39,7 +41,7 @@
                 android:padding="@dimen/_5sdp"
                 android:text="Select Floor Plan"
                 android:textColor="@color/txtColor"
-                android:textSize="@dimen/_5mdpi" />
+                android:textSize="@dimen/_6mdpi" />
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -77,6 +79,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:paddingVertical="@dimen/_1sdp"
+
             android:background="@drawable/background_square_border_grey">
 
             <androidx.appcompat.widget.AppCompatTextView
@@ -92,7 +96,7 @@
                 android:padding="@dimen/_5sdp"
                 android:text="Select Table to Merge"
                 android:textColor="@color/txtColor"
-                android:textSize="@dimen/_5mdpi" />
+                android:textSize="@dimen/_6mdpi" />
 
             <LinearLayout
                 android:layout_width="wrap_content"
