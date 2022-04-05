@@ -157,6 +157,7 @@
                     android:layout_weight="1"
                     android:paddingVertical="@dimen/_1sdp"
 
+
                     android:background="@drawable/background_square_border_grey"
                     app:layout_constraintTop_toBottomOf="@+id/relFloorPlan">
 
@@ -195,7 +196,7 @@
                             android:spinnerMode="dialog"
                             android:textColor="@color/color96"
                             android:textSize="@dimen/_5mdpi"
-                            android:popupBackground="@color/bg_color"
+                            android:popupBackground="@color/backgroundColor"
                             />
 
                         <androidx.appcompat.widget.AppCompatImageView
