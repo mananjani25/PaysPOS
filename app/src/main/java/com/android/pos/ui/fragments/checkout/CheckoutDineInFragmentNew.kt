@@ -11,7 +11,6 @@ import android.view.ViewGroup
 import android.widget.EditText
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
@@ -27,7 +26,6 @@ import com.android.pos.databinding.FragmentCheckoutDetailsNewBinding
 import com.android.pos.di.ApiModule1
 import com.android.pos.di.MagtekModule
 import com.android.pos.di.PrefProvider
-import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.android.pos.ui.fragments.magtek.MagtekRequestUtils
 import com.android.pos.ui.fragments.magtek.PaymentResponse
 import com.android.pos.ui.fragments.magtekPro.MTParser
@@ -55,7 +53,6 @@ import retrofit2.Response
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
-import kotlin.collections.ArrayList
 
 @AndroidEntryPoint
 class CheckoutDineInFragmentNew : Fragment(), magtekCallback,
@@ -70,7 +67,7 @@ class CheckoutDineInFragmentNew : Fragment(), magtekCallback,
     private var paymentOfflineId: String = ""
     var isSelectedCount = 1
     private val paymentviewModel by activityViewModels<PaymentViewModel>()
-    private val viewModel by activityViewModels<DashBoardCategoryViewModel>()
+    private val viewModel by activityViewModels<CheckoutDineInPaymentViewModel>()
     var listtextview: ArrayList<AppCompatTextView> = arrayListOf()
     var paymentType = "Cash"
     var cashDiscountSurcharge = 0.0
@@ -746,6 +743,7 @@ class CheckoutDineInFragmentNew : Fragment(), magtekCallback,
         redeemLoyaltyInfo = viewModel.redeemLoyaltyInfo
         prefProvider.setValue(Constants.ORDER_TYPE,Constants.DINE_IN)
         if (prefProvider.getValue(Constants.WHOLE_AMOUNT, "").isEmpty()) {
+            Log.e(TAG,"totalPriceNewViewmdeo ${viewModel.totalPrice}")
             WholetotalPrice = viewModel.totalPrice
             prefProvider.setValue(
                 Constants.WHOLE_AMOUNT,

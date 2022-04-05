@@ -16,6 +16,7 @@ import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.constraintlayout.widget.Group
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -46,6 +47,7 @@ import com.android.pos.data.remote.Constants.TERMINAL_ID
 import com.android.pos.databinding.FragmentDineInOrderTableBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.adapter.DineInTableAdapter
+import com.android.pos.ui.fragments.checkout.CheckoutDineInPaymentViewModel
 import com.android.pos.utils.*
 import com.android.pos.utils.extensions.liveSnackBar
 import com.android.pos.utils.printer.PrinterClass
@@ -114,6 +116,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
     @Inject
     lateinit var prefProvider: PrefProvider
     private val viewModel by viewModels<DineInOrderTableViewModel>()
+    private val viewModelPayment by activityViewModels<CheckoutDineInPaymentViewModel>()
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -376,6 +379,14 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 DineInPaymentUpdateModel()
             )
             val bundle = Bundle()
+            viewModelPayment.totalPrice = MethodUtils.roundOffAmountDouble(toFinalAmt)
+            viewModelPayment.subTotalPrice = MethodUtils.roundOffAmountDouble(subTotalDInin)
+            viewModelPayment.totalTax = MethodUtils.roundOffAmountDouble(finalTaxAmt)
+            viewModelPayment.cashdiscountAmount =
+                MethodUtils.roundOffAmountDouble(divideCashDiscount)
+            viewModelPayment.totalServiceCharge = MethodUtils.roundOffAmountDouble(serviceCharge)
+            viewModelPayment.totalDiscount = MethodUtils.roundOffAmountDouble(totalDiscount)
+
             bundle.putDouble("totalPrice", MethodUtils.roundOffAmountDouble(toFinalAmt))
             bundle.putDouble("subTotalPrice", MethodUtils.roundOffAmountDouble(subTotalDInin))
             bundle.putDouble("totalTax", MethodUtils.roundOffAmountDouble(finalTaxAmt))
