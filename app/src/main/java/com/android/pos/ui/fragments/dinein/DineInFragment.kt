@@ -74,7 +74,7 @@ class DineInFragment : Fragment() {
         setUpRecyclerView()
         prefProvider.setValueboolean(DINE_IN_STATUS, false)
 
-        TextViewCompat.setTextAppearance(
+        /*TextViewCompat.setTextAppearance(
             binding.layoutHeader.txtMerge,
             R.style.CustomFontRegularStyle
         )
@@ -83,7 +83,7 @@ class DineInFragment : Fragment() {
             R.style.CustomFontBold
         )
         binding.layoutHeader.txtMerge.setTextColor(resources.getColor(R.color.txtColor))
-        binding.layoutHeader.txtDineinordere.setTextColor(resources.getColor(R.color.btnColor))
+        binding.layoutHeader.txtDineinordere.setTextColor(resources.getColor(R.color.btnColor))*/
 
 
 
