@@ -231,9 +231,9 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
         super.onViewCreated(view, savedInstanceState)
 
         onClick()
-        if (arguments != null) {
-            isupdate = arguments?.getBoolean("update")!!
-        }
+
+        isupdate = requireArguments().getBoolean("update")
+
 
         requireActivity().window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         val customer = prefProvider.getCustomerData()

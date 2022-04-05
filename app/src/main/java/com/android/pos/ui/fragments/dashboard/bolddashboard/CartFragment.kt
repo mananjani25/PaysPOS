@@ -160,7 +160,8 @@ class CartFragment(val itemClickListner: ItemClickListner?) : Fragment(), MyCall
         //  getCartList()
 
         if (updateBundle != null) {
-            isOrderUpdate = updateBundle?.getBoolean("update")!!
+            isOrderUpdate = requireArguments().getBoolean("update")
+            Log.e(TAG,"isOrderUpdateReq:  $isOrderUpdate")
             if (isOrderUpdate) {
                 orderId = updateBundle?.getInt("orderId")
                 paymentId = updateBundle?.getInt("paymentId")
