@@ -8,10 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import androidx.activity.OnBackPressedCallback
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
-import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.setFragmentResultListener
+import androidx.fragment.app.*
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
@@ -321,7 +318,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
             }
         }
         frag.arguments = result
-        fm.beginTransaction().replace(binding.frameLayoutCart.id, frag).commit()
+        fm.beginTransaction().replace(binding.frameLayoutCart.id, frag).addToBackStack(null).commit()
     }
 
     private fun loadKeyPadFragment(frag: Fragment) {
@@ -410,6 +407,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
             loadCategoryFragment(fragment)
         } else {
 
+            Log.e(TAG, "cartListItemAddSize: ${cartList.size}")
             if (cartList.isEmpty()) {
                 viewModel.createCart(cartList)
             }
@@ -567,6 +565,13 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
         Log.e(TAG, "dashboardPosItem:  ${Gson().toJson(item)}")
         val frag: Fragment = AddItemFragment.newInstance(item, this, cartList, true)
         loadCategoryFragment(frag)
+    }
+
+    override fun onDineInOrderCleared() {
+
+        val ftr: FragmentTransaction = requireFragmentManager().beginTransaction()
+        ftr.detach(this).attach(this).commit()
+     //   findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_self)
     }
 
 
@@ -743,5 +748,9 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
 
     }
 
+    override fun onPause() {
+        arguments?.clear()
+        super.onPause()
+    }
 
 }
