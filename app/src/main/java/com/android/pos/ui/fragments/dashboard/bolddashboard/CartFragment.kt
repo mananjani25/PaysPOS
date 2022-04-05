@@ -1043,10 +1043,13 @@ class CartFragment(val itemClickListner: ItemClickListner?) : Fragment(), MyCall
 
         binding.imgOrderMenu.setOnClickListener {
 
+
             val popupMenu = PopupMenu(requireContext(), it)
             popupMenu.menuInflater.inflate(R.menu.cart_menu, popupMenu.menu)
             if (prefProvider.getValue(Constants.CUSTOMER_NAME, "").isEmpty())
                 popupMenu.menu.findItem(R.id.menu_remove_customer).isVisible = false
+            if (cartlist.isEmpty())
+                popupMenu.menu.findItem(R.id.menu_discount).isVisible = false
             popupMenu.setOnMenuItemClickListener { menuItem ->
                 when (menuItem.itemId) {
                     R.id.menu_clear_cart -> {

@@ -390,6 +390,8 @@ class AddItemFragment(val listner: ItemListner) : Fragment() {
 
         } else {
             binding.txtRemoveItem.visibility = View.GONE
+            binding.txtAddNote.visibility = View.GONE
+            binding.txtAddDiscount.visibility = View.GONE
         }
 
     }
