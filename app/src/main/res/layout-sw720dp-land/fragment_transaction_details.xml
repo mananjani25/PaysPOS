@@ -181,6 +181,10 @@
                     android:background="@color/grayBackgroundColor"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     tools:listitem="@layout/view_order_item_list" />
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="0.5dp"
+                    android:background="@color/view" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -372,7 +376,7 @@
                     <View
                         android:layout_width="1dp"
                         android:layout_height="wrap_content"
-                        android:background="@color/grayBackgroundColor" />
+                        android:background="@color/view" />
 
                     <LinearLayout
                         android:layout_width="0dp"
@@ -514,6 +518,11 @@
 
             </LinearLayout>
 
+
+            <View
+                android:layout_width="1dp"
+                android:layout_height="match_parent"
+                android:background="@color/view"/>
 
             <RelativeLayout
                 android:layout_width="0dp"

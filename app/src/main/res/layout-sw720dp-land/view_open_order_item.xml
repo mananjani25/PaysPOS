@@ -23,14 +23,16 @@
             android:layout_height="wrap_content"
             android:background="@color/backgroundColor"
             android:orientation="horizontal"
+            android:weightSum="6"
+            android:paddingStart="@dimen/_18sdp"
             android:paddingVertical="@dimen/_7sdp">
 
             <androidx.appcompat.widget.LinearLayoutCompat
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
                 android:layout_weight="1"
-                android:gravity="center"
+                android:layout_gravity="center_vertical"
+                android:gravity="center_vertical"
                 android:orientation="horizontal">
 
 
@@ -39,7 +41,6 @@
                     style="@style/CustomFontMediumStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:gravity="center"
                     android:text="@{viewModel.offlineId}"
                     android:textColor="@color/txtColor"
                     android:textSize="@dimen/_5mdpi"
@@ -61,8 +62,6 @@
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
 
-                android:layout_gravity="center"
-                android:gravity="center"
                 android:orientation="vertical">
 
 
@@ -73,10 +72,7 @@
                     android:layout_height="wrap_content"
                     android:textColor="@color/txtColor"
                     android:textSize="@dimen/_6mdpi"
-                    tools:text="@string/tv_date_time"
-                    android:layout_gravity="center"
-                    android:gravity="center"/>
-
+                    tools:text="@string/tv_date_time"/>
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/tvtime"
                     style="@style/CustomFontMediumStyle"
@@ -86,8 +82,6 @@
                     android:textSize="@dimen/_6mdpi"
                     tools:text="@string/tv_date_time"
                     android:visibility="visible"
-                    android:layout_gravity="center"
-                    android:gravity="center"
                     />
 
             </androidx.appcompat.widget.LinearLayoutCompat>
@@ -99,50 +93,45 @@
                 style="@style/CustomFontBold"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
                 android:layout_weight="1"
-                android:gravity="center"
                 android:text="@{viewModel.paymentStatus}"
                 android:textColor="@color/btnColor"
                 android:textSize="@dimen/_6mdpi"
-                tools:text="paid" />
+                tools:text="paid"
+                android:paddingStart="@dimen/_2sdp"/>
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tvOrderType"
                 style="@style/CustomFontMediumStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
                 android:layout_weight="2"
-                android:gravity="center"
                 android:text="@{viewModel.orderType}"
                 android:textColor="@color/btnColor"
                 android:textSize="@dimen/_6mdpi"
                 android:visibility="gone"
-                tools:text="orderType" />
+                tools:text="orderType"
+                android:paddingStart="@dimen/_2sdp"/>
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tvTotalAmount"
                 style="@style/CustomFontMediumStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
                 android:layout_weight="1"
-                android:gravity="center"
                 android:layout_marginRight="@dimen/_3sdp"
                 android:text="@{@string/symbole +``+String.format(@string/format,viewModel.totalAmount)}"
                 android:textColor="@color/txtColor"
                 android:textSize="@dimen/_6mdpi"
-                tools:text="Amount" />
+                tools:text="Amount"
+                android:paddingStart="@dimen/_3sdp"/>
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tvTotalTips"
                 style="@style/CustomFontMediumStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
                 android:layout_weight="1"
-                android:gravity="center"
                 android:text="@{@string/symbole +``+String.format(@string/format,viewModel.totalTips)}"
                 android:textColor="@color/txtColor"
                 android:textSize="@dimen/_6mdpi"
@@ -154,9 +143,7 @@
                 style="@style/CustomFontMediumStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
                 android:layout_weight="1"
-                android:gravity="center"
                 android:textColor="@color/txtColor"
                 android:textSize="@dimen/_6mdpi"
                 tools:text="John Smith" />
@@ -166,9 +153,7 @@
                 style="@style/CustomFontMediumStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
                 android:layout_weight="1"
-                android:gravity="center"
                 android:text="@{viewModel.employee.name}"
                 android:textColor="@color/txtColor"
                 android:textSize="@dimen/_6mdpi"

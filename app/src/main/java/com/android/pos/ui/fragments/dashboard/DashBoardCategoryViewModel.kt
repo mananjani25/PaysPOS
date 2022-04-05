@@ -59,6 +59,7 @@ import java.net.URL
 import java.util.*
 import javax.inject.Inject
 import kotlin.collections.set
+import kotlin.math.log
 
 
 @HiltViewModel
@@ -496,27 +497,41 @@ class DashBoardCategoryViewModel @Inject constructor(
                     if (type == ADD || type == UPDATE) {
                         var index = -1
 
-                        list.forEachIndexed { pos, tbItem ->
+                        for (i in list.indices) {
                             if (item != null) {
-                                if (tbItem.itemId == item.itemId && checkVariation(
-                                        tbItem,
+                                if (list[i].itemId == item.itemId && checkVariation(
+                                        list[i],
                                         item
-                                    ) && checkModifier(tbItem, item)
+                                    ) && checkModifier(list[i], item)
                                 ) {
-                                    //   if (checkModifier(tbItem, item)) {
-                                    index = pos
-                                    return@forEachIndexed
-                                    //  }
+                                    Log.d(TAG, "cartLogic: " + i)
+                                    index = i
+                                    break
                                 }
                             }
-
-                            /*if (tbItem.itemId == item.itemId && checkModifier(tbItem, item)) {
-                            index = pos
-                            return@forEachIndexed
-                        }*/
                         }
+//                        list.forEachIndexed { pos, tbItem ->
+//                            if (item != null) {
+//                                if (tbItem.itemId == item.itemId && checkVariation(
+//                                        tbItem,
+//                                        item
+//                                    ) && checkModifier(tbItem, item)
+//                                ) {
+//                                    //   if (checkModifier(tbItem, item)) {
+//                                    index = pos
+//                                    return@forEachIndexed
+//                                    //  }
+//                                }
+//                            }
+//
+//                            /*if (tbItem.itemId == item.itemId && checkModifier(tbItem, item)) {
+//                            index = pos
+//                            return@forEachIndexed
+//                        }*/
+//                        }
                         if (index != -1) {
                             val model = cartList[0].items?.get(index)
+                            Log.d(TAG, "cartLogic: " + index)
                             if (model != null) {
                                 if (type == "UPDATE") {
                                     if (item != null) {
@@ -524,6 +539,10 @@ class DashBoardCategoryViewModel @Inject constructor(
                                         if (item.isEdited) {
                                             model.isEdited = item.isEdited
                                         }
+                                        item.modifiers.forEach {
+                                            it.itemQuantity = model.itemQuantity
+                                        }
+                                        model.modifiers = item.modifiers
 
                                         itemDiscountApply(model, item)
 
@@ -559,6 +578,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                             }
                         } else {
+                            Log.d(TAG, "cartLogic: " + index)
                             if (item != null) {
                                 list.add(item)
                             }
@@ -596,7 +616,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                     val cartModel = cartList[0]
                     cartModel.items = list
                     addCart(cartModel)
-
+                    Log.d(TAG, "cartLogic: " + list.size)
                     if (list.isEmpty()) {
                         // delete carts
                         deleteCart()
@@ -778,8 +798,12 @@ class DashBoardCategoryViewModel @Inject constructor(
         var checkModifier = false
 
         item.modifiers.forEach { itemM ->
-            tbItem.modifiers.forEach {
-                checkModifier = itemM.id == it.id
+            if (tbItem.modifiers.isNotEmpty()) {
+                tbItem.modifiers.forEach {
+                  return (itemM.id == it.id).also { checkModifier = it }
+                }
+            } else {
+                return true.also { checkModifier = it }
             }
         }
         return checkModifier

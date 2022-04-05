@@ -60,7 +60,7 @@ class VariationListAdapter() :
 
         init {
 
-            noteItemBinding.root.setOnClickListener {
+            noteItemBinding.linearParent.setOnClickListener {
 
                 mpos = bindingAdapterPosition
                 showVariationPriceClick?.invoke(variationList[bindingAdapterPosition])

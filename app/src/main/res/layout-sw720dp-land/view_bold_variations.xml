@@ -21,6 +21,8 @@
             android:gravity="center"
             tools:text="FOOD"
             android:maxLines="2"
+            android:clickable="false"
+            android:duplicateParentState="true"
             android:textColor="@color/txtColor"
             android:textSize="@dimen/_7mdpi" />
 
@@ -33,6 +35,8 @@
             android:gravity="center"
             tools:text="FOOD"
             android:padding="@dimen/_1sdp"
+            android:clickable="false"
+            android:duplicateParentState="true"
             android:maxLines="2"
             android:textColor="@color/txtColor"
             android:textSize="@dimen/_6mdpi" />

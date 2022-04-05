@@ -186,27 +186,26 @@
             android:layout_height="wrap_content"
             android:background="@drawable/background_square_border_solid_grey"
             android:orientation="horizontal"
-           android:paddingVertical="@dimen/_10sdp">
+            android:paddingVertical="@dimen/_10sdp"
+            android:weightSum="6"
+            android:paddingStart="@dimen/_18sdp">
 
             <androidx.appcompat.widget.AppCompatTextView
                 style="@style/CustomFontMediumStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
                 android:layout_weight="1"
-                android:gravity="center"
                 android:text="@string/tv_order_id"
                 android:textColor="@color/white"
                 android:textAllCaps="true"
-                android:textSize="@dimen/text_size_medium" />
+                android:textSize="@dimen/text_size_medium"
+                />
 
             <androidx.appcompat.widget.AppCompatTextView
                 style="@style/CustomFontMediumStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
                 android:layout_weight="1"
-                android:gravity="center"
                 android:text="@string/tv_date_time"
                 android:textAllCaps="true"
 
@@ -217,9 +216,7 @@
                 style="@style/CustomFontMediumStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
                 android:layout_weight="1"
-                android:gravity="center"
                 android:text="@string/payment_status"
                 android:textColor="@color/white"
                 android:textAllCaps="true"
@@ -230,23 +227,18 @@
                 style="@style/CustomFontMediumStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
                 android:layout_weight="2"
-                android:gravity="center"
                 android:text="@string/tv_order_type"
                 android:textColor="@color/white"
                 android:textSize="@dimen/text_size_medium"
                 android:textAllCaps="true"
-
                 android:visibility="gone" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 style="@style/CustomFontMediumStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
                 android:layout_weight="1"
-                android:gravity="center"
                 android:text="@string/tv_total_amount"
                 android:textColor="@color/white"
                 android:textAllCaps="true"
@@ -257,9 +249,7 @@
                 style="@style/CustomFontMediumStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
                 android:layout_weight="1"
-                android:gravity="center"
                 android:text="@string/tv_tip_amount"
                 android:textColor="@color/white"
                 android:textSize="@dimen/text_size_medium"
@@ -271,9 +261,7 @@
                 style="@style/CustomFontMediumStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
                 android:layout_weight="1"
-                android:gravity="center"
                 android:text="@string/tv_customer_name"
                 android:textColor="@color/white"
                 android:textAllCaps="true"
@@ -284,9 +272,7 @@
                 style="@style/CustomFontMediumStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
                 android:layout_weight="1"
-                android:gravity="center"
                 android:text="@string/tv_team_member"
                 android:textColor="@color/white"
                 android:textAllCaps="true"
