@@ -1694,7 +1694,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
     }
 
     @SuppressLint("SetTextI18n")
-    override fun onItemClickListener(view: View?, data: TbItem, position: Int?) {
+    override fun onItemClickListener(view: View?, data: TbItem, position: Int) {
 
         if (prefProvider.getValue(ORDER_TYPE, "").toString() != "") {
 

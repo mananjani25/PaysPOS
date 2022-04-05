@@ -778,6 +778,8 @@
     <string name="enter_card_number_here">enter Card Number Here</string>
     <string name="charge">Charge</string>
     <string name="add_tip_">Add Tip(%)<font color='#E90C0C'>*</font></string>
+    <string name="primary_table">Primary Table</string>
+    <string name="secondary_table">Secondary Table</string>
 
 
 </resources>

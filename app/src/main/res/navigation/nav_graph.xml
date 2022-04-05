@@ -1313,6 +1313,10 @@
         android:id="@+id/dashboardCategoryBoldPOS"
         android:name="com.android.pos.ui.fragments.dashboard.bolddashboard.DashboardCategoryBoldPOS"
         android:label="DashboardCategoryBoldPOS">
+        <argument
+            android:name="update"
+            app:argType="boolean"
+            android:defaultValue="false"/>
         <action
             android:id="@+id/actionboldpos_to_orderCompleteFragment"
             app:destination="@id/orderCompleteFragment" />
@@ -1363,6 +1367,9 @@
             android:id="@+id/action_dashboardCategoryBoldPOS_to_dineInOrderTable"
             app:destination="@id/dineInOrderTable"
             app:enterAnim="@anim/nav_default_enter_anim" />
+        <action
+            android:id="@+id/action_dashboardCategoryBoldPOS_self"
+            app:destination="@id/dashboardCategoryBoldPOS" />
 
 
     </fragment>

@@ -24,7 +24,9 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/_5sdp"
             android:layout_weight="1"
-            android:background="@drawable/background_merge_table_item">
+            android:paddingVertical="@dimen/_1sdp"
+
+            android:background="@drawable/background_square_border_grey">
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/txtFloorPlanLabel"
@@ -39,7 +41,7 @@
                 android:padding="@dimen/_5sdp"
                 android:text="Select Floor Plan"
                 android:textColor="@color/txtColor"
-                android:textSize="@dimen/_5mdpi" />
+                android:textSize="@dimen/_6mdpi" />
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -68,7 +70,7 @@
                     android:layout_gravity="center"
                     android:layout_marginStart="@dimen/_5sdp"
                     android:layout_marginEnd="@dimen/_5sdp"
-                    app:srcCompat="@drawable/ic_arrow_forward" />
+                    app:srcCompat="@drawable/ic_down_solid_arrow" />
 
             </LinearLayout>
         </RelativeLayout>
@@ -76,9 +78,10 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/_5sdp"
             android:layout_weight="1"
-            android:background="@drawable/background_merge_table_item">
+            android:paddingVertical="@dimen/_1sdp"
+
+            android:background="@drawable/background_square_border_grey">
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/txtPrimaryLabel"
@@ -93,7 +96,7 @@
                 android:padding="@dimen/_5sdp"
                 android:text="Select Table to Merge"
                 android:textColor="@color/txtColor"
-                android:textSize="@dimen/_5mdpi" />
+                android:textSize="@dimen/_6mdpi" />
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -122,7 +125,7 @@
                     android:layout_gravity="center"
                     android:layout_marginStart="@dimen/_5sdp"
                     android:layout_marginEnd="@dimen/_5sdp"
-                    app:srcCompat="@drawable/ic_arrow_forward" />
+                    app:srcCompat="@drawable/ic_down_solid_arrow" />
 
             </LinearLayout>
         </RelativeLayout>

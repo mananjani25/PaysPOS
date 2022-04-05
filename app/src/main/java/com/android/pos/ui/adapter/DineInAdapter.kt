@@ -169,11 +169,11 @@ class DineInAdapter : RecyclerView.Adapter<DineInAdapter.MyViewHolder>() {
             }
         }
 
-        override fun onItemClickListener(view: View?, data: TbItem, position: Int?) {
+        override fun onItemClickListener(view: View?, data: TbItem, position: Int) {
             Log.e(TAG, "ItemWithDine")
             list.get(0).itemPosition = position
             list.get(0).headerPosition = layoutPosition
-            listner.onItemSelected(bindingAdapterPosition, position ?: 0, data)
+            listner.onItemSelected(bindingAdapterPosition, position, data)
 
         }
 

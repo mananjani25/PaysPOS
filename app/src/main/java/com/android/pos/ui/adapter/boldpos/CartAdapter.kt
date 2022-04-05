@@ -1,6 +1,5 @@
 package com.android.pos.ui.adapter.boldpos
 
-import android.graphics.Paint
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -76,7 +75,7 @@ class CartAdapter : RecyclerView.Adapter<CartAdapter.MyViewHolder>() {
         init {
 
             binding.root.setOnClickListener {
-                mCallback.onItemClickListener(it, cartList[bindingAdapterPosition])
+                mCallback.onItemClickListener(it, cartList[bindingAdapterPosition],bindingAdapterPosition)
             }
         }
 
