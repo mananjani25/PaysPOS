@@ -58,7 +58,7 @@ class CheckoutDineInPaymentViewModel @Inject constructor(
     var dineInHeaderPosition: Int = 0
     var dineInSelectedItemHeaderPos: Int = 0
     var selectedItemPositionDine: Int = 0
-    val TAG = "CheckoutDinePayViewModel"
+    val TAG = "CheckoutDinePayViewMo"
     var totalPrice: Double = 0.0
     var totalCount = 0
     var subTotalPrice = 0.0
@@ -182,7 +182,7 @@ class CheckoutDineInPaymentViewModel @Inject constructor(
     fun addCart(cartModel: CartModel) {
 
         viewModelScope.launch {
-            posRepository.addItemCart(generateCombinedItems(cartModel))
+            posRepository.addItemCart(cartModel)
             destroyedList.clear()
         }
     }
