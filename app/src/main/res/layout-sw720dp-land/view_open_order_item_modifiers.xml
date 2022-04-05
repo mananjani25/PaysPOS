@@ -22,9 +22,8 @@
             android:layout_height="wrap_content"
             android:background="@color/backgroundColor"
             android:orientation="horizontal"
-            android:paddingStart="@dimen/_10sdp"
-            android:paddingEnd="@dimen/_10sdp"
             android:paddingTop="@dimen/_3sdp"
+            android:paddingStart="@dimen/_18sdp"
             android:paddingBottom="@dimen/_3sdp">
 
             <androidx.appcompat.widget.AppCompatTextView
@@ -33,8 +32,6 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:gravity="center"
-                android:layout_gravity="center"
                 android:text="@{model.name}"
                 android:textColor="@color/white"
                 android:textSize="@dimen/_5mdpi"
@@ -46,8 +43,8 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:layout_gravity="center"
-                android:gravity="center"
+                android:layout_gravity="center_vertical"
+                android:gravity="center_vertical"
                 android:text="@{@string/cross+``+model.quantity}"
                 android:textColor="@color/white"
                 android:textSize="@dimen/_5mdpi"
@@ -59,8 +56,8 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:layout_gravity="center"
-                android:gravity="center"
+                android:layout_gravity="center_vertical"
+                android:gravity="center_vertical"
                 android:text="@{@string/symbole +``+String.format(@string/format,model.price)}"
                 android:textColor="@color/white"
                 android:textSize="@dimen/_5mdpi"
@@ -71,36 +68,18 @@
                 style="@style/CustomFontMediumStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
+                android:layout_gravity="center_vertical"
                 android:layout_weight="1"
-                android:gravity="center"
+                android:gravity="center_vertical"
                 android:text="@{@string/symbole +``+String.format(@string/format,model.price)}"
                 android:textColor="@color/white"
                 android:textSize="@dimen/_5mdpi"
                 tools:text="$12.00" />
 
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/txtTerminalName"
-                style="@style/CustomFontMediumStyle"
+            <androidx.appcompat.widget.LinearLayoutCompat
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:textColor="@color/white"
-                android:textSize="@dimen/_5mdpi" />
-
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/txtEmployeeName"
-                style="@style/CustomFontSemiBold"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:textColor="@color/white"
-                android:textSize="@dimen/_5mdpi"
-                tools:text="Terminal Name" />
+                android:layout_weight="2"
+                android:layout_height="wrap_content" />
 
         </LinearLayout>
 

@@ -392,6 +392,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             bundle.putString("paymentOfflineId", randomOfflineId())
             bundle.putBoolean("isTotalPayment", true)
             bundle.putBoolean("isLastPayment", true)
+            bundle.putBoolean("isGuestPay", false)
             bundle.putParcelable(PRINT_DATA_DINE_IN, getOrderDetailsResponse)
             bundle.putDouble(DINE_IN_SUBTOTAL, subTotalWT)
             bundle.putDouble(DINE_IN_TAX, viewModel.totalTaxAmount)

@@ -13,21 +13,21 @@ import androidx.appcompat.widget.AppCompatTextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.data.entities.CartModel
 import com.android.pos.data.entities.RedeemLoyaltyInfo
 import com.android.pos.data.entities.TbItem
-import com.android.pos.data.model.requestModel.OrderRequestModel
-import com.android.pos.data.model.requestModel.PaymentAttributes
-import com.android.pos.data.model.requestModel.SpitByOrderPaymentModel
-import com.android.pos.data.model.requestModel.SpitByOrderRequestModel
+import com.android.pos.data.model.requestModel.*
+import com.android.pos.data.model.responseModel.GuestPaymentAttributes
 import com.android.pos.data.remote.Constants
 import com.android.pos.databinding.FragmentCheckoutDetailsNewBinding
 import com.android.pos.di.ApiModule1
 import com.android.pos.di.MagtekModule
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
+import com.android.pos.ui.fragments.dinein.DineInOrderTableViewModel
 import com.android.pos.ui.fragments.magtek.MagtekRequestUtils
 import com.android.pos.ui.fragments.magtek.PaymentResponse
 import com.android.pos.ui.fragments.magtekPro.MTParser
@@ -70,14 +70,18 @@ class CheckoutDineInFragmentNew : Fragment(), magtekCallback,
     private var paymentOfflineId: String = ""
     var isSelectedCount = 1
     private val paymentviewModel by activityViewModels<PaymentViewModel>()
+    private val dineinOrderVieweModel by viewModels<DineInOrderTableViewModel>()
     private val viewModel by activityViewModels<DashBoardCategoryViewModel>()
     var listtextview: ArrayList<AppCompatTextView> = arrayListOf()
     var paymentType = "Cash"
+    private var guestRequestModel: GuestPaymentRequest? = null
+    private var guestId: Int? = null
     var cashDiscountSurcharge = 0.0
     var cardActualAmount = 0.0
     private var paymentId: Int = -1
     private var isPaymentScreen = true
     private var isSplitScreen = false
+    private var isGuestPay = false
 
     private var remainingAmount: Double = 0.0
     var cashDiscountType = ""
@@ -98,7 +102,7 @@ class CheckoutDineInFragmentNew : Fragment(), magtekCallback,
     var cardPaymentAmount = 0.0
 
     private var cartList: CartModel? = null
-
+    private var splitModel: DineInOrderPayment? = null
     @Inject
     lateinit var magtekModule: MagtekModule
 
@@ -117,6 +121,8 @@ class CheckoutDineInFragmentNew : Fragment(), magtekCallback,
     private var splitAfterAmount: Double = 0.0
     private var custom_paymentAmount = 0.0
 
+
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -131,7 +137,12 @@ class CheckoutDineInFragmentNew : Fragment(), magtekCallback,
 
 
         orderId = arguments?.getInt("orderId")
-
+        if (arguments?.getBoolean("isGuestPay") != null) {
+            isGuestPay = arguments?.getBoolean("isGuestPay")!!
+        }
+        guestRequestModel = requireArguments().getParcelable("model")
+        guestId = requireArguments().getInt("id")
+        splitModel = requireArguments().getParcelable("orderPayment")
         Log.e("orderId :: ", orderId.toString())
         if (orderId != null) {
             paymentId = arguments?.getInt("paymentId")!!
@@ -298,6 +309,12 @@ class CheckoutDineInFragmentNew : Fragment(), magtekCallback,
     }
 
     private fun observeData() {
+        if (isGuestPay){
+            dineinOrderVieweModel.onPayment.observe(viewLifecycleOwner) { event ->
+                event.getContentIfNotHandled()?.let { str ->
+                }
+            }
+        }
         paymentviewModel.data.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
                 viewModel.redeemLoyaltyInfo = RedeemLoyaltyInfo()
@@ -584,7 +601,59 @@ class CheckoutDineInFragmentNew : Fragment(), magtekCallback,
         if (cashDiscountType == "CashDiscount") {
             paymentAmount -= cashDiscountSurcharge
         }
-        makeCashPayment()
+        if(isGuestPay){
+            paymentviewModel.totalPayAmount(paymentAmount)
+            guestPaySpit()
+            dineinOrderVieweModel.payByGuest(guestId!!,guestRequestModel!!,true,splitModel!!)
+        }else{
+            makeCashPayment()
+        }
+
+    }
+
+    private fun guestPaySpit() {
+        guestRequestModel?.paymentAttributes!!.amount =
+            paymentAmount
+        guestRequestModel?.paymentAttributes!!.serviceChargeAmount =
+            totalServiceCharge
+        guestRequestModel?.paymentAttributes!!.subTotal =
+            subTotalPrice
+        guestRequestModel?.paymentAttributes!!.taxAmount =
+            totalTax
+        guestRequestModel?.paymentAttributes!!.tips =
+            tipAmount
+        guestRequestModel?.paymentAttributes!!.totalDiscount =
+            totalDiscount
+        guestRequestModel?.paymentAttributes!!.paymentType = paymentType
+        guestRequestModel?.paymentAttributes!!.cash_discount_or_surcharge =
+            cashDiscountSurcharge
+        guestRequestModel?.paymentAttributes!!.cash_discount_type = cashDiscountType
+
+        val guestPaymentAttributes = GuestPaymentAttributes()
+        guestPaymentAttributes.amount = guestRequestModel?.paymentAttributes!!.amount
+        guestPaymentAttributes.serviceChargeAmount =
+            guestRequestModel?.paymentAttributes!!.serviceChargeAmount
+        guestPaymentAttributes.subTotal =
+            guestRequestModel?.paymentAttributes!!.subTotal
+        guestPaymentAttributes.taxAmount =
+            guestRequestModel?.paymentAttributes!!.taxAmount
+        guestPaymentAttributes.tips = guestRequestModel?.paymentAttributes!!.tips
+        guestPaymentAttributes.totalDiscount =
+            guestRequestModel?.paymentAttributes!!.totalDiscount
+        guestPaymentAttributes.payableType =
+            guestRequestModel?.paymentAttributes!!.payableType
+        guestPaymentAttributes.paymentType =
+            guestRequestModel?.paymentAttributes!!.paymentType
+        guestPaymentAttributes.offlineId =
+            guestRequestModel?.paymentAttributes!!.offlineId
+        guestPaymentAttributes.order_id =
+            guestRequestModel?.paymentAttributes!!.order_id
+        guestPaymentAttributes.cash_discount_or_surcharge =
+            guestRequestModel?.paymentAttributes!!.cash_discount_or_surcharge
+        guestPaymentAttributes.cash_discount_type =
+            guestRequestModel?.paymentAttributes!!.cash_discount_type
+        guestRequestModel?.paymentAttributes!!.paymentAttributes =
+            listOf(guestPaymentAttributes)
     }
 
     private fun paymentClick() {
@@ -744,7 +813,7 @@ class CheckoutDineInFragmentNew : Fragment(), magtekCallback,
 
     fun getDataFromPref() {
         redeemLoyaltyInfo = viewModel.redeemLoyaltyInfo
-        prefProvider.setValue(Constants.ORDER_TYPE,Constants.DINE_IN)
+        prefProvider.setValue(Constants.ORDER_TYPE, Constants.DINE_IN)
         if (prefProvider.getValue(Constants.WHOLE_AMOUNT, "").isEmpty()) {
             WholetotalPrice = viewModel.totalPrice
             prefProvider.setValue(
