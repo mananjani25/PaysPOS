@@ -796,7 +796,7 @@ class CartFragment(val itemClickListner: ItemClickListner?) : Fragment(), MyCall
         ProgressUtils.dismissProgressDialog()
     }
 
-    override fun onItemClickListener(view: View?, data: TbItem, position: Int?) {
+    override fun onItemClickListener(view: View?, data: TbItem, position: Int) {
         Log.e(TAG, "itemClicked  ${Gson().toJson(data)}")
         itemClickListner?.onItemUpdate(data)
 
@@ -810,8 +810,9 @@ class CartFragment(val itemClickListner: ItemClickListner?) : Fragment(), MyCall
     }
 
     override fun onItemSelected(headerPosition: Int, position: Int, item: TbItem) {
-        Log.e(TAG, "onDineinItemClick")
-        viewModel.dineInSelectedItemHeaderPos = headerPosition
+        Log.e(TAG, "onDineinItemClick ${position}")
+
+        viewModel.selectedItemPositionDine = position
         viewModel.dineInHeaderPosition = headerPosition
 
         itemClickListner?.onItemUpdate(item)

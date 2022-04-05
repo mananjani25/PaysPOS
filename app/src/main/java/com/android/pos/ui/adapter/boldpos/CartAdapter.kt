@@ -75,7 +75,7 @@ class CartAdapter : RecyclerView.Adapter<CartAdapter.MyViewHolder>() {
         init {
 
             binding.root.setOnClickListener {
-                mCallback.onItemClickListener(it, cartList[bindingAdapterPosition])
+                mCallback.onItemClickListener(it, cartList[bindingAdapterPosition],bindingAdapterPosition)
             }
         }
 
