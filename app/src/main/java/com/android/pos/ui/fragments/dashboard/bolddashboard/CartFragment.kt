@@ -696,8 +696,10 @@ class CartFragment(val itemClickListner: ItemClickListner?) : Fragment(), MyCall
                                         }"
                                     binding.txtLoyaltyPoints.text =
                                         "${viewModel.redeemLoyaltyInfo.usedLoyaltyPoints}"
-                                    binding.checkloylaty.isChecked =
-                                        viewModel.redeemLoyaltyInfo.needToApplyLoyalty
+                                    if (!viewModel.redeemLoyaltyInfo.needToApplyLoyalty) {
+                                        binding.checkloylaty.isChecked =
+                                            viewModel.redeemLoyaltyInfo.needToApplyLoyalty
+                                    }
                                 }
                             }
                         } else {
