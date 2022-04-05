@@ -188,7 +188,7 @@
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="220dp"
+                    android:layout_height="@dimen/_85sdp"
                     android:orientation="horizontal"
                     android:weightSum="2">
 
@@ -782,7 +782,7 @@
                 <androidx.appcompat.widget.LinearLayoutCompat
                     android:id="@+id/linear_paymentinfo"
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/_71sdp"
+                    android:layout_height="@dimen/_78sdp"
                     android:layout_alignParentBottom="true"
                     android:orientation="vertical">
 
