@@ -463,6 +463,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                 } else if (type == DELETE) {
 
                     var dine = dineInList.toMutableList()
+                    Log.e(TAG, "dinedinedine  ${Gson().toJson(dine)}")
 
                     dineInSelectedItemHeaderPos?.let {
                         dine.get(it).items.remove(
@@ -471,7 +472,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                             )
                         )
                     }
-                    Log.e(TAG, "dinedinedine  ${Gson().toJson(dine)}")
+
                     cartModel.dineInList = dine
                     addCart(cartModel)
                     /*dineInList.toMutableList().remove(

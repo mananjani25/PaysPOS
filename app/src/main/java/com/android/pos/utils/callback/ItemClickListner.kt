@@ -6,4 +6,5 @@ import com.android.pos.data.entities.TbItem
 
 interface ItemClickListner   {
     fun onItemUpdate(item: TbItem)
+    fun onDineInOrderCleared()
 }

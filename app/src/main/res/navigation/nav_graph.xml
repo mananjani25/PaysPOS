@@ -1367,6 +1367,9 @@
             android:id="@+id/action_dashboardCategoryBoldPOS_to_dineInOrderTable"
             app:destination="@id/dineInOrderTable"
             app:enterAnim="@anim/nav_default_enter_anim" />
+        <action
+            android:id="@+id/action_dashboardCategoryBoldPOS_self"
+            app:destination="@id/dashboardCategoryBoldPOS" />
 
 
     </fragment>

@@ -111,7 +111,6 @@ class CartAdapter : RecyclerView.Adapter<CartAdapter.MyViewHolder>() {
     }
 
     override fun getItemCount(): Int {
-        Log.e(TAG,"cartItemCount  ${cartList.size}")
         return cartList.size
     }
 
