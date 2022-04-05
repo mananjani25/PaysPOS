@@ -662,8 +662,8 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                     bundle.putParcelable("dineInList", baseResponse)
                     bundle.putBoolean("isGuestPaid", false)
                     bundle.putInt("orderId", baseResponse.order.id)
-                    prefProvider.setValue(ORDER_TYPE, DINE_IN)
-//                    viewModel.deleteCart()
+                    prefProvider.setValue(ORDER_TYPE, TAKEOUT)
+                    viewModel.deleteCart()
                     findNavController().navigate(
                         R.id.action_dashboardCategoryBoldPOS_to_dineInOrderTable,
                         bundle
