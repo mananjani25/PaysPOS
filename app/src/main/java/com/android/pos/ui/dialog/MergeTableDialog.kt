@@ -24,6 +24,7 @@ import com.android.pos.ui.adapter.MergeTableSelectionAdapter
 import com.android.pos.ui.fragments.dinein.DineInViewModel
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.ProgressUtils
+import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -203,12 +204,12 @@ class MergeTableDialog : DialogFragment() {
                     isDuplicateIdTrue = true
                     return@forEach
                 } else {
-                    isDuplicateIdTrue = false
                     set.add(it ?: 0)
 
                 }
 
             }
+            Log.e(TAG,"getSetData  ${Gson().toJson(set)}")
 
 
             if (!isDuplicateIdTrue) {
