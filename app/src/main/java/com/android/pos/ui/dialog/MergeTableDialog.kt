@@ -62,7 +62,7 @@ class MergeTableDialog : DialogFragment() {
     }
 
     private fun observeMergeTable() {
-        viewModel.mergeStatusChange.observe(viewLifecycleOwner, { event ->
+        viewModel.mergeStatusChange.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let { status ->
                 AlertUtils.showCustomAlertWithListenerWithOK(
                     requireContext(), status.toString()
@@ -76,7 +76,7 @@ class MergeTableDialog : DialogFragment() {
 
 
             }
-        })
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -209,13 +209,6 @@ class MergeTableDialog : DialogFragment() {
                 }
 
             }
-
-
-
-
-
-
-
 
 
             if (!isDuplicateIdTrue) {

@@ -47,7 +47,7 @@
                     android:maxLines="1"
                     android:singleLine="true"
                     android:textColor="@color/btnColor"
-                    android:textSize="@dimen/_5mdpi"
+                    android:textSize="@dimen/_6mdpi"
                     android:visibility="gone"
                     tools:text="Item Name" />
 
