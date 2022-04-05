@@ -650,7 +650,30 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
     private fun navigateDineInOrder() {
         viewModel._Basedata.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let { baseResponse ->
+                var listId: ArrayList<Int> = arrayListOf()
                 if (baseResponse != null) {
+                    try {
+                        if (baseResponse.order.orderItems.isNotEmpty()) {
+                            baseResponse.order.orderItems.forEachIndexed { index, orderItem ->
+                                listId.add(orderItem.id)
+                            }
+                        }
+
+                        for (i in listId.indices) {
+                            for (j in cartList[0].dineInList?.get(i)?.items?.indices!!) {
+                                cartList[0].dineInList?.get(i)?.items?.get(j)?.orderItemId =
+                                    listId[i]
+                                Log.d(
+                                    TAG,
+                                    "navigateDineInOrder: " + cartList[0].dineInList?.get(i)?.items?.get(
+                                        j
+                                    )?.orderItemId
+                                )
+                            }
+                        }
+                    } catch (e: Exception) {
+                        Log.d(TAG, "navigateDineInOrder: " + e.message)
+                    }
                     val bundle = Bundle()
                     bundle.putDouble("totalPrice", baseResponse.order.totalAmount)
                     bundle.putParcelable("cartList", cartList[0])
