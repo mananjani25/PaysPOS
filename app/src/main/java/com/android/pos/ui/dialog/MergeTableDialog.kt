@@ -211,13 +211,6 @@ class MergeTableDialog : DialogFragment() {
             }
 
 
-
-
-
-
-
-
-
             if (!isDuplicateIdTrue) {
                 var primaryTable = tableAdapter.getItem(tableSelectedPos)
                 var totalChairCount = 0

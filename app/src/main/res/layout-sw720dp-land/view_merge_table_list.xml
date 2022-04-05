@@ -24,7 +24,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="@dimen/_5sdp"
             android:layout_weight="1"
-            android:background="@drawable/background_merge_table_item">
+            android:background="@drawable/background_square_border_grey">
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/txtFloorPlanLabel"
@@ -68,7 +68,7 @@
                     android:layout_gravity="center"
                     android:layout_marginStart="@dimen/_5sdp"
                     android:layout_marginEnd="@dimen/_5sdp"
-                    app:srcCompat="@drawable/ic_arrow_forward" />
+                    app:srcCompat="@drawable/ic_down_solid_arrow" />
 
             </LinearLayout>
         </RelativeLayout>
@@ -76,9 +76,8 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/_5sdp"
             android:layout_weight="1"
-            android:background="@drawable/background_merge_table_item">
+            android:background="@drawable/background_square_border_grey">
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/txtPrimaryLabel"
@@ -122,7 +121,7 @@
                     android:layout_gravity="center"
                     android:layout_marginStart="@dimen/_5sdp"
                     android:layout_marginEnd="@dimen/_5sdp"
-                    app:srcCompat="@drawable/ic_arrow_forward" />
+                    app:srcCompat="@drawable/ic_down_solid_arrow" />
 
             </LinearLayout>
         </RelativeLayout>
