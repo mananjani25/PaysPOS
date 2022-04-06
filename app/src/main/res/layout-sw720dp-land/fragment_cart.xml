@@ -132,15 +132,15 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
+                android:visibility="gone"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rvCartDineIn"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/llCustomerDialog"
                 android:orientation="vertical"
-                android:visibility="gone"
+                android:visibility="visible"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 tools:listitem="@layout/view_cart_item" />
 

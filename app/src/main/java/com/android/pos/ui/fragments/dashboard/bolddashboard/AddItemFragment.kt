@@ -13,6 +13,7 @@ import com.android.pos.R
 import com.android.pos.data.entities.*
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.DELETE
+import com.android.pos.data.remote.Constants.DINE_IN
 import com.android.pos.data.remote.Constants.ORDER_TYPE
 import com.android.pos.data.remote.Constants.TAKEOUT
 import com.android.pos.data.remote.Constants.TERMINAL_ID
@@ -224,7 +225,17 @@ class AddItemFragment(val listner: ItemListner) : Fragment() {
         binding.txtRemoveItem.setOnClickListener {
 
             item.isEdited = false
-            viewModel.cartLogic(cartList, item, DELETE, false)
+
+            if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == DINE_IN) {
+
+                cartList[0].dineInList?.let { it1 ->
+                    viewModel.cartLogic(cartList, item, DELETE, false,
+                        it1
+                    )
+                }
+            } else {
+                viewModel.cartLogic(cartList, item, DELETE, false)
+            }
             listner.onCancelItemSelected()
 
         }

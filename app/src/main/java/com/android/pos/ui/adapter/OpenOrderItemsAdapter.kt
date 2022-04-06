@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.data.model.responseModel.OpenOrderResponse
 import com.android.pos.databinding.ViewOpenOrderItemsBinding
 
+
 class OpenOrderItemsAdapter :
     RecyclerView.Adapter<OpenOrderItemsAdapter.MyViewHolder>() {
     var list = ArrayList<OpenOrderResponse.Data.Order.OrderItem>()

@@ -59,7 +59,6 @@ import java.net.URL
 import java.util.*
 import javax.inject.Inject
 import kotlin.collections.set
-import kotlin.math.log
 
 
 @HiltViewModel
@@ -75,6 +74,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     var dineInHeaderPosition: Int = 0
     var dineInSelectedItemHeaderPos: Int = 0
+    var selectedItemPositionDine: Int = 0
     val TAG = "DashBoardCateViewModel"
     var totalPrice: Double = 0.0
     var totalCount = 0
@@ -464,14 +464,17 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                     var dine = dineInList.toMutableList()
 
-                    dineInSelectedItemHeaderPos?.let {
+                    Log.e(TAG, "dineInHeaderPosition:  ${dineInHeaderPosition}")
+                    Log.e(TAG, "selectedItemPositionDine  ${selectedItemPositionDine}")
+
+                    dineInHeaderPosition?.let {
                         dine.get(it).items.remove(
-                            dine.get(dineInSelectedItemHeaderPos).items.get(
-                                dine.get(0).itemPosition!!
+                            dine.get(dineInHeaderPosition).items.get(
+                                selectedItemPositionDine
                             )
                         )
                     }
-                    Log.e(TAG, "dinedinedine  ${Gson().toJson(dine)}")
+
                     cartModel.dineInList = dine
                     addCart(cartModel)
                     /*dineInList.toMutableList().remove(
@@ -799,7 +802,7 @@ class DashBoardCategoryViewModel @Inject constructor(
         item.modifiers.forEach { itemM ->
             if (tbItem.modifiers.isNotEmpty()) {
                 tbItem.modifiers.forEach {
-                  return (itemM.id == it.id).also { checkModifier = it }
+                    return (itemM.id == it.id).also { checkModifier = it }
                 }
             } else {
                 return true.also { checkModifier = it }
