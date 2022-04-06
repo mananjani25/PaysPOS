@@ -63,6 +63,13 @@ class PosRepository @Inject constructor(
 
     )
 
+    fun getCancelOrderListDatabse() =
+        performGetOperationDatabase(databaseQuery = { appDatabase.cancelOrderReasonDao().allCancelOrderReasons })
+
+    suspend fun addCancelOrderReasonFromDb(cancelOrderReason: List<VenueDetailsResponse.Data.CancelOrderReason>) {
+        appDatabase.cancelOrderReasonDao().addAllCancelOrderReasonsSuspend(cancelOrderReason)
+    }
+
     fun getKitchenPrinters() =
         performGetOperationDatabase { appDatabase.printerDao().kitchenPrintList }
 

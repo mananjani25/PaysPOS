@@ -80,9 +80,11 @@ data class VenueDetailsResponse(
         val magensaSettings: List<MagensaSettings>
 
     ) {
+        @Entity(tableName = "TbCancelOrderReason")
         data class CancelOrderReason(
             @SerializedName("created_at")
             val createdAt: String,
+            @PrimaryKey
             @SerializedName("id")
             val id: Int,
             @SerializedName("is_active")

@@ -46,6 +46,8 @@ class ActiveOrderViewModel @Inject constructor(
 
     val endDate = MutableLiveData<String>()
 
+    val getcancelOrderReasonsDatabse = posRepository.getCancelOrderListDatabse()
+
     fun getCustomerReceiptSettings() = posRepository.getCustomerReceiptSettings()
 
     fun getCustomerPrinterList(): LiveData<Resource<List<PrinterResponse.Data.CustomerReceiptPrinters>>> {
