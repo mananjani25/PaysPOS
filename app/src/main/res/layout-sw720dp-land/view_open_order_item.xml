@@ -223,23 +223,6 @@
                     app:textAllCaps="false" />
 
                 <androidx.appcompat.widget.AppCompatTextView
-                    android:id="@+id/txtPrintReceipt"
-                    style="@style/CustomFontBold"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_marginLeft="@dimen/_5sdp"
-                    android:layout_marginRight="@dimen/_5sdp"
-                    android:layout_weight="1"
-                    android:background="@drawable/background_square_border_grey"
-                    android:gravity="center"
-                    android:padding="@dimen/_10sdp"
-                    android:text="@string/tv_kitchen_receipt"
-                    android:textColor="@color/txtColor"
-                    android:textSize="@dimen/_5mdpi"
-                    app:textAllCaps="false" />
-
-                <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/txtCustomerReceipt"
                     style="@style/CustomFontBold"
                     android:layout_width="wrap_content"

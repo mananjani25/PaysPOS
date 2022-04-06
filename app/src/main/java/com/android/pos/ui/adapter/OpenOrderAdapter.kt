@@ -22,7 +22,6 @@ import com.android.pos.utils.callback.OrderCallBack
 import com.android.pos.utils.extensions.gone
 import com.android.pos.utils.extensions.visible
 import java.util.*
-import kotlin.collections.ArrayList
 
 class OpenOrderAdapter(val context: Context) :
     RecyclerView.Adapter<OpenOrderAdapter.MyViewHolder>(), Filterable {
@@ -88,15 +87,13 @@ class OpenOrderAdapter(val context: Context) :
 
                 binding.txtCancelOrder.visibility = View.GONE
                 binding.txtEditOrder.visibility = View.GONE
-                binding.txtPrintReceipt.visibility = View.VISIBLE
+
                 binding.txtPayNow.visibility = View.GONE
-                binding.txtPrintReceipt.text = "Print Receipt"
+
 
             } else {
                 binding.txtCancelOrder.visibility = View.VISIBLE
                 binding.txtEditOrder.visibility = View.VISIBLE
-                binding.txtPrintReceipt.visibility = View.VISIBLE
-                binding.txtPrintReceipt.text = "Print Unpaid Receipt"
                 binding.txtPayNow.visibility = View.VISIBLE
             }
 
@@ -112,7 +109,13 @@ class OpenOrderAdapter(val context: Context) :
                 binding.tvDeliveryStatus.setTextColor(binding.root.resources.getColor(R.color.txtColor))
                 binding.tvTeamMember.setTextColor(binding.root.resources.getColor(R.color.txtColor))
                 binding.llShowLayout.visibility = View.GONE
-                binding.imgIndicator.setImageDrawable(ResourcesCompat.getDrawable(binding.root.resources,R.drawable.ic_down_solid_arrow,binding.root.resources.newTheme()))
+                binding.imgIndicator.setImageDrawable(
+                    ResourcesCompat.getDrawable(
+                        binding.root.resources,
+                        R.drawable.ic_down_solid_arrow,
+                        binding.root.resources.newTheme()
+                    )
+                )
 
 //                binding.imgIndicator.setImageDrawable(binding.root.resources.getDrawable(R.drawable.ic_down_solid_arrow))
                 binding.imgIndicator.setColorFilter(
@@ -137,7 +140,13 @@ class OpenOrderAdapter(val context: Context) :
                 binding.tvTeamMember.setTextColor(binding.root.resources.getColor(R.color.white))
                 binding.llShowLayout.visibility = View.VISIBLE
 //                binding.imgIndicator.setImageDrawable(binding.root.resources.getDrawable(R.drawable.ic_solid_up_arrow))
-                binding.imgIndicator.setImageDrawable(ResourcesCompat.getDrawable(binding.root.resources,R.drawable.ic_solid_up_arrow,binding.root.resources.newTheme()))
+                binding.imgIndicator.setImageDrawable(
+                    ResourcesCompat.getDrawable(
+                        binding.root.resources,
+                        R.drawable.ic_solid_up_arrow,
+                        binding.root.resources.newTheme()
+                    )
+                )
                 binding.imgIndicator.setColorFilter(ContextCompat.getColor(context, R.color.white))
                 binding.tvDeliveryStatus.setTextColor(binding.root.resources.getColor(R.color.white))
 
@@ -167,8 +176,7 @@ class OpenOrderAdapter(val context: Context) :
                     itemView.context.getDrawable(R.drawable.button_selected)
                 binding.txtEditOrder.background =
                     itemView.context.getDrawable(R.drawable.background_square_border_grey)
-                binding.txtPrintReceipt.background =
-                    itemView.context.getDrawable(R.drawable.background_square_border_grey)
+
                 binding.txtCustomerReceipt.background =
                     itemView.context.getDrawable(R.drawable.background_square_border_grey)
                 binding.txtPayNow.background =
@@ -176,33 +184,12 @@ class OpenOrderAdapter(val context: Context) :
                 mCallback?.onItemClickListener(it, bindingAdapterPosition, "")
             }
 
-            binding.txtPrintReceipt.setOnClickListener {
-
-                binding.txtCancelOrder.background =
-                    itemView.context.getDrawable(R.drawable.background_square_border_grey)
-                binding.txtEditOrder.background =
-                    itemView.context.getDrawable(R.drawable.background_square_border_grey)
-                binding.txtPrintReceipt.background =
-                    itemView.context.getDrawable(R.drawable.button_selected)
-                binding.txtCustomerReceipt.background =
-                    itemView.context.getDrawable(R.drawable.background_square_border_grey)
-                binding.txtPayNow.background =
-                    itemView.context.getDrawable(R.drawable.background_square_border_grey)
-
-                if (filterList[bindingAdapterPosition].paymentStatus == "Paid") {
-                    mCallback?.onItemClickListener(it, bindingAdapterPosition, PRINT_PAID)
-                } else {
-                    mCallback?.onItemClickListener(it, bindingAdapterPosition, PRINT_UNPAID)
-                }
-            }
 
             binding.txtEditOrder.setOnClickListener {
                 binding.txtCancelOrder.background =
                     itemView.context.getDrawable(R.drawable.background_square_border_grey)
                 binding.txtEditOrder.background =
                     itemView.context.getDrawable(R.drawable.button_selected)
-                binding.txtPrintReceipt.background =
-                    itemView.context.getDrawable(R.drawable.background_square_border_grey)
                 binding.txtCustomerReceipt.background =
                     itemView.context.getDrawable(R.drawable.background_square_border_grey)
                 binding.txtPayNow.background =
@@ -215,8 +202,6 @@ class OpenOrderAdapter(val context: Context) :
                     itemView.context.getDrawable(R.drawable.background_square_border_grey)
                 binding.txtEditOrder.background =
                     itemView.context.getDrawable(R.drawable.background_square_border_grey)
-                binding.txtPrintReceipt.background =
-                    itemView.context.getDrawable(R.drawable.background_square_border_grey)
                 binding.txtCustomerReceipt.background =
                     itemView.context.getDrawable(R.drawable.background_square_border_grey)
                 binding.txtPayNow.background =
@@ -227,8 +212,6 @@ class OpenOrderAdapter(val context: Context) :
                 binding.txtCancelOrder.background =
                     itemView.context.getDrawable(R.drawable.background_square_border_grey)
                 binding.txtEditOrder.background =
-                    itemView.context.getDrawable(R.drawable.background_square_border_grey)
-                binding.txtPrintReceipt.background =
                     itemView.context.getDrawable(R.drawable.background_square_border_grey)
                 binding.txtCustomerReceipt.background =
                     itemView.context.getDrawable(R.drawable.button_selected)
@@ -286,24 +269,27 @@ class OpenOrderAdapter(val context: Context) :
                 } else {
                     val fList = ArrayList<OpenOrderResponse.Data.Order>()
 
-                    for (it in orderList){
-                        if (it.offlineId.lowercase(Locale.getDefault()).contains(charString.lowercase(Locale.getDefault()))){
-                             fList.add(it)
-                        }
-                       else if (it.customer!=null&&it.customer.firstName.lowercase(Locale.getDefault()).contains(charString.lowercase(Locale.getDefault()))
-                        ){
-                             fList.add(it)
-                        }
-                        else if (it.customer!=null&&it.customer.lastName.lowercase(Locale.getDefault()).contains(charString.lowercase(Locale.getDefault()))
-                        ){
-                             fList.add(it)
-                        } else if (it.employee.firstName.lowercase(Locale.getDefault()).contains(charString.lowercase(Locale.getDefault()))
-                        ){
-                             fList.add(it)
-                        }
-                        else if (it.employee.lastName.lowercase(Locale.getDefault()).contains(charString.lowercase(Locale.getDefault()))
-                        ){
-                             fList.add(it)
+                    for (it in orderList) {
+                        if (it.offlineId.lowercase(Locale.getDefault())
+                                .contains(charString.lowercase(Locale.getDefault()))
+                        ) {
+                            fList.add(it)
+                        } else if (it.customer != null && it.customer.firstName.lowercase(Locale.getDefault())
+                                .contains(charString.lowercase(Locale.getDefault()))
+                        ) {
+                            fList.add(it)
+                        } else if (it.customer != null && it.customer.lastName.lowercase(Locale.getDefault())
+                                .contains(charString.lowercase(Locale.getDefault()))
+                        ) {
+                            fList.add(it)
+                        } else if (it.employee.firstName.lowercase(Locale.getDefault())
+                                .contains(charString.lowercase(Locale.getDefault()))
+                        ) {
+                            fList.add(it)
+                        } else if (it.employee.lastName.lowercase(Locale.getDefault())
+                                .contains(charString.lowercase(Locale.getDefault()))
+                        ) {
+                            fList.add(it)
                         }
                     }
 
