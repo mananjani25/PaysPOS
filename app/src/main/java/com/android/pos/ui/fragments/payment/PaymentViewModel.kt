@@ -26,7 +26,6 @@ import com.android.pos.utils.statusUtils.Status
 import com.google.gson.Gson
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
-import java.util.*
 import javax.inject.Inject
 
 @HiltViewModel
@@ -138,10 +137,26 @@ open class PaymentViewModel @Inject constructor(
                                     )
                                 }
 
+                                Log.e(TAG, "isOnlySave:  ${onlySave}")
 
                                 if (onlySave) {
-                                    _queueCreateSaveOrder.value = Event(true)
-                                } else {
+                                    if (prefProvider.getValueboolean(
+                                            IS_PRINTER_QUEUE_ENABLE,
+                                            false
+                                        )
+                                    ) {
+
+
+                                        _queueStartSaveOrder.value = Event(createOrderResponse)
+                                    } else {
+                                        _queueStart.value = Event(createOrderResponse)
+                                        //_data.value = Event(createOrderResponse)
+                                    }
+                                    //_queueStart.value = Event(createOrderResponse)
+
+                                }
+
+                                else {
                                     if (createOrderResponse.data.order.orderType != "Dine In") {
                                         cashLogApi(createOrderResponse, "in")
                                     }

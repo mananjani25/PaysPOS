@@ -92,7 +92,7 @@ class Passcode : Fragment() {
 
     private fun setTimeandDate() {
         val sdf = SimpleDateFormat("hh:mm aa")
-        val currentDate = sdf.format(Date())
+        val currentDate = sdf.format(Calendar.getInstance().time)
         binding.currentTime.text = currentDate
         val date = Date()
         val formatter = SimpleDateFormat("EEEE, dd MMMM");
