@@ -234,7 +234,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment() {
                     )
                 }
             } else {
-                viewModel.cartLogic(cartList, item, DELETE, false)
+                viewModel.cartLogic(cartList, item, DELETE, item.isManualSales)
             }
             listner.onCancelItemSelected()
 

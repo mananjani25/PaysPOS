@@ -668,6 +668,7 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
             paymentviewModel.totalPayAmount(
                 binding.tvCash0.text.toString().replace("$", "").trim().toDouble()
             )
+            paymentAmount = binding.tvCash0.text.toString().replace("$", "").trim().toDouble()
             cashPaymentWithVariation()
         }
         binding.tvCash1.setOnClickListener {
