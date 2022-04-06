@@ -2145,20 +2145,23 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 Log.e(TAG, "FullData  ${Gson().toJson(it)}")
 
 
-                                /*   try {
-                                       if (it.data.logo != null && it.data.logo.logoUrl.isNotEmpty()) {
+                                 try {
+                                       if (it.data.logo != null ) {
                                            Log.e(
                                                TAG,
                                                "VenueLogo  ${Gson().toJson(it.data.logo.logoUrl)}"
                                            )
-                                           val bitmap = getBitmapFromURL(it.data.logo.logoUrl)
-                                           var baseBitmap = bitmap?.let { it1 -> encodeTobase64(it1) }
-                                           if (baseBitmap?.isNotEmpty() == true) {
-                                               baseBitmap?.let { it1 ->
-                                                   prefProvider.setValue(
-                                                       VENUE_LOGO,
-                                                       it1
-                                                   )
+                                           if (it.data.logo.logoUrl.isNotEmpty()) {
+                                               val bitmap = getBitmapFromURL(it.data.logo.logoUrl)
+                                               var baseBitmap =
+                                                   bitmap?.let { it1 -> encodeTobase64(it1) }
+                                               if (baseBitmap?.isNotEmpty() == true) {
+                                                   baseBitmap?.let { it1 ->
+                                                       prefProvider.setValue(
+                                                           VENUE_LOGO,
+                                                           it1
+                                                       )
+                                                   }
                                                }
                                            }
 
@@ -2168,15 +2171,8 @@ class DashBoardCategoryViewModel @Inject constructor(
                                    } catch (e: Exception) {
                                        e.printStackTrace()
                                    }
-   *//*
-                                if (it.data.logo != null && it.data.logo.logoUrl.isNotEmpty()) {
 
-                                    downaloadVenueImage(it.data.logo.logoUrl)
-                                    *//*   prefProvider.setValue(
-                                           VENUE_LOGO,
-                                           it.data.logo.logoUrl
-                                       )*//*
-                                }*/
+
                                 prefProvider.setValue(BUSINESS_NAME, it.data.businessName)
                                 prefProvider.setValue(SYSTEM_TIMEZONE, it.data.timeZone)
                                 prefProvider.setValue(BUSINESS_PHONE_NO, it.data.phoneNumber)

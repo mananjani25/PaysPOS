@@ -2022,10 +2022,6 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     dineInList.get(0).wholeTableSurTax =
                         WTServiceCharge / dineInList.get(0).totalGuestCount
 
-                    Log.d(
-                        "guestDivide",
-                        "navigateDineInOrder: " + (WTSubTotal + WTTaxes + WTServiceCharge) / (baseResponse.guestAttributes.size - 1)
-                    )
                     WholeTableAmount = MethodUtils.roundOffAmountDouble(
                         (WTSubTotal + WTTaxes + WTServiceCharge)
                     )
@@ -2163,11 +2159,6 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                                             it.modifiers.forEach { it ->
                                                 guestAmt += it.itemQuantity * it.price
                                                 guestSubTotal += it.itemQuantity * it.price
-                                                Log.d("yash", "navigateDineInOrder: " + guestAmt)
-                                                Log.d(
-                                                    "yash",
-                                                    "navigateDineInOrder: " + guestSubTotal
-                                                )
 
                                             }
                                         }
@@ -2335,12 +2326,9 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 var starPos = i + 1
                 if (i == list.size -1) starPos = i
 
-                Log.e(TAG, "getDivstarPos:  ${starPos}")
-                Log.e(TAG, "getDivlistSize:  ${list.size}")
+
                 for (j in starPos until list.size) {
-                    Log.e(TAG, "position for i: ${i}")
-                    Log.e(TAG, "position for j: ${j}")
-                    Log.e(TAG,"GetProperData ${list[i]}")
+
                     if (list[j].isHeader == 1) {
                          dineInItems.add(list[j].item!!)
 
