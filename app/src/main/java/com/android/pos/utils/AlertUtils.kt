@@ -459,7 +459,7 @@ object AlertUtils {
     }
 
     fun showCustomAlertWithYesNoListener(
-        context: Context,
+        context: Context?,
         message: String?,
         listener: DialogInterface.OnClickListener?
     ) {
@@ -470,18 +470,19 @@ object AlertUtils {
         val tvTitle = dialogView.findViewById<AppCompatTextView>(R.id.tvTitle)
         val tvSubTitle = dialogView.findViewById<AppCompatTextView>(R.id.tvMessage)
 
-        tvTitle.text = context.getString(R.string.app_name)
+        tvTitle.text = context?.getString(R.string.app_name)
         tvSubTitle.text = message
 
         val btSave = dialogView.findViewById<AppCompatTextView>(R.id.tvSave)
-        btSave.text = context.getString(R.string.yes)
-        btSave.setBackgroundColor(ContextCompat.getColor(context, R.color.colorRed))
+        btSave.text = context?.getString(R.string.yes)
+        context?.let { ContextCompat.getColor(it, R.color.colorRed) }
+            ?.let { btSave.setBackgroundColor(it) }
         btSave.setOnClickListener {
             customDialog.dismiss()
             listener?.onClick(customDialog, 0)
         }
         val btDismiss = dialogView.findViewById<AppCompatTextView>(R.id.tvCancel)
-        btDismiss.text = context.getString(R.string.no)
+        btDismiss.text = context?.getString(R.string.no)
         btDismiss.visibility = View.VISIBLE
         btDismiss.setOnClickListener {
             customDialog.dismiss()
