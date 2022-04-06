@@ -8,14 +8,16 @@ import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import androidx.activity.OnBackPressedCallback
-import androidx.fragment.app.*
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.setFragmentResultListener
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.data.entities.*
 import com.android.pos.data.model.DineInModel
-import com.android.pos.data.model.responseModel.GetFloorPlanResponse
-import com.android.pos.data.model.responseModel.GetOrderDetailsResponse
+import com.android.pos.data.model.responseModel.*
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.DINE_IN
 import com.android.pos.data.remote.Constants.EMPLOYEE_NAME
@@ -25,11 +27,14 @@ import com.android.pos.databinding.FragmentDashboardCategoryBoldPosBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.android.pos.ui.fragments.payment.PaymentViewModel
-import com.android.pos.utils.MethodUtils
+import com.android.pos.utils.*
 import com.android.pos.utils.callback.ItemClickListner
 import com.android.pos.utils.callback.ItemListner
+import com.android.pos.utils.printer.PrinterClass
 import com.android.pos.utils.statusUtils.Resource
 import com.android.pos.utils.statusUtils.Status
+import com.epson.eposprint.Builder
+import com.epson.eposprint.Print
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -46,6 +51,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
     private var dineInFloorTableModel: GetFloorPlanResponse.Data.FloorPlanTable? = null
     private val TAG = "DashboardCategoryBold"
     var ordertypelist: ArrayList<TbOrderType> = arrayListOf()
+    private var kitchenSettingModel = GetKitchenReceiptSettingsResponse.Data()
     var isupdate = false
     var orderDiscount = 0.0
     var dineInResult: Bundle? = null
@@ -74,6 +80,8 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
             }
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
+        observeSaveOrder()
+        getKitchenReceiptSettings()
         addObserver()
         getServiceCharges()
         resultListener()
@@ -318,7 +326,8 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
             }
         }
         frag.arguments = result
-        fm.beginTransaction().replace(binding.frameLayoutCart.id, frag).addToBackStack(null).commit()
+        fm.beginTransaction().replace(binding.frameLayoutCart.id, frag).addToBackStack(null)
+            .commit()
     }
 
     private fun loadKeyPadFragment(frag: Fragment) {
@@ -507,16 +516,15 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
         }
 
 
+        /*  viewModelPayment.QueueCreateSaveOrder.observe(requireActivity()) {
+              it.getContentIfNotHandled()?.let {
+                  viewModel.deleteCart()
+                  clearCustomer()
+                  prefProvider.setValue(ORDER_TYPE, TAKEOUT)
+                  findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
 
-        viewModelPayment.QueueCreateSaveOrder.observe(requireActivity()) {
-            it.getContentIfNotHandled()?.let {
-                viewModel.deleteCart()
-                clearCustomer()
-                prefProvider.setValue(ORDER_TYPE, TAKEOUT)
-                findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
-
-            }
-        }
+              }
+          }*/
     }
 
     private fun clearCustomer() {
@@ -568,10 +576,9 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
     }
 
     override fun onDineInOrderCleared() {
-
-        val ftr: FragmentTransaction = requireFragmentManager().beginTransaction()
-        ftr.detach(this).attach(this).commit()
-     //   findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_self)
+        arguments?.clear()
+        findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_self)
+        //   findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_self)
     }
 
 
@@ -751,6 +758,470 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
     override fun onPause() {
         arguments?.clear()
         super.onPause()
+    }
+
+    private fun initKitchenPrinter(
+        data: PrinterResponse.Data.KitchenReceiptPrinters,
+        type: String,
+        createOrderResponse: CreateOrderResponse
+    ) {
+        if (PrinterClass.getPrinter() == null) {
+            var printer: Print? = Print(requireContext())
+            if (printer != null) {
+                /* printer.setStatusChangeEventCallback(this)
+                 printer.setBatteryStatusChangeEventCallback(this)*/
+            }
+
+            val enabled = Print.TRUE
+
+            try {
+
+                printer?.openPrinter(
+                    if (data.printer_type == Constants.BLUETOOTH) {
+                        Print.DEVTYPE_BLUETOOTH
+                    } else {
+                        Print.DEVTYPE_TCP
+                    },
+                    data.ipAddress,
+                    enabled,
+                    1000
+                )
+                //  printer?.setStatusChangeEventCallback(this)
+
+            } catch (e: Exception) {
+                Log.e(TAG, "PrinterException: " + e.message)
+                printer = null
+                ProgressUtils.dismissProgressDialog()
+                findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
+
+            }
+
+            if (printer != null) {
+                PrinterClass.setPrinter(printer)
+
+                generateKitchenReceipt(data, type, createOrderResponse.data)
+
+            }
+
+        } else {
+            Log.e(TAG, "PrinterIsNotNull:")
+            ProgressUtils.dismissProgressDialog()
+            findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
+        }
+
+    }
+
+    private fun observeSaveOrder() {
+
+        viewModelPayment.QueueStart.observe(viewLifecycleOwner, { event ->
+            event.getContentIfNotHandled()?.let { it ->
+                // AlertUtils.showCustomAlert(requireActivity(), it.message)
+                viewModel.deleteCart()
+                if (prefProvider.getValue(ORDER_TYPE, "").toString() != "") {
+                    prefProvider.setValue(ORDER_TYPE, TAKEOUT)
+                }
+
+                clearCustomer()
+                getKitchenPrinters(it)
+
+
+            }
+        })
+
+    }
+
+    private fun getKitchenPrinters(createOrderResponse: CreateOrderResponse) {
+        viewModel.getKitchenPrinterList().observe(viewLifecycleOwner, { it ->
+            when (it.status) {
+                Status.SUCCESS -> {
+                    Log.e(TAG, "getKitchenPrinterList:  ${Gson().toJson(it.data)}")
+                    ProgressUtils.dismissProgressDialog()
+                    ProgressUtils.showProgressDialog(requireActivity())
+
+                    if (it.data?.isNotEmpty() == true) {
+
+                        for (i in 0 until it.data.size) {
+
+                            initKitchenPrinter(
+                                it.data.get(i),
+                                Constants.KITCHEN,
+                                createOrderResponse
+                            )
+                        }
+                    } else {
+                        ProgressUtils.dismissProgressDialog()
+                        findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
+                    }
+
+                }
+                Status.LOADING -> {
+                    ProgressUtils.showProgressDialog(requireActivity())
+                }
+                Status.ERROR -> {
+                    ProgressUtils.dismissProgressDialog()
+                    findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
+
+                }
+            }
+
+        })
+
+    }
+
+    private fun generateKitchenReceipt(
+        customerReceiptPrinters: PrinterResponse.Data.KitchenReceiptPrinters,
+        type: String,
+        receiptModel: CreateOrderResponse.Data
+    ) {
+        var builder: Builder? = null
+        try {
+            val pname = if (customerReceiptPrinters.name.substring(0, 6).toString()
+                    .lowercase() == "TM-m30".lowercase()
+            ) {
+                "TM-m30"
+            } else {
+                customerReceiptPrinters.name
+            }
+
+            builder = Builder(pname, PrinterClass.language, requireActivity())
+
+            if (kitchenSettingModel.showOrderType) {
+
+
+                builder.addFeedLine(0)
+                builder.addTextFont(Builder.FONT_E)
+                builder.addTextLang(Builder.LANG_EN)
+                builder.addTextSize(2, 2)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.TRUE,
+                    Builder.COLOR_1
+                )
+                builder.addTextAlign(Builder.ALIGN_CENTER)
+
+                addBuilderText(builder, receiptModel?.order?.orderType.toString())
+            }
+
+            /* if (receiptModel?.order?.orderType.trim().lowercase() == "OpenOrder".trim()
+                     .lowercase()
+               ) {*/
+            builder.addFeedLine(1)
+            builder.addTextFont(Builder.FONT_E)
+            builder.addTextLang(Builder.LANG_EN)
+            builder.addTextSize(2, 2)
+            builder.addTextStyle(
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.TRUE,
+                Builder.COLOR_1
+            )
+            builder.addTextAlign(Builder.ALIGN_CENTER)
+
+            addBuilderText(builder, receiptModel?.order?.deliveryType.toString())
+
+            /*}*/
+
+
+            builder.addFeedLine(2)
+            builder.addTextFont(Builder.FONT_E)
+            //  builder.addTextAlign(Builder.ALIGN_LEFT)
+            builder.addTextLang(Builder.LANG_EN)
+            builder.addTextSize(1, 1)
+            builder.addTextStyle(
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.COLOR_1
+            )
+
+            builder.addText(
+                padLine(
+                    "OrderID:" + receiptModel?.order?.id,
+                    "",
+                    33
+                )
+            )
+
+            builder.addTextLineSpace(30)
+            builder.addFeedUnit(30)
+            builder.addTextFont(Builder.FONT_E)
+            //  builder.addTextAlign(Builder.ALIGN_LEFT)
+            builder.addTextLang(Builder.LANG_EN)
+            builder.addTextSize(1, 1)
+            builder.addTextStyle(
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.COLOR_1
+            )
+
+
+            builder.addText(
+                padLine(
+                    "ReceiptID:" + receiptModel?.order?.offlineId,
+                    "",
+                    33
+                )
+            )
+            if (kitchenSettingModel.showTeamMember) {
+
+                builder.addTextLineSpace(30)
+                builder.addFeedUnit(30)
+                builder.addTextFont(Builder.FONT_E)
+                //  builder.addTextAlign(Builder.ALIGN_LEFT)
+                builder.addTextLang(Builder.LANG_EN)
+                builder.addTextSize(1, 1)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.COLOR_1
+                )
+                builder.addText(
+                    padLine(
+                        "Employee:" + receiptModel?.order?.employee?.name, "",
+                        33
+                    )
+                )
+
+            }
+            builder.addTextLineSpace(30)
+            builder.addFeedUnit(30)
+            builder.addTextFont(Builder.FONT_E)
+            //  builder.addTextAlign(Builder.ALIGN_LEFT)
+            builder.addTextLang(Builder.LANG_EN)
+            builder.addTextSize(1, 1)
+            builder.addTextStyle(
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.COLOR_1
+            )
+
+            builder.addText(
+                padLine(
+                    Constants.getReceiptFormatDateFromUTCServer(receiptModel?.order?.createdAt.toString()),
+                    "",
+                    33
+                )
+            )
+
+            builder.addFeedLine(1)
+
+            builder.addTextFont(Builder.FONT_B)
+            //builder.addTextLineSpace(20)
+            builder.addTextLang(Builder.LANG_EN)
+            builder.addTextSize(1, 1)
+            builder.addTextStyle(
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.COLOR_1
+            )
+
+            addHorizontalKitchenLine(builder)
+
+            receiptModel?.order?.orderItems?.let { addOrdersForKitchen(builder, it) }
+
+            if (receiptModel?.order?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote) {
+                builder.addTextLineSpace(30)
+                builder.addFeedUnit(30)
+                builder.addFeedLine(1)
+                builder.addTextFont(Builder.FONT_E)
+                builder.addTextAlign(Builder.ALIGN_LEFT)
+                //builder.addTextLineSpace(20)
+                builder.addTextLang(Builder.LANG_EN)
+                builder.addTextSize(1, 1)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.TRUE,
+                    Builder.COLOR_1
+                )
+                builder.addText("Order Note")
+
+                builder.addTextLineSpace(30)
+                builder.addFeedUnit(30)
+
+                builder.addTextFont(Builder.FONT_E)
+                builder.addTextAlign(Builder.ALIGN_LEFT)
+                builder.addTextLang(Builder.LANG_EN)
+                builder.addTextSize(1, 1)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.COLOR_1
+                )
+
+
+                builder.addText(receiptModel?.order?.note.toString())
+            }
+
+
+            if (kitchenSettingModel.showCustomerAddress != false or kitchenSettingModel.showCustomerPhone != false or kitchenSettingModel.showCustomerName) {
+                if (receiptModel?.order?.customer != null) {
+
+                    builder.addTextLineSpace(30)
+                    builder.addFeedUnit(30)
+                    builder.addFeedLine(1)
+                    builder.addTextFont(Builder.FONT_E)
+                    //builder.addTextLineSpace(20)
+                    builder.addTextAlign(Builder.ALIGN_LEFT)
+                    builder.addTextLang(Builder.LANG_EN)
+                    builder.addTextSize(1, 1)
+                    builder.addTextStyle(
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.TRUE,
+                        Builder.COLOR_1
+                    )
+                    builder.addText("Customer Details" + "\n")
+
+                    builder.addTextFont(Builder.FONT_B)
+                    //builder.addTextLineSpace(20)
+                    builder.addTextLang(Builder.LANG_EN)
+                    builder.addTextSize(1, 1)
+                    builder.addTextStyle(
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.COLOR_1
+                    )
+                    addHorizontalKitchenLine(builder)
+
+                    if (kitchenSettingModel.showCustomerName) {
+
+                        builder.addTextLineSpace(30)
+                        builder.addFeedUnit(30)
+                        builder.addTextFont(Builder.FONT_E)
+                        builder.addTextAlign(Builder.ALIGN_LEFT)
+                        //builder.addTextLineSpace(20)
+                        builder.addTextLang(Builder.LANG_EN)
+                        builder.addTextSize(1, 1)
+                        builder.addTextStyle(
+                            Builder.FALSE,
+                            Builder.FALSE,
+                            Builder.TRUE,
+                            Builder.COLOR_1
+                        )
+                        builder.addText(receiptModel?.order?.customer?.firstName + " " + receiptModel?.order?.customer?.lastName)
+
+                    }
+
+
+                    if (kitchenSettingModel.showCustomerPhone) {
+
+                        if (receiptModel?.order?.customer?.phones?.isNotEmpty()) {
+                            builder.addTextLineSpace(30)
+                            builder.addFeedUnit(30)
+                            builder.addTextFont(Builder.FONT_E)
+                            builder.addTextAlign(Builder.ALIGN_LEFT)
+                            //builder.addTextLineSpace(20)
+                            builder.addTextLang(Builder.LANG_EN)
+                            builder.addTextSize(1, 1)
+                            builder.addTextStyle(
+                                Builder.FALSE,
+                                Builder.FALSE,
+                                Builder.TRUE,
+                                Builder.COLOR_1
+                            )
+                            builder.addText(receiptModel?.order?.customer?.phones?.get(0)?.phoneNumber)
+                        }
+
+                    }
+                    /* builder.addTextLineSpace(30)
+                 builder.addFeedUnit(30)
+                 builder.addTextFont(Builder.FONT_E)
+                 builder.addTextAlign(Builder.ALIGN_LEFT)
+                 //builder.addTextLineSpace(20)
+                 builder.addTextLang(Builder.LANG_EN)
+                 builder.addTextSize(1, 1)
+                 builder.addTextStyle(
+                     Builder.FALSE,
+                     Builder.FALSE,
+                     Builder.TRUE,
+                     Builder.COLOR_1
+                 )
+                 builder.addText(receiptModel?.order?.customer?.email)*/
+
+                    if (kitchenSettingModel.showCustomerAddress) {
+
+                        if (receiptModel?.order?.orderType.trim().lowercase() == "Open Order".trim()
+                                .lowercase() && receiptModel?.order?.deliveryType.trim()
+                                .lowercase() == "Pickup".trim()
+                                .lowercase()
+                        ) {
+
+                        } else if (receiptModel.order?.customer?.addresses?.isNotEmpty()) {
+
+                            builder.addTextLineSpace(30)
+                            builder.addFeedUnit(30)
+                            builder.addTextFont(Builder.FONT_E)
+                            builder.addTextAlign(Builder.ALIGN_LEFT)
+                            //builder.addTextLineSpace(20)
+                            builder.addTextLang(Builder.LANG_EN)
+                            builder.addTextSize(1, 1)
+                            builder.addTextStyle(
+                                Builder.FALSE,
+                                Builder.FALSE,
+                                Builder.TRUE,
+                                Builder.COLOR_1
+                            )
+
+                            builder.addText(receiptModel?.order?.customer?.addresses?.get(0)?.fullAddress)
+                        }
+                    }
+
+                }
+            }
+
+            builder.addFeedLine(2)
+
+            builder.addCut(Builder.CUT_FEED)
+
+            val status = IntArray(1)
+            val battery = IntArray(1)
+
+
+            try {
+                PrinterClass.getPrinter()?.sendData(
+                    builder,
+                    PrinterClass.SEND_TIMEOUT, status, battery
+                )
+
+                PrinterClass.closePrinter()
+                ProgressUtils.dismissProgressDialog()
+                findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
+
+                //PrinterClass.getPrinter()?.sendData(builder, 0, status, battery)
+            } catch (e: Exception) {
+                ProgressUtils.dismissProgressDialog()
+                findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
+                /*PrinterClass.closePrinter()
+                e.printStackTrace()
+                Log.e(TAG, "PrinterError: " + e.localizedMessage)
+               */
+            }
+
+
+        } catch (e: Exception) {
+            e.printStackTrace()
+            ProgressUtils.dismissProgressDialog()
+            findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
+        }
+
+    }
+
+    private fun getKitchenReceiptSettings() {
+        viewModel.getKitchenReceiptSettings().observe(viewLifecycleOwner, {
+
+            if (it != null) {
+                kitchenSettingModel = it
+
+            }
+        })
     }
 
 }
