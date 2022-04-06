@@ -11,7 +11,6 @@ import android.view.ViewGroup
 import android.widget.EditText
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -55,7 +54,6 @@ import retrofit2.Response
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
-import kotlin.collections.ArrayList
 
 @AndroidEntryPoint
 class CheckoutDineInFragmentNew : Fragment(), magtekCallback,
@@ -71,7 +69,7 @@ class CheckoutDineInFragmentNew : Fragment(), magtekCallback,
     var isSelectedCount = 1
     private val paymentviewModel by activityViewModels<PaymentViewModel>()
     private val dineinOrderVieweModel by viewModels<DineInOrderTableViewModel>()
-    private val viewModel by activityViewModels<DashBoardCategoryViewModel>()
+    private val viewModel by activityViewModels<CheckoutDineInPaymentViewModel>()
     var listtextview: ArrayList<AppCompatTextView> = arrayListOf()
     var paymentType = "Cash"
     private var guestRequestModel: GuestPaymentRequest? = null

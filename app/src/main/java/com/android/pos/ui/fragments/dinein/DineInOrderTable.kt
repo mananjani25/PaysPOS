@@ -16,6 +16,7 @@ import androidx.appcompat.widget.LinearLayoutCompat
 import androidx.constraintlayout.widget.Group
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -46,6 +47,7 @@ import com.android.pos.data.remote.Constants.TERMINAL_ID
 import com.android.pos.databinding.FragmentDineInOrderTableBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.adapter.DineInTableAdapter
+import com.android.pos.ui.fragments.checkout.CheckoutDineInPaymentViewModel
 import com.android.pos.utils.*
 import com.android.pos.utils.extensions.liveSnackBar
 import com.android.pos.utils.printer.PrinterClass
@@ -114,6 +116,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
     @Inject
     lateinit var prefProvider: PrefProvider
     private val viewModel by viewModels<DineInOrderTableViewModel>()
+    private val viewModelPayment by activityViewModels<CheckoutDineInPaymentViewModel>()
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -275,6 +278,11 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
             val adapterList = dineInTableAdapter.getList()
             var offlineId = randomOfflineId()
+            Log.e(TAG, "adapterDineInList:  ${Gson().toJson(adapterList)}")
+
+            cartList = getCartModel(adapterList.toCollection(arrayListOf()))
+            Log.e(TAG, "createDineInPaymentcartList:  ${Gson().toJson(cartList)}")
+            viewModelPayment.addCart(cartList!!)
 
             totalTax = 0.0
             var subTotal = 0.0
@@ -376,6 +384,14 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 DineInPaymentUpdateModel()
             )
             val bundle = Bundle()
+            viewModelPayment.totalPrice = MethodUtils.roundOffAmountDouble(toFinalAmt)
+            viewModelPayment.subTotalPrice = MethodUtils.roundOffAmountDouble(subTotalDInin)
+            viewModelPayment.totalTax = MethodUtils.roundOffAmountDouble(finalTaxAmt)
+            viewModelPayment.cashdiscountAmount =
+                MethodUtils.roundOffAmountDouble(divideCashDiscount)
+            viewModelPayment.totalServiceCharge = MethodUtils.roundOffAmountDouble(serviceCharge)
+            viewModelPayment.totalDiscount = MethodUtils.roundOffAmountDouble(totalDiscount)
+
             bundle.putDouble("totalPrice", MethodUtils.roundOffAmountDouble(toFinalAmt))
             bundle.putDouble("subTotalPrice", MethodUtils.roundOffAmountDouble(subTotalDInin))
             bundle.putDouble("totalTax", MethodUtils.roundOffAmountDouble(finalTaxAmt))
@@ -412,10 +428,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             prefProvider.setValue(Constants.ORDER_TYPE, Constants.DINE_IN)
 //            orderId?.let { it1 -> prefProvider.setValueInt("ORDER_ID", it1) }
 
-            findNavController().navigate(
-                R.id.action_dineInOrderTable_to_checkoutDineIN,
-                bundle
-            )
+            findNavController().navigate(R.id.action_dineInOrderTable_to_checkoutDineIN)
 
 
         }
@@ -2308,13 +2321,48 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
     fun getCartModel(list: ArrayList<DineInModel>): CartModel {
         var model = CartModel()
         var listItem: ArrayList<TbItem> = arrayListOf()
+        var dineInItems: ArrayList<TbItem> = arrayListOf()
+        var newDineInList: ArrayList<DineInModel> = arrayListOf()
+        var dineinModel: DineInModel = DineInModel()
+        Log.e(TAG, "dineExtractList  ${Gson().toJson(list)}")
         for (i in 0 until list.size) {
-            listItem.addAll(list.get(i).items)
+            if (list[i].isHeader == 1) {
+                list.get(i).item?.let { listItem.add(it) }
+            }
 
+            if (list[i].isHeader == 0) {
+                dineinModel = list[i]
+                var starPos = i + 1
+                if (i == list.size -1) starPos = i
+
+                Log.e(TAG, "getDivstarPos:  ${starPos}")
+                Log.e(TAG, "getDivlistSize:  ${list.size}")
+                for (j in starPos until list.size) {
+                    Log.e(TAG, "position for i: ${i}")
+                    Log.e(TAG, "position for j: ${j}")
+                    Log.e(TAG,"GetProperData ${list[i]}")
+                    if (list[j].isHeader == 1) {
+                         dineInItems.add(list[j].item!!)
+
+                    } else {
+                        dineinModel.items.addAll(dineInItems)
+                        dineInItems = arrayListOf()
+                        break
+                    }
+
+
+                }
+
+                newDineInList.add(dineinModel)
+            }
 
         }
+        Log.e(TAG, "originalItem  ${Gson().toJson(listItem)}")
+        Log.e(TAG, "newDineInList:  ${Gson().toJson(newDineInList)}")
         model.orderType = "DineIn"
-        model.dineInList = list
+        model.dineInList = newDineInList
+        model.items = listItem
+        model.serviceCharge = serviceChargeList
         model.employeeID = prefProvider.getValueInt(EMPLOYEE_ID, 0)
         model.locationId = prefProvider.getValueInt(LOCATION_ID, 0)
         model.terminalId = prefProvider.getValueInt(TERMINAL_ID, 0)
