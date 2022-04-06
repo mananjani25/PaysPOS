@@ -436,20 +436,19 @@ class ActiveOrderFragment(
 
             else -> {
                 if (rolePermission.hasCancelOrderPermission(binding.root)) {
-                    alert(
-                        getString(R.string.app_name),
-                        getString(R.string.cancel_order_message)
-                    ) {
-                        positiveButton(getString(R.string.yes)) {
+                    val bundle = Bundle().apply {
+                        /* putParcelable("refundData", refundData)
+                         putDouble("refundAmount", subTotalPrice)*/
 
-                            itemPos = pos
-                            viewModel.cancelOrder(order.id)
-                        }
-                        negativeButton(R.string.no) {
-                            // Do negative stuff here
-                        }
+                        putInt("orderId",order.id)
+                        putString("startDate",viewModel.startDate.value.toString())
+                        putString("endDate",viewModel.endDate.value.toString())
                     }
-                }
+
+                    findNavController().navigate(
+                        R.id.action_order_fragment_to_reason_for_cancel_order_dialog,
+                        bundle
+                    )                }
             }
         }
 

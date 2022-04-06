@@ -897,6 +897,10 @@
         <action
             android:id="@+id/action_orders_to_paymentBoldPosFragment"
             app:destination="@id/paymentBoldPosFragment" />
+        <action
+            android:id="@+id/action_order_fragment_to_reason_for_cancel_order_dialog"
+            app:destination="@id/reasonForCancleOrderDialog" />
+
     </fragment>
     <action
         android:id="@+id/action_global_orders"
@@ -977,6 +981,14 @@
             android:defaultValue="false"
             app:argType="boolean" />
     </dialog>
+
+    <dialog
+        android:id="@+id/reasonForCancleOrderDialog"
+        android:name="com.android.pos.ui.dialog.ReasonForCancelOrderDialog"
+        android:label="ReasonForCancelOrderDialog">
+    </dialog>
+
+
     <dialog
         android:id="@+id/editVariationDialog"
         android:name="com.android.pos.ui.dialog.EditVariationDialog"
