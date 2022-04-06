@@ -608,7 +608,7 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
     private fun calculateValue(number: String, delete: Boolean) {
         discountAdapter.clearSelectedItem()
         selectedListPos = -1
-        if (binding.edtAmount.text?.length!! > 1 && delete) {
+        if (binding.edtAmount.text?.length!! >= 1 && delete) {
             binding.edtAmount.setText(removeLastCharacter(binding.edtAmount.text.toString()))
 
         } else {
