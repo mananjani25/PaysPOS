@@ -250,7 +250,7 @@ class CartFragment(val itemClickListner: ItemClickListner?) : Fragment(), MyCall
         dineInFloorTableModel = arguments?.getParcelable("floorplan")
 
 
-        var orderDEtails: GetOrderDetailsResponse.Data.FloorPlanTable? =
+        val orderDEtails: GetOrderDetailsResponse.Data.FloorPlanTable? =
             arguments?.getParcelable("tableDetails")
         if (orderDEtails != null) {
             orderFloorDetails = orderDEtails
@@ -1218,6 +1218,10 @@ class CartFragment(val itemClickListner: ItemClickListner?) : Fragment(), MyCall
                         )
                         viewModelPayment.saveOrder(true)
                         viewModelPayment.submit(request)
+
+                        isOrderUpdate = false
+                        binding.tvSave.text = getString(R.string.save)
+
                     } else {
                         showMessage()
                     }

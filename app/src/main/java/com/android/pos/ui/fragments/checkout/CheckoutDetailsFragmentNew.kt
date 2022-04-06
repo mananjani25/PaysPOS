@@ -664,6 +664,10 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
         binding.tvCash0.setOnClickListener {
 
             custom_paymentAmount = 0.0
+
+            paymentviewModel.totalPayAmount(
+                binding.tvCash0.text.toString().replace("$", "").trim().toDouble()
+            )
             cashPaymentWithVariation()
         }
         binding.tvCash1.setOnClickListener {
@@ -1137,8 +1141,6 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
         if (myRequest != null) {
             if (custom_paymentAmount != 0.0) {
                 paymentviewModel.totalPayAmount(custom_paymentAmount)
-            } else {
-                paymentviewModel.totalPayAmount(viewModel.totalPrice)
             }
             paymentAttributesRequest(myRequest)
         }
