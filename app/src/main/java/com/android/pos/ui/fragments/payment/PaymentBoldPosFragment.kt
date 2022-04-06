@@ -61,7 +61,7 @@ class PaymentBoldPosFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
 
-        loadCartFragment(CartFragment(null))
+        loadCartFragment(CartFragment(null,null))
         if (prefProvider.getValue(ORDER_TYPE, "") == Constants.DINE_IN){
             Handler(Looper.getMainLooper()).postDelayed({ /* Create an Intent that will start the Menu-Activity. */
                 loadCategoryFragment(CheckoutDineInFragmentNew())

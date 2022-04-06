@@ -362,7 +362,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 binding.llNoReceipt.text = getString(R.string.no_receipt)
                 viewModel.deleteSplitDb()
                 binding.txtTitle.text =
-                    MethodUtils.roundOffAmount(paidAmount + tipAmount)
+                    MethodUtils.roundOffAmount(paidAmount)
 
                 if (isCustomCash) {
                     changeAmtGlobal =
@@ -379,7 +379,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 }
 
                 binding.txtPaymentAmount.text =
-                    "will remain Out of " + MethodUtils.roundOffAmount(paidAmount + tipAmount)
+                    "will remain Out of " + MethodUtils.roundOffAmount(paidAmount)
 
 
             }
