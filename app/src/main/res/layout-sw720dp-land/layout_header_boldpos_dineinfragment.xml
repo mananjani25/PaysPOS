@@ -65,14 +65,16 @@
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true">
 
-
             <TextView
                 android:id="@+id/txt_Dineinordere"
-                style="@style/CustomFontBold"
+                style="@style/CustomFontSemiBold"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:text="DINE IN ORDERS"
+                android:layout_marginLeft="@dimen/_10sdp"
+                android:background="?attr/selectableItemBackground"
+                android:padding="@dimen/_5sdp"
+                android:text="dine in orders"
                 android:textAllCaps="true"
                 android:textColor="@color/btnColor"
                 android:textSize="@dimen/_6mdpi" />
@@ -83,11 +85,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_marginLeft="@dimen/_10sdp"
-                android:layout_marginRight="@dimen/_15sdp"
+                android:layout_marginHorizontal="@dimen/_10sdp"
                 android:background="?attr/selectableItemBackground"
                 android:padding="@dimen/_5sdp"
-                android:text="Merge"
+                android:text="merge"
                 android:textAllCaps="true"
                 android:textColor="@color/txtColor"
                 android:textSize="@dimen/_6mdpi" />
