@@ -37,6 +37,7 @@ import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.callback.ItemClickListner
+import com.android.pos.utils.callback.ItemListner
 import com.android.pos.utils.callback.MyCallback
 import com.android.pos.utils.extensions.alert
 import com.android.pos.utils.extensions.gone
@@ -50,7 +51,7 @@ import javax.inject.Inject
 
 
 @AndroidEntryPoint
-class CartFragment(val itemClickListner: ItemClickListner?) : Fragment(), MyCallback,
+class CartFragment(val itemClickListner: ItemClickListner?,val itemListner: ItemListner?) : Fragment(), MyCallback,
     DineInAdapter.DineInCallback {
     private lateinit var binding: FragmentCartBinding
     var fragmentId: Int? = null
@@ -893,6 +894,8 @@ class CartFragment(val itemClickListner: ItemClickListner?) : Fragment(), MyCall
         ) {
             positiveButton(getString(R.string.tv_delete)) {
                 // Do positive stuff here
+
+                itemListner?.onCancelItemSelected()
                 if (prefProvider.getValue(ORDER_TYPE, "").toString() == Constants.DINE_IN) {
                     prefProvider.setValueInt(Constants.DINE_INGUEST_SELECTED, 0)
 
@@ -1356,8 +1359,6 @@ class CartFragment(val itemClickListner: ItemClickListner?) : Fragment(), MyCall
         }
 
     }
-
-
 }
 
 
