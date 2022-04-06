@@ -134,8 +134,10 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
                 binding.llRefundAmount.visibility = View.GONE
                 binding.tvRefundItemDetails.visibility = View.VISIBLE
                 binding.tvRefundPaymentDetails.visibility = View.GONE
-                binding.rbItems.background=requireActivity().getDrawable(R.drawable.btn_background_secondary)
-                binding.rbAmount.background=requireActivity().getDrawable(R.drawable.background_square_border_grey)
+                binding.rbItems.background =
+                    requireActivity().getDrawable(R.drawable.btn_background_secondary)
+                binding.rbAmount.background =
+                    requireActivity().getDrawable(R.drawable.background_square_border_grey)
 
                 binding.rbItems.setTextColor(requireActivity().resources.getColor(R.color.white))
                 binding.rbAmount.setTextColor(requireActivity().resources.getColor(R.color.txtColor))
@@ -146,8 +148,10 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
                 binding.llRefundAmount.visibility = View.VISIBLE
                 binding.tvRefundPaymentDetails.visibility = View.VISIBLE
                 binding.tvRefundItemDetails.visibility = View.GONE
-                binding.rbItems.background=requireActivity().getDrawable(R.drawable.background_square_border_grey)
-                binding.rbAmount.background=requireActivity().getDrawable(R.drawable.btn_background_secondary)
+                binding.rbItems.background =
+                    requireActivity().getDrawable(R.drawable.background_square_border_grey)
+                binding.rbAmount.background =
+                    requireActivity().getDrawable(R.drawable.btn_background_secondary)
                 binding.rbAmount.setTextColor(requireActivity().resources.getColor(R.color.white))
                 binding.rbItems.setTextColor(requireActivity().resources.getColor(R.color.txtColor))
                 val mData = paymentOrderDetailsResponse.data
@@ -209,7 +213,8 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
                             employeeId = paymentOrderDetailsResponse.data.employee_id
                             terminalId = paymentOrderDetailsResponse.data.terminal_id
                             taxRefunded = paymentOrderDetailsResponse.data.tax_amount
-                            tipsRefunded = paymentOrderDetailsResponse.data.tips
+                            tipsRefunded =
+                                if (paymentOrderDetailsResponse.data.payment_type == "Cash") 0.0 else paymentOrderDetailsResponse.data.tips
                             serviceChargeRefunded =
                                 paymentOrderDetailsResponse.data.service_charge_amount
                             cash_discount_or_surcharge_refunded =
@@ -417,7 +422,7 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
                 orderItemRefundsAttributes = orderItemRefundsAttributesList
                 taxRefunded = totalTax
                 serviceChargeRefunded = totalServiceCharge
-                tipsRefunded = paymentOrderDetailsResponse.data.tips
+                tipsRefunded =  if (paymentOrderDetailsResponse.data.payment_type == "Cash") 0.0 else paymentOrderDetailsResponse.data.tips
             }
         }
     }

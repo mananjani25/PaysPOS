@@ -154,9 +154,7 @@ open class PaymentViewModel @Inject constructor(
                                     }
                                     //_queueStart.value = Event(createOrderResponse)
 
-                                }
-
-                                else {
+                                } else {
                                     if (createOrderResponse.data.order.orderType != "Dine In") {
                                         cashLogApi(createOrderResponse, "in")
                                     }
@@ -279,7 +277,7 @@ open class PaymentViewModel @Inject constructor(
 
         val order = createOrderResponse.data.order
         val cashLogRequest = CashLogRequest(
-            totalPayAmounts + order.payments[order.payments.size - 1].tips,
+            totalPayAmounts,
             order.employeeId,
             event,
             order.id,
@@ -301,11 +299,15 @@ open class PaymentViewModel @Inject constructor(
 
                         resource.data?.let {
 
-                            Log.e("INOUT : Total Amount", order.totalAmount.toString())
+                            Log.e(
+                                "INOUT : Total Amount",
+                                (order.payments[order.payments.size - 1].amount + order.payments[order.payments.size - 1].tips).toString()
+                            )
                             Log.e("INOUT : Total PayAmount", totalPayAmounts.toString())
 
+
                             if (order.payments.isNotEmpty()) {
-                                if (order.payments[order.payments.size - 1].amount == totalPayAmounts) {
+                                if (order.payments[order.payments.size - 1].amount + order.payments[order.payments.size - 1].tips == totalPayAmounts) {
                                     _data.value = Event(createOrderResponse)
                                 } else {
                                     cashOutApi(createOrderResponse, "out")
@@ -343,7 +345,7 @@ open class PaymentViewModel @Inject constructor(
         val order = createOrderResponse.data.order
 
         val cashLogRequest = CashLogRequest(
-            MethodUtils.roundOffAmountDouble(totalPayAmounts) - order.payments[order.payments.size - 1].amount,
+            MethodUtils.roundOffAmountDouble(totalPayAmounts) - (order.payments[order.payments.size - 1].amount + order.payments[order.payments.size - 1].tips),
             order.employeeId,
             event,
             order.id,
@@ -1509,6 +1511,8 @@ open class PaymentViewModel @Inject constructor(
     fun totalPayAmount(paymentAmount: Double) {
 
         totalPayAmounts = MethodUtils.roundOffAmountDouble(paymentAmount)
+
+        Log.e("totalPayAmounts::", totalPayAmounts.toString())
     }
 
     fun saveOrder(isSave: Boolean) {

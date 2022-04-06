@@ -61,6 +61,11 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
     private var orderFloorDetails: GetOrderDetailsResponse.Data.FloorPlanTable =
         GetOrderDetailsResponse.Data.FloorPlanTable()
 
+    private var orderId: Int? = null
+    private var orderOfflineId: String = ""
+    private var paymentOfflineId: String = ""
+    private var paymentId: Int? = null
+
     @Inject
     lateinit var prefProvider: PrefProvider
 
@@ -138,7 +143,6 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
             }
         }
 
-
         setFragmentResultListener("request_key_discount_details") { requestKey: String, bundle: Bundle ->
             val result = bundle.getParcelable<TbDiscount>("data")
             val item = bundle.getParcelable<TbItem>("item")
@@ -189,7 +193,6 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
 
         }
 
-
         setFragmentResultListener("request_key_note") { requestKey: String, bundle: Bundle ->
             val note = bundle.getString("note")
             val singleItem = bundle.getParcelable<TbItem>("item")
@@ -238,6 +241,14 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
         onClick()
 
         isupdate = requireArguments().getBoolean("update")
+
+        if (isupdate){
+
+            orderId = requireArguments().getInt("orderId")
+            paymentId = requireArguments().getInt("paymentId")
+            paymentOfflineId = requireArguments().getString("paymentOfflineId").toString()
+            orderOfflineId = requireArguments().getString("orderOfflineId").toString()
+        }
 
 
         requireActivity().window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
@@ -324,6 +335,15 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
             if (arguments != null) {
                 putBundle("updateBundle", arguments)
             }
+            putBoolean("update",isupdate)
+            if (isupdate){
+                orderId?.let { putInt("orderId", it) }
+                paymentId?.let { putInt("paymentId", it) }
+                putString("paymentOfflineId", paymentOfflineId)
+                putString("orderOfflineId", orderOfflineId)
+            }
+
+
         }
         frag.arguments = result
         fm.beginTransaction().replace(binding.frameLayoutCart.id, frag).addToBackStack(null)
@@ -813,7 +833,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
 
     private fun observeSaveOrder() {
 
-        viewModelPayment.QueueStart.observe(viewLifecycleOwner, { event ->
+        viewModelPayment.QueueStart.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let { it ->
                 // AlertUtils.showCustomAlert(requireActivity(), it.message)
                 viewModel.deleteCart()
@@ -826,7 +846,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
 
 
             }
-        })
+        }
 
     }
 
