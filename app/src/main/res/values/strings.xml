@@ -163,7 +163,9 @@
     <string name="add_new_itemswithoutplus">Add New Item</string>
     <string name="add_new_itemswithstar">Add New Item <font color='#E90C0C'>*</font></string>
     <string name="add_tax_name">Add Tax Name</string>
+    <string name="add_tax_name_">Add Tax Name<font color='#E90C0C'>*</font></string>
     <string name="add_tax__percentage">Add Tax Percentages (%)</string>
+    <string name="add_tax__percentage_">Add Tax Percentages (%)<font color='#E90C0C'>*</font></string>
     <string name="add_tax__dollor">Add Tax Dollar ($)</string>
     <string name="search_categories">Search Categories</string>
     <string name="create_category">Create Category</string>
@@ -780,6 +782,7 @@
     <string name="add_tip_">Add Tip(%)<font color='#E90C0C'>*</font></string>
     <string name="primary_table">Primary Table</string>
     <string name="secondary_table">Secondary Table</string>
+    <string name="note_title_">Note Title<font color='#E90C0C'>*</font></string>
 
 
 </resources>
