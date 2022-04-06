@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.os.StrictMode
 import android.util.Base64
 import android.util.Log
 import androidx.appcompat.widget.AppCompatTextView
@@ -2152,6 +2153,10 @@ class DashBoardCategoryViewModel @Inject constructor(
                                                "VenueLogo  ${Gson().toJson(it.data.logo.logoUrl)}"
                                            )
                                            if (it.data.logo.logoUrl.isNotEmpty()) {
+                                               val policy: StrictMode.ThreadPolicy =
+                                                   StrictMode.ThreadPolicy.Builder().permitAll().build()
+
+                                               StrictMode.setThreadPolicy(policy)
                                                val bitmap = getBitmapFromURL(it.data.logo.logoUrl)
                                                var baseBitmap =
                                                    bitmap?.let { it1 -> encodeTobase64(it1) }
