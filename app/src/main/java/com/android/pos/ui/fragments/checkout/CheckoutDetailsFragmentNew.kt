@@ -744,7 +744,7 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
                 cardCVV.isEmpty() -> {
                     errorDisplay("Please enter CVV number")
                 }
-                cardCVV.length < 3 -> {
+                cardCVV.length < 4 -> {
                     errorDisplay("Please enter valid CVV number")
                 }
                 else -> {
