@@ -24,6 +24,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.R
 import com.android.pos.data.entities.*
 import com.android.pos.data.model.DineInModel
+import com.android.pos.data.model.DineinCartPaymentModel
 import com.android.pos.data.model.requestModel.*
 import com.android.pos.data.model.responseModel.*
 import com.android.pos.data.remote.Constants
@@ -384,13 +385,13 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 DineInPaymentUpdateModel()
             )
             val bundle = Bundle()
-            viewModelPayment.totalPrice = MethodUtils.roundOffAmountDouble(toFinalAmt)
-            viewModelPayment.subTotalPrice = MethodUtils.roundOffAmountDouble(subTotalDInin)
-            viewModelPayment.totalTax = MethodUtils.roundOffAmountDouble(finalTaxAmt)
-            viewModelPayment.cashdiscountAmount =
-                MethodUtils.roundOffAmountDouble(divideCashDiscount)
-            viewModelPayment.totalServiceCharge = MethodUtils.roundOffAmountDouble(serviceCharge)
-            viewModelPayment.totalDiscount = MethodUtils.roundOffAmountDouble(totalDiscount)
+//            viewModelPayment.totalPrice = MethodUtils.roundOffAmountDouble(toFinalAmt)
+//            viewModelPayment.subTotalPrice = MethodUtils.roundOffAmountDouble(subTotalDInin)
+//            viewModelPayment.totalTax = MethodUtils.roundOffAmountDouble(finalTaxAmt)
+//            viewModelPayment.cashdiscountAmount =
+//                MethodUtils.roundOffAmountDouble(divideCashDiscount)
+//            viewModelPayment.totalServiceCharge = MethodUtils.roundOffAmountDouble(serviceCharge)
+//            viewModelPayment.totalDiscount = MethodUtils.roundOffAmountDouble(totalDiscount)
 
             bundle.putDouble("totalPrice", MethodUtils.roundOffAmountDouble(toFinalAmt))
             bundle.putDouble("subTotalPrice", MethodUtils.roundOffAmountDouble(subTotalDInin))
@@ -932,6 +933,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         var modelReq = DineInOrderPayment(dineInOrderModel)
         var model = GuestPaymentRequest(paymentAttr, dineInOrderModel)
 
+
         val bundle = Bundle()
         dineInModel.id?.let { bundle.putInt("id", it) }
         bundle.putParcelable("cartList", cartList)
@@ -985,12 +987,43 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             }
 
         }
+        var isLastPayment = false
         if (totalGuestCount.minus(1) == paidGuestAmount) {
+            isLastPayment = true
             bundle.putBoolean("isLastPayment", true)
         } else {
+            isLastPayment = false
             bundle.putBoolean("isLastPayment", false)
         }
+
+
+        val dineinCartPaymentModel: DineinCartPaymentModel? = null
+
+        dineinCartPaymentModel?.isTotalPayment = false
+        dineinCartPaymentModel?.isLastPayment = isLastPayment
+        dineinCartPaymentModel?.totalPrice = MethodUtils.roundOffAmountDouble(totalGuest)
+        dineinCartPaymentModel?.subTotalPrice = MethodUtils.roundOffAmountDouble(subTotalGuest)
+        dineinCartPaymentModel?.isGuestPay = true
+        dineinCartPaymentModel?.splitModel = modelReq
+        dineinCartPaymentModel?.totalServiceCharge =
+            MethodUtils.roundOffAmountDouble(serviceChargeGuest)
+        dineinCartPaymentModel?.totalDiscount = MethodUtils.roundOffAmountDouble(divideDiscount)
+        dineinCartPaymentModel?.divideCashDiscount =
+            MethodUtils.roundOffAmountDouble(divideCashDiscount)
+        dineinCartPaymentModel?.totalTax = MethodUtils.roundOffAmountDouble(taxGuest)
+        dineinCartPaymentModel?.getOrderDetailsResponse = getOrderDetailsResponse
+        dineinCartPaymentModel?.dineInAdapterList =
+            dineInTableAdapter.getList().toCollection(arrayListOf())
+        dineinCartPaymentModel?.guestRequestModel = model
+        dineinCartPaymentModel?.totalGuestCount = totalGuestCount
+        dineinCartPaymentModel?.cartList = cartList
+        dineinCartPaymentModel?.guestId = id
+        dineinCartPaymentModel?.paidGuestCount = paidGuestAmount
+        dineinCartPaymentModel?.guestSelectedPos = position
+        dineinCartPaymentModel?.floorPlanModel = floorPlanModel
+
         prefProvider.setValue(Constants.ORDER_TYPE, Constants.DINE_IN)
+        bundle.putParcelable("dineinPaymentModel", dineinCartPaymentModel)
         findNavController().navigate(
             R.id.action_dineInOrderTable_to_checkoutDineIN,
             bundle
@@ -2333,16 +2366,16 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             if (list[i].isHeader == 0) {
                 dineinModel = list[i]
                 var starPos = i + 1
-                if (i == list.size -1) starPos = i
+                if (i == list.size - 1) starPos = i
 
                 Log.e(TAG, "getDivstarPos:  ${starPos}")
                 Log.e(TAG, "getDivlistSize:  ${list.size}")
                 for (j in starPos until list.size) {
                     Log.e(TAG, "position for i: ${i}")
                     Log.e(TAG, "position for j: ${j}")
-                    Log.e(TAG,"GetProperData ${list[i]}")
+                    Log.e(TAG, "GetProperData ${list[i]}")
                     if (list[j].isHeader == 1) {
-                         dineInItems.add(list[j].item!!)
+                        dineInItems.add(list[j].item!!)
 
                     } else {
                         dineinModel.items.addAll(dineInItems)
