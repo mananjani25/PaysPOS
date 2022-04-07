@@ -5,9 +5,6 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.android.pos.data.entities.CartModel
-import com.android.pos.data.model.PrinterDaoModel
-import com.android.pos.data.model.PrinterListModel
 import com.android.pos.data.model.responseModel.PrinterResponse
 
 @Dao
@@ -38,5 +35,9 @@ interface PrinterDao {
     suspend fun updateKitchenStatus(status: Boolean, id: Int)
 
     @Query("DELETE FROM TbKitchenPrint")
-    suspend fun delete()
+    suspend fun deleteKitchenPrinters()
+
+    @Query("DELETE FROM TbCustomerPrint")
+    suspend fun deleteCustomerPrinters()
+
 }

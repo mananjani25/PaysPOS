@@ -579,7 +579,8 @@ class PosRepository @Inject constructor(
     fun serviceChargeList() =
         performGetOperationDatabase(databaseQuery = { appDatabase.serviceChargeDao().allServiceCharge })
 
-    fun getOrderTypes() = performGetOperationDatabase(databaseQuery = { appDatabase.orderTypeDao().orderTypes })
+    fun getOrderTypes() =
+        performGetOperationDatabase(databaseQuery = { appDatabase.orderTypeDao().orderTypes })
 
     fun disocuntList() =
         performGetOperationDatabase(databaseQuery = { appDatabase.discountDao().allDiscount })
@@ -826,7 +827,8 @@ class PosRepository @Inject constructor(
         appDatabase.orderTypeDao().delete()
         appDatabase.terminalDao().delete()
         appDatabase.itemModifierSetsDao().delete()
-        appDatabase.printerDao().delete()
+        appDatabase.printerDao().deleteKitchenPrinters()
+        appDatabase.printerDao().deleteCustomerPrinters()
         appDatabase.kitchenSettingsDao().delete()
         appDatabase.customerSettingsDao().delete()
     }
