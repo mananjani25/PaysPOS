@@ -989,7 +989,7 @@ class ActiveOrderFragment(
                     )
 
                     builder.addText(
-                        "Order Time:" + Constants.getReceiptFormatDateFromUTCServer(
+                        "Order Time:" + Constants.getReceiptFormatDateFromUTCServer(requireContext(),
                             receiptModel?.createdAt.toString()
                         )
                     )
@@ -1103,7 +1103,7 @@ class ActiveOrderFragment(
                     builder.addText(
                         padLine(
                             if (customerSettingModel.showOrderTime) {
-                                "Order Time:" + Constants.getReceiptFormatDateFromUTCServer(
+                                "Order Time:" + Constants.getReceiptFormatDateFromUTCServer(requireContext(),
                                     receiptModel?.createdAt.toString()
                                 )
                             } else {

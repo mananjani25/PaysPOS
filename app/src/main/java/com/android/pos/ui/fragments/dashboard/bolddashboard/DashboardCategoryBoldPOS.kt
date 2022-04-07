@@ -1022,7 +1022,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
 
             builder.addText(
                 padLine(
-                    Constants.getReceiptFormatDateFromUTCServer(receiptModel?.order?.createdAt.toString()),
+                    Constants.getReceiptFormatDateFromUTCServer(requireContext(),receiptModel?.order?.createdAt.toString()),
                     "",
                     33
                 )

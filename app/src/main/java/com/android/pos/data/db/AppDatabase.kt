@@ -23,8 +23,8 @@ import com.android.pos.data.typeconvert.*
         ItemModifierSets::class, OptionSet::class, PrinterResponse.Data.CustomerReceiptPrinters::class,
         PrinterResponse.Data.KitchenReceiptPrinters::class, GetKitchenReceiptSettingsResponse.Data::class,
         GetCustomerReceiptSettingsResponse.Data::class, LoyaltyProgramsModel::class, SplitDetailListModel::class,
-        CashDiscountModel::class, TbCountryList::class,TbCardReader::class ,VenueDetailsResponse.Data.CancelOrderReason::class,DineInCartModel::class],
-    version = 3
+        CashDiscountModel::class, TbCountryList::class, TbCardReader::class, VenueDetailsResponse.Data.CancelOrderReason::class, DineInCartModel::class],
+    version = 1
 )
 @TypeConverters(
     TypeConvertersIds::class,
