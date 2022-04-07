@@ -1148,9 +1148,10 @@ class CheckoutDineInFragmentNew : Fragment(), magtekCallback,
 
     override fun onPause() {
         super.onPause()
+        /*
         dineInPaymentViewModel.deleteCart()
         prefProvider.setValue(Constants.ORDER_TYPE, Constants.TAKEOUT)
-        removeCustomer()
+        removeCustomer()*/
     }
 
     fun removeCustomer() {

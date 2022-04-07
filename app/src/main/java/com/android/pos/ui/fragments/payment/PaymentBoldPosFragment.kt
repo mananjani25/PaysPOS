@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.setFragmentResultListener
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.data.remote.Constants
@@ -20,6 +21,7 @@ import com.android.pos.databinding.FragmentPaymentBoldPosBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.fragments.checkout.CheckoutDetailsFragmentNew
 import com.android.pos.ui.fragments.checkout.CheckoutDineInFragmentNew
+import com.android.pos.ui.fragments.checkout.CheckoutDineInPaymentViewModel
 import com.android.pos.ui.fragments.dashboard.bolddashboard.CartFragment
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.TAG
@@ -33,6 +35,7 @@ class PaymentBoldPosFragment : Fragment() {
     private var paymentOfflineId: String = ""
     private var paymentId: Int = -1
 
+    private val dineInPaymentViewModel by viewModels<CheckoutDineInPaymentViewModel>()
     @Inject
     lateinit var prefProvider: PrefProvider
     private lateinit var binding: FragmentPaymentBoldPosBinding
@@ -96,6 +99,13 @@ class PaymentBoldPosFragment : Fragment() {
         binding.layoutHeaderCheckout.tvAddDiscount.setOnClickListener {
             findNavController().navigate(R.id.action_paymentBoldPosFragment_to_addDiscountDialogFragment)
         }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        Log.e(TAG,"onPause")
+        dineInPaymentViewModel.deleteCart()
+        prefProvider.setValue(Constants.ORDER_TYPE, Constants.TAKEOUT)
     }
 
     private fun loadCartFragment(frag: Fragment) {

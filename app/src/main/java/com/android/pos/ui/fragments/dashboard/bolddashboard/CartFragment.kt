@@ -21,7 +21,6 @@ import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.DINE_IN
 import com.android.pos.data.remote.Constants.DINE_IN_LIST_EDIT
 import com.android.pos.data.remote.Constants.DINE_IN_UPDATE
-import com.android.pos.data.remote.Constants.EMPLOYEE_ID
 import com.android.pos.data.remote.Constants.MANUAL_SALE
 import com.android.pos.data.remote.Constants.OPEN_ORDER
 import com.android.pos.data.remote.Constants.ORDER_TYPE
@@ -156,7 +155,6 @@ class CartFragment(val itemClickListner: ItemClickListner?, val itemListner: Ite
         callback()
         setupLoyalytyPoints()
         addObserver()
-        dineInPaymentObserver()
 
 
 
@@ -205,20 +203,6 @@ class CartFragment(val itemClickListner: ItemClickListner?, val itemListner: Ite
         } else {
             binding.tvSave.text = getString(R.string.save)
         }
-    }
-
-    private fun dineInPaymentObserver() {
-        dineInPayViewModel.mAllWordsDineIn(prefProvider.getValueInt(EMPLOYEE_ID, 0))
-            .observe(requireActivity(), {
-                Log.e(TAG, "isFromPayment:  $isFromPayment")
-
-                if (isFromPayment && it.isNotEmpty()) {
-
-
-                }
-
-
-            })
     }
 
     private fun setupLoyalytyPoints() {
