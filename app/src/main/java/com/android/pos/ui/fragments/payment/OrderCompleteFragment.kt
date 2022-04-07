@@ -361,18 +361,18 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 binding.txtRemainingAmount.visibility = View.GONE
                 binding.txtRemainingAmountLabel.visibility = View.GONE
                 binding.llNoReceipt.text = getString(R.string.no_receipt)
-                viewModel.deleteSplitDb()
-                if(isCustomCash){
+
+                if (isCustomCash) {
                     binding.txtTitle.text =
                         MethodUtils.roundOffAmount(paidAmount)
                     binding.txtPaymentAmount.text =
                         "will remain Out of " + MethodUtils.roundOffAmount(paidAmount)
 
-                }else{
+                } else {
                     binding.txtTitle.text =
-                        MethodUtils.roundOffAmount(paidAmount+tipAmount)
+                        MethodUtils.roundOffAmount(paidAmount + tipAmount)
                     binding.txtPaymentAmount.text =
-                        "will remain Out of " + MethodUtils.roundOffAmount(paidAmount+tipAmount)
+                        "will remain Out of " + MethodUtils.roundOffAmount(paidAmount + tipAmount)
                 }
 
 
@@ -389,7 +389,6 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                             MethodUtils.roundOffAmount(remainingAmount - tipAmount) + " Change"
                     }
                 }
-
 
 
             }
@@ -639,10 +638,10 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     resources.getDrawable(R.drawable.background_square_border_grey)
                 binding.llMessage.setTextColor(resources.getColor(R.color.txtColor))
 
-              /*  binding.llPrint.background =
-                    resources.getDrawable(R.drawable.background_square_border_grey)
-                binding.llPrint.setTextColor(resources.getColor(R.color.txtColor))
-*/
+                /*  binding.llPrint.background =
+                      resources.getDrawable(R.drawable.background_square_border_grey)
+                  binding.llPrint.setTextColor(resources.getColor(R.color.txtColor))
+  */
                 type = "Email"
 
                 binding.llSendReceipt.visibility = View.VISIBLE
@@ -675,8 +674,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             }
             R.id.llPrint -> {
                 //removeCustomer()
-              /*  binding.llPrint.background = resources.getDrawable(R.drawable.button_selected)
-                binding.llPrint.setTextColor(resources.getColor(R.color.white))*/
+                /*  binding.llPrint.background = resources.getDrawable(R.drawable.button_selected)
+                  binding.llPrint.setTextColor(resources.getColor(R.color.white))*/
 
                 binding.llEmail.background =
                     resources.getDrawable(R.drawable.background_square_border_grey)
@@ -3232,8 +3231,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                             TAG,
                             "customerReceiptdeliveryType:  ${receiptModel?.order?.deliveryType}"
                         )
-                        Log.e(TAG,"getSplitSize:  ${splitList.size}")
-                        Log.e(TAG,"getSplitISSplit :${isSpilt}")
+                        Log.e(TAG, "getSplitSize:  ${splitList.size}")
+                        Log.e(TAG, "getSplitISSplit :${isSpilt}")
                         if (!isSpilt || (isSpilt && splitList.size == 1)) {
                             if (!requireArguments().getBoolean("isDineIn") && !requireArguments().getBoolean(
                                     "isFromActiveOrder"
@@ -3318,6 +3317,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         }
 
 
+                    }
+                    if (!requireArguments().getBoolean("isSpilt")) {
+                        viewModel.deleteSplitDb()
                     }
 
                 }
