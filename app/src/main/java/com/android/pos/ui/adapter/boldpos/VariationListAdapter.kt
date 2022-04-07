@@ -6,7 +6,9 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.data.entities.VariationsAttribute
 import com.android.pos.databinding.ViewBoldVariationsBinding
+
 import com.android.pos.utils.MethodUtils
+import com.android.pos.utils.callback.ItemCallback
 import com.android.pos.utils.callback.UpdateVariationCallback
 
 class VariationListAdapter() :
@@ -21,6 +23,11 @@ class VariationListAdapter() :
     private lateinit var mCallback: UpdateVariationCallback
     fun setCallback(callback: UpdateVariationCallback) {
         mCallback = callback
+    }
+
+    private var mCallbackvariation: ItemCallback? = null
+    fun setCallback(callback: ItemCallback) {
+        mCallbackvariation = callback
     }
 
     override fun onCreateViewHolder(
@@ -43,7 +50,7 @@ class VariationListAdapter() :
                 it
             )
         }
-        Log.e(TAG,"mpos:  ${mpos}")
+        Log.e(TAG, "mpos:  ${mpos}")
 
         itemBinding.linearParent.isSelected = mpos == position
 
@@ -62,8 +69,10 @@ class VariationListAdapter() :
 
             noteItemBinding.linearParent.setOnClickListener {
 
-                mpos = bindingAdapterPosition
-                showVariationPriceClick?.invoke(variationList[bindingAdapterPosition])
+                mpos = absoluteAdapterPosition
+
+                mCallbackvariation?.onItemClickListener(it, mpos)
+                Log.d("yash", "position: " + absoluteAdapterPosition)
                 notifyDataSetChanged()
 
 
@@ -124,7 +133,7 @@ class VariationListAdapter() :
                 if (variation.id == id) {
                     mpos = i
                     notifyItemChanged(mpos)
-                    showVariationPriceClick?.invoke(variationList[i])
+
 
                     break
                 }
