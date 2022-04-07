@@ -164,6 +164,11 @@ class CheckoutDineInPaymentViewModel @Inject constructor(
 
     }
 
+    fun mAllWordsDineIn(empId:Int):LiveData<List<DineInCartModel>>{
+        return  posRepository.getCartDineInList(empId)
+
+    }
+
     fun manualSale(orderType: String, employee_Id: Int): LiveData<List<CartModel>> {
 
         return posRepository.getCartList(orderType, employee_Id)

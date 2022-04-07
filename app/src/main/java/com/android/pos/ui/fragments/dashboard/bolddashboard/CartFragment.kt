@@ -21,6 +21,7 @@ import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.DINE_IN
 import com.android.pos.data.remote.Constants.DINE_IN_LIST_EDIT
 import com.android.pos.data.remote.Constants.DINE_IN_UPDATE
+import com.android.pos.data.remote.Constants.EMPLOYEE_ID
 import com.android.pos.data.remote.Constants.MANUAL_SALE
 import com.android.pos.data.remote.Constants.OPEN_ORDER
 import com.android.pos.data.remote.Constants.ORDER_TYPE
@@ -31,6 +32,7 @@ import com.android.pos.databinding.FragmentCartBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.adapter.DineInAdapter
 import com.android.pos.ui.adapter.boldpos.CartAdapter
+import com.android.pos.ui.fragments.checkout.CheckoutDineInPaymentViewModel
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.android.pos.ui.fragments.payment.PaymentViewModel
 import com.android.pos.utils.AlertUtils
@@ -72,6 +74,7 @@ class CartFragment(val itemClickListner: ItemClickListner?, val itemListner: Ite
     var cartlist: ArrayList<CartModel> = arrayListOf()
     private val viewModel by activityViewModels<DashBoardCategoryViewModel>()
     private val viewModelPayment by activityViewModels<PaymentViewModel>()
+    private val dineInPayViewModel by activityViewModels<CheckoutDineInPaymentViewModel>()
     var updateBundle: Bundle? = null
     var isFromPayment: Boolean = false
     private var serviceChargesObserve: Observer<Resource<List<TbServiceCharge>>>? = null
@@ -153,6 +156,7 @@ class CartFragment(val itemClickListner: ItemClickListner?, val itemListner: Ite
         callback()
         setupLoyalytyPoints()
         addObserver()
+        dineInPaymentObserver()
 
 
 
@@ -196,6 +200,19 @@ class CartFragment(val itemClickListner: ItemClickListner?, val itemListner: Ite
             binding.tvSave.text = getString(R.string.save)
         }
 
+    }
+
+    private fun dineInPaymentObserver() {
+        dineInPayViewModel.mAllWordsDineIn(prefProvider.getValueInt(EMPLOYEE_ID, 0))
+            .observe(requireActivity(), {
+                Log.e(TAG, "isFromPayment:  $isFromPayment")
+                if (it.isNotEmpty()) {
+
+
+                }
+
+
+            })
     }
 
     private fun setupLoyalytyPoints() {

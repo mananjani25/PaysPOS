@@ -42,6 +42,9 @@ interface CartDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun addDineInCartDao(cartModel: DineInCartModel): Long?
 
+    @Query("select * from DineInCartModel where DineInCartModel.orderType = :orderType AND DineInCartModel.isMaual = 0 AND DineInCartModel.employeeID=:employee_Id")
+    fun allItemDineIn(orderType: String, employee_Id: Int): LiveData<List<DineInCartModel>>
+
     @Query("DELETE FROM DineInCartModel")
     suspend fun deleteDineInCart()
 

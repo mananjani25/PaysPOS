@@ -3163,7 +3163,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     )
 
                     builder.addText(
-                        "Order Time:" + Constants.getReceiptFormatDateFromUTCServer(requireContext(),
+                        "Order Time:" + Constants.getReceiptFormatDateFromUTCServer(
+                            requireContext(),
                             getOrderDetailsResponse?.createdAt.toString()
                         )
                     )
@@ -3281,7 +3282,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     builder.addText(
                         padLine(
                             if (customerSettingModel.showOrderTime) {
-                                "Order Time:" + Constants.getReceiptFormatDateFromUTCServer(requireContext(),
+                                "Order Time:" + Constants.getReceiptFormatDateFromUTCServer(
+                                    requireContext(),
                                     getOrderDetailsResponse?.createdAt.toString()
                                 )
                             } else {
@@ -4096,7 +4098,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     )
 
                     builder.addText(
-                        "Order Time:" + Constants.getReceiptFormatDateFromUTCServer(requireContext(),
+                        "Order Time:" + Constants.getReceiptFormatDateFromUTCServer(
+                            requireContext(),
                             getOrderDetailsResponse?.createdAt.toString()
                         )
                     )
@@ -4215,7 +4218,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     builder.addText(
                         padLine(
                             if (customerSettingModel.showOrderTime) {
-                                "Order Time:" + Constants.getReceiptFormatDateFromUTCServer(requireContext(),
+                                "Order Time:" + Constants.getReceiptFormatDateFromUTCServer(
+                                    requireContext(),
                                     getOrderDetailsResponse?.createdAt.toString()
                                 )
                             } else {
@@ -5141,7 +5145,10 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
             builder.addText(
                 padLine(
-                    Constants.getReceiptFormatDateFromUTCServer(requireContext(),getOrderDetailsResponse?.createdAt.toString()),
+                    Constants.getReceiptFormatDateFromUTCServer(
+                        requireContext(),
+                        getOrderDetailsResponse?.createdAt.toString()
+                    ),
                     "",
                     33
                 )
