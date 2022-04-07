@@ -69,12 +69,14 @@ class OpenOrderAdapter(val context: Context) :
             if (item.orderItems.isNotEmpty()) {
 
                 binding.rvOpenOrder.visible()
+/*
                 binding.rvOpenOrder.addItemDecoration(
                     DividerItemDecoration(
                         binding.root.context,
                         LinearLayoutManager.VERTICAL
                     )
                 )
+*/
 
                 adapter = OpenOrderItemsAdapter()
                 binding.rvOpenOrder.adapter = adapter

@@ -23,12 +23,14 @@ class OpenOrderItemsAdapter :
 
             if (item.orderItemModifiers.isNotEmpty()) {
 
+/*
                 binding.rvOpenOrder.addItemDecoration(
                     DividerItemDecoration(
                         binding.root.context,
                         LinearLayoutManager.VERTICAL
                     )
                 )
+*/
 
                 adapter = OpenOrderItemModifierAdapter()
                 binding.rvOpenOrder.adapter = adapter

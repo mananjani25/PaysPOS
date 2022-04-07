@@ -123,6 +123,7 @@
                 android:textColor="@color/txtColor"
                 android:textSize="@dimen/_6mdpi"
                 tools:text="Amount"
+                android:paddingLeft="@dimen/_1sdp"
                 />
 
             <androidx.appcompat.widget.AppCompatTextView
@@ -156,7 +157,9 @@
                 android:text="@{viewModel.employee.name}"
                 android:textColor="@color/txtColor"
                 android:textSize="@dimen/_6mdpi"
-                tools:text="Employee Name" />
+                tools:text="Employee Name"
+                android:paddingLeft="@dimen/_1sdp"
+                />
 
 
         </LinearLayout>

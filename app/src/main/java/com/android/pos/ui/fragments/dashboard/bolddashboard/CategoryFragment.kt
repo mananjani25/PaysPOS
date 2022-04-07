@@ -5,17 +5,21 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AutoCompleteTextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.PagerSnapHelper
 import androidx.recyclerview.widget.RecyclerView
+import com.android.pos.R
 import com.android.pos.data.entities.CategoryWithInventory
 import com.android.pos.data.entities.TbItem
 import com.android.pos.data.model.CategoryParentModel
+import com.android.pos.data.model.CategorySearchData
 import com.android.pos.data.model.CategoryTabModel
 import com.android.pos.databinding.FragmentCategoryBinding
 import com.android.pos.ui.adapter.CategoryItemAdapter1
+import com.android.pos.ui.adapter.CategorySearchAdapter
 import com.android.pos.ui.adapter.CategoryTabAdapter1
 import com.android.pos.ui.adapter.boldpos.CategoryParentAdapter
 import com.android.pos.ui.adapter.boldpos.CategoryTabAdapter
@@ -28,12 +32,14 @@ import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class CategoryFragment(val listner: ItemListner) : Fragment(), CategoryTabAdapter1.TabListner,
+class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteTextView?) : Fragment(), CategoryTabAdapter1.TabListner,
     CategoryItemAdapter1.CategoryItemList, CategoryParentAdapter.CategoryParentListner {
     private var categoryList1: ArrayList<CategoryWithInventory> = arrayListOf()
     private lateinit var binding: FragmentCategoryBinding
     private lateinit var categoryParentAdapter: CategoryParentAdapter
     private lateinit var itemAdapter: ItemAdapter
+    private lateinit var searchList: ArrayList<CategorySearchData>
+    private lateinit var searchAdapter: CategorySearchAdapter
 
     private val viewModel by activityViewModels<DashBoardCategoryViewModel>()
     private var itemList1: ArrayList<TbItem?> = arrayListOf()
@@ -45,7 +51,7 @@ class CategoryFragment(val listner: ItemListner) : Fragment(), CategoryTabAdapte
 
     companion object {
         fun newInstance(callback: ItemListner): CategoryFragment {
-            val fragment = CategoryFragment(callback)
+            val fragment = CategoryFragment(callback, null)
             return fragment
 
         }
@@ -141,6 +147,10 @@ class CategoryFragment(val listner: ItemListner) : Fragment(), CategoryTabAdapte
                             }
 
                             categoryParentAdapter.addList(list)
+
+                            //searchCategory()
+
+
                             itemAdapter.addList(itemList1)
                             if (list.isNotEmpty()) {
                                 binding.rvCategoryParent.scrollToPosition(0)
@@ -162,6 +172,76 @@ class CategoryFragment(val listner: ItemListner) : Fragment(), CategoryTabAdapte
         }
 
     }
+    private fun searchCategory() {
+
+        searchList = arrayListOf()
+        categoryList1.forEach { categories ->
+            val itemList = categories.inventoryLists
+            itemList?.filter { it?.isHide == true }?.forEach { tbItem ->
+                searchList.add(
+                    CategorySearchData(
+                        tbItem?.itemId ?: 0,
+                        tbItem?.name ?: "",
+                        tbItem?.imageUrl.toString(),
+                        categories.category.name ?: "",
+                        categories.category.id
+                    )
+                )
+            }
+        }
+        searchAdapter =
+            CategorySearchAdapter(
+                requireActivity(),
+                R.layout.search_category_item,
+                searchList
+            )
+        edtSearch?.threshold = 3
+        edtSearch?.setAdapter(searchAdapter)
+        edtSearch?.setOnItemClickListener { parent, _, position, _ ->
+            val model: CategorySearchData = parent.getItemAtPosition(position) as CategorySearchData
+            edtSearch?.setText(model.title)
+            resetTabbySearch(model)
+
+
+        }
+    }
+
+
+    private fun resetTabbySearch(model: CategorySearchData) {
+        var tabPos = -1
+        val tabList = (binding.rvTabLayout.adapter as CategoryTabAdapter).list
+        for (i in 0 until tabList.size) {
+
+            if (tabList[i].id == model.categoryID) {
+                tabList[i].isSelected = true
+                tabPos = i
+            } else {
+                tabList.get(i).isSelected = false
+            }
+
+        }
+
+        // (binding.rvTabLayout.adapter as CategoryTabAdapter1).list.clear()
+        (binding.rvTabLayout.adapter as CategoryTabAdapter).list = tabList
+        binding.rvTabLayout.adapter?.notifyDataSetChanged()
+
+        val listCategry = arrayListOf<TbItem?>()
+        listCategry.add(
+            0,
+            TbItem()
+        )
+        categoryList1[tabPos].inventoryLists?.let { it1 ->
+            listCategry.addAll(
+                it1
+            )
+        }
+        (binding.rvItemList.adapter as ItemAdapter).list.clear()
+        (binding.rvItemList.adapter as ItemAdapter).list = listCategry
+        binding.rvItemList.adapter?.notifyDataSetChanged()
+
+
+    }
+
 
     private fun observeShowProgress() {
         viewModel.showProgress.observe(viewLifecycleOwner) { event ->

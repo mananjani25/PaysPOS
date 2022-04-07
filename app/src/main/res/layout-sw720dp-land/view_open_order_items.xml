@@ -16,12 +16,6 @@
         android:orientation="vertical"
         android:layout_height="wrap_content">
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="0.5dp"
-            android:background="@color/view"
-            android:visibility="gone"/>
-
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -41,7 +35,8 @@
                 android:text="@{model.itemName}"
                 android:textColor="@color/white"
                 android:textSize="@dimen/_6mdpi"
-                tools:text="Item Name" />
+                tools:text="Item Name"
+                android:paddingEnd="@dimen/_5sdp"/>
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/txtQty"
@@ -54,7 +49,7 @@
                 android:text="@{@string/cross+``+model.quantity}"
                 android:textColor="@color/white"
                 android:textSize="@dimen/_6mdpi"
-                android:paddingEnd="@dimen/_5sdp"
+                android:paddingLeft="@dimen/_2sdp"
                 tools:text="X 1" />
 
             <androidx.appcompat.widget.AppCompatTextView
@@ -68,6 +63,7 @@
                 android:text="@{@string/symbole +``+String.format(@string/format,model.price)}"
                 android:textColor="@color/white"
                 android:textSize="@dimen/_6mdpi"
+                android:paddingLeft="@dimen/_2sdp"
                 tools:text="$12.00" />
 
             <androidx.appcompat.widget.AppCompatTextView
@@ -105,16 +101,17 @@
                 android:gravity="center_vertical"
                 android:textColor="@color/white"
                 android:textSize="@dimen/_6mdpi"
-                tools:text="Terminal Name" />
+                tools:text="Terminal Name"
+                android:paddingLeft="@dimen/_2sdp"/>
 
         </LinearLayout>
+
+
         <View
             android:layout_width="match_parent"
             android:layout_height="0.5dp"
             android:background="@color/view"
-            android:visibility="gone"/>
-
-       <!-- <include layout="@layout/divider" />-->
+            />
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvOpenOrder"
