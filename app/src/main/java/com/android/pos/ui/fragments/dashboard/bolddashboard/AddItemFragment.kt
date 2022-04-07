@@ -26,6 +26,7 @@ import com.android.pos.ui.adapter.boldpos.VariationListAdapter
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.MethodUtils
+import com.android.pos.utils.callback.ItemCallback
 import com.android.pos.utils.callback.ItemListner
 import com.android.pos.utils.statusUtils.Resource
 import com.android.pos.utils.statusUtils.Status
@@ -34,7 +35,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class AddItemFragment(val listner: ItemListner) : Fragment() {
+class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
     private lateinit var item: TbItem
     private var cartList: ArrayList<CartModel> = arrayListOf()
     private lateinit var binding: FragmentAddItemBinding
@@ -81,6 +82,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment() {
         binding.lifecycleOwner = this
         variationAdapter = VariationListAdapter()
         binding.rvVariationList.adapter = variationAdapter
+        variationAdapter.setCallback(this)
         isUpdateItem = requireArguments().getBoolean(Constants.IS_UPDATE_ITEM)
 
         return binding.root
@@ -201,6 +203,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment() {
         binding.txtAddDiscount.setOnClickListener {
 
             val bundle = Bundle().apply {
+                putDouble("orderDiscount", cartList[0].discountPrice)
                 putBoolean("isFromDetails", true)
                 putParcelable("model", item)
             }
@@ -229,7 +232,8 @@ class AddItemFragment(val listner: ItemListner) : Fragment() {
             if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == DINE_IN) {
 
                 cartList[0].dineInList?.let { it1 ->
-                    viewModel.cartLogic(cartList, item, DELETE, false,
+                    viewModel.cartLogic(
+                        cartList, item, DELETE, false,
                         it1
                     )
                 }
@@ -292,58 +296,14 @@ class AddItemFragment(val listner: ItemListner) : Fragment() {
                             binding.rvVariationList.visibility = View.VISIBLE
 
                             variationAdapter.addVariations(it.variationsAttributes)
-
-
-                            variationAdapter?.showVariationPriceClick = { it: VariationsAttribute ->
-                                if (!MethodUtils.isDoubleClick()) {
-                                    Log.e(TAG, "priceType:  ${it.priceType}")
-                                    if (it.priceType == "Variable") {
-                                        val bundle = Bundle().apply {
-                                            putParcelable("variationAttribute", it)
-                                        }
-
-                                        if (item.price == 0.0 && item.variationsAttributes.isNotEmpty()) {
-                                            /*   AlertUtils.showCustomAlert(
-                                                   requireActivity(),
-                                                   "Please enter atleast one price of item"
-                                               )
-
-   */
-                                        } else if (!checkItemQty(item, variationAdapter)) {
-                                            /* AlertUtils.showCustomAlert(
-                                                 requireActivity(),
-                                                 getString(R.string.qty_validation)
-                                             )*/
-
-                                        }
-
-
-                                        /*  findNavController().navigate(
-                                              R.id.action_dashboardCategoryNew_to_addVariablePriceDialog, bundle
-                                          )*/
-                                    } else if (it.priceType == "Fixed") {
-                                        showPriceTitle(it, variationAdapter = null, item, true)
-
-                                    }
-
-                                    val variationList = ArrayList<VariationsAttribute>()
-                                    if (item.variationsAttributes.isNotEmpty()) {
-                                        val variation = variationAdapter?.getItem()!!
-                                        variationList.add(variation)
-                                        item.name =
-                                            item.name.substringBefore(" (") + " (" + variation.name + ")"
-                                        item.variationsAttributes = variationList
-                                    }
-                                }
+                            val variationList = ArrayList<VariationsAttribute>()
+                            if (item.variationsAttributes.isNotEmpty()) {
+                                val variation = item.variationsAttributes[0]
+                                variationList.add(variation)
+                                item.name =
+                                    item.name.substringBefore(" (") + " (" + variation.name + ")"
+                                item.variationsAttributes = variationList
                             }
-
-
-                            if (item.variationsAttributes.isNotEmpty() && item.variationsAttributes[0].id != null) {
-                                variationAdapter.selectItem(
-                                    item.variationsAttributes[0].id ?: 0
-                                )
-                            }
-
 
                         }
 
@@ -383,9 +343,6 @@ class AddItemFragment(val listner: ItemListner) : Fragment() {
 
             }
 
-            variationAdapter?.showVariationPriceClick = { it: VariationsAttribute ->
-
-            }
 
 
         } else {
@@ -568,6 +525,49 @@ class AddItemFragment(val listner: ItemListner) : Fragment() {
         }
 
         return maxCount <= totalMinMax
+    }
+
+    override fun onItemClickListener(view: View?, pos: Int) {
+        if (!MethodUtils.isDoubleClick()) {
+            Log.e(TAG, "priceType:  ${variationAdapter.variationList[pos].priceType}")
+            if (variationAdapter.variationList[pos].priceType == "Variable") {
+                val bundle = Bundle().apply {
+                    putParcelable("variationAttribute", variationAdapter.variationList[pos])
+                }
+
+                if (item.price == 0.0 && variationAdapter.variationList.isNotEmpty()) {
+                    /*   AlertUtils.showCustomAlert(
+                           requireActivity(),
+                           "Please enter atleast one price of item"
+                       )
+
+*/
+                } else if (!checkItemQty(item, variationAdapter)) {
+                    /* AlertUtils.showCustomAlert(
+                         requireActivity(),
+                         getString(R.string.qty_validation)
+                     )*/
+
+                }
+
+
+                /*  findNavController().navigate(
+                      R.id.action_dashboardCategoryNew_to_addVariablePriceDialog, bundle
+                  )*/
+            } else if (variationAdapter.variationList[pos].priceType == "Fixed") {
+                showPriceTitle(variationAdapter.variationList[pos], variationAdapter = null, item, true)
+
+            }
+
+            val variationList = ArrayList<VariationsAttribute>()
+            if (variationAdapter.variationList.isNotEmpty()) {
+                val variation = variationAdapter.variationList[pos]
+                variationList.add(variation)
+                item.name =
+                    item.name.substringBefore(" (") + " (" + variation.name + ")"
+                item.variationsAttributes = variationList
+            }
+        }
     }
 
 }

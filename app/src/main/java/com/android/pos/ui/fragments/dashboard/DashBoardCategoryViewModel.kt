@@ -591,10 +591,18 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                         list.forEachIndexed { pos, tbItem ->
                             if (item != null) {
-                                if (tbItem.itemId == item.itemId) {
-                                    index = pos
-                                    return@forEachIndexed
+                                if (!item.isManualSales){
+                                    if (tbItem.itemId == item.itemId) {
+                                        index = pos
+                                        return@forEachIndexed
+                                    }
+                                }else {
+                                    if (tbItem.manualSaleId == item.manualSaleId) {
+                                        index = pos
+                                        return@forEachIndexed
+                                    }
                                 }
+
                             }
                         }
                         Log.e(TAG, "DeleteIndex  ${index}")

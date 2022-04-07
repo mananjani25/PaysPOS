@@ -49,6 +49,7 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
     private lateinit var defaultModel: TbItem
     private var selectedCurrency: String = AMOUNT
     var modifierPrice: Double = 0.0
+    var orderDiscount: Double = 0.0
 
     companion object {
         fun newInstance() = AddDiscountDialog()
@@ -71,9 +72,9 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
             totalOrderPrice = requireArguments().getDouble("totalPrice", 0.0)
             orderDiscountPrice = requireArguments().getDouble("orderDiscountPrice", 0.0)
             orderDiscountType = requireArguments().getString("orderDiscountType").toString()
-
         }
 
+        orderDiscount = requireArguments().getDouble("orderDiscount")
         isFromDetails = requireArguments().getBoolean("isFromDetails", false)
         val model: TbItem? = requireArguments().getParcelable("model")
         defaultModel = model ?: TbItem()
@@ -84,8 +85,9 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
             }
         }
 
-        itemPrice = (defaultModel.price * defaultModel.itemQuantity) + modifierPrice
 
+        itemPrice = (defaultModel.price * defaultModel.itemQuantity) + modifierPrice
+        itemPrice-=orderDiscount
 
         selectedCurrency = defaultModel.discountType
         if (selectedCurrency.isEmpty()) {
@@ -99,6 +101,7 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
         setupData()
         setKeyPad()
         onClick()
+
 
 
         if (!isOrderDiscount) {
@@ -174,6 +177,7 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
         binding.txtCurrencyPercentage.setOnClickListener {
 
             percentageView()
+            binding.edtAmount.setText("0.00")
             if (selectedListPos != -1) {
                 discountAdapter.clearSelectedItem()
                 selectedListPos = -1
@@ -182,7 +186,7 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
 
         }
         binding.txtCurrencyDollar.setOnClickListener {
-
+            binding.edtAmount.setText("0.00")
             amountView()
             if (selectedListPos != -1) {
                 discountAdapter.clearSelectedItem()
@@ -219,7 +223,7 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
                 -1,
                 -1,
                 "",
-                10.0,
+                20.0,
                 ""
             )
 
@@ -232,7 +236,7 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
                 -1,
                 -1,
                 "",
-                10.0,
+                30.0,
                 ""
             )
 

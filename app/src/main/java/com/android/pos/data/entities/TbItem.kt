@@ -8,6 +8,7 @@ import com.android.pos.data.model.responseModel.category.Category
 import com.android.pos.data.model.responseModel.item.Item
 import com.android.pos.data.typeconvert.TypeConvertersTax
 import kotlinx.parcelize.Parcelize
+import java.util.*
 
 
 @TypeConverters(TypeConvertersTax::class)
@@ -64,6 +65,7 @@ class TbItem : Parcelable {
     var guestItemId: Int? = null
     var isDestroy:Boolean = false
 
+    var manualSaleId: String = UUID.randomUUID().toString()
 
     fun convertToItem(item: Item, category: Category?): TbItem {
         itemId = item.id

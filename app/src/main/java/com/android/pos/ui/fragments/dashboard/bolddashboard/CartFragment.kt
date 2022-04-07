@@ -194,12 +194,17 @@ class CartFragment(val itemClickListner: ItemClickListner?, val itemListner: Ite
             Log.e("ORDER_TYPE", "Updated check1")
         }
 
+        uiSave()
+
+    }
+
+    private fun uiSave() {
+
         if (isOrderUpdate) {
             binding.tvSave.text = getString(R.string.update)
         } else {
             binding.tvSave.text = getString(R.string.save)
         }
-
     }
 
     private fun dineInPaymentObserver() {
@@ -942,6 +947,7 @@ class CartFragment(val itemClickListner: ItemClickListner?, val itemListner: Ite
                     dineInCartAdapter.clearList()
                     binding.rvCartDineIn.gone()
 
+//                    uiSave()
 
                     prefProvider.setValue(ORDER_TYPE, TAKEOUT)
                     prefProvider.setValueboolean(Constants.LOYALTY_ADDED, false)
@@ -996,6 +1002,7 @@ class CartFragment(val itemClickListner: ItemClickListner?, val itemListner: Ite
                     prefProvider.setValue(ORDER_TYPE, TAKEOUT)
                     prefProvider.setValueboolean(Constants.LOYALTY_ADDED, false)
                     itemClickListner?.onDineInOrderCleared()
+                    uiSave()
 
                 }
             }

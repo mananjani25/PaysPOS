@@ -70,12 +70,28 @@ class HideCategoryListing : Fragment() {
             it?.let { resource ->
                 when (resource.status) {
                     Status.SUCCESS -> {
-                        binding.rvCategoriesList.visibility = View.VISIBLE
-                        binding.progressCircular.visibility = View.GONE
-                        it.data?.let { it1 ->
-                            adapter.add(it1)
-                            binding.edtSearch.hint = "Search (" + it1.size + ") Categories"
+
+                        if (it.data?.isNotEmpty() == true) {
+                            binding.rvCategoriesList.visibility = View.VISIBLE
+                            binding.txtNodata.visibility = View.GONE
+                            it.data?.let { it1 ->
+                                adapter.add(it1)
+                                binding.edtSearch.hint = "Search (" + it1.size + ") Categories"
+                            }
+
+                        } else {
+                            binding.txtNodata.visibility = View.VISIBLE
+                            if (it.message != null && it.message.isNotEmpty())
+                                binding.txtNodata.text = it.message
+                            else
+                                binding.txtNodata.text = "No data available"
+
+                            binding.rvCategoriesList.visibility = View.GONE
+
+                            // binding.rvOpenOrder.visibility = View.GONE
                         }
+
+                        binding.progressCircular.visibility = View.GONE
                     }
                     Status.ERROR -> {
                         binding.rvCategoriesList.visibility = View.GONE

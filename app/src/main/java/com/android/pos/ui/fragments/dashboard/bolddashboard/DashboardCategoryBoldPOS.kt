@@ -22,6 +22,7 @@ import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.DINE_IN
 import com.android.pos.data.remote.Constants.EMPLOYEE_NAME
 import com.android.pos.data.remote.Constants.ORDER_TYPE
+import com.android.pos.data.remote.Constants.SPLIT_ENABLE
 import com.android.pos.data.remote.Constants.TAKEOUT
 import com.android.pos.databinding.FragmentDashboardCategoryBoldPosBinding
 import com.android.pos.di.PrefProvider
@@ -306,8 +307,12 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
         }
 */
 
-        loadCartFragment(CartFragment(this, this))
-        loadCategoryFragment(CategoryFragment(this))
+        if(prefProvider.getValueboolean(SPLIT_ENABLE,false)){
+            findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_paymentBoldPosFragment)
+        }else{
+            loadCartFragment(CartFragment(this,this))
+            loadCategoryFragment(CategoryFragment(this))
+        }
         binding.layoutHeader.txtUserName.text =
             prefProvider.getValue(EMPLOYEE_NAME, "")
 
