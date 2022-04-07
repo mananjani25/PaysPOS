@@ -690,8 +690,8 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                     bundle.putParcelable("dineInList", baseResponse)
                     bundle.putBoolean("isGuestPaid", false)
                     bundle.putInt("orderId", baseResponse.order.id)
-                    prefProvider.setValue(ORDER_TYPE, DINE_IN)
-//                    viewModel.deleteCart()
+                    prefProvider.setValue(ORDER_TYPE, TAKEOUT)
+                    viewModel.deleteCart()
                     findNavController().navigate(
                         R.id.action_dashboardCategoryBoldPOS_to_dineInOrderTable,
                         bundle
@@ -703,7 +703,6 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
 
     private fun checkDineInEditOrder() {
         if (arguments?.getBoolean("is_dine_in_edit") == true) {
-            Log.e(TAG, "isEditDineInOrder")
             var dineInList = arguments?.getParcelableArrayList<DineInModel>("dine_in_list")
 
             if (dineInList?.isNotEmpty() == true) {
@@ -757,13 +756,17 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
         viewModel.updateOrder.observe(viewLifecycleOwner, { event ->
             event.getContentIfNotHandled()?.let {
 
-                prefProvider.setValue(ORDER_TYPE, TAKEOUT)
-                viewModel.deleteCart()
+
                 val bundle = Bundle()
                 bundle.putParcelable("cartList", cartList[0])
                 bundle.putBoolean("isGuestPaid", false)
-
                 cartList[0].orderId?.let { it1 -> bundle.putInt("orderId", it1) }
+                prefProvider.setValue(ORDER_TYPE, TAKEOUT)
+                Log.e(TAG, "deleteCartDineIn")
+                viewModel.deleteCart()
+                clearCustomer()
+
+
 
 
                 findNavController().navigate(
@@ -1022,7 +1025,10 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
 
             builder.addText(
                 padLine(
-                    Constants.getReceiptFormatDateFromUTCServer(requireContext(),receiptModel?.order?.createdAt.toString()),
+                    Constants.getReceiptFormatDateFromUTCServer(
+                        requireContext(),
+                        receiptModel?.order?.createdAt.toString()
+                    ),
                     "",
                     33
                 )

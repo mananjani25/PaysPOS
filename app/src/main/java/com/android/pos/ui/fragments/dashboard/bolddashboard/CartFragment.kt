@@ -51,7 +51,8 @@ import javax.inject.Inject
 
 
 @AndroidEntryPoint
-class CartFragment(val itemClickListner: ItemClickListner?,val itemListner: ItemListner?) : Fragment(), MyCallback,
+class CartFragment(val itemClickListner: ItemClickListner?, val itemListner: ItemListner?) :
+    Fragment(), MyCallback,
     DineInAdapter.DineInCallback {
     private lateinit var binding: FragmentCartBinding
     var fragmentId: Int? = null
@@ -977,6 +978,7 @@ class CartFragment(val itemClickListner: ItemClickListner?,val itemListner: Item
                     isOrderUpdate = false
                     prefProvider.setValue(ORDER_TYPE, TAKEOUT)
                     prefProvider.setValueboolean(Constants.LOYALTY_ADDED, false)
+                    itemClickListner?.onDineInOrderCleared()
 
                 }
             }
