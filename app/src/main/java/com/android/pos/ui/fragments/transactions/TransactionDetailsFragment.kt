@@ -3,6 +3,7 @@ package com.android.pos.ui.fragments.transactions
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.Point
 import android.os.Build
 import android.os.Bundle
@@ -21,7 +22,6 @@ import com.android.pos.data.model.responseModel.GetCustomerReceiptSettingsRespon
 import com.android.pos.data.model.responseModel.GetTipReponse
 import com.android.pos.data.model.responseModel.PrinterResponse
 import com.android.pos.data.remote.Constants
-import com.android.pos.data.remote.Constants.KEY
 import com.android.pos.databinding.FragmentTransactionDetailsBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.adapter.OrderDetailsItemListAdapter
@@ -454,6 +454,31 @@ class TransactionDetailsFragment : Fragment() {
                         customerReceiptPrinters.name
                     }, PrinterClass.language, requireActivity()
                 )
+
+            Log.e(TAG, "getVanueLogo:  ${prefProvider.getValue(Constants.VENUE_LOGO, "")}")
+            if (customerSettingModel.showVenueLogo && prefProvider.getValue(Constants.VENUE_LOGO, "")
+                    .isNotEmpty()
+            ) {
+                builder.addFeedLine(1)
+                builder.addTextAlign(Builder.ALIGN_CENTER)
+
+                /* var bitmap = getBitmapFromURL(prefProvider.getValue(VENUE_LOGO, ""))*/
+
+                val decodedString: ByteArray = android.util.Base64.decode(
+                    prefProvider.getValue(Constants.VENUE_LOGO, ""),
+                    android.util.Base64.DEFAULT
+                )
+                val bitmap: Bitmap =
+                    BitmapFactory.decodeByteArray(decodedString, 0, decodedString.size)
+
+                val newBitmap = Bitmap.createScaledBitmap(bitmap!!, 210, 210, true)
+                builder.addImage(
+                    newBitmap, 0, 0,
+                    newBitmap.width, newBitmap.height, Builder.COLOR_1, Builder.MODE_MONO,
+                    Builder.HALFTONE_DITHER, 1.0
+                )
+            }
+
             builder.addFeedLine(1)
 
 

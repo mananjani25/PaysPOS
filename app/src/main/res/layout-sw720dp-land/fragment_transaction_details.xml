@@ -976,6 +976,7 @@
                     style="@style/CustomFontBold"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
+
                     android:layout_gravity="center"
                     android:layout_marginTop="@dimen/_10sdp"
                     android:background="@drawable/background_txt_selector"
@@ -985,7 +986,7 @@
                     android:text="@string/tv_print_kitchen_receipt"
                     android:textColor="@color/white"
                     android:textSize="@dimen/text_size_large"
-                    android:visibility="visible" />
+                    android:visibility="gone" />
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/txtTextReceipt"

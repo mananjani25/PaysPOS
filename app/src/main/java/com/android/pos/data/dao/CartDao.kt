@@ -6,6 +6,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.android.pos.data.entities.CartModel
+import com.android.pos.data.entities.DineInCartModel
 
 /**
  * Created by vishal patel on 2/3/2018.
@@ -35,5 +36,17 @@ interface CartDao {
 
     @Query("select * from CartModel where CartModel.orderType = :orderType AND CartModel.isMaual = 1 AND CartModel.employeeID=:employee_Id")
     fun getManualSaleItems(orderType: String, employee_Id: Int): LiveData<List<CartModel>>
+
+
+    //For Dine in Local Database
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun addDineInCartDao(cartModel: DineInCartModel): Long?
+
+    @Query("DELETE FROM DineInCartModel")
+    suspend fun deleteDineInCart()
+
+
+
+
 
 }
