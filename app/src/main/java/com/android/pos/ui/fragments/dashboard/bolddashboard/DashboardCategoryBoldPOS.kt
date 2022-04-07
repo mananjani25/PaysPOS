@@ -1256,4 +1256,6 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
         })
     }
 
+
+
 }

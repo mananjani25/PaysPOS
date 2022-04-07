@@ -158,6 +158,7 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
             viewLifecycleOwner
         ) { _: String, bundle: Bundle ->
             tipAmount = bundle.getDouble("tipAmount")
+            viewModel.setTipAmount(tipAmount)
             tipID = bundle.getInt("tipId")
             tipAmountCalculation()
         }
@@ -725,6 +726,7 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
             ).toDouble()
 
             val cardNumber = binding.edtCardNumber.rawText.toString().trim()
+            
             val cardExpDate = binding.edtMMYY.rawText.toString().trim()
             val cardCVV = binding.edtCVV.text.toString().trim()
 
@@ -744,7 +746,7 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
                 cardCVV.isEmpty() -> {
                     errorDisplay("Please enter CVV number")
                 }
-                cardCVV.length < 3 -> {
+                cardCVV.length < 4 -> {
                     errorDisplay("Please enter valid CVV number")
                 }
                 else -> {

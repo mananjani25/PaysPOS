@@ -17,7 +17,7 @@ class VariationListAdapter() :
 
 
     var showVariationPriceClick: ((VariationsAttribute) -> Unit)? = null
-    private var mpos: Int = 0
+    private var mpos: Int = -1
     var variationList = ArrayList<VariationsAttribute>()
 
     private lateinit var mCallback: UpdateVariationCallback
@@ -72,6 +72,7 @@ class VariationListAdapter() :
                 mpos = absoluteAdapterPosition
 
                 mCallbackvariation?.onItemClickListener(it, mpos)
+                showVariationPriceClick?.invoke(variationList[bindingAdapterPosition])
                 Log.d("yash", "position: " + absoluteAdapterPosition)
                 notifyDataSetChanged()
 
@@ -131,6 +132,7 @@ class VariationListAdapter() :
             for (i in 0 until variationList.size) {
                 val variation = variationList[i]
                 if (variation.id == id) {
+                    Log.e(TAG,"positionChafnf ${i}")
                     mpos = i
                     notifyItemChanged(mpos)
 

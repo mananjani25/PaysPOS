@@ -38,7 +38,7 @@
                 android:padding="@dimen/_5sdp"
                 android:text="@string/tv_home"
                 android:textAllCaps="true"
-                android:textColor="@color/txtColor"
+                android:textColor="@color/btnColor"
                 android:textSize="@dimen/_6mdpi" />
 
             <TextView

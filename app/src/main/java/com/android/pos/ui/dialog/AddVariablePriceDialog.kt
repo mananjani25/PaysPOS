@@ -1,7 +1,10 @@
 package com.android.pos.ui.dialog
 
 import android.annotation.SuppressLint
+import android.graphics.Color
 import android.graphics.Point
+import android.graphics.drawable.ColorDrawable
+import android.graphics.drawable.InsetDrawable
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextUtils
@@ -43,6 +46,10 @@ class AddVariablePriceDialog : DialogFragment(), TextWatcher {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        dialog?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN)
+        val back = ColorDrawable(Color.WHITE)
+        val inset = InsetDrawable(back, 150, 100, 150, 100)
+        dialog?.window?.setBackgroundDrawable(inset);
 
         variationAttribute =
             arguments?.getParcelable("variationAttribute")
@@ -69,7 +76,9 @@ class AddVariablePriceDialog : DialogFragment(), TextWatcher {
                 variationAttribute?.priceType = "Fixed"
             }
 
-            setNavigationResult(DIALOG_KEY_VARIATION_DETAILS, variationAttribute)
+            var bundle: Bundle = Bundle()
+            bundle.putParcelable("data", variationAttribute)
+            requireActivity().supportFragmentManager.setFragmentResult("request_variable", bundle)
             findNavController().popBackStack()
         }
 
@@ -85,22 +94,25 @@ class AddVariablePriceDialog : DialogFragment(), TextWatcher {
 
         }
 
-        binding.llKeypad.txt10.text="10$"
-        binding.llKeypad.txt20.text="20$"
-        binding.llKeypad.txt30.text="30$"
+        binding.llKeypad.txt10.text = "10$"
+        binding.llKeypad.txt20.text = "20$"
+        binding.llKeypad.txt30.text = "30$"
 
         binding.llKeypad.txt10.setOnClickListener {
-            val price=binding.llKeypad.txt10.text.toString().trim().substring(0,binding.llKeypad.txt10.text.toString().length-1).toDouble()
+            val price = binding.llKeypad.txt10.text.toString().trim()
+                .substring(0, binding.llKeypad.txt10.text.toString().length - 1).toDouble()
             binding.edtAmount.removeTextChangedListener(this)
             binding.edtAmount.setText(MethodUtils.roundOffAmountString(price))
         }
         binding.llKeypad.txt20.setOnClickListener {
-            val price=binding.llKeypad.txt20.text.toString().trim().substring(0,binding.llKeypad.txt20.text.toString().length-1).toDouble()
+            val price = binding.llKeypad.txt20.text.toString().trim()
+                .substring(0, binding.llKeypad.txt20.text.toString().length - 1).toDouble()
             binding.edtAmount.removeTextChangedListener(this)
             binding.edtAmount.setText(MethodUtils.roundOffAmountString(price))
         }
         binding.llKeypad.txt30.setOnClickListener {
-            val price=binding.llKeypad.txt30.text.toString().trim().substring(0,binding.llKeypad.txt30.text.toString().length-1).toDouble()
+            val price = binding.llKeypad.txt30.text.toString().trim()
+                .substring(0, binding.llKeypad.txt30.text.toString().length - 1).toDouble()
             binding.edtAmount.removeTextChangedListener(this)
             binding.edtAmount.setText(MethodUtils.roundOffAmountString(price))
         }

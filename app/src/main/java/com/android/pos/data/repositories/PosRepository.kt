@@ -12,6 +12,7 @@ import com.android.pos.data.model.SplitDetailListModel
 import com.android.pos.data.model.requestModel.*
 import com.android.pos.data.model.responseModel.*
 import com.android.pos.data.remote.ApiHelper
+import com.android.pos.data.remote.Constants.DINE_IN
 import com.android.pos.di.PrefProvider
 import com.android.pos.utils.performGetOperation
 import com.android.pos.utils.performGetOperationDatabase
@@ -29,7 +30,6 @@ class PosRepository @Inject constructor(
     fun getCustomerReceiptSettings() = appDatabase.customerSettingsDao().getCustomerSettings
 
     fun getKitchenReceiptSettings() = appDatabase.kitchenSettingsDao().getKitchenSettings
-
     fun getTipsList() = appDatabase.tipDao().allTips
 
     fun syncVenueData() =
@@ -539,6 +539,11 @@ class PosRepository @Inject constructor(
         return appDatabase.cartDao().allItem(orderType, employee_Id)
     }
 
+    fun getCartDineInList(employee_Id: Int): LiveData<List<DineInCartModel>> {
+        return appDatabase.cartDao().allItemDineIn(DINE_IN, employee_Id)
+    }
+
+
     fun getManualSaleList(employee_id: Int): LiveData<List<CartModel>> {
         return appDatabase.cartDao().manualItem(employee_id)
     }
@@ -555,6 +560,13 @@ class PosRepository @Inject constructor(
 
         appDatabase.cartDao().add(cartModel)
     }
+
+    suspend fun addItemCartDineIn(cartModel: DineInCartModel) {
+
+        appDatabase.cartDao().addDineInCartDao(cartModel)
+    }
+
+
 
     suspend fun createEmptyCart(cartModel: CartModel) {
         appDatabase.cartDao().add(cartModel)
@@ -856,5 +868,9 @@ class PosRepository @Inject constructor(
 
     fun cardReaderActiveList() =
         performGetOperationDatabase { appDatabase.cardReaderDao().cardReaderActiveList() }
+
+    suspend fun deleteDineInCart() = appDatabase.cartDao().deleteDineInCart()
+
+
 }
 

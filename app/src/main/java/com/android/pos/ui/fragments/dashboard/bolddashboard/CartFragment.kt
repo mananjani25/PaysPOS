@@ -31,6 +31,7 @@ import com.android.pos.databinding.FragmentCartBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.adapter.DineInAdapter
 import com.android.pos.ui.adapter.boldpos.CartAdapter
+import com.android.pos.ui.fragments.checkout.CheckoutDineInPaymentViewModel
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.android.pos.ui.fragments.payment.PaymentViewModel
 import com.android.pos.utils.AlertUtils
@@ -72,6 +73,7 @@ class CartFragment(val itemClickListner: ItemClickListner?, val itemListner: Ite
     var cartlist: ArrayList<CartModel> = arrayListOf()
     private val viewModel by activityViewModels<DashBoardCategoryViewModel>()
     private val viewModelPayment by activityViewModels<PaymentViewModel>()
+    private val dineInPayViewModel by activityViewModels<CheckoutDineInPaymentViewModel>()
     var updateBundle: Bundle? = null
     var isFromPayment: Boolean = false
     private var serviceChargesObserve: Observer<Resource<List<TbServiceCharge>>>? = null
@@ -309,6 +311,8 @@ class CartFragment(val itemClickListner: ItemClickListner?, val itemListner: Ite
             cartlist.add(cartModel)
         }
 
+        viewModel.dineInHeaderPosition = 0
+        viewModel.dineInSelectedItemHeaderPos = 0
         cartlist.get(0).orderType = Constants.DINE_IN
         viewModel.cartLogic(cartlist, null, Constants.ADD, false, dineInList = dineInList)
 
@@ -890,6 +894,7 @@ class CartFragment(val itemClickListner: ItemClickListner?, val itemListner: Ite
         binding.rvCartList.adapter = cartAdapter
         dineInCartAdapter = DineInAdapter()
         dineInCartAdapter.setListner(this)
+        dineInCartAdapter.isFromPayment(isFromPayment)
         binding.rvCartDineIn.adapter = dineInCartAdapter
     }
 

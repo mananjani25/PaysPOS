@@ -17,12 +17,14 @@ import com.android.pos.databinding.ViewDineInItemBinding
 import com.android.pos.ui.activities.SwipeHelper
 import com.android.pos.ui.adapter.boldpos.CartAdapter
 import com.android.pos.utils.callback.MyCallback
+import com.android.pos.utils.extensions.gone
 
 class DineInAdapter : RecyclerView.Adapter<DineInAdapter.MyViewHolder>() {
     private var list: ArrayList<DineInModel> = arrayListOf()
     private lateinit var listner: DineInCallback
     private lateinit var itemAdapter: com.android.pos.ui.adapter.boldpos.CartAdapter
     private val TAG = "DineInAdapter"
+    private var isFromPay = false
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DineInAdapter.MyViewHolder {
         val inflater = LayoutInflater.from(parent.context)
@@ -98,6 +100,10 @@ class DineInAdapter : RecyclerView.Adapter<DineInAdapter.MyViewHolder>() {
                 binding.imgOrderMenu.visibility = View.VISIBLE
             }
             // list.get(0).headerPosition = layoutPosition
+
+            if (isFromPay){
+                binding.imgOrderMenu.gone()
+            }
 
 
         }
@@ -284,5 +290,10 @@ class DineInAdapter : RecyclerView.Adapter<DineInAdapter.MyViewHolder>() {
         list.clear()
         list = arrayListOf()
         notifyDataSetChanged()
+    }
+
+    fun isFromPayment(fromPayment: Boolean) {
+        isFromPay = fromPayment
+
     }
 }
