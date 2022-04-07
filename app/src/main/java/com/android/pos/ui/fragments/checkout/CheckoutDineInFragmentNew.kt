@@ -102,6 +102,7 @@ class CheckoutDineInFragmentNew : Fragment(), magtekCallback,
 
     private var cartList: CartModel? = null
     private var splitModel: DineInOrderPayment? = null
+
     @Inject
     lateinit var magtekModule: MagtekModule
 
@@ -119,7 +120,6 @@ class CheckoutDineInFragmentNew : Fragment(), magtekCallback,
 
     private var splitAfterAmount: Double = 0.0
     private var custom_paymentAmount = 0.0
-
 
 
     override fun onCreateView(
