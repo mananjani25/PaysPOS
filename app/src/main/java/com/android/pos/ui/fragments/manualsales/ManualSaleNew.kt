@@ -44,6 +44,7 @@ import com.android.pos.utils.extensions.visible
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
+import kotlin.random.Random
 
 @AndroidEntryPoint
 class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
@@ -191,6 +192,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
 
     private fun getManualCategoryId() {
 
+/*
         viewModel.returnedVal.observe(viewLifecycleOwner) {
 
             if (it != null) {
@@ -199,6 +201,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
             }
 
         }
+*/
     }
 
     private fun getLoyaltyPrograms() {
@@ -223,6 +226,8 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                 cartList = it
                 Log.e(TAG, "cartListBeforeTax  ${Gson().toJson(cartList)}")
                 if (cartList?.isNotEmpty()!!) {
+                    manualItemId= it.get(0).items?.size!!
+
                     cartList?.get(0)?.items?.forEach {
                         it.taxes = taxList
                     }
@@ -806,7 +811,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
 
             }
 
-            tabItemMOdel.itemId = manualItemId
+            tabItemMOdel.itemId = Random.nextInt()
             tabItemMOdel.categoryId = manualCategoryId
 
             tabItemMOdel.taxes = taxList
