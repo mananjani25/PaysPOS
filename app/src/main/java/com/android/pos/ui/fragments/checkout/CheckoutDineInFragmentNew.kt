@@ -69,6 +69,7 @@ class CheckoutDineInFragmentNew : Fragment(), magtekCallback,
     var isSelectedCount = 1
     private val paymentviewModel by activityViewModels<PaymentViewModel>()
     private val dineinOrderVieweModel by viewModels<DineInOrderTableViewModel>()
+    private val dineInPaymentViewModel by viewModels<CheckoutDineInPaymentViewModel>()
     private val viewModel by activityViewModels<DashBoardCategoryViewModel>()
     var listtextview: ArrayList<AppCompatTextView> = arrayListOf()
     var paymentType = "Cash"
@@ -101,6 +102,7 @@ class CheckoutDineInFragmentNew : Fragment(), magtekCallback,
 
     private var cartList: CartModel? = null
     private var splitModel: DineInOrderPayment? = null
+
     @Inject
     lateinit var magtekModule: MagtekModule
 
@@ -118,7 +120,6 @@ class CheckoutDineInFragmentNew : Fragment(), magtekCallback,
 
     private var splitAfterAmount: Double = 0.0
     private var custom_paymentAmount = 0.0
-
 
 
     override fun onCreateView(
@@ -1147,7 +1148,11 @@ class CheckoutDineInFragmentNew : Fragment(), magtekCallback,
 
     override fun onPause() {
         super.onPause()
-        removeCustomer()
+        //removeCustomer()
+        /*
+        dineInPaymentViewModel.deleteCart()
+        prefProvider.setValue(Constants.ORDER_TYPE, Constants.TAKEOUT)
+        */
     }
 
     fun removeCustomer() {

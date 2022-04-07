@@ -164,6 +164,11 @@ class CheckoutDineInPaymentViewModel @Inject constructor(
 
     }
 
+    fun mAllWordsDineIn(empId:Int):LiveData<List<DineInCartModel>>{
+        return  posRepository.getCartDineInList(empId)
+
+    }
+
     fun manualSale(orderType: String, employee_Id: Int): LiveData<List<CartModel>> {
 
         return posRepository.getCartList(orderType, employee_Id)
@@ -203,6 +208,14 @@ class CheckoutDineInPaymentViewModel @Inject constructor(
         }
         cartModel.items = combinedItems
         return cartModel
+    }
+
+    fun deleteDineInCart(){
+        viewModelScope.launch {
+            posRepository.deleteDineInCart()
+            destroyedList.clear()
+        }
+
     }
 
     fun deleteCart() {

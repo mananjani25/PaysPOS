@@ -242,7 +242,7 @@
                 android:gravity="center"
                 android:minWidth="@dimen/_120sdp"
                 android:padding="@dimen/_8sdp"
-                android:text="@string/edit_order"
+                android:text="@string/add_order"
                 android:textColor="@color/white"
                 android:textSize="@dimen/_6ssp" />
 

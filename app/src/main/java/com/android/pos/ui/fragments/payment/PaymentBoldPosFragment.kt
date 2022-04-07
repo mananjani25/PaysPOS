@@ -12,6 +12,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResultListener
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.data.remote.Constants
@@ -23,6 +24,7 @@ import com.android.pos.di.PrefProvider
 import com.android.pos.ui.fragments.checkout.CheckoutDetailsFragmentNew
 import com.android.pos.ui.fragments.checkout.CheckoutDineInFragmentNew
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
+import com.android.pos.ui.fragments.checkout.CheckoutDineInPaymentViewModel
 import com.android.pos.ui.fragments.dashboard.bolddashboard.CartFragment
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.TAG
@@ -36,6 +38,8 @@ class PaymentBoldPosFragment : Fragment() {
     private var paymentOfflineId: String = ""
     private var paymentId: Int = -1
     private val viewModel by activityViewModels<DashBoardCategoryViewModel>()
+
+    private val dineInPaymentViewModel by viewModels<CheckoutDineInPaymentViewModel>()
 
     @Inject
     lateinit var prefProvider: PrefProvider
@@ -65,12 +69,12 @@ class PaymentBoldPosFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
 
 
-        loadCartFragment(CartFragment(null,null))
-        if (prefProvider.getValue(ORDER_TYPE, "") == Constants.DINE_IN){
+        loadCartFragment(CartFragment(null, null))
+        if (prefProvider.getValue(ORDER_TYPE, "") == Constants.DINE_IN) {
             Handler(Looper.getMainLooper()).postDelayed({ /* Create an Intent that will start the Menu-Activity. */
                 loadCategoryFragment(CheckoutDineInFragmentNew())
             }, 100)
-        }else{
+        } else {
             Handler(Looper.getMainLooper()).postDelayed({ /* Create an Intent that will start the Menu-Activity. */
                 loadCategoryFragment(CheckoutDetailsFragmentNew())
             }, 100)
@@ -102,6 +106,14 @@ class PaymentBoldPosFragment : Fragment() {
         binding.layoutHeaderCheckout.tvAddDiscount.setOnClickListener {
             findNavController().navigate(R.id.action_paymentBoldPosFragment_to_addDiscountDialogFragment)
         }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        Log.e(TAG, "onPause")
+        removeCustomer()
+        dineInPaymentViewModel.deleteCart()
+        prefProvider.setValue(Constants.ORDER_TYPE, Constants.TAKEOUT)
     }
 
     private fun loadCartFragment(frag: Fragment) {
@@ -138,5 +150,29 @@ class PaymentBoldPosFragment : Fragment() {
         // binding.frameLayout?.let { fm.beginTransaction().replace(it, fragment).commit() }
     }
 
+    fun removeCustomer() {
+        prefProvider.setValue(Constants.CUSTOMER_NAME, "")
+        prefProvider.setValueInt(Constants.CUSTOMER_ID, -1)
+        prefProvider.setValue("PaidAmount", "")
+        prefProvider.setValue(Constants.WHOLE_AMOUNT, "")
+        prefProvider.setValue(Constants.PREF_CUSTOMER, "")
+        prefProvider.setValue(Constants.SUB_TOTAL, "")
+        prefProvider.setValue(Constants.CASH_DISCOUNT_SURCHARGE, "")
+        prefProvider.setValue(Constants.TOTAL_DISCOUNT, "")
+        prefProvider.setValue(Constants.TIP, "")
+        prefProvider.setValue(Constants.TAX_CHARGE, "")
+        prefProvider.setValue(Constants.SERVICE_CHARGE, "")
+        prefProvider.setValueInt("ORDER_ID", -1)
+        prefProvider.setValueInt(Constants.PAYMENT_ID, 0)
+        prefProvider.setValue(Constants.TOTAL_PRICE_ACTUAL, "0.0")
+        prefProvider.setValue(Constants.SUB_TOTAL_ACTUAL, "0.0")
+        prefProvider.setValue(Constants.TOTAL_DISCOUNT_ACTUAL, "0.0")
+        prefProvider.setValue(
+            Constants.TOTAL_SERVICE_CHARGE_ACTUAL,
+            "0.0"
+        )
+        prefProvider.setValue(Constants.TAX_CHARGE_ACTUAL, "0.0")
+        prefProvider.setValue(Constants.TIPS_AMOUNT_ACTUAL, "0.0")
+    }
 
 }

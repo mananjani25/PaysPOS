@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     tools:ignore="MissingDefaultResource">
 
     <data>
@@ -13,23 +13,23 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:orientation="vertical"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
 
         <View
             android:layout_width="match_parent"
             android:layout_height="0.5dp"
             android:background="@color/view"
-            android:visibility="gone"/>
+            android:visibility="gone" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@color/backgroundColor"
             android:orientation="horizontal"
+            android:paddingStart="@dimen/_18sdp"
             android:paddingTop="@dimen/_4sdp"
-            android:paddingBottom="@dimen/_4sdp"
-            android:paddingStart="@dimen/_18sdp">
+            android:paddingBottom="@dimen/_4sdp">
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/txtItemName"
@@ -48,13 +48,13 @@
                 style="@style/CustomFontRegularStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
                 android:layout_weight="1"
                 android:gravity="center_vertical"
-                android:layout_gravity="center_vertical"
+                android:paddingEnd="@dimen/_5sdp"
                 android:text="@{@string/cross+``+model.quantity}"
                 android:textColor="@color/white"
                 android:textSize="@dimen/_6mdpi"
-                android:paddingEnd="@dimen/_5sdp"
                 tools:text="X 1" />
 
             <androidx.appcompat.widget.AppCompatTextView
@@ -62,9 +62,9 @@
                 style="@style/CustomFontRegularStyle"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
                 android:layout_weight="1"
                 android:gravity="center_vertical"
-                android:layout_gravity="center_vertical"
                 android:text="@{@string/symbole +``+String.format(@string/format,model.price)}"
                 android:textColor="@color/white"
                 android:textSize="@dimen/_6mdpi"
@@ -108,21 +108,22 @@
                 tools:text="Terminal Name" />
 
         </LinearLayout>
+
         <View
             android:layout_width="match_parent"
             android:layout_height="0.5dp"
             android:background="@color/view"
-            android:visibility="gone"/>
+            android:visibility="gone" />
 
-       <!-- <include layout="@layout/divider" />-->
+        <!-- <include layout="@layout/divider" />-->
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvOpenOrder"
             android:layout_width="match_parent"
-            tools:itemCount="2"
             android:layout_height="wrap_content"
-            tools:listitem="@layout/view_open_order_items"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            tools:itemCount="2"
+            tools:listitem="@layout/view_open_order_items" />
 
 
     </LinearLayout>
