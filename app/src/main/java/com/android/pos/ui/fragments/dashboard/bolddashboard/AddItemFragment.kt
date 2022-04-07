@@ -251,6 +251,14 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
             val note = bundle.getString("note")
             item.note = note.toString()
         }
+        requireActivity().supportFragmentManager.setFragmentResultListener(
+            "request_variable",
+            viewLifecycleOwner
+        ) { requestKey: String, bundle: Bundle ->
+            val variableAttribute: VariationsAttribute? = bundle.getParcelable<VariationsAttribute>("data")
+            variableAttribute?.let { variationAdapter.updateVariation(it) }
+            showPriceTitle(variableAttribute, variationAdapter = null, item, true)
+        }
     }
 
     fun createCart(): ArrayList<CartModel>? {
@@ -533,27 +541,11 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
             if (variationAdapter.variationList[pos].priceType == "Variable") {
                 val bundle = Bundle().apply {
                     putParcelable("variationAttribute", variationAdapter.variationList[pos])
-                }
-
-                if (item.price == 0.0 && variationAdapter.variationList.isNotEmpty()) {
-                    /*   AlertUtils.showCustomAlert(
-                           requireActivity(),
-                           "Please enter atleast one price of item"
-                       )
-
-*/
-                } else if (!checkItemQty(item, variationAdapter)) {
-                    /* AlertUtils.showCustomAlert(
-                         requireActivity(),
-                         getString(R.string.qty_validation)
-                     )*/
 
                 }
-
-
-                /*  findNavController().navigate(
-                      R.id.action_dashboardCategoryNew_to_addVariablePriceDialog, bundle
-                  )*/
+               findNavController().navigate(
+                    R.id.action_dashboardCategoryBoldPOS_to_addVariablePriceDialog, bundle
+                )
             } else if (variationAdapter.variationList[pos].priceType == "Fixed") {
                 showPriceTitle(variationAdapter.variationList[pos], variationAdapter = null, item, true)
 

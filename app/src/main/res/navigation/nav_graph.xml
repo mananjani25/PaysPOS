@@ -1339,6 +1339,9 @@
             android:id="@+id/action_dashboardCategoryBoldPOS_to_menuFragment"
             app:destination="@id/menuFragment" />
         <action
+            android:id="@+id/action_dashboardCategoryBoldPOS_to_addVariablePriceDialog"
+            app:destination="@id/addVariablePriceDialog" />
+        <action
             android:id="@+id/action_dashboardCategoryBoldPOS_to_transactionFragment"
             app:destination="@id/transactionFragment"
             app:enterAnim="@anim/nav_default_enter_anim" />

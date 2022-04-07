@@ -7,8 +7,10 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResultListener
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
@@ -20,6 +22,7 @@ import com.android.pos.databinding.FragmentPaymentBoldPosBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.fragments.checkout.CheckoutDetailsFragmentNew
 import com.android.pos.ui.fragments.checkout.CheckoutDineInFragmentNew
+import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.android.pos.ui.fragments.dashboard.bolddashboard.CartFragment
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.TAG
@@ -32,6 +35,7 @@ class PaymentBoldPosFragment : Fragment() {
     private var orderOfflineId: String = ""
     private var paymentOfflineId: String = ""
     private var paymentId: Int = -1
+    private val viewModel by activityViewModels<DashBoardCategoryViewModel>()
 
     @Inject
     lateinit var prefProvider: PrefProvider
@@ -91,7 +95,9 @@ class PaymentBoldPosFragment : Fragment() {
 
     private fun listeners() {
         binding.layoutHeaderCheckout.tvAddTip.setOnClickListener {
-            findNavController().navigate(R.id.action_paymentBoldPosFragment_to_addTipDialog)
+            findNavController().navigate(
+                R.id.action_paymentBoldPosFragment_to_addTipDialog,
+                bundleOf("totalTip" to viewModel.tipTransactionAmount))
         }
         binding.layoutHeaderCheckout.tvAddDiscount.setOnClickListener {
             findNavController().navigate(R.id.action_paymentBoldPosFragment_to_addDiscountDialogFragment)

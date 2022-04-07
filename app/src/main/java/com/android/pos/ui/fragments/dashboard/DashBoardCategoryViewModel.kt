@@ -100,7 +100,7 @@ class DashBoardCategoryViewModel @Inject constructor(
     var viewModelcartList: ArrayList<CartModel> = arrayListOf()
     var serviceCharge = posRepository.serviceChargeList()
     private var mPosition: Int = 0
-
+    var tipTransactionAmount = 0.0
     private val _updateOrder = MutableLiveData<Event<Any?>>()
     val updateOrder: LiveData<Event<Any?>> = _updateOrder
 
@@ -119,6 +119,10 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     fun setOrderTypeList(ordertypelist: ArrayList<TbOrderType>) {
         this.ordertypelist = ordertypelist
+    }
+
+    fun setTipAmount(tipAmount1: Double) {
+        this.tipTransactionAmount = tipAmount1
     }
 
     fun setCartModel(cartList: List<CartModel>) {
@@ -591,12 +595,12 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                         list.forEachIndexed { pos, tbItem ->
                             if (item != null) {
-                                if (!item.isManualSales){
+                                if (!item.isManualSales) {
                                     if (tbItem.itemId == item.itemId) {
                                         index = pos
                                         return@forEachIndexed
                                     }
-                                }else {
+                                } else {
                                     if (tbItem.manualSaleId == item.manualSaleId) {
                                         index = pos
                                         return@forEachIndexed
