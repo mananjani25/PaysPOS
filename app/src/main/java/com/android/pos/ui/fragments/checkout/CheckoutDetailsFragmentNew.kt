@@ -380,12 +380,7 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
                             }
                             if (custom_paymentAmount != 0.0 && isSelectedCount != 1) {
                                 var splitChange = 0.0
-                                splitChange = if (cashDiscountType == "CashDiscount") {
-                                    custom_paymentAmount - paymentAmount + cashDiscountSurcharge
-                                } else {
-                                    custom_paymentAmount - paymentAmount
-                                }
-
+                                splitChange = custom_paymentAmount - paymentAmount
                                 bundle.putDouble(
                                     "splitChange", String.format("%.2f", splitChange).toDouble()
                                 )
@@ -690,9 +685,9 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
         }
         binding.tvCustomAmount.setOnClickListener {
 
-
+            paymentAmount = binding.tvCash0.text.toString().replace("$", "").trim().toDouble()
             val bundleVal = Bundle().apply {
-                putDouble("totalprice", ((WholetotalPrice + tipAmount)))
+                putDouble("totalprice", ((paymentAmount + tipAmount)))
             }
             findNavController().navigate(
                 R.id.action_paymentBoldPosFragment_to_customAmountFragment,

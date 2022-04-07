@@ -6,8 +6,14 @@ import com.google.gson.annotations.SerializedName
 
 data class EodReportResponse(
     @SerializedName("data")
-    val `data`: Data
-) : BaseResponse() {
+    val `data`: Data,
+    @SerializedName("message")
+    val message: String,
+    @SerializedName("status")
+    val status: Int,
+    @SerializedName("type")
+    val type: String
+)  {
     data class Data(
         @SerializedName("cash_log_details")
         val cashLogDetails: List<KeyValue>,
