@@ -3850,7 +3850,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
             builder.addText(
                 padLine(
-                    Constants.getReceiptFormatDateFromUTCServer(receiptModel?.order?.createdAt.toString()),
+                    Constants.getReceiptFormatDateFromUTCServer(requireContext(),receiptModel?.order?.createdAt.toString()),
                     "",
                     33
                 )

@@ -456,7 +456,10 @@ class TransactionDetailsFragment : Fragment() {
                 )
 
             Log.e(TAG, "getVanueLogo:  ${prefProvider.getValue(Constants.VENUE_LOGO, "")}")
-            if (customerSettingModel.showVenueLogo && prefProvider.getValue(Constants.VENUE_LOGO, "")
+            if (customerSettingModel.showVenueLogo && prefProvider.getValue(
+                    Constants.VENUE_LOGO,
+                    ""
+                )
                     .isNotEmpty()
             ) {
                 builder.addFeedLine(1)
@@ -630,16 +633,19 @@ class TransactionDetailsFragment : Fragment() {
                     )
 
 
+                    Log.e(TAG, "created_atDate:  ${paymentDetailsResponse?.data.order.created_at}")
                     Log.e(
                         TAG,
                         "ConvertDateTime:  ${
                             Constants.getReceiptFormatDateFromUTCServer(
+                                requireContext(),
                                 paymentDetailsResponse?.data.order.created_at.toString()
                             )
                         }"
                     )
                     builder.addText(
                         "Order Time:" + Constants.getReceiptFormatDateFromUTCServer(
+                            requireContext(),
                             paymentDetailsResponse?.data.order.created_at.toString()
                         )
                     )
@@ -746,10 +752,20 @@ class TransactionDetailsFragment : Fragment() {
                         Builder.COLOR_1
                     )
 
+                    Log.e(
+                        TAG, "getOrderTimeDate:  ${
+                            Constants.getReceiptFormatDateFromUTCServer(
+                                requireContext(),
+                                paymentDetailsResponse?.data.order?.created_at.toString()
+                            )
+                        }"
+                    )
+
                     builder.addText(
                         padLine(
                             if (customerSettingModel.showOrderTime) {
                                 "Order Time:" + Constants.getReceiptFormatDateFromUTCServer(
+                                    requireContext(),
                                     paymentDetailsResponse?.data.order?.created_at.toString()
                                 )
                             } else {

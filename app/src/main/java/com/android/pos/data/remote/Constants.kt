@@ -1,9 +1,12 @@
 package com.android.pos.data.remote
 
+import android.content.Context
 import android.util.Log
 import com.android.pos.data.model.PrinterListModel
 import com.android.pos.data.model.requestModel.CreatePrinterRequestModel
 import com.android.pos.data.model.responseModel.PrinterResponse
+import com.android.pos.di.PrefProvider
+import com.android.pos.utils.TimeFormatUtils
 import com.google.gson.Gson
 import java.text.SimpleDateFormat
 import java.util.*
@@ -390,14 +393,38 @@ object Constants {
     const val UTC_SERVER_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
 
 
-    fun getReceiptFormatDateFromUTCServer(mdate: String): String {
+    fun getReceiptFormatDateFromUTCServer(context:Context,mdate: String): String {
 
-        val df = SimpleDateFormat(UTC_SERVER_FORMAT, Locale.ENGLISH)
-        df.setTimeZone(TimeZone.getTimeZone("UTC"))
-        val date: Date = df.parse(mdate)
-        df.setTimeZone(TimeZone.getDefault())
-        val dateFormatter = SimpleDateFormat("MMM-dd-yyyy hh:mm:aa")
-        return dateFormatter.format(date)
+        /* val df = SimpleDateFormat(UTC_SERVER_FORMAT, Locale.ENGLISH)
+         df.setTimeZone(TimeZone.getTimeZone("UTC"))
+         val date: Date = df.parse(mdate)
+         df.setTimeZone(TimeZone.getDefault())
+         val dateFormatter = SimpleDateFormat("MMM-dd-yyyy hh:mm:aa")
+         return dateFormatter.format(date)*/
+
+
+        try {
+            val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
+            inputFormat.timeZone = TimeZone.getTimeZone("UTC")
+            val outputFormat = SimpleDateFormat("MMM-dd-yyyy hh:mm:a")
+            TimeFormatUtils.prefProvider = PrefProvider(context = context!!)
+            outputFormat.timeZone =
+                TimeZone.getTimeZone(TimeFormatUtils.prefProvider.getValue(SYSTEM_TIMEZONE, ""))
+            val date = inputFormat.parse(mdate)
+            val formattedDate = outputFormat.format(date)
+            //  val formattedDateFinalDate = outputFormat.parse(formattedDate)
+            return formattedDate
+        } catch (e: Exception) {
+//Thu Jul 16 05:23:26 EDT 2020
+            val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US)
+            val outputFormat = SimpleDateFormat("MMM-dd-yyyy")
+            val date = inputFormat.parse(mdate)
+            val formattedDate = outputFormat.format(date)
+            //  val formattedDateFinalDate = outputFormat.parse(formattedDate)
+            return formattedDate
+
+        }
+
 
     }
 
@@ -428,6 +455,7 @@ object Constants {
 
 
     var SPLIT_ENABLE = "split_enable"
+
     //api constants
     const val EMP_NAME = "Employee Name"
     const val AMT_BY_CASH = "Amount by Cash"

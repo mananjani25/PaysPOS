@@ -514,10 +514,12 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
                         bundle.putBoolean("isFromActiveOrder", false)
 
 
-                        findNavController().navigate(
-                            R.id.action_paymentBoldPosFragment_to_orderComplete,
-                            bundle
-                        )
+                        if (findNavController().currentDestination?.id == R.id.paymentBoldPosFragment) {
+                            findNavController().navigate(
+                                R.id.action_paymentBoldPosFragment_to_orderComplete,
+                                bundle
+                            )
+                        }
 
                     }
                     paymentType == "Card" -> {
