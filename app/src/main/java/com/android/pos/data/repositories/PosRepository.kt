@@ -539,7 +539,7 @@ class PosRepository @Inject constructor(
         return appDatabase.cartDao().allItem(orderType, employee_Id)
     }
 
-    fun getCartDineInList( employee_Id: Int): LiveData<List<DineInCartModel>> {
+    fun getCartDineInList(employee_Id: Int): LiveData<List<DineInCartModel>> {
         return appDatabase.cartDao().allItemDineIn(DINE_IN, employee_Id)
     }
 
@@ -560,6 +560,13 @@ class PosRepository @Inject constructor(
 
         appDatabase.cartDao().add(cartModel)
     }
+
+    suspend fun addItemCartDineIn(cartModel: DineInCartModel) {
+
+        appDatabase.cartDao().addDineInCartDao(cartModel)
+    }
+
+
 
     suspend fun createEmptyCart(cartModel: CartModel) {
         appDatabase.cartDao().add(cartModel)
@@ -861,5 +868,9 @@ class PosRepository @Inject constructor(
 
     fun cardReaderActiveList() =
         performGetOperationDatabase { appDatabase.cardReaderDao().cardReaderActiveList() }
+
+    suspend fun deleteDineInCart() = appDatabase.cartDao().deleteDineInCart()
+
+
 }
 

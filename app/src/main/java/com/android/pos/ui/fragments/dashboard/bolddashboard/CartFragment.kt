@@ -211,7 +211,8 @@ class CartFragment(val itemClickListner: ItemClickListner?, val itemListner: Ite
         dineInPayViewModel.mAllWordsDineIn(prefProvider.getValueInt(EMPLOYEE_ID, 0))
             .observe(requireActivity(), {
                 Log.e(TAG, "isFromPayment:  $isFromPayment")
-                if (it.isNotEmpty()) {
+
+                if (isFromPayment && it.isNotEmpty()) {
 
 
                 }

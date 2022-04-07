@@ -210,6 +210,14 @@ class CheckoutDineInPaymentViewModel @Inject constructor(
         return cartModel
     }
 
+    fun deleteDineInCart(){
+        viewModelScope.launch {
+            posRepository.deleteDineInCart()
+            destroyedList.clear()
+        }
+
+    }
+
     fun deleteCart() {
         viewModelScope.launch {
             posRepository.deleteCart(prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0))
