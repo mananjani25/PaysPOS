@@ -189,12 +189,17 @@ class CartFragment(val itemClickListner: ItemClickListner?,val itemListner: Item
             Log.e("ORDER_TYPE", "Updated check1")
         }
 
+        uiSave()
+
+    }
+
+    private fun uiSave() {
+
         if (isOrderUpdate) {
             binding.tvSave.text = getString(R.string.update)
         } else {
             binding.tvSave.text = getString(R.string.save)
         }
-
     }
 
     private fun setupLoyalytyPoints() {
@@ -303,7 +308,7 @@ class CartFragment(val itemClickListner: ItemClickListner?,val itemListner: Item
             cartlist.add(cartModel)
         }
 
-        cartlist.get(0).orderType = Constants.DINE_IN
+        cartlist.get(0).orderType = DINE_IN
         viewModel.cartLogic(cartlist, null, Constants.ADD, false, dineInList = dineInList)
 
     }
@@ -326,8 +331,8 @@ class CartFragment(val itemClickListner: ItemClickListner?,val itemListner: Item
                         employeeID = prefProvider.getValueInt(Constants.EMPLOYEE_ID, -1)
                         locationId = prefProvider.getValueInt(Constants.LOCATION_ID, -1)
                         orderTypeId = 2
-                        orderType = Constants.DINE_IN
-                        orderTypeName = Constants.DINE_IN
+                        orderType = DINE_IN
+                        orderTypeName = DINE_IN
 
                         serviceCharge = serviceChargesList
                         orderId = arguments?.getInt("orderId")
@@ -343,8 +348,8 @@ class CartFragment(val itemClickListner: ItemClickListner?,val itemListner: Item
                     it.floorPlanTable = orderTableData
                 }
 
-                prefProvider.setValue(ORDER_TYPE, Constants.DINE_IN)
-                prefProvider.setValue(Constants.ORDER_TYPE_NAME, Constants.DINE_IN)
+                prefProvider.setValue(ORDER_TYPE, DINE_IN)
+                prefProvider.setValue(Constants.ORDER_TYPE_NAME, DINE_IN)
                 prefProvider.setValueInt(Constants.ORDER_TYPE_ID, 2)
 
                 viewModel.cartLogic(cartlist, null, Constants.ADD, false, dineInList = dineInList)
@@ -501,7 +506,7 @@ class CartFragment(val itemClickListner: ItemClickListner?,val itemListner: Item
                 Log.e(TAG, "listSize  ${Gson().toJson(it)}")
                 Log.e(TAG, "listSizeOrderType: ${prefProvider.getValue(ORDER_TYPE, TAKEOUT)}")
 
-                if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == Constants.DINE_IN) {
+                if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == DINE_IN) {
                     binding.rvCartDineIn.visible()
                     binding.rvCartList.gone()
                     if (it.isNotEmpty()) {
@@ -530,7 +535,7 @@ class CartFragment(val itemClickListner: ItemClickListner?,val itemListner: Item
                             requireContext()
                         )
                         viewModel.setCartModel(it)
-                        if (prefProvider.getValueboolean(Constants.DINE_IN_UPDATE, false) == true) {
+                        if (prefProvider.getValueboolean(DINE_IN_UPDATE, false) == true) {
 
                             binding.txtDineInProceed.setText("Update and Proceed")
                         } else {
@@ -855,7 +860,7 @@ class CartFragment(val itemClickListner: ItemClickListner?,val itemListner: Item
         ) {
             positiveButton(getString(R.string.tv_delete)) {
                 // Do positive stuff here
-                cartlist.get(0).orderType = Constants.DINE_IN
+                cartlist.get(0).orderType = DINE_IN
 
                 viewModel.cartLogic(
                     cartlist,
@@ -896,7 +901,7 @@ class CartFragment(val itemClickListner: ItemClickListner?,val itemListner: Item
                 // Do positive stuff here
 
                 itemListner?.onCancelItemSelected()
-                if (prefProvider.getValue(ORDER_TYPE, "").toString() == Constants.DINE_IN) {
+                if (prefProvider.getValue(ORDER_TYPE, "") == DINE_IN) {
                     prefProvider.setValueInt(Constants.DINE_INGUEST_SELECTED, 0)
 
                     if (cartlist.size > 0) {
@@ -924,13 +929,14 @@ class CartFragment(val itemClickListner: ItemClickListner?,val itemListner: Item
                     dineInCartAdapter.clearList()
                     binding.rvCartDineIn.gone()
 
+//                    uiSave()
 
                     prefProvider.setValue(ORDER_TYPE, TAKEOUT)
                     prefProvider.setValueboolean(Constants.LOYALTY_ADDED, false)
 
 
 
-                    prefProvider.setValueboolean(Constants.DINE_IN_UPDATE, false)
+                    prefProvider.setValueboolean(DINE_IN_UPDATE, false)
                     clearUpdateFlag()
                     binding.linearButtonView.visible()
                     binding.relPreoceedToFire.gone()
@@ -977,6 +983,7 @@ class CartFragment(val itemClickListner: ItemClickListner?,val itemListner: Item
                     isOrderUpdate = false
                     prefProvider.setValue(ORDER_TYPE, TAKEOUT)
                     prefProvider.setValueboolean(Constants.LOYALTY_ADDED, false)
+                    uiSave()
 
                 }
             }
@@ -1152,7 +1159,7 @@ class CartFragment(val itemClickListner: ItemClickListner?,val itemListner: Item
                 prefProvider.setValue(Constants.TIP, "")
                 prefProvider.setValue(Constants.TAX_CHARGE, "")
                 prefProvider.setValue(Constants.SERVICE_CHARGE, "")
-                if (prefProvider.getValue(ORDER_TYPE, "") != Constants.DINE_IN) {
+                if (prefProvider.getValue(ORDER_TYPE, "") != DINE_IN) {
 
                     var ordertype = ""
                     var ordertypeId = 0
@@ -1242,7 +1249,7 @@ class CartFragment(val itemClickListner: ItemClickListner?,val itemListner: Item
 
     private fun createDineInOrder() {
         if (cartlist.isNotEmpty()) {
-            if (prefProvider.getValueboolean(Constants.DINE_IN_UPDATE, false)) {
+            if (prefProvider.getValueboolean(DINE_IN_UPDATE, false)) {
                 var itemCount = 0
                 for (i in cartlist.indices) {
                     for (j in cartlist[i].dineInList?.indices!!) {
@@ -1266,9 +1273,9 @@ class CartFragment(val itemClickListner: ItemClickListner?,val itemListner: Item
                 } else {
                     val request = viewModel.updateOrder(cartlist[0])
 
-                    prefProvider.setValueboolean(Constants.DINE_IN_UPDATE, false)
+                    prefProvider.setValueboolean(DINE_IN_UPDATE, false)
                     prefProvider.setValueboolean(Constants.DINE_IN_LIST_EDIT, false)
-                    prefProvider.setValueboolean(Constants.DINE_IN_UPDATE, false)
+                    prefProvider.setValueboolean(DINE_IN_UPDATE, false)
                     cartlist[0].orderId?.let { viewModel.updateOrderCall(it, request) }
 
 
@@ -1336,7 +1343,7 @@ class CartFragment(val itemClickListner: ItemClickListner?,val itemListner: Item
 
         }
         viewModel.ordertypelist.forEach {
-            if (it.orderType.toLowerCase() == Constants.DINE_IN.toLowerCase()) {
+            if (it.orderType.toLowerCase() == DINE_IN.toLowerCase()) {
                 cartlist[0].orderTypeId = it.id
                 cartlist[0].orderType = it.orderType
             }
@@ -1349,7 +1356,7 @@ class CartFragment(val itemClickListner: ItemClickListner?,val itemListner: Item
             totalPrice = viewModel.totalPrice - cartlist[0].discountPrice,
             totalServiceCharge = viewModel.totalServiceCharge,
             totalTax = viewModel.totalTax,
-            ORDER_TYPE = Constants.DINE_IN,
+            ORDER_TYPE = DINE_IN,
             "",
             "",
             false,
