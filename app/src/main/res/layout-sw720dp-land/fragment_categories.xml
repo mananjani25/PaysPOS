@@ -4,87 +4,107 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:ignore="MissingDefaultResource">
 
-    <androidx.appcompat.widget.LinearLayoutCompat
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@color/bg_color"
-        android:orientation="vertical">
-
-        <androidx.appcompat.widget.LinearLayoutCompat
-            android:layout_width="match_parent"
-            android:orientation="vertical"
-            android:layout_height="wrap_content">
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="@color/view" />
-
-            <androidx.appcompat.widget.AppCompatEditText
-                android:id="@+id/edtSearch"
-                style="@style/CustomFontRegularStyle"
-                android:layout_width="match_parent"
-                android:layout_height="@dimen/_25sdp"
-                android:background="@null"
-                android:drawableStart="@drawable/ic_search"
-                android:drawablePadding="@dimen/_10sdp"
-                android:imeOptions="actionDone"
-                android:inputType="textVisiblePassword"
-                android:padding="@dimen/_4sdp"
-                android:textColor="@color/txtColor"
-                android:textColorHint="@color/hintColor"
-                android:textSize="@dimen/_5mdpi" />
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="@color/view" />
-
-        </androidx.appcompat.widget.LinearLayoutCompat>
+        android:layout_height="wrap_content">
 
         <androidx.appcompat.widget.LinearLayoutCompat
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginHorizontal="@dimen/_50sdp"
-            android:layout_marginVertical="@dimen/_10sdp"
+            android:background="@color/bg_color"
             android:orientation="vertical">
 
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/txtCreatecatagory"
-                style="@style/CustomFontBold"
+
+            <androidx.appcompat.widget.LinearLayoutCompat
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/_25sdp"
-                android:layout_gravity="center"
-                android:background="@drawable/button_action_hover"
-                android:gravity="center"
-                android:layout_marginVertical="@dimen/_10sdp"
-                android:text="@string/create_category"
-                android:textColor="@color/white"
-                android:textSize="@dimen/_7sdp"
-                app:textAllCaps="false" />
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
 
-            <ProgressBar
-                android:id="@+id/progress_circular"
-                style="@style/Widget.AppCompat.ProgressBar"
-                android:layout_width="wrap_content"
-                android:layout_height="0dp"
-                android:layout_gravity="center"
-                android:layout_weight="1"
-                android:visibility="gone" />
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/view" />
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rvCategoriesList"
+                <androidx.appcompat.widget.AppCompatEditText
+                    android:id="@+id/edtSearch"
+                    style="@style/CustomFontRegularStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/_25sdp"
+                    android:background="@null"
+                    android:drawableStart="@drawable/ic_search"
+                    android:drawablePadding="@dimen/_10sdp"
+                    android:imeOptions="actionDone"
+                    android:inputType="textVisiblePassword"
+                    android:padding="@dimen/_4sdp"
+                    android:textColor="@color/txtColor"
+                    android:textColorHint="@color/hintColor"
+                    android:textSize="@dimen/_5mdpi" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/view" />
+
+            </androidx.appcompat.widget.LinearLayoutCompat>
+
+            <androidx.appcompat.widget.LinearLayoutCompat
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:orientation="vertical"
-                android:visibility="visible"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                tools:itemCount="5"
-                tools:listitem="@layout/view_category" />
+                android:layout_marginHorizontal="@dimen/_50sdp"
+                android:layout_marginVertical="@dimen/_10sdp"
+                android:orientation="vertical">
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/txtCreatecatagory"
+                    style="@style/CustomFontBold"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/_25sdp"
+                    android:layout_gravity="center"
+                    android:layout_marginVertical="@dimen/_10sdp"
+                    android:background="@drawable/button_action_hover"
+                    android:gravity="center"
+                    android:text="@string/create_category"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/_7sdp"
+                    app:textAllCaps="false" />
+
+                <ProgressBar
+                    android:id="@+id/progress_circular"
+                    style="@style/Widget.AppCompat.ProgressBar"
+                    android:layout_width="wrap_content"
+                    android:layout_height="0dp"
+                    android:layout_gravity="center"
+                    android:layout_weight="1"
+                    android:visibility="gone" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvCategoriesList"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    android:visibility="visible"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    tools:itemCount="5"
+                    tools:listitem="@layout/view_category" />
+
+
+            </androidx.appcompat.widget.LinearLayoutCompat>
 
 
         </androidx.appcompat.widget.LinearLayoutCompat>
 
+        <TextView
+            android:id="@+id/txt_nodata"
+            style="@style/CustomFontBold"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:layout_marginTop="@dimen/_5sdp"
+            android:textColor="@color/txtColor"
+            android:textSize="@dimen/_7mdpi"
+            android:visibility="gone" />
 
-    </androidx.appcompat.widget.LinearLayoutCompat>
+
+    </RelativeLayout>
+
 </layout>
