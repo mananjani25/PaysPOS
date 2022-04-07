@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.os.StrictMode
 import android.util.Base64
 import android.util.Log
 import androidx.appcompat.widget.AppCompatTextView
@@ -2152,7 +2151,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                                TAG,
                                                "VenueLogo  ${Gson().toJson(it.data.logo.logoUrl)}"
                                            )
-                                           if (it.data.logo.logoUrl.isNotEmpty()) {
+                                         /*  if (it.data.logo.logoUrl.isNotEmpty()) {
                                                val policy: StrictMode.ThreadPolicy =
                                                    StrictMode.ThreadPolicy.Builder().permitAll().build()
 
@@ -2168,7 +2167,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                                        )
                                                    }
                                                }
-                                           }
+                                           }*/
 
 
                                        }

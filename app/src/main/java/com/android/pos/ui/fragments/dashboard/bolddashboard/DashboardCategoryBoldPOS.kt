@@ -85,6 +85,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
             }
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
+        getOrderTypes()
         observeSaveOrder()
         getKitchenReceiptSettings()
         addObserver()
@@ -242,7 +243,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
 
         isupdate = requireArguments().getBoolean("update")
 
-        if (isupdate){
+        if (isupdate) {
 
             orderId = requireArguments().getInt("orderId")
             paymentId = requireArguments().getInt("paymentId")
@@ -305,7 +306,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
         }
 */
 
-        loadCartFragment(CartFragment(this,this))
+        loadCartFragment(CartFragment(this, this))
         loadCategoryFragment(CategoryFragment(this))
         binding.layoutHeader.txtUserName.text =
             prefProvider.getValue(EMPLOYEE_NAME, "")
@@ -335,8 +336,8 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
             if (arguments != null) {
                 putBundle("updateBundle", arguments)
             }
-            putBoolean("update",isupdate)
-            if (isupdate){
+            putBoolean("update", isupdate)
+            if (isupdate) {
                 orderId?.let { putInt("orderId", it) }
                 paymentId?.let { putInt("paymentId", it) }
                 putString("paymentOfflineId", paymentOfflineId)
@@ -419,9 +420,12 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                 binding.layoutHeader.txtOpenOrder.typeface,
                 Typeface.NORMAL
             )
-            var bundle:Bundle = Bundle()
-            bundle.putParcelableArrayList("carttlist",cartList)
-            findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_manualSalesNew,bundle)
+            var bundle: Bundle = Bundle()
+            bundle.putParcelableArrayList("carttlist", cartList)
+            findNavController().navigate(
+                R.id.action_dashboardCategoryBoldPOS_to_manualSalesNew,
+                bundle
+            )
         }
 
 
@@ -562,17 +566,16 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                 serviceChargesList = it.data
                 viewModel.serviceChargesList = it.data ?: arrayListOf()
 
-                getOrderTypes()
+
             }
 
         }
-
         viewModel.serviceCharges.observe(requireActivity(), serviceChargesObserve!!)
     }
 
     private fun getOrderTypes() {
 
-        orderTypeObserver = Observer {
+        viewModel.getOrderTypes.observe(requireActivity(), {
             if (it.status == Status.SUCCESS) {
                 if (it.data != null) {
                     ordertypelist = it.data.toCollection(arrayListOf())
@@ -582,11 +585,8 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                 }
                 getDineInData()
             }
-        }
 
-        viewModel.getOrderTypes.observe(requireActivity(), orderTypeObserver!!)
-
-
+        })
     }
 
 
