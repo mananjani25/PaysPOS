@@ -17,7 +17,7 @@ class VariationListAdapter() :
 
 
     var showVariationPriceClick: ((VariationsAttribute) -> Unit)? = null
-    private var mpos: Int = 0
+    private var mpos: Int = -1
     var variationList = ArrayList<VariationsAttribute>()
 
     private lateinit var mCallback: UpdateVariationCallback

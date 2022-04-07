@@ -270,14 +270,6 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
             val note = bundle.getString("note")
             item.note = note.toString()
         }
-        requireActivity().supportFragmentManager.setFragmentResultListener(
-            "request_variable",
-            viewLifecycleOwner
-        ) { requestKey: String, bundle: Bundle ->
-            val variableAttribute: VariationsAttribute? = bundle.getParcelable<VariationsAttribute>("data")
-            variableAttribute?.let { variationAdapter.updateVariation(it) }
-            showPriceTitle(variableAttribute, variationAdapter = null, item, true)
-        }
     }
 
     fun createCart(): ArrayList<CartModel>? {
@@ -330,7 +322,9 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
                                     item.name.substringBefore(" (") + " (" + variation.name + ")"
                                 item.variationsAttributes = variationList
 
-                                variation.id?.let { it1 -> variationAdapter.selectItem(it1) }
+                                if (isUpdateItem) {
+                                    variation.id?.let { it1 -> variationAdapter.selectItem(it1) }
+                                }
                             }
 
                             variationAdapter?.showVariationPriceClick = { it: VariationsAttribute ->
@@ -396,7 +390,6 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
                                     }
                                 }
                             }
-
 
 
                         }
@@ -660,7 +653,8 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
                     item.name.substringBefore(" (") + " (" + variation.name + ")"
                 item.variationsAttributes = variationList
             }
-        }*/
-    }
+        }
+    }*/
 
+    }
 }
