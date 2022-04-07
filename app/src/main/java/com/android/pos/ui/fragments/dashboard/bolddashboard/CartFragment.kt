@@ -311,6 +311,8 @@ class CartFragment(val itemClickListner: ItemClickListner?, val itemListner: Ite
             cartlist.add(cartModel)
         }
 
+        viewModel.dineInHeaderPosition = 0
+        viewModel.dineInSelectedItemHeaderPos = 0
         cartlist.get(0).orderType = Constants.DINE_IN
         viewModel.cartLogic(cartlist, null, Constants.ADD, false, dineInList = dineInList)
 
@@ -892,6 +894,7 @@ class CartFragment(val itemClickListner: ItemClickListner?, val itemListner: Ite
         binding.rvCartList.adapter = cartAdapter
         dineInCartAdapter = DineInAdapter()
         dineInCartAdapter.setListner(this)
+        dineInCartAdapter.isFromPayment(isFromPayment)
         binding.rvCartDineIn.adapter = dineInCartAdapter
     }
 
