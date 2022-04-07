@@ -131,6 +131,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
     ): View? {
         binding = FragmentOrderCompletBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = this
+        getKitchenReceiptSettings()
         observeTipsList()
 
         findNavController().currentBackStackEntry?.savedStateHandle?.getLiveData<Bundle>("data")
@@ -154,7 +155,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         } else {
             prefProvider.setValue(Constants.SPLIT_PAY_AMOUNT, "")
         }
-        getKitchenReceiptSettings()
+
         return binding.root
     }
 
@@ -3231,6 +3232,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                             TAG,
                             "customerReceiptdeliveryType:  ${receiptModel?.order?.deliveryType}"
                         )
+                        Log.e(TAG,"getSplitSize:  ${splitList.size}")
+                        Log.e(TAG,"getSplitISSplit :${isSpilt}")
                         if (!isSpilt || (isSpilt && splitList.size == 1)) {
                             if (!requireArguments().getBoolean("isDineIn") && !requireArguments().getBoolean(
                                     "isFromActiveOrder"
