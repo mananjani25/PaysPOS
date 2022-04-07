@@ -47,7 +47,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:layout_marginLeft="@dimen/_3sdp"
-                    android:layout_marginBottom="@dimen/_2sdp"
+                    android:gravity="center"
                     android:text="3"
                     android:textColor="@color/black"
                     android:textSize="@dimen/_5mdpi" />
@@ -69,6 +69,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="@dimen/_3sdp"
                     android:text="3"
+                    android:layout_gravity="center"
                     android:textColor="@color/black"
                     android:textSize="@dimen/_5mdpi" />
             </LinearLayout>

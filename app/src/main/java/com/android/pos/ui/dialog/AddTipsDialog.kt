@@ -79,7 +79,7 @@ class AddTipsDialog : DialogFragment(), DialogTipsListAdapter.DiscountInterface 
 
 
         binding.edtAmount.addTextChangedListener(AmountTextWatcher(binding.edtAmount, true))
-        binding.edtAmount.setText("" + totalTip)
+        binding.edtAmount.setText("" + MethodUtils.roundOffAmountString(totalTip))
 
         setDiscountList()
         setupData()
