@@ -223,7 +223,7 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
                 -1,
                 -1,
                 "",
-                10.0,
+                20.0,
                 ""
             )
 
@@ -236,7 +236,7 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
                 -1,
                 -1,
                 "",
-                10.0,
+                30.0,
                 ""
             )
 
