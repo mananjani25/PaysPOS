@@ -66,16 +66,16 @@ class ReportEODViewModel @Inject constructor(
     fun setCurrentDate(myCalendar: Calendar) {
         val myFormat = "MM/dd/yyyy" //In which you need put here
         val sdf = SimpleDateFormat(myFormat, Locale.getDefault())
+        /* startDate.value = sdf.format(myCalendar.time) + " " + SimpleDateFormat(
+             "hh:mm a",
+             Locale.getDefault()
+         ).format(Date(System.currentTimeMillis() - 60000 * 30))*/
 
-        startDate.value = sdf.format(myCalendar.time) + " " + SimpleDateFormat(
-            "hh:mm a",
-            Locale.getDefault()
-        ).format(Date())
+        startDate.value = sdf.format(myCalendar.time) + " " + "12:00 AM"
         endDate.value = sdf.format(myCalendar.time) + " " + SimpleDateFormat(
             "hh:mm a",
             Locale.getDefault()
         ).format(Date(System.currentTimeMillis() + 300000))
-
 
     }
 
