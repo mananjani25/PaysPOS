@@ -419,8 +419,9 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                 binding.layoutHeader.txtOpenOrder.typeface,
                 Typeface.NORMAL
             )
-
-            findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_manualSalesNew)
+            var bundle:Bundle = Bundle()
+            bundle.putParcelableArrayList("carttlist",cartList)
+            findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_manualSalesNew,bundle)
         }
 
 

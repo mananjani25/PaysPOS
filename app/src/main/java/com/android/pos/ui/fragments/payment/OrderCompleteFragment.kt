@@ -361,8 +361,19 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 binding.txtRemainingAmountLabel.visibility = View.GONE
                 binding.llNoReceipt.text = getString(R.string.no_receipt)
                 viewModel.deleteSplitDb()
-                binding.txtTitle.text =
-                    MethodUtils.roundOffAmount(paidAmount)
+                if(isCustomCash){
+                    binding.txtTitle.text =
+                        MethodUtils.roundOffAmount(paidAmount)
+                    binding.txtPaymentAmount.text =
+                        "will remain Out of " + MethodUtils.roundOffAmount(paidAmount)
+
+                }else{
+                    binding.txtTitle.text =
+                        MethodUtils.roundOffAmount(paidAmount+tipAmount)
+                    binding.txtPaymentAmount.text =
+                        "will remain Out of " + MethodUtils.roundOffAmount(paidAmount+tipAmount)
+                }
+
 
                 if (isCustomCash) {
                     changeAmtGlobal =
@@ -378,8 +389,6 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     }
                 }
 
-                binding.txtPaymentAmount.text =
-                    "will remain Out of " + MethodUtils.roundOffAmount(paidAmount)
 
 
             }
