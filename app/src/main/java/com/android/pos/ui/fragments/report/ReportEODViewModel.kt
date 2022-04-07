@@ -58,7 +58,7 @@ class ReportEODViewModel @Inject constructor(
     val endDate = MutableLiveData<String>()
     var selectedTerminalId = "0"
     val terminalTitle = Terminal("Terminal", -9.9)
-
+    private lateinit var resource: Resource<EodReportResponse>
     fun employeeId(): Int {
         return prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
     }
@@ -98,23 +98,23 @@ class ReportEODViewModel @Inject constructor(
             Log.e("startDate", startDate.value ?: "")
             Log.e("endDate", endDate.value ?: "")
 
-            val resourceReport =
+            resource =
                 posRepository.getReportEOD(
-                    startDate = startDate.value ?: "",
-                    endDate = endDate.value ?: "",
+                    startDate = startDate.value.toString(),
+                    endDate = endDate.value.toString(),
                     terminalId = prefProvider.getValueInt(TERMINAL_ID, 0).toString(),
                     employee_id = selectedTerminalId,
                     email = emailId
 
                 )
-            when (resourceReport.status) {
+            when (resource.status) {
                 Status.SUCCESS -> {
                     _showProgress.value = Event(false)
-                    resourceReport.data.let {
+                    resource.data.let {
                         if (it?.status == 200) {
 
                             if (emailId.isEmpty()) {
-                                _data.postValue(Event(resourceReport.data?.data!!))
+                                _data.postValue(Event(resource.data?.data!!))
                             } else {
                                 _snackbarText.value = Event(it.message)
                             }
@@ -123,7 +123,7 @@ class ReportEODViewModel @Inject constructor(
                 }
 
                 Status.ERROR -> {
-                    _snackbarText.value = Event(resourceReport.message)
+                    _snackbarText.value = Event(resource.message)
                     _showProgress.value = Event(false)
                 }
 
