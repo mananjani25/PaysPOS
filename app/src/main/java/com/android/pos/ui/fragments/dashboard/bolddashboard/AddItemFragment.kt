@@ -201,6 +201,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment() {
         binding.txtAddDiscount.setOnClickListener {
 
             val bundle = Bundle().apply {
+                putDouble("orderDiscount",cartList[0].discountPrice)
                 putBoolean("isFromDetails", true)
                 putParcelable("model", item)
             }
