@@ -262,7 +262,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
         if (!isDineIn) {
             if (isSpilt) {
-                saveDataInPrefrences()
+                // saveDataInPrefrences()
                 binding.linearSplitLayout.visibility = View.VISIBLE
                 binding.linerContent.visibility = View.VISIBLE
                 binding.txtRemainingAmount.visibility = View.VISIBLE
@@ -755,7 +755,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             }
             bundle.putBoolean("isCustomCash", isCustomCash)
             Log.e(TAG, "ORDER_ID:  ${prefProvider.getValueInt("ORDER_ID", -1)}")
-            saveDataInPrefrences()
+            //  saveDataInPrefrences()
             prefProvider.setValueInt(PAYMENT_ID, 0)
             navController.previousBackStackEntry?.savedStateHandle?.set("data", bundle)
             navController.popBackStack()
@@ -1140,7 +1140,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     )
 
                     builder.addText(
-                        "Order Time:" + Constants.getReceiptFormatDateFromUTCServer(requireContext(),
+                        "Order Time:" + Constants.getReceiptFormatDateFromUTCServer(
+                            requireContext(),
                             getDineInOrderDetails?.createdAt.toString()
                         )
                     )
@@ -1258,7 +1259,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     builder.addText(
                         padLine(
                             if (customerSettingModel.showOrderTime) {
-                                "Order Time:" + Constants.getReceiptFormatDateFromUTCServer(requireContext(),
+                                "Order Time:" + Constants.getReceiptFormatDateFromUTCServer(
+                                    requireContext(),
                                     getDineInOrderDetails?.createdAt.toString()
                                 )
                             } else {
@@ -2201,7 +2203,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     )
 
                     builder.addText(
-                        "Order Time:" + Constants.getReceiptFormatDateFromUTCServer(requireContext(),
+                        "Order Time:" + Constants.getReceiptFormatDateFromUTCServer(
+                            requireContext(),
                             getDineInOrderDetails?.createdAt.toString()
                         )
                     )
@@ -2320,7 +2323,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     builder.addText(
                         padLine(
                             if (customerSettingModel.showOrderTime) {
-                                "Order Time:" + Constants.getReceiptFormatDateFromUTCServer(requireContext(),
+                                "Order Time:" + Constants.getReceiptFormatDateFromUTCServer(
+                                    requireContext(),
                                     getDineInOrderDetails?.createdAt.toString()
                                 )
                             } else {
@@ -3152,8 +3156,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     bundle.putBoolean("isSplitByAmount", isSplitByAmount)
                 }
                 bundle.putBoolean("isCustomCash", isCustomCash)
-                Log.e(TAG, "ORDER_ID:  ${prefProvider.getValueInt("ORDER_ID", -1)}")
-                saveDataInPrefrences()
+                //saveDataInPrefrences()
                 prefProvider.setValueInt(PAYMENT_ID, 0)
                 navController.previousBackStackEntry?.savedStateHandle?.set("data", bundle)
                 navController.popBackStack()
@@ -3233,7 +3236,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         Log.e(TAG, "getSplitSize:  ${splitList.size}")
                         Log.e(TAG, "getSplitISSplit :${isSpilt}")
                         val remain = requireArguments().getDouble("remainingAmount")
-                        Log.e(TAG,"remainAMount  ${remain}")
+                        Log.e(TAG, "remainAMount  ${remain}")
 
                         if (MethodUtils.roundOffAmountDouble(remain).toDouble() > 0) {
                             if (!requireArguments().getBoolean("isDineIn") && !requireArguments().getBoolean(
@@ -3695,7 +3698,12 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     )
 
 
-                    builder.addText("Order Time:" + getReceiptFormatDateFromUTCServer(requireContext(),receiptModel?.order?.createdAt.toString()))
+                    builder.addText(
+                        "Order Time:" + getReceiptFormatDateFromUTCServer(
+                            requireContext(),
+                            receiptModel?.order?.createdAt.toString()
+                        )
+                    )
 
                 }
 
@@ -3808,7 +3816,10 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     builder.addText(
                         padLine(
                             if (customerSettingModel.showOrderTime) {
-                                "Order Time:" + getReceiptFormatDateFromUTCServer(requireContext(),receiptModel?.order?.createdAt.toString())
+                                "Order Time:" + getReceiptFormatDateFromUTCServer(
+                                    requireContext(),
+                                    receiptModel?.order?.createdAt.toString()
+                                )
                             } else {
                                 ""
                             },
@@ -4751,7 +4762,10 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
             builder.addText(
                 padLine(
-                    getReceiptFormatDateFromUTCServer(requireContext(),receiptModel?.order?.createdAt.toString()),
+                    getReceiptFormatDateFromUTCServer(
+                        requireContext(),
+                        receiptModel?.order?.createdAt.toString()
+                    ),
                     "",
                     33
                 )

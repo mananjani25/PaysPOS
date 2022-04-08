@@ -12,7 +12,6 @@ import com.android.pos.data.model.responseModel.BaseResponse
 import com.android.pos.data.model.responseModel.CreateOrderResponse
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.DINE_IN
-import com.android.pos.data.remote.Constants.IS_PRINTER_QUEUE_ENABLE
 import com.android.pos.data.remote.Constants.PAYMENT_ID
 import com.android.pos.data.remote.Constants.TAKEOUT
 import com.android.pos.data.repositories.PosRepository
@@ -140,19 +139,7 @@ open class PaymentViewModel @Inject constructor(
                                 Log.e(TAG, "isOnlySave:  ${onlySave}")
 
                                 if (onlySave) {
-                                    if (prefProvider.getValueboolean(
-                                            IS_PRINTER_QUEUE_ENABLE,
-                                            false
-                                        )
-                                    ) {
-
-
-                                        _queueStartSaveOrder.value = Event(createOrderResponse)
-                                    } else {
-                                        _queueStart.value = Event(createOrderResponse)
-                                        //_data.value = Event(createOrderResponse)
-                                    }
-                                    //_queueStart.value = Event(createOrderResponse)
+                                    _queueStart.value = Event(createOrderResponse)
 
                                 } else {
                                     if (createOrderResponse.data.order.orderType != "Dine In") {
@@ -1026,7 +1013,7 @@ open class PaymentViewModel @Inject constructor(
                 orderItemsAttribute.timestamp = System.currentTimeMillis().toString()
                 orderItemsAttribute.totalPrice =
                     MethodUtils.roundOffAmountDouble(item.price * item.itemQuantity)
-                orderItemsAttribute.orderItemTaxesAttributes = orderItemTaxesAttributes(item)
+                orderItemsAttribute.orderItemTaxesAttributes = orderItemTaxesAttributesForDineIn(item)
                 orderItemsAttribute.orderItemModifiersAttributes =
                     orderItemModifierAttributes(item, cartModel.terminalId)
 
@@ -1235,6 +1222,76 @@ open class PaymentViewModel @Inject constructor(
                 orderItemTaxesAttribute.name = tax.name.toString()
                 orderItemTaxesAttribute.rate = tax.rate
                 orderItemTaxesAttribute.taxId = tax.id
+
+                orderItemTaxesAttribute.orderItemId = items.orderItemId
+                orderItemTaxesAttribute.orderId = orderId
+                if (isUpdateOrder) {
+                }
+
+                if (tax.taxType == "Percentage") {
+
+
+                    var modifierPrice = 0.0
+
+                    val price =
+                        (items.price * items.itemQuantity) - items.discountPrice
+
+                    items.modifiers.forEach {
+                        modifierPrice += (it.price * it.itemQuantity)
+                    }
+
+                    val totalPrice = price + modifierPrice
+
+                    val itemTaxPrice =
+                        (tax.rate * totalPrice) / 100
+
+                    orderItemTaxesAttribute.taxTotalAmount =
+                        MethodUtils.roundOffAmountDouble(itemTaxPrice)
+                } else {
+
+                    val ss = tax.rate * items.itemQuantity
+
+                    orderItemTaxesAttribute.taxTotalAmount =
+                        MethodUtils.roundOffAmountDouble((ss))
+                }
+
+
+
+
+                orderItemTaxesAttribute.taxType = tax.taxType.toString()
+                orderItemTaxesAttributeList.add(orderItemTaxesAttribute)
+            }
+        }
+
+
+        return orderItemTaxesAttributeList
+    }
+
+    private fun orderItemTaxesAttributesForDineIn(items: TbItem): List<OrderItemTaxesAttribute> {
+        Log.e(TAG,"getDineitems:  ${Gson().toJson(items)}")
+
+        val orderItemTaxesAttributeList: ArrayList<OrderItemTaxesAttribute> =
+            arrayListOf()
+
+        items.taxes?.forEach { tax ->
+
+            if (tax.isActive) {
+
+                val orderItemTaxesAttribute = OrderItemTaxesAttribute()
+
+                if (isUpdateOrder && tax.orderTaxId != null)
+                    orderItemTaxesAttribute.id = tax.orderTaxId
+
+                orderItemTaxesAttribute.isDefault = tax.isDefault
+                orderItemTaxesAttribute.isTaxRemoved = true
+                orderItemTaxesAttribute.name = tax.name.toString()
+                orderItemTaxesAttribute.rate = tax.rate
+                tax.orderTaxId?.let {
+
+                    orderItemTaxesAttribute.taxId = it
+                }
+
+
 
                 orderItemTaxesAttribute.orderItemId = items.orderItemId
                 orderItemTaxesAttribute.orderId = orderId
