@@ -1048,6 +1048,12 @@
             android:id="@+id/action_dineInFragment_to_orders"
             app:destination="@id/orders" />
         <action
+            android:id="@+id/action_dineInFragment_to_passcode"
+            app:destination="@id/passcode" />
+        <action
+            android:id="@+id/action_dineInFragment_to_reportEODFragmeent"
+            app:destination="@id/reportEODFragment" />
+        <action
             android:id="@+id/action_dineInFragment_to_dineInGuestFragment"
             app:destination="@id/dineInGuestFragment" />
         <action

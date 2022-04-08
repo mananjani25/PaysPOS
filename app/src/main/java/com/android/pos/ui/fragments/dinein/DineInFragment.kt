@@ -18,6 +18,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.android.pos.R
 import com.android.pos.data.model.responseModel.GetFloorPlanResponse
+import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.AVAILABLE
 import com.android.pos.data.remote.Constants.DINE_IN_STATUS
 import com.android.pos.data.remote.Constants.EMPLOYEE_ID
@@ -101,7 +102,7 @@ class DineInFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         onClick()
-
+        binding.layoutHeader.txtUserName.text = prefProvider.getValue(Constants.EMPLOYEE_NAME, "")
 
     }
 
@@ -110,6 +111,18 @@ class DineInFragment : Fragment() {
             findNavController().navigate(R.id.action_dineInFragment_to_transactionFragment)
         }
 
+        binding.layoutHeader.linearSwitchUser.setOnClickListener {
+            var bundle = Bundle()
+            bundle.putBoolean("isSwap", true)
+            bundle.putBoolean("isDashboard", false)
+            findNavController().navigate(
+                R.id.action_dineInFragment_to_passcode,
+                bundle
+            )
+        }
+        binding.layoutHeader.ivLock.setOnClickListener {
+            findNavController().navigate(R.id.action_dineInFragment_to_reportEODFragmeent)
+        }
         binding.layoutHeader.txtMerge.setOnClickListener {
             loadFloorPlanDetails()
         }
@@ -207,10 +220,10 @@ class DineInFragment : Fragment() {
                                     arrayListOf()
                                 )
                             )
-                             findNavController().navigate(
-                                 R.id.action_dineInFragment_to_mergeTableDialog,
-                                 bundle
-                             )
+                            findNavController().navigate(
+                                R.id.action_dineInFragment_to_mergeTableDialog,
+                                bundle
+                            )
 
                         } else {
                             AlertUtils.showCustomAlertWithListenerWithOK(

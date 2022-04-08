@@ -1114,6 +1114,7 @@ class CartFragment(val itemClickListner: ItemClickListner?, val itemListner: Ite
                         if (cartlist.isNotEmpty()) {
                             bundle.putDouble("orderDiscountPrice", cartlist[0].discountPrice)
                             bundle.putString("orderDiscountType", cartlist[0].discountType)
+                            bundle.putDouble("selectedvalue", cartlist[0].discountSelectdValue)
                         }
                         findNavController().navigate(
                             R.id.action_dashboardCategoryBoldPOS_to_addDiscountDialog,
