@@ -226,7 +226,6 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                 cartList = it
                 Log.e(TAG, "cartListBeforeTax  ${Gson().toJson(cartList)}")
                 if (cartList?.isNotEmpty()!!) {
-                    manualItemId= it.get(0).items?.size!!
 
                     cartList?.get(0)?.items?.forEach {
                         it.taxes = taxList
@@ -812,7 +811,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
             }
 
             tabItemMOdel.itemId = Random.nextInt()
-            tabItemMOdel.categoryId = manualCategoryId
+            tabItemMOdel.categoryId = Random.nextInt()
 
             tabItemMOdel.taxes = taxList
             viewModel.ordertypelist.forEach {

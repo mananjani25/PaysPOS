@@ -32,7 +32,7 @@ import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteTextView?) : Fragment(), CategoryTabAdapter1.TabListner,
+class CategoryFragment(val listner: ItemListner) : Fragment(), CategoryTabAdapter1.TabListner,
     CategoryItemAdapter1.CategoryItemList, CategoryParentAdapter.CategoryParentListner {
     private var categoryList1: ArrayList<CategoryWithInventory> = arrayListOf()
     private lateinit var binding: FragmentCategoryBinding
@@ -51,7 +51,7 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
 
     companion object {
         fun newInstance(callback: ItemListner): CategoryFragment {
-            val fragment = CategoryFragment(callback, null)
+            val fragment = CategoryFragment(callback)
             return fragment
 
         }
@@ -172,6 +172,7 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
         }
 
     }
+/*
     private fun searchCategory() {
 
         searchList = arrayListOf()
@@ -205,8 +206,10 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
 
         }
     }
+*/
 
 
+/*
     private fun resetTabbySearch(model: CategorySearchData) {
         var tabPos = -1
         val tabList = (binding.rvTabLayout.adapter as CategoryTabAdapter).list
@@ -241,6 +244,7 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
 
 
     }
+*/
 
 
     private fun observeShowProgress() {
