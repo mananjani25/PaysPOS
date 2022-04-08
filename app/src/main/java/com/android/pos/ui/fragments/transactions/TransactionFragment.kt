@@ -214,7 +214,14 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
 
         setFragmentResultListener("request_key_tips") { requestKey: String, bundle: Bundle ->
             tipAmount = bundle.getDouble("tipAmount")
-            tipCall()
+
+            if (singleTransaction?.payableType == "Card"){
+                magtekCall(tipAmount)
+            }else {
+                tipCall()
+            }
+
+
 
         }
 
@@ -300,7 +307,7 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
     }
 
     private fun tipCall() {
-        singleTransaction?.let { viewModel.orderUpdateTip(it.orderId, tipAmount) }
+        singleTransaction?.let { viewModel.orderUpdateTip(it.id, tipAmount) }
     }
 
     private fun apiCallTimeSheet() {

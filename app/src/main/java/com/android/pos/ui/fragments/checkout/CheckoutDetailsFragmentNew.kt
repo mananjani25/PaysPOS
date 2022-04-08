@@ -350,6 +350,8 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
             event.getContentIfNotHandled()?.let {
                 viewModel.redeemLoyaltyInfo = RedeemLoyaltyInfo()
                 prefProvider.setValueInt("ORDER_ID", it.data.order.id)
+
+                viewModel.setTipAmount(0.0)
                 when {
                     paymentType == "Cash" -> {
                         Log.e("TipAmount 4:: ", tipAmount.toString())
