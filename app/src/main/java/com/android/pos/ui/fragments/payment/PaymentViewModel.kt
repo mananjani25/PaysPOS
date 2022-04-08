@@ -12,7 +12,6 @@ import com.android.pos.data.model.responseModel.BaseResponse
 import com.android.pos.data.model.responseModel.CreateOrderResponse
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.DINE_IN
-import com.android.pos.data.remote.Constants.IS_PRINTER_QUEUE_ENABLE
 import com.android.pos.data.remote.Constants.PAYMENT_ID
 import com.android.pos.data.remote.Constants.TAKEOUT
 import com.android.pos.data.repositories.PosRepository
@@ -140,19 +139,7 @@ open class PaymentViewModel @Inject constructor(
                                 Log.e(TAG, "isOnlySave:  ${onlySave}")
 
                                 if (onlySave) {
-                                    if (prefProvider.getValueboolean(
-                                            IS_PRINTER_QUEUE_ENABLE,
-                                            false
-                                        )
-                                    ) {
-
-
-                                        _queueStartSaveOrder.value = Event(createOrderResponse)
-                                    } else {
-                                        _queueStart.value = Event(createOrderResponse)
-                                        //_data.value = Event(createOrderResponse)
-                                    }
-                                    //_queueStart.value = Event(createOrderResponse)
+                                    _queueStart.value = Event(createOrderResponse)
 
                                 } else {
                                     if (createOrderResponse.data.order.orderType != "Dine In") {
