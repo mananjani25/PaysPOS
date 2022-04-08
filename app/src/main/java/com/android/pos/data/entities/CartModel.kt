@@ -33,6 +33,7 @@ class CartModel : Parcelable {
     var dineInList: List<DineInModel>? = emptyList()
 
     var discountPrice: Double = 0.0
+    var discountSelectdValue :Double =0.0
     var discountType: String = ""
     var discountId: Int? = null
     var isFired: Boolean = true

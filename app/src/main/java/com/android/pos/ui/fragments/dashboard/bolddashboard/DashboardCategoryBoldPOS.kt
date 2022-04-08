@@ -126,6 +126,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
 
         setFragmentResultListener("request_key_discount_order") { _: String, bundle: Bundle ->
             val result = bundle.getParcelable<TbDiscount>("data")
+            val value = bundle.getDouble("value")
             if (result != null && viewModel.totalPrice != 0.0) {
                 orderDiscount = result.percentage
 
@@ -134,6 +135,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
 
                 if (cartList.isNotEmpty()) {
                     cartList[0].discountPrice = orderDiscount
+                    cartList[0].discountSelectdValue = value
                     cartList[0].discountType = result.discountType
                     if (result.id != -1) {
                         cartList[0].discountId = result.id
@@ -308,10 +310,10 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
         }
 */
 
-        if(prefProvider.getValueboolean(SPLIT_ENABLE,false)){
+        if (prefProvider.getValueboolean(SPLIT_ENABLE, false)) {
             findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_paymentBoldPosFragment)
-        }else{
-            loadCartFragment(CartFragment(this,this))
+        } else {
+            loadCartFragment(CartFragment(this, this))
             loadCategoryFragment(CategoryFragment(this))
         }
         binding.layoutHeader.txtUserName.text =
@@ -327,7 +329,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
         if (!sync)
             viewModel.syncInventoryModule()
     }
-
+    
     private fun loadCategoryFragment(fragment: Fragment) {
         val fm: FragmentManager = requireActivity().supportFragmentManager
         fm.beginTransaction().replace(binding.frameLayout.id, fragment).commit()
@@ -1252,7 +1254,6 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
             }
         })
     }
-
 
 
 }

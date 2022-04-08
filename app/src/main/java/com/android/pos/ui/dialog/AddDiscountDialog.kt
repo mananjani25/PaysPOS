@@ -50,6 +50,7 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
     private var selectedCurrency: String = AMOUNT
     var modifierPrice: Double = 0.0
     var orderDiscount: Double = 0.0
+    var selectedvalue: Double = 0.0
 
     companion object {
         fun newInstance() = AddDiscountDialog()
@@ -73,7 +74,7 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
             orderDiscountPrice = requireArguments().getDouble("orderDiscountPrice", 0.0)
             orderDiscountType = requireArguments().getString("orderDiscountType").toString()
         }
-
+        selectedvalue = requireArguments().getDouble("selectedvalue")
         orderDiscount = requireArguments().getDouble("orderDiscount")
         isFromDetails = requireArguments().getBoolean("isFromDetails", false)
         val model: TbItem? = requireArguments().getParcelable("model")
@@ -87,9 +88,9 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
 
 
         itemPrice = (defaultModel.price * defaultModel.itemQuantity) + modifierPrice
-        itemPrice-=orderDiscount
+        itemPrice -= orderDiscount
 
-        selectedCurrency = defaultModel.discountType
+        selectedCurrency = orderDiscountType
         if (selectedCurrency.isEmpty()) {
             selectedCurrency = AMOUNT
             amountView()
@@ -159,8 +160,7 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
             if (orderDiscountPrice != 0.0) {
 
                 if (orderDiscountType == getString(R.string.disc_percentage)) {
-                    val applyDiscount = (orderDiscountPrice * 100) / (totalOrderPrice)
-                    binding.edtAmount.setText(MethodUtils.roundOffAmountString(applyDiscount))
+                    binding.edtAmount.setText(MethodUtils.roundOffAmountString(selectedvalue))
                     percentageView()
                 } else {
                     binding.edtAmount.setText(MethodUtils.roundOffAmountString(orderDiscountPrice))
@@ -410,6 +410,7 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
                 val result = Bundle().apply {
                     putParcelable("data", discount)
                     putParcelable("item", defaultModel)
+                    putDouble("value", binding.edtAmount.text.toString().toDouble())
                 }
 
 
@@ -465,6 +466,7 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
                 val result = Bundle().apply {
                     putParcelable("data", discountModel)
                     putParcelable("item", defaultModel)
+                    putDouble("value", binding.edtAmount.text.toString().toDouble())
                 }
                 when {
                     isFromDetails -> {

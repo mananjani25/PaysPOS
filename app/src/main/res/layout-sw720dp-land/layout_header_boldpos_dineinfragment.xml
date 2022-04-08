@@ -93,26 +93,33 @@
                 android:textColor="@color/txtColor"
                 android:textSize="@dimen/_6mdpi" />
 
-
-            <ImageView
-                android:id="@+id/imgswitch"
+            <LinearLayout
+                android:id="@+id/linear_switchUser"
                 android:layout_width="wrap_content"
                 android:layout_height="@dimen/_18sdp"
-                android:layout_centerVertical="true"
-                android:layout_marginRight="@dimen/_2sdp"
                 android:contentDescription="@string/clock"
-                android:paddingVertical="@dimen/_5sdp"
-                android:src="@drawable/switch_user"
-                app:tint="@color/txtColor" />
+                android:orientation="horizontal">
 
-            <TextView
-                android:id="@+id/txtUserName"
-                style="@style/CustomFontMediumStyle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:text="ELEANOR RUSSELL"
-                android:textSize="@dimen/_6mdpi" />
+                <ImageView
+                    android:id="@+id/imgswitch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/_18sdp"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="@dimen/_2sdp"
+                    android:contentDescription="@string/clock"
+                    android:paddingVertical="@dimen/_5sdp"
+                    android:src="@drawable/switch_user"
+                    app:tint="@color/txtColor" />
+
+                <TextView
+                    android:id="@+id/txtUserName"
+                    style="@style/CustomFontMediumStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="ELEANOR RUSSELL"
+                    android:textSize="@dimen/_6mdpi" />
+            </LinearLayout>
 
             <View
                 android:layout_width="0.5dp"
@@ -123,6 +130,7 @@
                 android:background="@color/txtColor" />
 
             <ImageView
+                android:id="@+id/ivLock"
                 android:layout_width="@dimen/_10sdp"
                 android:layout_height="@dimen/_12sdp"
                 android:layout_gravity="center"
