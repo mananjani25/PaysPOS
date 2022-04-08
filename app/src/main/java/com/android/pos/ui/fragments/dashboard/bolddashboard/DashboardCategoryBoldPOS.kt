@@ -200,9 +200,14 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
         setFragmentResultListener("request_key_note") { requestKey: String, bundle: Bundle ->
             val note = bundle.getString("note")
             val singleItem = bundle.getParcelable<TbItem>("item")
-            var dineInArrayList = cartList[0].dineInList
-            if (prefProvider.getValue(Constants.ORDER_TYPE, Constants.TAKEOUT) == Constants.DINE_IN) {
-               dineInArrayList?.get(0)?.selectedPosition = bundle.getInt("headerPos")
+            var dineInArrayList: List<DineInModel>? = null
+            if (prefProvider.getValue(
+                    Constants.ORDER_TYPE,
+                    Constants.TAKEOUT
+                ) == Constants.DINE_IN
+            ) {
+                dineInArrayList = cartList[0].dineInList
+                dineInArrayList?.get(0)?.selectedPosition = bundle.getInt("headerPos")
             }
 
 
