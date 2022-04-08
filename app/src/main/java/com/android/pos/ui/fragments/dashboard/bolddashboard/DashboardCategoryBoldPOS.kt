@@ -201,9 +201,24 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
             val note = bundle.getString("note")
             val singleItem = bundle.getParcelable<TbItem>("item")
             var dineInArrayList = cartList[0].dineInList
+            if (prefProvider.getValue(Constants.ORDER_TYPE, Constants.TAKEOUT) == Constants.DINE_IN) {
+               dineInArrayList?.get(0)?.selectedPosition = bundle.getInt("headerPos")
+            }
+
+
 
             singleItem?.note = note.toString()
-            singleItem?.let { dineInArrayList?.let { it1 -> viewModel.cartLogic(cartList, it, Constants.UPDATE, false,dineInList= it1) } }
+            singleItem?.let {
+                dineInArrayList?.let { it1 ->
+                    viewModel.cartLogic(
+                        cartList,
+                        it,
+                        Constants.UPDATE,
+                        false,
+                        dineInList = it1
+                    )
+                }
+            }
         }
 
     }
@@ -329,7 +344,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
         if (!sync)
             viewModel.syncInventoryModule()
     }
-    
+
     private fun loadCategoryFragment(fragment: Fragment) {
         val fm: FragmentManager = requireActivity().supportFragmentManager
         fm.beginTransaction().replace(binding.frameLayout.id, fragment).commit()

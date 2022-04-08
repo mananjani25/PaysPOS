@@ -985,10 +985,11 @@ open class PaymentViewModel @Inject constructor(
         for (i in 0 until cartModel.dineInList?.size!!) {
             cartModel.dineInList?.get(i)?.items?.forEach { item ->
 
+                Log.e(TAG,"getItemDinefas  ${Gson().toJson(item)}")
                 val orderItemsAttribute = OrderItemsAttribute()
 
                 if (isUpdateOrder && item.orderItemId != null)
-                    orderItemsAttribute.id = item.orderItemId
+                    orderItemsAttribute.id = item.itemId
 
 
                 orderItemsAttribute.category_id = item.categoryId
