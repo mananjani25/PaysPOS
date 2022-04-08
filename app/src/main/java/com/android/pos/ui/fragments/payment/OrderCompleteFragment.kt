@@ -263,6 +263,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         if (!isDineIn) {
             if (isSpilt) {
                 saveDataInPrefrences()
+                binding.viewSplitLine.visibility = View.VISIBLE
                 binding.linearSplitLayout.visibility = View.VISIBLE
                 binding.linerContent.visibility = View.VISIBLE
                 binding.txtRemainingAmount.visibility = View.VISIBLE
@@ -355,6 +356,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 binding.llHome.visibility = View.VISIBLE
                 binding.txtHome.visibility = View.VISIBLE
                 binding.linearTopHeaderSplit.visibility = View.GONE
+                binding.viewSplitLine.visibility = View.GONE
                 binding.llNoReceipt.visibility = View.VISIBLE
                 binding.linearSplitLayout.visibility = View.GONE
                 binding.txtRemainingAmount.visibility = View.GONE
@@ -393,6 +395,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             }
         } else {
             if (isSpilt) {
+                binding.viewSplitLine.visibility = View.VISIBLE
                 binding.linearSplitLayout.visibility = View.VISIBLE
                 binding.linerContent.visibility = View.VISIBLE
                 binding.txtRemainingAmount.visibility = View.VISIBLE
@@ -450,6 +453,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     }
                 }
             } else {
+                binding.viewSplitLine.visibility = View.GONE
                 if (isGuest) {
                     if (isLastPayment) {
                         binding.llHome.visibility = View.VISIBLE
