@@ -8,6 +8,7 @@ import android.widget.Filterable
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.data.entities.TbItem
 import com.android.pos.databinding.ViewItemBinding
+import com.android.pos.utils.callback.ItemCallback
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -16,7 +17,10 @@ class ItemListAdapter(private val isChoose: Boolean) :
     var itemsList = ArrayList<TbItem>()
     var filterList = ArrayList<TbItem>()
     var selectedItemList = ArrayList<TbItem>()
-
+    private var mCallback: ItemCallback? = null
+    fun setCallback(callback: ItemCallback) {
+        mCallback = callback
+    }
     inner class MyViewHolder(private val binding: ViewItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
@@ -46,7 +50,15 @@ class ItemListAdapter(private val isChoose: Boolean) :
                     selectedItemList.remove(filterList.get(layoutPosition))
                 }
                 notifyDataSetChanged()
+
+
+
             }
+
+            binding.layoutMenu.imgOrderMenu.setOnClickListener {
+                mCallback?.onItemClickListener(it, bindingAdapterPosition)
+            }
+
         }
 
 

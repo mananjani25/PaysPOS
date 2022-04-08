@@ -784,6 +784,7 @@
     <string name="secondary_table">Secondary Table</string>
     <string name="note_title_">Note Title<font color='#E90C0C'>*</font></string>
     <string name="add_order">Add Order</string>
+    <string name="hide">Hide</string>
 
 
 </resources>

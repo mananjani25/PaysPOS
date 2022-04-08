@@ -78,6 +78,11 @@
                     android:layout_marginEnd="@dimen/_10sdp"
                     android:src="@{model.isChecked ? @drawable/ic_check_circle: @drawable/ic_uncheck_circle}" />
 
+
+                <include
+                    android:id="@+id/layout_menu"
+                    layout="@layout/img_menu" />
+
             </androidx.appcompat.widget.LinearLayoutCompat>
 
 
