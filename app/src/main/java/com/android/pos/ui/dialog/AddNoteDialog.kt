@@ -2,6 +2,7 @@ package com.android.pos.ui.dialog
 
 import android.graphics.Point
 import android.os.Bundle
+import android.util.Log
 import android.view.*
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.setFragmentResult
@@ -9,7 +10,9 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.android.pos.data.entities.TbItem
 import com.android.pos.data.model.responseModel.NoteResponse
+import com.android.pos.data.remote.Constants
 import com.android.pos.databinding.DailogAddNoteBinding
+import com.android.pos.di.PrefProvider
 import com.android.pos.ui.adapter.NotesListAdapter
 import com.android.pos.ui.fragments.settings.notes.NoteListViewModel
 import com.android.pos.utils.ProgressUtils
@@ -17,14 +20,20 @@ import com.android.pos.utils.callback.ItemCallback
 import com.android.pos.utils.extensions.showAlert
 import com.android.pos.utils.statusUtils.Status
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class AddNoteDialog : DialogFragment(), ItemCallback {
 
     private var item: TbItem? = null
+    private var headerItemPosition: Int? = null
     private lateinit var binding: DailogAddNoteBinding
     private lateinit var noteListadapter: NotesListAdapter
     private val viewModel by viewModels<NoteListViewModel>()
+    private val TAG = "AddNoteDialog"
+
+    @Inject
+    lateinit var prefProvider: PrefProvider
 
     companion object {
         fun newInstance() = AddNoteDialog()
@@ -54,6 +63,11 @@ class AddNoteDialog : DialogFragment(), ItemCallback {
     private fun setupData() {
 
         item = requireArguments().getParcelable("item")
+        if (prefProvider.getValue(Constants.ORDER_TYPE, Constants.TAKEOUT) == Constants.DINE_IN) {
+            headerItemPosition = requireArguments().getInt("headerPos")
+            Log.e(TAG, "headerItemPosition:  ${headerItemPosition}")
+        }
+
 
         with(binding) {
             edtNote.setText(item?.note)
@@ -73,7 +87,8 @@ class AddNoteDialog : DialogFragment(), ItemCallback {
     private fun addNote() {
         val result = Bundle().apply {
             putString("note", binding.edtNote.text.toString().trim())
-            putParcelable("item",item)
+            putParcelable("item", item)
+            headerItemPosition?.let { putInt("headerPos", it) }
         }
         setFragmentResult("request_key_note", result)
         findNavController().navigateUp()

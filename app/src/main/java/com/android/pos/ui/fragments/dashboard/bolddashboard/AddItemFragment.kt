@@ -193,9 +193,9 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
             if (isUpdateItem) {
                 if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == Constants.DINE_IN) {
                     val dineInList = cartList[0].dineInList
-                    dineInList!![0].headerPosition = viewModel.dineInSelectedItemHeaderPos
-                    dineInList[0].selectedPosition = viewModel.dineInHeaderPosition
-                    viewModel.cartLogic(cartList, item, Constants.UPDATE, false, dineInList)
+                    dineInList?.get(0)?.headerPosition = viewModel.dineInSelectedItemHeaderPos
+                    dineInList?.get(0)?.selectedPosition = viewModel.dineInHeaderPosition
+                    viewModel.cartLogic(cartList, item, Constants.UPDATE, false, dineInList ?: arrayListOf())
                 } else {
 
                     viewModel.cartLogic(cartList, item, Constants.UPDATE, false)
@@ -234,8 +234,11 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
         }
         binding.txtAddNote.setOnClickListener {
 
+            Log.e("HeaderPos","${viewModel.dineInSelectedItemHeaderPos}")
+            Log.e("HeaderPosdineInHea","${viewModel.dineInHeaderPosition}")
             val bundle = Bundle().apply {
                 putParcelable("item", item)
+                putInt("headerPos",viewModel.dineInHeaderPosition)
             }
 
             findNavController().navigate(

@@ -20,7 +20,7 @@
     <string name="tv_clock_in_out">Clock In/Out</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="tv_enter_your_passcode">enter passcode</string>
+    <string name="tv_enter_your_passcode">Enter passcode</string>
 
     <string name="loading">Loading…</string>
     <string name="no_internet">Internet is required for the application to work. Please enable the internet and try again.</string>
