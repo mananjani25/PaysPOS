@@ -115,7 +115,6 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
 
         binding.layoutMenu.imgSearch.visibility = View.GONE
         binding.layoutMenu.autoSearch.visibility = View.GONE
-        binding.layoutMenu.imgSync.visibility = View.GONE
         binding.layoutMenu.imgOptionMenu.visibility = View.GONE
         viewModel.redeemLoyaltyInfo.needToApplyLoyalty =
             prefProvider.getValueboolean(LOYALTY_ADDED, false)
@@ -133,6 +132,8 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
         listener()
         setUpToolbar()//created By Zeeshan
         callbackForDialog()
+
+
         binding.footer.linearEmpnameRole.setOnClickListener {
             var bundle = Bundle()
             bundle.putBoolean("isSwap", true)
@@ -152,11 +153,13 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
     //created By Zeeshaan
     private fun setUpToolbar() {
         binding.layoutHeader.txtKeypad.setTextColor(requireContext().resources.getColor(R.color.btnColor))
-        binding.layoutHeader.imgSync.visibility = View.GONE
         binding.layoutHeader.txtHome.visibility = View.VISIBLE
         binding.layoutHeader.txtTransaction.setOnClickListener {
             findNavController().navigate(R.id.action_manualSalesNew_to_transactionFragment)
 
+        }
+        binding.layoutHeader.imgSync.setOnClickListener {
+            viewModel.syncInventoryModule()
         }
         binding.layoutHeader.imgDrawer.setOnClickListener {
             findNavController().navigate(R.id.action_manualSalesNew_to_menuFragment)

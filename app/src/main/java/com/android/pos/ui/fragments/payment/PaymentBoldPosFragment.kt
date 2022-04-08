@@ -111,9 +111,11 @@ class PaymentBoldPosFragment : Fragment() {
     override fun onPause() {
         super.onPause()
         Log.e(TAG, "onPause")
-        removeCustomer()
-        dineInPaymentViewModel.deleteCart()
-        prefProvider.setValue(Constants.ORDER_TYPE, Constants.TAKEOUT)
+        if(!prefProvider.getValueboolean(SPLIT_ENABLE,false)){
+            removeCustomer()
+            dineInPaymentViewModel.deleteCart()
+            prefProvider.setValue(Constants.ORDER_TYPE, Constants.TAKEOUT)
+        }
     }
 
     private fun loadCartFragment(frag: Fragment) {
