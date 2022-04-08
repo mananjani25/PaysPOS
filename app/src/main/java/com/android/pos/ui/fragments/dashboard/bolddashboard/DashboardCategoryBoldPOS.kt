@@ -570,8 +570,6 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
             if (it.status == Status.SUCCESS) {
                 serviceChargesList = it.data
                 viewModel.serviceChargesList = it.data ?: arrayListOf()
-
-
             }
 
         }
@@ -580,25 +578,23 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
 
     private fun getOrderTypes() {
 
-        viewModel.getOrderTypes.observe(requireActivity(), {
+        viewModel.getOrderTypes.observe(requireActivity()) {
             if (it.status == Status.SUCCESS) {
                 if (it.data != null) {
                     ordertypelist = it.data.toCollection(arrayListOf())
                     viewModel.setOrderTypeList(ordertypelist)
-
-
                 }
                 getDineInData()
             }
 
-        })
+        }
     }
 
 
     override fun onItemUpdate(item: TbItem) {
         Log.e(TAG, "dashboardPosItem:  ${Gson().toJson(item)}")
         val frag: Fragment = AddItemFragment.newInstance(item, this, cartList, true)
-        loadCategoryFragment(CategoryFragment(this))
+        loadCategoryFragment(frag)
     }
 
     override fun onDineInOrderCleared() {
@@ -860,7 +856,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
     }
 
     private fun getKitchenPrinters(createOrderResponse: CreateOrderResponse) {
-        viewModel.getKitchenPrinterList().observe(viewLifecycleOwner, { it ->
+        viewModel.getKitchenPrinterList().observe(viewLifecycleOwner) { it ->
             when (it.status) {
                 Status.SUCCESS -> {
                     Log.e(TAG, "getKitchenPrinterList:  ${Gson().toJson(it.data)}")
@@ -893,7 +889,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                 }
             }
 
-        })
+        }
 
     }
 

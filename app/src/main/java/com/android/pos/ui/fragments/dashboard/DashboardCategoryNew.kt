@@ -4213,17 +4213,15 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
     }
 
     private fun observeQueueCreate() {
-        viewModelPayment.queueStartSaveOrder.observe(viewLifecycleOwner, { event ->
+        viewModelPayment.queueStartSaveOrder.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
                 createQueuePrinter(it)
-
-
             }
-        })
+        }
     }
 
     private fun queuePrinterObserver() {
-        viewModelPayment.QueueCreateSaveOrder.observe(requireActivity(), {
+        viewModelPayment.QueueCreateSaveOrder.observe(requireActivity()) {
             it.getContentIfNotHandled()?.let {
                 binding.layoutCart.txtSave.text = getString(R.string.save)
                 viewModel.deleteCart()
@@ -4240,7 +4238,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
 
             }
-        })
+        }
     }
 
     private fun createQueuePrinter(createOrder: CreateOrderResponse) {

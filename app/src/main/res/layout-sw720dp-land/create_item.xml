@@ -365,7 +365,7 @@
 
                     <androidx.appcompat.widget.AppCompatTextView
                         style="@style/CustomFontSemiBold"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:padding="@dimen/_5sdp"
                         android:text="@string/price"
@@ -383,7 +383,7 @@
                         <androidx.appcompat.widget.AppCompatEditText
                             android:id="@+id/etItemPrice"
                             style="@style/CustomFontSemiBold"
-                            android:layout_width="wrap_content"
+                            android:layout_width="match_parent"
                             android:layout_height="@dimen/_25sdp"
                             android:background="@null"
                             android:digits="0123456789"
@@ -419,8 +419,8 @@
                             android:layout_height="@dimen/_25sdp"
                             android:background="@null"
                             android:digits="@string/disable_emoji_string"
-                            android:hint="$0.00"
-                            android:paddingLeft="@dimen/_10sdp"
+                            android:hint="@string/sku"
+                            android:paddingStart="@dimen/_10sdp"
                             android:imeOptions="actionNext"
                             android:inputType="numberDecimal"
                             android:maxLength="200"
