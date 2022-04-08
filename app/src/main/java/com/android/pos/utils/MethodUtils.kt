@@ -10,8 +10,6 @@ import android.view.inputmethod.InputMethodManager
 import android.widget.TextView
 import androidx.appcompat.widget.AppCompatEditText
 import androidx.appcompat.widget.AppCompatTextView
-import androidx.appcompat.widget.LinearLayoutCompat
-import androidx.core.content.res.ResourcesCompat
 import com.android.pos.MainApplication
 import com.android.pos.R
 import com.android.pos.data.model.requestModel.CreateCategoryRequestModel
@@ -27,6 +25,8 @@ import java.io.File
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
+import java.util.regex.Matcher
+import java.util.regex.Pattern
 import kotlin.math.ceil
 import kotlin.math.floor
 
@@ -434,6 +434,27 @@ class MethodUtils {
                 salt.append(SALTCHARS[index])
             }
             return salt.toString()
+        }
+
+        fun isValidCVVNumber(str: String?): Boolean {
+            // Regex to check valid CVV number.
+            val regex = "^[0-9]{3,4}$"
+            val p: Pattern = Pattern.compile(regex)
+            if (str == null) {
+                return false
+            }
+            val m: Matcher = p.matcher(str)
+            return m.matches()
+        }
+        fun isValidCardExpNumber(str: String?): Boolean {
+            // Regex to check valid CVV number.
+            val regex = "/^(0[1-9]|1[0-2])\\/?([0-9]{2})\$/"
+            val p: Pattern = Pattern.compile(regex)
+            if (str == null) {
+                return false
+            }
+            val m: Matcher = p.matcher(str)
+            return m.matches()
         }
     }
 

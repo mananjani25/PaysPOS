@@ -726,7 +726,7 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
             ).toDouble()
 
             val cardNumber = binding.edtCardNumber.rawText.toString().trim()
-            
+
             val cardExpDate = binding.edtMMYY.rawText.toString().trim()
             val cardCVV = binding.edtCVV.text.toString().trim()
 
@@ -743,10 +743,18 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
                 cardExpDate.length < 4 -> {
                     errorDisplay("Please enter valid card expiration date")
                 }
+                cardExpDate.take(2).toInt() > 12  -> {
+
+                    errorDisplay("Please enter valid card expiration month")
+                }
+                cardExpDate.take(2).toInt() < 1   -> {
+
+                    errorDisplay("Please enter valid card expiration month")
+                }
                 cardCVV.isEmpty() -> {
                     errorDisplay("Please enter CVV number")
                 }
-                cardCVV.length < 4 -> {
+                !MethodUtils.isValidCVVNumber(cardCVV) -> {
                     errorDisplay("Please enter valid CVV number")
                 }
                 else -> {
