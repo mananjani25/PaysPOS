@@ -111,7 +111,7 @@
                 android:paddingVertical="@dimen/_5sdp"
                 android:text="Fire To Kitchen"
                 android:textColor="@color/txtColor"
-                android:textSize="@dimen/_5mdpi" />
+                android:textSize="@dimen/_7mdpi" />
 
 
             <androidx.appcompat.widget.AppCompatTextView
@@ -125,7 +125,7 @@
                 android:paddingStart="@dimen/_15sdp"
                 android:text="Item Name"
                 android:textColor="@color/txtColor"
-                android:textSize="@dimen/_5mdpi" />
+                android:textSize="@dimen/_7mdpi" />
 
 
             <androidx.appcompat.widget.AppCompatTextView
@@ -138,7 +138,7 @@
                 android:gravity="start"
                 android:text="Group Quantity"
                 android:textColor="@color/txtColor"
-                android:textSize="@dimen/_5mdpi" />
+                android:textSize="@dimen/_7mdpi" />
 
 
             <androidx.appcompat.widget.AppCompatTextView
@@ -151,7 +151,7 @@
                 android:gravity="center"
                 android:text="Team Member"
                 android:textColor="@color/txtColor"
-                android:textSize="@dimen/_5mdpi" />
+                android:textSize="@dimen/_7mdpi" />
 
 
             <androidx.appcompat.widget.AppCompatTextView
@@ -165,7 +165,7 @@
                 android:paddingEnd="@dimen/_20sdp"
                 android:text="Price"
                 android:textColor="@color/txtColor"
-                android:textSize="@dimen/_5mdpi" />
+                android:textSize="@dimen/_7mdpi" />
 
         </androidx.appcompat.widget.LinearLayoutCompat>
 
