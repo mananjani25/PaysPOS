@@ -111,7 +111,6 @@
                 android:imeOptions="actionDone"
                 android:inputType="text"
                 android:lines="1"
-                android:maxWidth="@dimen/_80sdp"
                 android:maxLines="1"
                 android:padding="@dimen/_5sdp"
                 android:textColor="@color/txtColor"

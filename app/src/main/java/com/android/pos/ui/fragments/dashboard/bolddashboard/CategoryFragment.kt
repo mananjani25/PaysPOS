@@ -32,7 +32,7 @@ import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class CategoryFragment(val listner: ItemListner) : Fragment(), CategoryTabAdapter1.TabListner,
+class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteTextView?) : Fragment(), CategoryTabAdapter1.TabListner,
     CategoryItemAdapter1.CategoryItemList, CategoryParentAdapter.CategoryParentListner {
     private var categoryList1: ArrayList<CategoryWithInventory> = arrayListOf()
     private lateinit var binding: FragmentCategoryBinding
@@ -51,7 +51,7 @@ class CategoryFragment(val listner: ItemListner) : Fragment(), CategoryTabAdapte
 
     companion object {
         fun newInstance(callback: ItemListner): CategoryFragment {
-            val fragment = CategoryFragment(callback)
+            val fragment = CategoryFragment(callback, null)
             return fragment
 
         }
@@ -148,7 +148,7 @@ class CategoryFragment(val listner: ItemListner) : Fragment(), CategoryTabAdapte
 
                             categoryParentAdapter.addList(list)
 
-                            //searchCategory()
+                            searchCategory()
 
 
                             itemAdapter.addList(itemList1)
@@ -172,7 +172,6 @@ class CategoryFragment(val listner: ItemListner) : Fragment(), CategoryTabAdapte
         }
 
     }
-/*
     private fun searchCategory() {
 
         searchList = arrayListOf()
@@ -206,27 +205,24 @@ class CategoryFragment(val listner: ItemListner) : Fragment(), CategoryTabAdapte
 
         }
     }
-*/
 
 
-/*
     private fun resetTabbySearch(model: CategorySearchData) {
         var tabPos = -1
-        val tabList = (binding.rvTabLayout.adapter as CategoryTabAdapter).list
-        for (i in 0 until tabList.size) {
-
-            if (tabList[i].id == model.categoryID) {
-                tabList[i].isSelected = true
+        val tabList = (binding.rvCategoryParent.adapter as CategoryParentAdapter).list
+        for (i in 0 until tabList.get(0).list.size) {
+            if (tabList.get(0).list[i].id == model.categoryID) {
+                tabList.get(0).list[i].isSelected = true
                 tabPos = i
             } else {
-                tabList.get(i).isSelected = false
+                tabList.get(0).list.get(i).isSelected = false
             }
 
         }
 
         // (binding.rvTabLayout.adapter as CategoryTabAdapter1).list.clear()
-        (binding.rvTabLayout.adapter as CategoryTabAdapter).list = tabList
-        binding.rvTabLayout.adapter?.notifyDataSetChanged()
+        (binding.rvCategoryParent.adapter as CategoryParentAdapter).list = tabList
+        binding.rvCategoryParent.adapter?.notifyDataSetChanged()
 
         val listCategry = arrayListOf<TbItem?>()
         listCategry.add(
@@ -244,7 +240,6 @@ class CategoryFragment(val listner: ItemListner) : Fragment(), CategoryTabAdapte
 
 
     }
-*/
 
 
     private fun observeShowProgress() {
