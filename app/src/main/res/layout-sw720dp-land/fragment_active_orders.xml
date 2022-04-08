@@ -164,7 +164,7 @@
                     android:background="@null"
                     android:digits="@string/disable_emoji_string"
                     android:fontFamily="@font/sf_pro_display_regular"
-                    android:hint="Search Orders"
+                    android:hint="Search order id , team member"
                     android:imeOptions="actionDone"
                     android:inputType="textVisiblePassword"
                     android:singleLine="true"

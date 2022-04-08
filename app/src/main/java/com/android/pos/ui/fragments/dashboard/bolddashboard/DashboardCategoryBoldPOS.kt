@@ -598,7 +598,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
     override fun onItemUpdate(item: TbItem) {
         Log.e(TAG, "dashboardPosItem:  ${Gson().toJson(item)}")
         val frag: Fragment = AddItemFragment.newInstance(item, this, cartList, true)
-        loadCategoryFragment(frag)
+        loadCategoryFragment(CategoryFragment(this))
     }
 
     override fun onDineInOrderCleared() {

@@ -92,7 +92,7 @@
                 android:src="@drawable/ic_sync"
                 app:tint="@color/txtColor" />
 
-            <androidx.appcompat.widget.AppCompatEditText
+            <AutoCompleteTextView
                 android:id="@+id/edtSearch"
                 style="@style/CustomFontRegularStyle"
                 android:layout_width="wrap_content"
