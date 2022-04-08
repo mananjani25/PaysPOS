@@ -198,9 +198,10 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
         setFragmentResultListener("request_key_note") { requestKey: String, bundle: Bundle ->
             val note = bundle.getString("note")
             val singleItem = bundle.getParcelable<TbItem>("item")
+            var dineInArrayList = cartList[0].dineInList
 
             singleItem?.note = note.toString()
-            singleItem?.let { viewModel.cartLogic(cartList, it, Constants.UPDATE, false) }
+            singleItem?.let { dineInArrayList?.let { it1 -> viewModel.cartLogic(cartList, it, Constants.UPDATE, false,dineInList= it1) } }
         }
 
     }
@@ -598,7 +599,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
     override fun onItemUpdate(item: TbItem) {
         Log.e(TAG, "dashboardPosItem:  ${Gson().toJson(item)}")
         val frag: Fragment = AddItemFragment.newInstance(item, this, cartList, true)
-        loadCategoryFragment(CategoryFragment(this))
+        loadCategoryFragment(frag)
     }
 
     override fun onDineInOrderCleared() {

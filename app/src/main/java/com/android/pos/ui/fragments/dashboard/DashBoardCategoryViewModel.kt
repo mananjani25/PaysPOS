@@ -391,6 +391,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                             if (model != null) {
                                 if (type == "UPDATE") {
                                     if (item != null) {
+                                        model.note=item.note
                                         model.itemQuantity = item.itemQuantity
                                     }
                                     if (prefProvider.getValueboolean(
