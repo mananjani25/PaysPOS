@@ -2386,6 +2386,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         model.orderType = "DineIn"
         model.dineInList = newDineInList
         model.items = listItem
+        model.discountPrice =list[0].orderDiscount
         model.serviceCharge = serviceChargeList
         model.employeeID = prefProvider.getValueInt(EMPLOYEE_ID, 0)
         model.locationId = prefProvider.getValueInt(LOCATION_ID, 0)

@@ -339,7 +339,7 @@ class MergeTableDialog : DialogFragment() {
             } else if (isDuplicateIdTrue) {
 
                 AlertUtils.showCustomAlertWithListenerWithOK(
-                    requireContext(), "Same Table Can't be Merged."
+                    requireContext(), "Same table can't be merged."
                 ) { _, _ ->
 
                 }

@@ -1377,7 +1377,7 @@ class CartFragment(val itemClickListner: ItemClickListner?, val itemListner: Ite
             "",
             "",
             false,
-            totalDiscount = viewModel.totalDiscount + cartlist[0].discountPrice,
+            totalDiscount = viewModel.totalDiscount,
             0.0,
             floorPlanDetails = floorModel
         )

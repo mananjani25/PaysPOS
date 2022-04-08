@@ -813,8 +813,8 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
 
             }
 
-            tabItemMOdel.itemId = Random.nextInt()
-            tabItemMOdel.categoryId = Random.nextInt()
+            tabItemMOdel.itemId = Random.nextInt(1,1000)
+            tabItemMOdel.categoryId = Random.nextInt(1,1000)
 
             tabItemMOdel.taxes = taxList
             viewModel.ordertypelist.forEach {

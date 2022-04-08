@@ -477,15 +477,17 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
             if (cartList.size > 0) {
 
                 if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == Constants.DINE_IN) {
-                    var dineInList = cartList[0].dineInList
-                    dineInList!![0]?.selectedPosition = viewModel.dineInHeaderPosition
-                    viewModel.cartLogic(
-                        cartList,
-                        item,
-                        Constants.ADD,
-                        false,
-                        dineInList = dineInList
-                    )
+                    if(cartList[0].dineInList!!.isNotEmpty()){
+                        var dineInList = cartList[0].dineInList
+                        dineInList!![0]?.selectedPosition = viewModel.dineInHeaderPosition
+                        viewModel.cartLogic(
+                            cartList,
+                            item,
+                            Constants.ADD,
+                            false,
+                            dineInList = dineInList
+                        )
+                    }
                 } else {
                     viewModel.cartLogic(cartList, item, Constants.ADD, false)
                 }
@@ -583,7 +585,13 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
     private fun clearCustomer() {
         prefProvider.setValue(Constants.CUSTOMER_NAME, "")
         prefProvider.setValueInt(Constants.CUSTOMER_ID, -1)
-
+        prefProvider.setValue(Constants.CUSTOMER_NAME, "")
+        prefProvider.setValue(Constants.PREF_CUSTOMER, "")
+        prefProvider.setValueInt(Constants.CUSTOMER_ID, -1)
+        viewModel.selectedCustomer = null
+        viewModel.assignCustomer = null
+        prefProvider.saveCustomerData(null)
+        prefProvider.setValueboolean(Constants.LOYALTY_ADDED, false)
     }
 
     private fun getServiceCharges() {
@@ -710,7 +718,6 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                 if (baseResponse != null) {
                     val bundle = Bundle()
                     bundle.putDouble("totalPrice", baseResponse.order.totalAmount)
-                    bundle.putParcelable("cartList", cartList[0])
                     bundle.putParcelable("dineInList", baseResponse)
                     bundle.putBoolean("isGuestPaid", false)
                     bundle.putInt("orderId", baseResponse.order.id)

@@ -279,7 +279,7 @@ class MergeTableFragment : Fragment() {
             if (childTableList.contains(primarytableId.toString())) {
                 AlertUtils.showCustomAlertWithListenerWithOK(
                     requireContext(),
-                    "Same Table Can't be Merged."
+                    "Same table can't be merged."
                 ) { _, _ ->
 
                 }
