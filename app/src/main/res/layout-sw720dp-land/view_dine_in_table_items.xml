@@ -101,7 +101,7 @@
                     android:gravity="start">
 
                     <androidx.appcompat.widget.AppCompatTextView
-                        style="@style/CustomFontMediumStyle"
+                        style="@style/CustomFontBold"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
@@ -109,7 +109,7 @@
                         android:gravity="center"
                         android:text="@{``+model.itemQuantity}"
                         android:textColor="@color/dark_btn_Color"
-                        android:textSize="@dimen/_5mdpi"
+                        android:textSize="@dimen/_6mdpi"
                         tools:text="x 10" />
                 </LinearLayout>
 
