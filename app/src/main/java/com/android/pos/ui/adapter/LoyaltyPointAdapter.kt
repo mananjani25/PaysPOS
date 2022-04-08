@@ -7,12 +7,17 @@ import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.data.entities.LoyaltyProgramsModel
 import com.android.pos.databinding.ViewLoyaltyPointItemBinding
 import com.android.pos.ui.fragments.settings.loyaltypoints.LoyaltyPointViewModel
+import com.android.pos.utils.callback.ItemCallback
 
 class LoyaltyPointAdapter(val viewModel: LoyaltyPointViewModel) :
     RecyclerView.Adapter<LoyaltyPointAdapter.MyViewHolder>() {
 
     var loyaltyPointList = ArrayList<LoyaltyProgramsModel>()
 
+    private var mCallback: ItemCallback? = null
+    fun setCallback(callback: ItemCallback) {
+        mCallback = callback
+    }
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
@@ -66,6 +71,12 @@ class LoyaltyPointAdapter(val viewModel: LoyaltyPointViewModel) :
 
     inner class MyViewHolder(val discountItemBinding: ViewLoyaltyPointItemBinding) :
         RecyclerView.ViewHolder(discountItemBinding.root) {
+        init {
+            discountItemBinding.layoutMenu.imgOrderMenu.setOnClickListener {
+                mCallback?.onItemClickListener(it, bindingAdapterPosition)
+            }
+
+        }
 
     }
 

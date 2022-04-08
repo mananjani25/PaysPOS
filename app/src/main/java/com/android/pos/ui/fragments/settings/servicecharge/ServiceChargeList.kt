@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.AppCompatTextView
+import androidx.appcompat.widget.PopupMenu
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -18,6 +19,7 @@ import com.android.pos.ui.adapter.ServiceChargeListAdapter
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.SwipeHelper
+import com.android.pos.utils.callback.ItemCallback
 import com.android.pos.utils.extensions.alert
 import com.android.pos.utils.extensions.liveSnackBar
 import com.android.pos.utils.extensions.showAlert
@@ -27,7 +29,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import java.util.*
 
 @AndroidEntryPoint
-class ServiceChargeList : Fragment() {
+class ServiceChargeList : Fragment(),ItemCallback {
 
     private lateinit var binding: ServiceChargeFragmentBinding
 
@@ -66,56 +68,7 @@ class ServiceChargeList : Fragment() {
     private fun setUpRecyclerView() {
         serviceChargeListadapter = ServiceChargeListAdapter(viewModel)
         binding.rvServiceCharge.adapter = serviceChargeListadapter
-
-        object : SwipeHelper(activity, binding.rvServiceCharge) {
-            override fun instantiateUnderlayButton(
-                viewHolder: RecyclerView.ViewHolder?,
-                underlayButtons: MutableList<UnderlayButton?>
-            ) {
-
-                underlayButtons.add(UnderlayButton(
-                    "Edit",
-                    ContextCompat.getColor(context, R.color.swipe_text_color),
-                    ContextCompat.getColor(context, R.color.swipe_bg_edit)
-                ) { pos ->
-
-                    serviceChargeObject = serviceChargeListadapter.getItem(pos)
-                    val bundle = Bundle()
-                    bundle.putBoolean("isEdit", true)
-                    bundle.putParcelable("serviceChargeObject", serviceChargeObject)
-
-                    //     var bundle= bundleOf()
-                    findNavController().navigate(
-                        R.id.action_settings_to_addServiceCharge,
-                        bundle
-                    )
-
-                })
-
-                underlayButtons.add(UnderlayButton(
-                    "Delete",
-                    ContextCompat.getColor(context, R.color.swipe_text_color),
-                    ContextCompat.getColor(context, R.color.swipe_bg_delete)
-                ) { pos ->
-
-                    position = pos
-
-                    alert(
-                        getString(R.string.app_name),
-                        getString(R.string.delete_service_charge_message)
-                    ) {
-                        positiveButton(getString(R.string.tv_delete)) {
-                            // Do positive stuff here
-                            serviceChargeObject = serviceChargeListadapter.getItem(pos)
-                            viewModel.delete(serviceChargeListadapter.getItem(pos).id)
-                        }
-                        negativeButton(R.string.tv_cancel) {
-                            // Do negative stuff here
-                        }
-                    }
-                })
-            }
-        }
+        serviceChargeListadapter.setCallback(this)
     }
 
     private fun getTaxListObserver() {
@@ -199,5 +152,45 @@ class ServiceChargeList : Fragment() {
 
     private fun setupSnackbar() =
         binding.root.liveSnackBar(this, viewModel.snackbarText, Snackbar.LENGTH_SHORT)
+
+    override fun onItemClickListener(view: View?, pos: Int) {
+        val popupMenu = view?.let { PopupMenu(requireContext(), it) }
+        popupMenu?.menuInflater?.inflate(R.menu.edit_delete_menu, popupMenu.menu)
+        popupMenu?.setOnMenuItemClickListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.menu_edit -> {
+                    serviceChargeObject = serviceChargeListadapter.getItem(pos)
+                    val bundle = Bundle()
+                    bundle.putBoolean("isEdit", true)
+                    bundle.putParcelable("serviceChargeObject", serviceChargeObject)
+
+                    //     var bundle= bundleOf()
+                    findNavController().navigate(
+                        R.id.action_settings_to_addServiceCharge,
+                        bundle
+                    )
+                }
+                R.id.menu_delete -> {
+                    position = pos
+
+                    alert(
+                        getString(R.string.app_name),
+                        getString(R.string.delete_service_charge_message)
+                    ) {
+                        positiveButton(getString(R.string.tv_delete)) {
+                            // Do positive stuff here
+                            serviceChargeObject = serviceChargeListadapter.getItem(pos)
+                            viewModel.delete(serviceChargeListadapter.getItem(pos).id)
+                        }
+                        negativeButton(R.string.tv_cancel) {
+                            // Do negative stuff here
+                        }
+                    }
+                }
+            }
+            true
+        }
+        popupMenu?.show()
+    }
 
 }

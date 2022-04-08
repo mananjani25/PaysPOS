@@ -6,11 +6,15 @@ import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.data.model.responseModel.GetTipReponse
 import com.android.pos.databinding.ViewTipItemBinding
 import com.android.pos.ui.fragments.settings.tip.TipListViewModel
+import com.android.pos.utils.callback.ItemCallback
 
 class TipsListAdapter(val viewModel: TipListViewModel) : RecyclerView.Adapter<TipsListAdapter.MyViewHolder>() {
 
     private val tipList = ArrayList<GetTipReponse.Data>()
-
+    private var mCallback: ItemCallback? = null
+    fun setCallback(callback: ItemCallback) {
+        mCallback = callback
+    }
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
@@ -46,14 +50,20 @@ class TipsListAdapter(val viewModel: TipListViewModel) : RecyclerView.Adapter<Ti
     inner class MyViewHolder(val tipItemBinding: ViewTipItemBinding) :
         RecyclerView.ViewHolder(tipItemBinding.root){
 
-           /* init {
+        init {
+            tipItemBinding.layoutMenu.imgOrderMenu.setOnClickListener {
+                mCallback?.onItemClickListener(it, position)
+            }
+        }
 
-                tipItemBinding.imgCheckBox.setOnClickListener {
-                    tipList.get(layoutPosition).isChecked =  !tipList.get(layoutPosition).isChecked
-                    notifyDataSetChanged()
+        /* init {
 
-                }
+             tipItemBinding.imgCheckBox.setOnClickListener {
+                 tipList.get(layoutPosition).isChecked =  !tipList.get(layoutPosition).isChecked
+                 notifyDataSetChanged()
 
-            }*/
+             }
+
+         }*/
 
     }}

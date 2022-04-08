@@ -60,7 +60,7 @@ class NotesListAdapter(val viewModel: NoteListViewModel, val isAdd: Boolean) :
         RecyclerView.ViewHolder(noteItemBinding.root) {
 
         init {
-            noteItemBinding.root.setOnClickListener {
+            noteItemBinding.layoutMenu.imgOrderMenu.setOnClickListener {
                 mCallback?.onItemClickListener(it, bindingAdapterPosition)
             }
 

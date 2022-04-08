@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.AppCompatTextView
+import androidx.appcompat.widget.PopupMenu
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
@@ -20,6 +21,7 @@ import com.android.pos.ui.adapter.TaxListAdapter
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.SwipeHelper
+import com.android.pos.utils.callback.ItemCallback
 import com.android.pos.utils.extensions.alert
 import com.android.pos.utils.extensions.liveSnackBar
 import com.android.pos.utils.extensions.showAlert
@@ -30,7 +32,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import java.util.*
 
 @AndroidEntryPoint
-class TaxesList : Fragment() {
+class TaxesList : Fragment() , ItemCallback {
 
     private var position: Int = -1
     private lateinit var taxListUpdateDelete: ArrayList<TaxData>
@@ -68,55 +70,8 @@ class TaxesList : Fragment() {
 
     private fun setUpRecyclerView() {
         taxListadapter = TaxListAdapter(viewModel)
+        taxListadapter.setCallback(this)
         binding.rvTaxList.adapter = taxListadapter
-
-        object : SwipeHelper(activity, binding.rvTaxList) {
-            override fun instantiateUnderlayButton(
-                viewHolder: RecyclerView.ViewHolder?,
-                underlayButtons: MutableList<UnderlayButton?>
-            ) {
-
-                underlayButtons.add(UnderlayButton(
-                    "Edit",
-                    ContextCompat.getColor(context, R.color.swipe_text_color),
-                    ContextCompat.getColor(context, R.color.swipe_bg_edit)
-                ) { pos ->
-
-                    taxObject = taxListadapter.getItem(pos)
-                    val bundle = Bundle()
-                    bundle.putBoolean("isEdit", true)
-                    bundle.putParcelable("taxObject", taxObject)
-
-                    //     var bundle= bundleOf()
-                    findNavController().navigate(R.id.action_settings_to_newTax, bundle)
-
-                })
-
-                underlayButtons.add(UnderlayButton(
-                    "Delete",
-                    ContextCompat.getColor(context, R.color.swipe_text_color),
-                    ContextCompat.getColor(context, R.color.swipe_bg_delete)
-                ) { pos ->
-
-                    position = pos
-
-                    alert(
-                        getString(R.string.app_name),
-                        getString(R.string.delete_tax_message)
-                    ) {
-                        positiveButton(getString(R.string.tv_delete)) {
-                            // Do positive stuff here
-                            taxObject = taxListadapter.getItem(pos)
-                            viewModel.delete(taxListadapter.getItem(pos).id)
-                        }
-                        negativeButton(R.string.tv_cancel) {
-                            // Do negative stuff here
-                        }
-                    }
-
-                })
-            }
-        }
     }
 
 
@@ -205,4 +160,39 @@ class TaxesList : Fragment() {
 
     private fun setupSnackbar() =
         binding.root.liveSnackBar(this, viewModel.snackbarText, Snackbar.LENGTH_SHORT)
+
+    override fun onItemClickListener(view: View?, pos: Int) {
+        val popupMenu = view?.let { PopupMenu(requireContext(), it) }
+        popupMenu?.menuInflater?.inflate(R.menu.edit_delete_menu, popupMenu.menu)
+        popupMenu?.setOnMenuItemClickListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.menu_edit -> {
+                    taxObject = taxListadapter.getItem(pos)
+                    val bundle = Bundle()
+                    bundle.putBoolean("isEdit", true)
+                    bundle.putParcelable("taxObject", taxObject)
+                    findNavController().navigate(R.id.action_settings_to_newTax, bundle)
+                }
+                R.id.menu_delete -> {
+                    position = pos
+
+                    alert(
+                        getString(R.string.app_name),
+                        getString(R.string.delete_tax_message)
+                    ) {
+                        positiveButton(getString(R.string.tv_delete)) {
+                            // Do positive stuff here
+                            taxObject = taxListadapter.getItem(pos)
+                            viewModel.delete(taxListadapter.getItem(pos).id)
+                        }
+                        negativeButton(R.string.tv_cancel) {
+                            // Do negative stuff here
+                        }
+                    }
+                }
+            }
+            true
+        }
+        popupMenu?.show()
+    }
 }

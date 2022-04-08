@@ -8,13 +8,17 @@ import com.android.pos.data.entities.TaxData
 import com.android.pos.data.model.responseModel.GetTaxResponse
 import com.android.pos.databinding.ViewTaxItemBinding
 import com.android.pos.ui.fragments.settings.tax.TaxListViewModel
+import com.android.pos.utils.callback.ItemCallback
 
 
 class TaxListAdapter(val viewModel: TaxListViewModel) :
     RecyclerView.Adapter<TaxListAdapter.MyViewHolder>() {
 
     var taxList = ArrayList<TaxData>()
-
+    private var mCallback: ItemCallback? = null
+    fun setCallback(callback: ItemCallback) {
+        mCallback = callback
+    }
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TaxListAdapter.MyViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         val binding = ViewTaxItemBinding.inflate(inflater, parent, false)
@@ -56,6 +60,12 @@ class TaxListAdapter(val viewModel: TaxListViewModel) :
 
     inner class MyViewHolder(val taxItemBinding: ViewTaxItemBinding) :
         RecyclerView.ViewHolder(taxItemBinding.root) {
+            init {
+                taxItemBinding.layoutMenu.imgOrderMenu.setOnClickListener {
+                    mCallback?.onItemClickListener(it, position)
+                }
+            }
+
         /*init {
 
             taxItemBinding.imgCheckBox.setOnClickListener {
