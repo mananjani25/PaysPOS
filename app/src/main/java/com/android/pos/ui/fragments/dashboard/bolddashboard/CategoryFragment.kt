@@ -32,7 +32,8 @@ import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteTextView?) : Fragment(), CategoryTabAdapter1.TabListner,
+class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteTextView?) : Fragment(),
+    CategoryTabAdapter1.TabListner,
     CategoryItemAdapter1.CategoryItemList, CategoryParentAdapter.CategoryParentListner {
     private var categoryList1: ArrayList<CategoryWithInventory> = arrayListOf()
     private lateinit var binding: FragmentCategoryBinding
@@ -172,6 +173,7 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
         }
 
     }
+
     private fun searchCategory() {
 
         searchList = arrayListOf()
@@ -209,7 +211,7 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
 
     private fun resetTabbySearch(model: CategorySearchData) {
         var tabPos = -1
-        val tabList = (binding.rvCategoryParent.adapter as CategoryParentAdapter).list
+        val tabList = categoryParentAdapter.getList()
         for (i in 0 until tabList.get(0).list.size) {
             if (tabList.get(0).list[i].id == model.categoryID) {
                 tabList.get(0).list[i].isSelected = true
@@ -220,18 +222,33 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
 
         }
 
-        // (binding.rvTabLayout.adapter as CategoryTabAdapter1).list.clear()
-        (binding.rvCategoryParent.adapter as CategoryParentAdapter).list = tabList
-        binding.rvCategoryParent.adapter?.notifyDataSetChanged()
+        categoryParentAdapter.list = tabList.toCollection(arrayListOf())
+        categoryParentAdapter.notifyDataSetChanged()
 
-        val listCategry = arrayListOf<TbItem?>()
-        //listCategry.add(0, TbItem())
-        categoryList1[tabPos].inventoryLists?.let { it1 -> listCategry.addAll(it1)
+        var itemList: ArrayList<TbItem?> = arrayListOf()
+
+        categoryList1[tabPos].inventoryLists?.filter {
+            it!!.isHide
+        }?.let { it1 ->
+            itemList.addAll(it1)
         }
-        (binding.rvItemList.adapter as ItemAdapter).list.clear()
-        (binding.rvItemList.adapter as ItemAdapter).list = listCategry
-        binding.rvItemList.adapter?.notifyDataSetChanged()
+        itemAdapter.list.clear()
+        itemAdapter.list = itemList
+        itemAdapter.notifyDataSetChanged()
 
+
+        // (binding.rvTabLayout.adapter as CategoryTabAdapter1).list.clear()
+        /* (binding.rvCategoryParent.adapter as CategoryParentAdapter).list = tabList
+         binding.rvCategoryParent.adapter?.notifyDataSetChanged()
+
+         val listCategry = arrayListOf<TbItem?>()
+         //listCategry.add(0, TbItem())
+         categoryList1[tabPos].inventoryLists?.let { it1 -> listCategry.addAll(it1)
+         }
+         (binding.rvItemList.adapter as ItemAdapter).list.clear()
+         (binding.rvItemList.adapter as ItemAdapter).list = listCategry
+         binding.rvItemList.adapter?.notifyDataSetChanged()
+ */
 
     }
 
