@@ -1008,7 +1008,7 @@ open class PaymentViewModel @Inject constructor(
                 orderItemsAttribute.orderItemTaxesAttributes =
                     orderItemTaxesAttributesForDineIn(item)
                 orderItemsAttribute.orderItemModifiersAttributes =
-                    orderItemModifierAttributes(item, cartModel.terminalId)
+                    orderItemModifierAttributesDineIn(item, cartModel.terminalId)
 
                 orderItemsAttribute.orderItemVariationAttributes =
                     orderItemVariationAttributes(item)
@@ -1125,6 +1125,35 @@ open class PaymentViewModel @Inject constructor(
 
                 if (isUpdateOrder && it.orderModifierId != null)
                     id = it.orderModifierId
+
+                name = it.name
+                price = it.price
+                order_item_id = item.orderItemId
+                totalPrice = MethodUtils.roundOffAmountDouble(it.price * it.itemQuantity)
+                modifier_set_id = it.modifierSetId ?: 0
+                quantity = it.itemQuantity
+                order_item_taxes_attributes = arrayListOf()
+            }
+            orderItemModifierAttributeList.add(orderItemModifierAttribute)
+        }
+
+        return orderItemModifierAttributeList
+    }
+
+    private fun orderItemModifierAttributesDineIn(
+        item: TbItem,
+        terminalId: Int
+    ): List<OrderItemModifierAttribute> {
+
+        val orderItemModifierAttributeList: ArrayList<OrderItemModifierAttribute> =
+            arrayListOf()
+
+        item.modifiers.forEach {
+
+            val orderItemModifierAttribute = OrderItemModifierAttribute().apply {
+
+                if (isUpdateOrder && it.id != null)
+                    id = it.id
 
                 name = it.name
                 price = it.price

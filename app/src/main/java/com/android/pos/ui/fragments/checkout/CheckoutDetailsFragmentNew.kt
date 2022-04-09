@@ -1085,8 +1085,10 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
 
     private fun makeCashPayment() {
         paymentType = "Cash"
+        Log.e(TAG,"makeCashPayorderId  ${orderId}")
+        Log.e(TAG,"makeCashPrefOrderId  ${prefProvider.getValueInt("ORDER_ID", -1)}")
 
-        if (orderId != -1 && orderId != 0)
+        if (orderId != -1 && orderId != 0) {
             paymentviewModel.updateOrder(
                 true,
                 orderId,
@@ -1094,6 +1096,10 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
                 paymentOfflineId,
                 orderOfflineId
             )
+        }
+        else {
+            paymentviewModel.updateOrder(false,null,null,"","")
+        }
 
 
         paymentviewModel.saveOrder(false)

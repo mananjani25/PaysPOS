@@ -3124,6 +3124,15 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         }
     }
 
+    override fun onStop() {
+        super.onStop()
+        if (!isSpilt){
+            removeCustomer()
+
+
+        }
+    }
+
     private fun moveToDashboard() {
 
 
@@ -5043,6 +5052,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         prefProvider.setValue(Constants.TIPS_AMOUNT_DINEIN, "")
         prefProvider.setValue(Constants.TAX_CHARGE_DINEIN, "")
         prefProvider.setValue(Constants.SERVICE_CHARGE_DINEIN, "")
+        prefProvider.setValueInt("orderId",-1)
 
 
     }
