@@ -393,6 +393,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                     if (item != null) {
                                         model.note=item.note
                                         model.itemQuantity = item.itemQuantity
+                                        itemDiscountApply(model,item)
                                     }
                                     if (prefProvider.getValueboolean(
                                             Constants.DINE_IN_UPDATE,
@@ -417,6 +418,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                                 it.itemQuantity = model.itemQuantity
                                             }
                                             model.modifiers = item.modifiers
+                                            itemDiscountApply(model,item)
                                         }
 
                                         if (prefProvider.getValueboolean(

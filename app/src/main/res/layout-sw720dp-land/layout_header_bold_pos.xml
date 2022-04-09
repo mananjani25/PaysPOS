@@ -112,6 +112,7 @@
                 android:inputType="text"
                 android:lines="1"
                 android:maxWidth="@dimen/_80sdp"
+                android:visibility="gone"
                 android:maxLines="1"
                 android:padding="@dimen/_5sdp"
                 android:textColor="@color/txtColor"

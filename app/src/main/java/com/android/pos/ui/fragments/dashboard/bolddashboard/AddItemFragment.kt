@@ -93,8 +93,30 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
         super.onViewCreated(view, savedInstanceState)
         getData()
         onClick()
+        getCartList()
 
     }
+
+    private fun getCartList() {
+        viewModel.mAllWords(
+            prefProvider.getValue(ORDER_TYPE, TAKEOUT),
+            prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
+        ).observe(requireActivity()) {
+            Log.e(TAG, "MAllWords:::  ${Gson().toJson(it)}")
+            if (it.isEmpty()) {
+                cartList.clear()
+                cartList = arrayListOf()
+
+            } else {
+                cartList.clear()
+                cartList = arrayListOf()
+                cartList.addAll(it.toCollection(arrayListOf()))
+            }
+
+
+        }
+    }
+
 
     private fun onClick() {
         binding.imgMinus.setOnClickListener {
@@ -195,7 +217,13 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
                     val dineInList = cartList[0].dineInList
                     dineInList?.get(0)?.headerPosition = viewModel.dineInSelectedItemHeaderPos
                     dineInList?.get(0)?.selectedPosition = viewModel.dineInHeaderPosition
-                    viewModel.cartLogic(cartList, item, Constants.UPDATE, false, dineInList ?: arrayListOf())
+                    viewModel.cartLogic(
+                        cartList,
+                        item,
+                        Constants.UPDATE,
+                        false,
+                        dineInList ?: arrayListOf()
+                    )
                 } else {
 
                     viewModel.cartLogic(cartList, item, Constants.UPDATE, false)
@@ -234,11 +262,11 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
         }
         binding.txtAddNote.setOnClickListener {
 
-            Log.e("HeaderPos","${viewModel.dineInSelectedItemHeaderPos}")
-            Log.e("HeaderPosdineInHea","${viewModel.dineInHeaderPosition}")
+            Log.e("HeaderPos", "${viewModel.dineInSelectedItemHeaderPos}")
+            Log.e("HeaderPosdineInHea", "${viewModel.dineInHeaderPosition}")
             val bundle = Bundle().apply {
                 putParcelable("item", item)
-                putInt("headerPos",viewModel.dineInHeaderPosition)
+                putInt("headerPos", viewModel.dineInHeaderPosition)
             }
 
             findNavController().navigate(
