@@ -8,6 +8,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.widget.PopupMenu
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
@@ -25,12 +26,13 @@ import com.android.pos.ui.adapter.CategoriesListAdapter
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.SwipeHelper
+import com.android.pos.utils.callback.ItemCallback
 import com.android.pos.utils.extensions.alert
 import com.android.pos.utils.statusUtils.Status
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class HideCategoryListing : Fragment() {
+class HideCategoryListing : Fragment() ,ItemCallback{
     private var isreOrder: Boolean = false
     private lateinit var adapter: CategoriesListAdapter
     private lateinit var binding: FragmentCategoriesBinding
@@ -162,71 +164,7 @@ class HideCategoryListing : Fragment() {
 
         adapter = CategoriesListAdapter(false)
         binding.rvCategoriesList.adapter = adapter
-
-        object : SwipeHelper(activity, binding.rvCategoriesList) {
-            override fun instantiateUnderlayButton(
-                viewHolder: RecyclerView.ViewHolder?,
-                underlayButtons: MutableList<UnderlayButton?>
-            ) {
-
-                underlayButtons.add(UnderlayButton(
-                    "UnHide",
-                    ContextCompat.getColor(context, R.color.swipe_text_color),
-                    ContextCompat.getColor(context, R.color.swipe_bg_hide)
-                ) { pos ->
-                    // hideCategoryCall(pos)
-
-                    alert(
-                        getString(R.string.app_name),
-                        getString(R.string.unhide_category_message)
-                    ) {
-                        positiveButton(getString(R.string.activate)) {
-                            viewModel.deleteCategory(adapter.getItem(pos).id, true, true)
-                        }
-                        negativeButton(R.string.tv_cancel) {
-                            // Do negative stuff here
-                        }
-                    }
-
-                })
-                /*underlayButtons.add(UnderlayButton(
-                    "Edit",
-                    0,
-                    Color.parseColor("#2997cc")
-                ) { pos ->
-                    val bundle = Bundle()
-                    bundle.putBoolean("isEdit", true)
-                    bundle.putParcelable("categoryObject", adapter.getItem(pos))
-                    findNavController().navigate(
-                        R.id.action_inventory_to_createCategory,
-                        bundle
-                    )
-
-
-                })*/
-
-                /*underlayButtons.add(UnderlayButton(
-                    "Delete",
-                    0,
-                    Color.parseColor("#FF3C30")
-                ) { pos ->
-
-                    alert(
-                        getString(R.string.app_name),
-                        getString(R.string.delete_category_message)
-                    ) {
-                        positiveButton(getString(R.string.tv_delete)) {
-                            viewModel.deleteCategory(adapter.getItem(pos).id, false)
-                        }
-                        negativeButton(R.string.tv_cancel) {
-                            // Do negative stuff here
-                        }
-                    }
-
-
-                })*/
-            }
-        }
+        adapter.setCallback(this)
 
         val touchHelper =
             ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(UP + DOWN, 0) {
@@ -311,10 +249,36 @@ class HideCategoryListing : Fragment() {
 
     private fun reallyMoved(oldPos: Int, newPos: Int, categoryIdOld: Int?) {
         if (categoryIdOld != null) {
-
             isreOrder = true
             viewModel.reOrderCategory(categoryIdOld, newPos, oldPos)
         }
+    }
 
+    override fun onItemClickListener(view: View?, pos: Int) {
+        val popupMenu = view?.let { PopupMenu(requireContext(), it) }
+        popupMenu?.menuInflater?.inflate(R.menu.edit_delete__hide_menu, popupMenu.menu)
+        popupMenu?.menu?.findItem(R.id.menu_edit)?.isVisible = false
+        popupMenu?.menu?.findItem(R.id.menu_delete)?.isVisible = false
+        popupMenu?.menu?.findItem(R.id.menu_hide)?.setTitle("Unhide")
+        popupMenu?.setOnMenuItemClickListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.menu_hide -> {
+                    alert(
+                        getString(R.string.app_name),
+                        getString(R.string.unhide_category_message)
+                    ) {
+                        positiveButton(getString(R.string.activate)) {
+                            viewModel.deleteCategory(adapter.getItem(pos).id, true, true)
+                        }
+                        negativeButton(R.string.tv_cancel) {
+                            // Do negative stuff here
+                        }
+                    }
+
+                }
+            }
+            true
+        }
+        popupMenu?.show()
     }
 }

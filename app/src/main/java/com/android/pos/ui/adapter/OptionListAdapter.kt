@@ -8,6 +8,7 @@ import android.widget.Filterable
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.data.entities.OptionSet
 import com.android.pos.databinding.ViewOptionListBinding
+import com.android.pos.utils.callback.ItemCallback
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -16,7 +17,10 @@ class OptionListAdapter :
 
     var list = ArrayList<OptionSet>()
     var filterList = ArrayList<OptionSet>()
-
+    private var mCallback: ItemCallback? = null
+    fun setCallback(callback: ItemCallback) {
+        mCallback = callback
+    }
     inner class MyViewHolder(private val binding: ViewOptionListBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(item: OptionSet) {
@@ -27,7 +31,18 @@ class OptionListAdapter :
                 binding.firstviewOption.visibility = View.GONE
             }
             binding.executePendingBindings()
+
+
+
         }
+        init {
+            binding.layoutMenu.imgOrderMenu.setOnClickListener {
+                mCallback?.onItemClickListener(it, bindingAdapterPosition)
+            }
+
+
+        }
+
     }
 
     override fun onCreateViewHolder(

@@ -63,6 +63,11 @@
                 android:layout_gravity="center"
                 android:padding="@dimen/_3sdp"
                 app:srcCompat="@drawable/ic_baseline_menu" />
+
+            <include
+                android:id="@+id/layout_menu"
+                layout="@layout/img_menu" />
+
         </androidx.appcompat.widget.LinearLayoutCompat>
 
         <View
