@@ -15,6 +15,7 @@ import com.android.pos.R
 import com.android.pos.data.entities.*
 import com.android.pos.data.model.DineInModel
 import com.android.pos.data.model.DineInOrderDetailAttributes
+import com.android.pos.data.model.GuestPaymentCalculationModel
 import com.android.pos.data.model.responseModel.GetFloorPlanResponse
 import com.android.pos.data.model.responseModel.GetOrderDetailsResponse
 import com.android.pos.data.remote.Constants
@@ -402,11 +403,35 @@ class CartFragment(val itemClickListner: ItemClickListner?, val itemListner: Ite
                         ?.let { it1 -> cartAdapter.setList(it1) }
 
                     cartlist = it as ArrayList<CartModel>
-                    viewModel.itemCalculationCartModel(
-                        it[0],
-                        binding.txtTotal,
-                        requireContext()
-                    )
+                    if (isFromPayment && prefProvider.getValue(
+                            ORDER_TYPE,
+                            TAKEOUT
+                        ) == DINE_IN
+                    ) {
+                        Log.e(TAG, "TotalPrice:  ${requireArguments().getDouble("totalPrice")}")
+                        var model = GuestPaymentCalculationModel(
+                            requireArguments().getDouble("subTotalPrice"),
+                            requireArguments().getDouble("totalPrice"),
+                            requireArguments().getDouble("totalServiceCharge"),
+                            requireArguments().getDouble("totalTax"),
+                            requireArguments().getDouble("divideCashDiscount"),
+                            requireArguments().getDouble("totalDiscount"),
+                        )
+
+                        viewModel.itemCalculationForDineInPayment(
+                            it[0],
+                            binding.txtTotal,
+                            requireContext(),
+                            model
+                        )
+                    } else {
+                        Log.e(TAG,"WithOutDineIn")
+                        viewModel.itemCalculationCartModel(
+                            it[0],
+                            binding.txtTotal,
+                            requireContext()
+                        )
+                    }
                     viewModel.setCartModel(it)
                     binding.txtSubTotal.text =
                         MethodUtils.roundOffAmount(viewModel.subTotalPrice)
@@ -1096,9 +1121,9 @@ class CartFragment(val itemClickListner: ItemClickListner?, val itemListner: Ite
 
             val popupMenu = PopupMenu(requireContext(), it)
             popupMenu.menuInflater.inflate(R.menu.cart_menu, popupMenu.menu)
-            if(prefProvider.getValue(ORDER_TYPE, TAKEOUT)==Constants.DINE_IN)
-            if (prefProvider.getValue(Constants.CUSTOMER_NAME, "").isEmpty())
-                popupMenu.menu.findItem(R.id.menu_remove_customer).isVisible = false
+            if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == Constants.DINE_IN)
+                if (prefProvider.getValue(Constants.CUSTOMER_NAME, "").isEmpty())
+                    popupMenu.menu.findItem(R.id.menu_remove_customer).isVisible = false
             if (cartlist.isEmpty())
                 popupMenu.menu.findItem(R.id.menu_discount).isVisible = false
             popupMenu.setOnMenuItemClickListener { menuItem ->

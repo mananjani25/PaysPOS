@@ -15,6 +15,7 @@ import com.android.pos.data.db.AppDatabase
 import com.android.pos.data.entities.*
 import com.android.pos.data.model.DineInModel
 import com.android.pos.data.model.DineInOrderDetailAttributes
+import com.android.pos.data.model.GuestPaymentCalculationModel
 import com.android.pos.data.model.requestModel.*
 import com.android.pos.data.model.responseModel.CreateOrderResponse
 import com.android.pos.data.model.responseModel.PrinterResponse
@@ -391,9 +392,9 @@ class DashBoardCategoryViewModel @Inject constructor(
                             if (model != null) {
                                 if (type == "UPDATE") {
                                     if (item != null) {
-                                        model.note=item.note
+                                        model.note = item.note
                                         model.itemQuantity = item.itemQuantity
-                                        itemDiscountApply(model,item)
+                                        itemDiscountApply(model, item)
                                     }
                                     if (prefProvider.getValueboolean(
                                             Constants.DINE_IN_UPDATE,
@@ -418,7 +419,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                                 it.itemQuantity = model.itemQuantity
                                             }
                                             model.modifiers = item.modifiers
-                                            itemDiscountApply(model,item)
+                                            itemDiscountApply(model, item)
                                         }
 
                                         if (prefProvider.getValueboolean(
@@ -2384,5 +2385,183 @@ class DashBoardCategoryViewModel @Inject constructor(
         }
 
         return cartList
+    }
+
+    fun itemCalculationForDineInPayment(
+        cartModel: CartModel,
+        txtTotal: AppCompatTextView,
+        context: Context,
+        model: GuestPaymentCalculationModel
+    ) {
+
+        var totalAmmount = 0.0
+        nonCashAdj = 0.0
+        totalPrice = 0.0
+        totalCount = 0
+        subTotalPrice = 0.0
+        totalDiscount = 0.0
+        totalTax = 0.0
+        totalServiceCharge = 0.0
+        var amountToBePaid = 0.0
+        if (cartModel.orderType == DINE_IN) {
+
+           subTotalPrice = model.subTotal
+           totalTax = model.tax
+           totalServiceCharge = model.serviceCharge
+            totalDiscount = model.totalDiscount
+
+            /*   cartModel.dineInList?.forEach { dine ->
+
+                   dine.items.forEach { item ->
+                       totalCount += item.itemQuantity
+                       subTotalPrice += if (!item.isManualSales) {
+                           (item.price * item.itemQuantity) - (item.discountPrice * item.itemQuantity)
+                       } else {
+                           (item.price * item.itemQuantity) - item.discountPrice
+                       }
+
+                       taxCalculation(item)
+
+                       item.modifiers.forEach {
+                           subTotalPrice += (it.price * it.itemQuantity)
+                       }
+                   }
+
+
+               }
+   */
+            serviceChargeCalculationModel(cartModel)
+            subTotalPrice -= cartModel.discountPrice
+            totalDiscount += cartModel.discountPrice
+         /*   cartModel.dineInList?.forEach {
+                it.items.forEach {
+                    totalDiscount += if (!it.isManualSales) {
+                        (it.discountPrice * it.itemQuantity)
+                    } else {
+                        it.discountPrice
+                    }
+                }
+            }
+*/
+
+            var finalTotal = 0.0
+            finalTotal = (subTotalPrice + totalTax + totalServiceCharge)
+            cashDiscountType = prefProvider.getValue(Constants.OPTION_TYPE, "")
+            //loyalty point and price calculation
+            amountToBePaid = finalTotal
+            if (selectedCustomer == null) {
+                totalPrice = amountToBePaid
+                /* MethodUtils.setPriceTextView(
+                     txtTotalAmount,
+                     amountToBePaid
+                 )*/
+            } else {
+                /*checkAppliedLoyaltyProgram(
+                    selectedCustomer,
+                    amountToBePaid,
+                    txtTotalAmount
+                )*/
+                redeemLoyaltyInfo.getAmountToBePaid()?.let {
+                    totalPrice = it
+                }
+            }
+
+            if (MethodUtils.isEnableCashDiscount(context)) {
+                cashdiscountAmount = MethodUtils.calculateCashDiscount(
+                    totalPrice,
+                    prefProvider,
+                    context
+                )
+            } else {
+                cashdiscountAmount = 0.0
+            }
+
+
+        } else {
+
+            if (cartModel.items?.isEmpty() == false) {
+
+
+                cartModel.items?.forEach { item ->
+                    totalCount += item.itemQuantity
+                    subTotalPrice += if (!item.isManualSales) {
+                        (item.price * item.itemQuantity) - (item.discountPrice * item.itemQuantity)
+                    } else {
+                        (item.price * item.itemQuantity) - item.discountPrice
+                    }
+
+                    taxCalculation(item)
+
+                    item.modifiers.forEach {
+                        subTotalPrice += (it.price * it.itemQuantity)
+
+                    }
+                }
+
+
+                serviceChargeCalculationModel(cartModel)
+                subTotalPrice -= cartModel.discountPrice
+
+                totalDiscount += cartModel.discountPrice
+
+                cartModel.items!!.forEach {
+                    totalDiscount += if (!it.isManualSales) {
+                        (it.discountPrice * it.itemQuantity)
+                    } else {
+                        it.discountPrice
+                    }
+                }
+
+                var finalTotal = 0.0
+                finalTotal = (subTotalPrice + totalTax + totalServiceCharge)
+
+
+
+                cashDiscountType = prefProvider.getValue(Constants.OPTION_TYPE, "")
+                //loyalty point and price calculation
+                amountToBePaid = finalTotal
+                if (selectedCustomer == null) {
+                    totalPrice = amountToBePaid
+                    /* MethodUtils.setPriceTextView(
+                         txtTotalAmount,
+                         amountToBePaid
+                     )*/
+                } else {
+                    /* checkAppliedLoyaltyProgram(
+                         selectedCustomer,
+                         amountToBePaid,
+                         txtTotalAmount
+                     )*/
+                    redeemLoyaltyInfo.getAmountToBePaid()?.let {
+                        totalPrice = it
+                    }
+                }
+
+                if (MethodUtils.isEnableCashDiscount(context)) {
+                    cashdiscountAmount = MethodUtils.calculateCashDiscount(
+                        totalPrice,
+                        prefProvider,
+                        context
+                    )
+                } else {
+                    cashdiscountAmount = 0.0
+                }
+
+                Log.e("amountToBePaid", "" + totalPrice)
+            } else {
+
+                nonCashAdj = 0.0
+                totalPrice = 0.0
+                totalCount = 0
+                subTotalPrice = 0.0
+                totalDiscount = 0.0
+                totalTax = 0.0
+                totalServiceCharge = 0.0
+                amountToBePaid = 0.0
+            }
+        }
+        //totalAmmount = totalPrice-cartList[0].discountPrice
+
+
     }
 }
