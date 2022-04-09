@@ -279,10 +279,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
             val adapterList = dineInTableAdapter.getList()
             var offlineId = randomOfflineId()
-            Log.e(TAG, "adapterDineInList:  ${Gson().toJson(adapterList)}")
 
             cartList = getCartModel(adapterList.toCollection(arrayListOf()))
-            Log.e(TAG, "createDineInPaymentcartList:  ${Gson().toJson(cartList)}")
             viewModelPayment.addCart(cartList!!)
 
             totalTax = 0.0
@@ -424,12 +422,13 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 )
             )
 
-            bundle.putInt("orderId", orderId ?: 0)
+            Log.e(TAG, "passOrderId:  ${orderId}")
+            bundle.putInt("orderId", orderId ?: -1)
             bundle.putInt(GUEST_POSITION, 0)
             prefProvider.setValue(Constants.ORDER_TYPE, Constants.DINE_IN)
-//            orderId?.let { it1 -> prefProvider.setValueInt("ORDER_ID", it1) }
+            //   orderId?.let { it1 -> prefProvider.setValueInt("ORDER_ID", it1) }
 
-            findNavController().navigate(R.id.action_dineInOrderTable_to_checkoutDineIN)
+            findNavController().navigate(R.id.action_dineInOrderTable_to_checkoutDineIN, bundle)
 
 
         }
@@ -2386,7 +2385,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         model.orderType = "DineIn"
         model.dineInList = newDineInList
         model.items = listItem
-        model.discountPrice =list[0].orderDiscount
+        model.discountPrice = list[0].orderDiscount
         model.serviceCharge = serviceChargeList
         model.employeeID = prefProvider.getValueInt(EMPLOYEE_ID, 0)
         model.locationId = prefProvider.getValueInt(LOCATION_ID, 0)

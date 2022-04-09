@@ -1132,10 +1132,6 @@
             app:popUpTo="@id/dineInFragment" />
     </fragment>
     <fragment
-        android:id="@+id/checkoutDininFragment"
-        android:name="com.android.pos.ui.fragments.checkout.CheckoutDineInFragmentNew"
-        android:label="checkoutDineFrag" />
-    <fragment
         android:id="@+id/payByGuestDialog"
         android:name="com.android.pos.ui.dialog.PayByGuestDialog"
         android:label="PayByGuestDialog">

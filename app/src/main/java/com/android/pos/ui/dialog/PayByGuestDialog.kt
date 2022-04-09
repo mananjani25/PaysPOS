@@ -26,6 +26,7 @@ import com.android.pos.data.remote.Constants.DINE_IN_SUBTOTAL
 import com.android.pos.data.remote.Constants.DINE_IN_TAX
 import com.android.pos.data.remote.Constants.EMPLOYEE_ID
 import com.android.pos.data.remote.Constants.LOCATION_ID
+import com.android.pos.data.remote.Constants.ORDER_TYPE_ID
 import com.android.pos.data.remote.Constants.SERVICE_CHARGE_DINEIN
 import com.android.pos.data.remote.Constants.SUB_TOTAL_DINEIN
 import com.android.pos.data.remote.Constants.TAX_CHARGE_DINEIN
@@ -363,7 +364,7 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
 
         getCashPaymentOptionList(_totalPrice + tipAmount)
         MethodUtils.setPriceTextView(binding.txtTipAmt, tipAmount)
-        Log.e(TAG,"_totalPrice:  ${_totalPrice}")
+        Log.e(TAG, "_totalPrice:  ${_totalPrice}")
         MethodUtils.setPriceTextView(binding.txtTotal, cardPaymentAmount + tipAmount)
         cardPaymentAmount += tipAmount
         binding.txtCardAmount.text =
@@ -2290,7 +2291,7 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
             terminalId = prefProvider.getValueInt(TERMINAL_ID, 0)
             note = ""
             openOrderType = "DineIn"
-            orderTypeId = 2
+            orderTypeId = prefProvider.getValueInt(ORDER_TYPE_ID, 2)
             paymentStatus = 1
             subTotal = paymentViewModel.actual_SubTotal
             totalAmount =

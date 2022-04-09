@@ -10,6 +10,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import androidx.appcompat.widget.AppCompatTextView
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
@@ -81,6 +82,7 @@ class CheckoutDineInFragmentNew : Fragment(), magtekCallback,
     private var isPaymentScreen = true
     private var isSplitScreen = false
     private var isGuestPay = false
+    private var orderIdNew: Int? = 0
 
     private var remainingAmount: Double = 0.0
     var cashDiscountType = ""
@@ -120,6 +122,16 @@ class CheckoutDineInFragmentNew : Fragment(), magtekCallback,
 
     private var splitAfterAmount: Double = 0.0
     private var custom_paymentAmount = 0.0
+
+    companion object {
+        fun newInstacne(orderId: Int): CheckoutDineInFragmentNew {
+            val frag = CheckoutDineInFragmentNew()
+            val bundle = bundleOf("orderId" to orderId)
+
+            frag.arguments = bundle
+            return frag
+        }
+    }
 
 
     override fun onCreateView(
@@ -1192,13 +1204,24 @@ class CheckoutDineInFragmentNew : Fragment(), magtekCallback,
                 paymentReq.order_id = orderId
             }
 
-            // total amount - (hal pay amoutn + alredy pay )
-            val aa = SpitByOrderRequestModel(
-                orderId, isSelectedCount <= 1,
-                SpitByOrderPaymentModel(listOf(paymentReq) as List<PaymentAttributes>)
-            )
+            if (prefProvider.getValueboolean(
+                    Constants.SPLIT_ENABLE,
+                    false
+                ) && prefProvider.getValueInt("ORDER_ID", -1) != -1
+            ) {
 
-            paymentviewModel.splitByOrder(aa, false)
+
+                // total amount - (hal pay amoutn + alredy pay )
+                val aa = SpitByOrderRequestModel(
+                    orderId, isSelectedCount <= 1,
+                    SpitByOrderPaymentModel(listOf(paymentReq) as List<PaymentAttributes>)
+                )
+
+                paymentviewModel.splitByOrder(aa, false)
+            } else {
+                myRequest.completed_all_payments = isSelectedCount <= 1
+                paymentviewModel.submit(myRequest)
+            }
 
         }
     }
