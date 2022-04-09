@@ -397,7 +397,8 @@ class CartFragment(val itemClickListner: ItemClickListner?, val itemListner: Ite
                         binding.linearButtonView.visible()
                         binding.relPreoceedToFire.gone()
                     }
-
+                    binding.rvCartDineIn.gone()
+                    binding.rvCartList.visible()
 
                     it[0].items?.toCollection(arrayListOf())
                         ?.let { it1 -> cartAdapter.setList(it1) }

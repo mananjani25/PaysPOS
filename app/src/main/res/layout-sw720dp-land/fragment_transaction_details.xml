@@ -128,7 +128,7 @@
                         android:layout_weight="2"
                         android:gravity="start"
                         android:text="@string/item_name_"
-                        android:textColor="@color/hint_color"
+                        android:textColor="@color/dark_gray"
                         android:textSize="@dimen/_6mdpi" />
 
 
@@ -139,7 +139,7 @@
                         android:layout_weight="1"
                         android:gravity="end"
                         android:text="@string/qty"
-                        android:textColor="@color/hint_color"
+                        android:textColor="@color/dark_gray"
                         android:textSize="@dimen/_6mdpi" />
 
                     <androidx.appcompat.widget.AppCompatTextView
@@ -149,7 +149,7 @@
                         android:layout_weight="1"
                         android:gravity="end"
                         android:text="@string/each"
-                        android:textColor="@color/hint_color"
+                        android:textColor="@color/dark_gray"
                         android:textSize="@dimen/_6mdpi" />
 
 
@@ -160,7 +160,7 @@
                         android:layout_weight="1"
                         android:gravity="end"
                         android:text="@string/tv_total"
-                        android:textColor="@color/hint_color"
+                        android:textColor="@color/dark_gray"
                         android:textSize="@dimen/_6mdpi" />
 
 
@@ -214,7 +214,7 @@
                                 android:layout_weight="6.5"
                                 android:text="@string/payment_subtotal"
                                 android:textColor="@color/hint_color"
-                                android:textSize="@dimen/_5mdpi" />
+                                android:textSize="@dimen/text_size_medium" />
 
                             <androidx.appcompat.widget.AppCompatTextView
                                 style="@style/CustomFontSemiBold"
@@ -242,7 +242,7 @@
                                 android:layout_weight="6.5"
                                 android:text="@string/tv_tax"
                                 android:textColor="@color/hint_color"
-                                android:textSize="@dimen/_5mdpi" />
+                                android:textSize="@dimen/text_size_medium" />
 
                             <androidx.appcompat.widget.AppCompatTextView
                                 style="@style/CustomFontSemiBold"
@@ -271,7 +271,7 @@
                                 android:layout_weight="6.5"
                                 android:text="Tip"
                                 android:textColor="@color/hint_color"
-                                android:textSize="@dimen/_5mdpi" />
+                                android:textSize="@dimen/text_size_medium" />
 
                             <androidx.appcompat.widget.AppCompatTextView
                                 style="@style/CustomFontSemiBold"
@@ -301,7 +301,7 @@
                                 android:layout_weight="6.5"
                                 android:text="@string/tv_refunded_amount"
                                 android:textColor="@color/colorRed"
-                                android:textSize="@dimen/_5mdpi" />
+                                android:textSize="@dimen/text_size_medium" />
 
                             <androidx.appcompat.widget.AppCompatTextView
                                 style="@style/CustomFontBold"
@@ -330,7 +330,7 @@
                                 android:layout_weight="6.5"
                                 android:text="@string/tv_loyalty_amount"
                                 android:textColor="@color/hint_color"
-                                android:textSize="@dimen/_5mdpi" />
+                                android:textSize="@dimen/text_size_medium" />
 
                             <androidx.appcompat.widget.AppCompatTextView
                                 style="@style/CustomFontSemiBold"
@@ -359,7 +359,7 @@
                                 android:layout_weight="6.5"
                                 android:text="@string/tv_used_loyalty_points"
                                 android:textColor="@color/hint_color"
-                                android:textSize="@dimen/_5mdpi" />
+                                android:textSize="@dimen/text_size_medium" />
 
                             <androidx.appcompat.widget.AppCompatTextView
                                 style="@style/CustomFontSemiBold"
@@ -401,7 +401,7 @@
                                 android:layout_weight="6.5"
                                 android:text="@string/tv_service_charge"
                                 android:textColor="@color/hint_color"
-                                android:textSize="@dimen/_5mdpi" />
+                                android:textSize="@dimen/text_size_medium" />
 
                             <androidx.appcompat.widget.AppCompatTextView
                                 style="@style/CustomFontSemiBold"
@@ -432,7 +432,7 @@
                                 android:layout_weight="6.5"
                                 android:text="@string/balance_due"
                                 android:textColor="@color/hint_color"
-                                android:textSize="@dimen/_5mdpi" />
+                                android:textSize="@dimen/text_size_medium" />
 
                             <androidx.appcompat.widget.AppCompatTextView
                                 android:id="@+id/txt_cashAmounntDiscount"
@@ -463,7 +463,7 @@
                                 android:layout_weight="6.5"
                                 android:text="@string/tv_discount"
                                 android:textColor="@color/hint_color"
-                                android:textSize="@dimen/_5mdpi" />
+                                android:textSize="@dimen/text_size_medium" />
 
                             <androidx.appcompat.widget.AppCompatTextView
                                 android:id="@+id/txt_discount"
@@ -861,7 +861,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="@dimen/_3sdp"
                                 android:gravity="end"
-                                android:text="@{orderDetails.data.payment_type}"
+                                android:text="@{orderDetails.data.card_type}"
                                 android:textColor="@color/txtColor"
                                 android:textSize="@dimen/_5mdpi" />
 

@@ -96,6 +96,8 @@ class MergeTableDialog : DialogFragment() {
         listTable = arrayListOf()
 
 
+        listFloor.add(MergeFloorModel(0, "Select floor"))
+        listTable.add(MergeTableModel(0, "Select table", 0, "Select floor", false, 0, null, 0))
         listFloorPlan?.forEach {
             listFloor.add(MergeFloorModel(it.id, it.name))
 
@@ -117,6 +119,7 @@ class MergeTableDialog : DialogFragment() {
                 )
             }
         }
+
         list.add(MergeTableListModel(listTable, listFloor))
 
         binding.rvTableList.adapter = adapter
@@ -209,7 +212,7 @@ class MergeTableDialog : DialogFragment() {
                 }
 
             }
-            Log.e(TAG,"getSetData  ${Gson().toJson(set)}")
+            Log.e(TAG, "getSetData  ${Gson().toJson(set)}")
 
 
             if (!isDuplicateIdTrue) {
