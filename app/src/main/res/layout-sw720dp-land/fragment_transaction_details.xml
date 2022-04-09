@@ -861,7 +861,7 @@
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="@dimen/_3sdp"
                                 android:gravity="end"
-                                android:text="@{orderDetails.data.card_type}"
+                                android:text="@{orderDetails.data.payment_type}"
                                 android:textColor="@color/txtColor"
                                 android:textSize="@dimen/_5mdpi" />
 

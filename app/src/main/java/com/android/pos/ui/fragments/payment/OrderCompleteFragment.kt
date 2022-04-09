@@ -275,11 +275,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 }
                 binding.llHome.visibility = View.GONE
                 binding.llNoReceipt.text = "Next Payment"
+                binding.llNoReceipt.setTextColor(requireActivity().resources.getColor(R.color.white))
+                binding.llNoReceipt.background = requireContext().getDrawable(R.drawable.button_selected)
                 binding.linearTopHeaderSplit.visibility = View.VISIBLE
                 binding.txtHome.visibility = View.GONE
 
-                binding.llNoReceipt.background =
-                    requireContext().getDrawable(R.drawable.background_square_border_grey)
 
                 var title = "Split "
                 viewModel.addSplitToDatabase(
@@ -362,6 +362,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 binding.txtRemainingAmount.visibility = View.GONE
                 binding.txtRemainingAmountLabel.visibility = View.GONE
                 binding.llNoReceipt.text = getString(R.string.no_receipt)
+                binding.llNoReceipt.setTextColor(requireActivity().resources.getColor(R.color.txtColor))
+                binding.llNoReceipt.background = requireContext().getDrawable(R.drawable.background_square_border_grey)
                 viewModel.deleteSplitDb()
                 if (isCustomCash) {
                     binding.txtTitle.text =
@@ -408,9 +410,10 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                 binding.llHome.visibility = View.GONE
                 binding.llNoReceipt.text = "Next Payment"
+                binding.llNoReceipt.setTextColor(requireActivity().resources.getColor(R.color.white))
+                binding.llNoReceipt.background = requireContext().getDrawable(R.drawable.button_selected)
                 binding.linearTopHeaderSplit.visibility = View.VISIBLE
                 binding.txtHome.visibility = View.GONE
-                binding.llNoReceipt.background = requireContext().getDrawable(R.color.black)
                 var title = "Split "
                 viewModel.addSplitToDatabase(
                     title,
@@ -479,6 +482,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 binding.txtRemainingAmount.visibility = View.GONE
                 binding.txtRemainingAmountLabel.visibility = View.GONE
                 binding.llNoReceipt.text = getString(R.string.no_receipt)
+                binding.llNoReceipt.setTextColor(requireActivity().resources.getColor(R.color.txtColor))
+                binding.llNoReceipt.background = requireContext().getDrawable(R.drawable.background_square_border_grey)
                 viewModel.deleteSplitDb()
                 binding.txtTitle.text =
                     MethodUtils.roundOffAmount(paidAmount + tipAmount)
