@@ -11,6 +11,7 @@ import com.android.pos.R
 import com.android.pos.data.entities.TbCustomer
 import com.android.pos.databinding.ViewCustomerListBinding
 import com.android.pos.utils.AlertUtils
+import com.android.pos.utils.callback.ItemCallback
 import com.android.pos.utils.extensions.getColorCompat
 import java.util.*
 import kotlin.collections.ArrayList
@@ -33,6 +34,10 @@ class CustomerListAdapter(
         filterList = list
     }
 
+    private var mCallback: ItemCallback? = null
+    fun setCallback(callback: ItemCallback) {
+        mCallback = callback
+    }
 
     inner class MyViewHolder(private val binding: ViewCustomerListBinding) :
         RecyclerView.ViewHolder(binding.root) {
@@ -113,6 +118,10 @@ class CustomerListAdapter(
                 notifyDataSetChanged()
                 listner.onCustomerSelect(layoutPosition, filterList[layoutPosition])
             }
+            binding.layoutMenu.imgOrderMenu.setOnClickListener {
+                mCallback?.onItemClickListener(it,layoutPosition)
+            }
+
 
         }
     }

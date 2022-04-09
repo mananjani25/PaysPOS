@@ -1,11 +1,11 @@
 package com.android.pos.ui.fragments.team
 
-import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.widget.PopupMenu
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
@@ -13,7 +13,6 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.R
 import com.android.pos.data.entities.Employee
@@ -23,7 +22,6 @@ import com.android.pos.ui.adapter.TeamsAdapter
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.SwipeHelper
-import com.android.pos.utils.SwipeHelperNew
 import com.android.pos.utils.callback.CustomCallback
 import com.android.pos.utils.callback.OperationCallback
 import com.android.pos.utils.extensions.alert
@@ -145,25 +143,6 @@ class TeamList : Fragment(), CustomCallback, OperationCallback {
                     ContextCompat.getColor(requireContext(), R.color.white_swipe)
                 ) { pos ->
 
-                    alert(
-                        getString(R.string.app_name),
-                        getString(R.string.delete_employee_message)
-                    ) {
-                        positiveButton(getString(R.string.tv_delete)) {
-
-                            deteleempObject =
-                                viewHolder?.itemView?.getTag(R.string.tv_order_id) as Employee
-                            // Do positive stuff here
-                            empObject =
-                                viewHolder?.itemView?.getTag(R.string.tv_order_id) as Employee
-
-                            Log.e("Edit", empObject!!.id.toString())
-                            viewModel.delete(empObject!!.id)
-                        }
-                        negativeButton(R.string.tv_cancel) {
-                            // Do negative stuff here
-                        }
-                    }
 
 
                 })
@@ -279,6 +258,41 @@ class TeamList : Fragment(), CustomCallback, OperationCallback {
         selectedPos = data.id
         empObject = data
         loadTeamDetails(empObject)
+    }
+
+    override fun onOptionClickListener(view: View?, viewHolder: TeamsAdapter.ItemViewHolder) {
+        val popupMenu = view?.let { PopupMenu(requireContext(), it) }
+        popupMenu?.menuInflater?.inflate(R.menu.edit_delete__hide_menu, popupMenu.menu)
+        popupMenu?.menu?.findItem(R.id.menu_edit)?.isVisible = false
+        popupMenu?.menu?.findItem(R.id.menu_hide)?.isVisible=false
+        popupMenu?.setOnMenuItemClickListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.menu_delete -> {
+                    alert(
+                        getString(R.string.app_name),
+                        getString(R.string.delete_employee_message)
+                    ) {
+                        positiveButton(getString(R.string.tv_delete)) {
+
+                            deteleempObject =
+                                viewHolder?.menuOption?.getTag(R.string.tv_order_id) as Employee
+                            // Do positive stuff here
+                            empObject =
+                                viewHolder?.menuOption?.getTag(R.string.tv_order_id) as Employee
+
+                            Log.e("Edit", empObject!!.id.toString())
+                            viewModel.delete(empObject!!.id)
+                        }
+                        negativeButton(R.string.tv_cancel) {
+                            // Do negative stuff here
+                        }
+                    }
+
+                }
+            }
+            true
+        }
+        popupMenu?.show()
     }
 
     override fun onItemClickListener(employee: Employee) {

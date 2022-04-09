@@ -2,25 +2,18 @@ package com.android.pos.ui.adapter
 
 import android.annotation.SuppressLint
 import android.text.TextUtils
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Filter
-import android.widget.Filterable
-import android.widget.LinearLayout
-import android.widget.TextView
-import androidx.core.content.ContextCompat
+import android.widget.*
 import androidx.fragment.app.FragmentActivity
 import com.android.pos.R
 import com.android.pos.data.entities.Employee
-import com.android.pos.data.model.responseModel.EmployeeListResponse
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.callback.CustomCallback
 import com.android.pos.utils.callback.OperationCallback
 import com.android.pos.utils.extensions.getColorCompat
 import com.android.pos.utils.sticky_recycler.SectioningAdapter
-import org.w3c.dom.Text
 import java.util.*
 
 /**
@@ -59,6 +52,7 @@ class TeamsAdapter : SectioningAdapter(), Filterable {
         var tvInitialName: TextView = itemView.findViewById(R.id.tvInitialName)
         var layout: LinearLayout = itemView.findViewById(R.id.layout)
         var view: View = itemView.findViewById(R.id.view_line)
+        var menuOption: ImageView = itemView.findViewById(R.id.imgOrderMenu)
 
     }
 
@@ -193,7 +187,7 @@ class TeamsAdapter : SectioningAdapter(), Filterable {
                 person.firstName?.subSequence(0, 2)
         }
 
-        ivh.itemView.setTag(R.string.tv_order_id, person)
+        ivh.menuOption.setTag(R.string.tv_order_id, person)
 
         ivh.itemView.tag = "normal"
 
@@ -231,6 +225,10 @@ class TeamsAdapter : SectioningAdapter(), Filterable {
 
 
         }
+        ivh.menuOption.setOnClickListener {
+            mCallback.onOptionClickListener(it,ivh)
+        }
+
     }
 
     @SuppressLint("SetTextI18n")
