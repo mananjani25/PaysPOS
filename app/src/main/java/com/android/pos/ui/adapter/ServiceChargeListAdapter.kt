@@ -6,12 +6,16 @@ import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.data.entities.TbServiceCharge
 import com.android.pos.databinding.ViewServiceChargeItemBinding
 import com.android.pos.ui.fragments.settings.servicecharge.ServiceChargeListViewModel
+import com.android.pos.utils.callback.ItemCallback
 
 class ServiceChargeListAdapter(val viewModel: ServiceChargeListViewModel) :
     RecyclerView.Adapter<ServiceChargeListAdapter.MyViewHolder>() {
 
     var serviceChargeList = ArrayList<TbServiceCharge>()
-
+    private var mCallback: ItemCallback? = null
+    fun setCallback(callback: ItemCallback) {
+        mCallback = callback
+    }
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
@@ -51,12 +55,14 @@ class ServiceChargeListAdapter(val viewModel: ServiceChargeListViewModel) :
 
         init {
             discountItemBinding.imgCheckBox.setOnClickListener {
-
-
                 serviceChargeList[layoutPosition].isChecked =
                     !serviceChargeList[layoutPosition].isChecked
                 notifyDataSetChanged()
             }
+            discountItemBinding.layoutMenu.imgOrderMenu.setOnClickListener {
+                mCallback?.onItemClickListener(it, bindingAdapterPosition)
+            }
+
         }
     }
 

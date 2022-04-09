@@ -8,6 +8,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.widget.PopupMenu
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
@@ -25,13 +26,14 @@ import com.android.pos.ui.adapter.CategoriesListAdapter
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.SwipeHelper
+import com.android.pos.utils.callback.ItemCallback
 import com.android.pos.utils.extensions.alert
 import com.android.pos.utils.statusUtils.Status
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class Categories : Fragment() {
+class Categories : Fragment(),ItemCallback {
     private var isreOrder: Boolean = false
     private lateinit var adapter: CategoriesListAdapter
     private lateinit var binding: FragmentCategoriesBinding
@@ -150,70 +152,7 @@ class Categories : Fragment() {
         adapter = CategoriesListAdapter(false)
         binding.rvCategoriesList.adapter = adapter
 
-        object : SwipeHelper(activity, binding.rvCategoriesList) {
-            override fun instantiateUnderlayButton(
-                viewHolder: RecyclerView.ViewHolder?,
-                underlayButtons: MutableList<UnderlayButton?>
-            ) {
-
-                underlayButtons.add(UnderlayButton(
-                    "Hide",
-                    ContextCompat.getColor(context, R.color.swipe_text_color),
-                    ContextCompat.getColor(context, R.color.swipe_bg_hide)
-                ) { pos ->
-                    // hideCategoryCall(pos)
-
-                    alert(
-                        getString(R.string.app_name),
-                        getString(R.string.hide_category_message)
-                    ) {
-                        positiveButton(getString(R.string.deactivate)) {
-                            viewModel.deleteCategory(adapter.getItem(pos).id, true, false)
-                        }
-                        negativeButton(R.string.tv_cancel) {
-                            // Do negative stuff here
-                        }
-                    }
-
-                })
-                underlayButtons.add(UnderlayButton(
-                    "Edit",
-                    ContextCompat.getColor(context, R.color.swipe_text_color),
-                    ContextCompat.getColor(context, R.color.swipe_bg_edit)
-                ) { pos ->
-                    val bundle = Bundle()
-                    bundle.putBoolean("isEdit", true)
-                    bundle.putParcelable("categoryObject", adapter.getItem(pos))
-                    findNavController().navigate(
-                        R.id.action_inventory_to_createCategory,
-                        bundle
-                    )
-
-
-                })
-
-                underlayButtons.add(UnderlayButton(
-                    "Delete",
-                    ContextCompat.getColor(context, R.color.swipe_text_color),
-                    ContextCompat.getColor(context, R.color.swipe_bg_delete)
-                ) { pos ->
-
-                    alert(
-                        getString(R.string.app_name),
-                        getString(R.string.delete_category_message)
-                    ) {
-                        positiveButton(getString(R.string.tv_delete)) {
-                            viewModel.deleteCategory(adapter.getItem(pos).id, false, false)
-                        }
-                        negativeButton(R.string.tv_cancel) {
-                            // Do negative stuff here
-                        }
-                    }
-
-
-                })
-            }
-        }
+        adapter.setCallback(this)
 
         val touchHelper =
             ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(UP + DOWN, 0) {
@@ -310,6 +249,52 @@ class Categories : Fragment() {
             viewModel.reOrderCategory(categoryIdOld, newPos, oldPos)
         }
 
+    }
+
+    override fun onItemClickListener(view: View?, pos: Int) {
+        val popupMenu = view?.let { PopupMenu(requireContext(), it) }
+        popupMenu?.menuInflater?.inflate(R.menu.edit_delete__hide_menu, popupMenu.menu)
+        popupMenu?.setOnMenuItemClickListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.menu_edit -> {
+                    val bundle = Bundle()
+                    bundle.putBoolean("isEdit", true)
+                    bundle.putParcelable("categoryObject", adapter.getItem(pos))
+                    findNavController().navigate(
+                        R.id.action_inventory_to_createCategory,
+                        bundle
+                    )
+                }
+                R.id.menu_delete -> {
+                    alert(
+                        getString(R.string.app_name),
+                        getString(R.string.delete_category_message)
+                    ) {
+                        positiveButton(getString(R.string.tv_delete)) {
+                            viewModel.deleteCategory(adapter.getItem(pos).id, false, false)
+                        }
+                        negativeButton(R.string.tv_cancel) {
+                            // Do negative stuff here
+                        }
+                    }
+                }
+                R.id.menu_hide -> {
+                    alert(
+                        getString(R.string.app_name),
+                        getString(R.string.hide_category_message)
+                    ) {
+                        positiveButton(getString(R.string.deactivate)) {
+                            viewModel.deleteCategory(adapter.getItem(pos).id, true, false)
+                        }
+                        negativeButton(R.string.tv_cancel) {
+                            // Do negative stuff here
+                        }
+                    }
+                }
+            }
+            true
+        }
+        popupMenu?.show()
     }
 
 }

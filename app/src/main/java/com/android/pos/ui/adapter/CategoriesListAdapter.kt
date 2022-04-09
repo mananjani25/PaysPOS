@@ -10,6 +10,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.R
 import com.android.pos.data.entities.TbCategory
 import com.android.pos.databinding.ViewCategoryBinding
+import com.android.pos.utils.callback.ItemCallback
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -18,7 +19,10 @@ class CategoriesListAdapter(private val isChoose: Boolean) :
     var categoryList = ArrayList<TbCategory>()
     private var mpos: Int = -2
     private var filterList = ArrayList<TbCategory>()
-
+    private var mCallback: ItemCallback? = null
+    fun setCallback(callback: ItemCallback) {
+        mCallback = callback
+    }
     inner class MyViewHolder(private val binding: ViewCategoryBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
@@ -49,6 +53,11 @@ class CategoriesListAdapter(private val isChoose: Boolean) :
                     mpos = absoluteAdapterPosition
                     notifyDataSetChanged()
                 }
+            }
+
+
+            binding.layoutMenu.imgOrderMenu.setOnClickListener {
+                mCallback?.onItemClickListener(it, bindingAdapterPosition)
             }
 
         }

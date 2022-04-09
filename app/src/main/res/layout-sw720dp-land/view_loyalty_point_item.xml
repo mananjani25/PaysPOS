@@ -86,6 +86,11 @@
                 android:layout_marginStart="@dimen/_5sdp"
                 android:layout_marginEnd="@dimen/_10sdp"
                 app:srcCompat="@drawable/ic_play" />
+
+            <include
+                android:id="@+id/layout_menu"
+                layout="@layout/img_menu" />
+
         </androidx.appcompat.widget.LinearLayoutCompat>
 
         <View

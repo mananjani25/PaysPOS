@@ -58,6 +58,9 @@
                     android:layout_marginEnd="@dimen/_10sdp"
                     app:srcCompat="@drawable/ic_baseline_menu" />
 
+                <include
+                    android:id="@+id/layout_menu"
+                    layout="@layout/img_menu" />
 
             </androidx.appcompat.widget.LinearLayoutCompat>
 

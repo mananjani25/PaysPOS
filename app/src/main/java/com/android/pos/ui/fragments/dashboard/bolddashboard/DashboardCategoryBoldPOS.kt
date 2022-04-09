@@ -334,7 +334,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
             findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_paymentBoldPosFragment)
         } else {
             loadCartFragment(CartFragment(this, this))
-            loadCategoryFragment(CategoryFragment(this))
+            loadCategoryFragment(CategoryFragment(this,binding.layoutHeader.edtSearch))
         }
         binding.layoutHeader.txtUserName.text =
             prefProvider.getValue(EMPLOYEE_NAME, "")
@@ -416,7 +416,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
         binding.layoutHeaderCheckout.imgDrawer.setOnClickListener {
             binding.layoutHeaderCheckout.rlRoot.visibility = View.GONE
             binding.layoutHeader.rlRoot.visibility = View.VISIBLE
-            loadCategoryFragment(CategoryFragment(this))
+            loadCategoryFragment(CategoryFragment(this,binding.layoutHeader.edtSearch))
         }
 
         binding.layoutHeader.imgSync.setOnClickListener {
@@ -498,7 +498,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
 
 
     override fun onCancelItemSelected() {
-        loadCategoryFragment(CategoryFragment(this))
+        loadCategoryFragment(CategoryFragment(this,binding.layoutHeader.edtSearch))
 
     }
 

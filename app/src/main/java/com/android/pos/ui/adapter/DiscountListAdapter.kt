@@ -7,12 +7,17 @@ import com.android.pos.R
 import com.android.pos.data.entities.TbDiscount
 import com.android.pos.databinding.ViewDiscountItemBinding
 import com.android.pos.ui.fragments.settings.discount.DiscountListViewModel
+import com.android.pos.utils.callback.ItemCallback
 
 class DiscountListAdapter(val viewModel: DiscountListViewModel) :
     RecyclerView.Adapter<DiscountListAdapter.MyViewHolder>() {
 
     var discountList = ArrayList<TbDiscount>()
 
+    private var mCallback: ItemCallback? = null
+    fun setCallback(callback: ItemCallback) {
+        mCallback = callback
+    }
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
@@ -64,6 +69,12 @@ class DiscountListAdapter(val viewModel: DiscountListViewModel) :
 
     inner class MyViewHolder(val discountItemBinding: ViewDiscountItemBinding) :
         RecyclerView.ViewHolder(discountItemBinding.root) {
+
+        init {
+            discountItemBinding.layoutMenu.imgOrderMenu.setOnClickListener {
+                mCallback?.onItemClickListener(it, position)
+            }
+        }
 
         /*init {
 

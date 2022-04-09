@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.widget.PopupMenu
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -17,6 +18,7 @@ import com.android.pos.ui.adapter.TipsListAdapter
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.SwipeHelper
+import com.android.pos.utils.callback.ItemCallback
 import com.android.pos.utils.extensions.alert
 import com.android.pos.utils.extensions.liveSnackBar
 import com.android.pos.utils.extensions.showAlert
@@ -26,7 +28,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import java.util.*
 
 @AndroidEntryPoint
-class TipsList : Fragment() {
+class TipsList : Fragment(), ItemCallback {
 
     private var position: Int = -1
     private lateinit var binding: FragmentTipsBinding
@@ -63,53 +65,7 @@ class TipsList : Fragment() {
     private fun setUpRecyclerView() {
         tipListadapter = TipsListAdapter(viewModel)
         binding.rvTipList.adapter = tipListadapter
-
-        object : SwipeHelper(activity, binding.rvTipList) {
-            override fun instantiateUnderlayButton(
-                viewHolder: RecyclerView.ViewHolder?,
-                underlayButtons: MutableList<UnderlayButton?>
-            ) {
-
-                underlayButtons.add(UnderlayButton(
-                    "Edit",
-                    ContextCompat.getColor(context, R.color.swipe_text_color),
-                    ContextCompat.getColor(context, R.color.swipe_bg_edit)
-                ) { pos ->
-
-                    tipObject = tipListadapter.getItem(pos)
-                    val bundle = Bundle()
-                    bundle.putBoolean("isEdit", true)
-                    bundle.putParcelable("tipObject", tipObject)
-
-                    //     var bundle= bundleOf()
-                    findNavController().navigate(R.id.action_settings_to_addTip, bundle)
-
-                })
-
-                underlayButtons.add(UnderlayButton(
-                    "Delete",
-                    ContextCompat.getColor(context, R.color.swipe_text_color),
-                    ContextCompat.getColor(context, R.color.swipe_bg_delete)
-                ) { pos ->
-
-                    position = pos
-
-                    alert(
-                        getString(R.string.app_name),
-                        getString(R.string.delete_tip_message)
-                    ) {
-                        positiveButton(getString(R.string.tv_delete)) {
-                            // Do positive stuff here
-                            tipObject = tipListadapter.getItem(pos)
-                            viewModel.delete(tipListadapter.getItem(pos).id)
-                        }
-                        negativeButton(R.string.tv_cancel) {
-                            // Do negative stuff here
-                        }
-                    }
-                })
-            }
-        }
+        tipListadapter.setCallback(this)
     }
 
     private fun getTipListObserver() {
@@ -192,4 +148,41 @@ class TipsList : Fragment() {
 
     private fun setupSnackbar() =
         binding.root.liveSnackBar(this, viewModel.snackbarText, Snackbar.LENGTH_SHORT)
+
+    override fun onItemClickListener(view: View?, pos: Int) {
+        val popupMenu = view?.let { PopupMenu(requireContext(), it) }
+        popupMenu?.menuInflater?.inflate(R.menu.edit_delete_menu, popupMenu.menu)
+        popupMenu?.setOnMenuItemClickListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.menu_edit -> {
+                    tipObject = tipListadapter.getItem(pos)
+                    val bundle = Bundle()
+                    bundle.putBoolean("isEdit", true)
+                    bundle.putParcelable("tipObject", tipObject)
+
+                    //     var bundle= bundleOf()
+                    findNavController().navigate(R.id.action_settings_to_addTip, bundle)
+                }
+                R.id.menu_delete -> {
+                    position = pos
+
+                    alert(
+                        getString(R.string.app_name),
+                        getString(R.string.delete_tip_message)
+                    ) {
+                        positiveButton(getString(R.string.tv_delete)) {
+                            // Do positive stuff here
+                            tipObject = tipListadapter.getItem(pos)
+                            viewModel.delete(tipListadapter.getItem(pos).id)
+                        }
+                        negativeButton(R.string.tv_cancel) {
+                            // Do negative stuff here
+                        }
+                    }
+                }
+            }
+            true
+        }
+        popupMenu?.show()
+    }
 }

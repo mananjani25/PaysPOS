@@ -90,6 +90,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
 
         getDiscountList()
 
+        binding.layoutHeader.edtSearch.visibility=View.GONE
 
         return binding.root
     }
