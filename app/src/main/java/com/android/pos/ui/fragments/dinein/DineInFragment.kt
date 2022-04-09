@@ -171,10 +171,12 @@ class DineInFragment : Fragment() {
                         ProgressUtils.dismissProgressDialog()
 
                         if (resource.data != null && resource.data.data.isNotEmpty()) {
+
+                            Log.e(TAG,"loadFloorPlan${Gson().toJson(resource.data.data)}")
+
                             dineInFloorNameList =
                                 it.data!!.data as ArrayList<GetFloorPlanResponse.Data>
                             dineInFloorNameListAdapter.addFloorName(dineInFloorNameList)
-
 
                             setFloorPlan(dineInFloorNameList[floorPlanSelectedPos].floorPlanTables)
 
@@ -208,8 +210,6 @@ class DineInFragment : Fragment() {
                                     floorPlanSelectedPos =
                                         dineInFloorNameListAdapter.getSelectedPos()
                                     loadFloorPlan()
-
-
                                 }
 
                             }

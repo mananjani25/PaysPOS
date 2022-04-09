@@ -225,14 +225,8 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
         binding.rvCategoryParent.adapter?.notifyDataSetChanged()
 
         val listCategry = arrayListOf<TbItem?>()
-        listCategry.add(
-            0,
-            TbItem()
-        )
-        categoryList1[tabPos].inventoryLists?.let { it1 ->
-            listCategry.addAll(
-                it1
-            )
+        //listCategry.add(0, TbItem())
+        categoryList1[tabPos].inventoryLists?.let { it1 -> listCategry.addAll(it1)
         }
         (binding.rvItemList.adapter as ItemAdapter).list.clear()
         (binding.rvItemList.adapter as ItemAdapter).list = listCategry

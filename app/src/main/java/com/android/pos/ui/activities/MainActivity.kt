@@ -68,7 +68,7 @@ class MainActivity : BaseScannerActivity() {
         override fun onReceive(context: Context?, intent: Intent?) {
             AlertUtils.showCustomAlertWithYesNoListener(
                 context,
-                "you are clocked out in different System.\n you want to clock out forcefully in your System."
+                "You are clocked out in different System.\n Do you want to clock out forcefully in your System."
             ) { _, _ ->
                 clockoutFromSystem()
             }

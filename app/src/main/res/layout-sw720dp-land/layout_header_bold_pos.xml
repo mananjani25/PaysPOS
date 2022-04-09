@@ -107,7 +107,7 @@
                 android:drawablePadding="@dimen/_5sdp"
                 android:ellipsize="end"
                 android:gravity="center"
-                android:hint="SEARCH"
+                android:hint="Search item"
                 android:imeOptions="actionDone"
                 android:inputType="text"
                 android:lines="1"
