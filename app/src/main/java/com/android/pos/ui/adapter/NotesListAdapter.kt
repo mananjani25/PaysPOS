@@ -46,7 +46,12 @@ class NotesListAdapter(val viewModel: NoteListViewModel, val isAdd: Boolean) :
 
         if (isAdd) {
             itemBinding.imgCheckBox.visibility = View.GONE
-        } else itemBinding.imgCheckBox.visibility = View.VISIBLE
+            itemBinding.layoutMenu.imgOrderMenu.visibility = View.GONE
+        } else {
+            itemBinding.imgCheckBox.visibility = View.VISIBLE
+            itemBinding.layoutMenu.imgOrderMenu.visibility = View.VISIBLE
+
+        }
 
         itemBinding.executePendingBindings()
     }
@@ -60,8 +65,16 @@ class NotesListAdapter(val viewModel: NoteListViewModel, val isAdd: Boolean) :
         RecyclerView.ViewHolder(noteItemBinding.root) {
 
         init {
-            noteItemBinding.layoutMenu.imgOrderMenu.setOnClickListener {
-                mCallback?.onItemClickListener(it, bindingAdapterPosition)
+            if (isAdd){
+                noteItemBinding.root.setOnClickListener {
+                    mCallback?.onItemClickListener(it, bindingAdapterPosition)
+                }
+            }
+            else{
+                noteItemBinding.layoutMenu.imgOrderMenu.setOnClickListener {
+                    mCallback?.onItemClickListener(it, bindingAdapterPosition)
+                }
+
             }
 
         }

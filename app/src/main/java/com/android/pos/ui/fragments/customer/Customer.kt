@@ -8,6 +8,7 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
 import android.view.*
+import androidx.appcompat.widget.PopupMenu
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
@@ -27,6 +28,7 @@ import com.android.pos.ui.adapter.CustomerListAdapter
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.SwipeHelper
+import com.android.pos.utils.callback.ItemCallback
 import com.android.pos.utils.callback.PaginationScrollListener
 import com.android.pos.utils.extensions.alert
 import com.android.pos.utils.extensions.showAlert
@@ -35,7 +37,7 @@ import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class Customer : Fragment() {
+class Customer : Fragment(),ItemCallback {
 
     private lateinit var binding: FragmentCustomerBinding
     private lateinit var customerAdapter: CustomerListAdapter
@@ -369,17 +371,18 @@ class Customer : Fragment() {
 
         binding.rvEmployeeList.adapter = customerAdapter
 
+        customerAdapter.setCallback(this)
 
-        object : SwipeHelper(activity, binding.rvEmployeeList) {
-            override fun instantiateUnderlayButton(
-                viewHolder: RecyclerView.ViewHolder?,
-                underlayButtons: MutableList<UnderlayButton>
-            ) {
-                underlayButtons.add(UnderlayButton(
-                    "Delete",
-                    ContextCompat.getColor(context, R.color.swipe_text_color_d),
-                    ContextCompat.getColor(context, R.color.white_swipe)
-                ) { pos ->
+    }
+
+    override fun onItemClickListener(view: View?, pos: Int) {
+        val popupMenu = view?.let { PopupMenu(requireContext(), it) }
+        popupMenu?.menuInflater?.inflate(R.menu.edit_delete__hide_menu, popupMenu.menu)
+        popupMenu?.menu?.findItem(R.id.menu_edit)?.isVisible = false
+        popupMenu?.menu?.findItem(R.id.menu_hide)?.isVisible=false
+        popupMenu?.setOnMenuItemClickListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.menu_delete -> {
                     deletedPos = pos
                     alert(
                         getString(R.string.app_name),
@@ -398,12 +401,11 @@ class Customer : Fragment() {
 
 
                     Log.e(TAG, "posClicked  ${pos}")
-                })
-
-
+                }
             }
-
+            true
         }
+        popupMenu?.show()
     }
 
 

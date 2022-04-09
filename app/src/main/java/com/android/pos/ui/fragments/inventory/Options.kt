@@ -8,6 +8,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.widget.PopupMenu
 import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -22,12 +23,13 @@ import com.android.pos.ui.adapter.OptionListAdapter
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.SwipeHelper
+import com.android.pos.utils.callback.ItemCallback
 import com.android.pos.utils.extensions.alert
 import com.android.pos.utils.statusUtils.Status
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class Options : Fragment(), TextWatcher {
+class Options : Fragment(), TextWatcher,ItemCallback {
     private lateinit var binding: FragmentOptionsBinding
     private var isreOrder: Boolean = false
     var dragFrom = -1
@@ -67,6 +69,7 @@ class Options : Fragment(), TextWatcher {
         adapter = OptionListAdapter()
         binding.rvOptonList.adapter = adapter
         binding.edtSearch.addTextChangedListener(this)
+        adapter.setCallback(this)
     }
 
     private fun optionSetObserver() {
@@ -99,51 +102,6 @@ class Options : Fragment(), TextWatcher {
     }
 
     private fun swipeViewSetup() {
-
-        object : SwipeHelper(activity, binding.rvOptonList) {
-            override fun instantiateUnderlayButton(
-                viewHolder: RecyclerView.ViewHolder?,
-                underlayButtons: MutableList<UnderlayButton?>
-            ) {
-
-                underlayButtons.add(UnderlayButton(
-                    "Edit",
-                    ContextCompat.getColor(context, R.color.swipe_text_color),
-                    ContextCompat.getColor(context, R.color.swipe_bg_edit)
-                ) { pos ->
-                    val bundle = Bundle()
-                    bundle.putBoolean("isEdit", true)
-                    bundle.putParcelable("optionObject", adapter.getItem(pos))
-                    findNavController().navigate(
-                        R.id.action_inventory_to_createOption,
-                        bundle
-                    )
-
-
-                })
-
-                underlayButtons.add(UnderlayButton(
-                    "Delete",
-                    ContextCompat.getColor(context, R.color.swipe_text_color),
-                    ContextCompat.getColor(context, R.color.swipe_bg_delete)
-                ) { pos ->
-
-                    alert(
-                        getString(R.string.app_name),
-                        getString(R.string.delete_option_message)
-                    ) {
-                        positiveButton(getString(R.string.tv_delete)) {
-                            adapter.getItem(pos).id?.let { viewModel.deleteOptionSet(it) }
-                        }
-                        negativeButton(R.string.tv_cancel) {
-                            // Do negative stuff here
-                        }
-                    }
-
-
-                })
-            }
-        }
 
         val touchHelper =
             ItemTouchHelper(object :
@@ -254,5 +212,38 @@ class Options : Fragment(), TextWatcher {
 
     override fun afterTextChanged(s: Editable?) {
         adapter.filter.filter(s.toString().trim())
+    }
+
+    override fun onItemClickListener(view: View?, pos: Int) {
+        val popupMenu = view?.let { PopupMenu(requireContext(), it) }
+        popupMenu?.menuInflater?.inflate(R.menu.edit_delete_menu, popupMenu.menu)
+        popupMenu?.setOnMenuItemClickListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.menu_edit -> {
+                    val bundle = Bundle()
+                    bundle.putBoolean("isEdit", true)
+                    bundle.putParcelable("optionObject", adapter.getItem(pos))
+                    findNavController().navigate(
+                        R.id.action_inventory_to_createOption,
+                        bundle
+                    )
+                }
+                R.id.menu_delete -> {
+                    alert(
+                        getString(R.string.app_name),
+                        getString(R.string.delete_option_message)
+                    ) {
+                        positiveButton(getString(R.string.tv_delete)) {
+                            adapter.getItem(pos).id?.let { viewModel.deleteOptionSet(it) }
+                        }
+                        negativeButton(R.string.tv_cancel) {
+                            // Do negative stuff here
+                        }
+                    }
+                }
+            }
+            true
+        }
+        popupMenu?.show()
     }
 }

@@ -458,6 +458,10 @@ class PosRepository @Inject constructor(
     suspend fun deleteEmployee(data: Int) =
         apiHelperNew.deleteEmployee(data)
 
+
+    suspend fun deleteAllEmployee() =
+        appDatabase.employeeDao().delete()
+
     suspend fun searchCustomer(query: String) =
         apiHelperNew.searchCustomers(query)
 
