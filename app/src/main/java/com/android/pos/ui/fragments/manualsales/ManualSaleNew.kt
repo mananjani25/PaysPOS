@@ -196,7 +196,6 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
 
     private fun getManualCategoryId() {
 
-/*
         viewModel.returnedVal.observe(viewLifecycleOwner) {
 
             if (it != null) {
@@ -205,7 +204,6 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
             }
 
         }
-*/
     }
 
     private fun getLoyaltyPrograms() {
@@ -814,8 +812,8 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
 
             }
 
-            tabItemMOdel.itemId = Random.nextInt(1,1000)
-            tabItemMOdel.categoryId = Random.nextInt(1,1000)
+            tabItemMOdel.itemId = manualItemId
+            tabItemMOdel.categoryId = manualCategoryId
 
             tabItemMOdel.taxes = taxList
             viewModel.ordertypelist.forEach {

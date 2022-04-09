@@ -81,7 +81,7 @@ class HideCategoryListing : Fragment() {
 
                         } else {
 
-                            binding.edtSearch.hint = "Search Categories"
+                            binding.edtSearch.hint = "Search (" + 0 + ") Categories"
                             binding.txtNodata.visibility = View.VISIBLE
                             if (it.message != null && it.message.isNotEmpty())
                                 binding.txtNodata.text = it.message

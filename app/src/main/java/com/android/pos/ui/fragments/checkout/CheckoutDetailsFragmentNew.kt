@@ -32,10 +32,7 @@ import com.android.pos.ui.fragments.magtek.PaymentResponse
 import com.android.pos.ui.fragments.magtekPro.MTParser
 import com.android.pos.ui.fragments.magtekPro.SessionManager
 import com.android.pos.ui.fragments.payment.PaymentViewModel
-import com.android.pos.utils.AlertUtils
-import com.android.pos.utils.MethodUtils
-import com.android.pos.utils.ProgressUtils
-import com.android.pos.utils.TLVParser
+import com.android.pos.utils.*
 import com.android.pos.utils.callback.DeleteOptionCallback
 import com.android.pos.utils.callback.magtekCallback
 import com.android.pos.utils.extensions.gone
@@ -646,12 +643,12 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
                 "%.2f",
                 getCalCashDiscWithAmount(WholetotalPrice, false) / isSelectedCount
             ).toDouble()
-//            makePaymentCreditCard()
-            if (device == 0) {
-                magtekPaymentCall()
-            } else {
-                magtekProPaymentCall()
-            }
+            makePaymentCreditCard()
+//            if (device == 0) {
+//                magtekPaymentCall()
+//            } else {
+//                magtekProPaymentCall()
+//            }
         }
         binding.llManualCardEntry.setOnClickListener {
             binding.frameLayoutId.visible()
@@ -733,38 +730,20 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
             val cardCVV = binding.edtCVV.text.toString().trim()
 
             when {
-                cardNumber.isEmpty() -> {
-                    errorDisplay("Please enter card number")
-                }
-                cardNumber.length < 16 -> {
+                !CardValidator.validateCardNumber(cardNumber) -> {
                     errorDisplay("Please enter valid card number")
                 }
-                cardExpDate.isEmpty() -> {
-                    errorDisplay("Please enter card expiration date")
-                }
-                cardExpDate.length < 4 -> {
+
+                !CardValidator.validateExpiryDate(
+                    cardExpDate.take(2),
+                    cardExpDate.takeLast(2)
+                ) -> {
                     errorDisplay("Please enter valid card expiration date")
                 }
-                cardExpDate.take(2).toInt() > 12  -> {
-
-                    errorDisplay("Please enter valid card expiration month")
-                }
-                cardExpDate.take(2).toInt() < 1   -> {
-
-                    errorDisplay("Please enter valid card expiration month")
-                }
-                cardCVV.isEmpty() -> {
-                    errorDisplay("Please enter CVV number")
-                }
-                !MethodUtils.isValidCVVNumber(cardCVV) -> {
+                !CardValidator.validateCVV(cardCVV, CardValidator.getCardType(cardNumber)) -> {
                     errorDisplay("Please enter valid CVV number")
                 }
                 else -> {
-
-                    Log.e("MM", cardExpDate.take(2))
-                    Log.e("YY", cardExpDate.takeLast(2))
-
-
 
                     manualCardPaymentCall(
                         cardNumber,
@@ -773,8 +752,6 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
                     )
                 }
             }
-
-
         }
     }
 
