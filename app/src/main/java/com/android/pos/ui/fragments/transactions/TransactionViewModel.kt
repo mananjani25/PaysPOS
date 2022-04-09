@@ -197,7 +197,6 @@ class TransactionViewModel @Inject constructor(
 
                             resource.data?.let { timeSheetResponse ->
                                 _data.value = Event(timeSheetResponse)
-
                             }
                         } else {
                             _snackbarText.value = Event(resource.message)
