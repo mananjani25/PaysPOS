@@ -8,11 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.os.bundleOf
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
-import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.setFragmentResultListener
-import androidx.fragment.app.viewModels
+import androidx.fragment.app.*
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.data.remote.Constants
@@ -23,8 +19,8 @@ import com.android.pos.databinding.FragmentPaymentBoldPosBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.fragments.checkout.CheckoutDetailsFragmentNew
 import com.android.pos.ui.fragments.checkout.CheckoutDineInFragmentNew
-import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.android.pos.ui.fragments.checkout.CheckoutDineInPaymentViewModel
+import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.android.pos.ui.fragments.dashboard.bolddashboard.CartFragment
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.TAG
@@ -71,11 +67,12 @@ class PaymentBoldPosFragment : Fragment() {
 
         loadCartFragment(CartFragment(null, null))
         if (prefProvider.getValue(ORDER_TYPE, "") == Constants.DINE_IN) {
-            Handler(Looper.getMainLooper()).postDelayed({ /* Create an Intent that will start the Menu-Activity. */
-                loadCategoryFragment(CheckoutDineInFragmentNew())
+            var dineInOrderId = requireArguments().getInt("orderId")
+            Handler(Looper.getMainLooper()).postDelayed({
+                loadCategoryFragment(CheckoutDineInFragmentNew.newInstacne(dineInOrderId))
             }, 100)
         } else {
-            Handler(Looper.getMainLooper()).postDelayed({ /* Create an Intent that will start the Menu-Activity. */
+            Handler(Looper.getMainLooper()).postDelayed({
                 loadCategoryFragment(CheckoutDetailsFragmentNew())
             }, 100)
 
@@ -93,7 +90,7 @@ class PaymentBoldPosFragment : Fragment() {
         setFragmentResultListener(
             "request_key_tips"
         ) { requestKey: String, bundle: Bundle ->
-            Log.d(TAG, "onViewCreated: " + bundle)
+
         }
     }
 
@@ -101,7 +98,8 @@ class PaymentBoldPosFragment : Fragment() {
         binding.layoutHeaderCheckout.tvAddTip.setOnClickListener {
             findNavController().navigate(
                 R.id.action_paymentBoldPosFragment_to_addTipDialog,
-                bundleOf("totalTip" to viewModel.tipTransactionAmount))
+                bundleOf("totalTip" to viewModel.tipTransactionAmount)
+            )
         }
         binding.layoutHeaderCheckout.tvAddDiscount.setOnClickListener {
             findNavController().navigate(R.id.action_paymentBoldPosFragment_to_addDiscountDialogFragment)
@@ -111,7 +109,7 @@ class PaymentBoldPosFragment : Fragment() {
     override fun onPause() {
         super.onPause()
         Log.e(TAG, "onPause")
-        if(!prefProvider.getValueboolean(SPLIT_ENABLE,false)){
+        if (!prefProvider.getValueboolean(SPLIT_ENABLE, false)) {
             removeCustomer()
             dineInPaymentViewModel.deleteCart()
             prefProvider.setValue(Constants.ORDER_TYPE, Constants.TAKEOUT)

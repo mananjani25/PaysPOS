@@ -505,16 +505,7 @@ open class PaymentViewModel @Inject constructor(
             orderServiceChargesAttributes(cartModel, subTotalPrice)
         if (cartModel.orderType == DINE_IN) {
             orderAttributeRequestModel.guestsAttributes = getGuestsAttributes(cartModel)
-            Log.e(
-                TAG,
-                "guestsAttributesData:  ${Gson().toJson(orderAttributeRequestModel.guestsAttributes)}"
-            )
-
             orderAttributeRequestModel.orderItemsAttributes = dineInOrderItemAttributed(cartModel)
-            Log.e(
-                TAG,
-                "dineInOrderItemData:  ${Gson().toJson(orderAttributeRequestModel.orderItemsAttributes)}"
-            )
         } else {
 
             orderAttributeRequestModel.orderItemsAttributes = orderItemsAttributes(cartModel)
@@ -985,11 +976,11 @@ open class PaymentViewModel @Inject constructor(
         for (i in 0 until cartModel.dineInList?.size!!) {
             cartModel.dineInList?.get(i)?.items?.forEach { item ->
 
-                Log.e(TAG,"getItemDinefas  ${Gson().toJson(item)}")
+                Log.e(TAG, "getItemDinefas  ${Gson().toJson(item)}")
                 val orderItemsAttribute = OrderItemsAttribute()
 
                 if (isUpdateOrder && item.orderItemId != null)
-                    orderItemsAttribute.id = item.itemId
+                    orderItemsAttribute.id = item.orderItemId
 
 
                 orderItemsAttribute.category_id = item.categoryId
@@ -1014,7 +1005,8 @@ open class PaymentViewModel @Inject constructor(
                 orderItemsAttribute.timestamp = System.currentTimeMillis().toString()
                 orderItemsAttribute.totalPrice =
                     MethodUtils.roundOffAmountDouble(item.price * item.itemQuantity)
-                orderItemsAttribute.orderItemTaxesAttributes = orderItemTaxesAttributesForDineIn(item)
+                orderItemsAttribute.orderItemTaxesAttributes =
+                    orderItemTaxesAttributesForDineIn(item)
                 orderItemsAttribute.orderItemModifiersAttributes =
                     orderItemModifierAttributes(item, cartModel.terminalId)
 
@@ -1269,7 +1261,7 @@ open class PaymentViewModel @Inject constructor(
     }
 
     private fun orderItemTaxesAttributesForDineIn(items: TbItem): List<OrderItemTaxesAttribute> {
-        Log.e(TAG,"getDineitems:  ${Gson().toJson(items)}")
+        Log.e(TAG, "getDineitems:  ${Gson().toJson(items)}")
 
         val orderItemTaxesAttributeList: ArrayList<OrderItemTaxesAttribute> =
             arrayListOf()
@@ -1280,19 +1272,17 @@ open class PaymentViewModel @Inject constructor(
 
                 val orderItemTaxesAttribute = OrderItemTaxesAttribute()
 
-                if (isUpdateOrder && tax.orderTaxId != null)
-                    orderItemTaxesAttribute.id = tax.orderTaxId
+                if (isUpdateOrder && tax.id != null)
+                    orderItemTaxesAttribute.id = tax.id
 
                 orderItemTaxesAttribute.isDefault = tax.isDefault
                 orderItemTaxesAttribute.isTaxRemoved = true
                 orderItemTaxesAttribute.name = tax.name.toString()
                 orderItemTaxesAttribute.rate = tax.rate
-                tax.orderTaxId?.let {
 
-                    orderItemTaxesAttribute.taxId = it
+                if (tax.orderTaxId != null) {
+                    tax.orderTaxId?.let { orderItemTaxesAttribute.taxId = it }
                 }
-
-
 
                 orderItemTaxesAttribute.orderItemId = items.orderItemId
                 orderItemTaxesAttribute.orderId = orderId
