@@ -66,11 +66,22 @@ class MainActivity : BaseScannerActivity() {
     private lateinit var mFirebaseAnalytics: FirebaseAnalytics
     var broadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
-            AlertUtils.showCustomAlertWithYesNoListener(
-                context,
-                "You are clocked out in different System.\n Do you want to clock out forcefully in your System."
-            ) { _, _ ->
-                clockoutFromSystem()
+            var message = intent?.getStringExtra("message")
+            var isAuto = intent?.getBooleanExtra("isAuto",false)
+            if (isAuto == true) {
+                AlertUtils.showCustomAlertWithYesNoListener(
+                    context,
+                    message
+                ) { _, _ ->
+                    clockoutFromSystem()
+                }
+            } else {
+                AlertUtils.showCustomAlertWithYesNoListener(
+                    context,
+                    "You are clocked out in different System.\n Do you want to clock out forcefully in your System."
+                ) { _, _ ->
+                    clockoutFromSystem()
+                }
             }
         }
 
