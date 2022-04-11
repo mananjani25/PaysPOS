@@ -86,7 +86,7 @@
                         android:layout_marginStart="@dimen/_10sdp"
                         android:text="$"
                         android:textColor="@color/txtColor"
-                        android:textSize="@dimen/_6mdpi"
+                        android:textSize="@dimen/_7mdpi"
                         app:layout_constraintBottom_toBottomOf="@+id/edtAmount"
                         app:layout_constraintEnd_toStartOf="@+id/edtAmount"
                         app:layout_constraintTop_toTopOf="@+id/edtAmount" />
@@ -118,7 +118,7 @@
                         android:layout_height="wrap_content"
                         android:text="%"
                         android:textColor="@color/txtColor"
-                        android:textSize="@dimen/_6mdpi"
+                        android:textSize="@dimen/_7mdpi"
                         android:visibility="gone"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toStartOf="@+id/linearLayout"
@@ -139,6 +139,7 @@
                         app:layout_constraintTop_toTopOf="parent">
 
                         <TextView
+                            style="@style/CustomFontSemiBold"
                             android:id="@+id/txtCurrencyPercentage"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -148,9 +149,11 @@
                             android:paddingStart="@dimen/_7sdp"
                             android:paddingEnd="@dimen/_7sdp"
                             android:text="%"
+                            android:textSize="@dimen/_5mdpi"
                             android:textColor="@color/txtColor" />
 
                         <TextView
+                            style="@style/CustomFontSemiBold"
                             android:id="@+id/txtCurrencyDollar"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
@@ -160,6 +163,7 @@
                             android:paddingStart="@dimen/_7sdp"
                             android:paddingEnd="@dimen/_7sdp"
                             android:text="$"
+                            android:textSize="@dimen/_5mdpi"
                             android:textColor="@color/txtColor" />
 
 

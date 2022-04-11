@@ -4,6 +4,7 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.android.pos.R
 import com.android.pos.data.entities.TbItem
 import com.android.pos.databinding.ViewCategoryItemBoldBinding
 import com.android.pos.ui.adapter.CategoryItemAdapter1
@@ -28,7 +29,8 @@ class ItemAdapter(
 
             binding.linearItem.setOnClickListener {
                 list[bindingAdapterPosition]?.let { listener.onClick(it) }
-
+                binding.txtCategoryName.setTextColor(binding.root.resources.getColor(R.color.white))
+                binding.txtPrice.setTextColor(binding.root.resources.getColor(R.color.white))
             }
         }
 

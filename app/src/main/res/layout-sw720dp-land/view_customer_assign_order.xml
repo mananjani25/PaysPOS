@@ -26,6 +26,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
+            android:layout_gravity="center_vertical"
+            android:gravity="center_vertical"
             android:paddingVertical="@dimen/_7sdp">
 
             <androidx.appcompat.widget.LinearLayoutCompat
@@ -86,6 +88,7 @@
                 android:textColor="@color/hint_color"
                 android:textSize="@dimen/_5mdpi"
                 tools:text="(200) 300-4000"
+                android:visibility="gone"
                 android:layout_marginTop="@dimen/_3sdp"
                 android:layout_marginStart="@dimen/_3sdp"/>
         </androidx.appcompat.widget.LinearLayoutCompat>
