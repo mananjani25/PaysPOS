@@ -19,7 +19,6 @@ import com.android.pos.R
 import com.android.pos.databinding.FragmentTagtekBinding
 import com.android.pos.ui.fragments.magtek.MagtekViewModel
 import com.android.pos.utils.AlertUtils
-import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.callback.ItemCallback
 import com.android.pos.utils.extensions.runOnUiThread
 import com.magtek.mobile.android.mtusdk.*
@@ -114,7 +113,9 @@ class MagtekProFragment : Fragment(), ItemCallback, IDeviceListCallback {
         }
 
         binding.txtHome.setOnClickListener {
-            findNavController().navigate(R.id.action_magtekFragment_to_dashboardCategoryBoldPOS)
+            if (findNavController().currentDestination?.id == R.id.magtekProFragment) {
+                findNavController().navigate(R.id.action_magtekFragment_to_dashboardCategoryBoldPOS)
+            }
         }
 
         mContaxt = requireContext()

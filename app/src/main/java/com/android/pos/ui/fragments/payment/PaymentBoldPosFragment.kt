@@ -71,23 +71,44 @@ class PaymentBoldPosFragment : Fragment() {
         if (prefProvider.getValue(
                 ORDER_TYPE,
                 TAKEOUT
-            ) == DINE_IN && requireArguments().getBoolean("isGuestPay")
+            ) == DINE_IN
 
         ) {
-            dineinCartPaymentModel = requireArguments().getParcelable<DineinCartPaymentModel>("dineinPaymentModel")
-            var model = GuestPaymentCalculationModel(
-                requireArguments().getDouble("subTotalB"),
-                requireArguments().getDouble("totalB"),
-                requireArguments().getDouble("serviceChargeB"),
-                requireArguments().getDouble("totalTaxB"),
-                requireArguments().getDouble("divideCashDiscount"),
-                requireArguments().getDouble("dicountB"),
-                requireArguments().getInt("id"),
-                dineinCartPaymentModel
 
-            )
+            val isGuest = requireArguments().getBoolean("isGuestPay")
+            if (isGuest) {
+                dineinCartPaymentModel =
+                    requireArguments().getParcelable<DineinCartPaymentModel>("dineinPaymentModel")
+                var model = GuestPaymentCalculationModel(
+                    requireArguments().getDouble("subTotalB"),
+                    requireArguments().getDouble("totalB"),
+                    requireArguments().getDouble("serviceChargeB"),
+                    requireArguments().getDouble("totalTaxB"),
+                    requireArguments().getDouble("divideCashDiscount"),
+                    requireArguments().getDouble("dicountB"),
+                    requireArguments().getInt("id"),
+                    dineinCartPaymentModel
 
-            loadCartFragment(CartFragment(null,null,true,model))
+                )
+
+                loadCartFragment(CartFragment(null, null, true, model))
+            }
+            else{
+
+                var model = GuestPaymentCalculationModel(
+                    requireArguments().getDouble("subTotalPrice"),
+                    requireArguments().getDouble("totalPrice"),
+                    requireArguments().getDouble("totalServiceCharge"),
+                    requireArguments().getDouble("totalTax"),
+                    0.0,
+                    requireArguments().getDouble("totalDiscount"),
+
+
+
+                )
+                loadCartFragment(CartFragment(null, null, true, model))
+
+            }
         } else {
             loadCartFragment(CartFragment(null, null))
         }
