@@ -124,8 +124,6 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
         val device = prefProvider.getValueInt(Constants.MAGTEK_HARDWARE, 0)
 
         if (device == 0) {
-//            magtekPaymentCall()
-
             magtekModule.setupInit()
             magtekModule.setCallback(this)
         } else {

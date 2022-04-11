@@ -55,7 +55,7 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class CheckoutDineInFragmentNew : Fragment(), magtekCallback,
-    DeleteOptionCallback {
+    DeleteOptionCallback ,IDeviceListCallback{
     private var isManualCard: Boolean = false
     private lateinit var binding: FragmentCheckoutDetailsNewBinding
     private val TAG = "DashboardCategoryBold"
@@ -140,8 +140,15 @@ class CheckoutDineInFragmentNew : Fragment(), magtekCallback,
         binding = FragmentCheckoutDetailsNewBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = this
 
-        magtekModule.setupInit()
-        magtekModule.setCallback(this)
+        val device = prefProvider.getValueInt(Constants.MAGTEK_HARDWARE, 0)
+
+        if (device == 0) {
+            magtekModule.setupInit()
+            magtekModule.setCallback(this)
+        } else {
+            mSessionManager.setDineInFragment(this)
+
+        }
 
 
         orderId = arguments?.getInt("orderId")
@@ -1538,13 +1545,26 @@ class CheckoutDineInFragmentNew : Fragment(), magtekCallback,
         if (mSessionManager.isConnected) {
             startTransaction()
         } else {
-            if (mSessionManager.device != null) {
-                mSessionManager.connectDevice()
-            } else {
-                ProgressUtils.dismissProgressDialog()
-                dismissDialog()
-                AlertUtils.showCustomAlert(requireActivity(), "Please connect device")
-            }
+            val deviceList: List<IDevice> = CoreAPI.getDeviceList(context, DeviceType.MMS, this)
+            setupList(deviceList)
+
+        }
+    }
+
+    private fun setupList(deviceList: List<IDevice>) {
+
+        if (deviceList.isNotEmpty()) {
+
+            val device = deviceList[0]
+            mSessionManager.device = device
+            mSessionManager.connectDevice()
+        }
+
+    }
+
+    override fun OnDeviceList(mlist: MutableList<IDevice>?) {
+        if (mlist != null) {
+            setupList(mlist)
         }
     }
 
