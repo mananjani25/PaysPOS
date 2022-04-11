@@ -53,7 +53,7 @@ import javax.inject.Inject
 
 
 @AndroidEntryPoint
-class CartFragment(val itemClickListner: ItemClickListner?, val itemListner: ItemListner?) :
+class CartFragment(val itemClickListner: ItemClickListner?, val itemListner: ItemListner?,val isFromPaymentDinein:Boolean=false,val guestCalModel:GuestPaymentCalculationModel?=null) :
     Fragment(), MyCallback,
     DineInAdapter.DineInCallback {
     private lateinit var binding: FragmentCartBinding
@@ -404,35 +404,7 @@ class CartFragment(val itemClickListner: ItemClickListner?, val itemListner: Ite
                         ?.let { it1 -> cartAdapter.setList(it1) }
 
                     cartlist = it as ArrayList<CartModel>
-                    if (isFromPayment && prefProvider.getValue(
-                            ORDER_TYPE,
-                            TAKEOUT
-                        ) == DINE_IN
-                    ) {
-                        Log.e(TAG, "TotalPrice:  ${requireArguments().getDouble("totalPrice")}")
-                        var model = GuestPaymentCalculationModel(
-                            requireArguments().getDouble("subTotalPrice"),
-                            requireArguments().getDouble("totalPrice"),
-                            requireArguments().getDouble("totalServiceCharge"),
-                            requireArguments().getDouble("totalTax"),
-                            requireArguments().getDouble("divideCashDiscount"),
-                            requireArguments().getDouble("totalDiscount"),
-                        )
 
-                        viewModel.itemCalculationForDineInPayment(
-                            it[0],
-                            binding.txtTotal,
-                            requireContext(),
-                            model
-                        )
-                    } else {
-                        Log.e(TAG,"WithOutDineIn")
-                        viewModel.itemCalculationCartModel(
-                            it[0],
-                            binding.txtTotal,
-                            requireContext()
-                        )
-                    }
                     viewModel.setCartModel(it)
                     binding.txtSubTotal.text =
                         MethodUtils.roundOffAmount(viewModel.subTotalPrice)
@@ -560,11 +532,30 @@ class CartFragment(val itemClickListner: ItemClickListner?, val itemListner: Ite
 
 
                         }
-                        viewModel.itemCalculationCartModel(
+                        Log.e(TAG,"getPAyment:  ${isFromPayment}")
+
+                        if (isFromPaymentDinein) {
+                            Log.e(TAG, "TotalPrice:  ${requireArguments().getDouble("totalPrice")}")
+
+                            viewModel.itemCalculationForDineInPayment(
+                                it[0],
+                                binding.txtTotal,
+                                requireContext(),
+                                guestCalModel!!
+                            )
+                        } else {
+                            Log.e(TAG,"WithOutDineIn")
+                            viewModel.itemCalculationCartModel(
+                                it[0],
+                                binding.txtTotal,
+                                requireContext()
+                            )
+                        }
+                      /*  viewModel.itemCalculationCartModel(
                             it[0],
                             binding.txtTotal,
                             requireContext()
-                        )
+                        )*/
                         viewModel.setCartModel(it)
                         if (prefProvider.getValueboolean(Constants.DINE_IN_UPDATE, false) == true) {
 

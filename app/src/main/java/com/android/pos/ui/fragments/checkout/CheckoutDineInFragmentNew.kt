@@ -794,6 +794,8 @@ class CheckoutDineInFragmentNew : Fragment(), magtekCallback,
         redeemLoyaltyInfo = viewModel.redeemLoyaltyInfo
         prefProvider.setValue(Constants.ORDER_TYPE, Constants.DINE_IN)
         if (prefProvider.getValue(Constants.WHOLE_AMOUNT, "").isEmpty()) {
+            Log.e(TAG,"totalPrice  ${viewModel.totalPrice}")
+
             WholetotalPrice = viewModel.totalPrice
             prefProvider.setValue(
                 Constants.WHOLE_AMOUNT,

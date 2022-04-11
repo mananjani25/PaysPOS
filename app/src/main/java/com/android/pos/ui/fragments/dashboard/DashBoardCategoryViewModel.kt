@@ -2431,7 +2431,8 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                }
    */
-            serviceChargeCalculationModel(cartModel)
+            totalServiceCharge = model.serviceCharge
+           // serviceChargeCalculationModel(cartModel)
             subTotalPrice -= cartModel.discountPrice
             totalDiscount += cartModel.discountPrice
          /*   cartModel.dineInList?.forEach {
@@ -2476,6 +2477,8 @@ class DashBoardCategoryViewModel @Inject constructor(
             } else {
                 cashdiscountAmount = 0.0
             }
+
+            MethodUtils.roundOffAmount(model.total)
 
 
         } else {

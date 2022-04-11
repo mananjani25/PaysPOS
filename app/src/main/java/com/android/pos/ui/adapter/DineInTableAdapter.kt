@@ -271,11 +271,12 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                 listner.onGuestPay(
                     list[position],
                     position,
-                    MethodUtils.roundOffAmountDouble(guestSubTotal + list.get(0).wholeTableSubTotal),
+                    MethodUtils.roundOffAmountDouble(guestSubTotal),
                     MethodUtils.roundOffAmountDouble(finalAmt),
-                    MethodUtils.roundOffAmountDouble(totalTaxAmt + list.get(0).wholeTableTax),
-                    MethodUtils.roundOffAmountDouble(totalServiceCharge + list.get(0).wholeTableSurTax),
-                    guestOrderDisShare
+                    MethodUtils.roundOffAmountDouble(totalTaxAmt ),
+                    MethodUtils.roundOffAmountDouble(totalServiceCharge),
+                    guestOrderDisShare,
+                    list[0].guestDividedAmt
 
                 )
             }
@@ -616,7 +617,8 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             total: Double,
             tax: Double,
             serviceCharge: Double,
-            discount: Double
+            discount: Double,
+            guestDividedAmt: Double
         )
 
         fun onSendItemToKitchen(item: TbItem)

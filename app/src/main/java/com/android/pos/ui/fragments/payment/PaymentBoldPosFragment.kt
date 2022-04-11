@@ -11,10 +11,13 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.*
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
+import com.android.pos.data.model.GuestPaymentCalculationModel
 import com.android.pos.data.remote.Constants
+import com.android.pos.data.remote.Constants.DINE_IN
 import com.android.pos.data.remote.Constants.ORDER_TYPE
 import com.android.pos.data.remote.Constants.REDIRECT_FROM
 import com.android.pos.data.remote.Constants.SPLIT_ENABLE
+import com.android.pos.data.remote.Constants.TAKEOUT
 import com.android.pos.databinding.FragmentPaymentBoldPosBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.fragments.checkout.CheckoutDetailsFragmentNew
@@ -63,9 +66,25 @@ class PaymentBoldPosFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        if (prefProvider.getValue(
+                ORDER_TYPE,
+                TAKEOUT
+            ) == DINE_IN && requireArguments().getBoolean("isGuestPay")
 
+        ) {
+            var model = GuestPaymentCalculationModel(
+                requireArguments().getDouble("subTotalB"),
+                requireArguments().getDouble("totalB"),
+                requireArguments().getDouble("serviceChargeB"),
+                requireArguments().getDouble("totalTaxB"),
+                requireArguments().getDouble("divideCashDiscount"),
+                requireArguments().getDouble("dicountB"),
+            )
 
-        loadCartFragment(CartFragment(null, null))
+            loadCartFragment(CartFragment(null,null,true,model))
+        } else {
+            loadCartFragment(CartFragment(null, null))
+        }
         if (prefProvider.getValue(ORDER_TYPE, "") == Constants.DINE_IN) {
             var dineInOrderId = requireArguments().getInt("orderId")
             Handler(Looper.getMainLooper()).postDelayed({
