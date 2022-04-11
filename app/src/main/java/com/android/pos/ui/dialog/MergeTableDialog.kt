@@ -168,6 +168,8 @@ class MergeTableDialog : DialogFragment() {
                 tempTableList = list.get(0).listTable.filter { it ->
                     it.floorId == list.get(0).listFloorPlan.get(position).id
                 }.toCollection(arrayListOf())
+                var sortedlist = tempTableList.toList().sortedBy { it.id }
+                tempTableList = ArrayList(sortedlist)
                 tableAdapter.clear()
                 tableAdapter.addAll(tempTableList)
                 tableAdapter.notifyDataSetChanged()

@@ -173,6 +173,7 @@ class CheckoutDineInFragmentNew : Fragment(), magtekCallback,
             viewLifecycleOwner
         ) { _: String, bundle: Bundle ->
             tipAmount = bundle.getDouble("tipAmount")
+            viewModel.setTipAmount(tipAmount)
             tipID = bundle.getInt("tipId")
             tipAmountCalculation()
         }

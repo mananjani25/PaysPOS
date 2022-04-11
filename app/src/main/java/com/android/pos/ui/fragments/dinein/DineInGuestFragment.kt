@@ -14,6 +14,7 @@ import com.android.pos.R
 import com.android.pos.data.entities.TbServiceCharge
 import com.android.pos.data.model.responseModel.GetFloorPlanResponse
 import com.android.pos.data.remote.Constants
+import com.android.pos.data.remote.Constants.AVAILABLE
 import com.android.pos.data.remote.Constants.DINE_IN
 import com.android.pos.data.remote.Constants.DINE_IN_TABLE_ID
 import com.android.pos.data.remote.Constants.MERGED
@@ -121,6 +122,12 @@ class DineInGuestFragment : Fragment(), GuestListAdapter.GuestListner {
 
         Log.e(TAG,"DineMergeStatus  ${dineInFloorTableModel.status}")
 
+        if(dineInFloorTableModel.status== AVAILABLE){
+            viewModelDash.deleteCart()
+            prefProvider.setValue(Constants.CUSTOMER_NAME, "")
+            prefProvider.setValue(Constants.PREF_CUSTOMER, "")
+            prefProvider.setValueInt(Constants.CUSTOMER_ID, -1)
+        }
         if (dineInFloorTableModel.status == MERGED){
             viewModel.getTableStatus(dineInFloorTableModel.id, MERGED)
         }
