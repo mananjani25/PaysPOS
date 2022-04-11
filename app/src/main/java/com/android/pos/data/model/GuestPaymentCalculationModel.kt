@@ -6,5 +6,7 @@ data class GuestPaymentCalculationModel(
     val serviceCharge: Double,
     val tax: Double,
     val cashDiscount: Double,
-    val totalDiscount: Double
+    val totalDiscount: Double,
+    val guestId:Int,
+    val model:DineinCartPaymentModel?=null
 )

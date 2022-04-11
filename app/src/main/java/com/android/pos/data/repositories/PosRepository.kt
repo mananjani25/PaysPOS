@@ -788,8 +788,7 @@ class PosRepository @Inject constructor(
         id: Int,
         isAllComplete: Boolean,
         model: GuestPaymentRequest
-    ) =
-        apiHelperNew.payByGuest(id, isAllComplete, model)
+    ) = apiHelperNew.payByGuest(id, isAllComplete, model)
 
     suspend fun orderCancel(id: Int, data: OrderCancelRequest) =
         apiHelperNew.orderCancel(id, data)

@@ -536,6 +536,7 @@ class CartFragment(val itemClickListner: ItemClickListner?, val itemListner: Ite
 
                         if (isFromPaymentDinein) {
                             Log.e(TAG, "TotalPrice:  ${requireArguments().getDouble("totalPrice")}")
+                            Log.e(TAG, "guestCalModel:  ${Gson().toJson(guestCalModel)}")
 
                             viewModel.itemCalculationForDineInPayment(
                                 it[0],

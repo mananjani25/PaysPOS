@@ -2478,7 +2478,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                 cashdiscountAmount = 0.0
             }
 
-            MethodUtils.roundOffAmount(model.total)
+            MethodUtils.setPriceTextView(txtTotal,model.total)
 
 
         } else {

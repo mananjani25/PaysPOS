@@ -11,6 +11,7 @@ import androidx.core.os.bundleOf
 import androidx.fragment.app.*
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
+import com.android.pos.data.model.DineinCartPaymentModel
 import com.android.pos.data.model.GuestPaymentCalculationModel
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.DINE_IN
@@ -37,6 +38,7 @@ class PaymentBoldPosFragment : Fragment() {
     private var paymentOfflineId: String = ""
     private var paymentId: Int = -1
     private val viewModel by activityViewModels<DashBoardCategoryViewModel>()
+    private var dineinCartPaymentModel: DineinCartPaymentModel? = null
 
     private val dineInPaymentViewModel by viewModels<CheckoutDineInPaymentViewModel>()
 
@@ -72,6 +74,7 @@ class PaymentBoldPosFragment : Fragment() {
             ) == DINE_IN && requireArguments().getBoolean("isGuestPay")
 
         ) {
+            dineinCartPaymentModel = requireArguments().getParcelable<DineinCartPaymentModel>("dineinPaymentModel")
             var model = GuestPaymentCalculationModel(
                 requireArguments().getDouble("subTotalB"),
                 requireArguments().getDouble("totalB"),
@@ -79,6 +82,9 @@ class PaymentBoldPosFragment : Fragment() {
                 requireArguments().getDouble("totalTaxB"),
                 requireArguments().getDouble("divideCashDiscount"),
                 requireArguments().getDouble("dicountB"),
+                requireArguments().getInt("id"),
+                dineinCartPaymentModel
+
             )
 
             loadCartFragment(CartFragment(null,null,true,model))
