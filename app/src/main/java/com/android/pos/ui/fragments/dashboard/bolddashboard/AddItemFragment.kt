@@ -266,6 +266,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
             Log.e("HeaderPosdineInHea", "${viewModel.dineInHeaderPosition}")
             val bundle = Bundle().apply {
                 putParcelable("item", item)
+                putParcelableArrayList("cartList", cartList)
                 putInt("headerPos", viewModel.dineInHeaderPosition)
             }
 

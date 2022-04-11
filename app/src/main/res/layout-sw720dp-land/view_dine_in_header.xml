@@ -32,7 +32,8 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:layout_weight="0.6"
-                    android:gravity="center">
+                    android:gravity="center"
+                    android:layout_marginStart="@dimen/_1sdp">
 
 
                     <androidx.appcompat.widget.AppCompatCheckBox
@@ -63,7 +64,7 @@
                         android:text="Whole Table"
 
                         android:textColor="@color/white"
-                        android:textSize="@dimen/_6mdpi" />
+                        android:textSize="@dimen/_7mdpi" />
                 </LinearLayout>
 
             </LinearLayout>
@@ -85,7 +86,7 @@
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
                 android:layout_marginEnd="@dimen/_7sdp"
-                android:layout_toStartOf="@+id/llInfo1"
+                android:layout_alignParentEnd="true"
 
                 android:background="@color/btnColorDark"
                 android:clickable="true"
@@ -102,7 +103,7 @@
                     android:paddingHorizontal="@dimen/_10sdp"
                     android:paddingVertical="@dimen/_4sdp"
                     android:text="@string/pay_now"
-                    android:textColor="@color/txtColor"
+                    android:textColor="@color/white"
                     android:textSize="@dimen/_5mdpi" />
 
 
@@ -125,8 +126,6 @@
                 android:layout_height="1dp"
                 android:layout_marginEnd="@dimen/_45sdp"
                 android:layout_toStartOf="@+id/llInfo1" />
-
-
 
 
             <androidx.appcompat.widget.LinearLayoutCompat

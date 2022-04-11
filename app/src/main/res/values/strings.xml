@@ -294,6 +294,7 @@
     <string name="tv_sub_total">Sub Total</string>
     <string name="tv_refund_amount">Refund Amount</string>
     <string name="tv_service_charge">Service Charge</string>
+    <string name="tv_service_charge_">Service Charge<font color='#E90C0C'>*</font></string>
     <string name="tv_total_discount">Total Discount</string>
     <string name="tv_cash_discount">Cash Discount</string>
     <string name="tv_change_amount">Change Amount</string>

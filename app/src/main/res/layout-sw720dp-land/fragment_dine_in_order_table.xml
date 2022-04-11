@@ -110,7 +110,7 @@
                 android:gravity="center"
                 android:paddingVertical="@dimen/_5sdp"
                 android:text="Fire To Kitchen"
-                android:textColor="@color/txtColor"
+                android:textColor="@color/white"
                 android:textSize="@dimen/_7mdpi" />
 
 
@@ -124,7 +124,7 @@
                 android:gravity="start"
                 android:paddingStart="@dimen/_15sdp"
                 android:text="Item Name"
-                android:textColor="@color/txtColor"
+                android:textColor="@color/white"
                 android:textSize="@dimen/_7mdpi" />
 
 
@@ -137,7 +137,7 @@
                 android:layout_weight="0.65"
                 android:gravity="start"
                 android:text="Group Quantity"
-                android:textColor="@color/txtColor"
+                android:textColor="@color/white"
                 android:textSize="@dimen/_7mdpi" />
 
 
@@ -150,7 +150,7 @@
                 android:layout_weight="1"
                 android:gravity="center"
                 android:text="Team Member"
-                android:textColor="@color/txtColor"
+                android:textColor="@color/white"
                 android:textSize="@dimen/_7mdpi" />
 
 
@@ -162,9 +162,9 @@
                 android:layout_gravity="center"
                 android:layout_weight="1"
                 android:gravity="end"
-                android:paddingEnd="@dimen/_20sdp"
+                android:paddingRight="@dimen/_20sdp"
                 android:text="Price"
-                android:textColor="@color/txtColor"
+                android:textColor="@color/white"
                 android:textSize="@dimen/_7mdpi" />
 
         </androidx.appcompat.widget.LinearLayoutCompat>

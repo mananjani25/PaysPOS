@@ -38,7 +38,7 @@
                 <androidx.appcompat.widget.LinearLayoutCompat
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal"
+                    android:layout_gravity="center"
                     android:layout_weight="6"
                     android:gravity="center"
                     android:orientation="horizontal">
@@ -61,7 +61,7 @@
                         android:id="@+id/txtTitleCash"
                         style="@style/CustomFontSemiBold"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_height="match_parent"
                         android:layout_centerVertical="true"
                         android:layout_marginStart="@dimen/_3sdp"
                         android:layout_toEndOf="@+id/txtTitle"
@@ -111,7 +111,8 @@
                     android:textAllCaps="true"
                     android:textColor="@color/white"
                     android:textSize="@dimen/_6sdp"
-                    android:visibility="visible" />
+                    android:visibility="gone"
+                    />
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/txtAddCustomer"

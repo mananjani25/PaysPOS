@@ -200,15 +200,19 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
         setFragmentResultListener("request_key_note") { requestKey: String, bundle: Bundle ->
             val note = bundle.getString("note")
             val singleItem = bundle.getParcelable<TbItem>("item")
+           // val cartList = bundle.getParcelableArrayList<CartModel>("cartList")
             var dineInArrayList: List<DineInModel>? = null
+/*
             if (prefProvider.getValue(
-                    Constants.ORDER_TYPE,
-                    Constants.TAKEOUT
-                ) == Constants.DINE_IN
+                    ORDER_TYPE,
+                    TAKEOUT
+                ) ==DINE_IN
             ) {
-                dineInArrayList = cartList[0].dineInList
+                Log.e(TAG,"notecartlist$cartList")
+                dineInArrayList = cartList?.get(0)?.dineInList
                 dineInArrayList?.get(0)?.selectedPosition = bundle.getInt("headerPos")
             }
+*/
 
 
 
@@ -219,8 +223,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                         cartList,
                         it,
                         Constants.UPDATE,
-                        false,
-                        dineInList = it1
+                        false
                     )
                 }
             }
@@ -291,8 +294,6 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                     Log.e(TAG, "assignResult:  ${Gson().toJson(result)}")
                     val dineInList = cartList.get(0).dineInList
                     Log.e(TAG, "getdineInListSize:  ${dineInList?.size}")
-
-
 
                     if (dineInList?.isNotEmpty() == true) {
 

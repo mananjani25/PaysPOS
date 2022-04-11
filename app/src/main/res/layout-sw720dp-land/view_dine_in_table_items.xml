@@ -64,7 +64,7 @@
                         android:paddingStart="@dimen/_14sdp"
                         android:text="@{model.name}"
                         android:textColor="@color/txtColor"
-                        android:textSize="@dimen/_5mdpi"
+                        android:textSize="@dimen/_7mdpi"
                         tools:text="Item" />
 
                     <TextView
@@ -126,7 +126,8 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:layout_weight="1"
-                    android:gravity="center">
+                    android:gravity="center"
+                    android:translationX="-25dp">
 
                     <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/txtEmpName"
@@ -164,11 +165,12 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="end"
-                        android:layout_marginEnd="@dimen/_15sdp"
-                        android:gravity="start"
+                        android:gravity="center"
                         android:textColor="@color/txtColor"
                         android:textSize="@dimen/_5mdpi"
-                        tools:text="$20.00" />
+                        tools:text="$20.00"
+                        android:paddingRight="@dimen/_20sdp"
+                        />
 
                     <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/tvDiscountRate"
@@ -177,11 +179,13 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="end"
                         android:layout_marginTop="@dimen/_2sdp"
-                        android:layout_marginEnd="@dimen/_15sdp"
                         android:gravity="start"
                         android:textColor="@color/colorRed"
                         android:textSize="@dimen/_5mdpi"
-                        tools:text="$20.00" />
+                        tools:text="$20.00"
+                        android:paddingRight="@dimen/_22sdp"
+
+                        />
 
 
                 </androidx.appcompat.widget.LinearLayoutCompat>

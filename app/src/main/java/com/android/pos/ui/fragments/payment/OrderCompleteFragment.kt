@@ -354,7 +354,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             } else {
                 binding.linerContent.visibility = View.VISIBLE
                 binding.llHome.visibility = View.VISIBLE
-                binding.txtHome.visibility = View.VISIBLE
+                binding.txtHome.visibility = View.GONE
                 binding.linearTopHeaderSplit.visibility = View.GONE
                 binding.viewSplitLine.visibility = View.GONE
                 binding.llNoReceipt.visibility = View.VISIBLE
@@ -460,7 +460,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 if (isGuest) {
                     if (isLastPayment) {
                         binding.llHome.visibility = View.VISIBLE
-                        binding.txtHome.visibility = View.VISIBLE
+                        binding.txtHome.visibility = View.GONE
                         binding.linearTopHeaderSplit.visibility = View.GONE
                         binding.llCheckOut.visibility = View.GONE
                     } else {
@@ -471,7 +471,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     }
                 } else {
                     binding.llHome.visibility = View.VISIBLE
-                    binding.txtHome.visibility = View.VISIBLE
+                    binding.txtHome.visibility = View.GONE
                     binding.linearTopHeaderSplit.visibility = View.GONE
                     binding.llCheckOut.visibility = View.GONE
                 }
@@ -5037,7 +5037,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         binding.edtEmail.text?.clear()
         binding.llSendReceipt.visibility = View.GONE
         binding.imgBack.visibility = View.GONE
-        binding.txtHome.visibility = View.VISIBLE
+        binding.txtHome.visibility = View.GONE
         binding.txtAddCustomer.visibility = View.GONE
         binding.llOptions.visibility = View.VISIBLE
     }
