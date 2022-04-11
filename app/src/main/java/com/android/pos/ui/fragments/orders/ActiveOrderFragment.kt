@@ -327,6 +327,7 @@ class ActiveOrderFragment(
                         Constants.CUSTOMER_NAME,
                         order.customer.firstName + " " + order.customer.lastName
                     )
+                    prefProvider.setValueInt(Constants.CUSTOMER_ID,order.customer.id)
                     prefProvider.saveCustomerData(TbCustomer.customerMapping(order.customer))
                 }
 

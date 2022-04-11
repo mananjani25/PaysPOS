@@ -102,7 +102,8 @@ class MergeTableSelectionAdapter : RecyclerView.Adapter<MergeTableSelectionAdapt
                             list.get(0).listFloorPlan.get(position).id
 
 
-
+                        var sortedlist = tempTableList.toList().sortedBy { it.id }
+                        tempTableList = ArrayList(sortedlist)
                         tableAdapter = ArrayAdapter(
                             binding.root.context,
                             R.layout.spinner_text_selected,
