@@ -172,7 +172,7 @@ class DineInFragment : Fragment() {
 
                         if (resource.data != null && resource.data.data.isNotEmpty()) {
 
-                            Log.e(TAG,"loadFloorPlan${Gson().toJson(resource.data.data)}")
+                            Log.e(TAG, "loadFloorPlan${Gson().toJson(resource.data.data)}")
 
                             dineInFloorNameList =
                                 it.data!!.data as ArrayList<GetFloorPlanResponse.Data>
@@ -323,13 +323,22 @@ class DineInFragment : Fragment() {
                             ((dineInFloorTablesList[i].xLeft.toInt() * 1.04).toInt())
 
 
-                        paramsSquare.topMargin = if (dineInFloorTablesList[i].yTop > 735) {
-                            735
-                        } else {
-                            ((dineInFloorTablesList[i].yTop.toInt() * 1.04).toInt())
+                        if (dineInFloorTablesList[i].yTop > 0) {
+                            paramsSquare.topMargin =
+                                (dineInFloorTablesList[i].yTop.toInt() * 1.04).toInt()
                         }
+//                        paramsSquare.topMargin = if (dineInFloorTablesList[i].yTop > 735) {
+//                            735
+//                        } else {
+//                            ((dineInFloorTablesList[i].yTop.toInt() * 1.04).toInt())
+//                        }
 
-                        Log.e(TAG, "YTOPVALUE:  ${dineInFloorTablesList[i].yTop}")
+                        Log.d(
+                            TAG,
+                            "setFloorPlan: xPosition : " + dineInFloorTablesList[i].xPosition
+                        )
+                        Log.d(TAG, "setFloorPlan: yTop      : " + dineInFloorTablesList[i].yTop)
+                        Log.e(TAG, "YTOPVALUE:  ${dineInFloorTablesList[i].xPosition}")
 
                         if (dineInFloorTablesList[i].status == OCCUPIED || dineInFloorTablesList[i].status == MERGEDANDOCCUPIED) {
                             llMainParentSquare.background =
@@ -411,14 +420,17 @@ class DineInFragment : Fragment() {
                         paramsRound.leftMargin =
                             ((dineInFloorTablesList[i].xLeft.toInt() * 1.04).toInt())
 
-
-
-                        paramsRound.topMargin =
-                            if (dineInFloorTablesList[i].yTop > 735) {
-                                735
-                            } else {
-                                ((dineInFloorTablesList[i].yTop.toInt() * 1.04).toInt())
-                            }
+                        if (dineInFloorTablesList[i].yTop > 0) {
+                            paramsRound.topMargin =
+                                (dineInFloorTablesList[i].yTop.toInt() * 1.04).toInt()
+                        }
+//
+//                        paramsRound.topMargin =
+//                            if (dineInFloorTablesList[i].yTop > 735) {
+//                                735
+//                            } else {
+//                                ((dineInFloorTablesList[i].yTop.toInt() * 1.04).toInt())
+//                            }
                         // binding.flFloorPlan.removeAllViews()
                         if (dineInFloorTablesList[i].status == OCCUPIED || dineInFloorTablesList[i].status == MERGEDANDOCCUPIED) {
                             llMainParentRound.background =
@@ -445,29 +457,39 @@ class DineInFragment : Fragment() {
     private fun clickInInflatedLayout(): View.OnClickListener {
         return View.OnClickListener { v ->
             val dineInFloorTableModel = v.tag as GetFloorPlanResponse.Data.FloorPlanTable
-            if (dineInFloorTableModel.status == OCCUPIED && dineInFloorTableModel.currentOrderDetails != null
-            ) {
-                if (dineInFloorTableModel.currentOrderDetails.employeeId == prefProvider.getValueInt(
-                        EMPLOYEE_ID, 0
-                    )
+            if (dineInFloorTableModel.status == OCCUPIED) {
+                if (dineInFloorTableModel.lock_by_id == prefProvider.getValueInt(
+                        EMPLOYEE_ID,
+                        0
+                    ) || prefProvider.isAdmin()
                 ) {
-                    val bundle = Bundle()
-                    bundle.putBoolean("isFromFloor", true)
-                    bundle.putBoolean("isMerged", false)
-                    /*prefProvider.setValueInt(
-                        "ORDER_ID",
-                        dineInFloorTableModel.currentOrderDetails.orderId
-                    )*/
-                    bundle.putParcelable("floorPlan", dineInFloorTableModel)
+                    Log.d(TAG, "clickInInflatedLayout: current "+prefProvider.getValueInt(EMPLOYEE_ID,0))
+                    Log.d(TAG, "clickInInflatedLayout: dynamic "+dineInFloorTableModel.lock_by_id)
+                    Log.d(TAG, "clickInInflatedLayout: isadmin "+prefProvider.isAdmin())
+                    if (dineInFloorTableModel.currentOrderDetails != null) {
+                        val bundle = Bundle()
+                        bundle.putBoolean("isFromFloor", true)
+                        bundle.putBoolean("isMerged", false)
+                        bundle.putParcelable("floorPlan", dineInFloorTableModel)
 
 
-                    findNavController().navigate(
-                        R.id.action_dineInFragment_to_dineInOrderTable,
-                        bundle
-                    )
+                        findNavController().navigate(
+                            R.id.action_dineInFragment_to_dineInOrderTable,
+                            bundle
+                        )
+                    } else {
+                        val bundle = Bundle()
+                        bundle.putBoolean("isMerged", false)
+                        bundle.putParcelable("dineInFloorTableObject", dineInFloorTableModel)
+                        findNavController().navigate(
+                            R.id.action_dineInFragment_to_dineInGuestFragment,
+                            bundle
+                        )
+                    }
+
                 } else {
                     val status =
-                        "This table is locked by " + dineInFloorTableModel.currentOrderDetails.employeeName + "."
+                        "This table is locked by " + dineInFloorTableModel.lock_by_name + "."
 
                     AlertUtils.showCustomAlertWithListenerWithOK(
                         requireContext(),
@@ -502,9 +524,10 @@ class DineInFragment : Fragment() {
 
             } else if (dineInFloorTableModel.status == MERGEDANDOCCUPIED) {
 
-                if (dineInFloorTableModel.currentOrderDetails.employeeId == prefProvider.getValueInt(
-                        EMPLOYEE_ID, 0
-                    )
+                if (dineInFloorTableModel.lock_by_id == prefProvider.getValueInt(
+                        EMPLOYEE_ID,
+                        0
+                    ) || prefProvider.isAdmin()
                 ) {
                     Log.e(
                         TAG,

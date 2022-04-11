@@ -58,6 +58,7 @@
                     android:scaleX="1"
                     android:scaleY="1"
                     android:showText="false"
+                    android:checked="true"
                     android:thumb="@drawable/custom_thumb_printer_active_switch"
                     android:visibility="visible"
                     app:srcCompat="@drawable/ic_arrow_forward"
@@ -107,7 +108,8 @@
                 android:background="?attr/selectableItemBackground"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:visibility="gone">
 
                 <androidx.appcompat.widget.AppCompatTextView
                     style="@style/CustomFontSemiBold"

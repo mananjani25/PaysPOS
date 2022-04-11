@@ -40,6 +40,10 @@ data class GetFloorPlanResponse(
             val id: Int,
             @SerializedName("status")
             val status: String,
+            @SerializedName("lock_by_id")
+            val lock_by_id: Int? = null,
+            @SerializedName("lock_by_name")
+            val lock_by_name: String? = null,
             @SerializedName("style")
             val style: String,
             @SerializedName("table_name")

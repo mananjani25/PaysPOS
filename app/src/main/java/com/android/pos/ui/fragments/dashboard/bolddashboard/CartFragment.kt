@@ -405,6 +405,20 @@ class CartFragment(val itemClickListner: ItemClickListner?, val itemListner: Ite
 
                     cartlist = it as ArrayList<CartModel>
 
+                        viewModel.itemCalculationForDineInPayment(
+                            it[0],
+                            binding.txtTotal,
+                            requireContext(),
+                            model
+                        )
+                    } else {
+                        Log.e(TAG, "WithOutDineIn")
+                        viewModel.itemCalculationCartModel(
+                            it[0],
+                            binding.txtTotal,
+                            requireContext()
+                        )
+                    }
                     viewModel.setCartModel(it)
                     binding.txtSubTotal.text =
                         MethodUtils.roundOffAmount(viewModel.subTotalPrice)
@@ -1114,9 +1128,14 @@ class CartFragment(val itemClickListner: ItemClickListner?, val itemListner: Ite
 
             val popupMenu = PopupMenu(requireContext(), it)
             popupMenu.menuInflater.inflate(R.menu.cart_menu, popupMenu.menu)
-            if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == Constants.DINE_IN)
+            if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == Constants.DINE_IN) {
                 if (prefProvider.getValue(Constants.CUSTOMER_NAME, "").isEmpty())
                     popupMenu.menu.findItem(R.id.menu_remove_customer).isVisible = false
+            } else
+                if (prefProvider.getValue(Constants.CUSTOMER_NAME, "").isEmpty()||prefProvider.getValue(Constants.CUSTOMER_NAME, "").equals("customer"))
+                    popupMenu.menu.findItem(R.id.menu_remove_customer).isVisible = false
+
+
             if (cartlist.isEmpty())
                 popupMenu.menu.findItem(R.id.menu_discount).isVisible = false
             popupMenu.setOnMenuItemClickListener { menuItem ->

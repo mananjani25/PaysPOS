@@ -37,7 +37,8 @@
             android:title="Setup" />
         <item
             android:id="@+id/menuSupport"
-            android:title="Support" />
+            android:title="Support"
+            android:visible="false"/>
 
         <item
             android:id="@+id/menuHardware"

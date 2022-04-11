@@ -8,6 +8,7 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.setFragmentResult
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import com.android.pos.data.entities.CartModel
 import com.android.pos.data.entities.TbItem
 import com.android.pos.data.model.responseModel.NoteResponse
 import com.android.pos.data.remote.Constants
@@ -26,6 +27,7 @@ import javax.inject.Inject
 class AddNoteDialog : DialogFragment(), ItemCallback {
 
     private var item: TbItem? = null
+    private var cartList: ArrayList<CartModel>? = null
     private var headerItemPosition: Int? = null
     private lateinit var binding: DailogAddNoteBinding
     private lateinit var noteListadapter: NotesListAdapter
@@ -63,6 +65,7 @@ class AddNoteDialog : DialogFragment(), ItemCallback {
     private fun setupData() {
 
         item = requireArguments().getParcelable("item")
+        cartList = requireArguments().getParcelableArrayList<CartModel>("cartList")
         if (prefProvider.getValue(Constants.ORDER_TYPE, Constants.TAKEOUT) == Constants.DINE_IN) {
             headerItemPosition = requireArguments().getInt("headerPos")
             Log.e(TAG, "headerItemPosition:  ${headerItemPosition}")
@@ -88,6 +91,7 @@ class AddNoteDialog : DialogFragment(), ItemCallback {
         val result = Bundle().apply {
             putString("note", binding.edtNote.text.toString().trim())
             putParcelable("item", item)
+            putParcelableArrayList("cartList", cartList)
             headerItemPosition?.let { putInt("headerPos", it) }
         }
         setFragmentResult("request_key_note", result)

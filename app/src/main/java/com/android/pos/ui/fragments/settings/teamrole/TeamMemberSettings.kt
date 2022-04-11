@@ -39,9 +39,14 @@ class TeamMemberSettings : Fragment() {
         prefProvider = PrefProvider(requireContext())
 
 
+     //Hidden By Zeeshan
+/*
         if (prefProvider.getValueboolean(TIME_TRACKER_ENABLED, false)) {
             binding.timeTracker.isChecked = true
         }
+*/
+        binding.timeTracker.isChecked = true //added by zeeshan
+
         binding.timeTracker.setOnClickListener {
             if (binding.timeTracker.isChecked) {
                 prefProvider.setValueboolean(TIME_TRACKER_ENABLED, true)
