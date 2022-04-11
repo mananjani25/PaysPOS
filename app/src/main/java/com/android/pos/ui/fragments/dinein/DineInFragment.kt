@@ -9,7 +9,6 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.LinearLayout
 import androidx.appcompat.widget.AppCompatTextView
-import androidx.core.widget.TextViewCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
@@ -478,13 +477,25 @@ class DineInFragment : Fragment() {
                             bundle
                         )
                     } else {
-                        val bundle = Bundle()
+                        val status =
+                            "This table is locked by " + dineInFloorTableModel.lock_by_name + "."
+
+                        AlertUtils.showCustomAlertWithListenerWithOK(
+                            requireContext(),
+                            status
+                        ) { _, _ ->
+
+
+                        }
+
+
+                     /*   val bundle = Bundle()
                         bundle.putBoolean("isMerged", false)
                         bundle.putParcelable("dineInFloorTableObject", dineInFloorTableModel)
                         findNavController().navigate(
                             R.id.action_dineInFragment_to_dineInGuestFragment,
                             bundle
-                        )
+                        )*/
                     }
 
                 } else {
@@ -510,7 +521,7 @@ class DineInFragment : Fragment() {
                     bundle
                 )
 
-            } else if (dineInFloorTableModel.status == MERGED) {
+            } else if (dineInFloorTableModel.status == MERGED || prefProvider.isAdmin()) {
                 Log.e(TAG, "dineInFloorTableModel:  ${Gson().toJson(dineInFloorTableModel)}")
 
                 val bundle = Bundle()
