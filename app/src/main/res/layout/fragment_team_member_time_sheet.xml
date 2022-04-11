@@ -1,0 +1,195 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:bind="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".ui.fragments.settings.teamrole.TeamMemberTimeSheetFragment"
+    tools:ignore="MissingDefaultResource">
+
+    <data>
+
+        <variable
+            name="viewModel"
+            type="com.android.pos.ui.fragments.settings.teamrole.TeamMemberSheetViewModel" />
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <include
+            android:id="@+id/includeView"
+            layout="@layout/layout_team_member_time_sheet"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            bind:includeLayoutViewModel="@{viewModel}" />
+
+        <LinearLayout
+            android:id="@+id/llTestClick"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/_5sdp"
+            android:background="@color/backgroundColor"
+            android:orientation="horizontal"
+            android:paddingTop="@dimen/_9sdp"
+            android:paddingBottom="@dimen/_9sdp">
+
+            <androidx.appcompat.widget.AppCompatTextView
+                style="@style/CustomFontSemiBold"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/_5sdp"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="@string/tv_team_member"
+                android:textColor="@color/white"
+                android:textAllCaps="true"
+                android:textSize="@dimen/_6mdpi" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                style="@style/CustomFontSemiBold"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:gravity="center"
+                android:text="@string/tv_total_hours"
+                android:textColor="@color/white"
+                android:textAllCaps="true"
+
+                android:textSize="@dimen/_6mdpi" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                style="@style/CustomFontSemiBold"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="@string/tv_total_wage"
+                android:textColor="@color/white"
+                android:textAllCaps="true"
+
+                android:textSize="@dimen/_6mdpi" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                style="@style/CustomFontSemiBold"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="@string/tv_mon"
+                android:textColor="@color/white"
+                android:textAllCaps="true"
+
+                android:textSize="@dimen/_6mdpi" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                style="@style/CustomFontSemiBold"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="@string/tv_tue"
+                android:textColor="@color/white"
+                android:textAllCaps="true"
+
+                android:textSize="@dimen/_6mdpi" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                style="@style/CustomFontSemiBold"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="@string/tv_wed"
+                android:textColor="@color/white"
+                android:textAllCaps="true"
+
+                android:textSize="@dimen/_6mdpi" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                style="@style/CustomFontSemiBold"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="@string/tv_thu"
+                android:textColor="@color/white"
+                android:textAllCaps="true"
+
+                android:textSize="@dimen/_6mdpi" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                style="@style/CustomFontSemiBold"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="@string/tv_fri"
+                android:textColor="@color/white"
+                android:textAllCaps="true"
+
+                android:textSize="@dimen/_6mdpi" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                style="@style/CustomFontSemiBold"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="@string/tv_sat"
+                android:textColor="@color/white"
+                android:textAllCaps="true"
+
+                android:textSize="@dimen/_6mdpi" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                style="@style/CustomFontSemiBold"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="@string/tv_sun"
+                android:textColor="@color/white"
+                android:textAllCaps="true"
+
+                android:textSize="@dimen/_6mdpi" />
+        </LinearLayout>
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvTeamTimeSheet"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="9"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            tools:listitem="@layout/view_item_timesheet" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvEmployeeTotalHours"
+            style="@style/CustomFontSemiBold"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_weight="0.5"
+            android:layout_marginStart="@dimen/_10sdp"
+            android:layout_marginBottom="@dimen/_1sdp"
+            android:gravity="center"
+            android:textColor="@color/btnColorDark"
+            android:textSize="@dimen/_6mdpi"
+            android:textStyle="bold" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvEmployeeTotalWages"
+            style="@style/CustomFontSemiBold"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:layout_weight="0.5"
+            android:layout_marginStart="@dimen/_10sdp"
+            android:layout_marginBottom="@dimen/_5sdp"
+            android:gravity="center"
+            android:textColor="@color/btnColorDark"
+            android:textSize="@dimen/_6mdpi"
+            android:textStyle="bold" />
+
+
+    </LinearLayout>
+</layout>

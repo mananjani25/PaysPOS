@@ -1,0 +1,479 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+
+    android:layout_margin="@dimen/_5sdp"
+    android:elevation="@dimen/_5sdp"
+    app:cardCornerRadius="@dimen/_5sdp"
+    tools:ignore="MissingDefaultResource">
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_card"
+        android:orientation="vertical"
+        android:padding="@dimen/_5sdp"
+        android:weightSum="1">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="@dimen/_180sdp"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:id="@+id/llData"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+
+                    <androidx.appcompat.widget.LinearLayoutCompat
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="?attr/selectableItemBackground"
+                        android:orientation="horizontal"
+                        android:paddingStart="@dimen/_5sdp"
+                        android:paddingTop="@dimen/_3sdp"
+                        android:paddingEnd="@dimen/_5sdp"
+                        android:paddingBottom="@dimen/_3sdp">
+
+                        <androidx.appcompat.widget.AppCompatTextView
+                            style="@style/CustomFontMediumStyle"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_weight="1"
+                            android:gravity="start"
+                            android:text="Total Tax"
+                            android:textColor="@color/drawerBack"
+                            android:textSize="@dimen/_5mdpi" />
+
+                        <androidx.appcompat.widget.AppCompatTextView
+                            android:id="@+id/txtTotalTax"
+                            style="@style/CustomFontSemiBold"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_weight="1"
+                            android:gravity="end"
+                            android:text="$20.00"
+                            android:textColor="@color/drawerBack"
+                            android:textSize="@dimen/_5mdpi" />
+
+                    </androidx.appcompat.widget.LinearLayoutCompat>
+
+                    <androidx.appcompat.widget.LinearLayoutCompat
+                        android:id="@+id/lineaarCashDiscount"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="?attr/selectableItemBackground"
+                        android:orientation="horizontal"
+                        android:paddingStart="@dimen/_5sdp"
+                        android:paddingTop="@dimen/_3sdp"
+                        android:paddingEnd="@dimen/_5sdp"
+                        android:paddingBottom="@dimen/_3sdp"
+                        android:visibility="gone">
+
+                        <androidx.appcompat.widget.AppCompatTextView
+                            style="@style/CustomFontMediumStyle"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_weight="1.5"
+                            android:gravity="start"
+                            android:text="@string/cash_discount"
+                            android:textColor="@color/drawerBack"
+                            android:textSize="@dimen/_5mdpi" />
+
+                        <androidx.appcompat.widget.AppCompatTextView
+                            android:id="@+id/txtcashDiscount"
+                            style="@style/CustomFontSemiBold"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_weight="1"
+                            android:gravity="end"
+                            android:text="$20.00"
+                            android:textColor="@color/drawerBack"
+                            android:textSize="@dimen/_5mdpi" />
+
+                    </androidx.appcompat.widget.LinearLayoutCompat>
+
+                    <androidx.appcompat.widget.LinearLayoutCompat
+                        android:id="@+id/linear_NonCashDiscount"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="?attr/selectableItemBackground"
+                        android:orientation="horizontal"
+                        android:paddingStart="@dimen/_5sdp"
+                        android:paddingTop="@dimen/_3sdp"
+                        android:paddingEnd="@dimen/_5sdp"
+                        android:paddingBottom="@dimen/_3sdp"
+                        android:visibility="gone">
+
+                        <androidx.appcompat.widget.AppCompatTextView
+                            style="@style/CustomFontMediumStyle"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_weight="1"
+                            android:gravity="start"
+                            android:text="@string/non_cash_adj"
+                            android:textColor="@color/drawerBack"
+                            android:textSize="@dimen/_5mdpi" />
+
+                        <androidx.appcompat.widget.AppCompatTextView
+                            android:id="@+id/txtnoncashadj"
+                            style="@style/CustomFontSemiBold"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_weight="1"
+                            android:gravity="end"
+                            android:text="$20.00"
+                            android:textColor="@color/drawerBack"
+                            android:textSize="@dimen/_5mdpi" />
+
+                    </androidx.appcompat.widget.LinearLayoutCompat>
+
+
+                </androidx.appcompat.widget.LinearLayoutCompat>
+
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/_5sdp"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <androidx.appcompat.widget.LinearLayoutCompat
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="horizontal">
+
+                        <CheckBox
+                            android:id="@+id/chkTotalPrice"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="0dp"
+                            android:layout_weight="0.1"
+                            android:button="@drawable/bg_checkbox"
+                            android:checked="false"
+                            android:maxWidth="@dimen/_10sdp"
+                            android:maxHeight="@dimen/_10sdp"
+                            android:minWidth="0dp"
+                            android:minHeight="0dp"
+                            android:visibility="invisible"
+                            app:layout_constraintBottom_toBottomOf="@id/lblTotalPrice"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="@id/lblTotalPrice" />
+
+                        <TextView
+                            android:id="@+id/lblTotalPrice"
+                            style="@style/CustomFontSemiBold"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="0.5"
+                            android:gravity="start"
+                            android:padding="@dimen/_3sdp"
+                            android:text="@string/sub_total_price"
+                            android:textColor="@color/drawerBack"
+                            android:textSize="@dimen/_5mdpi" />
+
+                        <TextView
+                            android:id="@+id/txtSubTotal"
+                            style="@style/CustomFontSemiBold"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="0.4"
+                            android:gravity="end"
+                            android:padding="@dimen/_3sdp"
+                            android:textColor="@color/drawerBack"
+                            android:textSize="@dimen/_5mdpi"
+                            tools:text="$200.00" />
+
+
+                    </androidx.appcompat.widget.LinearLayoutCompat>
+
+                    <androidx.appcompat.widget.LinearLayoutCompat
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="horizontal">
+
+                        <CheckBox
+                            android:id="@+id/chkServiceCharge"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="0dp"
+                            android:layout_weight="0.1"
+                            android:button="@drawable/bg_checkbox"
+                            android:checked="false"
+                            android:minWidth="0dp"
+                            android:minHeight="0dp"
+                            android:visibility="invisible"
+                            app:layout_constraintBottom_toBottomOf="@id/lblTotalPrice"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="@id/lblTotalPrice" />
+
+                        <TextView
+                            android:id="@+id/lblServiceCharge"
+                            style="@style/CustomFontSemiBold"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="0.5"
+                            android:gravity="start"
+                            android:padding="@dimen/_3sdp"
+                            android:text="@string/service_charge"
+                            android:textColor="@color/drawerBack"
+                            android:textSize="@dimen/_5mdpi" />
+
+                        <TextView
+                            android:id="@+id/txtServiceCharge"
+                            style="@style/CustomFontSemiBold"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="0.4"
+                            android:gravity="end"
+                            android:padding="@dimen/_3sdp"
+                            android:textColor="@color/drawerBack"
+                            android:textSize="@dimen/_5mdpi"
+                            tools:text="$200.00" />
+
+
+                    </androidx.appcompat.widget.LinearLayoutCompat>
+
+                    <androidx.appcompat.widget.LinearLayoutCompat
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="horizontal">
+
+                        <CheckBox
+                            android:id="@+id/chkTotalDiscount"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="0dp"
+                            android:layout_weight="0.1"
+                            android:button="@drawable/bg_checkbox"
+                            android:checked="false"
+                            android:minWidth="0dp"
+                            android:minHeight="0dp"
+                            android:visibility="invisible"
+                            app:layout_constraintBottom_toBottomOf="@id/lblTotalPrice"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="@id/lblTotalPrice" />
+
+                        <TextView
+                            android:id="@+id/lblTotalDiscount"
+                            style="@style/CustomFontSemiBold"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="0.5"
+                            android:gravity="start"
+                            android:padding="@dimen/_3sdp"
+                            android:text="@string/total_discount"
+                            android:textColor="@color/drawerBack"
+                            android:textSize="@dimen/_5mdpi" />
+
+                        <TextView
+                            android:id="@+id/txtDiscount"
+                            style="@style/CustomFontSemiBold"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="0.4"
+                            android:gravity="end"
+                            android:padding="@dimen/_3sdp"
+                            android:textColor="@color/drawerBack"
+                            android:textSize="@dimen/_5mdpi"
+                            tools:text="$200.00" />
+
+
+                    </androidx.appcompat.widget.LinearLayoutCompat>
+
+                    <androidx.appcompat.widget.LinearLayoutCompat
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="horizontal">
+
+                        <CheckBox
+                            android:id="@+id/chkLoyaltyAmount"
+                            android:layout_width="0dp"
+                            android:layout_height="@dimen/_10sdp"
+                            android:layout_weight="0.1"
+                            android:layout_marginEnd="0dp"
+                            android:button="@drawable/bg_checkbox"
+                            android:checked="false"
+                            android:maxWidth="@dimen/_10sdp"
+                            android:maxHeight="@dimen/_10sdp"
+                            android:minWidth="0dp"
+                            android:minHeight="0dp" />
+
+                        <TextView
+                            android:id="@+id/lblLoyaltyAmount"
+                            style="@style/CustomFontSemiBold"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="0.5"
+                            android:gravity="start"
+                            android:padding="@dimen/_3sdp"
+                            android:text="@string/loyalty_rewards"
+                            android:textColor="@color/drawerBack"
+                            android:textSize="@dimen/_5mdpi" />
+
+                        <TextView
+                            android:id="@+id/txtLoyaltyAmount"
+                            style="@style/CustomFontSemiBold"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="0.4"
+                            android:gravity="end"
+                            android:padding="@dimen/_3sdp"
+                            android:textColor="@color/drawerBack"
+                            android:textSize="@dimen/_5mdpi"
+                            tools:text="$200.00" />
+
+
+                    </androidx.appcompat.widget.LinearLayoutCompat>
+
+                    <androidx.appcompat.widget.LinearLayoutCompat
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="horizontal">
+
+                        <CheckBox
+                            android:id="@+id/chkLoyaltyAmount2"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="0dp"
+                            android:layout_weight="0.1"
+                            android:button="@drawable/bg_checkbox"
+                            android:checked="false"
+                            android:minWidth="0dp"
+                            android:minHeight="0dp"
+                            android:visibility="invisible"
+                            app:layout_constraintBottom_toBottomOf="@id/lblTotalPrice"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="@id/lblTotalPrice" />
+
+                        <TextView
+                            android:id="@+id/lblLoyaltyPoints"
+                            style="@style/CustomFontSemiBold"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="0.5"
+                            android:gravity="start"
+                            android:padding="@dimen/_3sdp"
+                            android:text="@string/used_loyalty_points"
+                            android:textColor="@color/drawerBack"
+                            android:textSize="@dimen/_5mdpi" />
+
+                        <TextView
+                            android:id="@+id/txtLoyaltyPoints"
+                            style="@style/CustomFontSemiBold"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="0.4"
+                            android:gravity="end"
+                            android:padding="@dimen/_3sdp"
+                            android:textColor="@color/drawerBack"
+                            android:textSize="@dimen/_5mdpi"
+                            tools:text="$200.00" />
+
+
+                    </androidx.appcompat.widget.LinearLayoutCompat>
+
+
+                </androidx.appcompat.widget.LinearLayoutCompat>
+
+            </androidx.appcompat.widget.LinearLayoutCompat>
+            <View
+                android:id="@+id/divider"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/view"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/llData" />
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:layout_width="match_parent"
+                android:layout_height="0dp"
+                android:minWidth="@dimen/_180sdp"
+                android:orientation="horizontal"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/divider">
+
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:visibility="invisible">
+
+                </androidx.appcompat.widget.LinearLayoutCompat>
+
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:paddingTop="@dimen/_5sdp"
+                    android:paddingEnd="@dimen/_3sdp"
+                    android:paddingBottom="@dimen/_5sdp">
+
+                    <androidx.appcompat.widget.LinearLayoutCompat
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="?attr/selectableItemBackground"
+                        android:orientation="horizontal">
+
+                        <androidx.appcompat.widget.AppCompatTextView
+                            style="@style/CustomFontBold"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_weight="1"
+                            android:gravity="start"
+                            android:text="Final Amount"
+                            android:textColor="@color/drawerBack"
+                            android:textSize="@dimen/_6mdpi" />
+
+                        <androidx.appcompat.widget.AppCompatTextView
+                            android:id="@+id/txtTotalAmount"
+                            style="@style/CustomFontSemiBold"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_weight="1"
+                            android:gravity="end"
+                            android:text="$20.00"
+                            android:textColor="@color/drawerBack"
+                            android:textSize="@dimen/_6mdpi" />
+
+                    </androidx.appcompat.widget.LinearLayoutCompat>
+
+                </androidx.appcompat.widget.LinearLayoutCompat>
+
+            </androidx.appcompat.widget.LinearLayoutCompat>
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
+</androidx.cardview.widget.CardView>

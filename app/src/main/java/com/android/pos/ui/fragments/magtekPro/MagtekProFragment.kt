@@ -19,6 +19,7 @@ import com.android.pos.R
 import com.android.pos.databinding.FragmentTagtekBinding
 import com.android.pos.ui.fragments.magtek.MagtekViewModel
 import com.android.pos.utils.AlertUtils
+import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.callback.ItemCallback
 import com.android.pos.utils.extensions.runOnUiThread
 import com.magtek.mobile.android.mtusdk.*
@@ -29,6 +30,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class MagtekProFragment : Fragment(), ItemCallback, IDeviceListCallback {
 
+    private var device: IDevice? = null
     private lateinit var mContaxt: Context
     private var adapter: MagtakProAdapter? = null
     private lateinit var binding: FragmentTagtekBinding
@@ -114,7 +116,7 @@ class MagtekProFragment : Fragment(), ItemCallback, IDeviceListCallback {
 
         binding.txtHome.setOnClickListener {
             if (findNavController().currentDestination?.id == R.id.magtekProFragment) {
-                findNavController().navigate(R.id.action_magtekFragment_to_dashboardCategoryBoldPOS)
+                findNavController().navigate(R.id.action_magtekProFragment_to_dashboardCategoryBoldPOS)
             }
         }
 
@@ -148,13 +150,23 @@ class MagtekProFragment : Fragment(), ItemCallback, IDeviceListCallback {
 
     override fun onItemClickListener(view: View?, pos: Int) {
 
-        val device = adapter?.getItem(pos)
+        device = adapter?.getItem(pos)
         if (device != null) {
             mSessionManager.device = device
             mSessionManager.connectDevice()
         }
 
 
+    }
+
+
+    override fun onResume() {
+        super.onResume()
+
+        if (device != null) {
+            mSessionManager.device = device
+            mSessionManager.connectDevice()
+        }
     }
 
 
@@ -167,7 +179,9 @@ class MagtekProFragment : Fragment(), ItemCallback, IDeviceListCallback {
                 when (ConnectionStateBuilder.GetValue(data.StringValue())) {
                     ConnectionState.Connected -> {
                         Log.e("", "[CONNECTED]")
+                        ProgressUtils.dismissProgressDialog()
                         updateUIControls(true)
+
                     }
                     ConnectionState.Disconnected -> {
                         Log.e("", "[DISCONNECTED]")
@@ -176,9 +190,12 @@ class MagtekProFragment : Fragment(), ItemCallback, IDeviceListCallback {
                     }
                     ConnectionState.Disconnecting -> {
                         Log.e("", "[DISCONNECTING]")
+
                     }
                     ConnectionState.Connecting -> {
                         Log.e("", "[CONNECTING]")
+
+                        ProgressUtils.showProgressDialog(requireActivity())
 
                     }
                     else -> ""

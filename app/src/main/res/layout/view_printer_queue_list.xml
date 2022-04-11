@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="MissingDefaultResource">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:id="@+id/linearData"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/_10sdp"
+            android:layout_marginEnd="@dimen/_10sdp"
+            android:orientation="horizontal"
+            android:paddingVertical="@dimen/_5sdp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <TextView
+                android:id="@+id/txtOfflineId"
+                style="@style/CustomFontRegularStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:gravity="start"
+                android:text="ID"
+                android:textColor="@color/txtColor"
+                android:textSize="@dimen/_5mdpi" />
+
+            <TextView
+                android:id="@+id/txtOrderId"
+                style="@style/CustomFontRegularStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="Order ID"
+                android:textColor="@color/txtColor"
+                android:textSize="@dimen/_5mdpi" />
+
+            <TextView
+                android:id="@+id/txtOrderType"
+                style="@style/CustomFontRegularStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="Order Type"
+                android:textColor="@color/txtColor"
+                android:textSize="@dimen/_5mdpi" />
+
+            <TextView
+                android:id="@+id/txtTotalAmt"
+                style="@style/CustomFontRegularStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="Total Amount"
+                android:textColor="@color/txtColor"
+                android:textSize="@dimen/_5mdpi" />
+
+            <TextView
+                android:id="@+id/txtTerminalName"
+                style="@style/CustomFontRegularStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="Terminal Name"
+                android:textColor="@color/txtColor"
+                android:textSize="@dimen/_5mdpi" />
+
+            <TextView
+                android:id="@+id/txtStatus"
+                style="@style/CustomFontRegularStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="Status"
+                android:textColor="@color/txtColor"
+                android:textSize="@dimen/_5mdpi" />
+
+
+        </LinearLayout>
+
+        <View
+            android:id="@+id/viewLine"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/view"
+            app:layout_constraintTop_toBottomOf="@+id/linearData" />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

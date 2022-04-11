@@ -1,0 +1,351 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="MissingDefaultResource">
+
+    <data>
+
+        <variable
+            name="createDiscountFragment"
+            type="com.android.pos.ui.fragments.settings.discount.CreateDiscount" />
+
+        <variable
+            name="viewModel"
+            type="com.android.pos.ui.fragments.settings.discount.CreateDiscountViewModel" />
+    </data>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/white"
+        android:fillViewport="true"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/bg_color"
+            android:orientation="vertical">
+
+
+            <include
+                android:id="@+id/header"
+                layout="@layout/gray_button_toolbar"/>
+
+
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/_75sdp"
+                android:background="@color/backgroundColor"
+
+                >
+
+                <RelativeLayout
+                    android:layout_width="@dimen/_47sdp"
+                    android:layout_height="@dimen/_45sdp"
+                    android:layout_centerInParent="true"
+                    android:background="@drawable/background_square_border_grey">
+
+                    <ImageView
+                        android:layout_width="@dimen/_15sdp"
+                        android:layout_height="wrap_content"
+                        android:layout_centerHorizontal="true"
+                        android:layout_marginTop="@dimen/_10sdp"
+                        android:adjustViewBounds="true"
+                        android:src="@drawable/ic_discount" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/_10sdp"
+                        android:layout_alignParentBottom="true"
+                        android:background="@color/white" />
+
+                </RelativeLayout>
+
+
+            </RelativeLayout>
+
+
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/_60sdp"
+                android:orientation="vertical">
+
+
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+                    <androidx.appcompat.widget.LinearLayoutCompat
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginTop="@dimen/_20sdp"
+                        android:layout_marginEnd="@dimen/_15sdp"
+                        android:layout_marginBottom="@dimen/_20sdp"
+                        android:orientation="vertical">
+
+                        <RelativeLayout
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content">
+
+                            <androidx.appcompat.widget.AppCompatImageView
+                                android:layout_width="@dimen/_60sdp"
+                                android:layout_height="@dimen/_25sdp"
+                                android:layout_gravity="center"
+                                android:background="@color/boxColor"
+                                android:padding="@dimen/_8sdp"
+                                android:visibility="gone" />
+
+                            <androidx.appcompat.widget.AppCompatTextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_centerInParent="true"
+                                android:alpha="0.5"
+                                android:text="@string/plus"
+                                android:textColor="@color/color"
+                                android:textSize="@dimen/_10mdpi"
+                                android:visibility="gone" />
+
+                        </RelativeLayout>
+
+                        <androidx.appcompat.widget.AppCompatTextView
+                            style="@style/CustomFontSemiBold"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:background="@drawable/edt_border_light_gray"
+                            android:gravity="center"
+                            android:padding="@dimen/_2sdp"
+                            android:textColor="@color/txtColor"
+                            android:textSize="@dimen/_5mdpi" />
+
+
+                    </androidx.appcompat.widget.LinearLayoutCompat>
+
+                    <androidx.appcompat.widget.LinearLayoutCompat
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/_20sdp"
+                        android:background="@drawable/edt_border_light_gray"
+                        android:orientation="vertical">
+
+                        <androidx.appcompat.widget.LinearLayoutCompat
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+
+
+                            <androidx.appcompat.widget.AppCompatEditText
+                                style="@style/CustomFontSemiBold"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:background="@drawable/background_square_border_grey"
+                                android:hint="@string/discount_name_"
+                                android:imeOptions="actionNext"
+                                android:inputType="textCapWords|textVisiblePassword"
+                                android:padding="@dimen/_7sdp"
+                                android:text="@={viewModel.createDiscountDetails.name}"
+                                android:textColor="@color/txtColor"
+                                android:textColorHint="@color/hintColor"
+                                android:textSize="@dimen/text_size_medium" />
+
+                        </androidx.appcompat.widget.LinearLayoutCompat>
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:background="@color/view"
+                            android:visibility="gone" />
+
+                        <androidx.appcompat.widget.LinearLayoutCompat
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/background_square_border_grey"
+                            android:orientation="horizontal">
+
+                            <LinearLayout
+                                android:layout_width="0dp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:layout_marginStart="@dimen/_8sdp">
+
+                                <TextView
+                                    android:id="@+id/tvSymbolDollar"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:fontFamily="@font/sf_pro_display_semibold"
+                                    android:text="@string/symbole"
+                                    android:textColor="@color/txtColor"
+                                    android:textSize="@dimen/text_size_medium"
+                                    android:visibility="gone"
+                                    />
+
+                                <androidx.appcompat.widget.AppCompatEditText
+                                    style="@style/CustomFontSemiBold"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:background="@null"
+                                    android:hint="0%"
+                                    android:imeOptions="actionDone"
+                                    android:inputType="numberDecimal"
+                                    android:paddingTop="@dimen/_7sdp"
+                                    android:paddingBottom="@dimen/_7sdp"
+                                    android:text="@={``+viewModel.createDiscountDetails.percentage}"
+                                    android:textColor="@color/txtColor"
+                                    android:textColorHint="@color/hintColor"
+                                    android:textSize="@dimen/text_size_medium" />
+
+                                <TextView
+                                    android:id="@+id/tvSymbolPer"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:fontFamily="@font/sf_pro_display_semibold"
+                                    android:text="@string/percentage_symbol"
+                                    android:textColor="@color/txtColor"
+                                    android:textSize="@dimen/text_size_medium"
+                                    android:visibility="gone" />
+                            </LinearLayout>
+
+                            <androidx.appcompat.widget.SwitchCompat
+                                android:id="@+id/swtDiscountType"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentEnd="true"
+                                android:layout_gravity="center"
+                                android:checked="true"
+                                android:scaleX="1.5"
+                                android:scaleY="1.5"
+                                android:onCheckedChanged="@{(button, bool)-> createDiscountFragment.discountType(bool)}"
+                                android:padding="@dimen/_5sdp"
+                                android:text="%"
+
+                                android:textColor="@color/txtColor"
+                                android:textSize="@dimen/_5mdpi"
+                                app:theme="@style/AppTheme"
+                                app:thumbTint="@color/btnColor"
+                                app:trackTint="@color/txtColor" />
+
+                            <androidx.appcompat.widget.SwitchCompat
+                                android:id="@+id/swtDollarType"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentEnd="true"
+                                android:layout_gravity="center"
+                                android:checked="true"
+                                android:onCheckedChanged="@{(button, bool)-> createDiscountFragment.discountType(bool)}"
+                                android:padding="@dimen/_5sdp"
+                                android:text="@string/dollar_amount"
+                                android:textColor="@color/txtColor"
+                                android:textSize="@dimen/_5mdpi"
+                                android:visibility="gone"
+                                app:theme="@style/AppTheme"
+                                app:thumbTint="@color/btnColor"
+                                app:trackTint="@color/txtColor" />
+
+                        </androidx.appcompat.widget.LinearLayoutCompat>
+
+
+                    </androidx.appcompat.widget.LinearLayoutCompat>
+
+                </androidx.appcompat.widget.LinearLayoutCompat>
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    style="@style/CustomFontRegularStyle"
+                    android:layout_width="@dimen/_158sdp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginBottom="@dimen/_10sdp"
+                    android:gravity="center"
+                    android:singleLine="false"
+
+                    android:padding="@dimen/_5sdp"
+                    android:text="@string/leave_the_discount_amount_blank_to_enter_at_the_time_of_sale_n_discount_are_applied_to_the_ticket_before_tax_is_calculated"
+                    android:textColor="@color/hint_color"
+                    android:textSize="@dimen/_5mdpi"
+                    app:textAllCaps="false" />
+
+                <TextView
+                    style="@style/CustomFontSemiBold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:elevation="@dimen/_10sdp"
+                    android:gravity="start"
+                    android:padding="@dimen/_5sdp"
+                    android:text="@string/options"
+                    android:textColor="@color/viewTextColor"
+                    android:textSize="@dimen/_5mdpi"
+                    android:visibility="gone" />
+
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/view"
+                    android:visibility="gone" />
+
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="@dimen/_15sdp"
+                    android:background="@drawable/background_square_border_grey"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_weight="1"
+                        android:elevation="@dimen/_10sdp"
+                        android:fontFamily="@font/sf_pro_display_semibold"
+                        android:gravity="start"
+                        android:padding="@dimen/_7sdp"
+                        android:text="@string/apply_discount_after_taxes"
+                        android:textColor="@color/txtColor"
+                        android:textSize="@dimen/_5mdpi" />
+
+                    <androidx.appcompat.widget.SwitchCompat
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:layout_gravity="center"
+                        android:checked="true"
+                        android:scaleY="1.5"
+                        android:scaleX="1.5"
+                        android:padding="@dimen/_5sdp"
+                        app:srcCompat="@drawable/ic_arrow_forward"
+                        app:thumbTint="@color/btnColor"
+                        app:trackTint="@color/colorE2" />
+                </androidx.appcompat.widget.LinearLayoutCompat>
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/view"
+                    android:visibility="gone" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    style="@style/CustomFontRegularStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginLeft="@dimen/_10sdp"
+                    android:layout_marginTop="@dimen/_10sdp"
+                    android:layout_marginBottom="@dimen/_20sdp"
+                    android:gravity="center"
+                    android:padding="@dimen/_7sdp"
+                    android:text="@string/this_should_only_be_used_for_manufacture_discount_and_instant_rebates_learn_more"
+                    android:textColor="@color/hint_color"
+                    android:textSize="@dimen/_5mdpi"
+                    app:textAllCaps="false" />
+
+            </androidx.appcompat.widget.LinearLayoutCompat>
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+</layout>

@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical"
+    tools:ignore="MissingDefaultResource">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvOne"
+            style="@style/CustomFontRegularStyle"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_margin="@dimen/_5sdp"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="@string/buttonOne"
+            android:textColor="@color/color65"
+            android:textSize="@dimen/_20ssp" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvTwo"
+            style="@style/CustomFontRegularStyle"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_margin="@dimen/_5sdp"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="@string/buttonTwo"
+            android:textColor="@color/color65"
+            android:textSize="@dimen/_20ssp" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvThree"
+            style="@style/CustomFontRegularStyle"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_margin="@dimen/_5sdp"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="@string/buttonThree"
+            android:textColor="@color/color65"
+            android:textSize="@dimen/_20ssp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="@dimen/_10sdp"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvFour"
+            style="@style/CustomFontRegularStyle"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_margin="@dimen/_5sdp"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="@string/buttonFour"
+            android:textColor="@color/color65"
+            android:textSize="@dimen/_20ssp" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvFive"
+            style="@style/CustomFontRegularStyle"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_margin="@dimen/_5sdp"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="@string/buttonFive"
+            android:textColor="@color/color65"
+            android:textSize="@dimen/_20ssp" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvSix"
+            style="@style/CustomFontRegularStyle"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_margin="@dimen/_5sdp"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="@string/buttonSix"
+            android:textColor="@color/color65"
+            android:textSize="@dimen/_20ssp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="@dimen/_10sdp"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvSeven"
+            style="@style/CustomFontRegularStyle"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_margin="@dimen/_5sdp"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="@string/buttonSeven"
+            android:textColor="@color/color65"
+            android:textSize="@dimen/_20ssp" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvEight"
+            style="@style/CustomFontRegularStyle"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_margin="@dimen/_5sdp"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="@string/buttonEight"
+            android:textColor="@color/color65"
+            android:textSize="@dimen/_20ssp" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvNine"
+            style="@style/CustomFontRegularStyle"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_margin="@dimen/_5sdp"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="@string/buttonNine"
+            android:textColor="@color/color65"
+            android:textSize="@dimen/_20ssp" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="@dimen/_10sdp"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvZero"
+            style="@style/CustomFontRegularStyle"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_margin="@dimen/_5sdp"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="@string/buttonZero"
+            android:textColor="@color/color65"
+            android:textSize="@dimen/_20ssp" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvDot"
+            style="@style/CustomFontRegularStyle"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_margin="@dimen/_5sdp"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:text="@string/buttonClear"
+            android:textColor="@color/color65"
+            android:textSize="@dimen/_20ssp" />
+
+
+        <ImageView
+            android:id="@+id/tvBack"
+            style="@style/CustomFontRegularStyle"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:padding="@dimen/_5sdp"
+            android:src="@drawable/ic_arrow_back" />
+    </LinearLayout>
+
+</LinearLayout>

@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="MissingDefaultResource">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:background="@color/bg_color"
+        android:layout_height="match_parent">
+
+        <include
+            android:id="@+id/commonToolbar"
+            layout="@layout/settings_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/commonToolbar"
+            android:orientation="horizontal"
+            android:weightSum="1">
+
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.28"
+                android:orientation="vertical"
+                android:background="@color/bg_color">
+
+                <ScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/txtBusiness"
+                            style="@style/CustomFontSemiBold"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:paddingHorizontal="@dimen/_7sdp"
+                            android:paddingVertical="@dimen/_10sdp"
+                            android:text="@string/business"
+                            android:textColor="@color/txtColor"
+                            android:textSize="@dimen/text_size_medium" />
+
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:background="@color/view" />
+
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/rvBusiness"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginBottom="@dimen/_3sdp"
+                            android:orientation="vertical"
+                            android:visibility="gone"
+                            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                            tools:listitem="@layout/view_business_setting" />
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:background="@color/view"
+                            android:visibility="gone" />
+
+
+                        <TextView
+                            android:id="@+id/txtHardware"
+                            style="@style/CustomFontSemiBold"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/sf_pro_display_regular"
+                            android:paddingHorizontal="@dimen/_7sdp"
+                            android:paddingVertical="@dimen/_10sdp"
+                            android:text="@string/hardware"
+                            android:textColor="@color/txtColor"
+                            android:textSize="@dimen/_5mdpi"
+                            android:textStyle="normal"
+                            android:visibility="gone" />
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:background="@color/view"
+                            android:visibility="gone" />
+
+
+                        <TextView
+                            android:id="@+id/txtSecurity"
+                            style="@style/CustomFontSemiBold"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/sf_pro_display_regular"
+                            android:paddingHorizontal="@dimen/_7sdp"
+                            android:paddingVertical="@dimen/_10sdp"
+                            android:text="@string/security"
+                            android:textColor="@color/txtColor"
+                            android:textSize="@dimen/text_size_medium"
+                            android:textStyle="normal" />
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:background="@color/view" />
+
+                        <TextView
+                            android:id="@+id/txtMarketing"
+                            style="@style/CustomFontSemiBold"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/sf_pro_display_regular"
+                            android:paddingHorizontal="@dimen/_7sdp"
+                            android:paddingVertical="@dimen/_10sdp"
+                            android:text="@string/marketing"
+                            android:textColor="@color/txtColor"
+
+                            android:textSize="@dimen/text_size_medium"
+                            android:textStyle="normal"
+                            android:visibility="gone" />
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:background="@color/view"
+                            android:visibility="gone" />
+
+                        <TextView
+                            android:id="@+id/txtEmployee"
+                            style="@style/CustomFontSemiBold"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/sf_pro_display_regular"
+                            android:paddingHorizontal="@dimen/_7sdp"
+                            android:paddingVertical="@dimen/_10sdp"
+                            android:text="@string/team_member"
+                            android:textColor="@color/txtColor"
+                            android:textSize="@dimen/text_size_medium"
+                            android:textStyle="normal" />
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:background="@color/view" />
+
+                        <TextView
+                            android:id="@+id/txtReports"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="?attr/selectableItemBackground"
+                            android:fontFamily="@font/sf_pro_display_regular"
+                            android:paddingHorizontal="@dimen/_7sdp"
+                            android:paddingVertical="@dimen/_12sdp"
+                            android:text="@string/reports"
+                            android:textColor="@color/white"
+                            android:textSize="@dimen/text_size_medium"
+                            android:textStyle="normal"
+                            android:visibility="gone" />
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:background="@color/dividerColor"
+                            android:visibility="gone" />
+
+
+                    </LinearLayout>
+                </ScrollView>
+
+            </LinearLayout>
+
+            <View
+                android:id="@+id/viewLine"
+                android:layout_width="1dp"
+                android:layout_height="match_parent"
+                android:background="@color/view" />
+
+
+            <FrameLayout
+                android:id="@+id/frameLayout"
+                android:layout_width="0sp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.72"
+                android:orientation="vertical" />
+
+        </LinearLayout>
+
+
+
+    </RelativeLayout>
+</layout>

@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:bind="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".ui.fragments.settings.teamrole.TeamMemberTimeSheetFragment"
+    tools:ignore="MissingDefaultResource">
+
+    <data>
+
+        <variable
+            name="viewModel"
+            type="com.android.pos.ui.fragments.transactions.TransactionViewModel" />
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:background="@color/bg_color">
+
+        <include
+            android:id="@+id/includeView"
+            layout="@layout/layout_transaction"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            bind:includeLayoutViewModel="@{viewModel}" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1.5dp"
+            android:background="@color/view"
+            android:layout_marginTop="@dimen/_5sdp"/>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/_7sdp"
+            android:background="@color/backgroundColor"
+            android:orientation="horizontal">
+
+            <androidx.appcompat.widget.AppCompatTextView
+                style="@style/CustomFontBold"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:text="@string/tv_date_time"
+                android:textAllCaps="true"
+                android:textColor="@color/white"
+                android:textSize="@dimen/text_size_normal" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                style="@style/CustomFontBold"
+                android:layout_width="0dp"
+                android:layout_gravity="center"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="@string/tv_order_type"
+                android:textColor="@color/white"
+                android:textSize="@dimen/text_size_normal"
+                android:textAllCaps="true"/>
+
+            <androidx.appcompat.widget.AppCompatTextView
+                style="@style/CustomFontBold"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="@string/tv_total_amount"
+                android:layout_gravity="center"
+                android:textColor="@color/white"
+                android:textSize="@dimen/text_size_normal"
+                android:textAllCaps="true"/>
+
+            <androidx.appcompat.widget.AppCompatTextView
+                style="@style/CustomFontBold"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:text="@string/tv_tip_amount"
+                android:textColor="@color/white"
+                android:textSize="@dimen/text_size_normal"
+                android:textAllCaps="true"/>
+
+            <androidx.appcompat.widget.AppCompatTextView
+                style="@style/CustomFontBold"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:layout_gravity="center"
+                android:text="Customer"
+                android:textColor="@color/white"
+                android:textSize="@dimen/text_size_normal"
+                android:textAllCaps="true"/>
+
+            <androidx.appcompat.widget.AppCompatTextView
+                style="@style/CustomFontBold"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="Role"
+                android:visibility="gone"
+                android:layout_gravity="center"
+                android:textColor="@color/txtColor"
+                android:textSize="@dimen/_5mdpi" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                style="@style/CustomFontBold"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:layout_gravity="center"
+                android:text="Team Member"
+                android:visibility="gone"
+                android:textColor="@color/white"
+                android:textSize="@dimen/text_size_large" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                style="@style/CustomFontBold"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:layout_gravity="center"
+                android:text="@string/tv_transaction_receipt_id"
+                android:textColor="@color/white"
+                android:textSize="@dimen/text_size_normal"
+                android:textAllCaps="true"/>
+
+            <androidx.appcompat.widget.AppCompatTextView
+                style="@style/CustomFontBold"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:visibility="visible"
+                android:text="@string/tv_terminal_id"
+                app:textAllCaps="true"
+                android:textColor="@color/white"
+                android:textSize="@dimen/text_size_normal" />
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1.5dp"
+            android:background="@color/view"/>
+
+        <TextView
+            android:id="@+id/txt_nodata"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:text=""
+            android:visibility="gone"
+            android:gravity="center"
+            android:textSize="@dimen/_6sdp"
+            android:textColor="@color/txtColor"
+            android:layout_weight="1" />
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvTeamTimeSheet"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            tools:listitem="@layout/view_transaction_item" />
+
+        <ProgressBar
+            android:id="@+id/progress_circular"
+            style="@style/Widget.AppCompat.ProgressBar"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:visibility="gone" />
+
+    </LinearLayout>
+</layout>

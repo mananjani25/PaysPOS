@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="MissingDefaultResource">
+
+    <data>
+
+        <variable
+            name="model"
+            type="com.android.pos.data.model.BusinessSettingModel" />
+    </data>
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:id="@+id/linear_business_items"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@{model.selected ? @color/bg_color:@color/backgroundColor}"
+            android:orientation="horizontal"
+            android:paddingVertical="@dimen/_2sdp">
+
+            <TextView
+                android:id="@+id/txtTitle"
+                style="@style/CustomFontRegularStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="9.5"
+                android:padding="@dimen/_5sdp"
+                android:text="@{model.title}"
+                android:textColor="@{model.selected ? @color/btnColor:@color/white}"
+                android:textSize="@{model.selected ? @dimen/_6mdpi:@dimen/_5mdpi}"
+                 />
+
+            <ImageView
+                android:layout_width="@dimen/_10sdp"
+                android:layout_height="@dimen/_10sdp"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="0.6"
+                android:padding="@dimen/_3sdp"
+                android:src="@drawable/ic_play"/>
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/view" />
+    </androidx.appcompat.widget.LinearLayoutCompat>
+</layout>

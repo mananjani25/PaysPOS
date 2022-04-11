@@ -1,0 +1,529 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="MissingDefaultResource">
+
+    <data>
+
+        <variable
+            name="viewModel"
+            type="com.android.pos.ui.fragments.customer.AddCustomerViewModel" />
+    </data>
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/bg_color"
+        android:orientation="vertical">
+
+        <include
+            android:id="@+id/header"
+            layout="@layout/view_header_toolbar" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:background="@color/view" />
+
+
+        <androidx.core.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:orientation="vertical"
+                android:padding="@dimen/_10sdp"
+                android:layout_marginHorizontal="@dimen/_80sdp"
+                >
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/_15sdp"
+                    android:layout_marginEnd="@dimen/_15sdp"
+                    android:visibility="visible"
+                    android:weightSum="2">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="@dimen/_5sdp"
+                        android:layout_weight="1"
+
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/txtFirstName"
+                            style="@style/CustomFontSemiBold"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/first_name"
+                            android:textColor="@color/color65"
+                            android:textSize="@dimen/_5mdpi"
+                            android:visibility="gone"/>
+
+                        <androidx.appcompat.widget.AppCompatEditText
+                            android:id="@+id/edtFName"
+                            style="@style/CustomFontMediumStyle"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/_5sdp"
+                            android:background="@drawable/background_square_border_grey"
+                            android:imeOptions="actionNext"
+                            android:padding="@dimen/_9sdp"
+                            android:maxLength="30"
+                            android:inputType="textCapWords|textVisiblePassword"
+                            android:digits="@string/character_String"
+                            android:text="@={viewModel.addCustomerDetails.data.first_name}"
+                            android:textColor="@color/txtColor"
+                            android:textColorHint="@color/hintColor"
+                            android:textSize="@dimen/_7mdpi"
+                            android:hint="@string/first_name"/>
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/_5sdp"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/txtLastName"
+                            style="@style/CustomFontSemiBold"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/last_name_"
+                            android:textColor="@color/color65"
+                            android:visibility="gone"
+                            android:textSize="@dimen/_5mdpi" />
+
+                        <androidx.appcompat.widget.AppCompatEditText
+                            android:id="@+id/edtLName"
+                            style="@style/CustomFontMediumStyle"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/_5sdp"
+                            android:background="@drawable/background_square_border_grey"
+                            android:imeOptions="actionNext"
+                            android:inputType="textCapWords|textVisiblePassword"
+                            android:digits="@string/character_String"
+                            android:padding="@dimen/_9sdp"
+                            android:text="@={viewModel.addCustomerDetails.data.last_name}"
+                            android:textColor="@color/txtColor"
+                            android:textColorHint="@color/hintColor"
+                            android:textSize="@dimen/_7mdpi"
+                            android:hint="@string/last_name_"
+                            android:maxLength="30"/>
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <TextView
+                    style="@style/CustomFontSemiBold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/_15sdp"
+                    android:layout_marginTop="@dimen/_10sdp"
+                    android:text="@string/_phone_number"
+                    android:textColor="@color/txtColor"
+                    android:textSize="@dimen/_5mdpi"
+                    android:visibility="visible" />
+
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/_15sdp"
+                    android:layout_marginTop="@dimen/_5sdp"
+                    android:layout_marginEnd="@dimen/_15sdp"
+                    android:background="@drawable/background_square_border_grey"
+                    android:orientation="vertical"
+                    android:visibility="visible">
+
+                    <Spinner
+                        android:id="@+id/edtCountry"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@null"
+                        android:enabled="false"
+                        android:padding="@dimen/_9sdp"
+                        android:textColor="@color/txt_color_blue"
+                        android:textSize="@dimen/_5mdpi"
+                        android:theme="@style/SpinnerTheme" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="0.5dp"
+                        android:background="@color/view" />
+
+                    <com.santalu.maskedittext.MaskEditText
+                        android:id="@+id/edtPhoneNo"
+                        style="@style/CustomFontMediumStyle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@null"
+                        android:hint="(201) 555-0123"
+                        android:inputType="number"
+                        android:maxLength="20"
+                        android:padding="@dimen/_9sdp"
+                        android:text="@={viewModel.phoneNo}"
+                        android:textColor="@color/txtColor"
+                        android:textColorHint="@color/hint_color_"
+                        android:textSize="@dimen/_7mdpi"
+                        app:met_mask="(###) ###-####" />
+
+                </androidx.appcompat.widget.LinearLayoutCompat>
+
+                <TextView
+                    style="@style/CustomFontSemiBold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/_15sdp"
+                    android:layout_marginTop="@dimen/_10sdp"
+                    android:text="@string/tv_email_address_"
+                    android:visibility="gone"
+                    android:textColor="@color/color65"
+                    android:textSize="@dimen/_5mdpi" />
+
+                <androidx.appcompat.widget.AppCompatEditText
+                    android:id="@+id/edtEmailAdd"
+                    style="@style/CustomFontMediumStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/_15sdp"
+                    android:layout_marginTop="@dimen/_5sdp"
+                    android:layout_marginEnd="@dimen/_15sdp"
+                    android:background="@drawable/background_square_border_grey"
+                    android:imeOptions="actionNext"
+                    android:digits="@string/disable_emoji_string"
+                    android:inputType="textVisiblePassword"
+                    android:padding="@dimen/_9sdp"
+                    android:text="@={viewModel.addCustomerDetails.data.email}"
+                    android:textColor="@color/btnColor"
+                    android:textSize="@dimen/_7mdpi"
+                    android:textColorHint="@color/hintColor"
+                    android:hint="@string/tv_email_address_"/>
+
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/_15sdp"
+                    android:layout_marginTop="@dimen/_10sdp"
+                    android:layout_marginEnd="@dimen/_15sdp">
+
+                    <TextView
+                        style="@style/CustomFontSemiBold"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="@string/tv_address"
+                        android:textColor="@color/txtColor"
+                        android:textSize="@dimen/_5mdpi" />
+
+                    <ImageView
+                        android:id="@+id/imgAddressAdd"
+                        android:layout_width="@dimen/_12sdp"
+                        android:layout_height="@dimen/_12sdp"
+                        android:layout_alignParentEnd="true"
+                        android:src="@drawable/ic_add"
+                        app:tint="@color/txt_color_blue" />
+                </RelativeLayout>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvAddresses"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    tools:listitem="@layout/view_customer_address" />
+
+                <!--<EditText
+                    android:id="@+id/edtAddress"
+                    style="@style/CustomFontMediumStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/_15sdp"
+                    android:layout_marginTop="@dimen/_5sdp"
+                    android:layout_marginEnd="@dimen/_15sdp"
+                    android:background="@drawable/background_square_border_grey"
+                    android:enabled="false"
+                    android:padding="@dimen/_5sdp"
+                    android:text="United States"
+                    android:textColor="@color/txt_color_blue"
+                    android:textSize="@dimen/_5mdpi" />
+
+                <AutoCompleteTextView
+                    android:id="@+id/edtStreet"
+                    style="@style/CustomFontMediumStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/_15sdp"
+                    android:layout_marginEnd="@dimen/_15sdp"
+                    android:background="@drawable/background_square_border_grey"
+                    android:hint="Street"
+                    android:imeOptions="actionNext"
+                    android:inputType="textNoSuggestions"
+                    android:padding="@dimen/_5sdp"
+                    android:text=""
+                    android:textColor="@color/hintColor"
+                    android:textSize="@dimen/_5mdpi" />
+
+                <EditText
+                    android:id="@+id/edtSuite"
+                    style="@style/CustomFontMediumStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/_15sdp"
+                    android:layout_marginEnd="@dimen/_15sdp"
+                    android:background="@drawable/background_square_border_grey"
+                    android:inputType="textNoSuggestions"
+                    android:padding="@dimen/_5sdp"
+                    android:text=""
+                    android:textColor="@color/hintColor"
+                    android:textSize="@dimen/_5mdpi" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/_15sdp"
+                    android:layout_marginEnd="@dimen/_15sdp"
+                    android:orientation="horizontal"
+                    android:weightSum="3">
+
+
+                    <EditText
+                        android:id="@+id/edtCity"
+                        style="@style/CustomFontMediumStyle"
+                        android:layout_width="0sp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:background="@drawable/background_square_border_grey"
+                        android:inputType="textNoSuggestions"
+                        android:padding="@dimen/_5sdp"
+                        android:text=""
+                        android:textColor="@color/hintColor"
+                        android:textSize="@dimen/_5mdpi" />
+
+                    <EditText
+                        android:id="@+id/edtState"
+                        style="@style/CustomFontMediumStyle"
+                        android:layout_width="0sp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:background="@drawable/background_square_border_grey"
+                        android:inputType="textNoSuggestions"
+                        android:padding="@dimen/_5sdp"
+                        android:text=""
+                        android:textColor="@color/hintColor"
+                        android:textSize="@dimen/_5mdpi" />
+
+                    <EditText
+                        android:id="@+id/edtZip"
+                        style="@style/CustomFontMediumStyle"
+                        android:layout_width="0sp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:background="@drawable/background_square_border_grey"
+                        android:inputType="textNoSuggestions"
+                        android:padding="@dimen/_5sdp"
+                        android:text=""
+                        android:textColor="@color/hintColor"
+                        android:textSize="@dimen/_5mdpi" />
+
+
+                </LinearLayout>
+-->
+
+                <EditText
+                    android:id="@+id/edtAddress2"
+                    style="@style/CustomFontMediumStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/_15sdp"
+                    android:layout_marginTop="@dimen/_5sdp"
+                    android:layout_marginEnd="@dimen/_15sdp"
+                    android:background="@drawable/background_square_border_grey"
+                    android:enabled="false"
+                    android:padding="@dimen/_5sdp"
+                    android:text="United States"
+                    android:textColor="@color/txt_color_blue"
+                    android:textSize="@dimen/_5mdpi"
+                    android:visibility="gone" />
+
+                <EditText
+                    android:id="@+id/edtStreet2"
+                    style="@style/CustomFontMediumStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/_15sdp"
+                    android:layout_marginEnd="@dimen/_15sdp"
+                    android:background="@drawable/background_square_border_grey"
+                    android:enabled="false"
+                    android:padding="@dimen/_5sdp"
+                    android:text="Street"
+                    android:textColor="@color/hintColor"
+                    android:textSize="@dimen/_5mdpi"
+                    android:visibility="gone" />
+
+                <EditText
+                    android:id="@+id/edtSuite2"
+                    style="@style/CustomFontMediumStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/_15sdp"
+                    android:layout_marginEnd="@dimen/_15sdp"
+                    android:background="@drawable/background_square_border_grey"
+                    android:enabled="false"
+                    android:padding="@dimen/_5sdp"
+                    android:text="Apt/Suite"
+                    android:textColor="@color/hintColor"
+                    android:textSize="@dimen/_5mdpi"
+                    android:visibility="gone" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/_15sdp"
+                    android:layout_marginEnd="@dimen/_15sdp"
+                    android:orientation="horizontal"
+                    android:visibility="gone"
+                    android:weightSum="3">
+
+
+                    <EditText
+                        android:id="@+id/edtCity2"
+                        style="@style/CustomFontMediumStyle"
+                        android:layout_width="0sp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:background="@drawable/background_square_border_grey"
+                        android:enabled="false"
+                        android:hint="City"
+                        android:padding="@dimen/_5sdp"
+                        android:textColor="@color/hintColor"
+                        android:textSize="@dimen/_5mdpi" />
+
+                    <EditText
+                        android:id="@+id/edtState2"
+                        style="@style/CustomFontMediumStyle"
+                        android:layout_width="0sp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:background="@drawable/background_square_border_grey"
+                        android:enabled="false"
+                        android:padding="@dimen/_5sdp"
+                        android:text="State"
+                        android:textColor="@color/hintColor"
+                        android:textSize="@dimen/_5mdpi" />
+
+                    <EditText
+                        android:id="@+id/edtZip2"
+                        style="@style/CustomFontMediumStyle"
+                        android:layout_width="0sp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:background="@drawable/background_square_border_grey"
+                        android:enabled="false"
+                        android:padding="@dimen/_5sdp"
+                        android:text="Zip"
+                        android:textColor="@color/hintColor"
+                        android:textSize="@dimen/_5mdpi" />
+
+
+                </LinearLayout>
+
+
+                <TextView
+                    style="@style/CustomFontSemiBold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/_15sdp"
+                    android:layout_marginTop="@dimen/_10sdp"
+                    android:text="@string/company"
+                    android:visibility="gone"
+                    android:textColor="@color/color65"
+                    android:textSize="@dimen/_5mdpi" />
+
+                <EditText
+                    android:id="@+id/edtCompany"
+                    style="@style/CustomFontMediumStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/_15sdp"
+                    android:layout_marginTop="@dimen/_5sdp"
+                    android:layout_marginEnd="@dimen/_15sdp"
+                    android:background="@drawable/background_square_border_grey"
+                    android:imeOptions="actionDone"
+                    android:inputType="textVisiblePassword"
+                    android:padding="@dimen/_9sdp"
+                    android:text="@={viewModel.addCustomerDetails.data.company}"
+                    android:textColor="@color/txtColor"
+                    android:textSize="@dimen/_7mdpi"
+                    android:textColorHint="@color/hintColor"
+                    android:hint="@string/company_name"/>
+
+                <TextView
+                    style="@style/CustomFontSemiBold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/_15sdp"
+                    android:layout_marginTop="@dimen/_10sdp"
+                    android:text="@string/tv_birthday_"
+                    android:visibility="gone"
+                    android:textColor="@color/color65"
+                    android:textSize="@dimen/_5mdpi" />
+
+                <TextView
+                    android:id="@+id/edtBirthDay"
+                    style="@style/CustomFontMediumStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/_15sdp"
+                    android:layout_marginTop="@dimen/_5sdp"
+                    android:layout_marginEnd="@dimen/_15sdp"
+                    android:layout_marginBottom="@dimen/_15sdp"
+                    android:background="@drawable/background_square_border_grey"
+                    android:clickable="true"
+                    android:padding="@dimen/_9sdp"
+                    android:hint="@string/tv_birthday_"
+                    android:text=""
+                    android:textColorHint="@color/hintColor"
+                    android:textColor="@color/txtColor"
+                    android:textSize="@dimen/_7mdpi" />
+
+
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <TextView
+                        style="@style/CustomFontSemiBold"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/_15sdp"
+                        android:text="@string/enroll_to_loyalty"
+                        android:textColor="@color/color65"
+                        android:layout_marginBottom="@dimen/_20sdp"
+                        android:textSize="@dimen/_5mdpi" />
+
+                    <CheckBox
+                        android:id="@+id/chkIsLoyalty"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checked="@={viewModel.addCustomerDetails.data.enroll_to_loyalty}"
+                        android:gravity="center" />
+
+                </androidx.appcompat.widget.LinearLayoutCompat>
+
+
+            </LinearLayout>
+        </androidx.core.widget.NestedScrollView>
+
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
+</layout>
