@@ -220,6 +220,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             receiptModel = requireArguments().getParcelable("receiptData")
             splitValue = requireArguments().getInt("splitValue")
             isLastPayment = requireArguments().getBoolean("isLastPayment", false)
+            Log.e(TAG, "isLastPaymentDine:  ${isLastPayment}")
             isGuest = requireArguments().getBoolean("isGuest")
             isGuestPaymentTotal = requireArguments().getBoolean("isGuestPaymentTotal")
             isSpilt = requireArguments().getBoolean("isSpilt")
@@ -276,7 +277,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 binding.llHome.visibility = View.GONE
                 binding.llNoReceipt.text = "Next Payment"
                 binding.llNoReceipt.setTextColor(requireActivity().resources.getColor(R.color.white))
-                binding.llNoReceipt.background = requireContext().getDrawable(R.drawable.button_selected)
+                binding.llNoReceipt.background =
+                    requireContext().getDrawable(R.drawable.button_selected)
                 binding.linearTopHeaderSplit.visibility = View.VISIBLE
                 binding.txtHome.visibility = View.GONE
 
@@ -363,7 +365,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 binding.txtRemainingAmountLabel.visibility = View.GONE
                 binding.llNoReceipt.text = getString(R.string.no_receipt)
                 binding.llNoReceipt.setTextColor(requireActivity().resources.getColor(R.color.txtColor))
-                binding.llNoReceipt.background = requireContext().getDrawable(R.drawable.background_square_border_grey)
+                binding.llNoReceipt.background =
+                    requireContext().getDrawable(R.drawable.background_square_border_grey)
                 viewModel.deleteSplitDb()
                 if (isCustomCash) {
                     binding.txtTitle.text =
@@ -411,7 +414,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 binding.llHome.visibility = View.GONE
                 binding.llNoReceipt.text = "Next Payment"
                 binding.llNoReceipt.setTextColor(requireActivity().resources.getColor(R.color.white))
-                binding.llNoReceipt.background = requireContext().getDrawable(R.drawable.button_selected)
+                binding.llNoReceipt.background =
+                    requireContext().getDrawable(R.drawable.button_selected)
                 binding.linearTopHeaderSplit.visibility = View.VISIBLE
                 binding.txtHome.visibility = View.GONE
                 var title = "Split "
@@ -483,7 +487,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 binding.txtRemainingAmountLabel.visibility = View.GONE
                 binding.llNoReceipt.text = getString(R.string.no_receipt)
                 binding.llNoReceipt.setTextColor(requireActivity().resources.getColor(R.color.txtColor))
-                binding.llNoReceipt.background = requireContext().getDrawable(R.drawable.background_square_border_grey)
+                binding.llNoReceipt.background =
+                    requireContext().getDrawable(R.drawable.background_square_border_grey)
                 viewModel.deleteSplitDb()
                 binding.txtTitle.text =
                     MethodUtils.roundOffAmount(paidAmount + tipAmount)
@@ -3126,7 +3131,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
     override fun onStop() {
         super.onStop()
-        if (!isSpilt){
+        if (!isSpilt) {
             removeCustomer()
 
 
@@ -5052,7 +5057,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         prefProvider.setValue(Constants.TIPS_AMOUNT_DINEIN, "")
         prefProvider.setValue(Constants.TAX_CHARGE_DINEIN, "")
         prefProvider.setValue(Constants.SERVICE_CHARGE_DINEIN, "")
-        prefProvider.setValueInt("orderId",-1)
+        prefProvider.setValueInt("orderId", -1)
 
 
     }
