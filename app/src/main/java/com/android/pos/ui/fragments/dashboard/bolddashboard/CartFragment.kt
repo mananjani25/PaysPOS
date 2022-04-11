@@ -19,6 +19,7 @@ import com.android.pos.data.model.GuestPaymentCalculationModel
 import com.android.pos.data.model.responseModel.GetFloorPlanResponse
 import com.android.pos.data.model.responseModel.GetOrderDetailsResponse
 import com.android.pos.data.remote.Constants
+import com.android.pos.data.remote.Constants.CUSTOMER_ID
 import com.android.pos.data.remote.Constants.DINE_IN
 import com.android.pos.data.remote.Constants.DINE_IN_LIST_EDIT
 import com.android.pos.data.remote.Constants.DINE_IN_UPDATE
@@ -53,7 +54,12 @@ import javax.inject.Inject
 
 
 @AndroidEntryPoint
-class CartFragment(val itemClickListner: ItemClickListner?, val itemListner: ItemListner?,val isFromPaymentDinein:Boolean=false,val guestCalModel:GuestPaymentCalculationModel?=null) :
+class CartFragment(
+    val itemClickListner: ItemClickListner?,
+    val itemListner: ItemListner?,
+    val isFromPaymentDinein: Boolean = false,
+    val guestCalModel: GuestPaymentCalculationModel? = null
+) :
     Fragment(), MyCallback,
     DineInAdapter.DineInCallback {
     private lateinit var binding: FragmentCartBinding
@@ -405,20 +411,6 @@ class CartFragment(val itemClickListner: ItemClickListner?, val itemListner: Ite
 
                     cartlist = it as ArrayList<CartModel>
 
-                        viewModel.itemCalculationForDineInPayment(
-                            it[0],
-                            binding.txtTotal,
-                            requireContext(),
-                            model
-                        )
-                    } else {
-                        Log.e(TAG, "WithOutDineIn")
-                        viewModel.itemCalculationCartModel(
-                            it[0],
-                            binding.txtTotal,
-                            requireContext()
-                        )
-                    }
                     viewModel.setCartModel(it)
                     binding.txtSubTotal.text =
                         MethodUtils.roundOffAmount(viewModel.subTotalPrice)
@@ -546,7 +538,7 @@ class CartFragment(val itemClickListner: ItemClickListner?, val itemListner: Ite
 
 
                         }
-                        Log.e(TAG,"getPAyment:  ${isFromPayment}")
+                        Log.e(TAG, "getPAyment:  ${isFromPayment}")
 
                         if (isFromPaymentDinein) {
                             Log.e(TAG, "TotalPrice:  ${requireArguments().getDouble("totalPrice")}")
@@ -559,18 +551,18 @@ class CartFragment(val itemClickListner: ItemClickListner?, val itemListner: Ite
                                 guestCalModel!!
                             )
                         } else {
-                            Log.e(TAG,"WithOutDineIn")
+                            Log.e(TAG, "WithOutDineIn")
                             viewModel.itemCalculationCartModel(
                                 it[0],
                                 binding.txtTotal,
                                 requireContext()
                             )
                         }
-                      /*  viewModel.itemCalculationCartModel(
-                            it[0],
-                            binding.txtTotal,
-                            requireContext()
-                        )*/
+                        /*  viewModel.itemCalculationCartModel(
+                              it[0],
+                              binding.txtTotal,
+                              requireContext()
+                          )*/
                         viewModel.setCartModel(it)
                         if (prefProvider.getValueboolean(Constants.DINE_IN_UPDATE, false) == true) {
 
@@ -1128,16 +1120,16 @@ class CartFragment(val itemClickListner: ItemClickListner?, val itemListner: Ite
 
             val popupMenu = PopupMenu(requireContext(), it)
             popupMenu.menuInflater.inflate(R.menu.cart_menu, popupMenu.menu)
-            if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == Constants.DINE_IN) {
+            if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == Constants.DINE_IN)
                 if (prefProvider.getValue(Constants.CUSTOMER_NAME, "").isEmpty())
                     popupMenu.menu.findItem(R.id.menu_remove_customer).isVisible = false
-            } else
-                if (prefProvider.getValue(Constants.CUSTOMER_NAME, "").isEmpty()||prefProvider.getValue(Constants.CUSTOMER_NAME, "").equals("customer"))
-                    popupMenu.menu.findItem(R.id.menu_remove_customer).isVisible = false
-
-
             if (cartlist.isEmpty())
                 popupMenu.menu.findItem(R.id.menu_discount).isVisible = false
+
+
+            if (prefProvider.getValueInt(CUSTOMER_ID, -1) == -1) {
+                popupMenu.menu.findItem(R.id.menu_remove_customer).isVisible = false
+            }
             popupMenu.setOnMenuItemClickListener { menuItem ->
                 when (menuItem.itemId) {
                     R.id.menu_clear_cart -> {
