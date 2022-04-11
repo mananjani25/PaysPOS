@@ -262,23 +262,29 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
             // Log.e(TAG,"guestDivided  ${list.get(0).guestDividedAmt}")
 
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                binding.btnPay.setBackgroundColor(binding.root.context.getColor(R.color.btnColorDark))
+
+
+            if (!list.get(position).isPaid) {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                    binding.btnPay.setBackgroundColor(binding.root.context.getColor(R.color.btnColorDark))
+                }
+                binding.txtPay.text = "Pay " + MethodUtils.roundOffAmount(finalAmt)
             }
-            binding.txtPay.text = "Pay " + MethodUtils.roundOffAmount(finalAmt)
 
             binding.btnPay.setOnClickListener {
-                listner.onGuestPay(
-                    list[position],
-                    position,
-                    MethodUtils.roundOffAmountDouble(guestSubTotal),
-                    MethodUtils.roundOffAmountDouble(finalAmt),
-                    MethodUtils.roundOffAmountDouble(totalTaxAmt ),
-                    MethodUtils.roundOffAmountDouble(totalServiceCharge),
-                    guestOrderDisShare,
-                    list[0].guestDividedAmt
+                if (!list.get(position).isPaid) {
+                    listner.onGuestPay(
+                        list[position],
+                        position,
+                        MethodUtils.roundOffAmountDouble(guestSubTotal),
+                        MethodUtils.roundOffAmountDouble(finalAmt),
+                        MethodUtils.roundOffAmountDouble(totalTaxAmt),
+                        MethodUtils.roundOffAmountDouble(totalServiceCharge),
+                        guestOrderDisShare,
+                        list[0].guestDividedAmt
 
-                )
+                    )
+                }
             }
 
             binding.imgPrint.setOnClickListener {

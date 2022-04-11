@@ -10,7 +10,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
 import androidx.appcompat.widget.AppCompatTextView
-import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
@@ -19,6 +18,7 @@ import com.android.pos.R
 import com.android.pos.data.entities.CartModel
 import com.android.pos.data.entities.RedeemLoyaltyInfo
 import com.android.pos.data.entities.TbItem
+import com.android.pos.data.model.CheckOutDineInDataModel
 import com.android.pos.data.model.requestModel.*
 import com.android.pos.data.model.responseModel.GuestPaymentAttributes
 import com.android.pos.data.remote.Constants
@@ -54,8 +54,10 @@ import java.util.*
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class CheckoutDineInFragmentNew : Fragment(), magtekCallback,
+class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : Fragment(),
+    magtekCallback,
     DeleteOptionCallback {
+    private var isLastPayment: Boolean = false
     private var isManualCard: Boolean = false
     private lateinit var binding: FragmentCheckoutDetailsNewBinding
     private val TAG = "DashboardCategoryBold"
@@ -120,12 +122,17 @@ class CheckoutDineInFragmentNew : Fragment(), magtekCallback,
     private var splitAfterAmount: Double = 0.0
     private var custom_paymentAmount = 0.0
 
+
     companion object {
-        fun newInstacne(orderId: Int): CheckoutDineInFragmentNew {
-            val frag = CheckoutDineInFragmentNew()
-            val bundle = bundleOf("orderId" to orderId)
+        fun newInstacne(
+            modelDineIn: CheckOutDineInDataModel
+        ): CheckoutDineInFragmentNew {
+            val frag = CheckoutDineInFragmentNew(modelDineIn)
+            val bundle = Bundle()
+            bundle.putParcelable("dineInModel", modelDineIn)
 
             frag.arguments = bundle
+            Log.e(TAG, "modelDineInmodelDineIn:  ${Gson().toJson(modelDineIn)}")
             return frag
         }
     }
@@ -139,12 +146,26 @@ class CheckoutDineInFragmentNew : Fragment(), magtekCallback,
 
         binding = FragmentCheckoutDetailsNewBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = this
+        navigateOnPaymentSuccess()
 
         magtekModule.setupInit()
         magtekModule.setCallback(this)
 
 
-        orderId = arguments?.getInt("orderId")
+
+
+
+        return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        Log.e(TAG, "dineInDataModel:  ${Gson().toJson(dineInDataModel)}")
+        orderId = dineInDataModel?.orderId
+        isGuestPay = dineInDataModel?.isFromGuest ?: false
+        isLastPayment = dineInDataModel?.isLastPayment ?: false
+        guestRequestModel = dineInDataModel?.guestPaymentReq
+        splitModel = dineInDataModel?.splitModel
         Log.e("orderId :: ", orderId.toString())
         if (orderId != null) {
             paymentId = arguments?.getInt("paymentId")!!
@@ -152,11 +173,6 @@ class CheckoutDineInFragmentNew : Fragment(), magtekCallback,
             orderOfflineId = arguments?.getString("orderOfflineId").toString()
         }
 
-        return binding.root
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
         getDataFromPref()
         setupTabDesign()
         paymentClick()
@@ -598,7 +614,66 @@ class CheckoutDineInFragmentNew : Fragment(), magtekCallback,
         if (cashDiscountType == "CashDiscount") {
             paymentAmount -= cashDiscountSurcharge
         }
-        makeCashPayment()
+
+        Log.e(TAG, "isGuestPay:  ${isGuestPay}")
+        if (isGuestPay) {
+            dineinOrderVieweModel.totalPayAmount(WholetotalPrice)
+            guestAttributeCalculation()
+            guestRequestModel?.paymentAttributes?.let { logPrintGuest(it) }
+            dineinOrderVieweModel?.payByGuest(
+                dineInDataModel?.guestId ?: 0, dineInDataModel?.guestPaymentReq!!,
+                dineInDataModel?.isLastPayment!!, dineInDataModel?.splitModel!!
+            )
+
+
+        } else {
+            makeCashPayment()
+        }
+    }
+
+    private fun guestAttributeCalculation() {
+        guestRequestModel?.paymentAttributes!!.amount =
+            paymentAmount
+        guestRequestModel?.paymentAttributes!!.serviceChargeAmount =
+            totalServiceCharge
+        guestRequestModel?.paymentAttributes!!.subTotal =
+            subTotalPrice
+        guestRequestModel?.paymentAttributes!!.taxAmount =
+            totalTax
+        guestRequestModel?.paymentAttributes!!.tips =
+            tipAmount
+        guestRequestModel?.paymentAttributes!!.totalDiscount =
+            totalDiscount
+        guestRequestModel?.paymentAttributes!!.paymentType = paymentType
+        guestRequestModel?.paymentAttributes!!.cash_discount_or_surcharge =
+            cashDiscountSurcharge
+        guestRequestModel?.paymentAttributes!!.cash_discount_type = cashDiscountType
+
+        val guestPaymentAttributes = GuestPaymentAttributes()
+        guestPaymentAttributes.amount = guestRequestModel?.paymentAttributes!!.amount
+        guestPaymentAttributes.serviceChargeAmount =
+            guestRequestModel?.paymentAttributes!!.serviceChargeAmount
+        guestPaymentAttributes.subTotal =
+            guestRequestModel?.paymentAttributes!!.subTotal
+        guestPaymentAttributes.taxAmount =
+            guestRequestModel?.paymentAttributes!!.taxAmount
+        guestPaymentAttributes.tips = guestRequestModel?.paymentAttributes!!.tips
+        guestPaymentAttributes.totalDiscount =
+            guestRequestModel?.paymentAttributes!!.totalDiscount
+        guestPaymentAttributes.payableType =
+            guestRequestModel?.paymentAttributes!!.payableType
+        guestPaymentAttributes.paymentType =
+            guestRequestModel?.paymentAttributes!!.paymentType
+        guestPaymentAttributes.offlineId =
+            guestRequestModel?.paymentAttributes!!.offlineId
+        guestPaymentAttributes.order_id =
+            guestRequestModel?.paymentAttributes!!.order_id
+        guestPaymentAttributes.cash_discount_or_surcharge =
+            guestRequestModel?.paymentAttributes!!.cash_discount_or_surcharge
+        guestPaymentAttributes.cash_discount_type =
+            guestRequestModel?.paymentAttributes!!.cash_discount_type
+        guestRequestModel?.paymentAttributes!!.paymentAttributes =
+            listOf(guestPaymentAttributes)
     }
 
     private fun guestPaySpit() {
@@ -795,7 +870,7 @@ class CheckoutDineInFragmentNew : Fragment(), magtekCallback,
         redeemLoyaltyInfo = viewModel.redeemLoyaltyInfo
         prefProvider.setValue(Constants.ORDER_TYPE, Constants.DINE_IN)
         if (prefProvider.getValue(Constants.WHOLE_AMOUNT, "").isEmpty()) {
-            Log.e(TAG,"totalPrice  ${viewModel.totalPrice}")
+            Log.e(TAG, "totalPrice  ${viewModel.totalPrice}")
 
             WholetotalPrice = viewModel.totalPrice
             prefProvider.setValue(
@@ -1572,4 +1647,217 @@ class CheckoutDineInFragmentNew : Fragment(), magtekCallback,
         val device = prefProvider.getValueInt(Constants.MAGTEK_HARDWARE, 0)
         return device == 0
     }
+
+    fun logPrintGuest(data: GuestPaymentAttributes) {
+        Log.d(TAG, "  makePayment: total : " + data!!.amount)
+        Log.d(TAG, "  makePayment: subtotal : " + data!!.subTotal)
+        Log.d(TAG, "  makePayment: cashdiscount : " + data!!.cash_discount_or_surcharge)
+        Log.d(TAG, "  makePayment: tax :  " + data!!.taxAmount)
+        Log.d(TAG, "  makePayment: servicecharge :  " + data!!.serviceChargeAmount)
+        Log.d(TAG, "  makePayment: tip : " + data!!.tips)
+        Log.d(TAG, "  makePayment: totaldiscount : " + data!!.totalDiscount)
+    }
+
+    private fun navigateOnPaymentSuccess() {
+        dineinOrderVieweModel.onPayment.observe(viewLifecycleOwner, { event ->
+            event.getContentIfNotHandled()?.let { str ->
+                Log.e(TAG, "getstr:   $str")
+                /*AlertUtils.showCustomAlertWithListenerWithOK(requireContext(), str) { _, _ ->*/
+
+
+                gotoPay()
+
+
+                /*}*/
+
+            }
+        })
+    }
+
+    private fun gotoPay() {
+        when {
+
+            paymentType == "Cash" -> {
+                Log.e("TipAmount 4:: ", tipAmount.toString())
+
+                val bundle = Bundle()
+                bundle.putBoolean("isDineIn", true)
+                bundle.putBoolean("isTotalPayment", true)
+                if (remainingAmount == 0.0) {
+                    if (custom_paymentAmount != 0.0) {
+                        bundle.putDouble("PaidAmount", custom_paymentAmount)
+                    } else {
+                        bundle.putDouble("PaidAmount", paymentAmount)
+                    }
+                } else {
+                    bundle.putDouble("PaidAmount", remainingAmount)
+                }
+
+                var wholePrice =
+                    String.format(
+                        "%.2f",
+                        prefProvider.getValue(Constants.WHOLE_AMOUNT, "0.0").toDouble()
+                    ).toDouble()
+
+                bundle.putDouble("WholetotalPrice", wholePrice)
+                var remainingValue = 0.0
+                if (custom_paymentAmount != 0.0) {
+                    if (cashDiscountType == "CashDiscount") {
+                        wholePrice -= cashDiscountSurcharge
+                    }
+                    if (custom_paymentAmount != 0.0 && isSelectedCount != 1) {
+                        var splitChange = 0.0
+                        if (cashDiscountType == "CashDiscount") {
+                            splitChange =
+                                custom_paymentAmount - paymentAmount + cashDiscountSurcharge
+                        } else {
+                            splitChange =
+                                custom_paymentAmount - paymentAmount
+                        }
+
+                        bundle.putDouble(
+                            "splitChange", String.format("%.2f", splitChange).toDouble()
+                        )
+                        remainingValue = wholePrice - (custom_paymentAmount - splitChange)
+                        bundle.putDouble(
+                            "remainingAmount",
+                            remainingValue
+                        )
+                    } else {
+                        if (custom_paymentAmount >= wholePrice) {
+                            remainingValue =
+                                custom_paymentAmount - wholePrice
+                            bundle.putDouble(
+                                "remainingAmount",
+                                remainingValue
+                            )
+                        } else {
+                            remainingValue =
+                                wholePrice - custom_paymentAmount
+                            bundle.putDouble(
+                                "remainingAmount",
+                                remainingValue
+                            )
+                        }
+
+                    }
+
+                    prefProvider.setValue(
+                        Constants.WHOLE_AMOUNT,
+                        String.format("%.2f", remainingValue).toString()
+                    )
+                } else {
+                    if (cashDiscountType == "CashDiscount") {
+                        remainingValue =
+                            wholePrice - (paymentAmount + cashDiscountSurcharge)
+                    } else {
+                        remainingValue = wholePrice - paymentAmount
+                    }
+                    bundle.putDouble(
+                        "remainingAmount",
+                        remainingValue
+                    )
+                    prefProvider.setValue(
+                        Constants.WHOLE_AMOUNT,
+                        String.format("%.2f", remainingValue)
+                    )
+                }
+
+                if (remainingValue == 0.0 || remainingValue <= 0.0) {
+                    bundle.putBoolean("isSpilt", false)
+                    bundle.putBoolean("isSplitByNo", false)
+                    prefProvider.setValueboolean(Constants.SPLIT_ENABLE, false)
+                    bundle.putBoolean("isCustomCash", false)
+                    splitAllAmounts(Constants.SUB_TOTAL, 0.0)
+                    splitAllAmounts(Constants.TOTAL_DISCOUNT, 0.0)
+                    splitAllAmounts(Constants.TAX_CHARGE, 0.0)
+                    splitAllAmounts(Constants.SERVICE_CHARGE, 0.0)
+                    splitAllAmounts(Constants.CASH_DISCOUNT_SURCHARGE, 0.0)
+                    splitAllAmounts(Constants.TIP, 0.0)
+                } else {
+                    if (custom_paymentAmount != 0.0 && isSelectedCount != 1) {
+                        prefProvider.setValueboolean(Constants.SPLIT_ENABLE, true)
+                        bundle.putBoolean("isSpilt", true)
+                        bundle.putBoolean("isSplitByNo", true)
+                        bundle.putBoolean("isCustomCash", true)
+                        splitAllAmounts(Constants.SUB_TOTAL, subTotalPrice)
+                        splitAllAmounts(Constants.TOTAL_DISCOUNT, totalDiscount)
+                        splitAllAmounts(Constants.TAX_CHARGE, totalTax)
+                        splitAllAmounts(Constants.SERVICE_CHARGE, totalServiceCharge)
+                        if (cashDiscountType == "CashDiscount") {
+                            splitAllAmounts(
+                                Constants.CASH_DISCOUNT_SURCHARGE,
+                                cashDiscountSurcharge
+                            )
+                        }
+
+                        splitAllAmounts(Constants.TIP, 0.0)
+                    } else if (custom_paymentAmount != 0.0) {
+                        bundle.putBoolean("isSpilt", false)
+                        prefProvider.setValueboolean(Constants.SPLIT_ENABLE, false)
+                        bundle.putBoolean("isSplitByNo", false)
+                        bundle.putBoolean("isCustomCash", true)
+                        splitAllAmounts(Constants.SUB_TOTAL, subTotalPrice)
+                        splitAllAmounts(Constants.TOTAL_DISCOUNT, totalDiscount)
+                        splitAllAmounts(Constants.TAX_CHARGE, totalTax)
+                        splitAllAmounts(Constants.SERVICE_CHARGE, totalServiceCharge)
+                        if (cashDiscountType == "CashDiscount") {
+                            splitAllAmounts(
+                                Constants.CASH_DISCOUNT_SURCHARGE,
+                                cashDiscountSurcharge
+                            )
+                        }
+
+                        splitAllAmounts(Constants.TIP, 0.0)
+                    } else {
+                        bundle.putBoolean("isSpilt", true)
+                        bundle.putBoolean("isSplitByNo", true)
+                        bundle.putBoolean("isCustomCash", false)
+                        prefProvider.setValueboolean(Constants.SPLIT_ENABLE, true)
+                        splitAllAmounts(Constants.SUB_TOTAL, subTotalPrice)
+                        splitAllAmounts(Constants.TOTAL_DISCOUNT, totalDiscount)
+                        splitAllAmounts(Constants.TAX_CHARGE, totalTax)
+                        splitAllAmounts(Constants.SERVICE_CHARGE, totalServiceCharge)
+                        if (cashDiscountType == "CashDiscount") {
+                            splitAllAmounts(
+                                Constants.CASH_DISCOUNT_SURCHARGE,
+                                cashDiscountSurcharge
+                            )
+                        }
+
+                        splitAllAmounts(Constants.TIP, 0.0)
+                    }
+
+                }
+
+
+                orderId?.let { bundle.putInt("orderID", it) }
+                //bundle.putParcelable("receiptData", it.data)
+                bundle.putInt("splitValue", isSelectedCount)
+                bundle.putBoolean("isSplitByAmount", false)
+                bundle.putString("paymentType", "Cash")
+                bundle.putParcelable("cartList", cartList)
+                bundle.putParcelable("redeemLoyalty", redeemLoyaltyInfo)
+                bundle.putDouble("TipAmount", tipAmount)
+
+                bundle.putDouble("noCashAdj", cashDiscountSurcharge)
+                bundle.putBoolean("isFromActiveOrder", false)
+                bundle.putBoolean("isGuestPaymentTotal", isLastPayment)
+                bundle.putBoolean("isGuest", isGuestPay)
+                bundle.putBoolean("isLastPayment", isLastPayment)
+
+
+
+                if (findNavController().currentDestination?.id == R.id.paymentBoldPosFragment) {
+                    findNavController().navigate(
+                        R.id.action_paymentBoldPosFragment_to_orderComplete,
+                        bundle
+                    )
+                }
+
+            }
+        }
+
+    }
+
 }

@@ -114,7 +114,7 @@ class MagtekProFragment : Fragment(), ItemCallback, IDeviceListCallback {
 
         binding.txtHome.setOnClickListener {
             if (findNavController().currentDestination?.id == R.id.magtekProFragment) {
-                findNavController().navigate(R.id.action_magtekFragment_to_dashboardCategoryBoldPOS)
+                findNavController().navigate(R.id.action_magtekProFragment_to_dashboardCategoryBoldPOS)
             }
         }
 
