@@ -78,6 +78,46 @@
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true">
 
+
+            <AutoCompleteTextView
+                android:id="@+id/edtSearch"
+                style="@style/CustomFontSemiBold"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/_18sdp"
+                android:layout_centerVertical="true"
+                android:layout_gravity="center"
+                android:layout_marginEnd="@dimen/_30sdp"
+                android:layout_toStartOf="@+id/linearSecond"
+                android:layout_toEndOf="@+id/linearFirst"
+                android:background="@null"
+                android:drawableStart="@drawable/search_icon_small"
+                android:drawablePadding="@dimen/_5sdp"
+                android:ellipsize="end"
+                android:gravity="center"
+                android:hint="Search by item"
+                android:imeOptions="actionDone"
+                android:inputType="text"
+                android:lines="1"
+                android:maxWidth="@dimen/_100sdp"
+                android:maxLines="1"
+                android:padding="@dimen/_5sdp"
+                android:textColor="@color/txtColor"
+                android:textColorHint="@color/searchHintColor"
+                android:textSize="@dimen/_7mdpi" />
+
+            <TextView
+                android:id="@+id/txt_open_order"
+                style="@style/CustomFontBold"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginEnd="@dimen/_15sdp"
+                android:text="OPEN ORDERS"
+                android:textAllCaps="true"
+                android:textColor="@color/btnColor"
+                android:textSize="@dimen/_6mdpi" />
+
+
             <ImageView
                 android:id="@+id/imgSync"
                 android:layout_width="wrap_content"
@@ -91,43 +131,6 @@
                 android:padding="@dimen/_5sdp"
                 android:src="@drawable/ic_sync"
                 app:tint="@color/txtColor" />
-
-            <AutoCompleteTextView
-                android:id="@+id/edtSearch"
-                style="@style/CustomFontRegularStyle"
-                android:layout_width="wrap_content"
-                android:layout_height="@dimen/_18sdp"
-                android:layout_centerVertical="true"
-                android:layout_gravity="center"
-                android:layout_marginEnd="@dimen/_30sdp"
-                android:layout_toStartOf="@+id/linearSecond"
-                android:layout_toEndOf="@+id/linearFirst"
-                android:background="@null"
-                android:drawableStart="@drawable/search_icon_small"
-                android:drawablePadding="@dimen/_5sdp"
-                android:ellipsize="end"
-                android:gravity="center"
-                android:hint="Search item"
-                android:imeOptions="actionDone"
-                android:inputType="text"
-                android:lines="1"
-                android:maxLines="1"
-                android:padding="@dimen/_5sdp"
-                android:textColor="@color/txtColor"
-                android:textColorHint="@color/searchHintColor"
-                android:textSize="@dimen/_6mdpi" />
-
-            <TextView
-                android:id="@+id/txt_open_order"
-                style="@style/CustomFontBold"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginEnd="@dimen/_15sdp"
-                android:text="OPEN ORDERS"
-                android:textAllCaps="true"
-                android:textColor="@color/btnColor"
-                android:textSize="@dimen/_6mdpi" />
 
 
             <LinearLayout

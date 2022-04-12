@@ -53,13 +53,15 @@ class AssignCustomerToOrderAdapter :
                 }
             }
 
-            if (item.addresses.isNotEmpty()) {
-                binding.txtAddress1.visibility = View.VISIBLE
-                item.addresses.forEach {
+            item.addresses.forEach {
+                if (it.full_address.isNotEmpty()){
                     binding.txtAddress1.text = it.full_address
+                    binding.txtAddress1.visibility = View.VISIBLE
                 }
-            } else {
-                binding.txtAddress1.visibility = View.GONE
+                else{
+                    binding.txtAddress1.text = it.full_address
+                    binding.txtAddress1.visibility = View.GONE
+                }
             }
 
             if (builder.isNotEmpty()) {

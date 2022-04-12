@@ -98,18 +98,21 @@ class ReasonForRefundDialog : DialogFragment() {
                     when {
 
                         Constants.FIRST_DATA_GATEWAY == magtekRequestUtils.gatewayName() -> {
-                            jsonArray =
-                                model.transactionOutput?.token?.let { it1 ->
-                                    magtekRequestUtils.processTokenFirstData(
-                                        (refundAmount * 100).toInt(),
-                                        it1,
-                                        model.customerTransactionID ?: "",
-                                        model.transactionOutput.transactionOutputDetails[0].value,
-                                        REFUND1
-                                    )
-                                }
 
-                            networkCall(jsonArray, 0)
+                            if (model != null) {
+                                jsonArray =
+                                    model.transactionOutput?.token?.let { it1 ->
+                                        magtekRequestUtils.processTokenFirstData(
+                                            (refundAmount * 100).toInt(),
+                                            it1,
+                                            model.customerTransactionID ?: "",
+                                            model.transactionOutput.transactionOutputDetails[0].value,
+                                            REFUND1
+                                        )
+                                    }
+
+                                networkCall(jsonArray, 0)
+                            }
                         }
 
 

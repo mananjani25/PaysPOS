@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="MissingDefaultResource">
+
+    <data>
+
+        <variable
+            name="itemSheetModel"
+            type="com.android.pos.data.model.responseModel.GetEmployeeTimeSheetDetailsResponse.Data" />
+
+    </data>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?attr/selectableItemBackground"
+        android:orientation="horizontal"
+        android:paddingTop="@dimen/_5sdp"
+        android:paddingBottom="@dimen/_5sdp">
+
+        <androidx.appcompat.widget.AppCompatTextView
+            style="@style/CustomFontSemiBold"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/_5sdp"
+            android:layout_weight="0.5"
+            android:gravity="center"
+            android:text="1"
+            android:layout_gravity="center"
+            android:textColor="@color/txtColor"
+            android:textSize="@dimen/_6mdpi" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvclockIntime"
+            style="@style/CustomFontSemiBold"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1.5"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:textColor="@color/txtColor"
+            android:textSize="@dimen/_6mdpi" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/tvclockOuttime"
+            style="@style/CustomFontSemiBold"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1.5"
+            android:gravity="center"
+            android:layout_gravity="center"
+            android:textColor="@color/txtColor"
+            android:textSize="@dimen/_6mdpi" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            style="@style/CustomFontSemiBold"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:text="@{itemSheetModel.hourlyWages}"
+            android:textColor="@color/txtColor"
+            android:textSize="@dimen/_6mdpi" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            style="@style/CustomFontSemiBold"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:layout_gravity="center"
+            android:textColor="@color/txtColor"
+            android:textSize="@dimen/_6mdpi"
+            android:visibility="gone" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            style="@style/CustomFontSemiBold"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:layout_gravity="center"
+            android:text="@{itemSheetModel.actualInTime}"
+            android:textColor="@color/txtColor"
+            android:textSize="@dimen/_6mdpi" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            style="@style/CustomFontSemiBold"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:layout_gravity="center"
+            android:text="@{itemSheetModel.totalWage}"
+            android:textColor="@color/txtColor"
+            android:textSize="@dimen/_6mdpi" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            style="@style/CustomFontSemiBold"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center"
+            android:layout_gravity="center"
+            android:text="Print Report"
+            android:textColor="@color/btnColor"
+            android:textSize="@dimen/_6mdpi" />
+
+    </LinearLayout>
+
+
+</layout>

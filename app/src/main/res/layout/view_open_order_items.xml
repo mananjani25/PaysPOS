@@ -1,0 +1,139 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="MissingDefaultResource">
+
+    <data>
+
+        <variable
+            name="model"
+            type="com.android.pos.data.model.responseModel.OpenOrderResponse.Data.Order.OrderItem" />
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:background="@color/view"
+            android:visibility="gone" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/backgroundColor"
+            android:orientation="horizontal"
+            android:paddingStart="@dimen/_18sdp"
+            android:paddingTop="@dimen/_4sdp"
+            android:paddingBottom="@dimen/_4sdp">
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/txtItemName"
+                style="@style/CustomFontRegularStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+
+                android:text="@{model.itemName}"
+                android:textColor="@color/white"
+                android:textSize="@dimen/_6mdpi"
+                tools:text="Item Name"
+                android:paddingEnd="@dimen/_5sdp"/>
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/txtQty"
+                style="@style/CustomFontRegularStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="1"
+                android:gravity="center_vertical"
+                android:paddingEnd="@dimen/_5sdp"
+                android:text="@{@string/cross+``+model.quantity}"
+                android:textColor="@color/white"
+                android:textSize="@dimen/_6mdpi"
+                android:paddingLeft="@dimen/_2sdp"
+                tools:text="X 1" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/txtPrice"
+                style="@style/CustomFontRegularStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="1"
+                android:gravity="center_vertical"
+                android:text="@{@string/symbole +``+String.format(@string/format,model.price)}"
+                android:textColor="@color/white"
+                android:textSize="@dimen/_6mdpi"
+                android:paddingLeft="@dimen/_2sdp"
+                tools:text="$12.00" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/CustomFontRegularStyle"
+                style="@style/CustomFontSemiBold"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="1"
+                android:gravity="center_vertical"
+                android:text="@{@string/symbole +``+String.format(@string/format,model.totalPrice)}"
+                android:textColor="@color/white"
+                android:textSize="@dimen/_6mdpi"
+                tools:text="$12.00" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/txtTerminalName"
+                style="@style/CustomFontRegularStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="1"
+                android:gravity="center_vertical"
+                android:textColor="@color/white"
+                android:textSize="@dimen/_6mdpi"
+                tools:text="Terminal Name" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/txtEmployeeName"
+                style="@style/CustomFontRegularStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="1"
+                android:gravity="center_vertical"
+                android:textColor="@color/white"
+                android:textSize="@dimen/_6mdpi"
+                tools:text="Terminal Name"
+                android:paddingLeft="@dimen/_2sdp"/>
+
+        </LinearLayout>
+
+
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:background="@color/view"
+            android:visibility="visible" />
+
+        <!-- <include layout="@layout/divider" />-->
+            />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rvOpenOrder"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            tools:itemCount="2"
+            tools:listitem="@layout/view_open_order_items" />
+
+
+    </LinearLayout>
+
+
+</layout>

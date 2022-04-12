@@ -397,6 +397,7 @@ class CartFragment(
                 Log.e(TAG, "listSize  ${Gson().toJson(it)}")
                 if (it.isNotEmpty()) {
                     if (isFromPayment) {
+                        binding.linearCashDiscount.visible()
                         binding.linearButtonView.gone()
                         binding.relPreoceedToFire.gone()
                     } else {
@@ -523,6 +524,7 @@ class CartFragment(
 
                         cartlist = it as ArrayList<CartModel>
                         if (isFromPayment) {
+                            binding.linearCashDiscount.visible()
                             binding.linearButtonView.gone()
                             binding.relPreoceedToFire.gone()
                         } else {
@@ -639,6 +641,7 @@ class CartFragment(
 
                     } else {
                         if (isFromPayment) {
+                            binding.linearCashDiscount.visible()
                             binding.linearButtonView.gone()
                             binding.relPreoceedToFire.gone()
                         } else {
@@ -675,6 +678,7 @@ class CartFragment(
 
                     if (it.isNotEmpty()) {
                         if (isFromPayment) {
+                            binding.linearCashDiscount.visible()
                             binding.linearButtonView.gone()
                             binding.relPreoceedToFire.gone()
                         } else {

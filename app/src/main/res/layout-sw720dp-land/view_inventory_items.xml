@@ -52,7 +52,7 @@
                 android:layout_gravity="start|center_vertical"
                 android:layout_marginStart="@dimen/_10sdp"
                 android:gravity="start|center_vertical"
-                android:text="@{Integer.toString(model.count)}"
+                android:text="@{`(`+Integer.toString(model.count)+`)`}"
 
                 android:textSize="@dimen/text_size_medium"
                 android:visibility="visible"

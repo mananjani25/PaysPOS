@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="MissingDefaultResource">
+
+    <data>
+
+        <variable
+            name="viewModel"
+            type="com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel" />
+    </data>
+
+    <RelativeLayout
+        android:id="@+id/relParent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/_5sdp"
+        android:layout_marginEnd="@dimen/_5sdp"
+        android:background="@color/bg_color"
+        android:orientation="horizontal">
+
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="@dimen/_10sdp"
+            android:orientation="horizontal">
+
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:id="@+id/linear_empname_role"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="@dimen/_2sdp"
+                android:orientation="horizontal">
+
+
+                <ImageView
+                    android:id="@+id/imgswitch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/_18sdp"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="@dimen/_2sdp"
+                    android:contentDescription="@string/clock"
+                    android:paddingVertical="@dimen/_5sdp"
+                    android:src="@drawable/switch_user"
+                    app:tint="@color/txt_color_blue" />
+
+                <TextView
+                    android:id="@+id/txtEmployeeName"
+                    style="@style/CustomFontSemiBold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:paddingVertical="@dimen/_5sdp"
+                    android:textColor="@color/txt_color_blue"
+                    android:textSize="@dimen/_6mdpi"
+                    tools:ignore="RelativeOverlap"
+                    tools:text="John Smith" />
+            </androidx.appcompat.widget.LinearLayoutCompat>
+
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:id="@+id/linear_clockout"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="@dimen/_18sdp"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="@dimen/_2sdp"
+                    android:contentDescription="@string/clock"
+                    android:paddingVertical="@dimen/_5sdp"
+                    android:src="@drawable/ic_tab_clock" />
+
+                <TextView
+                    style="@style/CustomFontSemiBold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:paddingVertical="@dimen/_5sdp"
+                    android:text="ClockOut"
+                    android:textColor="@color/txt_color_blue"
+                    android:textSize="@dimen/_6mdpi"
+                    tools:ignore="RelativeOverlap" />
+            </androidx.appcompat.widget.LinearLayoutCompat>
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:orientation="horizontal"
+            tools:ignore="RelativeOverlap">
+
+            <LinearLayout
+                android:id="@+id/linearCheckOut"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:visibility="gone"
+                android:orientation="horizontal"
+                tools:ignore="UseCompoundDrawables">
+
+                <ImageView
+                    android:id="@+id/imgCalculator"
+                    android:layout_width="@dimen/_8sdp"
+                    android:layout_height="@dimen/_8sdp"
+                    android:contentDescription="@string/checkout"
+                    android:src="@drawable/ic_tab_checkout"
+                    app:tint="@color/txt_color_blue" />
+
+                <TextView
+                    android:id="@+id/txtCheckOut"
+                    style="@style/CustomFontSemiBold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="@dimen/_5sdp"
+                    android:text="@string/checkout"
+                    android:textColor="@color/txt_color_blue"
+                    android:textSize="@dimen/_5mdpi" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:background="?attr/selectableItemBackground"
+                android:id="@+id/linearTransaction"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginStart="@dimen/_15sdp"
+                android:gravity="center"
+                android:orientation="horizontal"
+                tools:ignore="UseCompoundDrawables">
+
+                <ImageView
+                    android:layout_marginStart="@dimen/_5sdp"
+                    android:layout_width="@dimen/_8sdp"
+                    android:layout_height="@dimen/_8sdp"
+                    android:contentDescription="@string/transactions"
+                    android:src="@drawable/ic_tab_transaction"
+                    app:tint="@color/txtColor" />
+
+                <TextView
+                    style="@style/CustomFontSemiBold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="@dimen/_5sdp"
+                    android:text="@string/transactions"
+                    android:textColor="@color/txtColor"
+                    android:textSize="@dimen/_5mdpi" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:background="?attr/selectableItemBackground"
+                android:id="@+id/linearOpenOrders"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginStart="@dimen/_15sdp"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:visibility="visible"
+                tools:ignore="UseCompoundDrawables">
+
+                <ImageView
+                    android:layout_marginStart="@dimen/_5sdp"
+                    android:layout_width="@dimen/_8sdp"
+                    android:layout_height="@dimen/_8sdp"
+                    android:contentDescription="@string/notification"
+                    android:src="@drawable/ic_orders"
+                    app:tint="@color/txtColor" />
+
+                <TextView
+                    style="@style/CustomFontSemiBold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="@dimen/_5sdp"
+                    android:text="@string/open_orders"
+                    android:textColor="@color/txtColor"
+                    android:textSize="@dimen/_5mdpi" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:background="?attr/selectableItemBackground"
+                android:id="@+id/linearMore"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginStart="@dimen/_15sdp"
+                android:gravity="center"
+                android:orientation="horizontal"
+                tools:ignore="UseCompoundDrawables">
+
+                <ImageView
+                    android:layout_marginStart="@dimen/_5sdp"
+                    android:id="@+id/imgMore"
+                    android:layout_width="@dimen/_8sdp"
+                    android:layout_height="@dimen/_8sdp"
+                    android:contentDescription="@string/more"
+                    android:src="@drawable/ic_tab_more"
+                    app:tint="@color/txtColor" />
+
+                <TextView
+                    android:id="@+id/txtMore"
+                    style="@style/CustomFontSemiBold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="@dimen/_5sdp"
+                    android:text="@string/more"
+                    android:textColor="@color/txtColor"
+                    android:textSize="@dimen/_5mdpi" />
+            </LinearLayout>
+
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+    </RelativeLayout>
+
+
+</layout>
