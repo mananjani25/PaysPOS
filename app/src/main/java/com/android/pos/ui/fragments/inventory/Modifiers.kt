@@ -1,5 +1,6 @@
 package com.android.pos.ui.fragments.inventory
 
+import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.text.Editable
@@ -30,14 +31,14 @@ import com.android.pos.utils.statusUtils.Status
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class Modifiers : Fragment(), TextWatcher,ItemCallback {
+class Modifiers(val clickedPosition: Int) : Fragment(), TextWatcher,ItemCallback {
     private var isreOrder: Boolean = false
     var dragFrom = -1
     var dragTo = -1
     private lateinit var binding: FragmentModifiersBinding
     private lateinit var adapter: ModifierSetsListAdapter
     private val viewModel by viewModels<ModifierSetViewModel>()
-
+    var listSize:Int?=0
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -209,6 +210,13 @@ class Modifiers : Fragment(), TextWatcher,ItemCallback {
                     isreOrder = false
                     viewModel.reOrder(adapter.getAll())
                 }
+
+                val intent = Intent()
+                intent.action = "inventory"
+                intent.putExtra("isCount", true)
+                intent.putExtra("param1", clickedPosition)
+                intent.putExtra("count", listSize)
+                requireContext().sendBroadcast(intent)
             }
         })
 

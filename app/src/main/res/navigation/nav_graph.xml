@@ -208,6 +208,13 @@
             android:id="@+id/action_inventory_to_createOption"
             app:destination="@id/createOption"
             app:enterAnim="@anim/nav_default_enter_anim" />
+
+
+        <action
+            android:id="@+id/action_inventory_to_menuFragment"
+            app:destination="@id/menuFragment"
+            app:popUpToInclusive="true" />
+
     </fragment>
     <action
         android:id="@+id/action_global_inventory"
@@ -299,6 +306,12 @@
             app:enterAnim="@anim/nav_default_enter_anim" />
 
 
+        <action
+            android:id="@+id/action_settings_to_menuFragment"
+            app:destination="@id/menuFragment"
+            app:popUpToInclusive="true" />
+
+
     </fragment>
     <action
         android:id="@+id/action_global_settings"
@@ -372,6 +385,12 @@
             app:destination="@id/dashboardCategoryBoldPOS"
             app:popUpTo="@id/reports"
             app:popUpToInclusive="true" />
+
+        <action
+            android:id="@+id/action_reports_to_menuFragment"
+            app:destination="@id/menuFragment"
+            app:popUpToInclusive="true" />
+
 
     </fragment>
     <action

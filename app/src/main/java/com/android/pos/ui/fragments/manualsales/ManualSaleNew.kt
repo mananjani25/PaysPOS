@@ -261,7 +261,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                         "%.2f",
                         viewModel.totalPrice
                     )
-                    binding.tvDiscount.text = "$" + String.format(
+                    binding.tvDiscount.text = "-$" + String.format(
                         "%.2f",
                         viewModel.totalDiscount
                     )
@@ -577,7 +577,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                                     prefProvider.setValueInt(Constants.CUSTOMER_ID, -1)
                                     binding.txtTotalAmount.text = "$0.00"
                                     binding.txtTotal.text = "$0.00"
-                                    binding.tvDiscount.text = "$0.00"
+                                    binding.tvDiscount.text = "-$0.00"
                                     binding.txtSubTotal.text = "$0.00"
                                     binding.txtTotalTax.text = "$0.00"
                                     binding.txtServiceCharge.text = "$0.00"

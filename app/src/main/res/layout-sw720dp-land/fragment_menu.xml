@@ -21,7 +21,8 @@
                 android:layout_centerVertical="true"
                 android:layout_gravity="center"
                 android:background="?attr/selectableItemBackground"
-                android:padding="@dimen/_8sdp"
+                android:paddingHorizontal="@dimen/_8sdp"
+                android:paddingVertical="@dimen/_6sdp"
                 app:srcCompat="@drawable/ic_arrow_back"
                 app:tint="@color/txtColor" />
 
@@ -46,11 +47,13 @@
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
                 android:layout_gravity="center"
+                android:background="@drawable/button_action_hover"
                 android:gravity="center"
-                android:padding="@dimen/_8sdp"
+                android:paddingHorizontal="@dimen/padding_home_button"
+                android:paddingVertical="@dimen/_8sdp"
                 android:text="@string/tv_home"
                 android:textAllCaps="true"
-                android:textColor="@color/btnColor"
+                android:textColor="@color/white"
                 android:textSize="@dimen/_5mdpi"
                 tools:ignore="RelativeOverlap" />
 

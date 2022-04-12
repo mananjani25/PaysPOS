@@ -1,5 +1,6 @@
 package com.android.pos.ui.fragments.inventory
 
+import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.text.Editable
@@ -32,11 +33,11 @@ import com.android.pos.utils.statusUtils.Status
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class HideCategoryListing : Fragment() ,ItemCallback{
+class HideCategoryListing(val clickedPosition: Int) : Fragment() ,ItemCallback{
     private var isreOrder: Boolean = false
     private lateinit var adapter: CategoriesListAdapter
     private lateinit var binding: FragmentCategoriesBinding
-
+    var listSize:Int?=0
     /* private var position: Int = -1
      private lateinit var categoryListUpdateDelete: ArrayList<TbCategory>*/
     private val viewModel by viewModels<CategoriesViewModel>()
@@ -142,6 +143,13 @@ class HideCategoryListing : Fragment() ,ItemCallback{
 
 
                 }
+
+                val intent = Intent()
+                intent.action = "inventory"
+                intent.putExtra("isCount", true)
+                intent.putExtra("param1", clickedPosition)
+                intent.putExtra("count", listSize)
+                requireContext().sendBroadcast(intent)
             }
         })
 

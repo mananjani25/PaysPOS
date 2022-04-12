@@ -281,6 +281,9 @@ object Constants {
     const val IN_PROCESS = "IN PROCESS"
     const val COMPLETED = "COMPLETED"
 
+    const val INVENTORY_COUNTS = "items/inventories_count"
+
+
     fun createRequestModelForUpdatePritnerType(
         oldList: ArrayList<PrinterResponse.Data.OrderTypes>?,
         adapterList: ArrayList<PrinterResponse.Data.OrderTypes>,

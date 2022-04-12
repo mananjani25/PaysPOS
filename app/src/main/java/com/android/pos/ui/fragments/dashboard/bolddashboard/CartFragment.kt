@@ -420,7 +420,7 @@ class CartFragment(
                         MethodUtils.roundOffAmount(viewModel.totalServiceCharge)
                     binding.tvPayNow.text = "Pay " + binding.txtTotal.text.toString()
                     Log.e("totalDiscount", viewModel.totalDiscount.toString())
-                    binding.txtDiscount.text =
+                    binding.txtDiscount.text ="-"+
                         MethodUtils.roundOffAmount(viewModel.totalDiscount)
                     binding.txtNoncashAdj.text =
                         MethodUtils.roundOffAmount(viewModel.cashdiscountAmount)
@@ -483,7 +483,7 @@ class CartFragment(
                     binding.txtTotal.text = MethodUtils.roundOffAmount(0.0)
                     binding.txtSubTotal.text = MethodUtils.roundOffAmount(0.0)
                     binding.txtTax.text = MethodUtils.roundOffAmount(0.0)
-                    binding.txtDiscount.text = MethodUtils.roundOffAmount(0.0)
+                    binding.txtDiscount.text = "-"+MethodUtils.roundOffAmount(0.0)
                     binding.txtNoncashAdj.text =
                         MethodUtils.roundOffAmount(0.0)
                     binding.txtServiceCharge.text =
@@ -579,7 +579,7 @@ class CartFragment(
                         binding.txtServiceCharge.text =
                             MethodUtils.roundOffAmount(viewModel.totalServiceCharge)
                         binding.txtDiscount.text =
-                            MethodUtils.roundOffAmount(viewModel.totalDiscount)
+                            "-"+MethodUtils.roundOffAmount(viewModel.totalDiscount)
                         binding.txtNoncashAdj.text =
                             MethodUtils.roundOffAmount(viewModel.cashdiscountAmount)
 //                        var data: TbCustomer? = prefProvider.getCustomerData()
@@ -707,7 +707,7 @@ class CartFragment(
                         binding.tvPayNow.text = "Pay " + binding.txtTotal.text.toString()
                         Log.e("totalDiscount", viewModel.totalDiscount.toString())
                         binding.txtDiscount.text =
-                            MethodUtils.roundOffAmount(viewModel.totalDiscount)
+                            "-"+ MethodUtils.roundOffAmount(viewModel.totalDiscount)
                         binding.txtNoncashAdj.text =
                             MethodUtils.roundOffAmount(viewModel.cashdiscountAmount)
                         var data: TbCustomer? = prefProvider.getCustomerData()
@@ -771,7 +771,7 @@ class CartFragment(
                         binding.txtTotal.text = MethodUtils.roundOffAmount(0.0)
                         binding.txtSubTotal.text = MethodUtils.roundOffAmount(0.0)
                         binding.txtTax.text = MethodUtils.roundOffAmount(0.0)
-                        binding.txtDiscount.text = MethodUtils.roundOffAmount(0.0)
+                        binding.txtDiscount.text = "-"+MethodUtils.roundOffAmount(0.0)
                         binding.txtNoncashAdj.text =
                             MethodUtils.roundOffAmount(0.0)
                         binding.txtServiceCharge.text =

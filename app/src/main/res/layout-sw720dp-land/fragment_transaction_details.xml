@@ -64,14 +64,13 @@
                     style="@style/CustomFontSemiBold"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
-                    android:layout_marginEnd="@dimen/_5sdp"
-                    android:background="?attr/selectableItemBackground"
                     android:gravity="center"
-                    android:padding="@dimen/_6sdp"
                     android:text="Home"
                     android:textAllCaps="true"
-                    android:textColor="@color/txt_color_blue"
-                    android:textSize="@dimen/_6mdpi" />
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/_6mdpi"
+                    android:background="@drawable/button_action_hover"
+                    android:paddingHorizontal="@dimen/padding_home_button"/>
 
             </LinearLayout>
 

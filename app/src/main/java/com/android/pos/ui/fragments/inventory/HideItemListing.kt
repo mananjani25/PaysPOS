@@ -1,5 +1,6 @@
 package com.android.pos.ui.fragments.inventory
 
+import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.text.Editable
@@ -30,10 +31,11 @@ import com.android.pos.utils.statusUtils.Status
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class HideItemListing : Fragment(),ItemCallback {
+class HideItemListing(val clickedPosition: Int) : Fragment(),ItemCallback {
 
     private var isreOrder: Boolean = false
     private var deleteAndHide: Boolean = false
+    var listSize:Int?=0
 
     private var deletePos: Int = -1
     private var deleteObj: TbItem? = null
@@ -199,6 +201,13 @@ class HideItemListing : Fragment(),ItemCallback {
                     viewModel.reOrder(adapter.getAll())
                 }
                 // viewModel.dbDeleteAndHide(deleteObj!!.itemId, deleteAndHide)
+
+                val intent = Intent()
+                intent.action = "inventory"
+                intent.putExtra("isCount", true)
+                intent.putExtra("param1", clickedPosition)
+                intent.putExtra("count", listSize)
+                requireContext().sendBroadcast(intent)
             }
         })
 

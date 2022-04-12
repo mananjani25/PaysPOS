@@ -31,6 +31,7 @@
                     android:layout_centerVertical="true"
                     android:layout_marginStart="@dimen/_5sdp"
                     android:padding="@dimen/_6sdp"
+                    android:background="?attr/selectableItemBackground"
                     android:src="@drawable/ic_baseline_menu" />
 
 
@@ -57,7 +58,7 @@
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="match_parent"
                 android:layout_gravity="center"
                 android:layout_weight="0.72"
                 android:orientation="horizontal">
@@ -92,18 +93,19 @@
                 <TextView
                     android:id="@+id/txtHome"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_height="match_parent"
                     android:fontFamily="@font/sf_pro_display_semibold"
                     android:paddingVertical="@dimen/_6sdp"
                     android:text="@string/tv_home"
                     android:textAllCaps="true"
                     android:textColor="@color/white"
                     android:textSize="@dimen/_6mdpi"
+                    android:gravity="center"
                     android:paddingHorizontal="@dimen/padding_home_button"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@+id/imgOptionMenuContainer"
                     app:layout_constraintTop_toTopOf="parent"
-                    android:background="@drawable/button_selected"
+                    android:background="@drawable/button_action_hover"
                     />
 
                 <TextView
