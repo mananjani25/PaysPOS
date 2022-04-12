@@ -308,7 +308,7 @@
                                 android:layout_alignParentEnd="true"
                                 android:layout_marginEnd="@dimen/_5sdp"
                                 android:gravity="end"
-                                android:text="$ 0.00"
+                                android:text="-$0.00"
                                 android:textColor="@color/colorRed"
                                 android:textSize="@dimen/text_size_medium" />
                         </RelativeLayout>
@@ -321,7 +321,7 @@
                             android:layout_marginTop="@dimen/_1sdp"
                             android:orientation="horizontal"
                             android:padding="@dimen/_1sdp"
-                            android:visibility="visible">
+                            android:visibility="gone">
 
                             <androidx.appcompat.widget.AppCompatTextView
                                 style="@style/CustomFontMediumStyle"

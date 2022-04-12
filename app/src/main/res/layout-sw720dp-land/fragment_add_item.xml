@@ -216,7 +216,7 @@
                 android:layout_marginStart="@dimen/_2sdp"
                 android:layout_marginEnd="@dimen/_4sdp"
                 android:layout_weight="1"
-                android:background="@color/btnColorDark"
+                android:background="@color/colorRed"
                 android:gravity="center"
                 android:padding="@dimen/_5sdp"
                 android:text="@string/remove_item"
