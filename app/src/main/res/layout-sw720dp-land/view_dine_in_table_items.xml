@@ -179,13 +179,11 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="end"
                         android:layout_marginTop="@dimen/_2sdp"
-                        android:gravity="start"
+                        android:gravity="center"
                         android:textColor="@color/colorRed"
                         android:textSize="@dimen/_5mdpi"
                         tools:text="$20.00"
-                        android:paddingRight="@dimen/_22sdp"
-
-                        />
+                        android:paddingRight="@dimen/_20sdp"/>
 
 
                 </androidx.appcompat.widget.LinearLayoutCompat>
