@@ -1,0 +1,357 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".ui.fragments.settings.teamrole.TeamMemberTimeSheetFragment"
+    tools:ignore="MissingDefaultResource">
+
+    <data>
+
+        <variable
+            name="viewModel"
+            type="com.android.pos.ui.fragments.settings.teamrole.UserAccessPermissionViewModel" />
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/bg_color"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/imgClose"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:padding="@dimen/_6sdp"
+                android:src="@drawable/ic_arrow_back" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/txtTitle"
+                style="@style/CustomFontMediumStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:padding="@dimen/_3sdp"
+                android:text="@string/tv_user_access_permission"
+                android:textColor="@color/txtColor"
+                android:textSize="@dimen/_6mdpi" />
+
+            <TextView
+                android:id="@+id/txtHome"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="@dimen/_10sdp"
+                android:fontFamily="@font/sf_pro_display_semibold"
+                android:padding="@dimen/_6sdp"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:text="@string/tv_home"
+                android:textColor="@color/btnColor"
+                android:textSize="@dimen/_7mdpi" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+
+
+            android:background="@color/view" />
+
+        <androidx.core.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_marginVertical="@dimen/_10sdp"
+            android:layout_height="wrap_content"
+            android:fillViewport="true">
+
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/_50sdp"
+                android:layout_marginTop="@dimen/_5sdp"
+                android:layout_marginEnd="@dimen/_50sdp"
+                android:layout_marginBottom="@dimen/_5sdp"
+                android:orientation="vertical">
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    style="@style/CustomFontSemiBold"
+                    android:layout_width="wrap_content"
+                    android:id="@+id/tvRoleNameLabel"
+                    android:layout_marginBottom="@dimen/_5sdp"
+                    android:layout_height="wrap_content"
+                    android:text="@string/tv_add_new_role_name"
+                    android:textColor="@color/txtColor"
+                    android:textSize="@dimen/_6mdpi"
+                    app:textAllCaps="false" />
+
+                <androidx.appcompat.widget.AppCompatEditText
+                    android:id="@+id/tvRoleName"
+                    style="@style/CustomFontMediumStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:digits="@string/disable_emoji_string"
+                    android:layout_marginBottom="@dimen/_10sdp"
+                    android:background="@drawable/border_with_field"
+                    android:hint="@string/tv_add_role_name"
+                    android:imeOptions="actionNext"
+                    android:inputType="textCapWords"
+                    android:padding="@dimen/_5sdp"
+                    android:text="@={viewModel.createUserPermission.name}"
+                    android:textColor="@color/txtColor"
+                    android:textColorHint="@color/hintColor"
+                    android:textSize="@dimen/_6mdpi" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    style="@style/CustomFontMediumStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_5sdp"
+                    android:layout_marginBottom="@dimen/_5sdp"
+                    android:text="@string/tv_select_module"
+                    android:textColor="@color/txtColor"
+                    android:textSize="@dimen/_6mdpi"
+                    app:textAllCaps="false" />
+
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginBottom="@dimen/_5sdp"
+                    android:orientation="horizontal">
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/rvAllModule"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <androidx.appcompat.widget.AppCompatTextView
+                            style="@style/CustomFontSemiBold"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="@color/btnColor"
+                            android:ems="6"
+                            android:gravity="center"
+                            android:onClick="@{() -> viewModel.addAllModule()}"
+                            android:padding="@dimen/_5sdp"
+                            android:text="@string/tv_add_all"
+                            android:textColor="@color/white"
+                            android:textSize="@dimen/_6mdpi"
+                            app:textAllCaps="false" />
+
+                        <androidx.appcompat.widget.AppCompatTextView
+                            style="@style/CustomFontSemiBold"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/_5sdp"
+                            android:background="@drawable/background_timesheet"
+                            android:ems="6"
+                            android:gravity="center"
+                            android:onClick="@{() -> viewModel.removeAllModule()}"
+                            android:padding="@dimen/_5sdp"
+                            android:text="@string/tv_remove_all"
+                            android:textColor="@color/white"
+                            android:textSize="@dimen/_6mdpi"
+                            app:textAllCaps="false" />
+
+
+
+                    </LinearLayout>
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/rvSelectedModule"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+
+                        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+
+                </LinearLayout>
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    style="@style/CustomFontMediumStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_5sdp"
+                    android:layout_marginBottom="@dimen/_5sdp"
+                    android:text="@string/tv_select_team_member"
+                    android:textColor="@color/txtColor"
+                    android:textSize="@dimen/_6mdpi"
+                    app:textAllCaps="false" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="horizontal">
+
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/rvAllMember"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+
+                        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <androidx.appcompat.widget.AppCompatTextView
+                            style="@style/CustomFontSemiBold"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:background="@color/btnColor"
+                            android:ems="6"
+                            android:gravity="center"
+                            android:onClick="@{() -> viewModel.addAllEmployee()}"
+                            android:padding="@dimen/_5sdp"
+                            android:text="@string/tv_add_all"
+                            android:textColor="@color/white"
+                            android:textSize="@dimen/_6mdpi"
+                            app:textAllCaps="false" />
+
+                        <androidx.appcompat.widget.AppCompatTextView
+                            style="@style/CustomFontSemiBold"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/_5sdp"
+                            android:background="@drawable/background_timesheet"
+                            android:ems="6"
+                            android:gravity="center"
+                            android:onClick="@{() -> viewModel.removeAllEmployee()}"
+                            android:padding="@dimen/_5sdp"
+                            android:text="@string/tv_remove_all"
+                            android:textColor="@color/white"
+                            android:textSize="@dimen/_6mdpi"
+                            app:textAllCaps="false" />
+
+
+                    </LinearLayout>
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:id="@+id/rvSelectedMember"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+
+                        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_15sdp"
+                    android:orientation="horizontal">
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/addRole"
+                        style="@style/CustomFontSemiBold"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginRight="@dimen/_10sdp"
+                        android:background="@color/btnColor"
+                        android:ems="15"
+                        android:gravity="center"
+                        android:onClick="@{() -> viewModel.submit()}"
+                        android:padding="@dimen/_5sdp"
+                        android:text="@string/tv_add_role"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/_6mdpi"
+                        app:textAllCaps="false" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/txtCancel"
+                        style="@style/CustomFontSemiBold"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:background="@drawable/background_timesheet"
+                        android:ems="15"
+                        android:gravity="center"
+                        android:padding="@dimen/_5sdp"
+                        android:text="@string/tv_cancel"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/_6mdpi"
+                        app:textAllCaps="false" />
+
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_10sdp"
+                    android:background="@drawable/background_timesheet"
+                    android:orientation="horizontal"
+                    android:paddingTop="@dimen/_8sdp"
+                    android:paddingBottom="@dimen/_8sdp">
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        style="@style/CustomFontMediumStyle"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="@dimen/_10sdp"
+                        android:layout_marginRight="@dimen/_10sdp"
+                        android:text="@string/tv_role"
+                        android:gravity="center"
+                        android:layout_gravity="center"
+                        android:layout_weight="1"
+                        android:textAllCaps="true"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/_7mdpi" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        style="@style/CustomFontMediumStyle"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="2"
+                        android:textAllCaps="true"
+                        android:gravity="center"
+                        android:text="@string/tv_team_member_with_role"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/_7mdpi" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        style="@style/CustomFontMediumStyle"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:textAllCaps="true"
+                        android:text="@string/tv_permission"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/_7mdpi" />
+
+                </LinearLayout>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvAssignRole"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/border_with_square_outlinne"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+
+            </androidx.appcompat.widget.LinearLayoutCompat>
+        </androidx.core.widget.NestedScrollView>
+
+    </LinearLayout>
+</layout>

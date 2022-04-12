@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="MissingDefaultResource">
+
+    <LinearLayout
+        android:id="@+id/linearParent"
+        android:layout_margin="@dimen/_4sdp"
+        android:background="@drawable/categories_selector"
+        android:layout_width="match_parent"
+        android:orientation="vertical"
+        android:padding="@dimen/_5sdp"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/txtVariation"
+            style="@style/CustomFontSemiBold"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            tools:text="FOOD"
+            android:maxLines="2"
+            android:clickable="false"
+            android:duplicateParentState="true"
+            android:textColor="@color/txtColor"
+            android:textSize="@dimen/_7mdpi" />
+
+        <TextView
+            android:id="@+id/txtPrice"
+            style="@style/CustomFontSemiBold"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:gravity="center"
+            tools:text="FOOD"
+            android:padding="@dimen/_1sdp"
+            android:clickable="false"
+            android:duplicateParentState="true"
+            android:maxLines="2"
+            android:textColor="@color/txtColor"
+            android:textSize="@dimen/_6mdpi" />
+
+    </LinearLayout>
+</layout>

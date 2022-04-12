@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="MissingDefaultResource">
+
+    <data>
+
+        <variable
+            name="model"
+            type="com.android.pos.data.model.requestModel.CreateCustomerRequestModel.Customer.Addresses" />
+    </data>
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_3sdp"
+        android:orientation="vertical">
+
+        <ImageView
+            android:id="@+id/imgDelete"
+            android:layout_width="@dimen/_12sdp"
+            android:layout_height="@dimen/_12sdp"
+            android:layout_gravity="end"
+            android:layout_marginEnd="@dimen/_15sdp"
+            android:src="@drawable/ic_baseline_delete_24"
+            app:tint="@color/txt_color_blue" />
+
+        <Spinner
+            android:id="@+id/edtAddress"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/_15sdp"
+            android:layout_marginTop="@dimen/_5sdp"
+            android:layout_marginEnd="@dimen/_15sdp"
+            android:background="@drawable/background_square_border_grey"
+            android:padding="@dimen/_9sdp"
+            android:theme="@style/SpinnerTheme" />
+
+        <androidx.appcompat.widget.AppCompatAutoCompleteTextView
+            android:id="@+id/edtStreet"
+            style="@style/CustomFontMediumStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/_15sdp"
+            android:layout_marginEnd="@dimen/_15sdp"
+            android:background="@drawable/background_square_border_grey"
+            android:hint="Street"
+            android:imeOptions="actionNext"
+            android:inputType="textVisiblePassword"
+            android:padding="@dimen/_9sdp"
+
+            android:textColor="@color/txtColor"
+            android:textColorHint="@color/hintColor"
+            android:textSize="@dimen/_7mdpi" />
+
+        <EditText
+            android:id="@+id/edtSuite"
+            style="@style/CustomFontMediumStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/_15sdp"
+            android:layout_marginEnd="@dimen/_15sdp"
+            android:background="@drawable/background_square_border_grey"
+            android:inputType="textVisiblePassword"
+            android:padding="@dimen/_9sdp"
+            android:textColor="@color/txtColor"
+            android:textSize="@dimen/_7mdpi"
+            android:textColorHint="@color/hint_color"
+            android:hint="@string/apt_suite"
+            android:digits="@string/disable_emoji_string"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/_15sdp"
+            android:layout_marginEnd="@dimen/_15sdp"
+            android:orientation="horizontal"
+            android:weightSum="3">
+
+
+            <EditText
+                android:id="@+id/edtCity"
+                style="@style/CustomFontMediumStyle"
+                android:layout_width="0sp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/background_square_border_grey"
+                android:inputType="textVisiblePassword"
+                android:padding="@dimen/_9sdp"
+                android:digits="@string/disable_emoji_string"
+                android:textColor="@color/txtColor"
+                android:textSize="@dimen/_7mdpi"
+                android:hint="@string/city"
+                android:textColorHint="@color/hint_color"/>
+
+            <EditText
+                android:id="@+id/edtState"
+                style="@style/CustomFontMediumStyle"
+                android:layout_width="0sp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/background_square_border_grey"
+                android:inputType="textVisiblePassword"
+                android:padding="@dimen/_9sdp"
+                android:digits="@string/disable_emoji_string"
+                android:textColor="@color/txtColor"
+                android:textSize="@dimen/_7mdpi"
+                android:hint="@string/state"
+                android:textColorHint="@color/hint_color"/>
+
+            <EditText
+                android:id="@+id/edtZip"
+                style="@style/CustomFontMediumStyle"
+                android:layout_width="0sp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/background_square_border_grey"
+                android:inputType="textVisiblePassword"
+                android:padding="@dimen/_9sdp"
+                android:digits="@string/disable_emoji_string"
+                android:textColor="@color/txtColor"
+                android:textSize="@dimen/_7mdpi"
+                android:hint="@string/zip"
+                android:textColorHint="@color/hint_color"/>
+
+
+        </LinearLayout>
+
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
+</layout>

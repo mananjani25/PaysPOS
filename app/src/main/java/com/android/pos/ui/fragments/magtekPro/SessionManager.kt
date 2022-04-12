@@ -5,6 +5,7 @@ import android.graphics.*
 import android.util.Log
 import com.android.pos.ui.dialog.PayByGuestDialog
 import com.android.pos.ui.fragments.checkout.CheckoutDetailsFragmentNew
+import com.android.pos.ui.fragments.checkout.CheckoutDineInFragmentNew
 import com.magtek.mobile.android.mtcms.MTParser
 import com.magtek.mobile.android.mtusdk.*
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -19,7 +20,7 @@ open class SessionManager @Inject constructor(@ApplicationContext private val mC
     var device: IDevice? = null
     private var mOutputFragment: CheckoutDetailsFragmentNew? = null
     private var mDevicesFragment: MagtekProFragment? = null
-    private var mDineInFragment: PayByGuestDialog? = null
+    private var mDineInFragment: CheckoutDineInFragmentNew? = null
     private var mTransaction: Transaction? = null
     private var mGetSignatureFromDevice = false
     private var mFallbackManager: FallbackManager? = null
@@ -35,7 +36,7 @@ open class SessionManager @Inject constructor(@ApplicationContext private val mC
         mOutputFragment = outputFragment
     }
 
-    fun setDineInFragment(outputFragment: PayByGuestDialog?) {
+    fun setDineInFragment(outputFragment: CheckoutDineInFragmentNew?) {
         mDineInFragment = outputFragment
     }
 
@@ -221,7 +222,7 @@ open class SessionManager @Inject constructor(@ApplicationContext private val mC
         try {
             mDevicesFragment?.processEvent(eventType, data)
             mOutputFragment?.processEvent(eventType, data)
-//            mDineInFragment?.processEvent(eventType, data)
+            mDineInFragment?.processEvent(eventType, data)
 
 
             when (eventType) {

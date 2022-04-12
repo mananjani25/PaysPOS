@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="MissingDefaultResource">
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:id="@+id/relParent"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/bg_color"
+        android:orientation="horizontal">
+
+        <RelativeLayout
+            android:layout_gravity="center"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingVertical="@dimen/_5sdp">
+
+            <TextView
+                android:id="@+id/txtKeypad"
+                style="@style/CustomFontSemiBold"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginStart="@dimen/_5sdp"
+                android:background="?attr/selectableItemBackground"
+                android:padding="@dimen/_5sdp"
+                android:text="@string/keypad"
+                android:textColor="@color/txtColor"
+                android:textSize="@dimen/_6mdpi" />
+
+            <TextView
+                android:id="@+id/txtProducts"
+                style="@style/CustomFontSemiBold"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_gravity="end"
+                android:background="?attr/selectableItemBackground"
+                android:gravity="end"
+                android:padding="@dimen/_5sdp"
+                android:text="@string/tv_home"
+                android:textAllCaps="true"
+                android:textColor="@color/txt_color_blue"
+
+
+                android:textSize="@dimen/_6mdpi"
+                android:visibility="visible" />
+
+            <!-- android:background="?attr/selectableItemBackground"-->
+            <TextView
+                style="@style/CustomFontSemiBold"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:padding="@dimen/_5sdp"
+                android:text="@string/services"
+                android:visibility="gone"
+                android:textColor="@color/txtColor"
+                android:textSize="@dimen/_5mdpi" />
+
+
+        </RelativeLayout>
+
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:layout_weight="1"
+            android:layout_gravity="end"
+            android:gravity="end"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+
+            <ImageView
+                android:id="@+id/imgSearch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_gravity="center"
+                android:layout_marginEnd="@dimen/_5sdp"
+                android:layout_toStartOf="@+id/autoSearch"
+                android:contentDescription="@string/search"
+                android:src="@drawable/ic_search"
+
+                 />
+
+            <AutoCompleteTextView
+                android:id="@+id/autoSearch"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_centerVertical="true"
+                android:layout_gravity="center"
+                android:layout_marginEnd="@dimen/_5sdp"
+                android:layout_toStartOf="@+id/imgOptionMenu"
+                android:background="@null"
+                android:ems="10"
+                android:fontFamily="@font/sf_pro_display_regular"
+                android:hint="@string/scan_barcode_or_search"
+                android:imeOptions="actionDone"
+                android:inputType="text"
+                android:textColor="@color/txtColor"
+                android:textColorHint="@color/hint_color"
+                android:textSize="@dimen/_5mdpi" />
+
+
+            <ImageView
+                android:id="@+id/imgSync"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:layout_toStartOf="@+id/imgSearch"
+                android:contentDescription="@string/search"
+                android:padding="@dimen/_5sdp"
+                android:background="?attr/selectableItemBackground"
+                android:src="@drawable/ic_sync"
+                 />
+
+
+            <ImageView
+                android:id="@+id/imgOptionMenu"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:layout_gravity="center"
+                android:layout_marginStart="@dimen/_2sdp"
+                android:background="?attr/selectableItemBackground"
+                android:contentDescription="@string/menu"
+                android:padding="@dimen/_5sdp"
+                android:src="@drawable/ic_dot_menu"
+                 />
+
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
+</layout>

@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="MissingDefaultResource">
+
+    <data>
+
+        <variable
+            name="serviceChargeModel"
+            type="com.android.pos.data.entities.LoyaltyProgramsModel" />
+
+        <variable
+            name="viewModel"
+            type="com.android.pos.ui.fragments.settings.loyaltypoints.LoyaltyPointViewModel" />
+    </data>
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/view" />
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/imgCheckBox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:onClick="@{() -> viewModel.isLoyaltyPointActive(serviceChargeModel)}"
+                android:padding="@dimen/_5sdp"
+                android:src="@{serviceChargeModel.isEnable ? @drawable/ic_check_box: @drawable/ic_check_box_unchecked}" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                style="@style/CustomFontSemiBold"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginStart="@dimen/_5sdp"
+                android:layout_weight="1"
+                android:gravity="start"
+                android:padding="@dimen/_5sdp"
+                android:text="@{serviceChargeModel.name}"
+                android:textColor="@color/txtColor"
+                android:textSize="@dimen/_5mdpi" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/txtLoyaltyValue"
+                style="@style/CustomFontSemiBold"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginStart="@dimen/_5sdp"
+                android:layout_weight="1"
+                android:gravity="start"
+                android:padding="@dimen/_5sdp"
+                android:textColor="@color/txtColor"
+                android:textSize="@dimen/_5mdpi" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                style="@style/CustomFontSemiBold"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginStart="@dimen/_5sdp"
+                android:gravity="start"
+                android:padding="@dimen/_5sdp"
+                android:text="@{``+serviceChargeModel.rewardPoint}"
+                android:textColor="@color/txtColor"
+                android:textSize="@dimen/_5mdpi" />
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginStart="@dimen/_5sdp"
+                android:layout_marginEnd="@dimen/_10sdp"
+                app:srcCompat="@drawable/ic_play" />
+
+            <include
+                android:id="@+id/layout_menu"
+                layout="@layout/img_menu" />
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.3dp"
+            android:background="@color/view" />
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
+</layout>

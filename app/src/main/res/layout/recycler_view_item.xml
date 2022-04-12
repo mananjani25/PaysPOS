@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.android.pos.utils.CustomSwipeLayout.SwipeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/swipe_layout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    app:canFullSwipeFromRight="true"
+    app:rightItemIcons="@array/rightDrawables"
+    app:foregroundLayout="@layout/view_team_item"
+    app:rightIconColors="@array/rightDrawableColors"
+    app:rightItemColors="@array/rightColors"
+    app:rightStrings="@array/rightTexts"
+    app:rightTextColors="@array/rightTextColors"
+    app:textSize="@dimen/_8mdpi" />

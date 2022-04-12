@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="MissingDefaultResource">
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginStart="@dimen/_50sdp"
+        android:layout_marginTop="@dimen/_20sdp"
+        android:layout_marginEnd="@dimen/_50sdp"
+        android:background="@color/bg_color"
+        android:layout_marginBottom="@dimen/_10sdp"
+        android:orientation="vertical">
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/view" />
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingVertical="@dimen/_5sdp"
+            >
+
+            <TextView
+                style="@style/CustomFontRegularStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:gravity="start"
+                android:padding="@dimen/_5sdp"
+                android:text="@string/lock_screen_after_each_transaction"
+                android:textColor="@color/txtColor"
+                android:textSize="@dimen/_6mdpi" />
+
+            <com.google.android.material.switchmaterial.SwitchMaterial
+                android:id="@+id/swtOrderId"
+                style="@style/AppTheme"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:gravity="center"
+                android:layout_weight="1"
+                android:scaleX="1"
+                android:scaleY="1"
+                android:showText="false"
+
+                android:thumb="@drawable/custom_thumb_printer_active_switch"
+                android:visibility="visible"
+                app:srcCompat="@drawable/ic_arrow_forward"
+                app:thumbTint="@color/switch_thumb_selector"
+                app:track="@drawable/custom_switch_track_printer"
+                app:trackTint="@color/switch_track_tint"
+                tools:ignore="UseSwitchCompatOrMaterialXml" />
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/view" />
+
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
+</layout>

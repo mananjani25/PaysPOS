@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="MissingDefaultResource">
+
+    <data>
+
+        <variable
+            name="model"
+            type="com.android.pos.data.model.InventoryItemModel" />
+    </data>
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <View
+            android:id="@+id/firstview"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/view" />
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:id="@+id/linear_background_order"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/_30sdp"
+
+            android:orientation="horizontal"
+            android:weightSum="2">
+
+
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/txt_title"
+                style="@style/CustomFontSemiBold"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_gravity="start|center_vertical"
+                android:layout_marginStart="@dimen/_10sdp"
+                android:gravity="start|center_vertical"
+                android:text="@{model.title}"
+
+                android:textSize="@dimen/text_size_medium"
+                android:layout_weight="1.8"
+                />
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/txt_count"
+                style="@style/CustomFontSemiBold"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_gravity="start|center_vertical"
+                android:layout_marginStart="@dimen/_10sdp"
+                android:gravity="start|center_vertical"
+                android:text="@{Integer.toString(model.count)}"
+
+                android:textSize="@dimen/text_size_medium"
+                android:visibility="visible"
+                android:layout_weight="0.8"
+                />
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/view" />
+    </androidx.appcompat.widget.LinearLayoutCompat>
+
+</layout>

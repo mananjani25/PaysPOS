@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="MissingDefaultResource">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <include
+            android:id="@+id/commonToolbar"
+            layout="@layout/settings_toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@+id/commonToolbar"
+            android:background="@color/bg_color"
+            android:orientation="horizontal"
+            android:weightSum="1">
+
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.28"
+                android:background="@color/bg_color"
+                android:orientation="vertical"
+                >
+
+                <TextView
+                    android:id="@+id/txtCurrentDrawer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/sf_pro_display_semibold"
+                    android:padding="@dimen/_7sdp"
+                    android:text="@string/current_drawer"
+                    android:textColor="@color/txtColor"
+                    android:textSize="@dimen/_6sdp" />
+
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/dividerColor" />
+
+
+                <TextView
+                    android:id="@+id/txtSales"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/sf_pro_display_semibold"
+                    android:padding="@dimen/_7sdp"
+                    android:text="@string/sales"
+                    android:textColor="@color/txtColor"
+                    android:textSize="@dimen/_6sdp" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/dividerColor" />
+
+
+                <TextView
+                    android:id="@+id/txtShiftReport"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="@font/sf_pro_display_semibold"
+                    android:padding="@dimen/_7sdp"
+                    android:text="@string/shift_report"
+                    android:textColor="@color/txtColor"
+                    android:textSize="@dimen/_6sdp"
+                    android:visibility="gone" />
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/dividerColor" />
+
+            </LinearLayout>
+
+
+            <View
+                android:id="@+id/viewLine"
+                android:layout_width="1dp"
+                android:layout_height="match_parent"
+                android:background="@color/dividerColor" />
+
+
+            <FrameLayout
+                android:id="@+id/frameLayout"
+                android:layout_width="0sp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.72"
+                android:orientation="vertical" />
+
+        </LinearLayout>
+    </RelativeLayout>
+</layout>

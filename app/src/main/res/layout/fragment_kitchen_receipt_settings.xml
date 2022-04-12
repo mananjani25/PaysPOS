@@ -1,0 +1,1100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="MissingDefaultResource">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:background="@color/bg_color"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/ivBack"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:padding="@dimen/_6sdp"
+
+                app:srcCompat="@drawable/ic_arrow_back" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                style="@style/CustomFontSemiBold"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:text="@string/tv_kitchen_receipt_settings"
+                android:textSize="@dimen/_7mdpi" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/txtSave"
+                style="@style/CustomFontSemiBold"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/_27sdp"
+                android:layout_gravity="center"
+                android:layout_weight="0.1"
+                android:background="@drawable/button_action_hover"
+                android:gravity="center"
+                android:padding="@dimen/_6sdp"
+                android:text="@string/save"
+                android:textColor="@color/white"
+                android:textSize="@dimen/_7mdpi" />
+
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/view" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal">
+
+            <androidx.core.widget.NestedScrollView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="0.8"
+                android:padding="@dimen/_5sdp"
+                android:visibility="visible">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        style="@style/CustomFontSemiBold"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="@dimen/_5sdp"
+                        android:text="@string/tv_select_font_size"
+                        android:textColor="@color/txtColor"
+                        android:textSize="@dimen/_6mdpi" />
+
+
+                    <androidx.appcompat.widget.LinearLayoutCompat
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+
+                        android:orientation="vertical"
+                        android:padding="@dimen/_5sdp"
+                        android:visibility="visible">
+
+                        <RadioGroup
+                            android:id="@+id/rdGroup"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/border_with_square_outlinne"
+                            android:orientation="vertical"
+                            android:visibility="visible">
+
+                            <RadioButton
+                                android:id="@+id/radioSmall"
+                                style="@style/CustomFontSemiBold"
+
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="start"
+                                android:layout_margin="@dimen/_5sdp"
+                                android:button="@drawable/selector_size"
+                                android:buttonTint="@color/kitchen_size_color_selector"
+                                android:layoutDirection="rtl"
+                                android:text="Small"
+                                android:textAlignment="textStart"
+                                android:textColor="@color/txtColor"
+                                android:textSize="@dimen/_6mdpi" />
+
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="1dp"
+                                android:background="@color/view" />
+
+                            <RadioButton
+                                android:id="@+id/radioMedium"
+                                style="@style/CustomFontSemiBold"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="start"
+                                android:layout_margin="@dimen/_5sdp"
+                                android:button="@drawable/selector_size"
+                                android:buttonTint="@color/kitchen_size_color_selector"
+                                android:layoutDirection="rtl"
+                                android:text="Medium"
+                                android:textAlignment="textStart"
+                                android:textColor="@color/txtColor"
+                                android:textSize="@dimen/_6mdpi" />
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="1dp"
+                                android:background="@color/view" />
+
+                            <RadioButton
+                                android:id="@+id/radioLarge"
+                                style="@style/CustomFontSemiBold"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="start"
+                                android:layout_margin="@dimen/_5sdp"
+                                android:button="@drawable/selector_size"
+                                android:buttonTint="@color/kitchen_size_color_selector"
+                                android:layoutDirection="rtl"
+                                android:text="Large"
+                                android:textAlignment="textStart"
+                                android:textColor="@color/txtColor"
+                                android:textSize="@dimen/_6mdpi" />
+
+
+                        </RadioGroup>
+
+
+                    </androidx.appcompat.widget.LinearLayoutCompat>
+
+                    <androidx.appcompat.widget.LinearLayoutCompat
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_marginTop="@dimen/_5sdp"
+                            android:layout_weight="1"
+                            android:fontFamily="@font/sf_pro_display_semibold"
+                            android:gravity="start"
+                            android:padding="@dimen/_5sdp"
+                            android:text="@string/tv_show_category"
+                            android:textAllCaps="true"
+                            android:textColor="@color/txtColor"
+                            android:textSize="@dimen/_6mdpi" />
+                    </androidx.appcompat.widget.LinearLayoutCompat>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@color/view" />
+
+                    <androidx.appcompat.widget.LinearLayoutCompat
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_weight="1"
+                            android:fontFamily="@font/sf_pro_display_semibold"
+                            android:gravity="start"
+                            android:padding="@dimen/_5sdp"
+                            android:text="@string/tv_show_category"
+                            android:textColor="@color/txtColor"
+                            android:textSize="@dimen/_6mdpi" />
+                        <com.google.android.material.switchmaterial.SwitchMaterial
+                            android:id="@+id/swtShowCategory"
+                            style="@style/AppTheme"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:scaleX="0.7"
+                            android:scaleY="0.8"
+                            android:showText="false"
+                            android:thumb="@drawable/custom_thumb_printer_active_switch"
+                            android:visibility="visible"
+                            app:srcCompat="@drawable/ic_arrow_forward"
+                            app:thumbTint="@color/switch_thumb_selector"
+                            app:track="@drawable/custom_switch_track_printer"
+                            app:trackTint="@color/switch_track_tint"
+                            tools:ignore="UseSwitchCompatOrMaterialXml" />
+
+                    </androidx.appcompat.widget.LinearLayoutCompat>
+
+                    <View
+
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@color/view" />
+
+                    <androidx.appcompat.widget.LinearLayoutCompat
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:visibility="gone">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_marginTop="@dimen/_5sdp"
+                            android:layout_weight="1"
+                            android:fontFamily="@font/sf_pro_display_semibold"
+                            android:gravity="start"
+                            android:padding="@dimen/_5sdp"
+                            android:text="Grouping/Ungrouping Items"
+                            android:textAllCaps="true"
+                            android:textColor="@color/txtColor"
+                            android:textSize="@dimen/_6mdpi" />
+                    </androidx.appcompat.widget.LinearLayoutCompat>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@color/view"
+                        android:visibility="gone" />
+
+                    <androidx.appcompat.widget.LinearLayoutCompat
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:visibility="gone">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_weight="1"
+                            android:fontFamily="@font/sf_pro_display_semibold"
+                            android:gravity="start"
+                            android:padding="@dimen/_5sdp"
+                            android:text="Show Same Items in the Group"
+                            android:textColor="@color/txtColor"
+                            android:textSize="@dimen/_6mdpi" />
+                        <com.google.android.material.switchmaterial.SwitchMaterial
+                            android:id="@+id/swtSameGrpItem"
+                            style="@style/AppTheme"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:scaleX="0.7"
+                            android:scaleY="0.8"
+                            android:showText="false"
+                            android:thumb="@drawable/custom_thumb_printer_active_switch"
+                            android:visibility="visible"
+                            app:srcCompat="@drawable/ic_arrow_forward"
+                            app:thumbTint="@color/switch_thumb_selector"
+                            app:track="@drawable/custom_switch_track_printer"
+                            app:trackTint="@color/switch_track_tint"
+                            tools:ignore="UseSwitchCompatOrMaterialXml" />
+
+                    </androidx.appcompat.widget.LinearLayoutCompat>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@color/view"
+                        android:visibility="gone" />
+
+                    <androidx.appcompat.widget.LinearLayoutCompat
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_marginTop="@dimen/_5sdp"
+                            android:layout_weight="1"
+                            android:fontFamily="@font/sf_pro_display_semibold"
+                            android:gravity="start"
+                            android:padding="@dimen/_5sdp"
+                            android:text="Show Team Member"
+                            android:textAllCaps="true"
+                            android:textColor="@color/txtColor"
+                            android:textSize="@dimen/_6mdpi" />
+                    </androidx.appcompat.widget.LinearLayoutCompat>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@color/view" />
+
+                    <androidx.appcompat.widget.LinearLayoutCompat
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_weight="1"
+                            android:fontFamily="@font/sf_pro_display_semibold"
+                            android:gravity="start"
+                            android:padding="@dimen/_5sdp"
+                            android:text="Team Member"
+                            android:textColor="@color/txtColor"
+                            android:textSize="@dimen/_6mdpi" />
+                        <com.google.android.material.switchmaterial.SwitchMaterial
+                            android:id="@+id/swtTeamMember"
+                            style="@style/AppTheme"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:scaleX="0.7"
+                            android:scaleY="0.8"
+                            android:showText="false"
+                            android:thumb="@drawable/custom_thumb_printer_active_switch"
+                            android:visibility="visible"
+                            app:srcCompat="@drawable/ic_arrow_forward"
+                            app:thumbTint="@color/switch_thumb_selector"
+                            app:track="@drawable/custom_switch_track_printer"
+                            app:trackTint="@color/switch_track_tint"
+                            tools:ignore="UseSwitchCompatOrMaterialXml" />
+
+                    </androidx.appcompat.widget.LinearLayoutCompat>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@color/view" />
+
+                    <androidx.appcompat.widget.LinearLayoutCompat
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_marginTop="@dimen/_5sdp"
+                            android:layout_weight="1"
+                            android:fontFamily="@font/sf_pro_display_semibold"
+                            android:gravity="start"
+                            android:padding="@dimen/_5sdp"
+                            android:text="Show Order Note"
+                            android:textAllCaps="true"
+                            android:textColor="@color/txtColor"
+                            android:textSize="@dimen/_6mdpi" />
+                    </androidx.appcompat.widget.LinearLayoutCompat>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@color/view" />
+
+                    <androidx.appcompat.widget.LinearLayoutCompat
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_weight="1"
+                            android:fontFamily="@font/sf_pro_display_semibold"
+                            android:gravity="start"
+                            android:padding="@dimen/_5sdp"
+                            android:text="Order Note"
+                            android:textColor="@color/txtColor"
+                            android:textSize="@dimen/_6mdpi" />
+                        <com.google.android.material.switchmaterial.SwitchMaterial
+                            android:id="@+id/swtOrderNote"
+                            style="@style/AppTheme"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:scaleX="0.7"
+                            android:scaleY="0.8"
+                            android:showText="false"
+                            android:thumb="@drawable/custom_thumb_printer_active_switch"
+                            android:visibility="visible"
+                            app:srcCompat="@drawable/ic_arrow_forward"
+                            app:thumbTint="@color/switch_thumb_selector"
+                            app:track="@drawable/custom_switch_track_printer"
+                            app:trackTint="@color/switch_track_tint"
+                            tools:ignore="UseSwitchCompatOrMaterialXml" />
+
+                    </androidx.appcompat.widget.LinearLayoutCompat>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@color/view" />
+
+                    <androidx.appcompat.widget.LinearLayoutCompat
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_marginTop="@dimen/_5sdp"
+                            android:layout_weight="1"
+                            android:fontFamily="@font/sf_pro_display_semibold"
+                            android:gravity="start"
+                            android:padding="@dimen/_5sdp"
+                            android:text="Show Order Type"
+                            android:textAllCaps="true"
+                            android:textColor="@color/txtColor"
+                            android:textSize="@dimen/_6mdpi" />
+                    </androidx.appcompat.widget.LinearLayoutCompat>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@color/view" />
+
+                    <androidx.appcompat.widget.LinearLayoutCompat
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_weight="1"
+                            android:fontFamily="@font/sf_pro_display_semibold"
+                            android:gravity="start"
+                            android:padding="@dimen/_5sdp"
+                            android:text="Order Type"
+                            android:textColor="@color/txtColor"
+                            android:textSize="@dimen/_6mdpi" />
+                        <com.google.android.material.switchmaterial.SwitchMaterial
+                            android:id="@+id/swtOrderType"
+                            style="@style/AppTheme"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:scaleX="0.7"
+                            android:scaleY="0.8"
+                            android:showText="false"
+                            android:thumb="@drawable/custom_thumb_printer_active_switch"
+                            android:visibility="visible"
+                            app:srcCompat="@drawable/ic_arrow_forward"
+                            app:thumbTint="@color/switch_thumb_selector"
+                            app:track="@drawable/custom_switch_track_printer"
+                            app:trackTint="@color/switch_track_tint"
+                            tools:ignore="UseSwitchCompatOrMaterialXml" />
+
+                    </androidx.appcompat.widget.LinearLayoutCompat>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@color/view" />
+
+                    <androidx.appcompat.widget.LinearLayoutCompat
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_marginTop="@dimen/_5sdp"
+                            android:layout_weight="1"
+                            android:fontFamily="@font/sf_pro_display_semibold"
+                            android:gravity="start"
+                            android:padding="@dimen/_5sdp"
+                            android:text="@string/tv_show_customer_information"
+                            android:textColor="@color/txtColor"
+                            android:textSize="@dimen/_6mdpi" />
+                    </androidx.appcompat.widget.LinearLayoutCompat>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@color/view" />
+
+                    <androidx.appcompat.widget.LinearLayoutCompat
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_weight="1"
+                            android:fontFamily="@font/sf_pro_display_semibold"
+                            android:gravity="start"
+                            android:padding="@dimen/_5sdp"
+                            android:text="@string/tv_name"
+                            android:textColor="@color/txtColor"
+                            android:textSize="@dimen/_6mdpi" />
+                        <com.google.android.material.switchmaterial.SwitchMaterial
+                            android:id="@+id/swtName"
+                            style="@style/AppTheme"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:scaleX="0.7"
+                            android:scaleY="0.8"
+                            android:showText="false"
+                            android:thumb="@drawable/custom_thumb_printer_active_switch"
+                            android:visibility="visible"
+                            app:srcCompat="@drawable/ic_arrow_forward"
+                            app:thumbTint="@color/switch_thumb_selector"
+                            app:track="@drawable/custom_switch_track_printer"
+                            app:trackTint="@color/switch_track_tint"
+                            tools:ignore="UseSwitchCompatOrMaterialXml" />
+
+
+                    </androidx.appcompat.widget.LinearLayoutCompat>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@color/view" />
+
+                    <androidx.appcompat.widget.LinearLayoutCompat
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_weight="1"
+                            android:fontFamily="@font/sf_pro_display_semibold"
+                            android:gravity="start"
+                            android:padding="@dimen/_5sdp"
+                            android:text="@string/tv_phone"
+                            android:textColor="@color/txtColor"
+                            android:textSize="@dimen/_6mdpi" />
+                        <com.google.android.material.switchmaterial.SwitchMaterial
+                            android:id="@+id/swtPhone"
+                            style="@style/AppTheme"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:scaleX="0.7"
+                            android:scaleY="0.8"
+                            android:showText="false"
+                            android:thumb="@drawable/custom_thumb_printer_active_switch"
+                            android:visibility="visible"
+                            app:srcCompat="@drawable/ic_arrow_forward"
+                            app:thumbTint="@color/switch_thumb_selector"
+                            app:track="@drawable/custom_switch_track_printer"
+                            app:trackTint="@color/switch_track_tint"
+                            tools:ignore="UseSwitchCompatOrMaterialXml" />
+
+                    </androidx.appcompat.widget.LinearLayoutCompat>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@color/view" />
+
+                    <androidx.appcompat.widget.LinearLayoutCompat
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_weight="1"
+                            android:fontFamily="@font/sf_pro_display_semibold"
+                            android:gravity="start"
+                            android:padding="@dimen/_5sdp"
+                            android:text="@string/tv_address"
+                            android:textColor="@color/txtColor"
+                            android:textSize="@dimen/_6mdpi" />
+                        <com.google.android.material.switchmaterial.SwitchMaterial
+                            android:id="@+id/swtAddress"
+                            style="@style/AppTheme"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:scaleX="0.7"
+                            android:scaleY="0.8"
+                            android:showText="false"
+                            android:thumb="@drawable/custom_thumb_printer_active_switch"
+                            android:visibility="visible"
+                            app:srcCompat="@drawable/ic_arrow_forward"
+                            app:thumbTint="@color/switch_thumb_selector"
+                            app:track="@drawable/custom_switch_track_printer"
+                            app:trackTint="@color/switch_track_tint"
+                            tools:ignore="UseSwitchCompatOrMaterialXml" />
+
+                    </androidx.appcompat.widget.LinearLayoutCompat>
+
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@color/view" />
+
+
+                </LinearLayout>
+
+
+            </androidx.core.widget.NestedScrollView>
+
+            <androidx.core.widget.NestedScrollView
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:padding="@dimen/_5sdp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/border_with_square_outlinne"
+                    android:orientation="vertical">
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/txtKitchenPreview"
+                        style="@style/CustomFontSemiBold"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="@dimen/_5sdp"
+                        android:text="@string/tv_kitchen_receipt_preview"
+                        android:textColor="@color/txtColor"
+                        android:textSize="@dimen/_6mdpi" />
+
+                    <androidx.appcompat.widget.LinearLayoutCompat
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+
+                        android:orientation="vertical"
+                        >
+
+
+                        <androidx.appcompat.widget.LinearLayoutCompat
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/_5sdp"
+                            android:orientation="vertical">
+
+                            <androidx.appcompat.widget.AppCompatTextView
+                                android:id="@+id/txtDineIn"
+                                style="@style/CustomFontBold"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:gravity="center"
+                                android:text="DINE IN"
+                                android:textColor="@color/txtColor"
+                                android:textSize="@dimen/_7mdpi" />
+
+                            <RelativeLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="@dimen/_8sdp"
+                                android:orientation="horizontal"
+                                android:paddingLeft="@dimen/_3sdp"
+                                android:paddingTop="@dimen/_3sdp"
+                                android:paddingRight="@dimen/_3sdp">
+
+                                <LinearLayout
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_alignParentStart="true"
+                                    android:orientation="horizontal">
+
+                                    <androidx.appcompat.widget.AppCompatTextView
+                                        android:id="@+id/txtOrderIdLabel"
+                                        style="@style/CustomFontBold"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginLeft="@dimen/_3sdp"
+                                        android:text="Order ID: "
+                                        android:textColor="@color/txtColor"
+                                        android:textSize="@dimen/_6mdpi" />
+
+                                    <androidx.appcompat.widget.AppCompatTextView
+                                        android:id="@+id/txtOrderId"
+                                        style="@style/CustomFontMediumStyle"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginLeft="@dimen/_3sdp"
+                                        android:text="ORD564454"
+                                        android:textColor="@color/txtColor"
+                                        android:textSize="@dimen/_6mdpi" />
+
+                                </LinearLayout>
+
+                                <LinearLayout
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_alignParentEnd="true"
+                                    android:orientation="horizontal">
+
+                                    <androidx.appcompat.widget.AppCompatTextView
+                                        android:id="@+id/txtReceiptIdLabel"
+                                        style="@style/CustomFontBold"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginLeft="@dimen/_3sdp"
+                                        android:text="Receipt ID: "
+                                        android:textColor="@color/txtColor"
+                                        android:textSize="@dimen/_6mdpi" />
+
+                                    <androidx.appcompat.widget.AppCompatTextView
+                                        android:id="@+id/txtReceiptId"
+                                        style="@style/CustomFontMediumStyle"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginLeft="@dimen/_3sdp"
+                                        android:text="REC87564454"
+                                        android:textColor="@color/txtColor"
+                                        android:textSize="@dimen/_6mdpi" />
+
+                                </LinearLayout>
+
+
+                            </RelativeLayout>
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal"
+                                android:paddingLeft="@dimen/_3sdp"
+                                android:paddingRight="@dimen/_3sdp">
+
+                                <LinearLayout
+                                    android:id="@+id/linearTeamMember"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:orientation="horizontal">
+
+                                    <androidx.appcompat.widget.AppCompatTextView
+                                        android:id="@+id/txtEmployeeLabel"
+                                        style="@style/CustomFontBold"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginLeft="@dimen/_3sdp"
+                                        android:text="Employee: "
+                                        android:textColor="@color/txtColor"
+                                        android:textSize="@dimen/_6mdpi" />
+
+
+                                    <androidx.appcompat.widget.AppCompatTextView
+                                        android:id="@+id/txtEmployee"
+                                        style="@style/CustomFontMediumStyle"
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginLeft="@dimen/_3sdp"
+                                        android:text="David Miller"
+                                        android:textColor="@color/txtColor"
+                                        android:textSize="@dimen/_6mdpi" />
+
+                                </LinearLayout>
+
+                                <androidx.appcompat.widget.AppCompatTextView
+                                    android:id="@+id/txtDateTime"
+                                    style="@style/CustomFontSemiBold"
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="end"
+                                    android:layout_marginLeft="@dimen/_3sdp"
+                                    android:gravity="end"
+                                    android:text="Apr-29-2021 07:15 PM"
+                                    android:textColor="@color/txtColor"
+                                    android:textSize="@dimen/_6mdpi" />
+                            </LinearLayout>
+
+
+                        </androidx.appcompat.widget.LinearLayoutCompat>
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:layout_marginTop="@dimen/_5sdp"
+                            android:background="@color/view" />
+
+                        <androidx.appcompat.widget.LinearLayoutCompat
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:visibility="gone">
+
+                            <androidx.appcompat.widget.AppCompatTextView
+                                android:id="@+id/txtGuestNo"
+                                style="@style/CustomFontSemiBold"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center"
+                                android:layout_marginLeft="@dimen/_3sdp"
+                                android:paddingTop="@dimen/_5sdp"
+                                android:paddingBottom="@dimen/_5sdp"
+                                android:text="Number of Guest(s): 2"
+                                android:textColor="@color/txtColor"
+                                android:textSize="@dimen/_6mdpi" />
+
+                        </androidx.appcompat.widget.LinearLayoutCompat>
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:background="@color/view" />
+
+
+                    </androidx.appcompat.widget.LinearLayoutCompat>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="@dimen/_5sdp"
+                        android:orientation="vertical">
+
+                        <androidx.appcompat.widget.AppCompatTextView
+                            android:id="@+id/txtSoup"
+                            style="@style/CustomFontBold"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:padding="@dimen/_5sdp"
+                            android:text="Soup"
+                            android:textColor="@color/txtColor"
+                            android:textSize="@dimen/_6mdpi" />
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:background="@color/view" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+
+                            <androidx.appcompat.widget.AppCompatTextView
+                                android:id="@+id/txtChicken"
+                                style="@style/CustomFontBold"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:padding="@dimen/_5sdp"
+                                android:text="1  Chicken Meals"
+                                android:textColor="@color/txtColor"
+                                android:textSize="@dimen/_6mdpi" />
+
+                            <androidx.appcompat.widget.AppCompatTextView
+                                android:id="@+id/txtChickenPrice"
+                                style="@style/CustomFontBold"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="end"
+                                android:gravity="end"
+                                android:padding="@dimen/_5sdp"
+                                android:text="$9.99"
+                                android:textColor="@color/txtColor"
+                                android:textSize="@dimen/_6mdpi"
+                                android:visibility="invisible" />
+
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="1dp"
+                                android:background="@color/view" />
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+
+                            <androidx.appcompat.widget.AppCompatTextView
+                                android:id="@+id/txtExtra1"
+                                style="@style/CustomFontRegularStyle"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="@dimen/_20sdp"
+                                android:padding="@dimen/_5sdp"
+                                android:text="Extra Spycies"
+                                android:textColor="@color/txtColor"
+                                android:textSize="@dimen/_6mdpi" />
+
+                            <androidx.appcompat.widget.AppCompatTextView
+                                android:id="@+id/txtExtraPrice1"
+                                style="@style/CustomFontBold"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:gravity="end"
+                                android:padding="@dimen/_5sdp"
+                                android:text="$1.99"
+                                android:textColor="@color/txtColor"
+                                android:textSize="@dimen/_6mdpi"
+                                android:visibility="invisible" />
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal">
+
+                            <androidx.appcompat.widget.AppCompatTextView
+                                android:id="@+id/txtExtra2"
+                                style="@style/CustomFontRegularStyle"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="@dimen/_20sdp"
+                                android:padding="@dimen/_5sdp"
+                                android:text="Extra Spycies"
+                                android:textColor="@color/txtColor"
+                                android:textSize="@dimen/_6mdpi" />
+
+                            <androidx.appcompat.widget.AppCompatTextView
+                                android:id="@+id/txtExtraPrice2"
+                                style="@style/CustomFontBold"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:gravity="end"
+                                android:padding="@dimen/_5sdp"
+                                android:text="$1.99"
+                                android:textColor="@color/txtColor"
+                                android:textSize="@dimen/_6mdpi"
+                                android:visibility="invisible" />
+
+                        </LinearLayout>
+
+
+                        <LinearLayout
+                            android:id="@+id/linearNote"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:padding="@dimen/_5sdp">
+
+                            <androidx.appcompat.widget.AppCompatTextView
+                                android:id="@+id/txtNoteLabel"
+                                style="@style/CustomFontSemiBold"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginLeft="@dimen/_20sdp"
+
+                                android:text="Note: "
+                                android:textColor="@color/txtColor"
+                                android:textSize="@dimen/_6mdpi" />
+
+                            <androidx.appcompat.widget.AppCompatTextView
+                                android:id="@+id/txtNote"
+                                style="@style/CustomFontRegularStyle"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:gravity="end"
+
+                                android:text="Not much spicy"
+                                android:textColor="@color/txtColor"
+                                android:textSize="@dimen/_6mdpi" />
+
+                        </LinearLayout>
+
+
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/linearOrderNote"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <androidx.appcompat.widget.AppCompatTextView
+                            android:id="@+id/txtOrderNoteLable"
+                            style="@style/CustomFontBold"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/_10sdp"
+                            android:gravity="center"
+                            android:text="@string/tv_order_note"
+                            android:textColor="@color/txtColor"
+                            android:textSize="@dimen/_7mdpi" />
+
+                        <androidx.appcompat.widget.AppCompatTextView
+                            android:id="@+id/txtSugarLabel"
+                            style="@style/CustomFontRegularStyle"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/_10sdp"
+                            android:layout_marginTop="@dimen/_2sdp"
+                            android:gravity="center"
+                            android:text="Sugar Free,No herbs &amp; Spices"
+                            android:textColor="@color/txtColor"
+                            android:textSize="@dimen/_6mdpi" />
+
+
+                    </LinearLayout>
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/txtCustomerDetails"
+                        style="@style/CustomFontBold"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="@dimen/_10sdp"
+                        android:layout_marginTop="@dimen/_5sdp"
+                        android:gravity="center"
+                        android:text="@string/tv_customer_details"
+                        android:textColor="@color/txtColor"
+                        android:textSize="@dimen/_7mdpi" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_marginTop="@dimen/_5sdp"
+                        android:background="@color/view" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginVertical="@dimen/_10sdp"
+                        android:layout_marginTop="@dimen/_2sdp"
+                        android:orientation="vertical">
+
+                        <androidx.appcompat.widget.AppCompatTextView
+                            android:id="@+id/txtName"
+                            style="@style/CustomFontBold"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/_10sdp"
+                            android:layout_marginTop="@dimen/_2sdp"
+                            android:text="David Miller"
+                            android:textColor="@color/txtColor"
+                            android:textSize="@dimen/_6mdpi" />
+
+                        <androidx.appcompat.widget.AppCompatTextView
+                            android:id="@+id/txtPhone"
+                            style="@style/CustomFontBold"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/_10sdp"
+                            android:layout_marginTop="@dimen/_2sdp"
+                            android:text="(635) 987-3354"
+                            android:textColor="@color/txtColor"
+                            android:textSize="@dimen/_6mdpi" />
+
+                        <androidx.appcompat.widget.AppCompatTextView
+                            android:id="@+id/txtAddress"
+                            style="@style/CustomFontBold"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/_10sdp"
+                            android:layout_marginLeft="@dimen/_3sdp"
+                            android:layout_marginTop="@dimen/_2sdp"
+                            android:text="7450 DW 51 FH AT,Suite 503"
+                            android:textColor="@color/txtColor"
+                            android:textSize="@dimen/_6mdpi" />
+
+                    </LinearLayout>
+
+                    <androidx.recyclerview.widget.RecyclerView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_margin="@dimen/_5sdp"
+                        android:visibility="gone"
+                        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                        tools:listitem="@layout/view_guest_item" />
+
+                </LinearLayout>
+            </androidx.core.widget.NestedScrollView>
+        </LinearLayout>
+    </LinearLayout>
+</layout>

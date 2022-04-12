@@ -1,0 +1,617 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="MissingDefaultResource">
+
+    <data>
+
+        <variable
+            name="createItemVewModel"
+            type="com.android.pos.ui.fragments.createitem.CreateItemViewModel" />
+    </data>
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/bg_color"
+        android:orientation="vertical">
+
+        <include
+            android:id="@+id/header"
+            layout="@layout/view_header_toolbar_inventory" />
+
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/view" />
+
+        <androidx.appcompat.widget.LinearLayoutCompat
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:background="@color/grayBackgroundColor"
+            android:gravity="center">
+
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:id="@+id/llTapToEdit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="@dimen/_15sdp"
+                android:layout_marginBottom="@dimen/_15sdp"
+                android:background="@color/white"
+                android:orientation="vertical">
+
+                <RelativeLayout
+                    android:id="@+id/imgEdit"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content">
+
+                    <androidx.appcompat.widget.AppCompatImageView
+                        android:id="@+id/imgItem"
+                        android:layout_width="@dimen/_40sdp"
+                        android:layout_height="@dimen/_30sdp"
+                        android:layout_gravity="center"
+                        android:background="@color/viewTextColor"
+                        android:scaleType="centerCrop" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerInParent="true"
+                        android:text="@string/plus"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/_10sdp" />
+
+                </RelativeLayout>
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    style="@style/CustomFontSemiBold"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:padding="@dimen/_2sdp"
+                    android:text="@string/tap_to_edit"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/_5mdpi" />
+
+
+            </androidx.appcompat.widget.LinearLayoutCompat>
+        </androidx.appcompat.widget.LinearLayoutCompat>
+
+
+        <androidx.core.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="@dimen/_10sdp"
+            android:background="@color/bg_color">
+
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/_50sdp"
+                android:layout_marginEnd="@dimen/_50sdp"
+                android:layout_marginBottom="@dimen/_10sdp"
+                android:orientation="vertical">
+
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginVertical="@dimen/_5sdp"
+                    android:background="@drawable/background_square_border_grey"
+                    android:gravity="center_vertical">
+
+                    <androidx.appcompat.widget.AppCompatEditText
+                        style="@style/CustomFontSemiBold"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/_25sdp"
+                        android:background="@null"
+                        android:digits="@string/disable_emoji_string"
+                        android:hint="@string/add_new_itemswithstar"
+                        android:imeOptions="actionNext"
+                        android:inputType="textVisiblePassword"
+                        android:paddingStart="@dimen/_10sdp"
+                        android:text="@={createItemVewModel.itemDetails.name}"
+                        android:textColor="@color/txtColor"
+                        android:textColorHint="@color/hintColor"
+                        android:textSize="@dimen/_6mdpi" />
+
+                </androidx.appcompat.widget.LinearLayoutCompat>
+
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginVertical="@dimen/_5sdp"
+                    android:background="@drawable/background_square_border_grey"
+                    android:gravity="center_vertical"
+                    android:visibility="gone">
+
+                    <androidx.appcompat.widget.AppCompatEditText
+                        style="@style/CustomFontSemiBold"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/_25sdp"
+                        android:digits="@string/disable_emoji_string"
+                        android:hint="@string/product_code"
+                        android:imeOptions="actionNext"
+                        android:inputType="textCapWords"
+                        android:paddingLeft="@dimen/_10sdp"
+                        android:text="@={createItemVewModel.itemDetails.productCode}"
+                        android:textColor="@color/txtColor"
+                        android:textColorHint="@color/hintColor"
+                        android:textSize="@dimen/_6mdpi" />
+
+                </androidx.appcompat.widget.LinearLayoutCompat>
+
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginVertical="@dimen/_5sdp"
+                    android:background="@drawable/background_square_border_grey"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/chooseCategory"
+                        style="@style/CustomFontSemiBold"
+                        android:layout_width="0dp"
+                        android:layout_height="@dimen/_25sdp"
+                        android:layout_gravity="center_vertical"
+                        android:layout_weight="7"
+                        android:gravity="center_vertical"
+                        android:imeOptions="actionNext"
+                        android:inputType="textCapWords"
+                        android:paddingLeft="@dimen/_10sdp"
+                        android:text="@string/select_category"
+                        android:textColor="@color/btnColor"
+                        android:textSize="@dimen/_6mdpi" />
+
+                    <TextView
+                        android:id="@+id/txtCategoryName"
+                        style="@style/CustomFontSemiBold"
+                        android:layout_width="0dp"
+                        android:layout_height="@dimen/_25sdp"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginRight="@dimen/_20sdp"
+                        android:layout_weight="1"
+                        android:gravity="center_vertical"
+                        android:imeOptions="actionNext"
+                        android:inputType="textCapWords"
+                        android:paddingLeft="@dimen/_10sdp"
+                        android:textColor="@color/txtColor"
+                        android:textSize="@dimen/_6mdpi" />
+
+                    <androidx.appcompat.widget.AppCompatImageView
+                        android:layout_width="@dimen/_10sdp"
+                        android:layout_height="@dimen/_10sdp"
+                        android:layout_gravity="center"
+                        android:layout_marginEnd="@dimen/_5sdp"
+                        android:layout_marginRight="@dimen/_10sdp"
+                        app:srcCompat="@drawable/ic_arrow_drop_down" />
+                </androidx.appcompat.widget.LinearLayoutCompat>
+
+                <androidx.appcompat.widget.LinearLayoutCompat
+
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginVertical="@dimen/_5sdp"
+                    android:background="@drawable/background_square_border_grey"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/chooseTax"
+                        style="@style/CustomFontSemiBold"
+                        android:layout_width="0dp"
+                        android:layout_height="@dimen/_25sdp"
+                        android:layout_gravity="center_vertical"
+                        android:layout_weight="7"
+                        android:gravity="center_vertical"
+                        android:imeOptions="actionNext"
+                        android:inputType="textCapWords"
+                        android:paddingLeft="@dimen/_10sdp"
+                        android:text="@string/taxes"
+                        android:textColor="@color/btnColor"
+                        android:textSize="@dimen/_6mdpi" />
+
+                    <TextView
+                        android:id="@+id/txtTaxName"
+                        style="@style/CustomFontSemiBold"
+                        android:layout_width="0dp"
+                        android:layout_height="@dimen/_25sdp"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginRight="@dimen/_20sdp"
+                        android:layout_weight="1"
+                        android:gravity="center_vertical"
+                        android:imeOptions="actionNext"
+                        android:inputType="textCapWords"
+                        android:paddingLeft="@dimen/_10sdp"
+                        android:textColor="@color/txtColor"
+                        android:textSize="@dimen/_6mdpi" />
+
+                    <androidx.appcompat.widget.AppCompatImageView
+                        android:layout_width="@dimen/_10sdp"
+                        android:layout_height="@dimen/_10sdp"
+                        android:layout_gravity="center"
+                        android:layout_marginEnd="@dimen/_5sdp"
+                        android:layout_marginRight="@dimen/_10sdp"
+                        app:srcCompat="@drawable/ic_arrow_drop_down" />
+                </androidx.appcompat.widget.LinearLayoutCompat>
+
+
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_10sdp"
+                    android:layout_marginBottom="@dimen/_10sdp"
+                    android:orientation="vertical">
+
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        style="@style/CustomFontSemiBold"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:padding="@dimen/_5sdp"
+                        android:text="@string/options"
+                        android:textColor="@color/txtColor"
+                        android:textSize="@dimen/_6mdpi" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/tvAddOptions"
+                        style="@style/CustomFontBold"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/_25sdp"
+                        android:layout_gravity="center"
+                        android:layout_marginVertical="@dimen/_5sdp"
+                        android:background="@color/grayBackgroundColor"
+                        android:gravity="center"
+                        android:padding="@dimen/_5sdp"
+                        android:text="@string/add_options"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/_5mdpi"
+                        app:textAllCaps="false" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        style="@style/CustomFontRegularStyle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:gravity="center"
+                        android:padding="@dimen/_5sdp"
+                        android:text="@string/add_a_custom_set_of_options_to_an_item_to_create_variations_learn_more"
+                        android:textColor="@color/colorCB"
+                        android:textSize="@dimen/_5mdpi"
+                        app:textAllCaps="false" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        style="@style/CustomFontBold"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:padding="@dimen/_5sdp"
+                        android:text="@string/price_and_inventory"
+                        android:textColor="@color/viewTextColor"
+                        android:textSize="@dimen/_6mdpi"
+                        android:visibility="gone" />
+
+                    <androidx.appcompat.widget.LinearLayoutCompat
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:gravity="center"
+                        android:orientation="horizontal"
+                        android:padding="@dimen/_5sdp"
+                        android:visibility="gone">
+
+                        <androidx.appcompat.widget.AppCompatTextView
+                            style="@style/CustomFontSemiBold"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_weight="1"
+                            android:gravity="start"
+                            android:text="@string/unit_type"
+                            android:textColor="@color/viewTextColor"
+                            android:textSize="@dimen/_5mdpi" />
+
+                        <androidx.appcompat.widget.AppCompatTextView
+                            style="@style/CustomFontMediumStyle"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:text="@string/per_item"
+                            android:textColor="@color/colorC5"
+                            android:textSize="@dimen/_5mdpi" />
+
+                        <androidx.appcompat.widget.AppCompatImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_marginStart="@dimen/_5sdp"
+                            android:layout_marginEnd="@dimen/_5sdp"
+                            android:gravity="center"
+                            app:srcCompat="@drawable/ic_arrow_forward" />
+                    </androidx.appcompat.widget.LinearLayoutCompat>
+                </androidx.appcompat.widget.LinearLayoutCompat>
+
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    style="@style/CustomFontRegularStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:padding="@dimen/_5sdp"
+                    android:text="@string/choose_between_selling_whole_or_decimal_quantities_for_the_item_learn_more"
+                    android:textColor="@color/colorCB"
+                    android:textSize="@dimen/_5mdpi"
+                    android:visibility="gone"
+                    app:textAllCaps="false" />
+
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:id="@+id/llMainItemDetails"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:visibility="visible">
+
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        style="@style/CustomFontSemiBold"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:padding="@dimen/_5sdp"
+                        android:text="@string/price"
+                        android:textColor="@color/txtColor"
+                        android:textSize="@dimen/_5mdpi" />
+
+                    <androidx.appcompat.widget.LinearLayoutCompat
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginVertical="@dimen/_5sdp"
+                        android:background="@drawable/background_square_border_grey"
+                        android:gravity="center_vertical">
+
+                        <androidx.appcompat.widget.AppCompatEditText
+                            android:id="@+id/etItemPrice"
+                            style="@style/CustomFontSemiBold"
+                            android:layout_width="match_parent"
+                            android:layout_height="@dimen/_25sdp"
+                            android:background="@null"
+                            android:digits="0123456789"
+                            android:hint="$0.00"
+                            android:paddingLeft="@dimen/_10sdp"
+                            android:imeOptions="actionNext"
+                            android:inputType="numberDecimal"
+                            android:maxLength="11"
+                            android:textColor="@color/txtColor"
+                            android:textColorHint="@color/hintColor"
+                            android:textSize="@dimen/_5mdpi" />
+                    </androidx.appcompat.widget.LinearLayoutCompat>
+                    <androidx.appcompat.widget.AppCompatTextView
+                        style="@style/CustomFontSemiBold"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="@dimen/_5sdp"
+                        android:text="@string/sku"
+                        android:textColor="@color/txtColor"
+                        android:textSize="@dimen/_5mdpi" />
+                    <androidx.appcompat.widget.LinearLayoutCompat
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginVertical="@dimen/_5sdp"
+                        android:background="@drawable/background_square_border_grey"
+                        android:gravity="center_vertical">
+
+                        <androidx.appcompat.widget.AppCompatEditText
+                            android:id="@+id/etSku"
+                            style="@style/CustomFontSemiBold"
+                            android:layout_width="wrap_content"
+                            android:layout_height="@dimen/_25sdp"
+                            android:background="@null"
+                            android:digits="@string/disable_emoji_string"
+                            android:hint="@string/sku"
+                            android:paddingStart="@dimen/_10sdp"
+                            android:imeOptions="actionNext"
+                            android:inputType="numberDecimal"
+                            android:maxLength="200"
+                            android:textColor="@color/txtColor"
+                            android:textColorHint="@color/hintColor"
+                            android:textSize="@dimen/_5mdpi" />
+                    </androidx.appcompat.widget.LinearLayoutCompat>
+                    <androidx.appcompat.widget.AppCompatTextView
+                        style="@style/CustomFontSemiBold"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:padding="@dimen/_5sdp"
+                        android:text="@string/stock"
+                        android:textColor="@color/txtColor"
+                        android:textSize="@dimen/_5mdpi" />
+                    <androidx.appcompat.widget.LinearLayoutCompat
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginVertical="@dimen/_5sdp"
+                        android:background="@drawable/background_square_border_grey"
+                        android:gravity="center_vertical">
+
+                        <androidx.appcompat.widget.AppCompatEditText
+                            android:id="@+id/etStock"
+                            style="@style/CustomFontSemiBold"
+                            android:layout_width="wrap_content"
+                            android:layout_height="@dimen/_25sdp"
+                            android:background="@null"
+                            android:digits="0123456789"
+                            android:hint="0"
+                            android:paddingLeft="@dimen/_10sdp"
+                            android:imeOptions="actionNext"
+                            android:inputType="numberDecimal"
+                            android:maxLength="5"
+                            android:textColor="@color/txtColor"
+                            android:textColorHint="@color/hintColor"
+                            android:textSize="@dimen/_5mdpi" />
+                    </androidx.appcompat.widget.LinearLayoutCompat>
+
+
+                </androidx.appcompat.widget.LinearLayoutCompat>
+
+                <LinearLayout
+                    android:id="@+id/llVariationTitle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/background_timesheet"
+                    android:orientation="horizontal"
+                    android:paddingTop="@dimen/_4sdp"
+                    android:paddingBottom="@dimen/_4sdp"
+                    android:visibility="gone">
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        style="@style/CustomFontSemiBold"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:text="@string/tv_variations"
+                        android:textColor="@color/txtColor"
+                        android:textSize="@dimen/_5mdpi" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        style="@style/CustomFontSemiBold"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:text="@string/sku"
+                        android:textColor="@color/txtColor"
+                        android:textSize="@dimen/_5mdpi" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        style="@style/CustomFontSemiBold"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:text="@string/price"
+                        android:textColor="@color/txtColor"
+                        android:textSize="@dimen/_5mdpi" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        style="@style/CustomFontSemiBold"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:maxLength="5"
+                        android:text="@string/stock"
+                        android:textColor="@color/txtColor"
+                        android:textSize="@dimen/_5mdpi" />
+
+                </LinearLayout>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvVariationList"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tvAddVariation"
+                    style="@style/CustomFontBold"
+                    android:layout_width="match_parent"
+                    android:layout_height="@dimen/_25sdp"
+                    android:layout_gravity="center"
+                    android:layout_marginVertical="@dimen/_5sdp"
+                    android:background="@color/grayBackgroundColor"
+                    android:gravity="center"
+                    android:padding="@dimen/_5sdp"
+                    android:text="@string/add_variation"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/_5mdpi"
+                    app:textAllCaps="false" />
+
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    style="@style/CustomFontRegularStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:padding="@dimen/_5sdp"
+                    android:text="@string/leave_the_price_blank_to_enter_at_the_time_of_sale"
+                    android:textColor="@color/colorCB"
+                    android:textSize="@dimen/_5mdpi"
+                    android:visibility="gone"
+                    app:textAllCaps="false" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    style="@style/CustomFontBold"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:padding="@dimen/_5sdp"
+                    android:text="@string/modifier_sets"
+                    android:textColor="@color/txtColor"
+                    android:textSize="@dimen/_6mdpi" />
+
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvModifiersList"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/_10sdp"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    tools:itemCount="2"
+                    tools:listitem="@layout/view_modifier_sets" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    style="@style/CustomFontBold"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:padding="@dimen/_5sdp"
+                    android:text="@string/description"
+                    android:textColor="@color/txtColor"
+                    android:textSize="@dimen/_5mdpi" />
+
+
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginVertical="@dimen/_5sdp"
+                android:background="@drawable/background_square_border_grey"
+                android:gravity="center_vertical">
+                <androidx.appcompat.widget.AppCompatEditText
+                    android:id="@+id/etDesc"
+                    style="@style/CustomFontMediumStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="top"
+                    android:background="@null"
+                    android:digits="@string/disable_emoji_string"
+                    android:gravity="top"
+                    android:hint="@string/description"
+                    android:inputType="textMultiLine|textVisiblePassword"
+                    android:minLines="3"
+                    android:padding="@dimen/_5sdp"
+                    android:textColor="@color/txtColor"
+                    android:textColorHint="@color/hintColor"
+                    android:textSize="@dimen/_5mdpi" />
+            </androidx.appcompat.widget.LinearLayoutCompat>
+
+            </androidx.appcompat.widget.LinearLayoutCompat>
+
+
+        </androidx.core.widget.NestedScrollView>
+    </androidx.appcompat.widget.LinearLayoutCompat>
+</layout>

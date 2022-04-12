@@ -54,7 +54,7 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
-    DeleteOptionCallback {
+    DeleteOptionCallback, IDeviceListCallback {
     private var isManualCard: Boolean = false
     private lateinit var binding: FragmentCheckoutDetailsNewBinding
     private val TAG = "DashboardCategoryBold"
@@ -121,8 +121,17 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
         binding = FragmentCheckoutDetailsNewBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = this
 
-        magtekModule.setupInit()
-        magtekModule.setCallback(this)
+        val device = prefProvider.getValueInt(Constants.MAGTEK_HARDWARE, 0)
+
+        if (device == 0) {
+            magtekModule.setupInit()
+            magtekModule.setCallback(this)
+        } else {
+            mSessionManager.setOutputFragment(this)
+
+        }
+
+
 
 
         orderId = arguments?.getInt("orderId")
@@ -643,12 +652,12 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
                 "%.2f",
                 getCalCashDiscWithAmount(WholetotalPrice, false) / isSelectedCount
             ).toDouble()
-            makePaymentCreditCard()
-//            if (device == 0) {
-//                magtekPaymentCall()
-//            } else {
-//                magtekProPaymentCall()
-//            }
+            //   makePaymentCreditCard()
+            if (device == 0) {
+                magtekPaymentCall()
+            } else {
+                magtekProPaymentCall()
+            }
         }
         binding.llManualCardEntry.setOnClickListener {
             binding.frameLayoutId.visible()
@@ -1085,8 +1094,8 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
 
     private fun makeCashPayment() {
         paymentType = "Cash"
-        Log.e(TAG,"makeCashPayorderId  ${orderId}")
-        Log.e(TAG,"makeCashPrefOrderId  ${prefProvider.getValueInt("ORDER_ID", -1)}")
+        Log.e(TAG, "makeCashPayorderId  ${orderId}")
+        Log.e(TAG, "makeCashPrefOrderId  ${prefProvider.getValueInt("ORDER_ID", -1)}")
 
         if (orderId != -1 && orderId != 0) {
             paymentviewModel.updateOrder(
@@ -1096,9 +1105,8 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
                 paymentOfflineId,
                 orderOfflineId
             )
-        }
-        else {
-            paymentviewModel.updateOrder(false,null,null,"","")
+        } else {
+            paymentviewModel.updateOrder(false, null, null, "", "")
         }
 
 
@@ -1403,6 +1411,8 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
                         ConnectionState.Connected -> {
                             Log.e("", "[CONNECTED]")
 
+                           // ProgressUtils.dismissProgressDialog()
+
                             startTransaction()
                         }
                         ConnectionState.Disconnected -> {
@@ -1484,15 +1494,32 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
         if (mSessionManager.isConnected) {
             startTransaction()
         } else {
-            if (mSessionManager.device != null) {
-                mSessionManager.connectDevice()
-            } else {
-                ProgressUtils.dismissProgressDialog()
-                dismissDialog()
-                AlertUtils.showCustomAlert(requireActivity(), "Please connect device")
-            }
+
+            val deviceList: List<IDevice> = CoreAPI.getDeviceList(context, DeviceType.MMS, this)
+            setupList(deviceList)
+
+
+//            if (mSessionManager.device != null) {
+//                mSessionManager.connectDevice()
+//            } else {
+//                ProgressUtils.dismissProgressDialog()
+//                dismissDialog()
+//                AlertUtils.showCustomAlert(requireActivity(), "Please connect device")
+//            }
         }
     }
+
+    private fun setupList(deviceList: List<IDevice>) {
+
+        if (deviceList.isNotEmpty()) {
+
+            val device = deviceList[0]
+            mSessionManager.device = device
+            mSessionManager.connectDevice()
+        }
+
+    }
+
 
     private fun startTransaction() {
 
@@ -1517,5 +1544,11 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
     private fun isDynamo(): Boolean {
         val device = prefProvider.getValueInt(Constants.MAGTEK_HARDWARE, 0)
         return device == 0
+    }
+
+    override fun OnDeviceList(mlist: MutableList<IDevice>?) {
+        if (mlist != null) {
+            setupList(mlist)
+        }
     }
 }
