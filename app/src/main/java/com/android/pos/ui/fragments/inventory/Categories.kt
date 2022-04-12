@@ -1,5 +1,6 @@
 package com.android.pos.ui.fragments.inventory
 
+import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.text.Editable
@@ -33,11 +34,11 @@ import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class Categories : Fragment(),ItemCallback {
+class Categories(val clickedPosition: Int) : Fragment(),ItemCallback {
     private var isreOrder: Boolean = false
     private lateinit var adapter: CategoriesListAdapter
     private lateinit var binding: FragmentCategoriesBinding
-
+    var listSize:Int?=0
     /* private var position: Int = -1
      private lateinit var categoryListUpdateDelete: ArrayList<TbCategory>*/
     private val viewModel by viewModels<CategoriesViewModel>()
@@ -77,7 +78,7 @@ class Categories : Fragment(),ItemCallback {
                         binding.progressCircular.visibility = View.GONE
                         Log.e(TAG, "getCategoryData  ${Gson().toJson(it.data)}")
                         it.data?.let { it1 ->
-
+                            listSize=it.data.size
                             adapter.add(it1)
                             binding.edtSearch.hint = "Search (" + it1.size + ") Categories"
                         }
@@ -126,9 +127,14 @@ class Categories : Fragment(),ItemCallback {
                     Log.e(TAG,"getAllCategories  ${Gson().toJson(adapter.getAll())}")
                     viewModel.reOrder(adapter.getAll())
                     // categoriesObserver()
-
-
                 }
+
+                val intent = Intent()
+                intent.action = "inventory"
+                intent.putExtra("isCount", true)
+                intent.putExtra("param1", clickedPosition)
+                intent.putExtra("count", listSize)
+                requireContext().sendBroadcast(intent)
             }
         })
 

@@ -1,5 +1,6 @@
 package com.android.pos.ui.fragments.inventory
 
+import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.text.Editable
@@ -31,7 +32,7 @@ import com.android.pos.utils.statusUtils.Status
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class AllItems : Fragment(),ItemCallback {
+class AllItems(val clickedPosition: Int) : Fragment(),ItemCallback {
 
     private var isreOrder: Boolean = false
     private var deleteAndHide: Boolean = false
@@ -41,6 +42,7 @@ class AllItems : Fragment(),ItemCallback {
     private lateinit var adapter: ItemListAdapter
     private lateinit var binding: FragmentItemsBinding
     private val viewModel by viewModels<ItemsViewModel>()
+    var listSize:Int?=0
 
     var dragFrom = -1
     var dragTo = -1
@@ -86,6 +88,82 @@ class AllItems : Fragment(),ItemCallback {
 
 
     private fun setupHelper() {
+
+/*
+        object : SwipeHelper(activity, binding.rvAllItemList) {
+            override fun instantiateUnderlayButton(
+                viewHolder: RecyclerView.ViewHolder?,
+                underlayButtons: MutableList<UnderlayButton?>
+            ) {
+
+                underlayButtons.add(UnderlayButton(
+                    "Hide",
+                    0,
+                    Color.parseColor("#0AB833")
+                ) { pos ->
+
+                    alert(
+                        getString(R.string.app_name),
+                        getString(R.string.hide_item_message)
+                    ) {
+                        positiveButton(getString(R.string.deactivate)) {
+                            deleteAndHide = true
+                            deleteObj = adapter.getItem(pos)
+                            viewModel.deleteAndHide(deleteObj!!.itemId, deleteAndHide, false)
+                        }
+                        negativeButton(R.string.tv_cancel) {
+                            // Do negative stuff here
+                        }
+                    }
+
+
+                })
+
+                underlayButtons.add(UnderlayButton(
+                    "Edit",
+                    0,
+                    Color.parseColor("#2997cc")
+                ) { pos ->
+
+                    val itemObject = adapter.getItem(pos)
+                    val bundle = Bundle()
+                    bundle.putBoolean("isEdit", true)
+                    bundle.putParcelable("itemObject", itemObject)
+
+                    findNavController().navigate(R.id.action_inventory_to_createItem, bundle)
+
+
+                })
+
+
+                underlayButtons.add(UnderlayButton(
+                    "Delete",
+                    0,
+                    Color.parseColor("#FF3C30")
+                ) { pos ->
+
+                    activity?.let {
+                        AlertUtils.showCustomAlertWithListener(
+                            it, getString(R.string.delete_item_message)
+                        ) { _, _ ->
+
+                            deleteAndHide = false
+                            deletePos = pos
+                            deleteObj = adapter.getItem(pos)
+                            //delete API call
+                            viewModel.deleteAndHide(deleteObj!!.itemId, deleteAndHide, false)
+                            //Delete item in database
+//                            viewModel.dbDeleteAndHide(deleteObj!!.itemId, deleteAndHide)
+                        }
+                    }
+
+                })
+
+
+            }
+        }
+*/
+
 
 
         val touchHelper = ItemTouchHelper(object :
@@ -173,6 +251,8 @@ class AllItems : Fragment(),ItemCallback {
                             adapter.add(it1 as List<TbItem>)
                             binding.edtSearch.hint = "Search (" + it1.size + ") Items"
                         }
+                        listSize=it.data?.size
+
                     }
                     Status.ERROR -> {
                         binding.rvAllItemList.visibility = View.GONE
@@ -198,6 +278,16 @@ class AllItems : Fragment(),ItemCallback {
                     isreOrder = false
                     viewModel.reOrder(adapter.getAll())
                 }
+
+                val intent = Intent()
+                intent.action = "inventory"
+                intent.putExtra("isCount", true)
+                intent.putExtra("param1", clickedPosition)
+                intent.putExtra("count", listSize)
+                requireContext().sendBroadcast(intent)
+
+
+
                 // viewModel.dbDeleteAndHide(deleteObj!!.itemId, deleteAndHide)
             }
         })
@@ -255,17 +345,18 @@ class AllItems : Fragment(),ItemCallback {
                     findNavController().navigate(R.id.action_inventory_to_createItem, bundle)
                 }
                 R.id.menu_delete -> {
-                    alert(
-                        getString(R.string.app_name),
-                        getString(R.string.hide_item_message)
-                    ) {
-                        positiveButton(getString(R.string.deactivate)) {
-                            deleteAndHide = true
+                    activity?.let {
+                        AlertUtils.showCustomAlertWithListener(
+                            it, getString(R.string.delete_item_message)
+                        ) { _, _ ->
+
+                            deleteAndHide = false
+                            deletePos = pos
                             deleteObj = adapter.getItem(pos)
+                            //delete API call
                             viewModel.deleteAndHide(deleteObj!!.itemId, deleteAndHide, false)
-                        }
-                        negativeButton(R.string.tv_cancel) {
-                            // Do negative stuff here
+                            //Delete item in database
+//                            viewModel.dbDeleteAndHide(deleteObj!!.itemId, deleteAndHide)
                         }
                     }
                 }

@@ -851,6 +851,9 @@ class PosRepository @Inject constructor(
     fun orderCounts(startDate: String?, endDate: String?) =
         performGetOperationNew(networkCall = { apiHelperNew.orderCounts(startDate, endDate) })
 
+    fun inventoryCounts() =
+        performGetOperationNew(networkCall = { apiHelperNew.inventoryCounts() })
+
     suspend fun addCardReader(tbCardReader: TbCardReader) {
         appDatabase.cardReaderDao().add(tbCardReader)
     }
