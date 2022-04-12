@@ -56,10 +56,8 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : Fragment(),
     magtekCallback,
-    DeleteOptionCallback {
+    DeleteOptionCallback ,IDeviceListCallback {
     private var isLastPayment: Boolean = false
-class CheckoutDineInFragmentNew : Fragment(), magtekCallback,
-    DeleteOptionCallback ,IDeviceListCallback{
     private var isManualCard: Boolean = false
     private lateinit var binding: FragmentCheckoutDetailsNewBinding
     private val TAG = "DashboardCategoryBold"
