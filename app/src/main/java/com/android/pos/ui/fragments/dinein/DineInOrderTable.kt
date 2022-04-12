@@ -75,6 +75,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
     private var cartList: CartModel? = null
     private var dineInData: CreateOrderResponse.Data? = null
     private var orderId: Int? = null
+    private var order_note =""
     private var getOrderDetailsResponse: GetOrderDetailsResponse.Data? = null
     private val TAG = "DineInOrderTable"
     private lateinit var dineInTableAdapter: DineInTableAdapter
@@ -281,6 +282,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             var offlineId = randomOfflineId()
 
             cartList = getCartModel(adapterList.toCollection(arrayListOf()))
+            cartList?.note = order_note
             viewModelPayment.addCart(cartList!!)
 
             totalTax = 0.0
@@ -1203,6 +1205,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         viewModel.Basedata.observe(viewLifecycleOwner, { event ->
             event.getContentIfNotHandled()?.let { baseResponse ->
                 if (baseResponse != null) {
+                    order_note = baseResponse.note
                     //Manan's Code
                     //for Merge Icon
                     if (baseResponse.floorPlanTable.status == MERGEDANDOCCUPIED) {

@@ -216,6 +216,10 @@ class TransactionDetailsFragment : Fragment() {
                     it.data.order.created_at,
                     context
                 )
+                if (it.data.order.note.isNotEmpty()) {
+                    binding.llNotes.visibility = View.VISIBLE
+                    binding.tvNote.text = it.data.order.note.toString()
+                }
 
                 if (it.data.order.customer != null) {
                     binding.tvCustomerName.text =
