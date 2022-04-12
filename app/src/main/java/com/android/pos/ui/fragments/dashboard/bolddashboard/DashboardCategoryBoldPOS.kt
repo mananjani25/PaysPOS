@@ -199,6 +199,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
 
         setFragmentResultListener("request_key_note") { requestKey: String, bundle: Bundle ->
             val note = bundle.getString("note")
+            val isOrderNote = bundle.getBoolean("isOrderNote")
             val singleItem = bundle.getParcelable<TbItem>("item")
            // val cartList = bundle.getParcelableArrayList<CartModel>("cartList")
             var dineInArrayList: List<DineInModel>? = null
@@ -215,18 +216,23 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
 */
 
 
-
-            singleItem?.note = note.toString()
-            singleItem?.let {
-                dineInArrayList?.let { it1 ->
-                    viewModel.cartLogic(
-                        cartList,
-                        it,
-                        Constants.UPDATE,
-                        false
-                    )
+            if(isOrderNote){
+                cartList[0].note = note.toString()
+                viewModel.addCart(cartList[0])
+            }else{
+                singleItem?.note = note.toString()
+                singleItem?.let {
+                    dineInArrayList?.let { it1 ->
+                        viewModel.cartLogic(
+                            cartList,
+                            it,
+                            Constants.UPDATE,
+                            false
+                        )
+                    }
                 }
             }
+
         }
 
     }

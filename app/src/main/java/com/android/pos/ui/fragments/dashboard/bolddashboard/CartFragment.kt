@@ -413,6 +413,10 @@ class CartFragment(
                     cartlist = it as ArrayList<CartModel>
 
                     viewModel.setCartModel(it)
+                    if (viewModel.order_note.isNotEmpty()) {
+                        binding.relativeOrderNotes?.visibility = View.VISIBLE
+                        binding.txtOrderNote?.text = viewModel.order_note
+                    }
                     binding.txtSubTotal.text =
                         MethodUtils.roundOffAmount(viewModel.subTotalPrice)
                     binding.txtTax.text = MethodUtils.roundOffAmount(viewModel.totalTax)
@@ -486,6 +490,7 @@ class CartFragment(
                     binding.txtDiscount.text = "-"+MethodUtils.roundOffAmount(0.0)
                     binding.txtNoncashAdj.text =
                         MethodUtils.roundOffAmount(0.0)
+                    binding.relativeOrderNotes?.visibility = View.GONE
                     binding.txtServiceCharge.text =
                         MethodUtils.roundOffAmount(0.0)
                     binding.tvPayNow.text = "Pay " + MethodUtils.roundOffAmount(0.0)
@@ -582,6 +587,10 @@ class CartFragment(
                             "-"+MethodUtils.roundOffAmount(viewModel.totalDiscount)
                         binding.txtNoncashAdj.text =
                             MethodUtils.roundOffAmount(viewModel.cashdiscountAmount)
+                        if (viewModel.order_note.isNotEmpty()) {
+                            binding.relativeOrderNotes?.visibility = View.VISIBLE
+                            binding.txtOrderNote?.text = viewModel.order_note
+                        }
 //                        var data: TbCustomer? = prefProvider.getCustomerData()
 //                        if (data != null) {
 //                            if (viewModel.loyaltyPointCondition(data)) {
@@ -663,6 +672,7 @@ class CartFragment(
 //                                binding.lblLoyaltyPoints.visibility = View.GONE
 //                            }
 //                        }
+                        binding.relativeOrderNotes?.visibility = View.GONE
                         binding.liinearInfoLayout.layoutParams.height =
                             resources.getDimension(R.dimen._40sdp).toInt()
                         binding.relativeLoylatyPoints.visibility = View.GONE
@@ -699,6 +709,10 @@ class CartFragment(
                             requireContext()
                         )
                         viewModel.setCartModel(it)
+                        if (viewModel.order_note.isNotEmpty()) {
+                            binding.relativeOrderNotes?.visibility = View.VISIBLE
+                            binding.txtOrderNote?.text = viewModel.order_note
+                        }
                         binding.txtSubTotal.text =
                             MethodUtils.roundOffAmount(viewModel.subTotalPrice)
                         binding.txtTax.text = MethodUtils.roundOffAmount(viewModel.totalTax)
@@ -732,7 +746,7 @@ class CartFragment(
                                             "${viewModel.redeemLoyaltyInfo.usedLoyaltyPoints}"
                                     } else {
                                         binding.liinearInfoLayout.layoutParams.height =
-                                            resources.getDimension(R.dimen._40sdp).toInt()
+                                            resources.getDimension(R.dimen._50sdp).toInt()
                                         binding.relativeLoylatyPoints.visibility = View.GONE
                                         binding.lblLoyaltyPoints.visibility = View.GONE
                                     }
@@ -759,8 +773,13 @@ class CartFragment(
                                 }
                             }
                         } else {
-                            binding.liinearInfoLayout.layoutParams.height =
-                                resources.getDimension(R.dimen._40sdp).toInt()
+                            if(viewModel.order_note.isNotEmpty()){
+                                binding.liinearInfoLayout.layoutParams.height =
+                                    resources.getDimension(R.dimen._50sdp).toInt()
+                            }else{
+                                binding.liinearInfoLayout.layoutParams.height =
+                                    resources.getDimension(R.dimen._40sdp).toInt()
+                            }
                             binding.relativeLoylatyPoints.visibility = View.GONE
                             binding.lblLoyaltyPoints.visibility = View.GONE
                         }
@@ -768,6 +787,7 @@ class CartFragment(
 
                     } else {
                         cartAdapter.clearList()
+                        binding.relativeOrderNotes?.visibility = View.GONE
                         binding.txtTotal.text = MethodUtils.roundOffAmount(0.0)
                         binding.txtSubTotal.text = MethodUtils.roundOffAmount(0.0)
                         binding.txtTax.text = MethodUtils.roundOffAmount(0.0)
@@ -790,6 +810,11 @@ class CartFragment(
                                 binding.relativeLoylatyPoints.visibility = View.GONE
                                 binding.lblLoyaltyPoints.visibility = View.GONE
                             }
+                        }else{
+                            binding.liinearInfoLayout.layoutParams.height =
+                                resources.getDimension(R.dimen._40sdp).toInt()
+                            binding.relativeLoylatyPoints.visibility = View.GONE
+                            binding.lblLoyaltyPoints.visibility = View.GONE
                         }
 
 
@@ -1127,9 +1152,10 @@ class CartFragment(
             if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == Constants.DINE_IN)
                 if (prefProvider.getValue(Constants.CUSTOMER_NAME, "").isEmpty())
                     popupMenu.menu.findItem(R.id.menu_remove_customer).isVisible = false
-            if (cartlist.isEmpty())
+            if (cartlist.isEmpty()) {
                 popupMenu.menu.findItem(R.id.menu_discount).isVisible = false
-
+                popupMenu.menu.findItem(R.id.menu_order_note).isVisible = false
+            }
 
             if (prefProvider.getValueInt(CUSTOMER_ID, -1) == -1) {
                 popupMenu.menu.findItem(R.id.menu_remove_customer).isVisible = false
@@ -1147,6 +1173,12 @@ class CartFragment(
                         }
                         clearCustomer()
 
+                    }
+                    R.id.menu_order_note -> {
+                        findNavController().navigate(
+                            R.id.action_dashboardCategoryBoldPOS_to_addNoteDialog,
+                            bundleOf("isOrderNote" to true,"cartList" to cartlist)
+                        )
                     }
                     R.id.menu_discount -> {
 

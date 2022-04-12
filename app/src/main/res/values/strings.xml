@@ -637,7 +637,7 @@
     <string name="pending_payments">Pending Payments</string>
     <string name="tax_details">Tax Details</string>
     <string name="discount_details">Discount Details</string>
-    <string name="sales_tax_summary">Sales Tax Summary</string>
+    <string name="sales_tax_summary">Sales And Taxes Summary</string>
     <string name="cash_event_summary">Cash Event Summary</string>
     <string name="total_external_payments">Total External Payments</string>
     <string name="total_payments">Total Payments</string>

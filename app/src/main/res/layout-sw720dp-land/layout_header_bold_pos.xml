@@ -98,6 +98,7 @@
                 android:imeOptions="actionDone"
                 android:inputType="text"
                 android:lines="1"
+                android:dropDownWidth="@dimen/_120sdp"
                 android:maxWidth="@dimen/_100sdp"
                 android:maxLines="1"
                 android:padding="@dimen/_5sdp"
