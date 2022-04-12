@@ -56,23 +56,29 @@
             android:visibility="visible">
 
 
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:id="@+id/linear_edit_email"
+                android:layout_width="match_parent"
+                android:visibility="gone"
+                android:background="@drawable/background_square_border_grey"
+                android:layout_height="@dimen/_20sdp">
             <androidx.appcompat.widget.AppCompatEditText
                 android:id="@+id/edtEmail"
                 style="@style/CustomFontSemiBold"
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/_20sdp"
                 android:layout_gravity="center"
-                android:background="@drawable/background_square_border_grey"
+                app:backgroundTint="@color/bg_color"
                 android:hint="@string/email_receipt"
                 android:imeOptions="actionDone"
                 android:inputType="textEmailAddress"
-
                 android:padding="@dimen/_7sdp"
                 android:textColor="@color/txtColor"
                 android:textColorHint="@color/hintColor"
                 android:textSize="@dimen/_6mdpi"
-                android:visibility="gone"
+                android:visibility="visible"
                 app:textAllCaps="true" />
+            </androidx.appcompat.widget.LinearLayoutCompat>
 
             <com.santalu.maskedittext.MaskEditText
                 android:id="@+id/edtPhoneNo"
