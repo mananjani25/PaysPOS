@@ -172,9 +172,11 @@ class PaymentBoldPosFragment : Fragment() {
         super.onPause()
         Log.e(TAG, "onPause")
         if (!prefProvider.getValueboolean(SPLIT_ENABLE, false)) {
-            removeCustomer()
-            dineInPaymentViewModel.deleteCart()
-            prefProvider.setValue(Constants.ORDER_TYPE, Constants.TAKEOUT)
+            if(prefProvider.getValue(ORDER_TYPE, TAKEOUT)== DINE_IN){
+                removeCustomer()
+                dineInPaymentViewModel.deleteCart()
+                prefProvider.setValue(Constants.ORDER_TYPE, Constants.TAKEOUT)
+            }
         }
     }
 
