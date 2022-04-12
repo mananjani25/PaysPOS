@@ -1,10 +1,8 @@
 package com.android.pos
 
-import android.app.Activity
 import android.app.Application
 import android.app.NotificationChannel
 import android.app.NotificationManager
-import android.content.Context
 import android.os.Build
 import android.os.Handler
 import androidx.appcompat.app.AppCompatDelegate
@@ -17,7 +15,6 @@ import com.testfairy.TestFairy
 import com.zebra.scannercontrol.DCSScannerInfo
 import com.zebra.scannercontrol.SDKHandler
 import dagger.hilt.android.HiltAndroidApp
-import java.util.*
 
 @HiltAndroidApp
 class MainApplication : Application() {
@@ -26,7 +23,7 @@ class MainApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         FirebaseApp.initializeApp(this)
-        TestFairy.begin(this, "SDK-Q1UpRvUs");
+        TestFairy.begin(this, "SDK-TRkPe0ic")
         instance = this
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
 
