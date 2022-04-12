@@ -12,7 +12,8 @@
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+           >
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/imgBack"
@@ -47,12 +48,13 @@
                 android:layout_centerVertical="true"
                 android:layout_gravity="center"
                 android:gravity="center"
-                android:padding="@dimen/_8sdp"
                 android:text="@string/tv_home"
                 android:textAllCaps="true"
-                android:textColor="@color/btnColor"
-                android:textSize="@dimen/_5mdpi"
-                tools:ignore="RelativeOverlap" />
+                android:textColor="@color/white"
+                android:textSize="@dimen/_6mdpi"
+                android:paddingVertical="@dimen/_9sdp"
+                android:background="@drawable/button_selected"
+                android:paddingHorizontal="@dimen/padding_home_button"/>
 
         </RelativeLayout>
 

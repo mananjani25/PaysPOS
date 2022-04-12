@@ -31,6 +31,7 @@
                     android:layout_centerVertical="true"
                     android:layout_marginStart="@dimen/_5sdp"
                     android:padding="@dimen/_6sdp"
+                    android:background="?attr/selectableItemBackground"
                     android:src="@drawable/ic_baseline_menu" />
 
 
@@ -105,16 +106,18 @@
                 <TextView
                     android:id="@+id/txtHome"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="@dimen/_10sdp"
+                    android:layout_height="match_parent"
                     android:fontFamily="@font/sf_pro_display_semibold"
-                    android:padding="@dimen/_6sdp"
                     android:text="@string/tv_home"
+                    android:gravity="center"
+
                     android:textAllCaps="true"
-                    android:textColor="@color/txt_color_blue"
+                    android:textColor="@color/white"
+                    android:background="@drawable/button_action_hover"
+                    android:paddingHorizontal="@dimen/padding_home_button"
                     android:textSize="@dimen/_6mdpi"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/imgOptionMenuContainer"
+                    app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <TextView

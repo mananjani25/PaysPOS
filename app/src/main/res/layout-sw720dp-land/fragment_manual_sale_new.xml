@@ -578,8 +578,8 @@
                                 android:layout_alignParentEnd="true"
                                 android:layout_marginRight="@dimen/_5sdp"
                                 android:gravity="end"
-                                android:text="$ 0.00"
-                                android:textColor="@color/txtColor"
+                                android:text="-$0.00"
+                                android:textColor="@color/colorRed"
                                 android:textSize="@dimen/text_size_medium" />
                         </RelativeLayout>
 

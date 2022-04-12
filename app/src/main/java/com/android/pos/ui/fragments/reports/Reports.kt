@@ -72,7 +72,8 @@ class Reports : Fragment() {
     private fun configureToolbar() {
         binding.commonToolbar.txtTitle.setText("Reports")
         binding.commonToolbar.imgDrawer.setOnClickListener {
-            (requireActivity() as MainActivity).enableDrawer()
+           // (requireActivity() as MainActivity).enableDrawer()
+            findNavController().navigate(R.id.action_reports_to_menuFragment)
         }
 
         binding.commonToolbar.txtHome.setOnClickListener {

@@ -20,6 +20,7 @@ import com.android.pos.data.remote.Constants.KEY
 import com.android.pos.databinding.FragmentInventoryBinding
 import com.android.pos.ui.activities.MainActivity
 import com.android.pos.ui.adapter.InventoryAdapter
+import com.android.pos.utils.statusUtils.Status
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -75,7 +76,8 @@ class Inventory : Fragment() {
 
     private fun configureToolbar() {
         binding.commonToolbar.imgDrawer.setOnClickListener {
-            (requireActivity() as MainActivity).enableDrawer()
+           // (requireActivity() as MainActivity).enableDrawer()
+            findNavController().navigate(R.id.action_inventory_to_menuFragment)
         }
         binding.commonToolbar.txtHome.setOnClickListener {
             findNavController().navigate(R.id.action_inventory_to_dashboardCategory)
@@ -280,4 +282,38 @@ class Inventory : Fragment() {
 
 
     }
+
+    //added by zeeshan for inventory items count
+    private fun getOrderCountsObserver(startDate: String?, endDate: String?) {
+        try {
+/*
+            viewModel.orderCounts(startDate,endDate).observe(viewLifecycleOwner) {
+                it?.let { resource ->
+                    when (resource.status) {
+                        Status.SUCCESS -> {
+
+                            activeOrdersCount = it.data?.data?.activeOrders
+                            cancelledOrdersCount = it.data?.data?.cancelledOrders
+                            completedOrdersCount = it.data?.data?.completedOrders
+                            upcomingOrdersCount = it.data?.data?.upcomingOrders
+
+                            setAdapter(mPos)
+
+                        }
+                        Status.ERROR -> {
+                            setAdapter(mPos)
+                        }
+                        Status.LOADING -> {
+                            setAdapter(mPos)
+                        }
+                    }
+                }
+            }
+*/
+
+        }catch (e:Exception){
+            e.printStackTrace()
+        }
+    }
+
 }
