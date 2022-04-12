@@ -838,22 +838,22 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         taxGuest: Double,
         serviceChargeGuest: Double,
         divideDiscount: Double,
-        dividedGuestAmt:Double
+        dividedGuestAmt: Double
     ) {
 
         //New Drag and Drop
 
-        Log.e("TODAYBOLD","subTotalB  ${subTotalGuest + dividedGuestAmt}")
-        Log.e("TODAYBOLD","totalGuest ${totalGuest}")
-        Log.e("TODAYBOLD","taxGuest ${taxGuest}")
-        Log.e("TODAYBOLD","serviceChargeGuest  ${serviceChargeGuest}")
-        Log.e("TODAYBOLD","divideDiscount ${divideDiscount}")
+        Log.e("TODAYBOLD", "subTotalB  ${subTotalGuest + dividedGuestAmt}")
+        Log.e("TODAYBOLD", "totalGuest ${totalGuest}")
+        Log.e("TODAYBOLD", "taxGuest ${taxGuest}")
+        Log.e("TODAYBOLD", "serviceChargeGuest  ${serviceChargeGuest}")
+        Log.e("TODAYBOLD", "divideDiscount ${divideDiscount}")
         val bundle = Bundle()
-        bundle.putDouble("subTotalB",subTotalGuest + dividedGuestAmt)
-        bundle.putDouble("totalB",totalGuest)
-        bundle.putDouble("totalTaxB",taxGuest)
-        bundle.putDouble("serviceChargeB",serviceChargeGuest)
-        bundle.putDouble("dicountB",divideDiscount)
+        bundle.putDouble("subTotalB", subTotalGuest + dividedGuestAmt)
+        bundle.putDouble("totalB", totalGuest)
+        bundle.putDouble("totalTaxB", taxGuest)
+        bundle.putDouble("serviceChargeB", serviceChargeGuest)
+        bundle.putDouble("dicountB", divideDiscount)
 
 
         val adapterList = dineInTableAdapter.getList()
