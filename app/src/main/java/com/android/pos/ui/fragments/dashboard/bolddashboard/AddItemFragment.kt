@@ -250,12 +250,24 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
         binding.txtAddDiscount.setOnClickListener {
             var totalItemswithQuantity = 0
 
-            cartList.get(0).items?.forEach {
-                totalItemswithQuantity += it.itemQuantity
+            if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == DINE_IN) {
+                cartList.get(0).dineInList?.forEach {
+                    it.items.forEach { it1 ->
+                        totalItemswithQuantity += it1.itemQuantity
+                    }
+                }
+            } else {
+                cartList.get(0).items?.forEach {
+                    totalItemswithQuantity += it.itemQuantity
 
+                }
             }
+
             var perItemDiscount = 0.0
             if (cartList[0].discountPrice != 0.0) {
+                if (totalItemswithQuantity == 0) {
+                    totalItemswithQuantity = 1
+                }
                 perItemDiscount =
                     MethodUtils.roundOffAmountDouble(cartList[0].discountPrice / totalItemswithQuantity)
             }

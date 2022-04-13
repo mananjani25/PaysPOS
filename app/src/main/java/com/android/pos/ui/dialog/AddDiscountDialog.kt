@@ -93,7 +93,9 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
         if (isOrderDiscount) {
             itemPrice -= orderDiscount
         } else {
-            itemPrice -= itemOrderDiscount
+            if(itemPrice>=itemOrderDiscount){
+                itemPrice -= itemOrderDiscount
+            }
         }
 
         selectedCurrency = orderDiscountType
