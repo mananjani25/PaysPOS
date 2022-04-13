@@ -36,7 +36,7 @@
                 >
 
                 <TextView
-                    style="@style/CustomFontRegularStyle"
+                    style="@style/CustomFontSemiBold"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
@@ -45,7 +45,7 @@
                     android:padding="@dimen/_5sdp"
                     android:text="@string/time_tracking"
                     android:textColor="@color/txtColor"
-                    android:textSize="@dimen/_6mdpi" />
+                    android:textSize="@dimen/_7mdpi" />
 
                 <com.google.android.material.switchmaterial.SwitchMaterial
                     android:id="@+id/time_tracker"

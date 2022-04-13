@@ -26,12 +26,13 @@ class ItemAdapter(
         }
 
         init {
-
             binding.linearItem.setOnClickListener {
                 list[bindingAdapterPosition]?.let { listener.onClick(it) }
             }
+            binding.txtCategoryName.setOnClickListener {
+              //  list[bindingAdapterPosition]?.let { listener.onClick(it) }
+            }
         }
-
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemAdapter.MyViewHolder {

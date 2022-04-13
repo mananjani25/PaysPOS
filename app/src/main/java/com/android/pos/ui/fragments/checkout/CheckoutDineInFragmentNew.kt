@@ -125,6 +125,21 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
     private var custom_paymentAmount = 0.0
 
 
+    companion object {
+        fun newInstacne(
+            modelDineIn: CheckOutDineInDataModel
+        ): CheckoutDineInFragmentNew {
+            val frag = CheckoutDineInFragmentNew(modelDineIn)
+            val bundle = Bundle()
+            bundle.putParcelable("dineInModel", modelDineIn)
+
+            frag.arguments = bundle
+            Log.e(TAG, "modelDineInmodelDineIn:  ${Gson().toJson(modelDineIn)}")
+            return frag
+        }
+    }
+
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -144,6 +159,11 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
             mSessionManager.setDineInFragment(this)
 
         }
+
+
+
+
+
         return binding.root
     }
 

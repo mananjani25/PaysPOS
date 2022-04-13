@@ -290,7 +290,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 binding.llNoReceipt.setTextColor(requireActivity().resources.getColor(R.color.white))
                 binding.llNoReceipt.background =
                     requireContext().getDrawable(R.drawable.button_selected)
-                binding.linearTopHeaderSplit.visibility = View.VISIBLE
+               // binding.linearTopHeaderSplit.visibility = View.VISIBLE
                 binding.txtHome.visibility = View.GONE
 
 
@@ -368,7 +368,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 binding.linerContent.visibility = View.VISIBLE
                 binding.llHome.visibility = View.VISIBLE
                 binding.txtHome.visibility = View.GONE
-                binding.linearTopHeaderSplit.visibility = View.GONE
+              //  binding.linearTopHeaderSplit.visibility = View.GONE
                 binding.viewSplitLine.visibility = View.GONE
                 binding.llNoReceipt.visibility = View.VISIBLE
                 binding.linearSplitLayout.visibility = View.GONE
@@ -427,7 +427,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 binding.llNoReceipt.setTextColor(requireActivity().resources.getColor(R.color.white))
                 binding.llNoReceipt.background =
                     requireContext().getDrawable(R.drawable.button_selected)
-                binding.linearTopHeaderSplit.visibility = View.VISIBLE
+              //  binding.linearTopHeaderSplit.visibility = View.VISIBLE
                 binding.txtHome.visibility = View.GONE
                 var title = "Split "
                 viewModel.addSplitToDatabase(
@@ -476,18 +476,18 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     if (isLastPayment) {
                         binding.llHome.visibility = View.VISIBLE
                         binding.txtHome.visibility = View.GONE
-                        binding.linearTopHeaderSplit.visibility = View.GONE
+                       // binding.linearTopHeaderSplit.visibility = View.GONE
                         binding.llCheckOut.visibility = View.GONE
                     } else {
                         binding.llHome.visibility = View.GONE
                         binding.txtHome.visibility = View.GONE
-                        binding.linearTopHeaderSplit.visibility = View.VISIBLE
+                      //  binding.linearTopHeaderSplit.visibility = View.VISIBLE
                         binding.llCheckOut.visibility = View.VISIBLE
                     }
                 } else {
                     binding.llHome.visibility = View.VISIBLE
                     binding.txtHome.visibility = View.GONE
-                    binding.linearTopHeaderSplit.visibility = View.GONE
+                  //  binding.linearTopHeaderSplit.visibility = View.GONE
                     binding.llCheckOut.visibility = View.GONE
                 }
 
@@ -533,7 +533,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             }
         }
 
-        binding.txtNextbutton.setOnClickListener(this)
+      //  binding.txtNextbutton.setOnClickListener(this)
         binding.txtHome.setOnClickListener(this)
         binding.txtAddCustomer.setOnClickListener(this)
         binding.llMessage.setOnClickListener(this)
@@ -809,8 +809,6 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
         }
         customerPrinterDineIn?.forEach {
-
-
             initDineInPrinter(
                 it,
                 Constants.CUSTOMER,
