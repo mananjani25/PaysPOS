@@ -1,5 +1,6 @@
 package com.android.pos.utils
 
+import android.util.Log
 import java.lang.Exception
 import java.util.*
 import java.util.regex.Pattern
@@ -120,19 +121,18 @@ object CardValidator {
      * @return boolean containing the result of the verification
      */
     fun validateExpiryDate(month: String, year: String): Boolean {
-        if (year.length != 4 && year.length != 2) {
-            return false
-        }
         val iMonth: Int
         val iYear: Int
-        try {
-            iMonth = month.toInt()
-            iYear = year.toInt()
-        } catch (e: Exception) {
-            e.printStackTrace()
-            return false
+        var current_year = Calendar.getInstance().get(Calendar.YEAR) % 100
+        var current_month = Calendar.getInstance().get(Calendar.MONTH)+1
+        Log.d(TAG, "validateExpiryDate: year  "+current_month)
+        Log.d(TAG, "validateExpiryDate: month "+current_year)
+        if(current_year==year.toInt()){
+            return month.toInt()>=current_month && month.toInt()<=12
+        }else{
+            return (month.toInt()<=12) && current_year<=year.toInt()
         }
-        return validateExpiryDate(iMonth, iYear)
+        return true
     }
 
     /**
@@ -141,7 +141,7 @@ object CardValidator {
      * @param year int containing the expiring year of the card
      * @return boolean containing the result of the verification
      */
-    private fun validateExpiryDate(month: Int, year: Int): Boolean {
+     fun validateExpiryDate(month: Int, year: Int): Boolean {
         if (month < 1 || year < 1) return false
         val cal = Calendar.getInstance()
         val curMonth = cal[Calendar.MONTH] + 1
