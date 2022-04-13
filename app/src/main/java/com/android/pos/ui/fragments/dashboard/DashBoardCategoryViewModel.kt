@@ -87,6 +87,7 @@ class DashBoardCategoryViewModel @Inject constructor(
     var cashDiscountType = ""
     var totalDiscount = 0.0
     var tip = 0.0
+    var order_note = ""
     var cartModel: CartModel? = null
     var assignCustomer: TbCustomer? = null
     var orderItemDiscount = 0.0
@@ -1041,6 +1042,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
 
             }
+            order_note = cartModel.note
 
             serviceChargeCalculationModel(cartModel)
             subTotalPrice -= cartModel.discountPrice
@@ -1115,7 +1117,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                 subTotalPrice -= cartModel.discountPrice
 
                 totalDiscount += cartModel.discountPrice
-
+                order_note = cartModel.note
                 cartModel.items!!.forEach {
                     totalDiscount += if (!it.isManualSales) {
                         (it.discountPrice * it.itemQuantity)

@@ -26,6 +26,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class AddNoteDialog : DialogFragment(), ItemCallback {
 
+    private var isOrderNote: Boolean = false
     private var item: TbItem? = null
     private var cartList: ArrayList<CartModel>? = null
     private var headerItemPosition: Int? = null
@@ -65,6 +66,7 @@ class AddNoteDialog : DialogFragment(), ItemCallback {
     private fun setupData() {
 
         item = requireArguments().getParcelable("item")
+        isOrderNote = requireArguments().getBoolean("isOrderNote")
         cartList = requireArguments().getParcelableArrayList<CartModel>("cartList")
         if (prefProvider.getValue(Constants.ORDER_TYPE, Constants.TAKEOUT) == Constants.DINE_IN) {
             headerItemPosition = requireArguments().getInt("headerPos")
@@ -91,9 +93,11 @@ class AddNoteDialog : DialogFragment(), ItemCallback {
         val result = Bundle().apply {
             putString("note", binding.edtNote.text.toString().trim())
             putParcelable("item", item)
+            putBoolean("isOrderNote",isOrderNote)
             putParcelableArrayList("cartList", cartList)
             headerItemPosition?.let { putInt("headerPos", it) }
         }
+
         setFragmentResult("request_key_note", result)
         findNavController().navigateUp()
     }

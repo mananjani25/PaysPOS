@@ -34,6 +34,14 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
             Log.d(TAG, "onMessageReceived: type : $type")
             if (type == "Clock Out") {
                 var intent = Intent()
+                intent.putExtra("isAuto", false)
+                intent.action = SEND_CLOCKOUT_NOTIFICATION
+                prefProvider.setValueboolean("clockOutFromNoti", true)
+                sendBroadcast(intent)
+            } else if (type == "Auto Clockout") {
+                var intent = Intent()
+                intent.putExtra("isAuto", true)
+                intent.putExtra("message", remoteMessage.data["message"].toString())
                 intent.action = SEND_CLOCKOUT_NOTIFICATION
                 prefProvider.setValueboolean("clockOutFromNoti", true)
                 sendBroadcast(intent)

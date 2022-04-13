@@ -5,6 +5,9 @@ import android.graphics.Point
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.InsetDrawable
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
+import android.text.style.UnderlineSpan
 import android.view.*
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.setFragmentResult
@@ -66,9 +69,25 @@ class SendReceiptFragment : DialogFragment() {
         if (type == 1) {
             binding.edtPhoneNo.visible()
         } else if (type == 2) {
-            binding.edtEmail.visible()
+            binding.linearEditEmail?.visible()
         }
 
+        binding.edtEmail.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+                for (span in s!!.getSpans(0, s.length, UnderlineSpan::class.java)) {
+                    s.removeSpan(span)
+                }
+            }
+
+        })
         binding.imgBack.setOnClickListener {
             dismiss()
         }

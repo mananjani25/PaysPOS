@@ -34,6 +34,7 @@ import java.util.*
 class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountInterface,
     TextWatcher {
 
+    private var itemOrderDiscount: Double = 0.0
     private var itemPrice: Double = 0.0
     private var orderDiscountType: String = ""
     private var orderDiscountPrice: Double = 0.0
@@ -78,6 +79,7 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
         orderDiscount = requireArguments().getDouble("orderDiscount")
         isFromDetails = requireArguments().getBoolean("isFromDetails", false)
         val model: TbItem? = requireArguments().getParcelable("model")
+        itemOrderDiscount = requireArguments().getDouble("itemOrderDiscount")
         defaultModel = model ?: TbItem()
 
         if (defaultModel.modifiers.isNotEmpty()) {
@@ -88,7 +90,11 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
 
 
         itemPrice = (defaultModel.price * defaultModel.itemQuantity) + modifierPrice
-        itemPrice -= orderDiscount
+        if (isOrderDiscount) {
+            itemPrice -= orderDiscount
+        } else {
+            itemPrice -= itemOrderDiscount
+        }
 
         selectedCurrency = orderDiscountType
         if (selectedCurrency.isEmpty()) {
@@ -539,6 +545,8 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
 
             if (model.discountType == requireContext().getString(R.string.disc_percentage)) {
 
+                Log.e(TAG, "modelPercentagepercentage:  ${model.percentage}")
+                Log.e(TAG, "modelPercentagetotalOrderPrice  ${totalOrderPrice}")
                 val percentage = (totalOrderPrice * model.percentage) / 100
 
                 if (percentage <= totalOrderPrice) {
@@ -549,6 +557,8 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
                 }
 
             } else {
+                Log.e(TAG, "modelpercentage:  ${model.percentage}")
+                Log.e(TAG, "modeltotalOrderPrice  ${totalOrderPrice}")
                 if (model.percentage <= totalOrderPrice) {
 
                     setData(model, pos)
@@ -563,6 +573,8 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
         } else {
 
             if (model.discountType == requireContext().getString(R.string.disc_percentage)) {
+                Log.e(TAG, "modelPercentagepercentage:  ${model.percentage}")
+                Log.e(TAG, "modelPercentagetotalOrderPrice  ${itemPrice}")
 
                 val percentage = (itemPrice * model.percentage) / 100
 
@@ -573,6 +585,8 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
 
                 }
             } else {
+                Log.e(TAG, "modelpercentage:  ${model.percentage}")
+                Log.e(TAG, "modeltotalOrderPrice  ${itemPrice}")
                 if (model.percentage <= itemPrice) {
 
                     setData(model, pos)

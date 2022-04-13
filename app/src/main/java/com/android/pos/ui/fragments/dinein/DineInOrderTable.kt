@@ -75,6 +75,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
     private var cartList: CartModel? = null
     private var dineInData: CreateOrderResponse.Data? = null
     private var orderId: Int? = null
+    private var order_note =""
     private var getOrderDetailsResponse: GetOrderDetailsResponse.Data? = null
     private val TAG = "DineInOrderTable"
     private lateinit var dineInTableAdapter: DineInTableAdapter
@@ -281,6 +282,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             var offlineId = randomOfflineId()
 
             cartList = getCartModel(adapterList.toCollection(arrayListOf()))
+            cartList?.note = order_note
             viewModelPayment.addCart(cartList!!)
 
             totalTax = 0.0
@@ -838,22 +840,22 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         taxGuest: Double,
         serviceChargeGuest: Double,
         divideDiscount: Double,
-        dividedGuestAmt:Double
+        dividedGuestAmt: Double
     ) {
 
         //New Drag and Drop
 
-        Log.e("TODAYBOLD","subTotalB  ${subTotalGuest + dividedGuestAmt}")
-        Log.e("TODAYBOLD","totalGuest ${totalGuest}")
-        Log.e("TODAYBOLD","taxGuest ${taxGuest}")
-        Log.e("TODAYBOLD","serviceChargeGuest  ${serviceChargeGuest}")
-        Log.e("TODAYBOLD","divideDiscount ${divideDiscount}")
+        Log.e("TODAYBOLD", "subTotalB  ${subTotalGuest + dividedGuestAmt}")
+        Log.e("TODAYBOLD", "totalGuest ${totalGuest}")
+        Log.e("TODAYBOLD", "taxGuest ${taxGuest}")
+        Log.e("TODAYBOLD", "serviceChargeGuest  ${serviceChargeGuest}")
+        Log.e("TODAYBOLD", "divideDiscount ${divideDiscount}")
         val bundle = Bundle()
-        bundle.putDouble("subTotalB",subTotalGuest + dividedGuestAmt)
-        bundle.putDouble("totalB",totalGuest)
-        bundle.putDouble("totalTaxB",taxGuest)
-        bundle.putDouble("serviceChargeB",serviceChargeGuest)
-        bundle.putDouble("dicountB",divideDiscount)
+        bundle.putDouble("subTotalB", subTotalGuest + dividedGuestAmt)
+        bundle.putDouble("totalB", totalGuest)
+        bundle.putDouble("totalTaxB", taxGuest)
+        bundle.putDouble("serviceChargeB", serviceChargeGuest)
+        bundle.putDouble("dicountB", divideDiscount)
 
 
         val adapterList = dineInTableAdapter.getList()
@@ -1203,6 +1205,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         viewModel.Basedata.observe(viewLifecycleOwner, { event ->
             event.getContentIfNotHandled()?.let { baseResponse ->
                 if (baseResponse != null) {
+                    order_note = baseResponse.note
                     //Manan's Code
                     //for Merge Icon
                     if (baseResponse.floorPlanTable.status == MERGEDANDOCCUPIED) {

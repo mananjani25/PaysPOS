@@ -27,9 +27,9 @@
                 android:fontFamily="@font/sf_pro_display_medium"
                 android:lines="1"
                 android:maxLines="1"
-                tools:text="SnacksSnacksSnacksSnacks"
                 android:textColor="@color/txtColor"
-                android:textSize="@dimen/_6mdpi" />
+                android:textSize="@dimen/_6mdpi"
+                tools:text="SnacksSnacksSnacksSnacks" />
 
             <TextView
                 android:id="@+id/txtCat"

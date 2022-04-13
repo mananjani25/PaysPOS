@@ -248,13 +248,27 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
         }
 
         binding.txtAddDiscount.setOnClickListener {
+            var totalItemswithQuantity = 0
 
+            cartList.get(0).items?.forEach {
+                totalItemswithQuantity += it.itemQuantity
+
+            }
+            var perItemDiscount = 0.0
+            if (cartList[0].discountPrice != 0.0) {
+                perItemDiscount =
+                    MethodUtils.roundOffAmountDouble(cartList[0].discountPrice / totalItemswithQuantity)
+            }
+
+            Log.e(TAG, "totalItemswithQuantity  ${totalItemswithQuantity}")
+            Log.e(TAG, "perItemDiscount  ${perItemDiscount}")
             val bundle = Bundle().apply {
                 putDouble("orderDiscount", cartList[0].discountPrice)
                 putBoolean("isFromDetails", true)
                 putParcelable("model", item)
+                putDouble("itemOrderDiscount", perItemDiscount)
             }
-            //
+
             findNavController().navigate(
                 R.id.action_dashboardCategoryBoldPOS_to_addDiscountDialog,
                 bundle
