@@ -21,10 +21,6 @@
             android:id="@+id/header"
             layout="@layout/view_header_toolbar_inventory" />
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="@color/view" />
 
         <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"

@@ -15,325 +15,336 @@
             type="com.android.pos.ui.fragments.settings.tax.CreateTaxViewModel" />
     </data>
 
-    <androidx.core.widget.NestedScrollView
+    <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/bg_color"
         android:orientation="vertical">
 
-        <LinearLayout
+        <include
+            android:id="@+id/header"
+            layout="@layout/view_header_toolbar" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/view" />
+
+        <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:background="@color/bg_color"
             android:orientation="vertical">
 
-            <include
-                android:id="@+id/header"
-                layout="@layout/view_header_toolbar" />
-
-            <View
+            <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="@color/view" />
-
-
-
-            <androidx.appcompat.widget.LinearLayoutCompat
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/_50sdp"
-                android:layout_marginTop="@dimen/_25sdp"
-                android:layout_marginEnd="@dimen/_50sdp"
-                android:layout_marginBottom="@dimen/_10sdp"
+                android:layout_height="match_parent"
                 android:orientation="vertical">
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:background="@color/view" />
+
+
 
 
 
                 <androidx.appcompat.widget.LinearLayoutCompat
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:paddingVertical="@dimen/_5sdp"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_weight="1"
-                        android:elevation="@dimen/_10sdp"
-                        android:fontFamily="@font/sf_pro_display_semibold"
-                        android:gravity="start"
-                        android:padding="@dimen/_5sdp"
-                        android:text="@string/tv_enable_default_tax"
-                        android:textColor="@color/txtColor"
-                        android:textSize="@dimen/_7sdp" />
+                    android:layout_marginStart="@dimen/_50sdp"
+                    android:layout_marginTop="@dimen/_25sdp"
+                    android:layout_marginEnd="@dimen/_50sdp"
+                    android:layout_marginBottom="@dimen/_10sdp"
+                    android:orientation="vertical">
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@color/view" />
 
 
-                    <com.google.android.material.switchmaterial.SwitchMaterial
-                        android:id="@+id/swtEnableTax"
-                        style="@style/AppTheme"
-                        android:layout_width="@dimen/_20sdp"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:scaleX="1.5"
-                        android:scaleY="1.5"
-                        android:checked="true"
-                        android:layout_marginRight="@dimen/_15sdp"
-                        android:onCheckedChanged="@{(button, bool)-> createTaxFragment.enableTax(bool)}"
-                        android:showText="false"
-                        android:thumb="@drawable/custom_thumb_printer_active_switch"
-                        android:visibility="visible"
-                        app:srcCompat="@drawable/ic_arrow_forward"
-                        app:thumbTint="@color/switch_thumb_selector"
-                        app:track="@drawable/custom_switch_track_printer"
-                        app:trackTint="@color/switch_track_tint"
-                        tools:ignore="UseSwitchCompatOrMaterialXml" />
 
-                </androidx.appcompat.widget.LinearLayoutCompat>
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:background="@color/view" />
-
-                <androidx.appcompat.widget.LinearLayoutCompat
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="@dimen/_5sdp"
-                    android:background="@drawable/background_square_border_grey"
-                    android:orientation="horizontal">
-
-                    <androidx.appcompat.widget.AppCompatEditText
-                        android:id="@+id/etName"
-                        style="@style/CustomFontSemiBold"
+                    <androidx.appcompat.widget.LinearLayoutCompat
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:padding="@dimen/_9sdp"
-                        android:background="@null"
-                        android:digits="@string/disable_emoji_string"
-                        android:hint="@string/add_tax_name_"
-                        android:imeOptions="actionNext"
-                        android:inputType="textVisiblePassword"
-                        android:paddingStart="@dimen/_10sdp"
-                        android:text="@={viewModel.createTaxDetails.name}"
-                        android:textColor="@color/txtColor"
-                        android:textColorHint="@color/hintColor"
-                        android:textSize="@dimen/_6mdpi" />
+                        android:paddingVertical="@dimen/_5sdp"
+                        android:orientation="horizontal">
 
-                </androidx.appcompat.widget.LinearLayoutCompat>
-                <androidx.appcompat.widget.LinearLayoutCompat
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:gravity="center_vertical"
-                    android:layout_marginTop="@dimen/_10sdp"
-                    android:background="@drawable/background_square_border_grey"
-                    android:orientation="horizontal">
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_weight="1"
+                            android:elevation="@dimen/_10sdp"
+                            android:fontFamily="@font/sf_pro_display_semibold"
+                            android:gravity="start"
+                            android:padding="@dimen/_5sdp"
+                            android:text="@string/tv_enable_default_tax"
+                            android:textColor="@color/txtColor"
+                            android:textSize="@dimen/_7sdp" />
+
+
+                        <com.google.android.material.switchmaterial.SwitchMaterial
+                            android:id="@+id/swtEnableTax"
+                            style="@style/AppTheme"
+                            android:layout_width="@dimen/_20sdp"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:scaleX="1.5"
+                            android:scaleY="1.5"
+                            android:checked="true"
+                            android:layout_marginRight="@dimen/_15sdp"
+                            android:onCheckedChanged="@{(button, bool)-> createTaxFragment.enableTax(bool)}"
+                            android:showText="false"
+                            android:thumb="@drawable/custom_thumb_printer_active_switch"
+                            android:visibility="visible"
+                            app:srcCompat="@drawable/ic_arrow_forward"
+                            app:thumbTint="@color/switch_thumb_selector"
+                            app:track="@drawable/custom_switch_track_printer"
+                            app:trackTint="@color/switch_track_tint"
+                            tools:ignore="UseSwitchCompatOrMaterialXml" />
+
+                    </androidx.appcompat.widget.LinearLayoutCompat>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@color/view" />
+
                     <androidx.appcompat.widget.LinearLayoutCompat
-                        android:layout_width="0dp"
-                        android:layout_weight="8.5"
-                        android:orientation="horizontal"
-                        android:layout_height="@dimen/_25sdp">
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/_5sdp"
+                        android:background="@drawable/background_square_border_grey"
+                        android:orientation="horizontal">
 
                         <androidx.appcompat.widget.AppCompatEditText
-                            android:id="@+id/edtAmount"
+                            android:id="@+id/etName"
                             style="@style/CustomFontSemiBold"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:padding="@dimen/_9sdp"
                             android:background="@null"
                             android:digits="@string/disable_emoji_string"
-                            android:hint="@string/add_tax__percentage_"
+                            android:hint="@string/add_tax_name_"
                             android:imeOptions="actionNext"
-                            android:inputType="number"
+                            android:inputType="textVisiblePassword"
                             android:paddingStart="@dimen/_10sdp"
+                            android:text="@={viewModel.createTaxDetails.name}"
                             android:textColor="@color/txtColor"
                             android:textColorHint="@color/hintColor"
                             android:textSize="@dimen/_6mdpi" />
 
                     </androidx.appcompat.widget.LinearLayoutCompat>
-
-                    <com.google.android.material.switchmaterial.SwitchMaterial
-                        android:id="@+id/swtTaxType"
-                        style="@style/AppTheme"
-                        android:layout_width="wrap_content"
+                    <androidx.appcompat.widget.LinearLayoutCompat
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:scaleX="1.5"
-                        android:scaleY="1.5"
-                        app:switchPadding="@dimen/_5sdp"
-                        android:textSize="@dimen/_5sdp"
-                        android:text="Percentage"
-                        android:layout_marginRight="@dimen/_17sdp"
+                        android:layout_gravity="center_vertical"
                         android:gravity="center_vertical"
-                        android:textColor="@color/txtColor"
-                        android:onCheckedChanged="@{(button, bool)-> createTaxFragment.taxType(bool)}"
-                        android:showText="true"
-                        android:thumb="@drawable/custom_thumb_printer_active_switch"
-                        android:visibility="visible"
-                        app:srcCompat="@drawable/ic_arrow_forward"
-                        app:thumbTint="@color/switch_thumb_selector"
-                        app:track="@drawable/custom_switch_track_printer"
-                        app:trackTint="@color/switch_track_tint"
-                        tools:ignore="UseSwitchCompatOrMaterialXml" />
-
-                </androidx.appcompat.widget.LinearLayoutCompat>
-
-
-
-                <androidx.appcompat.widget.LinearLayoutCompat
-                    android:visibility="gone"
-                    android:id="@+id/llItemPricing"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_weight="1"
-                        android:elevation="@dimen/_10sdp"
-                        android:fontFamily="@font/sf_pro_display_semibold"
-                        android:gravity="start"
-                        android:padding="@dimen/_5sdp"
-                        android:text="@string/item_pricing"
-                        android:textColor="@color/txtColor"
-                        android:textSize="@dimen/_5mdpi" />
-
-                    <androidx.appcompat.widget.AppCompatTextView
-                        android:id="@+id/tvItemPricing"
-                        style="@style/CustomFontSemiBold"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:textColor="@color/txtColor"
-                        android:textSize="@dimen/_5mdpi" />
-
-                    <androidx.appcompat.widget.AppCompatImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentEnd="true"
-                        android:layout_gravity="center"
-                        android:layout_marginStart="@dimen/_5sdp"
-                        android:layout_marginEnd="@dimen/_5sdp"
-                        app:srcCompat="@drawable/ic_play" />
-                </androidx.appcompat.widget.LinearLayoutCompat>
-
-
-
-                <androidx.appcompat.widget.LinearLayoutCompat
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
                         android:layout_marginTop="@dimen/_10sdp"
-                        android:layout_marginBottom="@dimen/_5sdp"
-                        android:layout_weight="1"
-                        android:elevation="@dimen/_10sdp"
-                        android:fontFamily="@font/sf_pro_display_semibold"
-                        android:gravity="start"
-                        android:padding="@dimen/_5sdp"
-                        android:text="@string/tv_apply_tax_to"
-                        android:textColor="@color/txtColor"
-                        android:textSize="@dimen/_7mdpi" />
+                        android:background="@drawable/background_square_border_grey"
+                        android:orientation="horizontal">
+                        <androidx.appcompat.widget.LinearLayoutCompat
+                            android:layout_width="0dp"
+                            android:layout_weight="8.5"
+                            android:orientation="horizontal"
+                            android:layout_height="@dimen/_25sdp">
+
+                            <androidx.appcompat.widget.AppCompatEditText
+                                android:id="@+id/edtAmount"
+                                style="@style/CustomFontSemiBold"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:padding="@dimen/_9sdp"
+                                android:background="@null"
+                                android:digits="@string/disable_emoji_string"
+                                android:hint="@string/add_tax__percentage_"
+                                android:imeOptions="actionNext"
+                                android:inputType="number"
+                                android:paddingStart="@dimen/_10sdp"
+                                android:textColor="@color/txtColor"
+                                android:textColorHint="@color/hintColor"
+                                android:textSize="@dimen/_6mdpi" />
+
+                        </androidx.appcompat.widget.LinearLayoutCompat>
+
+                        <com.google.android.material.switchmaterial.SwitchMaterial
+                            android:id="@+id/swtTaxType"
+                            style="@style/AppTheme"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:scaleX="1.5"
+                            android:scaleY="1.5"
+                            app:switchPadding="@dimen/_5sdp"
+                            android:textSize="@dimen/_5sdp"
+                            android:text="Percentage"
+                            android:layout_marginRight="@dimen/_17sdp"
+                            android:gravity="center_vertical"
+                            android:textColor="@color/txtColor"
+                            android:onCheckedChanged="@{(button, bool)-> createTaxFragment.taxType(bool)}"
+                            android:showText="true"
+                            android:thumb="@drawable/custom_thumb_printer_active_switch"
+                            android:visibility="visible"
+                            app:srcCompat="@drawable/ic_arrow_forward"
+                            app:thumbTint="@color/switch_thumb_selector"
+                            app:track="@drawable/custom_switch_track_printer"
+                            app:trackTint="@color/switch_track_tint"
+                            tools:ignore="UseSwitchCompatOrMaterialXml" />
+
+                    </androidx.appcompat.widget.LinearLayoutCompat>
+
+
+
+                    <androidx.appcompat.widget.LinearLayoutCompat
+                        android:visibility="gone"
+                        android:id="@+id/llItemPricing"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_weight="1"
+                            android:elevation="@dimen/_10sdp"
+                            android:fontFamily="@font/sf_pro_display_semibold"
+                            android:gravity="start"
+                            android:padding="@dimen/_5sdp"
+                            android:text="@string/item_pricing"
+                            android:textColor="@color/txtColor"
+                            android:textSize="@dimen/_5mdpi" />
+
+                        <androidx.appcompat.widget.AppCompatTextView
+                            android:id="@+id/tvItemPricing"
+                            style="@style/CustomFontSemiBold"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:textColor="@color/txtColor"
+                            android:textSize="@dimen/_5mdpi" />
+
+                        <androidx.appcompat.widget.AppCompatImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentEnd="true"
+                            android:layout_gravity="center"
+                            android:layout_marginStart="@dimen/_5sdp"
+                            android:layout_marginEnd="@dimen/_5sdp"
+                            app:srcCompat="@drawable/ic_play" />
+                    </androidx.appcompat.widget.LinearLayoutCompat>
+
+
+
+                    <androidx.appcompat.widget.LinearLayoutCompat
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_marginTop="@dimen/_10sdp"
+                            android:layout_marginBottom="@dimen/_5sdp"
+                            android:layout_weight="1"
+                            android:elevation="@dimen/_10sdp"
+                            android:fontFamily="@font/sf_pro_display_semibold"
+                            android:gravity="start"
+                            android:padding="@dimen/_5sdp"
+                            android:text="@string/tv_apply_tax_to"
+                            android:textColor="@color/txtColor"
+                            android:textSize="@dimen/_7mdpi" />
+                    </androidx.appcompat.widget.LinearLayoutCompat>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="0.5dp"
+                        android:background="@color/view" />
+
+                    <androidx.appcompat.widget.LinearLayoutCompat
+                        android:layout_width="match_parent"
+                        android:visibility="gone"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_weight="1"
+                            android:elevation="@dimen/_10sdp"
+                            android:fontFamily="@font/sf_pro_display_semibold"
+                            android:gravity="start"
+                            android:padding="@dimen/_5sdp"
+                            android:text="@string/tv_custom_amount"
+                            android:textColor="@color/txtColor"
+                            android:textSize="@dimen/_5mdpi" />
+
+                        <androidx.appcompat.widget.SwitchCompat
+                            android:id="@+id/swtCustomAmount"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentEnd="true"
+                            android:layout_gravity="center"
+                            android:checked="false"
+                            android:onCheckedChanged="@{(button, bool)-> createTaxFragment.customAmount(bool)}"
+                            android:padding="@dimen/_5sdp"
+                            app:theme="@style/AppTheme" />
+                    </androidx.appcompat.widget.LinearLayoutCompat>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@color/view" />
+
+                    <androidx.appcompat.widget.LinearLayoutCompat
+                        android:id="@+id/llAllItemsDialog"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_weight="1"
+                            android:elevation="@dimen/_10sdp"
+                            android:fontFamily="@font/sf_pro_display_semibold"
+                            android:gravity="start"
+                            android:padding="@dimen/_5sdp"
+                            android:text="@string/tv_items"
+                            android:textColor="@color/txtColor"
+                            android:textSize="@dimen/_5mdpi" />
+
+                        <androidx.appcompat.widget.AppCompatTextView
+                            android:id="@+id/itemsCount"
+                            style="@style/CustomFontSemiBold"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:text=""
+                            android:textColor="@color/txtColor"
+                            android:textSize="@dimen/_5mdpi" />
+
+                        <androidx.appcompat.widget.AppCompatImageView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_alignParentEnd="true"
+                            android:layout_gravity="center"
+                            android:layout_marginStart="@dimen/_5sdp"
+                            android:layout_marginEnd="@dimen/_5sdp"
+                            app:srcCompat="@drawable/ic_play" />
+                    </androidx.appcompat.widget.LinearLayoutCompat>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@color/view" />
+
+
                 </androidx.appcompat.widget.LinearLayoutCompat>
 
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="0.5dp"
-                    android:background="@color/view" />
-
-                <androidx.appcompat.widget.LinearLayoutCompat
-                    android:layout_width="match_parent"
-                    android:visibility="gone"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_weight="1"
-                        android:elevation="@dimen/_10sdp"
-                        android:fontFamily="@font/sf_pro_display_semibold"
-                        android:gravity="start"
-                        android:padding="@dimen/_5sdp"
-                        android:text="@string/tv_custom_amount"
-                        android:textColor="@color/txtColor"
-                        android:textSize="@dimen/_5mdpi" />
-
-                    <androidx.appcompat.widget.SwitchCompat
-                        android:id="@+id/swtCustomAmount"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentEnd="true"
-                        android:layout_gravity="center"
-                        android:checked="false"
-                        android:onCheckedChanged="@{(button, bool)-> createTaxFragment.customAmount(bool)}"
-                        android:padding="@dimen/_5sdp"
-                        app:theme="@style/AppTheme" />
-                </androidx.appcompat.widget.LinearLayoutCompat>
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:background="@color/view" />
-
-                <androidx.appcompat.widget.LinearLayoutCompat
-                    android:id="@+id/llAllItemsDialog"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:layout_weight="1"
-                        android:elevation="@dimen/_10sdp"
-                        android:fontFamily="@font/sf_pro_display_semibold"
-                        android:gravity="start"
-                        android:padding="@dimen/_5sdp"
-                        android:text="@string/tv_items"
-                        android:textColor="@color/txtColor"
-                        android:textSize="@dimen/_5mdpi" />
-
-                    <androidx.appcompat.widget.AppCompatTextView
-                        android:id="@+id/itemsCount"
-                        style="@style/CustomFontSemiBold"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center"
-                        android:text=""
-                        android:textColor="@color/txtColor"
-                        android:textSize="@dimen/_5mdpi" />
-
-                    <androidx.appcompat.widget.AppCompatImageView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentEnd="true"
-                        android:layout_gravity="center"
-                        android:layout_marginStart="@dimen/_5sdp"
-                        android:layout_marginEnd="@dimen/_5sdp"
-                        app:srcCompat="@drawable/ic_play" />
-                </androidx.appcompat.widget.LinearLayoutCompat>
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:background="@color/view" />
+            </LinearLayout>
+        </androidx.core.widget.NestedScrollView>
 
 
-            </androidx.appcompat.widget.LinearLayoutCompat>
+    </androidx.appcompat.widget.LinearLayoutCompat>
 
-        </LinearLayout>
-    </androidx.core.widget.NestedScrollView>
 </layout>

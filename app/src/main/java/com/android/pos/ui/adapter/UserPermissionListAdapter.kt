@@ -7,11 +7,15 @@ import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.data.entities.TeamRole
 import com.android.pos.data.model.responseModel.GetUserPermissionListResponse
 import com.android.pos.databinding.ViewUserPermissionItemBinding
+import com.android.pos.utils.callback.ItemCallback
 
 class UserPermissionListAdapter : RecyclerView.Adapter<UserPermissionListAdapter.MyViewHolder>() {
 
     private val permissionList = ArrayList<TeamRole>()
-
+    private var mCallback: ItemCallback? = null
+    fun setCallback(callback: ItemCallback) {
+        mCallback = callback
+    }
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
@@ -26,7 +30,7 @@ class UserPermissionListAdapter : RecyclerView.Adapter<UserPermissionListAdapter
         val itemBinding = holder.tipItemBinding
         itemBinding.permissionListModel = permissionList[position]
 
-        itemBinding.imgArrow.visibility = View.VISIBLE
+        itemBinding.imgArrow.visibility = View.GONE
 
         itemBinding.executePendingBindings()
     }
@@ -46,5 +50,11 @@ class UserPermissionListAdapter : RecyclerView.Adapter<UserPermissionListAdapter
     }
 
     inner class MyViewHolder(val tipItemBinding: ViewUserPermissionItemBinding) :
-        RecyclerView.ViewHolder(tipItemBinding.root)
+        RecyclerView.ViewHolder(tipItemBinding.root){
+            init {
+                tipItemBinding.layoutMenu.imgOrderMenu.setOnClickListener {
+                    mCallback?.onItemClickListener(it, bindingAdapterPosition)
+                }
+            }
+        }
 }
