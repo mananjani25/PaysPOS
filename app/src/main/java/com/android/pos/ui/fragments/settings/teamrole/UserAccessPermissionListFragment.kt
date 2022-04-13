@@ -248,24 +248,18 @@ class UserAccessPermissionListFragment : Fragment() ,ItemCallback{
                 }
                 R.id.menu_delete -> {
                     activity?.let {
-                        AlertUtils.showCustomAlertWithListener(
-                            it, getString(R.string.delete_item_message)
-                        ) { _, _ ->
-
-                            alert(
-                                getString(R.string.app_name),
-                                getString(R.string.delete_employee_role_message)
-                            ) {
-                                positiveButton(getString(R.string.tv_delete)) {
-                                    // Do positive stuff here
-                                    userPermissionObject = userPermissionListAdapter.getItem(pos)
-                                    viewModel.delete(userPermissionListAdapter.getItem(pos).id)
-                                }
-                                negativeButton(R.string.tv_cancel) {
-                                    // Do negative stuff here
-                                }
+                        alert(
+                            getString(R.string.app_name),
+                            getString(R.string.delete_employee_role_message)
+                        ) {
+                            positiveButton(getString(R.string.tv_delete)) {
+                                // Do positive stuff here
+                                userPermissionObject = userPermissionListAdapter.getItem(pos)
+                                viewModel.delete(userPermissionListAdapter.getItem(pos).id)
                             }
-
+                            negativeButton(R.string.tv_cancel) {
+                                // Do negative stuff here
+                            }
                         }
                     }
                 }
