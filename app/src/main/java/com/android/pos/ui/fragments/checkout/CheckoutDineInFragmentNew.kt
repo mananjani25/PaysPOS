@@ -743,7 +743,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                 "%.2f",
                 getCalCashDiscWithAmount(WholetotalPrice, false) / isSelectedCount
             ).toDouble()
-           makePaymentCreditCard()
+            makePaymentCreditCard()
             /*if (device == 0) {
                 magtekPaymentCall()
             } else {
@@ -1934,7 +1934,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
 
 
                 orderId?.let { bundle.putInt("orderID", it) }
-               // bundle.putParcelable("receiptData", it.data)
+                // bundle.putParcelable("receiptData", it.data)
                 bundle.putInt("splitValue", isSelectedCount)
                 bundle.putBoolean("isSplitByAmount", false)
                 bundle.putString("paymentType", "Card")

@@ -1,6 +1,7 @@
 package com.android.pos.ui.fragments.payment
 
 
+import android.content.Context
 import android.content.Context.WINDOW_SERVICE
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -124,6 +125,13 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
     private var tipsList: List<GetTipReponse.Data> = listOf()
     private lateinit var splitAdapter: SplitListAdapter
 
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+
+
+
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -131,6 +139,14 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
     ): View? {
         binding = FragmentOrderCompletBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = this
+
+        if (requireArguments().getBoolean("isSpilt")) {
+            observeSplitList()
+        } else {
+            prefProvider.setValue(Constants.SPLIT_PAY_AMOUNT, "")
+        }
+        getKitchenReceiptSettings()
+
         observeTipsList()
 
         findNavController().currentBackStackEntry?.savedStateHandle?.getLiveData<Bundle>("data")
@@ -149,12 +165,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         binding.rvSplits.adapter = splitAdapter
         noCashAdjGlobal =
             MethodUtils.roundOffAmountDouble(requireArguments().getDouble("noCashAdj"))
-        if (requireArguments().getBoolean("isSpilt")) {
-            observeSplitList()
-        } else {
-            prefProvider.setValue(Constants.SPLIT_PAY_AMOUNT, "")
-        }
-        getKitchenReceiptSettings()
+
         return binding.root
     }
 
@@ -3252,12 +3263,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                 "isFromActiveOrder"
                             )
                         ) {*/
-                        Log.e(
-                            TAG,
-                            "customerReceiptdeliveryType:  ${receiptModel?.order?.deliveryType}"
-                        )
-                        Log.e(TAG, "getSplitSize:  ${splitList.size}")
-                        Log.e(TAG, "getSplitISSplit :${isSpilt}")
+
                         val remain = requireArguments().getDouble("remainingAmount")
                         Log.e(TAG, "remainAMount  ${remain}")
 
