@@ -81,7 +81,7 @@
 
             <AutoCompleteTextView
                 android:id="@+id/edtSearch"
-                style="@style/CustomFontSemiBold"
+                android:fontFamily="@font/sf_pro_display_regular"
                 android:layout_width="wrap_content"
                 android:layout_height="@dimen/_18sdp"
                 android:layout_centerVertical="true"
@@ -92,18 +92,18 @@
                 android:background="@null"
                 android:drawableStart="@drawable/search_icon_small"
                 android:drawablePadding="@dimen/_5sdp"
+                android:dropDownWidth="@dimen/_120sdp"
                 android:ellipsize="end"
                 android:gravity="center"
                 android:hint="Search by item"
                 android:imeOptions="actionDone"
                 android:inputType="text"
                 android:lines="1"
-                android:dropDownWidth="@dimen/_120sdp"
                 android:maxWidth="@dimen/_100sdp"
                 android:maxLines="1"
                 android:padding="@dimen/_5sdp"
                 android:textColor="@color/txtColor"
-                android:textColorHint="@color/searchHintColor"
+                android:textColorHint="@color/hint_color"
                 android:textSize="@dimen/_7mdpi" />
 
             <TextView

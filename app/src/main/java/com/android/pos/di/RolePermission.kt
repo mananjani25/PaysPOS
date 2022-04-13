@@ -56,7 +56,7 @@ class RolePermission @Inject constructor(
         return if (permission) {
             true
         } else {
-            root?.showAlert("You do not have Permission to Access this Feature.")
+            root?.showAlert("You do not have permission to access this feature.")
             false
         }
     }

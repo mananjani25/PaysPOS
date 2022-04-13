@@ -933,6 +933,9 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
 
     private fun tipAmountCalculation() {
         if (tipAmount == 0.00) {
+            binding.tvsplittip?.gone()
+            binding.tvtipcard?.gone()
+            binding.tvtipcash?.gone()
             MethodUtils.setPriceTextView(
                 binding.tvCash,
                 getCalCashDiscWithAmount(WholetotalPrice, true) / isSelectedCount
@@ -967,9 +970,13 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
                 (getCalCashDiscWithAmount(WholetotalPrice, false) / isSelectedCount) + tipAmount
             )
             binding.tvCash.text =
-                "Cash (" + binding.tvCash.text + ") (" + MethodUtils.roundOffAmount(tipAmount) + " Tip Added)"
+                "Cash (" + binding.tvCash.text + ")"
+            binding.tvtipcash?.visible()
+            binding.tvtipcash?.text = "(" + MethodUtils.roundOffAmount(tipAmount) + " Tip Added)"
             binding.tvCard.text =
-                "Card (" + binding.tvCard.text + ") (" + MethodUtils.roundOffAmount(tipAmount) + " Tip Added)"
+                "Card (" + binding.tvCard.text + ")"
+            binding.tvtipcard?.visible()
+            binding.tvtipcard?.text = "(" + MethodUtils.roundOffAmount(tipAmount) + " Tip Added)"
             MethodUtils.getCashPaymentOptionList(
                 (getCalCashDiscWithAmount(WholetotalPrice, true) / isSelectedCount) + tipAmount,
                 binding.tvCash1,
@@ -983,7 +990,9 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
                 ) / isSelectedCount) + tipAmount
             )
             binding.tvAmount.text =
-                binding.tvAmount.text.toString() + " (" + tipAmount + " Tip Added)"
+                binding.tvAmount.text.toString()
+            binding.tvsplittip?.visible()
+            binding.tvsplittip?.text = "(" + MethodUtils.roundOffAmount(tipAmount) + " Tip Added)"
         }
     }
 
@@ -1012,6 +1021,7 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
 
     private fun tipsetupGlobal(tipAmount: Double, isSelectCount: Int) {
         if (tipAmount == 0.0) {
+            binding.tvsplittip?.gone()
             MethodUtils.setPriceTextView(
                 binding.tvAmount,
                 getCalCashDiscWithAmount(
@@ -1026,7 +1036,9 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
                 ) / isSelectCount) + tipAmount
             )
             binding.tvAmount.text =
-                binding.tvAmount.text.toString() + " (" + MethodUtils.roundOffAmount(tipAmount) + " Tip Added)"
+                binding.tvAmount.text.toString()
+            binding.tvsplittip?.visible()
+            binding.tvsplittip?.text = "(" + MethodUtils.roundOffAmount(tipAmount) + " Tip Added)"
         }
     }
 
