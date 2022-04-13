@@ -80,7 +80,7 @@ class PaymentBoldPosFragment : Fragment() {
 
         ) {
 
-            val isGuest = requireArguments().getBoolean("isGuestPay")
+            val isGuest = arguments?.getBoolean("isGuestPay") ?: false
             if (isGuest) {
                 dineinCartPaymentModel =
                     requireArguments().getParcelable<DineinCartPaymentModel>("dineinPaymentModel")
