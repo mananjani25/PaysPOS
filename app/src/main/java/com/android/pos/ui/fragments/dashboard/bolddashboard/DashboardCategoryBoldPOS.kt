@@ -201,7 +201,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
             val note = bundle.getString("note")
             val isOrderNote = bundle.getBoolean("isOrderNote")
             val singleItem = bundle.getParcelable<TbItem>("item")
-           // val cartList = bundle.getParcelableArrayList<CartModel>("cartList")
+            // val cartList = bundle.getParcelableArrayList<CartModel>("cartList")
             var dineInArrayList: List<DineInModel>? = null
 /*
             if (prefProvider.getValue(
@@ -216,10 +216,11 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
 */
 
 
-            if(isOrderNote){
-                cartList[0].note = note.toString()
-                viewModel.addCart(cartList[0])
-            }else{
+            if (isOrderNote) {
+                viewModel.addOrderNote(note.toString())
+               /* cartList[0].note = note.toString()
+                viewModel.addCart(cartList[0])*/
+            } else {
                 singleItem?.note = note.toString()
                 singleItem?.let {
                     dineInArrayList?.let { it1 ->
@@ -341,7 +342,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
             findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_paymentBoldPosFragment)
         } else {
             loadCartFragment(CartFragment(this, this))
-            loadCategoryFragment(CategoryFragment(this,binding.layoutHeader.edtSearch))
+            loadCategoryFragment(CategoryFragment(this, binding.layoutHeader.edtSearch))
         }
         binding.layoutHeader.txtUserName.text =
             prefProvider.getValue(EMPLOYEE_NAME, "")
@@ -423,7 +424,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
         binding.layoutHeaderCheckout.imgDrawer.setOnClickListener {
             binding.layoutHeaderCheckout.rlRoot.visibility = View.GONE
             binding.layoutHeader.rlRoot.visibility = View.VISIBLE
-            loadCategoryFragment(CategoryFragment(this,binding.layoutHeader.edtSearch))
+            loadCategoryFragment(CategoryFragment(this, binding.layoutHeader.edtSearch))
         }
 
         binding.layoutHeader.imgSync.setOnClickListener {
@@ -470,6 +471,11 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
     override fun onItemSelected(item: TbItem) {
         Log.e(TAG, "getitem:  ${Gson().toJson(item)}")
         Log.e(TAG, "OrderTYpe:  ${prefProvider.getValue(ORDER_TYPE, TAKEOUT)}")
+        Log.e(TAG, "dineInHeaderPosition  ${viewModel.dineInHeaderPosition}")
+        Log.e(
+            TAG,
+            "dineInHeaderdineInSelectedItemHeaderPos  ${viewModel.dineInSelectedItemHeaderPos}"
+        )
 
         if (item.modifier_set_ids.isNotEmpty() || item.variationsAttributes.isNotEmpty()) {
             val fragment = AddItemFragment.newInstance(item, this, cartList, false)
@@ -484,9 +490,11 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
             if (cartList.size > 0) {
 
                 if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == Constants.DINE_IN) {
-                    if(cartList[0].dineInList!!.isNotEmpty()){
+                    Log.e(TAG,"dineInCartListData:  ${Gson().toJson(cartList[0].dineInList)}")
+                    if (cartList[0].dineInList!!.isNotEmpty()) {
                         var dineInList = cartList[0].dineInList
                         dineInList!![0]?.selectedPosition = viewModel.dineInHeaderPosition
+                        Log.e("Dinerrer", "Dinerrer")
                         viewModel.cartLogic(
                             cartList,
                             item,
@@ -505,7 +513,15 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
 
 
     override fun onCancelItemSelected() {
-        loadCategoryFragment(CategoryFragment(this,binding.layoutHeader.edtSearch))
+        Log.e(TAG, "dineInHeaderPosition  ${viewModel.dineInHeaderPosition}")
+        Log.e(
+            TAG,
+            "dineInHeaderdineInSelectedItemHeaderPos  ${viewModel.dineInSelectedItemHeaderPos}"
+        )
+        if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == DINE_IN){
+
+        }
+        loadCategoryFragment(CategoryFragment(this, binding.layoutHeader.edtSearch))
 
     }
 

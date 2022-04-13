@@ -1,6 +1,7 @@
 package com.android.pos.ui.fragments.payment
 
 
+import android.content.Context
 import android.content.Context.WINDOW_SERVICE
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -124,6 +125,13 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
     private var tipsList: List<GetTipReponse.Data> = listOf()
     private lateinit var splitAdapter: SplitListAdapter
 
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+
+
+
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -131,6 +139,14 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
     ): View? {
         binding = FragmentOrderCompletBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = this
+
+        if (requireArguments().getBoolean("isSpilt")) {
+            observeSplitList()
+        } else {
+            prefProvider.setValue(Constants.SPLIT_PAY_AMOUNT, "")
+        }
+        getKitchenReceiptSettings()
+
         observeTipsList()
 
         findNavController().currentBackStackEntry?.savedStateHandle?.getLiveData<Bundle>("data")
@@ -149,12 +165,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         binding.rvSplits.adapter = splitAdapter
         noCashAdjGlobal =
             MethodUtils.roundOffAmountDouble(requireArguments().getDouble("noCashAdj"))
-        if (requireArguments().getBoolean("isSpilt")) {
-            observeSplitList()
-        } else {
-            prefProvider.setValue(Constants.SPLIT_PAY_AMOUNT, "")
-        }
-        getKitchenReceiptSettings()
+
         return binding.root
     }
 
@@ -1946,7 +1957,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 builder.addFeedLine(1)
 
                 builder.addTextFont(Builder.FONT_E)
-                builder.addTextAlign(Builder.ALIGN_LEFT)
+                builder.addTextAlign(Builder.ALIGN_CENTER)
                 builder.addTextLang(Builder.LANG_EN)
                 builder.addTextSize(1, 1)
                 builder.addTextStyle(
@@ -3252,12 +3263,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                 "isFromActiveOrder"
                             )
                         ) {*/
-                        Log.e(
-                            TAG,
-                            "customerReceiptdeliveryType:  ${receiptModel?.order?.deliveryType}"
-                        )
-                        Log.e(TAG, "getSplitSize:  ${splitList.size}")
-                        Log.e(TAG, "getSplitISSplit :${isSpilt}")
+
                         val remain = requireArguments().getDouble("remainingAmount")
                         Log.e(TAG, "remainAMount  ${remain}")
 
@@ -4090,6 +4096,37 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 )
             }
 
+
+
+            if (receiptModel?.order?.payments?.isNotEmpty() == true) {
+                if (receiptModel?.order?.payments?.get(receiptModel?.order?.payments!!.size - 1)?.isLoyaltyApplied == true && receiptModel?.order?.payments!![receiptModel?.order?.payments!!.size  - 1].loyaltyUSedPoints != 0) {
+                    builder.addTextLineSpace(30)
+                    builder.addFeedUnit(30)
+                    builder.addTextFont(Builder.FONT_E)
+                    // builder.addTextAlign(Builder.ALIGN_LEFT)
+                    builder.addTextLang(Builder.LANG_EN)
+                    addCustomerTextSize(builder, customerSettingModel.fonts)
+                    builder.addTextStyle(
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.COLOR_1
+                    )
+
+                    builder.addText(
+                        padLine(
+                            "Used Loyalty Points",
+                            receiptModel?.order?.payments!![receiptModel?.order?.payments!!.size  - 1].loyaltyUSedPoints.toString(),
+                            if (customerSettingModel.fonts == LARGE) {
+                                24
+                            } else {
+                                48
+                            }
+                        )
+                    )
+                }
+            }
+
             builder.addTextLineSpace(30)
             builder.addFeedUnit(30)
 
@@ -4516,7 +4553,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             }
 
 
-            if (receiptModel?.order?.note != null && receiptModel?.order?.note != "" && customerSettingModel.showOrderNote) {
+            Log.e(TAG,"showOrderNote:  ${receiptModel?.order?.note}")
+            if (receiptModel?.order?.note != null && receiptModel?.order?.note != "" ) {
 
                 builder.addFeedLine(2)
                 builder.addTextFont(Builder.FONT_B)

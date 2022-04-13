@@ -210,6 +210,14 @@ class DashBoardCategoryViewModel @Inject constructor(
         }
     }
 
+    fun addOrderNote(note:String){
+        if (cartModel != null){
+            cartModel!!.note =note
+           addCart(cartModel!!)
+
+        }
+    }
+
     fun createEmptyCart(model: CartModel) {
         viewModelScope.launch {
             posRepository.createEmptyCart(model)

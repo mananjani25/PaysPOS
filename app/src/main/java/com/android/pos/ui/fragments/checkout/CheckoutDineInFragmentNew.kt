@@ -22,6 +22,8 @@ import com.android.pos.data.model.CheckOutDineInDataModel
 import com.android.pos.data.model.requestModel.*
 import com.android.pos.data.model.responseModel.GuestPaymentAttributes
 import com.android.pos.data.remote.Constants
+import com.android.pos.data.remote.Constants.DINE_IN_ADAPTER_LIST
+import com.android.pos.data.remote.Constants.PRINT_DATA_DINE_IN
 import com.android.pos.databinding.FragmentCheckoutDetailsNewBinding
 import com.android.pos.di.ApiModule1
 import com.android.pos.di.MagtekModule
@@ -123,21 +125,6 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
     private var custom_paymentAmount = 0.0
 
 
-    companion object {
-        fun newInstacne(
-            modelDineIn: CheckOutDineInDataModel
-        ): CheckoutDineInFragmentNew {
-            val frag = CheckoutDineInFragmentNew(modelDineIn)
-            val bundle = Bundle()
-            bundle.putParcelable("dineInModel", modelDineIn)
-
-            frag.arguments = bundle
-            Log.e(TAG, "modelDineInmodelDineIn:  ${Gson().toJson(modelDineIn)}")
-            return frag
-        }
-    }
-
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -157,11 +144,6 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
             mSessionManager.setDineInFragment(this)
 
         }
-
-
-
-
-
         return binding.root
     }
 
@@ -497,9 +479,12 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
 
                         bundle.putDouble("noCashAdj", cashDiscountSurcharge)
                         bundle.putBoolean("isFromActiveOrder", false)
-
+                        bundle.putParcelableArrayList(DINE_IN_ADAPTER_LIST,dineInDataModel.dineInAdapterList?.toCollection(
+                            arrayListOf()))
+                        bundle.putParcelable(PRINT_DATA_DINE_IN,dineInDataModel.dineInOrderDetails)
 
                         if (findNavController().currentDestination?.id == R.id.paymentBoldPosFragment) {
+
                             findNavController().navigate(
                                 R.id.action_paymentBoldPosFragment_to_orderComplete,
                                 bundle
@@ -574,6 +559,9 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
 
                         bundle.putDouble("noCashAdj", cashDiscountSurcharge)
                         bundle.putBoolean("isFromActiveOrder", false)
+                        bundle.putParcelableArrayList(DINE_IN_ADAPTER_LIST,dineInDataModel.dineInAdapterList?.toCollection(
+                            arrayListOf()))
+                        bundle.putParcelable(PRINT_DATA_DINE_IN,dineInDataModel.dineInOrderDetails)
 
                         if (findNavController().currentDestination?.id == R.id.paymentBoldPosFragment) {
                             findNavController().navigate(
@@ -1300,7 +1288,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                     SpitByOrderPaymentModel(listOf(paymentReq) as List<PaymentAttributes>)
                 )
 
-                paymentviewModel.splitByOrder(aa, false)
+                paymentviewModel.splitByOrder(aa, true)
             } else {
                 myRequest.completed_all_payments = isSelectedCount <= 1
                 paymentviewModel.submit(myRequest)
@@ -1876,9 +1864,11 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                 bundle.putBoolean("isGuestPaymentTotal", isLastPayment)
                 bundle.putBoolean("isGuest", isGuestPay)
                 bundle.putBoolean("isLastPayment", isLastPayment)
+                bundle.putParcelableArrayList(DINE_IN_ADAPTER_LIST,dineInDataModel.dineInAdapterList?.toCollection(
+                    arrayListOf()))
 
 
-
+                bundle.putParcelable(PRINT_DATA_DINE_IN,dineInDataModel.dineInOrderDetails)
                 if (findNavController().currentDestination?.id == R.id.paymentBoldPosFragment) {
                     findNavController().navigate(
                         R.id.action_paymentBoldPosFragment_to_orderComplete,
@@ -1945,7 +1935,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
 
 
                 orderId?.let { bundle.putInt("orderID", it) }
-               // bundle.putParcelable("receiptData", it.data)
+                // bundle.putParcelable("receiptData", it.data)
                 bundle.putInt("splitValue", isSelectedCount)
                 bundle.putBoolean("isSplitByAmount", false)
                 bundle.putString("paymentType", "Card")
@@ -1955,6 +1945,9 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
 
                 bundle.putDouble("noCashAdj", cashDiscountSurcharge)
                 bundle.putBoolean("isFromActiveOrder", false)
+                bundle.putParcelableArrayList(DINE_IN_ADAPTER_LIST,dineInDataModel.dineInAdapterList?.toCollection(
+                    arrayListOf()))
+                bundle.putParcelable(PRINT_DATA_DINE_IN,dineInDataModel.dineInOrderDetails)
 
                 if (findNavController().currentDestination?.id == R.id.paymentBoldPosFragment) {
                     findNavController().navigate(

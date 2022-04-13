@@ -354,6 +354,7 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
     private fun observeData() {
         paymentviewModel.data.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
+                Log.e(TAG, "receiptData: ${Gson().toJson(it.data)}")
                 viewModel.redeemLoyaltyInfo = RedeemLoyaltyInfo()
                 prefProvider.setValueInt("ORDER_ID", it.data.order.id)
 
@@ -1423,7 +1424,7 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
                         ConnectionState.Connected -> {
                             Log.e("", "[CONNECTED]")
 
-                           // ProgressUtils.dismissProgressDialog()
+                            // ProgressUtils.dismissProgressDialog()
 
                             startTransaction()
                         }

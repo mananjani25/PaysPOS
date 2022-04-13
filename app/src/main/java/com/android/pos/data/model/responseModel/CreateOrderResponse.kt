@@ -335,7 +335,12 @@ data class CreateOrderResponse(
                 @SerializedName("transaction_id")
                 val transactionId: String,
                 @SerializedName("updated_at")
-                val updatedAt: String
+                val updatedAt: String,
+                @SerializedName("is_loyalty_applied")
+                val isLoyaltyApplied: Boolean = false,
+                @SerializedName("used_reward_points")
+                val loyaltyUSedPoints: Int = 0
+
             )
         }
 
