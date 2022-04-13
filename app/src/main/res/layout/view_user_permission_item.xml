@@ -49,6 +49,11 @@
                 android:layout_marginEnd="@dimen/_10sdp"
                 android:layout_height="wrap_content" />
 
+            <include
+                android:id="@+id/layout_menu"
+                layout="@layout/img_menu" />
+
+
             <androidx.appcompat.widget.AppCompatTextView
                 style="@style/CustomFontSemiBold"
                 android:layout_width="wrap_content"

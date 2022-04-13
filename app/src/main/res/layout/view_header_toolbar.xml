@@ -13,7 +13,8 @@
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
         android:layout_gravity="center"
-        android:padding="@dimen/_8sdp"
+        android:paddingHorizontal="@dimen/_8sdp"
+        android:paddingVertical="@dimen/_5sdp"
         app:srcCompat="@drawable/ic_arrow_back" />
 
     <androidx.appcompat.widget.AppCompatTextView
@@ -38,7 +39,7 @@
         android:background="@drawable/button_action_hover"
         android:gravity="center"
         android:paddingHorizontal="@dimen/_15sdp"
-        android:paddingVertical="@dimen/_10sdp"
+        android:paddingVertical="@dimen/_6sdp"
         android:text="@string/save"
         android:textColor="@color/white"
         android:textSize="@dimen/_8sdp" />
