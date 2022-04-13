@@ -554,7 +554,7 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
                         )
                         prefProvider.setValue(Constants.WHOLE_AMOUNT, remainingValue.toString())
 
-                        if (remainingValue == 0.0) {
+                        if (remainingValue == 0.0 || remainingValue <= 0.0) {
                             bundle.putBoolean("isSpilt", false)
                             bundle.putBoolean("isSplitByNo", false)
                             prefProvider.setValueboolean(Constants.SPLIT_ENABLE, false)
@@ -565,7 +565,7 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
                             splitAllAmounts(Constants.SERVICE_CHARGE, 0.0)
                             splitAllAmounts(Constants.CASH_DISCOUNT_SURCHARGE, 0.0)
                             splitAllAmounts(Constants.TIP, 0.0)
-                        } else {
+                        }  else {
                             bundle.putBoolean("isSpilt", true)
                             bundle.putBoolean("isSplitByNo", true)
                             bundle.putBoolean("isCustomCash", false)
@@ -1064,6 +1064,18 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
         paymentType = "Card"
         Log.e(TAG, "cartList:  ${Gson().toJson(cartList)}")
         Log.e(TAG, "cartListcartItems:  ${Gson().toJson(cartItems)}")
+        if (orderId != -1 && orderId != 0) {
+            paymentviewModel.updateOrder(
+                true,
+                orderId,
+                paymentId,
+                paymentOfflineId,
+                orderOfflineId
+            )
+        } else {
+            paymentviewModel.updateOrder(false, null, null, "", "")
+        }
+        paymentviewModel.saveOrder(false)
         val myRequest = cartList?.let {
             paymentviewModel.createOrderRequestForCard(
                 it,
@@ -1087,7 +1099,7 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
         }
         Log.e(TAG, "myRequestOriginal ${Gson().toJson(myRequest)}")
         if (myRequest != null) {
-            paymentviewModel.totalPayAmount(viewModel.totalPrice)
+            paymentviewModel.totalPayAmount(paymentAmount)
             paymentAttributesRequest(myRequest)
         }
     }

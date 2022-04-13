@@ -282,14 +282,29 @@ class MergeTableDialog : DialogFragment() {
 
                 if (listSecondaryOrderDetails.size == 0) {
                     //This is for Every Empty Table for both Primary and Secondary
+                    var childzero = false
+                    childIds.forEach {
+                        if (it.toString() != "0") {
+                            childzero = true
+                            return@forEach
+                        }
+                    }
+                    if (parentTableId != 0 && childzero) {
+                        parentTableId?.let { it1 ->
+                            viewModel.mergeTable(
+                                it1,
+                                childIds,
+                                null,
+                                null
+                            )
+                        }
+                    } else {
+                        AlertUtils.showCustomAlertWithListenerWithOK(
+                            requireContext(), "Please Select Table"
+                        ) { _, _ ->
 
-                    parentTableId?.let { it1 ->
-                        viewModel.mergeTable(
-                            it1,
-                            childIds,
-                            null,
-                            null
-                        )
+                        }
+
                     }
 
 
@@ -301,15 +316,28 @@ class MergeTableDialog : DialogFragment() {
                         listSecondaryOrderDetails.get(0),
                         tableMergeList
                     )
+                    var childzero = false
+                    childIds.forEach {
+                        if (it.toString() != "0") {
+                            childzero = true
+                            return@forEach
+                        }
+                    }
 
-                    viewModel.mergeTable(
-                        parentTableId ?: 0,
-                        childIds,
-                        orderModel = orderModel,
-                        orderId = orderModel.id
+                    if (parentTableId != 0 && childzero) {
+                        viewModel.mergeTable(
+                            parentTableId ?: 0,
+                            childIds,
+                            orderModel = orderModel,
+                            orderId = orderModel.id
+                        )
+                    } else {
+                        AlertUtils.showCustomAlertWithListenerWithOK(
+                            requireContext(), "Please Select Table"
+                        ) { _, _ ->
 
-                    )
-
+                        }
+                    }
                 } else {
                     //Multiple Occupied and Other's Available
                     var orderModel =
@@ -335,18 +363,52 @@ class MergeTableDialog : DialogFragment() {
                     }
                     var mergedOrderIds = android.text.TextUtils.join(",", listOrderIds)
 
-                    viewModel.mergeTable(parentTableId ?: 0, childIds, mergedOrderIds, orderModel)
+                    var childzero = false
+                    childIds.forEach {
+                        if (it.toString() != "0") {
+                            childzero = true
+                            return@forEach
+                        }
+                    }
+                    if (parentTableId != 0 && childzero) {
+                        viewModel.mergeTable(
+                            parentTableId ?: 0,
+                            childIds,
+                            mergedOrderIds,
+                            orderModel
+                        )
+                    } else {
+                        AlertUtils.showCustomAlertWithListenerWithOK(
+                            requireContext(), "Please Select Table"
+                        ) { _, _ ->
+
+                        }
+
+                    }
 
 
                 }
 
 
             } else if (isDuplicateIdTrue) {
+                var valdate = false
+                for (i in allIds.indices) {
+                    if (allIds[i] == 0) {
+                        valdate =true
+                    }
+                }
+                if(valdate){
+                    AlertUtils.showCustomAlertWithListenerWithOK(
+                        requireContext(), "Please Select Table"
+                    ) { _, _ ->
 
-                AlertUtils.showCustomAlertWithListenerWithOK(
-                    requireContext(), "Same table can't be merged."
-                ) { _, _ ->
+                    }
+                }else{
+                    AlertUtils.showCustomAlertWithListenerWithOK(
+                        requireContext(), "Same table can't be merged."
+                    ) { _, _ ->
 
+                    }
                 }
 
 

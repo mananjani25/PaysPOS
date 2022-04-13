@@ -370,14 +370,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                             }
                             if (custom_paymentAmount != 0.0 && isSelectedCount != 1) {
                                 var splitChange = 0.0
-                                if (cashDiscountType == "CashDiscount") {
-                                    splitChange =
-                                        custom_paymentAmount - paymentAmount + cashDiscountSurcharge
-                                } else {
-                                    splitChange =
-                                        custom_paymentAmount - paymentAmount
-                                }
-
+                                splitChange = custom_paymentAmount - paymentAmount
                                 bundle.putDouble(
                                     "splitChange", String.format("%.2f", splitChange).toDouble()
                                 )
@@ -410,11 +403,10 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                                 String.format("%.2f", remainingValue).toString()
                             )
                         } else {
-                            if (cashDiscountType == "CashDiscount") {
-                                remainingValue =
-                                    wholePrice - (paymentAmount + cashDiscountSurcharge)
+                            remainingValue = if (cashDiscountType == "CashDiscount") {
+                                wholePrice - (paymentAmount + cashDiscountSurcharge)
                             } else {
-                                remainingValue = wholePrice - paymentAmount
+                                wholePrice - paymentAmount
                             }
                             bundle.putDouble(
                                 "remainingAmount",
@@ -507,10 +499,12 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                         bundle.putBoolean("isFromActiveOrder", false)
 
 
-                        findNavController().navigate(
-                            R.id.action_paymentBoldPosFragment_to_orderComplete,
-                            bundle
-                        )
+                        if (findNavController().currentDestination?.id == R.id.paymentBoldPosFragment) {
+                            findNavController().navigate(
+                                R.id.action_paymentBoldPosFragment_to_orderComplete,
+                                bundle
+                            )
+                        }
 
                     }
                     paymentType == "Card" -> {
@@ -624,7 +618,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
 
         Log.e(TAG, "isGuestPay:  ${isGuestPay}")
         if (isGuestPay) {
-            dineinOrderVieweModel.totalPayAmount(WholetotalPrice)
+//            dineinOrderVieweModel.totalPayAmount(WholetotalPrice)
             guestAttributeCalculation()
             guestRequestModel?.paymentAttributes?.let { logPrintGuest(it) }
             dineinOrderVieweModel?.payByGuest(
@@ -743,12 +737,12 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                 "%.2f",
                 getCalCashDiscWithAmount(WholetotalPrice, false) / isSelectedCount
             ).toDouble()
-           makePaymentCreditCard()
-            /*if (device == 0) {
+//           makePaymentCreditCard()
+            if (device == 0) {
                 magtekPaymentCall()
             } else {
                 magtekProPaymentCall()
-            }*/
+            }
         }
         binding.llManualCardEntry.setOnClickListener {
             binding.frameLayoutId.visible()
@@ -761,6 +755,11 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
         binding.tvCash0.setOnClickListener {
 
             custom_paymentAmount = 0.0
+
+            paymentviewModel.totalPayAmount(
+                binding.tvCash0.text.toString().replace("$", "").trim().toDouble()
+            )
+            paymentAmount = binding.tvCash0.text.toString().replace("$", "").trim().toDouble()
             cashPaymentWithVariation()
         }
         binding.tvCash1.setOnClickListener {
@@ -1149,6 +1148,18 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
         paymentType = "Card"
         Log.e(TAG, "cartList:  ${Gson().toJson(cartList)}")
         Log.e(TAG, "cartListcartItems:  ${Gson().toJson(cartItems)}")
+        if (orderId != -1 && orderId != 0) {
+            paymentviewModel.updateOrder(
+                true,
+                orderId,
+                paymentId,
+                paymentOfflineId,
+                orderOfflineId
+            )
+        } else {
+            paymentviewModel.updateOrder(false, null, null, "", "")
+        }
+        paymentviewModel.saveOrder(false)
         val myRequest = cartList?.let {
             paymentviewModel.createOrderRequestForCard(
                 it,
@@ -1172,7 +1183,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
         }
         Log.e(TAG, "myRequestOriginal ${Gson().toJson(myRequest)}")
         if (myRequest != null) {
-            paymentviewModel.totalPayAmount(viewModel.totalPrice)
+            paymentviewModel.totalPayAmount(paymentAmount)
             paymentAttributesRequest(myRequest)
         }
     }
@@ -1181,7 +1192,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
 
         paymentType = "Cash"
 
-        if (orderId != -1 && orderId != 0)
+        if (orderId != -1 && orderId != 0) {
             paymentviewModel.updateOrder(
                 true,
                 orderId,
@@ -1189,7 +1200,9 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                 paymentOfflineId,
                 orderOfflineId
             )
-
+        } else {
+            paymentviewModel.updateOrder(false, null, null, "", "")
+        }
 
         paymentviewModel.saveOrder(false)
         Log.d("yash", "makeCashPayment: total Price : " + paymentAmount)
@@ -1223,8 +1236,6 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
         if (myRequest != null) {
             if (custom_paymentAmount != 0.0) {
                 paymentviewModel.totalPayAmount(custom_paymentAmount)
-            } else {
-                paymentviewModel.totalPayAmount(viewModel.totalPrice)
             }
             paymentAttributesRequest(myRequest)
         }
@@ -1905,7 +1916,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                 )
                 prefProvider.setValue(Constants.WHOLE_AMOUNT, remainingValue.toString())
 
-                if (remainingValue == 0.0) {
+                if (remainingValue == 0.0 || remainingValue <= 0.0) {
                     bundle.putBoolean("isSpilt", false)
                     bundle.putBoolean("isSplitByNo", false)
                     prefProvider.setValueboolean(Constants.SPLIT_ENABLE, false)
@@ -1916,7 +1927,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                     splitAllAmounts(Constants.SERVICE_CHARGE, 0.0)
                     splitAllAmounts(Constants.CASH_DISCOUNT_SURCHARGE, 0.0)
                     splitAllAmounts(Constants.TIP, 0.0)
-                } else {
+                }  else {
                     bundle.putBoolean("isSpilt", true)
                     bundle.putBoolean("isSplitByNo", true)
                     bundle.putBoolean("isCustomCash", false)
