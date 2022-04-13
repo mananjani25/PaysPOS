@@ -20,7 +20,6 @@ import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.Event
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.statusUtils.Status
-import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -114,7 +113,7 @@ class CustomerReceiptSettings : Fragment() {
 
             model.showOrderIdTop = binding.swtOrderId.isChecked
             model.showModifiers = binding.swtAddons.isChecked
-            model.showSplitAmount = binding.swtOrderNote.isChecked
+            model.showOrderNote = binding.swtOrderNote.isChecked
             model.showRolledOver = binding.swtAutoRollOvr.isChecked
             model.showOrderType = binding.swtOrderType.isChecked
             model.showOrderTime = binding.customerReciptPart2.swtOrderTime.isChecked
@@ -377,7 +376,7 @@ class CustomerReceiptSettings : Fragment() {
                 setTextSize(model.fonts)
                 binding.swtOrderId.isChecked = model.showOrderIdTop
                 binding.swtAddons.isChecked = model.showModifiers
-                binding.swtOrderNote.isChecked = model.showSplitAmount
+                binding.swtOrderNote.isChecked = model.showOrderNote
                 binding.swtAutoRollOvr.isChecked = model.showRolledOver
                 binding.swtOrderType.isChecked = model.showOrderType
                 binding.customerReciptPart2.swtOrderTime.isChecked = model.showOrderTime

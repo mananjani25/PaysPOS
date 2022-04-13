@@ -217,8 +217,9 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
 
 
             if (isOrderNote) {
-                cartList[0].note = note.toString()
-                viewModel.addCart(cartList[0])
+                viewModel.addOrderNote(note.toString())
+               /* cartList[0].note = note.toString()
+                viewModel.addCart(cartList[0])*/
             } else {
                 singleItem?.note = note.toString()
                 singleItem?.let {
@@ -517,6 +518,9 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
             TAG,
             "dineInHeaderdineInSelectedItemHeaderPos  ${viewModel.dineInSelectedItemHeaderPos}"
         )
+        if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == DINE_IN){
+
+        }
         loadCategoryFragment(CategoryFragment(this, binding.layoutHeader.edtSearch))
 
     }
