@@ -1289,7 +1289,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                     SpitByOrderPaymentModel(listOf(paymentReq) as List<PaymentAttributes>)
                 )
 
-                paymentviewModel.splitByOrder(aa, false)
+                paymentviewModel.splitByOrder(aa, true)
             } else {
                 myRequest.completed_all_payments = isSelectedCount <= 1
                 paymentviewModel.submit(myRequest)

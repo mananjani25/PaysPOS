@@ -4096,6 +4096,37 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 )
             }
 
+
+
+            if (receiptModel?.order?.payments?.isNotEmpty() == true) {
+                if (receiptModel?.order?.payments?.get(receiptModel?.order?.payments!!.size - 1)?.isLoyaltyApplied == true && receiptModel?.order?.payments!![receiptModel?.order?.payments!!.size  - 1].loyaltyUSedPoints != 0) {
+                    builder.addTextLineSpace(30)
+                    builder.addFeedUnit(30)
+                    builder.addTextFont(Builder.FONT_E)
+                    // builder.addTextAlign(Builder.ALIGN_LEFT)
+                    builder.addTextLang(Builder.LANG_EN)
+                    addCustomerTextSize(builder, customerSettingModel.fonts)
+                    builder.addTextStyle(
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.COLOR_1
+                    )
+
+                    builder.addText(
+                        padLine(
+                            "Used Loyalty Points",
+                            receiptModel?.order?.payments!![receiptModel?.order?.payments!!.size  - 1].loyaltyUSedPoints.toString(),
+                            if (customerSettingModel.fonts == LARGE) {
+                                24
+                            } else {
+                                48
+                            }
+                        )
+                    )
+                }
+            }
+
             builder.addTextLineSpace(30)
             builder.addFeedUnit(30)
 
