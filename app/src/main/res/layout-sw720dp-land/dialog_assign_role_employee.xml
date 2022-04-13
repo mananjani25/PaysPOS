@@ -75,7 +75,6 @@
             android:layout_marginStart="@dimen/_20sdp"
             android:layout_marginTop="@dimen/_10sdp"
             android:layout_marginEnd="@dimen/_20sdp"
-            android:background="@color/white"
             android:orientation="vertical">
 
             <ProgressBar
