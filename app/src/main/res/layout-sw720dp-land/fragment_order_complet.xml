@@ -181,8 +181,8 @@
                                 android:id="@+id/rvSplits"
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
-                                android:orientation="vertical"
                                 android:layout_below="@+id/txtSplitTitle"
+                                android:orientation="vertical"
                                 android:visibility="visible"
                                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                                 tools:itemCount="3"
@@ -487,19 +487,20 @@
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_gravity="center"
+
                                 android:orientation="horizontal"
-                                android:visibility="gone">
+                                android:visibility="visible">
 
                                 <androidx.appcompat.widget.AppCompatTextView
                                     android:id="@+id/llHome"
                                     style="@style/CustomFontBold"
-                                    android:layout_width="match_parent"
+                                    android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_margin="@dimen/_3sdp"
                                     android:layout_weight="1"
                                     android:background="@color/btnColorDark_"
                                     android:gravity="center"
-                                    android:minWidth="@dimen/_245sdp"
+                                    android:minWidth="@dimen/_300sdp"
                                     android:padding="@dimen/_5sdp"
                                     android:text="@string/tv_home"
                                     android:textColor="@color/white"
@@ -515,12 +516,13 @@
                                     android:layout_weight="1"
                                     android:background="@color/btnColorDark_"
                                     android:gravity="center"
-                                    android:minWidth="@dimen/_245sdp"
+                                    android:minWidth="@dimen/_300sdp"
                                     android:padding="@dimen/_5sdp"
                                     android:text="@string/checkout"
                                     android:textColor="@color/white"
                                     android:textSize="@dimen/_7mdpi"
                                     android:visibility="gone" />
+
 
 
                             </androidx.appcompat.widget.LinearLayoutCompat>
