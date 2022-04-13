@@ -29,9 +29,9 @@ class ItemAdapter(
             binding.linearItem.setOnClickListener {
                 list[bindingAdapterPosition]?.let { listener.onClick(it) }
             }
-            binding.txtCategoryName.setOnClickListener {
-              //  list[bindingAdapterPosition]?.let { listener.onClick(it) }
-            }
+//            binding.txtCategoryName.setOnClickListener {
+//              //  list[bindingAdapterPosition]?.let { listener.onClick(it) }
+//            }
         }
     }
 
