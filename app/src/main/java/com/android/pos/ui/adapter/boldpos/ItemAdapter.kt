@@ -29,8 +29,6 @@ class ItemAdapter(
 
             binding.linearItem.setOnClickListener {
                 list[bindingAdapterPosition]?.let { listener.onClick(it) }
-                binding.txtCategoryName.setTextColor(binding.root.resources.getColor(R.color.white))
-                binding.txtPrice.setTextColor(binding.root.resources.getColor(R.color.white))
             }
         }
 
