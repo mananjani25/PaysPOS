@@ -75,7 +75,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
     private var cartList: CartModel? = null
     private var dineInData: CreateOrderResponse.Data? = null
     private var orderId: Int? = null
-    private var order_note =""
+    private var order_note = ""
     private var getOrderDetailsResponse: GetOrderDetailsResponse.Data? = null
     private val TAG = "DineInOrderTable"
     private lateinit var dineInTableAdapter: DineInTableAdapter
@@ -2912,7 +2912,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
                 if (printer != null) {
                     PrinterClass.setPrinter(printer)
-                    if (guestPrint) {
+                    if (guestPrint && getOrderDetailsResponse?.guestAttributes?.size!! > 2) {
                         generateGuestPrint(
                             customerReceiptPrinters,
                             type,
