@@ -21,9 +21,11 @@ import com.android.pos.data.remote.Constants.CANCELED_ORDER
 import com.android.pos.data.remote.Constants.COMPLETED_ORDER
 import com.android.pos.data.remote.Constants.KEY
 import com.android.pos.databinding.FragmentInventoryBinding
+import com.android.pos.di.RolePermission
 import com.android.pos.ui.adapter.InventoryAdapter
 import com.android.pos.utils.statusUtils.Status
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class Orders : Fragment() {
@@ -36,6 +38,9 @@ class Orders : Fragment() {
     private lateinit var binding: FragmentInventoryBinding
     var startDate:String?=null
     var endDate:String?=null
+
+    @Inject
+    lateinit var rolePermission: RolePermission
 
     private val viewModel by viewModels<ActiveOrderViewModel>()
 
@@ -236,13 +241,25 @@ class Orders : Fragment() {
             }
         }
         binding.recyclerViewItemsList.adapter =
-            InventoryAdapter(requireContext(), list, false, object : InventoryAdapter.InventoryListner {
-                override fun onItemSelect(position: Int) {
-                    Log.e(TAG, "position  $position")
-                    changePosition(position)
-                }
+            InventoryAdapter(
+                requireContext(),
+                list,
+                false,
+                object : InventoryAdapter.InventoryListner {
+                    override fun onItemSelect(position: Int) {
+                        if (position == 2) {
+                            if (rolePermission.hasCancelOrderPermission(binding.root)) {
+                                changePosition(position)
+                            }
+                        } else {
+                            changePosition(position)
+                        }
+                        Log.e(TAG, "position  $position")
 
-            })
+
+                    }
+
+                })
 
 
     }

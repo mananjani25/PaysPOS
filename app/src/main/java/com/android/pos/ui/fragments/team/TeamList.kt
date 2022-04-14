@@ -211,8 +211,7 @@ class TeamList : Fragment(), CustomCallback, OperationCallback {
         binding.layoutTool.txtSubTitle.text = ""
         binding.layoutTool.txtEdit.visibility = View.GONE
         binding.layoutTool.imgDrawer.setOnClickListener {
-         //   (requireActivity() as MainActivity).enableDrawer()
-            findNavController().navigate(R.id.action_teamList_to_menuFragment)
+            findNavController().navigate(R.id.action_teamList_to_menupos)
         }
         binding.layoutTool.imgOptionMenu.setImageResource(R.drawable.ic_add)
         binding.layoutTool.imgOptionMenuContainer.visibility = View.GONE

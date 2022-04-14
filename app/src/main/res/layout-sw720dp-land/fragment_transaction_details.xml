@@ -423,13 +423,13 @@
                             android:visibility="gone">
 
                             <androidx.appcompat.widget.AppCompatTextView
+                                android:id="@+id/label_cashsurcharge"
                                 style="@style/CustomFontMediumStyle"
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_alignParentStart="true"
                                 android:layout_marginStart="@dimen/_3sdp"
                                 android:layout_weight="6.5"
-                                android:text="@string/balance_due"
                                 android:textColor="@color/hint_color"
                                 android:textSize="@dimen/text_size_medium" />
 

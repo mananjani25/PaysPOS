@@ -370,7 +370,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 binding.txtHome.visibility = View.GONE
               //  binding.linearTopHeaderSplit.visibility = View.GONE
                 binding.viewSplitLine.visibility = View.GONE
-                binding.llNoReceipt.visibility = View.VISIBLE
+                binding.llNoReceipt.visibility = View.GONE
                 binding.linearSplitLayout.visibility = View.GONE
                 binding.txtRemainingAmount.visibility = View.GONE
                 binding.txtRemainingAmountLabel.visibility = View.GONE
@@ -3125,8 +3125,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
     private fun moveToCheckOut() {
         if (isDineIn) {
-            if (isGuestPaymentTotal) {
+            if (!isLastPayment) {
                 val bundle = Bundle()
+                Log.e(TAG, "guestorderID ${orderID}")
                 bundle.putInt("orderId", orderID)
 
                 findNavController().navigate(

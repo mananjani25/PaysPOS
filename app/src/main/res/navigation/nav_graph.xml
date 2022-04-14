@@ -228,7 +228,7 @@
             android:id="@+id/action_teamList_to_dashboardCategoryNew"
             app:destination="@id/dashboardCategoryBoldPOS" />
         <action
-            android:id="@+id/action_teamList_to_menuFragment"
+            android:id="@+id/action_teamList_to_menupos"
             app:destination="@id/menuFragment" />
     </fragment>
     <action

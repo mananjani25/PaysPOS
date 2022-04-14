@@ -26,6 +26,7 @@ import com.android.pos.data.remote.Constants.SPLIT_ENABLE
 import com.android.pos.data.remote.Constants.TAKEOUT
 import com.android.pos.databinding.FragmentDashboardCategoryBoldPosBinding
 import com.android.pos.di.PrefProvider
+import com.android.pos.di.RolePermission
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.android.pos.ui.fragments.payment.PaymentViewModel
 import com.android.pos.utils.*
@@ -63,6 +64,8 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
     private var orderFloorDetails: GetOrderDetailsResponse.Data.FloorPlanTable =
         GetOrderDetailsResponse.Data.FloorPlanTable()
 
+    @Inject
+    lateinit var rolePermission: RolePermission
     private var orderId: Int? = null
     private var orderOfflineId: String = ""
     private var paymentOfflineId: String = ""
@@ -396,7 +399,9 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
     private fun onClick() {
 
         binding.layoutHeader.txtTransaction.setOnClickListener {
-            findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_transactionFragment)
+            if(rolePermission.hasTransactionPermission(binding.root)){
+                findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_transactionFragment)
+            }
 
         }
         binding.layoutHeader.txtDineIn.setOnClickListener {
@@ -445,24 +450,25 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
          )
      }*/
         binding.layoutHeader.txtKeypad.setOnClickListener {
-            //loadKeyPadFragment(KeyPadManualSaleFragment())
-            viewModel.deleteManualSaleCart()
-            binding.layoutHeader.txtKeypad.setTextColor(resources.getColor(R.color.btnColor))
-            binding.layoutHeader.txtKeypad.setTypeface(
-                binding.layoutHeader.txtKeypad.typeface,
-                Typeface.BOLD
-            )
-            binding.layoutHeader.txtOpenOrder.setTextColor(resources.getColor(R.color.txtColor))
-            binding.layoutHeader.txtOpenOrder.setTypeface(
-                binding.layoutHeader.txtOpenOrder.typeface,
-                Typeface.NORMAL
-            )
-            var bundle: Bundle = Bundle()
-            bundle.putParcelableArrayList("carttlist", cartList)
-            findNavController().navigate(
-                R.id.action_dashboardCategoryBoldPOS_to_manualSalesNew,
-                bundle
-            )
+            if(rolePermission.hasManualSalesPermission(binding.root)){
+                viewModel.deleteManualSaleCart()
+                binding.layoutHeader.txtKeypad.setTextColor(resources.getColor(R.color.btnColor))
+                binding.layoutHeader.txtKeypad.setTypeface(
+                    binding.layoutHeader.txtKeypad.typeface,
+                    Typeface.BOLD
+                )
+                binding.layoutHeader.txtOpenOrder.setTextColor(resources.getColor(R.color.txtColor))
+                binding.layoutHeader.txtOpenOrder.setTypeface(
+                    binding.layoutHeader.txtOpenOrder.typeface,
+                    Typeface.NORMAL
+                )
+                var bundle: Bundle = Bundle()
+                bundle.putParcelableArrayList("carttlist", cartList)
+                findNavController().navigate(
+                    R.id.action_dashboardCategoryBoldPOS_to_manualSalesNew,
+                    bundle
+                )
+            }
         }
 
 

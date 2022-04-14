@@ -2061,15 +2061,15 @@ class DashBoardCategoryViewModel @Inject constructor(
             totalServiceCharges = totalServiceCharge
             totalTaxAmount = totalTax
             orderItemsAttributes = dineInOrderItemAttributed(cartModel)
-            paymentAttributes =
-                paymentAttributes(
-                    cartModel,
-                    totalPrice,
-                    subTotalPrice,
-                    totalServiceCharge,
-                    totalTax,
-                    totalDiscount, 0.0
-                )
+//            paymentAttributes =
+//                paymentAttributes(
+//                    cartModel,
+//                    totalPrice,
+//                    subTotalPrice,
+//                    totalServiceCharge,
+//                    totalTax,
+//                    totalDiscount, 0.0
+//                )
 
             orderServiceChargesAttributes =
                 orderServiceChargesAttributes(cartModel, subTotalPrice)

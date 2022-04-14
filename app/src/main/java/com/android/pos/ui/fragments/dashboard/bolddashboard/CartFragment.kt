@@ -25,6 +25,7 @@ import com.android.pos.data.remote.Constants.DINE_IN_LIST_EDIT
 import com.android.pos.data.remote.Constants.DINE_IN_UPDATE
 import com.android.pos.data.remote.Constants.MANUAL_SALE
 import com.android.pos.data.remote.Constants.OPEN_ORDER
+import com.android.pos.data.remote.Constants.OPTION_TYPE
 import com.android.pos.data.remote.Constants.ORDER_TYPE
 import com.android.pos.data.remote.Constants.REDIRECT_FROM
 import com.android.pos.data.remote.Constants.TAKEOUT
@@ -397,7 +398,17 @@ class CartFragment(
                 Log.e(TAG, "listSize  ${Gson().toJson(it)}")
                 if (it.isNotEmpty()) {
                     if (isFromPayment) {
-                        binding.linearCashDiscount.visible()
+                        if(MethodUtils.isEnableCashDiscount(requireContext())){
+                            binding.linearCashDiscount.visible()
+                            if (prefProvider.getValue(OPTION_TYPE, "CashDiscount") == "CashDiscount") {
+                                binding.labelCashSurcharge?.text  = "Cash Discount"
+                            }else{
+                                binding.labelCashSurcharge?.text  = "SurCharge"
+                            }
+                        }else{
+                            binding.linearCashDiscount.gone()
+                        }
+
                         binding.linearButtonView.gone()
                         binding.relPreoceedToFire.gone()
                     } else {
@@ -424,8 +435,8 @@ class CartFragment(
                         MethodUtils.roundOffAmount(viewModel.totalServiceCharge)
                     binding.tvPayNow.text = "Pay " + binding.txtTotal.text.toString()
                     Log.e("totalDiscount", viewModel.totalDiscount.toString())
-                    binding.txtDiscount.text ="-"+
-                        MethodUtils.roundOffAmount(viewModel.totalDiscount)
+                    binding.txtDiscount.text = "-" +
+                            MethodUtils.roundOffAmount(viewModel.totalDiscount)
                     binding.txtNoncashAdj.text =
                         MethodUtils.roundOffAmount(viewModel.cashdiscountAmount)
                     var data: TbCustomer? = prefProvider.getCustomerData()
@@ -487,7 +498,7 @@ class CartFragment(
                     binding.txtTotal.text = MethodUtils.roundOffAmount(0.0)
                     binding.txtSubTotal.text = MethodUtils.roundOffAmount(0.0)
                     binding.txtTax.text = MethodUtils.roundOffAmount(0.0)
-                    binding.txtDiscount.text = "-"+MethodUtils.roundOffAmount(0.0)
+                    binding.txtDiscount.text = "-" + MethodUtils.roundOffAmount(0.0)
                     binding.txtNoncashAdj.text =
                         MethodUtils.roundOffAmount(0.0)
                     binding.relativeOrderNotes?.visibility = View.GONE
@@ -529,7 +540,16 @@ class CartFragment(
 
                         cartlist = it as ArrayList<CartModel>
                         if (isFromPayment) {
-                            binding.linearCashDiscount.visible()
+                            if(MethodUtils.isEnableCashDiscount(requireContext())){
+                                binding.linearCashDiscount.visible()
+                                if (prefProvider.getValue(OPTION_TYPE, "CashDiscount") == "CashDiscount") {
+                                    binding.labelCashSurcharge?.text  = "Cash Discount"
+                                }else{
+                                    binding.labelCashSurcharge?.text  = "SurCharge"
+                                }
+                            }else{
+                                binding.linearCashDiscount.gone()
+                            }
                             binding.linearButtonView.gone()
                             binding.relPreoceedToFire.gone()
                         } else {
@@ -584,7 +604,7 @@ class CartFragment(
                         binding.txtServiceCharge.text =
                             MethodUtils.roundOffAmount(viewModel.totalServiceCharge)
                         binding.txtDiscount.text =
-                            "-"+MethodUtils.roundOffAmount(viewModel.totalDiscount)
+                            "-" + MethodUtils.roundOffAmount(viewModel.totalDiscount)
                         binding.txtNoncashAdj.text =
                             MethodUtils.roundOffAmount(viewModel.cashdiscountAmount)
                         if (viewModel.order_note.isNotEmpty()) {
@@ -650,7 +670,16 @@ class CartFragment(
 
                     } else {
                         if (isFromPayment) {
-                            binding.linearCashDiscount.visible()
+                            if(MethodUtils.isEnableCashDiscount(requireContext())){
+                                binding.linearCashDiscount.visible()
+                                if (prefProvider.getValue(OPTION_TYPE, "CashDiscount") == "CashDiscount") {
+                                    binding.labelCashSurcharge?.text  = "Cash Discount"
+                                }else{
+                                    binding.labelCashSurcharge?.text  = "SurCharge"
+                                }
+                            }else{
+                                binding.linearCashDiscount.gone()
+                            }
                             binding.linearButtonView.gone()
                             binding.relPreoceedToFire.gone()
                         } else {
@@ -688,7 +717,16 @@ class CartFragment(
 
                     if (it.isNotEmpty()) {
                         if (isFromPayment) {
-                            binding.linearCashDiscount.visible()
+                            if(MethodUtils.isEnableCashDiscount(requireContext())){
+                                binding.linearCashDiscount.visible()
+                                if (prefProvider.getValue(OPTION_TYPE, "CashDiscount") == "CashDiscount") {
+                                    binding.labelCashSurcharge?.text  = "Cash Discount"
+                                }else{
+                                    binding.labelCashSurcharge?.text  = "SurCharge"
+                                }
+                            }else{
+                                binding.linearCashDiscount.gone()
+                            }
                             binding.linearButtonView.gone()
                             binding.relPreoceedToFire.gone()
                         } else {
@@ -721,7 +759,7 @@ class CartFragment(
                         binding.tvPayNow.text = "Pay " + binding.txtTotal.text.toString()
                         Log.e("totalDiscount", viewModel.totalDiscount.toString())
                         binding.txtDiscount.text =
-                            "-"+ MethodUtils.roundOffAmount(viewModel.totalDiscount)
+                            "-" + MethodUtils.roundOffAmount(viewModel.totalDiscount)
                         binding.txtNoncashAdj.text =
                             MethodUtils.roundOffAmount(viewModel.cashdiscountAmount)
                         var data: TbCustomer? = prefProvider.getCustomerData()
@@ -773,10 +811,10 @@ class CartFragment(
                                 }
                             }
                         } else {
-                            if(viewModel.order_note.isNotEmpty()){
+                            if (viewModel.order_note.isNotEmpty()) {
                                 binding.liinearInfoLayout.layoutParams.height =
                                     resources.getDimension(R.dimen._50sdp).toInt()
-                            }else{
+                            } else {
                                 binding.liinearInfoLayout.layoutParams.height =
                                     resources.getDimension(R.dimen._40sdp).toInt()
                             }
@@ -791,7 +829,7 @@ class CartFragment(
                         binding.txtTotal.text = MethodUtils.roundOffAmount(0.0)
                         binding.txtSubTotal.text = MethodUtils.roundOffAmount(0.0)
                         binding.txtTax.text = MethodUtils.roundOffAmount(0.0)
-                        binding.txtDiscount.text = "-"+MethodUtils.roundOffAmount(0.0)
+                        binding.txtDiscount.text = "-" + MethodUtils.roundOffAmount(0.0)
                         binding.txtNoncashAdj.text =
                             MethodUtils.roundOffAmount(0.0)
                         binding.txtServiceCharge.text =
@@ -810,7 +848,7 @@ class CartFragment(
                                 binding.relativeLoylatyPoints.visibility = View.GONE
                                 binding.lblLoyaltyPoints.visibility = View.GONE
                             }
-                        }else{
+                        } else {
                             binding.liinearInfoLayout.layoutParams.height =
                                 resources.getDimension(R.dimen._40sdp).toInt()
                             binding.relativeLoylatyPoints.visibility = View.GONE
@@ -1180,7 +1218,7 @@ class CartFragment(
                     R.id.menu_order_note -> {
                         findNavController().navigate(
                             R.id.action_dashboardCategoryBoldPOS_to_addNoteDialog,
-                            bundleOf("isOrderNote" to true,"cartList" to cartlist)
+                            bundleOf("isOrderNote" to true, "cartList" to cartlist)
                         )
                     }
                     R.id.menu_discount -> {

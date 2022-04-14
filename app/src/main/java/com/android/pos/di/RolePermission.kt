@@ -51,8 +51,7 @@ class RolePermission @Inject constructor(
     }
 
     fun hasUserAccessPermission(root: View?): Boolean {
-        val permission =
-            prefProvider.isManager() || prefProvider.isOwner() || prefProvider.isAdmin()
+            val permission = prefProvider.isOwner() || prefProvider.isAdmin()
         return if (permission) {
             true
         } else {
