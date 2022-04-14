@@ -12,6 +12,7 @@ import com.android.pos.R
 import com.android.pos.data.remote.Constants
 import com.android.pos.databinding.FragmentMenuBinding
 import com.android.pos.di.PrefProvider
+import com.android.pos.di.RolePermission
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.android.pos.utils.extensions.alert
 import dagger.hilt.android.AndroidEntryPoint
@@ -20,6 +21,9 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class MenuFragment : DialogFragment() {
     private lateinit var binding: FragmentMenuBinding
+
+    @Inject
+    lateinit var rolePermission: RolePermission
     private val viewModel by viewModels<DashBoardCategoryViewModel>()
     @Inject
     lateinit var prefProvider: PrefProvider
@@ -83,23 +87,33 @@ class MenuFragment : DialogFragment() {
             findNavController().navigateUp()
         }
         binding.linearInventory.setOnClickListener {
-            findNavController().navigate(R.id.action_menuFragment_to_inventory)
+            if (rolePermission.hasInventoryPermission(binding.root)){
+                findNavController().navigate(R.id.action_menuFragment_to_inventory)
+            }
         }
 
         binding.linearOrders.setOnClickListener {
             findNavController().navigate(R.id.action_menuFragment_to_orders)
         }
         binding.linearTeam.setOnClickListener {
-            findNavController().navigate(R.id.action_menuFragment_to_teamList)
+            if(rolePermission.hasEmployeePermission(binding.root)){
+                findNavController().navigate(R.id.action_menuFragment_to_teamList)
+            }
         }
         binding.linearTransactions.setOnClickListener {
-            findNavController().navigate(R.id.action_menuFragment_to_transactionFragment)
+            if (rolePermission.hasTransactionPermission(binding.root)){
+                findNavController().navigate(R.id.action_menuFragment_to_transactionFragment)
+            }
         }
         binding.linearCashLog.setOnClickListener {
-            findNavController().navigate(R.id.action_menuFragment_to_cashLogFragment)
+            if (rolePermission.hasCashLogPermission(binding.root)) {
+                findNavController().navigate(R.id.action_menuFragment_to_cashLogFragment)
+            }
         }
         binding.linearCustomers.setOnClickListener {
-            findNavController().navigate(R.id.action_menuFragment_to_customer)
+            if(rolePermission.hasCustomerPermission(binding.root)) {
+                findNavController().navigate(R.id.action_menuFragment_to_customer)
+            }
         }
         binding.linearReports.setOnClickListener {
             findNavController().navigate(R.id.action_menuFragment_to_reports)

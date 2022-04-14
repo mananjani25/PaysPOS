@@ -3,16 +3,12 @@ package com.android.pos.ui.adapter
 import android.annotation.SuppressLint
 import android.graphics.Paint
 import android.util.Log
-import android.view.*
-import android.widget.TextView
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.android.pos.R
-import com.android.pos.data.entities.CartModel
 import com.android.pos.data.entities.TbItem
-import com.android.pos.data.model.ManualSaleCartModel
 import com.android.pos.databinding.ViewItemCartBinding
-import com.android.pos.databinding.ViewManualSaleItemBinding
-import com.android.pos.utils.CustomSwipeLayout.SwipeLayout
 import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.callback.ManualSaleOptionsCustomCallback
 import com.android.pos.utils.swipereveallayout.ViewBinderHelper
@@ -51,7 +47,7 @@ class ManualSaleCartAdapter : RecyclerView.Adapter<ManualSaleCartAdapter.MyViewH
 
                 MethodUtils.setPriceTextView(binding.tvDiscountRate, dPrice)
             } else {
-                binding.txtTotalPrice.paintFlags = 0
+                binding.txtTotalPrice.setPaintFlags(binding.txtTotalPrice.getPaintFlags() and Paint.STRIKE_THRU_TEXT_FLAG.inv())
                 binding.tvDiscountRate.text = ""
             }
 

@@ -157,7 +157,9 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
         binding.layoutHeader.txtKeypad.setTextColor(requireContext().resources.getColor(R.color.btnColor))
         binding.layoutHeader.txtHome.visibility = View.VISIBLE
         binding.layoutHeader.txtTransaction.setOnClickListener {
-            findNavController().navigate(R.id.action_manualSalesNew_to_transactionFragment)
+            if(rolePermission.hasTransactionPermission(binding.root)){
+                findNavController().navigate(R.id.action_manualSalesNew_to_transactionFragment)
+            }
 
         }
         binding.layoutHeader.imgSync.setOnClickListener {
@@ -1358,7 +1360,9 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
         }
 
         linearCash.setOnClickListener {
-            findNavController().navigate(R.id.action_manualSaleNew_to_Cashlog)
+            if (rolePermission.hasCashLogPermission(binding.root)) {
+                findNavController().navigate(R.id.action_manualSaleNew_to_Cashlog)
+            }
             closeDialog(dialog)
         }
 
@@ -1371,8 +1375,10 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
             closeDialog(dialog)
         }
         linearCust.setOnClickListener {
-            findNavController().navigate(R.id.action_manualSaleNew_to_customer)
-            closeDialog(dialog)
+            if(rolePermission.hasCustomerPermission(binding.root)){
+                findNavController().navigate(R.id.action_manualSaleNew_to_customer)
+                closeDialog(dialog)
+            }
         }
         linearReports.setOnClickListener {
             findNavController().navigate(R.id.action_manualSaleNew_to_reports)

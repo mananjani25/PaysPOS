@@ -285,6 +285,7 @@ class TransactionDetailsFragment : Fragment() {
                     if (paymentDetailsResponse.data.payment_type == "Card") {
                         if (paymentDetailsResponse.data.cash_discount_type == "SurCharge") {
                             binding.linearCashDiscount.visibility = View.VISIBLE
+                            binding.labelCashsurcharge?.text = "SurCharge"
                             binding.txtCashAmounntDiscount.setTextColor(
                                 ContextCompat.getColor(
                                     requireContext(),
@@ -301,6 +302,7 @@ class TransactionDetailsFragment : Fragment() {
                     } else {
                         if (paymentDetailsResponse.data.cash_discount_type == "CashDiscount") {
                             binding.linearCashDiscount.visibility = View.VISIBLE
+                            binding.labelCashsurcharge?.text = "Cash Discount"
                             binding.txtCashAmounntDiscount.setTextColor(
                                 ContextCompat.getColor(
                                     requireContext(),

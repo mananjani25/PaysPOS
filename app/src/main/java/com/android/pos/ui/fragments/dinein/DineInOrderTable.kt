@@ -1304,9 +1304,9 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                                         //Whole Table Calculation
                                         totalItemDiscount += it.discountAmount
 
-                                        if (it.isPaid) {
+                                   /*     if (baseResponse.guestAttributes.get(i).isPaid) {
                                             notPayAnyAmount = true
-                                        }
+                                        }*/
 
                                         //for add item in tbItem List and extract/convert data from API
                                         val itemDineIn: DineInModel = DineInModel()
@@ -1450,6 +1450,9 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
                     for (k in 0 until baseResponse.guestAttributes.size) {
                         val obj = baseResponse.guestAttributes.get(k)
+                        if (baseResponse.guestAttributes.get(k).isPaid){
+                            notPayAnyAmount = true
+                        }
 
                         obj.guestItemAttributes.forEach {
                             baseResponse.orderItems.forEach { oi ->
@@ -1689,6 +1692,13 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                         if (!notPayAnyAmount) {
                             touchHelper.attachToRecyclerView(binding.rvItemList)
                         }
+                    }
+
+                    Log.e(TAG, "notPayAnyAmount  ${notPayAnyAmount}")
+                    if (notPayAnyAmount) {
+                        binding.txtEditOrder.visibility = View.GONE
+                    } else {
+                        binding.txtEditOrder.visibility = View.VISIBLE
                     }
 
 
