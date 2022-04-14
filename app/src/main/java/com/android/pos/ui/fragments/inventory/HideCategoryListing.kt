@@ -74,6 +74,7 @@ class HideCategoryListing(val clickedPosition: Int) : Fragment() ,ItemCallback{
                 when (resource.status) {
                     Status.SUCCESS -> {
 
+                        listSize=it.data?.size
                         if (it.data?.isNotEmpty() == true) {
                             binding.rvCategoriesList.visibility = View.VISIBLE
                             binding.txtNodata.visibility = View.GONE
@@ -126,6 +127,22 @@ class HideCategoryListing(val clickedPosition: Int) : Fragment() ,ItemCallback{
             }
         })
 
+        viewModel.data.observe(viewLifecycleOwner) { event ->
+            event.getContentIfNotHandled()?.let { baseResponse ->
+                activity?.let {
+                    AlertUtils.showCustomAlertWithListenerWithOK(
+                        it, baseResponse.message
+                    ) { _, _ ->
+                        val intent = Intent()
+                        intent.action = "inventory"
+                        intent.putExtra("position", clickedPosition)
+                        requireContext().sendBroadcast(intent)
+                    }
+                }
+            }
+        }
+
+
     }
 
     private fun deleteObserve() {
@@ -143,13 +160,6 @@ class HideCategoryListing(val clickedPosition: Int) : Fragment() ,ItemCallback{
 
 
                 }
-
-                val intent = Intent()
-                intent.action = "inventory"
-                intent.putExtra("isCount", true)
-                intent.putExtra("param1", clickedPosition)
-                intent.putExtra("count", listSize)
-                requireContext().sendBroadcast(intent)
             }
         })
 

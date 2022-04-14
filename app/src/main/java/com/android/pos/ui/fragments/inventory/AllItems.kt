@@ -281,9 +281,7 @@ class AllItems(val clickedPosition: Int) : Fragment(),ItemCallback {
 
                 val intent = Intent()
                 intent.action = "inventory"
-                intent.putExtra("isCount", true)
-                intent.putExtra("param1", clickedPosition)
-                intent.putExtra("count", listSize)
+                intent.putExtra("position", clickedPosition)
                 requireContext().sendBroadcast(intent)
 
 

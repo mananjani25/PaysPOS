@@ -53,10 +53,15 @@ class Inventory : Fragment() {
     var broadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
 
-            val isCount = intent?.getBooleanExtra("isCount", false)
+            //val isCount = intent?.getBooleanExtra("isCount", false)
 
             getInventoryCountsObserver()
 
+            val position = intent?.getIntExtra("position", 0)
+            changePosition(position!!)
+            setAdapter(position)
+
+/*
             if (isCount == true) {
 
                 val count = intent.getIntExtra("count", 0)
@@ -97,10 +102,11 @@ class Inventory : Fragment() {
 
                 Log.e("broadcastReceiver", count.toString())
             } else {
-                val position = intent?.getIntExtra("position", 0)
+                val position = intent?.getIntExtra("param1", 0)
                 changePosition(position!!)
                 setAdapter(position)
             }
+*/
         }
 
     }
@@ -449,7 +455,7 @@ class Inventory : Fragment() {
                     InventoryItemModel(
                         0,
                         resources.getString(R.string.hidden_categories_title),
-                        hiddenItemsCount, true
+                        hiddenCategoriesCount, true
                     )
                 )
                 list.add(

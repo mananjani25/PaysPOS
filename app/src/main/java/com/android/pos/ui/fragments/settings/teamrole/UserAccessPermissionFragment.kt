@@ -66,6 +66,8 @@ class UserAccessPermissionFragment : Fragment() {
 
         isEdit = arguments?.getBoolean("isEdit")!!
 
+        setHeader()
+
         var roleLabel = getString(R.string.tv_add_new_role_name)
         if (isEdit) {
             binding.addRole.text = getString(R.string.update_role)
@@ -96,17 +98,23 @@ class UserAccessPermissionFragment : Fragment() {
         getUserPermissionListObserver()
         getModulesObserver()
 
-        binding.imgClose.setOnClickListener {
+        binding.header.imgBack.setOnClickListener {
             findNavController().navigateUp()
         }
         binding.txtCancel.setOnClickListener {
             findNavController().navigateUp()
         }
-        binding.txtHome.setOnClickListener {
+        binding.header.txtSave.setOnClickListener {
             findNavController().navigate(R.id.action_userAccessPermissionFragment_to_dashboardCategoryNew)
         }
 
         return binding.root
+    }
+
+
+    private fun setHeader() {
+        binding.header.txtTitle.text=getString(R.string.tv_user_access_permission)
+        binding.header.txtSave.text=getString(R.string.tv_home)
     }
 
 

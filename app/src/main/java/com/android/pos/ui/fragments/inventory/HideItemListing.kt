@@ -162,13 +162,14 @@ class HideItemListing(val clickedPosition: Int) : Fragment(),ItemCallback {
 
     private fun itemsObserver() {
 
-        viewModel.showItemsList.observe(viewLifecycleOwner, {
+        viewModel.showItemsList.observe(viewLifecycleOwner) {
 
             it?.let { resource ->
                 when (resource.status) {
                     Status.SUCCESS -> {
                         binding.rvAllItemList.visibility = View.VISIBLE
                         binding.progressCircular.visibility = View.GONE
+                        listSize = it.data?.size
                         it.data?.let { it1 ->
                             adapter.add(it1)
                             binding.edtSearch.hint = "Search (" + it1.size + ") Items"
@@ -186,7 +187,7 @@ class HideItemListing(val clickedPosition: Int) : Fragment(),ItemCallback {
             }
 
 
-        })
+        }
     }
 
     private fun deleteObserver() {
@@ -204,9 +205,7 @@ class HideItemListing(val clickedPosition: Int) : Fragment(),ItemCallback {
 
                 val intent = Intent()
                 intent.action = "inventory"
-                intent.putExtra("isCount", true)
-                intent.putExtra("param1", clickedPosition)
-                intent.putExtra("count", listSize)
+                intent.putExtra("position", clickedPosition)
                 requireContext().sendBroadcast(intent)
             }
         })
