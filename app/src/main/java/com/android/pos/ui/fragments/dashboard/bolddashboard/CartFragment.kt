@@ -663,8 +663,13 @@ class CartFragment(
 //                            binding.relativeLoylatyPoints.visibility = View.GONE
 //                            binding.lblLoyaltyPoints.visibility = View.GONE
 //                        }
-                        binding.liinearInfoLayout.layoutParams.height =
-                            resources.getDimension(R.dimen._40sdp).toInt()
+                        if (viewModel.order_note.isNotEmpty()) {
+                            binding.liinearInfoLayout.layoutParams.height =
+                                resources.getDimension(R.dimen._50sdp).toInt()
+                        } else {
+                            binding.liinearInfoLayout.layoutParams.height =
+                                resources.getDimension(R.dimen._40sdp).toInt()
+                        }
                         binding.relativeLoylatyPoints.visibility = View.GONE
                         binding.lblLoyaltyPoints.visibility = View.GONE
 

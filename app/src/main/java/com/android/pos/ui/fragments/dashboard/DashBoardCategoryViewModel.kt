@@ -2422,7 +2422,7 @@ class DashBoardCategoryViewModel @Inject constructor(
             totalTax = model.tax
             totalServiceCharge = model.serviceCharge
             totalDiscount = model.totalDiscount
-
+            order_note = cartModel.note
             /*   cartModel.dineInList?.forEach { dine ->
 
                    dine.items.forEach { item ->
@@ -2514,7 +2514,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                     }
                 }
 
-
+                order_note = cartModel.note
                 serviceChargeCalculationModel(cartModel)
                 subTotalPrice -= cartModel.discountPrice
 
