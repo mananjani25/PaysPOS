@@ -493,7 +493,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                 binding.linearSplitLayout.visibility = View.GONE
                 binding.linerContent.visibility = View.VISIBLE
-                binding.llNoReceipt.visibility = View.VISIBLE
+                binding.llNoReceipt.visibility = View.GONE
                 binding.txtRemainingAmount.visibility = View.GONE
                 binding.txtRemainingAmountLabel.visibility = View.GONE
                 binding.llNoReceipt.text = getString(R.string.no_receipt)
