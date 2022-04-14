@@ -1691,6 +1691,13 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                         }
                     }
 
+                    if (notPayAnyAmount){
+                        binding.txtEditOrder.visibility = View.GONE
+                    }
+                    else{
+                        binding.txtEditOrder.visibility = View.VISIBLE
+                    }
+
 
                 }
             }
