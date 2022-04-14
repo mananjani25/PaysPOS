@@ -138,6 +138,10 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
             if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == DINE_IN) {
                 listner.onCancelItemSelected(true)
             }
+            else{
+                listner.onCancelItemSelected(false)
+
+            }
         }
 
         binding.txtDone.setOnClickListener {
