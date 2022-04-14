@@ -26,6 +26,7 @@ import com.android.pos.data.remote.Constants.MERGEDANDOCCUPIED
 import com.android.pos.data.remote.Constants.OCCUPIED
 import com.android.pos.databinding.FragmentDineInBinding
 import com.android.pos.di.PrefProvider
+import com.android.pos.di.RolePermission
 import com.android.pos.ui.adapter.DineInFloorNameListAdapter
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.ProgressUtils
@@ -47,6 +48,8 @@ class DineInFragment : Fragment() {
     private val TAG = this.javaClass.name.toString()
     private var floorPlanSelectedPos = 0
 
+    @Inject
+    lateinit var rolePermission: RolePermission
 
     @Inject
     lateinit var prefProvider: PrefProvider
@@ -107,7 +110,9 @@ class DineInFragment : Fragment() {
 
     private fun onClick() {
         binding.layoutHeader.txtTransaction.setOnClickListener {
-            findNavController().navigate(R.id.action_dineInFragment_to_transactionFragment)
+            if(rolePermission.hasTransactionPermission(binding.root)){
+                findNavController().navigate(R.id.action_dineInFragment_to_transactionFragment)
+            }
         }
 
         binding.layoutHeader.linearSwitchUser.setOnClickListener {

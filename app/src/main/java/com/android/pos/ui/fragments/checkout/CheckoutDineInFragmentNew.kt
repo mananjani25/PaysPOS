@@ -626,7 +626,9 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
 
         Log.e(TAG, "isGuestPay:  ${isGuestPay}")
         if (isGuestPay) {
-//            dineinOrderVieweModel.totalPayAmount(WholetotalPrice)
+            if (custom_paymentAmount != 0.0) {
+                dineinOrderVieweModel.totalPayAmount(custom_paymentAmount)
+            }
             guestAttributeCalculation()
             guestRequestModel?.paymentAttributes?.let { logPrintGuest(it) }
             dineinOrderVieweModel?.payByGuest(
@@ -764,9 +766,16 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
 
             custom_paymentAmount = 0.0
 
-            paymentviewModel.totalPayAmount(
-                binding.tvCash0.text.toString().replace("$", "").trim().toDouble()
-            )
+            if (isGuestPay) {
+                dineinOrderVieweModel.totalPayAmount(
+                    binding.tvCash0.text.toString().replace("$", "").trim().toDouble()
+                )
+            } else {
+                paymentviewModel.totalPayAmount(
+                    binding.tvCash0.text.toString().replace("$", "").trim().toDouble()
+                )
+            }
+
             paymentAmount = binding.tvCash0.text.toString().replace("$", "").trim().toDouble()
             cashPaymentWithVariation()
         }
@@ -1504,7 +1513,20 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                             if (isDynamo())
                                 magtekModule.closeDevice()
                             paymentviewModel.setMagensaResponse(Gson().toJson(response.body()!![0]))
-                            makePaymentCreditCard()
+                            if (isGuestPay) {
+                                dineinOrderVieweModel.totalPayAmount(paymentAmount)
+                                guestAttributeCalculation()
+                                guestRequestModel?.paymentAttributes?.let { logPrintGuest(it) }
+                                dineinOrderVieweModel?.payByGuest(
+                                    dineInDataModel?.guestId ?: 0,
+                                    dineInDataModel?.guestPaymentReq!!,
+                                    dineInDataModel?.isLastPayment!!,
+                                    dineInDataModel?.splitModel!!
+                                )
+
+                            } else {
+                                makePaymentCreditCard()
+                            }
                         } else {
                             AlertUtils.showCustomAlert(
                                 requireContext(),
