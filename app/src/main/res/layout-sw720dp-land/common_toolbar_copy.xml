@@ -110,8 +110,7 @@
                     android:fontFamily="@font/sf_pro_display_semibold"
                     android:text="@string/tv_home"
                     android:gravity="center"
-
-                    android:textAllCaps="true"
+                    android:textAllCaps="false"
                     android:textColor="@color/white"
                     android:background="@drawable/button_action_hover"
                     android:paddingHorizontal="@dimen/padding_home_button"

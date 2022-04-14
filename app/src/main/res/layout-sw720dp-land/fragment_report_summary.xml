@@ -34,9 +34,10 @@
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
                     android:layout_gravity="center"
-                    android:background="?attr/selectableItemBackground"
-                    android:padding="@dimen/_6sdp"
-                    app:srcCompat="@drawable/ic_arrow_back" />
+                    android:paddingHorizontal="@dimen/_8sdp"
+                    android:paddingVertical="@dimen/_5sdp"
+                    app:srcCompat="@drawable/ic_arrow_back"
+                    android:background="?attr/selectableItemBackground"/>
 
             </RelativeLayout>
 
