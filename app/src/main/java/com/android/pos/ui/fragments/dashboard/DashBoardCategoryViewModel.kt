@@ -210,10 +210,10 @@ class DashBoardCategoryViewModel @Inject constructor(
         }
     }
 
-    fun addOrderNote(note:String){
-        if (cartModel != null){
-            cartModel!!.note =note
-           addCart(cartModel!!)
+    fun addOrderNote(note: String) {
+        if (cartModel != null) {
+            cartModel!!.note = note
+            addCart(cartModel!!)
 
         }
     }
@@ -483,10 +483,12 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                     Log.e(TAG, "dineInHeaderPosition:  ${dineInHeaderPosition}")
                     Log.e(TAG, "selectedItemPositionDine  ${selectedItemPositionDine}")
+                    Log.e(TAG, "dineInHeaderNew  ${dineInSelectedItemHeaderPos}")
+                    Log.e(TAG,"dineInList ${Gson().toJson(dine)}")
 
-                    dineInHeaderPosition?.let {
+                    dineInSelectedItemHeaderPos?.let {
                         dine.get(it).items.remove(
-                            dine.get(dineInHeaderPosition).items.get(
+                            dine.get(dineInSelectedItemHeaderPos).items.get(
                                 selectedItemPositionDine
                             )
                         )
@@ -2416,9 +2418,9 @@ class DashBoardCategoryViewModel @Inject constructor(
         var amountToBePaid = 0.0
         if (cartModel.orderType == DINE_IN) {
 
-           subTotalPrice = model.subTotal
-           totalTax = model.tax
-           totalServiceCharge = model.serviceCharge
+            subTotalPrice = model.subTotal
+            totalTax = model.tax
+            totalServiceCharge = model.serviceCharge
             totalDiscount = model.totalDiscount
 
             /*   cartModel.dineInList?.forEach { dine ->
@@ -2442,19 +2444,19 @@ class DashBoardCategoryViewModel @Inject constructor(
                }
    */
             totalServiceCharge = model.serviceCharge
-           // serviceChargeCalculationModel(cartModel)
+            // serviceChargeCalculationModel(cartModel)
             subTotalPrice -= cartModel.discountPrice
             totalDiscount += cartModel.discountPrice
-         /*   cartModel.dineInList?.forEach {
-                it.items.forEach {
-                    totalDiscount += if (!it.isManualSales) {
-                        (it.discountPrice * it.itemQuantity)
-                    } else {
-                        it.discountPrice
-                    }
-                }
-            }
-*/
+            /*   cartModel.dineInList?.forEach {
+                   it.items.forEach {
+                       totalDiscount += if (!it.isManualSales) {
+                           (it.discountPrice * it.itemQuantity)
+                       } else {
+                           it.discountPrice
+                       }
+                   }
+               }
+   */
 
             var finalTotal = 0.0
             finalTotal = (subTotalPrice + totalTax + totalServiceCharge)
@@ -2488,7 +2490,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                 cashdiscountAmount = 0.0
             }
 
-            MethodUtils.setPriceTextView(txtTotal,model.total)
+            MethodUtils.setPriceTextView(txtTotal, model.total)
 
 
         } else {

@@ -870,6 +870,8 @@ class CartFragment(
 
     override fun onItemClickListener(view: View?, data: TbItem, position: Int) {
         Log.e(TAG, "itemClicked  ${Gson().toJson(data)}")
+
+
         itemClickListner?.onItemUpdate(data)
 
 
@@ -886,6 +888,7 @@ class CartFragment(
 
         viewModel.selectedItemPositionDine = position
         viewModel.dineInHeaderPosition = headerPosition
+        viewModel.dineInSelectedItemHeaderPos = headerPosition
 
         itemClickListner?.onItemUpdate(item)
         /* if (prefProvider.getValue(ORDER_TYPE, "") == Constants.DINE_IN) {

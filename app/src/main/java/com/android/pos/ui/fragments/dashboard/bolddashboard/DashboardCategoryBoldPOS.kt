@@ -42,6 +42,7 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
+    private var dineInList: List<DineInModel>? = null
     private var cartList: ArrayList<CartModel> = arrayListOf()
     private lateinit var binding: FragmentDashboardCategoryBoldPosBinding
     private val viewModel by activityViewModels<DashBoardCategoryViewModel>()
@@ -218,8 +219,8 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
 
             if (isOrderNote) {
                 viewModel.addOrderNote(note.toString())
-               /* cartList[0].note = note.toString()
-                viewModel.addCart(cartList[0])*/
+                /* cartList[0].note = note.toString()
+                 viewModel.addCart(cartList[0])*/
             } else {
                 singleItem?.note = note.toString()
                 singleItem?.let {
@@ -469,13 +470,6 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
 
 
     override fun onItemSelected(item: TbItem) {
-        Log.e(TAG, "getitem:  ${Gson().toJson(item)}")
-        Log.e(TAG, "OrderTYpe:  ${prefProvider.getValue(ORDER_TYPE, TAKEOUT)}")
-        Log.e(TAG, "dineInHeaderPosition  ${viewModel.dineInHeaderPosition}")
-        Log.e(
-            TAG,
-            "dineInHeaderdineInSelectedItemHeaderPos  ${viewModel.dineInSelectedItemHeaderPos}"
-        )
 
         if (item.modifier_set_ids.isNotEmpty() || item.variationsAttributes.isNotEmpty()) {
             val fragment = AddItemFragment.newInstance(item, this, cartList, false)
@@ -490,11 +484,14 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
             if (cartList.size > 0) {
 
                 if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == Constants.DINE_IN) {
-                    Log.e(TAG,"dineInCartListData:  ${Gson().toJson(cartList[0].dineInList)}")
-                    if (cartList[0].dineInList!!.isNotEmpty()) {
+                    if (cartList[0].dineInList?.isEmpty() == true) {
+                        cartList[0].dineInList = dineInList
+                    }
+
+                    Log.e(TAG, "dineInCartListData:  ${Gson().toJson(cartList[0].dineInList)}")
+                    if (cartList[0].dineInList?.isNotEmpty() == true) {
                         var dineInList = cartList[0].dineInList
                         dineInList!![0]?.selectedPosition = viewModel.dineInHeaderPosition
-                        Log.e("Dinerrer", "Dinerrer")
                         viewModel.cartLogic(
                             cartList,
                             item,
@@ -512,16 +509,14 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
     }
 
 
-    override fun onCancelItemSelected() {
-        Log.e(TAG, "dineInHeaderPosition  ${viewModel.dineInHeaderPosition}")
-        Log.e(
-            TAG,
-            "dineInHeaderdineInSelectedItemHeaderPos  ${viewModel.dineInSelectedItemHeaderPos}"
-        )
-        if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == DINE_IN){
-
+    override fun onCancelItemSelected(isCancel: Boolean) {
+        if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == DINE_IN && isCancel){
+            arguments?.clear()
+            findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_self)
         }
-        loadCategoryFragment(CategoryFragment(this, binding.layoutHeader.edtSearch))
+        else {
+            loadCategoryFragment(CategoryFragment(this, binding.layoutHeader.edtSearch))
+        }
 
     }
 
