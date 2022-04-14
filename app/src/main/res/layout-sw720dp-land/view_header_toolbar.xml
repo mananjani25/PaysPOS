@@ -31,23 +31,18 @@
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/txtSave"
-        style="@style/CustomFontSemiBold"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_gravity="center"
         android:background="@drawable/button_action_hover"
         android:gravity="center"
-        android:paddingHorizontal="@dimen/_15sdp"
-        android:paddingVertical="@dimen/_6sdp"
+        android:paddingHorizontal="@dimen/padding_home_button"
         android:text="@string/save"
+        android:paddingVertical="@dimen/_7mdpi"
         android:textColor="@color/white"
-        android:textSize="@dimen/_8sdp" />
+        android:fontFamily="@font/sf_pro_display_semibold"
+        android:textSize="@dimen/_6mdpi" />
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@color/view"
-        android:layout_below="@+id/txtSave"/>
 </RelativeLayout>
 
