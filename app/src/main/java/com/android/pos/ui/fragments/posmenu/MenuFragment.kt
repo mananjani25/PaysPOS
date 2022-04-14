@@ -31,10 +31,17 @@ class MenuFragment : DialogFragment() {
         binding = FragmentMenuBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = this
 
+        setUpHeader()
 
 
         return binding.root
     }
+
+    private fun setUpHeader() {
+        binding.header.txtTitle.text=getString(R.string.menu)
+        binding.header.txtSave.text=getString(R.string.tv_home)
+    }
+
     override fun getTheme(): Int {
         return R.style.DialogTheme
     }
@@ -62,7 +69,7 @@ class MenuFragment : DialogFragment() {
     }
 
     private fun onClick() {
-        binding.txtHome.setOnClickListener {
+        binding.header.txtSave.setOnClickListener {
             findNavController().navigateUp()
             /*findNavController().navigateUp()*/
         }
@@ -72,7 +79,7 @@ class MenuFragment : DialogFragment() {
         binding.linearHardware.setOnClickListener {
             findNavController().navigate(R.id.action_menuFragment_to_hardware)
         }
-        binding.imgBack.setOnClickListener {
+        binding.header.imgBack.setOnClickListener {
             findNavController().navigateUp()
         }
         binding.linearInventory.setOnClickListener {

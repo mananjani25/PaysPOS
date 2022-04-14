@@ -227,6 +227,9 @@
         <action
             android:id="@+id/action_teamList_to_dashboardCategoryNew"
             app:destination="@id/dashboardCategoryBoldPOS" />
+        <action
+            android:id="@+id/action_teamList_to_menuFragment"
+            app:destination="@id/menuFragment" />
     </fragment>
     <action
         android:id="@+id/action_global_teamList"
@@ -874,7 +877,8 @@
     <fragment
         android:id="@+id/orderCompleteFragment"
         android:name="com.android.pos.ui.fragments.payment.OrderCompleteFragment"
-        android:label="OrderCompleteFragment">
+        android:label="OrderCompleteFragment"
+        >
         <argument
             android:name="isDineIn"
             android:defaultValue="false"

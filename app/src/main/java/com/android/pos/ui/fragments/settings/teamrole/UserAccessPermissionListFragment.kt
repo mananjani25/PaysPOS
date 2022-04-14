@@ -61,6 +61,7 @@ class UserAccessPermissionListFragment : Fragment() ,ItemCallback{
         )
 
         binding.lifecycleOwner = this
+        setHeader()
 
         setUpRecyclerView()
         getUserRoleListObserver()
@@ -74,10 +75,10 @@ class UserAccessPermissionListFragment : Fragment() ,ItemCallback{
             )
         }
 
-        binding.imgClose.setOnClickListener {
+        binding.header.imgBack.setOnClickListener {
             backPressManage()
         }
-        binding.txtHome.setOnClickListener {
+        binding.header.txtSave.setOnClickListener {
             findNavController().navigate(R.id.action_userAccessPermissionListFragment_to_dashboardCategory)
         }
 
@@ -91,6 +92,12 @@ class UserAccessPermissionListFragment : Fragment() ,ItemCallback{
 
         return binding.root
     }
+
+    private fun setHeader() {
+        binding.header.txtTitle.text=getString(R.string.tv_user_access_permission)
+        binding.header.txtSave.text=getString(R.string.tv_home)
+    }
+
 
 
     private fun setUpRecyclerView() {
