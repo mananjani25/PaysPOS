@@ -10,6 +10,9 @@
         android:background="@color/bg_color"
         android:orientation="vertical">
 
+        <include android:id="@+id/header"
+            layout="@layout/view_header_toolbar"/>
+<!--
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
@@ -56,6 +59,7 @@
                 tools:ignore="RelativeOverlap" />
 
         </RelativeLayout>
+-->
 
         <include layout="@layout/divider" />
 

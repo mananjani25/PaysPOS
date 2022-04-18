@@ -114,7 +114,7 @@
                     android:textColor="@color/white"
                     android:background="@drawable/button_action_hover"
                     android:paddingHorizontal="@dimen/padding_home_button"
-                    android:textSize="@dimen/_6mdpi"
+                    android:textSize="@dimen/_7mdpi"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />

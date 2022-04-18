@@ -41,6 +41,7 @@ import com.android.pos.ui.adapter.PrinterListAdapter
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.addHorizontalKitchenLine
 import com.android.pos.utils.extensions.alert
+import com.android.pos.utils.extensions.visible
 import com.android.pos.utils.padLine
 import com.android.pos.utils.printer.PrinterClass
 import com.android.pos.utils.printer.PrinterClass.BLUETOOTH_TIMEOUT
@@ -130,7 +131,15 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
         getOrderTypes()
 
+        setUpHeader()
+
         return binding.root
+    }
+
+    private fun setUpHeader() {
+        binding.header.imgSync.visible()
+        binding.header.txtTitle.text=getString(R.string.printers)
+        binding.header.txtSave.text=getString(R.string.tv_home)
     }
 
 
@@ -313,7 +322,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
               e.printStackTrace()
           }*/
 
-        binding.imgBack.setOnClickListener {
+        binding.header.imgBack.setOnClickListener {
             val navController = findNavController()
             navController.previousBackStackEntry?.savedStateHandle?.set(
                 com.android.pos.data.remote.Constants.KEY,
@@ -323,13 +332,13 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
             navController.popBackStack()
         }
 
-        binding.txtHome.setOnClickListener {
+        binding.header.txtSave.setOnClickListener {
             findNavController().navigate(R.id.action_printer_to_dashboardCategoryNew)
             // syncPrinterList(true)
 
         }
 
-        binding.imgSync.setOnClickListener {
+        binding.header.imgSync.setOnClickListener {
             availableNetworkAdapter.clearList()
 
             //searchBluetooth()

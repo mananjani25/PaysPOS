@@ -628,11 +628,11 @@
 
         <androidx.appcompat.widget.LinearLayoutCompat
             android:id="@+id/llManualCard"
-            android:visibility="gone"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@color/bg_color"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:visibility="gone">
 
 
             <androidx.appcompat.widget.LinearLayoutCompat
@@ -646,7 +646,8 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:padding="@dimen/_5sdp"
-                    android:src="@drawable/ic_arrow_back" />
+                    android:src="@mipmap/ic_left_arrow"
+                    app:tint="@color/drawable_ic_color" />
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:layout_width="match_parent"
