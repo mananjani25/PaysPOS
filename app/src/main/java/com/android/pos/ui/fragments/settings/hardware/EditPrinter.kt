@@ -10,6 +10,7 @@ import android.widget.ArrayAdapter
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import com.android.pos.R
 import com.android.pos.data.entities.TbOrderType
 import com.android.pos.data.model.PrinterListModel
 import com.android.pos.data.model.responseModel.PrinterResponse
@@ -59,7 +60,12 @@ class EditPrinter : Fragment() {
         observeShowProgress()
         updateDate()
         getOrderTypes()
+        setUpHeader()
         return binding.root
+    }
+
+    private fun setUpHeader() {
+        binding.header.txtTitle.text=getString(R.string.edit_printers)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -249,10 +255,10 @@ class EditPrinter : Fragment() {
 
 
     private fun onClick() {
-        binding.imgClose.setOnClickListener {
+        binding.header.imgBack.setOnClickListener {
             findNavController().popBackStack()
         }
-        binding.txtSave.setOnClickListener {
+        binding.header.txtSave.setOnClickListener {
             Log.e(TAG,"gettype:  ${type}")
             Log.e(TAG,"getPrinertype:  ${printerModel?.type}")
 

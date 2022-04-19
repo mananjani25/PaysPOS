@@ -10,64 +10,69 @@
         android:background="@color/bg_color"
         android:orientation="vertical">
 
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+        <include android:id="@+id/header"
+            layout="@layout/view_header_toolbar"/>
 
-            <androidx.appcompat.widget.AppCompatImageView
-                android:id="@+id/imgBack"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:layout_gravity="center"
-                android:background="?attr/selectableItemBackground"
-                android:padding="@dimen/_8sdp"
-                app:srcCompat="@drawable/ic_arrow_back"
-                app:tint="@color/txtColor" />
+        <!--
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
 
-            <ImageView
-                android:id="@+id/imgSync"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="@dimen/_5sdp"
-                android:layout_toLeftOf="@+id/txtHome"
-                android:layout_centerVertical="true"
-                android:background="?attr/selectableItemBackground"
-                android:padding="@dimen/_6sdp"
-                android:src="@drawable/ic_baseline_sync_24"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:tint="@color/txt_color_blue" />
+                    <androidx.appcompat.widget.AppCompatImageView
+                        android:id="@+id/imgBack"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_gravity="center"
+                        android:background="?attr/selectableItemBackground"
+                        android:padding="@dimen/_8sdp"
+                        app:srcCompat="@drawable/ic_arrow_back"
+                        app:tint="@color/txtColor" />
 
-            <androidx.appcompat.widget.AppCompatTextView
-                style="@style/CustomFontBold"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
-                android:layout_gravity="center"
-                android:gravity="center"
-                android:padding="@dimen/_5mdpi"
-                android:text="Printers"
-                android:textColor="@color/txtColor"
-                android:textSize="@dimen/header_title_size"
-                android:visibility="visible" />
+                    <ImageView
+                        android:id="@+id/imgSync"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginEnd="@dimen/_5sdp"
+                        android:layout_toLeftOf="@+id/txtHome"
+                        android:background="?attr/selectableItemBackground"
+                        android:padding="@dimen/_6sdp"
+                        android:src="@drawable/ic_baseline_sync_24"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:tint="@color/txt_color_blue" />
 
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/txtHome"
-                style="@style/CustomFontBold"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentEnd="true"
-                android:layout_centerVertical="true"
-                android:layout_gravity="center"
-                android:gravity="center"
-                android:padding="@dimen/_8sdp"
-                android:text="@string/tv_home"
-                android:textAllCaps="true"
-                android:textColor="@color/btnColor"
-                android:textSize="@dimen/_7mdpi" />
+                    <androidx.appcompat.widget.AppCompatTextView
+                        style="@style/CustomFontBold"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerInParent="true"
+                        android:layout_gravity="center"
+                        android:gravity="center"
+                        android:padding="@dimen/_5mdpi"
+                        android:text="Printers"
+                        android:textColor="@color/txtColor"
+                        android:textSize="@dimen/header_title_size"
+                        android:visibility="visible" />
 
-        </RelativeLayout>
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/txtHome"
+                        style="@style/CustomFontBold"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentEnd="true"
+                        android:layout_centerVertical="true"
+                        android:layout_gravity="center"
+                        android:gravity="center"
+                        android:padding="@dimen/_8sdp"
+                        android:text="@string/tv_home"
+                        android:textAllCaps="true"
+                        android:textColor="@color/btnColor"
+                        android:textSize="@dimen/_7mdpi" />
+
+                </RelativeLayout>
+        -->
 
         <include layout="@layout/divider" />
 

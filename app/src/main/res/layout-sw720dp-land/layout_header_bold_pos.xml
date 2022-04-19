@@ -90,7 +90,7 @@
                 android:layout_toStartOf="@+id/linearSecond"
                 android:layout_toEndOf="@+id/linearFirst"
                 android:background="@null"
-                android:drawableStart="@drawable/search_icon_small"
+                android:drawableStart="@drawable/ic_dashboard_serach"
                 android:drawablePadding="@dimen/_5sdp"
                 android:dropDownWidth="@dimen/_120sdp"
                 android:ellipsize="end"

@@ -39,7 +39,7 @@
     <dimen name="box_size">@dimen/_25sdp</dimen>
     <dimen name="btn_size">@dimen/_25sdp</dimen>
     <dimen name="header_title_size">@dimen/_7mdpi</dimen>
-    <dimen name="padding_home_button">@dimen/_8sdp</dimen>
+    <dimen name="padding_home_button">@dimen/_12sdp</dimen>
 
 
 

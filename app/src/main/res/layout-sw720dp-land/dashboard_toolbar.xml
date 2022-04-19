@@ -83,7 +83,7 @@
                 android:layout_marginEnd="@dimen/_5sdp"
                 android:layout_toStartOf="@+id/autoSearch"
                 android:contentDescription="@string/search"
-                android:src="@drawable/ic_search"
+                android:src="@drawable/ic_dashboard_serach"
 
                  />
 
