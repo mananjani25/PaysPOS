@@ -363,6 +363,18 @@
                         android:textSize="@dimen/_6mdpi" />
 
                     <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/txtConnStatusTemp"
+                        style="@style/CustomFontSemiBold"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:text="@string/active"
+                        android:textAllCaps="true"
+                        android:textSize="@dimen/_6mdpi" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/txtAction3"
                         style="@style/CustomFontSemiBold"
                         android:layout_width="0dp"
