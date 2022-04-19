@@ -821,12 +821,10 @@ class PosRepository @Inject constructor(
     suspend fun getOrderHistory(id: String) =
         apiHelperNew.getOrderHistory(id)
 
-    suspend fun clearTableNew(){
+    suspend fun clearTableManually(){
         appDatabase.clearAllTables()
     }
-
     suspend fun clearTable() {
-
 
         Log.e("clear Db Table", "-------")
         appDatabase.characterDao().delete()
@@ -851,6 +849,10 @@ class PosRepository @Inject constructor(
         appDatabase.printerDao().deleteCustomerPrinters()
         appDatabase.kitchenSettingsDao().delete()
         appDatabase.customerSettingsDao().delete()
+        appDatabase.cancelOrderReasonDao().delete()
+        appDatabase.cashDiscountDao().delete()
+        appDatabase.cartDao().delete()
+
     }
 
     fun orderCounts(startDate: String?, endDate: String?) =

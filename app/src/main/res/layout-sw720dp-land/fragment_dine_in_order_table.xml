@@ -238,11 +238,11 @@
                 android:layout_marginStart="@dimen/_2sdp"
                 android:layout_marginEnd="@dimen/_2sdp"
                 android:layout_weight="1"
-                android:background="@drawable/dine_in_footer_selector"
+                android:background="@drawable/btn_border_orange"
                 android:gravity="center"
                 android:minWidth="@dimen/_120sdp"
                 android:padding="@dimen/_8sdp"
-                android:text="@string/add_order"
+                android:text="@string/edit_order"
                 android:textColor="@color/white"
                 android:textSize="@dimen/_6ssp" />
 
@@ -254,7 +254,7 @@
                 android:layout_marginStart="@dimen/_2sdp"
                 android:layout_marginEnd="@dimen/_4sdp"
                 android:layout_weight="1"
-                android:background="@drawable/dine_in_footer_selector"
+                android:background="@drawable/btn_background_selector"
                 android:gravity="center">
 
                 <androidx.appcompat.widget.AppCompatTextView

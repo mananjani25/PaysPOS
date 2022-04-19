@@ -5,6 +5,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.android.pos.data.model.responseModel.BaseResponse
+import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.EMPLOYEE_ID
 import com.android.pos.data.remote.Constants.EMPLOYEE_NAME
 import com.android.pos.data.remote.Constants.EMPLOYEE_ROLE
@@ -109,6 +110,7 @@ class PasscodeViewModel @Inject constructor(
                                     )
                                     prefProvider.setValueboolean("clockOutFromNoti", false)
                                     prefProvider.setValue(PASSCODE, passcode)
+                                    prefProvider.setValueboolean(Constants.SYNC_DATA, false)
                                     employeeLogin(data)
 
                                 }

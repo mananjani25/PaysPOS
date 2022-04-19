@@ -60,8 +60,9 @@ class MenuFragment : DialogFragment() {
         viewModel.logout.observe(viewLifecycleOwner, { event ->
             event.getContentIfNotHandled()?.let {
                 if (it) {
+                    viewModel.clearTableAll()
                     prefProvider.setClear()
-                    viewModel.clearAllTables()
+                    prefProvider.setValue(Constants.AUTH_TOKEN, "")
                     findNavController().navigate(R.id.action_global_login)
 
 

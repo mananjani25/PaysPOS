@@ -216,6 +216,7 @@
                             android:layout_marginTop="@dimen/_10sdp"
                             android:gravity="center"
                             android:text="No Change"
+                            android:visibility="gone"
                             android:textColor="@color/txtColor"
                             android:textSize="@dimen/_12mdpi" />
 
@@ -239,8 +240,8 @@
                             android:gravity="center"
                             android:padding="@dimen/_5sdp"
                             android:text=""
-                            android:textColor="@color/light_gray"
-                            android:textSize="@dimen/_7mdpi" />
+                            android:textColor="@color/txtColor"
+                            android:textSize="@dimen/_10mdpi" />
 
                         <RelativeLayout
                             android:layout_width="wrap_content"
