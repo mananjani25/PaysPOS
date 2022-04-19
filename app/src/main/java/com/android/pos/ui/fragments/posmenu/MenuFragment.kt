@@ -61,8 +61,7 @@ class MenuFragment : DialogFragment() {
             event.getContentIfNotHandled()?.let {
                 if (it) {
                     prefProvider.setClear()
-                    viewModel.clearTable()
-                    prefProvider.setValue(Constants.AUTH_TOKEN, "")
+                    viewModel.clearAllTables()
                     findNavController().navigate(R.id.action_global_login)
 
 
