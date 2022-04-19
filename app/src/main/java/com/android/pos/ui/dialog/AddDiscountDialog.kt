@@ -82,6 +82,17 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
         itemOrderDiscount = requireArguments().getDouble("itemOrderDiscount")
         defaultModel = model ?: TbItem()
 
+        Log.e(TAG, "dataModel ${Gson().toJson(model)}")
+
+        if (model?.discountId != -1 && model?.discountType == PERCENTAGE) {
+            Log.e(TAG, "DiscountPercentage")
+
+            var disPercentage = 0.0
+            disPercentage = MethodUtils.roundOffAmountDouble(100 * model.discountPrice / model.price)
+            Log.e(TAG,"disPercentage  ${disPercentage}")
+
+
+        }
         if (defaultModel.modifiers.isNotEmpty()) {
             for (i in defaultModel.modifiers.indices) {
                 modifierPrice += (defaultModel.modifiers[i].price * defaultModel.modifiers[i].itemQuantity)
@@ -93,7 +104,7 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
         if (isOrderDiscount) {
             itemPrice -= orderDiscount
         } else {
-            if(itemPrice>=itemOrderDiscount){
+            if (itemPrice >= itemOrderDiscount) {
                 itemPrice -= itemOrderDiscount
             }
         }
@@ -116,6 +127,7 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
         if (!isOrderDiscount) {
             if (defaultModel.discountId == 0) {
                 binding.txtRemoveDiscount.visibility = View.GONE
+                Log.e(TAG,"edtAmountAppendFirst")
                 binding.edtAmount.append(MethodUtils.roundOffAmountString(defaultModel.discountPrice))
 
                 if (defaultModel.discountPrice != 0.0) {
@@ -123,9 +135,11 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
                         val applyDiscount =
                             (defaultModel.discountPrice * 100) / (itemPrice/*(defaultModel.price + modifierPrice) * defaultModel.itemQuantity*/)
                         binding.edtAmount.setText(MethodUtils.roundOffAmountString(applyDiscount))
+                        Log.e(TAG,"edtAmountSetSecond")
                         percentageView()
                     } else {
                         binding.edtAmount.setText(MethodUtils.roundOffAmountString(defaultModel.discountPrice))
+                        Log.e(TAG,"edtAmountSetSecond")
                         amountView()
                     }
                     binding.txtRemoveDiscount.visibility = View.VISIBLE
@@ -147,6 +161,8 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
                                     .toDouble()
                             )
                         )
+
+                        Log.e(TAG,"edtAmountSetThird")
                     } else {
                         val applyDiscount =
                             (defaultModel.discountPrice * 100) / (itemPrice/*(defaultModel.price + modifierPrice) * defaultModel.itemQuantity*/)
@@ -156,11 +172,14 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
                                     .toDouble()
                             )
                         )
+
+                        Log.e(TAG,"edtAmountSetThird")
                     }
 
                     percentageView()
                 } else {
                     binding.edtAmount.setText(MethodUtils.roundOffAmountString(defaultModel.discountPrice))
+                    Log.e(TAG,"edtAmountSetFour")
                     amountView()
                 }
             }
@@ -169,9 +188,11 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
 
                 if (orderDiscountType == getString(R.string.disc_percentage)) {
                     binding.edtAmount.setText(MethodUtils.roundOffAmountString(selectedvalue))
+                    Log.e(TAG,"edtAmountSetFive")
                     percentageView()
                 } else {
                     binding.edtAmount.setText(MethodUtils.roundOffAmountString(orderDiscountPrice))
+                    Log.e(TAG,"edtAmountSetFive")
                     amountView()
                 }
             }
@@ -268,6 +289,7 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
         binding.txtCurrencyDollar.setTextColor(requireActivity().resources.getColor(R.color.white))
         binding.txtCurrencyPercentage.setTextColor(requireActivity().resources.getColor(R.color.txtColor))
         binding.edtAmount.setText(binding.edtAmount.text.toString().trim())
+        Log.e(TAG,"edtAmountSetSix")
 
 
     }
@@ -287,6 +309,7 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
         binding.txtCurrencyDollar.setTextColor(requireActivity().resources.getColor(R.color.txtColor))
         binding.txtCurrencyPercentage.setTextColor(requireActivity().resources.getColor(R.color.white))
         binding.edtAmount.setText(binding.edtAmount.text.toString().trim())
+        Log.e(TAG,"edtAmountSetSeven")
 
 
     }

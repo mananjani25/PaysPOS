@@ -47,6 +47,7 @@ object ApiModule {
                         chain.proceed(chain.request().newBuilder().also {
                             val authToken = prefProvider.getValue(AUTH_TOKEN, "")
                             println("authToken ::  $authToken")
+                            println("BASE_URL :: ${prefProvider.getValue(BASE_URL_NEW, BASE_URL)}")
                             if (authToken!!.isNotEmpty())
                                 it.addHeader("TOKEN", authToken)
                         }.build())

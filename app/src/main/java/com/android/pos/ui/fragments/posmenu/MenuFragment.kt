@@ -9,7 +9,6 @@ import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
-import com.android.pos.data.remote.Constants
 import com.android.pos.databinding.FragmentMenuBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
@@ -21,6 +20,7 @@ import javax.inject.Inject
 class MenuFragment : DialogFragment() {
     private lateinit var binding: FragmentMenuBinding
     private val viewModel by viewModels<DashBoardCategoryViewModel>()
+
     @Inject
     lateinit var prefProvider: PrefProvider
     override fun onCreateView(
@@ -35,6 +35,7 @@ class MenuFragment : DialogFragment() {
 
         return binding.root
     }
+
     override fun getTheme(): Int {
         return R.style.DialogTheme
     }
@@ -50,8 +51,7 @@ class MenuFragment : DialogFragment() {
             event.getContentIfNotHandled()?.let {
                 if (it) {
                     prefProvider.setClear()
-                    viewModel.clearTable()
-                    prefProvider.setValue(Constants.AUTH_TOKEN, "")
+                    viewModel.clearAllTables()
                     findNavController().navigate(R.id.action_global_login)
 
 
@@ -107,12 +107,12 @@ class MenuFragment : DialogFragment() {
 
             }
 
-           // closeDialog(dialog)
+            // closeDialog(dialog)
         }
 
 
-
     }
+
     private fun closeDialog(dialog: Dialog?) {
         dialog?.dismiss()
     }

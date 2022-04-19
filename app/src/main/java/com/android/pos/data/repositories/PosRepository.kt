@@ -113,7 +113,7 @@ class PosRepository @Inject constructor(
     suspend fun syncVenueDetails() = apiHelperNew.syncVenueDetails()
 
 
-    suspend fun syncInventory() = apiHelperNew.syncVenueData()
+    suspend fun syncInventory() =  apiHelperNew.syncVenueData()
 
 
     fun venueDataLocal() = performGetOperationDatabase(
@@ -821,7 +821,12 @@ class PosRepository @Inject constructor(
     suspend fun getOrderHistory(id: String) =
         apiHelperNew.getOrderHistory(id)
 
+    suspend fun clearTableNew(){
+        appDatabase.clearAllTables()
+    }
+
     suspend fun clearTable() {
+
 
         Log.e("clear Db Table", "-------")
         appDatabase.characterDao().delete()
