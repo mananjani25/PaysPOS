@@ -1415,12 +1415,6 @@ class DashBoardCategoryViewModel @Inject constructor(
         }
     }
 
-     fun clearAllTables(){
-
-        CoroutineScope(Dispatchers.IO).launch {
-            posRepository.clearTableNew()
-        }
-    }
 
 
     fun clearTable() {
