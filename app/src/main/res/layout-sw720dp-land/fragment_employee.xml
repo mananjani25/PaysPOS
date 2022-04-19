@@ -19,6 +19,7 @@
         <androidx.appcompat.widget.LinearLayoutCompat
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:visibility="gone"
             android:background="@color/bg_color"
             android:orientation="vertical">
 
@@ -84,6 +85,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:gravity="center"
+            android:visibility="gone"
             android:padding="@dimen/_5sdp"
             android:text="Allow team member to clock in and out from any POS point of sale.View and edit shifts in POS Soft Dashboard"
             android:textColor="@color/hint_color"
@@ -96,7 +98,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:layout_marginTop="@dimen/_20sdp">
+            >
 
             <View
                 android:layout_width="match_parent"

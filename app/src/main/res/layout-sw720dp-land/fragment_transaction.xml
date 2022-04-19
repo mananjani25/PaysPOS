@@ -93,7 +93,7 @@
                 android:layout_weight="1"
                 android:gravity="center"
                 android:layout_gravity="center"
-                android:text="Customer"
+                android:text="Team/Customer"
                 android:textColor="@color/white"
                 android:textSize="@dimen/text_size_normal"
                 android:textAllCaps="true"/>

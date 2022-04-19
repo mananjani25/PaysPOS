@@ -203,6 +203,17 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
             tipAmountCalculation()
         }
         requireActivity().supportFragmentManager.setFragmentResultListener(
+            "request_key_split",
+            viewLifecycleOwner
+        ) { _: String, bundle: Bundle ->
+
+            isSelectedCount = bundle.getInt("split")
+            binding.tvCustom.text = "Custom ($isSelectedCount Ways)"
+            binding.tvwaysplit?.visible()
+            binding.tvwaysplit?.text = "$isSelectedCount Way Split Amount"
+            tipsetupGlobal(tipAmount, isSelectedCount)
+        }
+        requireActivity().supportFragmentManager.setFragmentResultListener(
             "request_for_customAmount",
             viewLifecycleOwner
         ) { _: String, bundle: Bundle ->
@@ -244,6 +255,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
             binding.tvCustom.text = "Custom"
             isSelectedCount = 1
             tipsetupGlobal(tipAmount, isSelectedCount)
+            binding.tvwaysplit?.visibility = View.INVISIBLE
             binding.tvFullAMounttxt.visibility = View.VISIBLE
 
         }
@@ -261,6 +273,8 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
             isSelectedCount = 2
             tipsetupGlobal(tipAmount, isSelectedCount)
             binding.tvFullAMounttxt.visibility = View.INVISIBLE
+            binding.tvwaysplit?.visible()
+            binding.tvwaysplit?.text = "$isSelectedCount Way Split Amount"
 
         }
         binding.tv3ways.setOnClickListener {
@@ -276,6 +290,8 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
             isSelectedCount = 3
             tipsetupGlobal(tipAmount, isSelectedCount)
             binding.tvFullAMounttxt.visibility = View.INVISIBLE
+            binding.tvwaysplit?.visible()
+            binding.tvwaysplit?.text = "$isSelectedCount Way Split Amount"
         }
         binding.tv4ways.setOnClickListener {
             listtextview = arrayListOf()
@@ -290,6 +306,8 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
             isSelectedCount = 4
             tipsetupGlobal(tipAmount, isSelectedCount)
             binding.tvFullAMounttxt.visibility = View.INVISIBLE
+            binding.tvwaysplit?.visible()
+            binding.tvwaysplit?.text = "$isSelectedCount Way Split Amount"
         }
         binding.tv5ways.setOnClickListener {
             listtextview = arrayListOf()
@@ -304,6 +322,8 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
             isSelectedCount = 5
             tipsetupGlobal(tipAmount, isSelectedCount)
             binding.tvFullAMounttxt.visibility = View.INVISIBLE
+            binding.tvwaysplit?.visible()
+            binding.tvwaysplit?.text = "$isSelectedCount Way Split Amount"
         }
         binding.tv6ways.setOnClickListener {
             listtextview = arrayListOf()
@@ -318,6 +338,8 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
             isSelectedCount = 6
             tipsetupGlobal(tipAmount, isSelectedCount)
             binding.tvFullAMounttxt.visibility = View.INVISIBLE
+            binding.tvwaysplit?.visible()
+            binding.tvwaysplit?.text = "$isSelectedCount Way Split Amount"
         }
         binding.tvCustom.setOnClickListener {
             listtextview = arrayListOf()

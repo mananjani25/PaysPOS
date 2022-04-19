@@ -46,6 +46,13 @@ class OrderDetailsItemListAdapter :
              totalPrice
          )*/
 
+        if (taxList[position].note.isEmpty()) {
+            itemBinding.txtNote?.visibility = View.GONE
+        } else {
+            itemBinding.txtNote?.visibility = View.VISIBLE
+            itemBinding.txtNote?.text = "Note: " + taxList[position].note
+        }
+
         itemBinding.tvTotal.text = MethodUtils.roundOffAmount(totalPrice)
 
         var total_rate = 0.0

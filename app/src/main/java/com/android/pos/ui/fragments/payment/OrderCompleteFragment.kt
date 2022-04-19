@@ -49,7 +49,9 @@ import com.android.pos.databinding.FragmentOrderCompletBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.adapter.SplitListAdapter
 import com.android.pos.utils.*
+import com.android.pos.utils.extensions.gone
 import com.android.pos.utils.extensions.liveSnackBar
+import com.android.pos.utils.extensions.visible
 import com.android.pos.utils.printer.PrinterClass
 import com.android.pos.utils.printer.PrinterClass.BLUETOOTH_TIMEOUT
 import com.android.pos.utils.statusUtils.Status
@@ -322,46 +324,50 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         changeAmtGlobal =
                             MethodUtils.roundOffAmountDouble(paidAmount - WholetotalPrice)
                                 .toDouble()
+                        binding.txtChangeAmount.visible()
                         binding.txtChangeAmount.text =
                             MethodUtils.roundOffAmount(paidAmount - WholetotalPrice) + " Change"
                         binding.txtPaymentAmount.text =
-                            "will remain Out of " + MethodUtils.roundOffAmount(paidAmount + tipAmount)
+                            MethodUtils.roundOffAmount(paidAmount + tipAmount)+" payment successful"
 
                     } else {
                         changeAmtGlobal = MethodUtils.roundOffAmountDouble(0.0).toDouble()
-
+                        binding.txtChangeAmount.gone()
                         binding.txtChangeAmount.text =
                             MethodUtils.roundOffAmount(0.0) + " Change"
                     }
                 } else if (remainingAmount < paidAmount) {
                     if (isCustomCash && splitChange != 0.0) {
                         changeAmtGlobal = MethodUtils.roundOffAmountDouble(splitChange).toDouble()
+                        binding.txtChangeAmount.visible()
                         binding.txtChangeAmount.text =
                             MethodUtils.roundOffAmount(splitChange) + " Change"
                         binding.txtPaymentAmount.text =
-                            "will remain Out of " + MethodUtils.roundOffAmount((paidAmount + tipAmount))
+                            MethodUtils.roundOffAmount((paidAmount + tipAmount))+" payment successful"
                     } else {
 
                         val changeValue = (paidAmount - dis_charge_value) - remainingAmount
                         if (changeValue > 0.0) {
                             changeAmtGlobal =
                                 MethodUtils.roundOffAmountDouble(changeValue).toDouble()
+                            binding.txtChangeAmount.visible()
                             binding.txtChangeAmount.text =
                                 MethodUtils.roundOffAmount(changeValue) + " Change"
                         }
                         binding.txtPaymentAmount.text =
-                            "will remain  Out of " + MethodUtils.roundOffAmount((paidAmount + tipAmount))
+                            MethodUtils.roundOffAmount((paidAmount + tipAmount))+" payment successful"
                     }
                 } else {
                     if (isCustomCash && splitChange != 0.0) {
                         changeAmtGlobal = MethodUtils.roundOffAmountDouble(splitChange).toDouble()
+                        binding.txtChangeAmount.visible()
                         binding.txtChangeAmount.text =
                             MethodUtils.roundOffAmount(splitChange) + " Change"
                         binding.txtPaymentAmount.text =
-                            "will remain Out of " + MethodUtils.roundOffAmount((paidAmount + tipAmount))
+                            MethodUtils.roundOffAmount((paidAmount + tipAmount))+" payment successful"
                     } else {
                         binding.txtPaymentAmount.text =
-                            "will remain Out of " + MethodUtils.roundOffAmount(paidAmount + tipAmount)
+                            MethodUtils.roundOffAmount(paidAmount + tipAmount)+" payment successful"
                     }
                 }
             } else {
@@ -383,25 +389,27 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     binding.txtTitle.text =
                         MethodUtils.roundOffAmount(paidAmount)
                     binding.txtPaymentAmount.text =
-                        "will remain Out of " + MethodUtils.roundOffAmount(paidAmount)
+                        MethodUtils.roundOffAmount(paidAmount)+" payment successful"
 
                 } else {
                     binding.txtTitle.text =
                         MethodUtils.roundOffAmount(paidAmount + tipAmount)
                     binding.txtPaymentAmount.text =
-                        "will remain Out of " + MethodUtils.roundOffAmount(paidAmount + tipAmount)
+                        MethodUtils.roundOffAmount(paidAmount + tipAmount)+" payment successful"
                 }
 
 
                 if (isCustomCash) {
                     changeAmtGlobal =
                         MethodUtils.roundOffAmountDouble(remainingAmount - tipAmount).toDouble()
+                    binding.txtChangeAmount.visible()
                     binding.txtChangeAmount.text =
                         MethodUtils.roundOffAmount(remainingAmount - tipAmount) + " Change"
                 } else {
                     if (remainingAmount < 0) {
                         changeAmtGlobal =
                             MethodUtils.roundOffAmountDouble(remainingAmount - tipAmount).toDouble()
+                        binding.txtChangeAmount.visible()
                         binding.txtChangeAmount.text =
                             MethodUtils.roundOffAmount(remainingAmount - tipAmount) + " Change"
                     }
@@ -441,33 +449,36 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 if (remainingAmount < paidAmount) {
                     if (isCustomCash && splitChange != 0.0) {
                         changeAmtGlobal = MethodUtils.roundOffAmountDouble(splitChange)
+                        binding.txtChangeAmount.visible()
                         binding.txtChangeAmount.text =
                             MethodUtils.roundOffAmount(splitChange) + " Change"
                         binding.txtPaymentAmount.text =
-                            "will remain Out of " + MethodUtils.roundOffAmount((paidAmount + tipAmount))
+                            MethodUtils.roundOffAmount((paidAmount + tipAmount))+" payment successful"
                     } else {
                         var temp_Change =
                             MethodUtils.roundOffAmountDouble((paidAmount - dis_charge_value) - remainingAmount)
                         if (!(temp_Change.equals(0.0) || temp_Change.equals(0) || temp_Change <= 0.0)) {
                             changeAmtGlobal =
                                 MethodUtils.roundOffAmountDouble((paidAmount - dis_charge_value) - remainingAmount)
+                            binding.txtChangeAmount.visible()
                             binding.txtChangeAmount.text =
                                 MethodUtils.roundOffAmount((paidAmount - dis_charge_value) - remainingAmount) + " Change"
                         }
                         binding.txtPaymentAmount.text =
-                            "will remain Out of " + MethodUtils.roundOffAmount((paidAmount + tipAmount))
+                            MethodUtils.roundOffAmount((paidAmount + tipAmount))+" payment successful"
                     }
 
                 } else {
                     if (isCustomCash && splitChange != 0.0) {
                         changeAmtGlobal = MethodUtils.roundOffAmountDouble(splitChange)
+                        binding.txtChangeAmount.visible()
                         binding.txtChangeAmount.text =
                             MethodUtils.roundOffAmount(splitChange) + " Change"
                         binding.txtPaymentAmount.text =
-                            "will remain Out of " + MethodUtils.roundOffAmount((paidAmount + tipAmount))
+                            MethodUtils.roundOffAmount((paidAmount + tipAmount))+" payment successful"
                     } else {
                         binding.txtPaymentAmount.text =
-                            "will remain Out of " + MethodUtils.roundOffAmount(paidAmount + tipAmount)
+                            MethodUtils.roundOffAmount(paidAmount + tipAmount)+" payment successful"
                     }
                 }
             } else {
@@ -506,18 +517,20 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                 if (isCustomCash) {
                     changeAmtGlobal = MethodUtils.roundOffAmountDouble(remainingAmount - tipAmount)
+                    binding.txtChangeAmount.visible()
                     binding.txtChangeAmount.text =
                         MethodUtils.roundOffAmount(remainingAmount - tipAmount) + " Change"
                 } else {
                     if (remainingAmount < 0) {
                         changeAmtGlobal = MethodUtils.roundOffAmountDouble(remainingAmount)
+                        binding.txtChangeAmount.visible()
                         binding.txtChangeAmount.text =
                             MethodUtils.roundOffAmount(remainingAmount) + " Change"
                     }
                 }
 
                 binding.txtPaymentAmount.text =
-                    "will remain Out of " + MethodUtils.roundOffAmount(paidAmount + tipAmount)
+                    MethodUtils.roundOffAmount(paidAmount + tipAmount)+" payment successful"
 
 
             }

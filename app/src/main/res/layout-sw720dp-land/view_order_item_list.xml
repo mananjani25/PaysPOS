@@ -30,6 +30,21 @@
                     android:text="Three layer ice cream"
                     android:textColor="@color/white"
                     android:textSize="@dimen/_6mdpi" />
+                <TextView
+                    android:id="@+id/txtNote"
+                    style="@style/CustomFontRegularStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="start"
+                    android:ellipsize="end"
+                    android:gravity="start"
+                    android:lines="1"
+                    android:maxLines="1"
+                    android:singleLine="true"
+                    android:textColor="@color/btnColor"
+                    android:textSize="@dimen/_6mdpi"
+                    android:visibility="gone"
+                    tools:text="Item Name" />
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/tvModifierName"
