@@ -344,6 +344,7 @@ class ActiveOrderFragment(
                     bundle.putString("paymentOfflineId", randomOfflineId())
                 }
                 bundle.putString("orderOfflineId", order.offlineId)
+                bundle.putBoolean("isFromActiveOrder", true)
                 bundle.putBoolean("isLoyaltyApplied", order.isLoyaltyApplied)
                 findNavController().navigate(
                     R.id.action_orders_to_dashboardCategoryBoldPOS, bundle
@@ -362,6 +363,7 @@ class ActiveOrderFragment(
                         order.customer.firstName + " " + order.customer.lastName
                     )
                     prefProvider.setValueInt(Constants.CUSTOMER_ID,order.customer.id)
+                    prefProvider.saveCustomerData(TbCustomer.customerMapping(order.customer))
                 }
                 dashboardViewModel.addCart(
                     cartModel(order)
@@ -386,7 +388,6 @@ class ActiveOrderFragment(
                 bundle.putString("future_delivery_date", order.futureDeliveryDate)
                 bundle.putString("future_delivery_time", order.futureDeliveryTime)
                 bundle.putParcelable("cartList", cartModel(order))
-
 
                 bundle.putInt("orderId", order.id)
                 Log.e("orderId :: ", order.id.toString())
@@ -421,6 +422,7 @@ class ActiveOrderFragment(
                     Gson().toJson(redeemLoyaltyInfo)
                 )
                 bundle.putBoolean("isFromActiveOrder", true)
+                bundle.putBoolean("isLoyaltyApplied", order.isLoyaltyApplied)
 
                 findNavController().navigate(R.id.action_orders_to_paymentBoldPosFragment, bundle)
 

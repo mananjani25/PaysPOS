@@ -193,6 +193,8 @@ class PaymentBoldPosFragment : Fragment() {
             putInt("fragmentId", binding.frameLayout.id)
             putInt("checkoutHeaderId", binding.layoutHeaderCheckout.rlRoot.id)
             putBoolean("isFromPayment", true)
+            arguments?.getBoolean("isLoyaltyApplied")?.let { putBoolean("isLoyaltyApplied", it) }
+            arguments?.getBoolean("isFromActiveOrder")?.let { putBoolean("isFromActiveOrder", it) }
             putString(REDIRECT_FROM, arguments?.getString(REDIRECT_FROM))
             // putInt("dashboardHeaderId", binding.layoutHeader.rlRoot.id)
         }
