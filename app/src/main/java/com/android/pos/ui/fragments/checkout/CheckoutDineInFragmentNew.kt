@@ -23,6 +23,7 @@ import com.android.pos.data.model.requestModel.*
 import com.android.pos.data.model.responseModel.GuestPaymentAttributes
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.DINE_IN_ADAPTER_LIST
+import com.android.pos.data.remote.Constants.DINE_IN_GUEST_PAYMENT_DATA
 import com.android.pos.data.remote.Constants.PRINT_DATA_DINE_IN
 import com.android.pos.databinding.FragmentCheckoutDetailsNewBinding
 import com.android.pos.di.ApiModule1
@@ -524,6 +525,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                         bundle.putParcelableArrayList(DINE_IN_ADAPTER_LIST,dineInDataModel.dineInAdapterList?.toCollection(
                             arrayListOf()))
                         bundle.putParcelable(PRINT_DATA_DINE_IN,dineInDataModel.dineInOrderDetails)
+                        bundle.putParcelable(DINE_IN_GUEST_PAYMENT_DATA,dineInDataModel.guestPaymentModel)
 
                         if (findNavController().currentDestination?.id == R.id.paymentBoldPosFragment) {
 
@@ -604,6 +606,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                         bundle.putParcelableArrayList(DINE_IN_ADAPTER_LIST,dineInDataModel.dineInAdapterList?.toCollection(
                             arrayListOf()))
                         bundle.putParcelable(PRINT_DATA_DINE_IN,dineInDataModel.dineInOrderDetails)
+                        bundle.putParcelable(DINE_IN_GUEST_PAYMENT_DATA,dineInDataModel.guestPaymentModel)
 
                         if (findNavController().currentDestination?.id == R.id.paymentBoldPosFragment) {
                             findNavController().navigate(
@@ -1945,6 +1948,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
 
 
                 bundle.putParcelable(PRINT_DATA_DINE_IN,dineInDataModel.dineInOrderDetails)
+                bundle.putParcelable(DINE_IN_GUEST_PAYMENT_DATA,dineInDataModel.guestPaymentModel)
                 if (findNavController().currentDestination?.id == R.id.paymentBoldPosFragment) {
                     findNavController().navigate(
                         R.id.action_paymentBoldPosFragment_to_orderComplete,
@@ -2024,6 +2028,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                 bundle.putParcelableArrayList(DINE_IN_ADAPTER_LIST,dineInDataModel.dineInAdapterList?.toCollection(
                     arrayListOf()))
                 bundle.putParcelable(PRINT_DATA_DINE_IN,dineInDataModel.dineInOrderDetails)
+                bundle.putParcelable(DINE_IN_GUEST_PAYMENT_DATA,dineInDataModel.guestPaymentModel)
 
                 if (findNavController().currentDestination?.id == R.id.paymentBoldPosFragment) {
                     findNavController().navigate(

@@ -123,6 +123,8 @@ class PaymentBoldPosFragment : Fragment() {
             var isLastPayment = requireArguments().getBoolean("isLastPayment") ?: false
             var splitModel: DineInOrderPayment =
                 requireArguments().getParcelable("orderPayment") ?: DineInOrderPayment()
+
+
             Handler(Looper.getMainLooper()).postDelayed({
                 val dineInModel = CheckOutDineInDataModel(
                     requireArguments().getInt("id") ?: 0,
@@ -132,14 +134,15 @@ class PaymentBoldPosFragment : Fragment() {
                     dineInOrderId,
                     splitModel,
                     dineInAdapterList = requireArguments()?.getParcelableArrayList(Constants.DINE_IN_ADAPTER_LIST),
-                    dineInOrderDetails = requireArguments()?.getParcelable(Constants.PRINT_DATA_DINE_IN)
+                    dineInOrderDetails = requireArguments()?.getParcelable(Constants.PRINT_DATA_DINE_IN),
+                    guestPaymentModel = requireArguments()?.getParcelable(Constants.DINE_IN_GUEST_PAYMENT_DATA)
                 )
                 Log.e(TAG, "dineInModel:  ${Gson().toJson(dineInModel)}")
                 loadCategoryFragment(CheckoutDineInFragmentNew(dineInModel))
             }, 100)
         } else {
             Handler(Looper.getMainLooper()).postDelayed({
-                loadCategoryFragment(CheckoutDetailsFragmentNew())
+                loadCategoryFragment(CheckoutDetailsFragmentNew(requireArguments().getBoolean("isFromActiveOrder")))
             }, 100)
 
         }

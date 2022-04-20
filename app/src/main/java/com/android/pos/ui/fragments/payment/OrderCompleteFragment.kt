@@ -21,6 +21,7 @@ import com.android.pos.data.entities.CartModel
 import com.android.pos.data.entities.RedeemLoyaltyInfo
 import com.android.pos.data.entities.TbItem
 import com.android.pos.data.model.DineInModel
+import com.android.pos.data.model.GuestDataModel
 import com.android.pos.data.model.SplitBundleModel
 import com.android.pos.data.model.SplitDetailListModel
 import com.android.pos.data.model.responseModel.*
@@ -889,15 +890,21 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     PrinterClass.setPrinter(printer)
                     if (isGuest) {
 
+                        val checkOutDineInModel = requireArguments().getParcelable<GuestDataModel>(Constants.DINE_IN_GUEST_PAYMENT_DATA)
+                        Log.e(TAG,"checkOutDineInModel:  ${Gson().toJson(checkOutDineInModel)}")
 
-                        generateGuestPrint(
-                            customerReceiptPrinters,
-                            type,
-                            paymentType,
-                            listGuestItem,
-                            guestName,
-                            listWTitems,
-                        )
+
+                        if (checkOutDineInModel != null) {
+                            generateGuestPrint(
+                                customerReceiptPrinters,
+                                type,
+                                paymentType,
+                                listGuestItem,
+                                guestName,
+                                listWTitems,
+                                checkOutDineInModel
+                            )
+                        }
 
                     } else {
 
@@ -923,6 +930,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         listGuestItem: ArrayList<TbItem>,
         guestName: String,
         listWTitems: ArrayList<TbItem>,
+        checkOutDineInModel: GuestDataModel?,
 
         ) {
         var guestSubTotal = 0.0
@@ -1429,6 +1437,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     Builder.FALSE,
                     Builder.COLOR_1
                 )
+
+
+
                 builder.addText(
                     padLine(
                         "Total Discount",
@@ -1437,7 +1448,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                             "$" + MethodUtils.roundOffAmountString(0.0)
                         } else {
 
-                            "-$" + MethodUtils.roundOffAmountString(finaldisLocal)
+                            "-$" + MethodUtils.roundOffAmountString(checkOutDineInModel?.totalDiscount ?: 0.0)
 
                         },
                         if (customerSettingModel.fonts == Constants.LARGE) {
@@ -1468,7 +1479,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 padLine(
                     "Sub Total",
                     "$" + MethodUtils.roundOffAmountString(
-                        subTotalWT - orderDiscount
+                        (checkOutDineInModel?.subTotal!!) - orderDiscount
                     ),
                     if (customerSettingModel.fonts == Constants.LARGE) {
                         24
@@ -1493,10 +1504,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     Builder.COLOR_1
                 )
 
+
                 builder.addText(
                     padLine(
                         "Tax",
-                        "$" + MethodUtils.roundOffAmountString(totalTaxAmount),
+                        "$" + MethodUtils.roundOffAmountString(checkOutDineInModel?.totalTax),
                         if (customerSettingModel.fonts == Constants.LARGE) {
                             24
                         } else {
@@ -1520,10 +1532,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 Builder.COLOR_1
             )
 
+
             builder.addText(
                 padLine(
                     "Service Charge",
-                    "$" + MethodUtils.roundOffAmountString(serviceCharge),
+                    "$" + MethodUtils.roundOffAmountString(checkOutDineInModel?.totalServiceCharge!!),
                     if (customerSettingModel.fonts == Constants.LARGE) {
                         24
                     } else {
@@ -1620,9 +1633,10 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 Builder.TRUE,
                 Builder.COLOR_1
             )
+
             var totalAmt =
                 MethodUtils.roundOffAmountDouble(
-                    subTotalWT + totalTaxAmount + serviceCharge - orderDiscount
+                    (checkOutDineInModel?.subTotal!!)  + checkOutDineInModel?.totalTax + checkOutDineInModel?.totalServiceCharge!! - orderDiscount
                 )
 
             if (payTypeGlb == "Cash") {
@@ -2527,7 +2541,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             builder.addText(
                 padLine(
                     "Sub Total",
-                    "$" + MethodUtils.roundOffAmountString(subTotalWT),
+                    "$" + MethodUtils.roundOffAmountString(getDineInOrderDetails?.subTotal ?: 0.0),
                     if (customerSettingModel.fonts == Constants.LARGE) {
                         24
                     } else {
@@ -2554,7 +2568,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 builder.addText(
                     padLine(
                         "Tax",
-                        "$" + MethodUtils.roundOffAmountString(totalTaxAmount),
+                        "$" + MethodUtils.roundOffAmountString(getDineInOrderDetails?.totalTaxAmount ?: 0.0),
                         if (customerSettingModel.fonts == Constants.LARGE) {
                             24
                         } else {
@@ -2564,7 +2578,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 )
             }
 
-            if (serviceCharge != null) {
+
                 builder.addTextLineSpace(30)
                 builder.addFeedUnit(30)
                 builder.addTextFont(Builder.FONT_E)
@@ -2581,7 +2595,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 builder.addText(
                     padLine(
                         "Service Charge",
-                        "$" + MethodUtils.roundOffAmountString(serviceCharge),
+                        "$" + MethodUtils.roundOffAmountString(getDineInOrderDetails?.totalServiceCharges ?: 0.0),
                         if (customerSettingModel.fonts == Constants.LARGE) {
                             24
                         } else {
@@ -2589,7 +2603,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         }
                     )
                 )
-            }
+
 
             if (getDineInOrderDetails?.totalTips != 0.0) {
 
@@ -2712,7 +2726,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 Builder.COLOR_1
             )
             var totalAmt =
-                MethodUtils.roundOffAmountDouble(subTotalWT + serviceCharge + totalTaxAmount)
+                MethodUtils.roundOffAmountDouble((getDineInOrderDetails?.subTotal ?: 0.0) + (getDineInOrderDetails?.totalServiceCharges
+                ?: 0.0) + (getDineInOrderDetails?.totalTaxAmount ?: 0.0))
 
             if (payTypeGlb == "Cash") {
 
@@ -3350,6 +3365,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         }
 */
                         if (requireArguments().getBoolean("isDineIn")) {
+                            Log.e(TAG,"IsDineIn True: ")
                             customerPrintWholeOrder()
 
                         } else {

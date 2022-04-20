@@ -53,7 +53,7 @@ import java.util.*
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
+class CheckoutDetailsFragmentNew(val isFromOpenOrder:Boolean = false) : Fragment(), magtekCallback,
     DeleteOptionCallback, IDeviceListCallback {
     private var isManualCard: Boolean = false
     private lateinit var binding: FragmentCheckoutDetailsNewBinding
@@ -516,7 +516,7 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
                         bundle.putDouble("TipAmount", tipAmount)
 
                         bundle.putDouble("noCashAdj", cashDiscountSurcharge)
-                        bundle.putBoolean("isFromActiveOrder", false)
+                        bundle.putBoolean("isFromActiveOrder", isFromOpenOrder)
 
 
                         if (findNavController().currentDestination?.id == R.id.paymentBoldPosFragment) {
@@ -593,7 +593,7 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
                         bundle.putDouble("TipAmount", tipAmount)
 
                         bundle.putDouble("noCashAdj", cashDiscountSurcharge)
-                        bundle.putBoolean("isFromActiveOrder", false)
+                        bundle.putBoolean("isFromActiveOrder", isFromOpenOrder)
 
                         if (findNavController().currentDestination?.id == R.id.paymentBoldPosFragment) {
                             findNavController().navigate(

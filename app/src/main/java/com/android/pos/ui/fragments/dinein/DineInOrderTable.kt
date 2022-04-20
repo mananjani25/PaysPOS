@@ -25,12 +25,14 @@ import com.android.pos.R
 import com.android.pos.data.entities.*
 import com.android.pos.data.model.DineInModel
 import com.android.pos.data.model.DineinCartPaymentModel
+import com.android.pos.data.model.GuestDataModel
 import com.android.pos.data.model.requestModel.*
 import com.android.pos.data.model.responseModel.*
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.DINE_IN
 import com.android.pos.data.remote.Constants.DINE_IN_ADAPTER_LIST
 import com.android.pos.data.remote.Constants.DINE_IN_DISCOUNT
+import com.android.pos.data.remote.Constants.DINE_IN_GUEST_PAYMENT_DATA
 import com.android.pos.data.remote.Constants.DINE_IN_SERVICECHARGE
 import com.android.pos.data.remote.Constants.DINE_IN_SUBTOTAL
 import com.android.pos.data.remote.Constants.DINE_IN_TAX
@@ -858,6 +860,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         bundle.putDouble("dicountB", divideDiscount)
 
 
+
+
         val adapterList = dineInTableAdapter.getList()
 
 
@@ -983,6 +987,19 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 arrayListOf()
             )
         )
+
+
+        val newGuestModel = GuestDataModel(
+            subTotal = subTotalGuest ,
+            totalTax = taxGuest,
+            totalAmount =  totalGuest,
+            totalDiscount = divideDiscount,
+            cashDiscount = divideCashDiscount,
+            totalServiceCharge = serviceChargeGuest
+
+        )
+        Log.e(TAG,"newGuestModel:  ${Gson().toJson(newGuestModel)}")
+        bundle.putParcelable(DINE_IN_GUEST_PAYMENT_DATA,newGuestModel)
         //orderId?.let { it1 -> bundle.putInt("orderId", it1) }
 //        orderId?.let { it1 -> prefProvider.setValueInt("ORDER_ID", it1) }
         var wholeTableAmt = 0.0
@@ -4324,7 +4341,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                         builder.addTextLineSpace(30)
                         builder.addFeedUnit(30)
                         builder.addTextFont(Builder.FONT_E)
-                        // builder.addTextAlign(Builder.ALIGN_LEFT)
+                         builder.addTextAlign(Builder.ALIGN_CENTER)
                         builder.addTextLang(Builder.LANG_EN)
                         addCustomerTextSize(builder, customerSettingModel.fonts)
                         builder.addTextStyle(
