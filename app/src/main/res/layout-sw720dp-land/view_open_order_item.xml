@@ -250,7 +250,7 @@
                     android:layout_marginLeft="@dimen/_5sdp"
                     android:layout_marginRight="@dimen/_5sdp"
                     android:layout_weight="1"
-                    android:background="@drawable/background_square_border_grey"
+                    android:background="@drawable/button_selected"
                     android:gravity="center"
                     android:padding="@dimen/_10sdp"
                     android:text="@string/tv_pay_now"

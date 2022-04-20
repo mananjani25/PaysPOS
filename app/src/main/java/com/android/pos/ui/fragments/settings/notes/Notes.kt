@@ -2,6 +2,7 @@ package com.android.pos.ui.fragments.settings.notes
 
 import android.graphics.Color
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -10,6 +11,7 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.R
 import com.android.pos.data.model.responseModel.NoteResponse
@@ -37,7 +39,9 @@ class Notes : Fragment() ,ItemCallback{
     private val viewModel by viewModels<NoteListViewModel>()
     private var position: Int = -1
     private lateinit var noteListUpdateDelete: ArrayList<NoteResponse.Data>
-
+    private val TAG = "Notes"
+    var dragFrom = -1
+    var dragTo = -1
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -68,8 +72,86 @@ class Notes : Fragment() ,ItemCallback{
         noteListadapter = NotesListAdapter(viewModel, false)
         binding.rvNoteLise.adapter = noteListadapter
         noteListadapter.setCallback(this)
+
+
+/*
+        val touchHelper =
+            ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP + ItemTouchHelper.DOWN, 0) {
+
+
+                override fun onMove(
+                    recyclerView: RecyclerView,
+                    viewHolder: RecyclerView.ViewHolder,
+                    target: RecyclerView.ViewHolder
+                ): Boolean {
+                    val oldPos = viewHolder.bindingAdapterPosition
+                    val newPos = target.bindingAdapterPosition
+                    Log.e(TAG,"posGOTPoldPos ${oldPos}")
+                    Log.e(TAG,"posGOTPnewPos ${newPos}")
+
+                    if (dragFrom == -1) {
+                        dragFrom = oldPos
+                    }
+                    dragTo = target.layoutPosition
+
+                    noteListadapter.onItemMove(
+                        viewHolder.bindingAdapterPosition,
+                        target.bindingAdapterPosition
+                    )
+
+                    return true
+                }
+
+                override fun isLongPressDragEnabled(): Boolean {
+                    return true
+                }
+
+                override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+
+                }
+
+                override fun clearView(
+                    recyclerView: RecyclerView,
+                    viewHolder: RecyclerView.ViewHolder
+                ) {
+
+                    if (dragFrom != -1 && dragTo != -1 && dragFrom != dragTo) {
+
+                        reallyMoved(
+                            adapter.getItem(dragFrom).sort,
+                            adapter.getItem(dragTo).sort,
+                            adapter.getItem(viewHolder.layoutPosition).id
+                        )
+                        */
+/* reallyMoved(
+                             dragFrom,
+                             dragTo,
+                             adapter.getItem(dragTo).id
+                         )*//*
+
+
+                    }
+
+                    dragFrom = -1
+                    dragTo = -1
+                }
+
+            })
+*/
+
+
     }
 
+    private fun reallyMoved(oldPos: Int, newPos: Int, categoryIdOld: Int?) {
+        if (categoryIdOld != null) {
+
+          /*  isreOrder = true
+            Log.e(TAG, "positionnewPos  ${newPos}")
+            Log.e(TAG, "positionoldPos  ${oldPos}")
+            viewModel.reOrderCategory(categoryIdOld, newPos, oldPos)*/
+        }
+
+    }
 
     private fun getTaxListObserver() {
         viewModel.getTaxList.observe(viewLifecycleOwner, {

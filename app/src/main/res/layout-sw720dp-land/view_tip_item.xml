@@ -52,7 +52,7 @@
                 android:padding="@dimen/_5sdp"
                 android:text="@{tipModel.name}"
                 android:textColor="@color/txtColor"
-                android:textSize="@dimen/_7mdpi" />
+                android:textSize="@dimen/setting_inner_text_size" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 style="@style/CustomFontSemiBold"
@@ -64,7 +64,7 @@
                 android:padding="@dimen/_5sdp"
                 android:text="@{String.format(@string/format,tipModel.rate)+``+@string/percentage_symbol}"
                 android:textColor="@color/btnColor"
-                android:textSize="@dimen/_5mdpi" />
+                android:textSize="@dimen/setting_inner_sub_text_size" />
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:layout_width="wrap_content"

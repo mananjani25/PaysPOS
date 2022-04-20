@@ -18,6 +18,6 @@ data class CreateServiceChargeRequestModel(
         @SerializedName("name")
         var name: String = "",
         @SerializedName("percentage")
-        var percentage: Double = 0.0
+        var percentage: Double = 0.00
     ):Parcelable
 }

@@ -64,7 +64,7 @@
         </RelativeLayout>
 -->
 
-        <include layout="@layout/divider" />
+        <!--<include layout="@layout/divider" />-->
 
         <androidx.appcompat.widget.LinearLayoutCompat
             android:layout_width="match_parent"
