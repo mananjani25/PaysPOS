@@ -142,7 +142,7 @@ class PaymentBoldPosFragment : Fragment() {
             }, 100)
         } else {
             Handler(Looper.getMainLooper()).postDelayed({
-                loadCategoryFragment(CheckoutDetailsFragmentNew(requireArguments().getBoolean("isFromActiveOrder")))
+                loadCategoryFragment(CheckoutDetailsFragmentNew(arguments?.getBoolean("isFromActiveOrder") == true))
             }, 100)
 
         }

@@ -82,7 +82,7 @@ class ActiveOrderViewModel @Inject constructor(
             endDate.value = sdf.format(myCalendar.time) + " " + SimpleDateFormat(
                 "hh:mm a",
                 Locale.getDefault()
-            ).format(Date(System.currentTimeMillis() + 300000))
+            ).format(Date(System.currentTimeMillis() + 60000))
         }
     }
 

@@ -492,6 +492,8 @@ class CartFragment(
                         binding.lblLoyaltyPoints.visibility = View.GONE
                     }
 
+                    viewModel.itemCalculation(it,binding.txtTotal,requireContext())
+
 
                 } else {
                     cartAdapter.clearList()
