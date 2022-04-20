@@ -370,7 +370,6 @@
                         android:layout_gravity="center"
                         android:layout_weight="1"
                         android:gravity="center"
-                        android:text="@string/active"
                         android:textAllCaps="true"
                         android:textSize="@dimen/_6mdpi" />
 
