@@ -38,6 +38,7 @@ class TeamList : Fragment(), CustomCallback, OperationCallback {
     private val viewModel by viewModels<TeamListViewModel>()
     var adapter: TeamsAdapter = TeamsAdapter()
     private var empObject: Employee? = null
+    var count = 0
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -51,11 +52,6 @@ class TeamList : Fragment(), CustomCallback, OperationCallback {
         configureToolbar()
         observeShowProgress()
 
-        if (empObject != null) {
-            loadTeamDetails(empObject)
-        } else {
-            loadTeamDetails(null)
-        }
         loadTeams()
         deleteEmployee()
 
@@ -144,7 +140,6 @@ class TeamList : Fragment(), CustomCallback, OperationCallback {
                 ) { pos ->
 
 
-
                 })
 
             }
@@ -167,7 +162,7 @@ class TeamList : Fragment(), CustomCallback, OperationCallback {
 
     private fun loadTeams() {
 
-        viewModel.employeeData().observe(viewLifecycleOwner, {
+        viewModel.employeeData().observe(viewLifecycleOwner) {
             it?.let { resource ->
                 when (resource.status) {
                     Status.SUCCESS -> {
@@ -177,6 +172,8 @@ class TeamList : Fragment(), CustomCallback, OperationCallback {
 
                             adapter.setSelected(selectedPos)
 
+
+                        count = resource.data?.size!!
                         adapter.setPeople(
                             resource.data as MutableList<Employee>,
                             requireActivity()
@@ -191,6 +188,12 @@ class TeamList : Fragment(), CustomCallback, OperationCallback {
 
                             }
 
+
+                        if (empObject != null) {
+                            loadTeamDetails(empObject)
+                        } else {
+                            loadTeamDetails(null)
+                        }
                     }
                     Status.ERROR -> {
                         ProgressUtils.dismissProgressDialog()
@@ -202,7 +205,7 @@ class TeamList : Fragment(), CustomCallback, OperationCallback {
                     }
                 }
             }
-        })
+        }
     }
 
 
@@ -237,15 +240,16 @@ class TeamList : Fragment(), CustomCallback, OperationCallback {
             }
 
             empObject = data
-        }else{
+        } else {
             binding.layoutTool.txtEdit.visibility = View.GONE
-            binding.layoutTool.txtSubTitle.text =""
+            binding.layoutTool.txtSubTitle.text = ""
         }
 
         val teamDetails = TeamDetails()
 
         val args = Bundle()
         args.putParcelable("data", data)
+        args.putInt("count", count)
         teamDetails.arguments = args
 
         val fm: FragmentManager = requireActivity().supportFragmentManager
@@ -264,7 +268,7 @@ class TeamList : Fragment(), CustomCallback, OperationCallback {
         val popupMenu = view?.let { PopupMenu(requireContext(), it) }
         popupMenu?.menuInflater?.inflate(R.menu.edit_delete__hide_menu, popupMenu.menu)
         popupMenu?.menu?.findItem(R.id.menu_edit)?.isVisible = false
-        popupMenu?.menu?.findItem(R.id.menu_hide)?.isVisible=false
+        popupMenu?.menu?.findItem(R.id.menu_hide)?.isVisible = false
         popupMenu?.setOnMenuItemClickListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.menu_delete -> {

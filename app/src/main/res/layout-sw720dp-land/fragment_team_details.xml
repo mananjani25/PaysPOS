@@ -36,6 +36,7 @@
                 app:srcCompat="@drawable/group" />
 
             <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/txt_nodatavallidation"
                 style="@style/CustomFontSemiBold"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
