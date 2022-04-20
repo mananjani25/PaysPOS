@@ -80,6 +80,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        syncData()
 
         binding = FragmentDashboardCategoryBoldPosBinding.inflate(inflater, container, false)
         val callback: OnBackPressedCallback =
@@ -100,7 +101,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
         dineInUpdateOrder()
         navigateDineInOrder()
         getLoyaltyPrograms()
-        syncData()
+
         checkDineInEditOrder()
 
         binding.lifecycleOwner = this
@@ -399,7 +400,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
     private fun onClick() {
 
         binding.layoutHeader.txtTransaction.setOnClickListener {
-            if(rolePermission.hasTransactionPermission(binding.root)){
+            if (rolePermission.hasTransactionPermission(binding.root)) {
                 findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_transactionFragment)
             }
 
@@ -450,7 +451,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
          )
      }*/
         binding.layoutHeader.txtKeypad.setOnClickListener {
-            if(rolePermission.hasManualSalesPermission(binding.root)){
+            if (rolePermission.hasManualSalesPermission(binding.root)) {
                 viewModel.deleteManualSaleCart()
                 binding.layoutHeader.txtKeypad.setTextColor(resources.getColor(R.color.btnColor))
                 binding.layoutHeader.txtKeypad.setTypeface(
@@ -516,11 +517,10 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
 
 
     override fun onCancelItemSelected(isCancel: Boolean) {
-        if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == DINE_IN && isCancel){
+        if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == DINE_IN && isCancel) {
             arguments?.clear()
             findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_self)
-        }
-        else {
+        } else {
             loadCategoryFragment(CategoryFragment(this, binding.layoutHeader.edtSearch))
         }
 

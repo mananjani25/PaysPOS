@@ -890,8 +890,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     PrinterClass.setPrinter(printer)
                     if (isGuest) {
 
-                        val checkOutDineInModel = requireArguments().getParcelable<GuestDataModel>(Constants.DINE_IN_GUEST_PAYMENT_DATA)
-                        Log.e(TAG,"checkOutDineInModel:  ${Gson().toJson(checkOutDineInModel)}")
+                        val checkOutDineInModel =
+                            requireArguments().getParcelable<GuestDataModel>(Constants.DINE_IN_GUEST_PAYMENT_DATA)
+                        Log.e(TAG, "checkOutDineInModel:  ${Gson().toJson(checkOutDineInModel)}")
 
 
                         if (checkOutDineInModel != null) {
@@ -1448,7 +1449,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                             "$" + MethodUtils.roundOffAmountString(0.0)
                         } else {
 
-                            "-$" + MethodUtils.roundOffAmountString(checkOutDineInModel?.totalDiscount ?: 0.0)
+                            "-$" + MethodUtils.roundOffAmountString(
+                                checkOutDineInModel?.totalDiscount ?: 0.0
+                            )
 
                         },
                         if (customerSettingModel.fonts == Constants.LARGE) {
@@ -1636,7 +1639,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
             var totalAmt =
                 MethodUtils.roundOffAmountDouble(
-                    (checkOutDineInModel?.subTotal!!)  + checkOutDineInModel?.totalTax + checkOutDineInModel?.totalServiceCharge!! - orderDiscount
+                    (checkOutDineInModel?.subTotal!!) + checkOutDineInModel?.totalTax + checkOutDineInModel?.totalServiceCharge!! - orderDiscount
                 )
 
             if (payTypeGlb == "Cash") {
@@ -2568,7 +2571,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 builder.addText(
                     padLine(
                         "Tax",
-                        "$" + MethodUtils.roundOffAmountString(getDineInOrderDetails?.totalTaxAmount ?: 0.0),
+                        "$" + MethodUtils.roundOffAmountString(
+                            getDineInOrderDetails?.totalTaxAmount ?: 0.0
+                        ),
                         if (customerSettingModel.fonts == Constants.LARGE) {
                             24
                         } else {
@@ -2579,30 +2584,32 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             }
 
 
-                builder.addTextLineSpace(30)
-                builder.addFeedUnit(30)
-                builder.addTextFont(Builder.FONT_E)
-                // builder.addTextAlign(Builder.ALIGN_LEFT)
-                builder.addTextLang(Builder.LANG_EN)
-                addCustomerTextSize(builder, customerSettingModel.fonts)
-                builder.addTextStyle(
-                    Builder.FALSE,
-                    Builder.FALSE,
-                    Builder.FALSE,
-                    Builder.COLOR_1
-                )
+            builder.addTextLineSpace(30)
+            builder.addFeedUnit(30)
+            builder.addTextFont(Builder.FONT_E)
+            // builder.addTextAlign(Builder.ALIGN_LEFT)
+            builder.addTextLang(Builder.LANG_EN)
+            addCustomerTextSize(builder, customerSettingModel.fonts)
+            builder.addTextStyle(
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.COLOR_1
+            )
 
-                builder.addText(
-                    padLine(
-                        "Service Charge",
-                        "$" + MethodUtils.roundOffAmountString(getDineInOrderDetails?.totalServiceCharges ?: 0.0),
-                        if (customerSettingModel.fonts == Constants.LARGE) {
-                            24
-                        } else {
-                            48
-                        }
-                    )
+            builder.addText(
+                padLine(
+                    "Service Charge",
+                    "$" + MethodUtils.roundOffAmountString(
+                        getDineInOrderDetails?.totalServiceCharges ?: 0.0
+                    ),
+                    if (customerSettingModel.fonts == Constants.LARGE) {
+                        24
+                    } else {
+                        48
+                    }
                 )
+            )
 
 
             if (getDineInOrderDetails?.totalTips != 0.0) {
@@ -2726,8 +2733,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 Builder.COLOR_1
             )
             var totalAmt =
-                MethodUtils.roundOffAmountDouble((getDineInOrderDetails?.subTotal ?: 0.0) + (getDineInOrderDetails?.totalServiceCharges
-                ?: 0.0) + (getDineInOrderDetails?.totalTaxAmount ?: 0.0))
+                MethodUtils.roundOffAmountDouble(
+                    (getDineInOrderDetails?.subTotal
+                        ?: 0.0) + (getDineInOrderDetails?.totalServiceCharges
+                        ?: 0.0) + (getDineInOrderDetails?.totalTaxAmount ?: 0.0)
+                )
 
             if (payTypeGlb == "Cash") {
 
@@ -3079,7 +3089,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 builder.addFeedLine(1)
 
                 builder.addTextFont(Builder.FONT_E)
-                builder.addTextAlign(Builder.ALIGN_LEFT)
+                builder.addTextAlign(Builder.ALIGN_CENTER)
                 builder.addTextLang(Builder.LANG_EN)
                 builder.addTextSize(1, 1)
                 builder.addTextStyle(
@@ -3294,38 +3304,38 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         val remain = requireArguments().getDouble("remainingAmount")
                         Log.e(TAG, "remainAMount  ${remain}")
 
-                            if (!requireArguments().getBoolean("isSpilt")) {
-                                if (!requireArguments().getBoolean("isDineIn") && !requireArguments().getBoolean(
-                                        "isFromActiveOrder"
-                                    )
-                                ) {
-                                    for (i in 0 until kitchenPrinterList.size) {
-                                        kitchenPrinterList[i].orderTypes.forEach {
+                        if (!requireArguments().getBoolean("isSpilt")) {
+                            if (!requireArguments().getBoolean("isDineIn") && !requireArguments().getBoolean(
+                                    "isFromActiveOrder"
+                                )
+                            ) {
+                                for (i in 0 until kitchenPrinterList.size) {
+                                    kitchenPrinterList[i].orderTypes.forEach {
 
 
-                                            if (it.orderTypeId == receiptModel?.order?.orderTypeId
+                                        if (it.orderTypeId == receiptModel?.order?.orderTypeId
 
-                                            ) {
+                                        ) {
 
-                                                it.printerSettings.forEach {
-                                                    if (it.printType.lowercase()
-                                                            .equals(KITCHEN.lowercase()) && it.autoPrinting
-                                                    ) {
-                                                        initKitchenPrinter(
-                                                            kitchenPrinterList.get(i),
-                                                            KITCHEN
-                                                        )
+                                            it.printerSettings.forEach {
+                                                if (it.printType.lowercase()
+                                                        .equals(KITCHEN.lowercase()) && it.autoPrinting
+                                                ) {
+                                                    initKitchenPrinter(
+                                                        kitchenPrinterList.get(i),
+                                                        KITCHEN
+                                                    )
 
-                                                    }
                                                 }
-
                                             }
+
                                         }
                                     }
-
-
                                 }
+
+
                             }
+                        }
 
                         /*else if (!requireArguments().getBoolean("isDineIn") && !requireArguments().getBoolean(
                                 "isFromActiveOrder"
@@ -3365,7 +3375,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         }
 */
                         if (requireArguments().getBoolean("isDineIn")) {
-                            Log.e(TAG,"IsDineIn True: ")
+                            Log.e(TAG, "IsDineIn True: ")
                             customerPrintWholeOrder()
 
                         } else {
@@ -4123,6 +4133,38 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
             if (receiptModel?.order?.payments?.isNotEmpty() == true) {
                 if (receiptModel?.order?.payments?.get(receiptModel?.order?.payments!!.size - 1)?.isLoyaltyApplied == true && receiptModel?.order?.payments!![receiptModel?.order?.payments!!.size - 1].loyaltyUSedPoints != 0) {
+                    if (receiptModel?.order?.loyaltyAmount != 0.0) {
+                        builder.addTextLineSpace(30)
+                        builder.addFeedUnit(30)
+                        builder.addTextFont(Builder.FONT_E)
+                        // builder.addTextAlign(Builder.ALIGN_LEFT)
+                        builder.addTextLang(Builder.LANG_EN)
+                        addCustomerTextSize(builder, customerSettingModel.fonts)
+                        builder.addTextStyle(
+                            Builder.FALSE,
+                            Builder.FALSE,
+                            Builder.FALSE,
+                            Builder.COLOR_1
+                        )
+
+                        builder.addText(
+                            padLine(
+                                "Used Loyalty Amount",
+                                "-$" + receiptModel?.order?.loyaltyAmount?.let {
+                                    MethodUtils.roundOffAmountString(
+                                        it
+                                    )
+                                },
+                                if (customerSettingModel.fonts == Constants.LARGE) {
+                                    24
+                                } else {
+                                    48
+                                }
+                            )
+                        )
+                    }
+
+
                     builder.addTextLineSpace(30)
                     builder.addFeedUnit(30)
                     builder.addTextFont(Builder.FONT_E)
@@ -4594,7 +4636,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 builder.addFeedLine(1)
 
                 builder.addTextFont(Builder.FONT_E)
-                builder.addTextAlign(Builder.ALIGN_LEFT)
+                builder.addTextAlign(Builder.ALIGN_CENTER)
                 builder.addTextLang(Builder.LANG_EN)
                 builder.addTextSize(1, 1)
                 builder.addTextStyle(
@@ -4893,7 +4935,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 builder.addFeedUnit(30)
 
                 builder.addTextFont(Builder.FONT_E)
-                builder.addTextAlign(Builder.ALIGN_LEFT)
+                builder.addTextAlign(Builder.ALIGN_CENTER)
                 builder.addTextLang(Builder.LANG_EN)
                 builder.addTextSize(1, 1)
                 builder.addTextStyle(

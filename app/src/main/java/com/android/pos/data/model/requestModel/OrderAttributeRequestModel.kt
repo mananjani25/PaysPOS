@@ -491,7 +491,7 @@ class PaymentAttributes : Parcelable {
     var cardNumber: String = ""
 
     @SerializedName("card_type")
-    var cardType: Int = 0
+    var cardType: Int? = null
 
     @SerializedName("cash_discount_or_surcharge")
     var cash_discount_or_surcharge: Double = 0.0

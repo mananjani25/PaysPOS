@@ -81,7 +81,6 @@
 
             <AutoCompleteTextView
                 android:id="@+id/edtSearch"
-                android:fontFamily="@font/sf_pro_display_regular"
                 android:layout_width="wrap_content"
                 android:layout_height="@dimen/_18sdp"
                 android:layout_centerVertical="true"
@@ -94,6 +93,7 @@
                 android:drawablePadding="@dimen/_5sdp"
                 android:dropDownWidth="@dimen/_120sdp"
                 android:ellipsize="end"
+                android:fontFamily="@font/sf_pro_display_regular"
                 android:gravity="center"
                 android:hint="Search by item"
                 android:imeOptions="actionDone"

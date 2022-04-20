@@ -109,7 +109,9 @@ data class CreateOrderResponse(
             @SerializedName("guest_attributes")
             var guestAttributes: List<GuestAttributes>,
             @SerializedName("venue_website")
-            val venue_website: String
+            val venue_website: String,
+            @SerializedName("loyalty_amount")
+            val loyaltyAmount:Double
         ) {
 
             @Parcelize
