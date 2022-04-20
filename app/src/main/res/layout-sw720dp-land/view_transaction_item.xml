@@ -139,18 +139,37 @@
                 tools:text="$0.00"
                 android:paddingLeft="@dimen/_22sdp" />
 
+            <LinearLayout
+                android:id="@+id/linear_customer_teammember"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_gravity="center"
+                android:gravity="center_horizontal"
+                android:paddingLeft="@dimen/_12sdp"
+                android:orientation="vertical"
+                android:layout_height="wrap_content">
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/txtTeamName"
+                    style="@style/CustomFontMediumStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/txtColor"
+                    android:textSize="@dimen/text_size_medium"
+                    tools:text="John Smifdgdgth"
+                    />
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/txtCustomerName"
                 style="@style/CustomFontMediumStyle"
-                android:layout_width="0dp"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_weight="1"
+                android:layout_marginTop="@dimen/_3sdp"
                 android:textColor="@color/txtColor"
                 android:textSize="@dimen/text_size_medium"
-                tools:text="John Smith"
-                android:paddingLeft="@dimen/_22sdp"/>
+                tools:text="John dSmith"
+                />
 
+            </LinearLayout>
             <androidx.appcompat.widget.AppCompatTextView
                 style="@style/CustomFontMediumStyle"
                 android:layout_width="0dp"

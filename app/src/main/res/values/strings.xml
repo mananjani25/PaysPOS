@@ -789,6 +789,7 @@
     <string name="hide">Hide</string>
     <string name="add_order_discount">Add Order Discount</string>
     <string name="printers">Printes</string>
+    <string name="order_type_n_team_name">ORDER TYPE/TEAM NAME</string>
 
 
 </resources>

@@ -115,16 +115,6 @@ class ItemModifierSetAdapter(
     }
 
 
-    fun selectModifier(modifiers: List<Modifier>) {
-        filterList.forEach {
-            it.modifiers.forEach { it1 ->
-                modifiers.forEach { modi ->
-                    it1.isChecked = modi.id == it1.id
-                }
-            }
-        }
-    }
-
     fun setData(modifiers: List<Modifier>) {
 
 

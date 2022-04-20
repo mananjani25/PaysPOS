@@ -11,18 +11,24 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.android.pos.R
 import com.android.pos.data.entities.Employee
+import com.android.pos.data.remote.Constants
 import com.android.pos.databinding.FragmentTeamDetailsBinding
+import com.android.pos.di.PrefProvider
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.MethodUtils
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class TeamDetails : Fragment() {
 
     private var model: Employee? = null
+    private var count: Int? = null
 
     private val viewModel by viewModels<CreateTeamViewModel>()
 
+    @Inject
+    lateinit var prefProvider: PrefProvider
     override fun onAttach(context: Context) {
         super.onAttach(context)
     }
@@ -60,6 +66,11 @@ class TeamDetails : Fragment() {
         model?.hourlyWages?.let { MethodUtils.setPriceTextView(binding.txtHourlyRate, it) }
 
         binding.txtPersonalPasscode.text = model?.passcode
+        binding.txtNodatavallidation?.text =
+            "$count team members that you manage at " + prefProvider.getValue(
+                Constants.BUSINESS_NAME,
+                ""
+            )
 
         model?.teamRoleId?.let { viewModel.roleNameById(it) }?.observe(viewLifecycleOwner,
             {
@@ -73,6 +84,7 @@ class TeamDetails : Fragment() {
         val bundle = this.arguments
         model = bundle?.getParcelable("data")
         model?.name?.let { Log.e("bundle", it) }
+        count = bundle?.getInt("count")
 
     }
 

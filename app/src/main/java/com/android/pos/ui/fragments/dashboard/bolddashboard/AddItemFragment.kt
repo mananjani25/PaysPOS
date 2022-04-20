@@ -427,28 +427,18 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
                                 }
                             }
                             if (intArray!!.isNotEmpty()) {
-                                adapter = ItemModifierSetAdapter(viewModel, item.itemId, viewLifecycleOwner)
-                                binding.rvModifiersList.adapter = adapter
+
                                 viewModel.modifierSet(intArray!!).observe(requireActivity()) {
                                     if (it.data != null && it.data.isNotEmpty()) {
+                                        adapter = ItemModifierSetAdapter(
+                                            viewModel,
+                                            item.itemId,
+                                            viewLifecycleOwner
+                                        )
+                                        binding.rvModifiersList.adapter = adapter
                                         binding.rvModifiersList.visibility = View.VISIBLE
-
-                                        Log.e(TAG, "modifiersSetDAta:  ${Gson().toJson(it.data)}")
-                                        it.data.let { it1 -> adapter.add(it1) }
-
-
+                                        adapter.add(it.data)
                                         adapter.setData(item.modifiers)
-                                        if(isUpdateItem){
-                                            if(item.modifier_set_ids.isNotEmpty()){
-                                                item.modifiers.forEach { it->
-                                                    it.isChecked = true
-                                                }
-                                            }
-                                            adapter.selectModifier(item.modifiers)
-                                        }
-
-
-
                                     } else binding.rvModifiersList.visibility = View.GONE
 
                                 }
