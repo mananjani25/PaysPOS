@@ -49,6 +49,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
     private var isUpdateItem: Boolean = false
 
     private lateinit var adapter: ItemModifierSetAdapter
+    private var intArray: IntArray? = null
 
     @Inject
     lateinit var prefProvider: PrefProvider
@@ -94,6 +95,34 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
         getData()
         onClick()
         getCartList()
+        findNavController().currentBackStackEntry?.savedStateHandle?.getLiveData<VariationsAttribute>(
+            Constants.DIALOG_KEY_VARIATION_DETAILS
+        )
+            ?.observe(viewLifecycleOwner) { it ->
+                if (variationAdapter.variationList.size > 0) {
+                    variationAdapter.updateVariation(it)
+                    var variation: VariationsAttribute? = null
+                    if (variationAdapter != null) {
+
+                        variation = variationAdapter.getItem()
+                    } else if (it != null) {
+                        variation = it
+                    }
+
+
+
+
+                    if (variation != null) {
+                        variation?.price?.let {
+                            item.price = it
+                        }
+
+                    } else {
+                        item.price = item.price
+                    }
+                }
+
+            }
 
     }
 
@@ -137,8 +166,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
         binding.txtCancel.setOnClickListener {
             if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == DINE_IN) {
                 listner.onCancelItemSelected(true)
-            }
-            else{
+            } else {
                 listner.onCancelItemSelected(false)
 
             }
@@ -188,6 +216,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
                 if (minMaxValidationCheck(adapter)) {
 
                     val modifiers = adapter.getSelectedModifiers()
+
                     Log.e(TAG, "selectedmodifiers  ${Gson().toJson(modifiers)}")
                     Log.e(TAG, "getQuantity  ${qty}")
                     if (modifiers != null) {
@@ -377,6 +406,10 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
                         it.data?.let {
                             binding.rvVariationList.visibility = View.VISIBLE
 
+                            intArray = IntArray(it.modifier_set_ids.size) { i ->
+                                it.modifier_set_ids[i]
+                            }
+
                             variationAdapter.addVariations(it.variationsAttributes)
                             val variationList = ArrayList<VariationsAttribute>()
                             if (item.variationsAttributes.isNotEmpty()) {
@@ -386,9 +419,44 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
                                     item.name.substringBefore(" (") + " (" + variation.name + ")"
                                 item.variationsAttributes = variationList
 
+
                                 if (isUpdateItem) {
                                     variation.id?.let { it1 -> variationAdapter.selectItem(it1) }
+                                    variationAdapter.updateVariation(variation)
+
                                 }
+                            }
+                            if (intArray!!.isNotEmpty()) {
+                                adapter = ItemModifierSetAdapter(viewModel, item.itemId, viewLifecycleOwner)
+                                binding.rvModifiersList.adapter = adapter
+                                viewModel.modifierSet(intArray!!).observe(requireActivity()) {
+                                    if (it.data != null && it.data.isNotEmpty()) {
+                                        binding.rvModifiersList.visibility = View.VISIBLE
+
+                                        Log.e(TAG, "modifiersSetDAta:  ${Gson().toJson(it.data)}")
+                                        it.data.let { it1 -> adapter.add(it1) }
+
+
+                                        adapter.setData(item.modifiers)
+                                        if(isUpdateItem){
+                                            if(item.modifier_set_ids.isNotEmpty()){
+                                                item.modifiers.forEach { it->
+                                                    it.isChecked = true
+                                                }
+                                            }
+                                            adapter.selectModifier(item.modifiers)
+                                        }
+
+
+
+                                    } else binding.rvModifiersList.visibility = View.GONE
+
+                                }
+
+
+                            } else {
+                                binding.rvModifiersList.visibility = View.GONE
+                                binding.dividerLine.root.visibility = View.GONE
                             }
 
                             variationAdapter?.showVariationPriceClick = { it: VariationsAttribute ->
@@ -425,33 +493,33 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
                                         }
                                     }
 
-                                    if (item.variationsAttributes.isNotEmpty()) {
-                                        val resultVariationDetails =
-                                            getNavigationResultLiveData<VariationsAttribute>(
-                                                Constants.DIALOG_KEY_VARIATION_DETAILS
-                                            )
-                                        resultVariationDetails?.observe(viewLifecycleOwner) {
-                                            variationAdapter?.updateVariation(it)
-                                            var variation: VariationsAttribute? = null
-                                            if (variationAdapter != null) {
-                                                variation = variationAdapter.getItem()
-                                            } else if (it != null) {
-                                                variation = it
-                                            }
-
-
-
-
-                                            if (variation != null) {
-                                                variation?.price?.let {
-                                                    item.price = it
-                                                }
-
-                                            } else {
-                                                item.price = item.price
-                                            }
-                                        }
-                                    }
+//                                    if (item.variationsAttributes.isNotEmpty()) {
+//                                        val resultVariationDetails =
+//                                            getNavigationResultLiveData<VariationsAttribute>(
+//                                                Constants.DIALOG_KEY_VARIATION_DETAILS
+//                                            )
+//                                        resultVariationDetails?.observe(viewLifecycleOwner) {
+//                                            variationAdapter?.updateVariation(it)
+//                                            var variation: VariationsAttribute? = null
+//                                            if (variationAdapter != null) {
+//                                                variation = variationAdapter.getItem()
+//                                            } else if (it != null) {
+//                                                variation = it
+//                                            }
+//
+//
+//
+//
+//                                            if (variation != null) {
+//                                                variation?.price?.let {
+//                                                    item.price = it
+//                                                }
+//
+//                                            } else {
+//                                                item.price = item.price
+//                                            }
+//                                        }
+//                                    }
                                 }
                             }
 
@@ -471,34 +539,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
 
         }
 
-        if (item.modifier_set_ids.isNotEmpty()) {
-            adapter = ItemModifierSetAdapter(viewModel, item.itemId, viewLifecycleOwner)
-            binding.rvModifiersList.adapter = adapter
 
-            val intArray = IntArray(item.modifier_set_ids.size) { i ->
-                item.modifier_set_ids[i]
-            }
-
-            viewModel.modifierSet(intArray).observe(requireActivity()) {
-                if (it.data != null && it.data.isNotEmpty()) {
-                    binding.rvModifiersList.visibility = View.VISIBLE
-
-                    Log.e(TAG, "modifiersSetDAta:  ${Gson().toJson(it.data)}")
-                    it.data.let { it1 -> adapter.add(it1) }
-
-
-                    adapter.setData(item.modifiers)
-
-
-                } else binding.rvModifiersList.visibility = View.GONE
-
-            }
-
-
-        } else {
-            binding.rvModifiersList.visibility = View.GONE
-            binding.dividerLine.root.visibility = View.GONE
-        }
 
         if (isUpdateItem) {
             qty = item.itemQuantity

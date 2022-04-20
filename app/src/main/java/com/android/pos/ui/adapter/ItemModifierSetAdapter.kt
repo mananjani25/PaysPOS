@@ -1,6 +1,7 @@
 package com.android.pos.ui.adapter
 
 import android.annotation.SuppressLint
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -111,6 +112,17 @@ class ItemModifierSetAdapter(
             }
         }
         return selectedModifierList
+    }
+
+
+    fun selectModifier(modifiers: List<Modifier>) {
+        filterList.forEach {
+            it.modifiers.forEach { it1 ->
+                modifiers.forEach { modi ->
+                    it1.isChecked = modi.id == it1.id
+                }
+            }
+        }
     }
 
     fun setData(modifiers: List<Modifier>) {
