@@ -790,6 +790,7 @@
     <string name="add_order_discount">Add Order Discount</string>
     <string name="printers">Printes</string>
     <string name="order_type_n_team_name">ORDER TYPE/TEAM NAME</string>
+    <string name="time_sheet">Time Sheet</string>
 
 
 </resources>

@@ -25,11 +25,12 @@
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/imgClose"
-                android:layout_width="wrap_content"
+                android:layout_width="@dimen/_20sdp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:padding="@dimen/_6sdp"
-                android:src="@drawable/ic_arrow_back" />
+                android:padding="@dimen/_5sdp"
+                android:src="@mipmap/ic_left_arrow"
+                android:tint="@color/drawable_ic_color"/>
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/txtTitle"
