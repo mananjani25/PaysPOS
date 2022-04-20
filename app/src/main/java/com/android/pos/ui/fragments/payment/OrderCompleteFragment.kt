@@ -3089,7 +3089,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 builder.addFeedLine(1)
 
                 builder.addTextFont(Builder.FONT_E)
-                builder.addTextAlign(Builder.ALIGN_LEFT)
+                builder.addTextAlign(Builder.ALIGN_CENTER)
                 builder.addTextLang(Builder.LANG_EN)
                 builder.addTextSize(1, 1)
                 builder.addTextStyle(
@@ -4636,7 +4636,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 builder.addFeedLine(1)
 
                 builder.addTextFont(Builder.FONT_E)
-                builder.addTextAlign(Builder.ALIGN_LEFT)
+                builder.addTextAlign(Builder.ALIGN_CENTER)
                 builder.addTextLang(Builder.LANG_EN)
                 builder.addTextSize(1, 1)
                 builder.addTextStyle(
@@ -4935,7 +4935,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 builder.addFeedUnit(30)
 
                 builder.addTextFont(Builder.FONT_E)
-                builder.addTextAlign(Builder.ALIGN_LEFT)
+                builder.addTextAlign(Builder.ALIGN_CENTER)
                 builder.addTextLang(Builder.LANG_EN)
                 builder.addTextSize(1, 1)
                 builder.addTextStyle(
