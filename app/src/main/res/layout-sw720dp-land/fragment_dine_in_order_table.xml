@@ -49,7 +49,7 @@
                 android:layout_height="@dimen/_15sdp"
                 android:layout_centerVertical="true"
                 android:layout_marginEnd="@dimen/_8sdp"
-                android:layout_toStartOf="@+id/txtFloorPlan"
+                android:layout_toStartOf="@+id/txtHome"
                 android:background="?attr/selectableItemBackground"
                 android:padding="@dimen/_2sdp"
                 android:src="@drawable/print_all"
