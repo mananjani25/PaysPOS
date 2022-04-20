@@ -121,7 +121,8 @@ class PaymentBoldPosFragment : Fragment() {
             var dineInOrderId = requireArguments().getInt("orderId")
             var isGuest = requireArguments().getBoolean("isGuestPay") ?: false
             var isLastPayment = requireArguments().getBoolean("isLastPayment") ?: false
-            var splitModel : DineInOrderPayment = requireArguments().getParcelable("orderPayment") ?: DineInOrderPayment()
+            var splitModel: DineInOrderPayment =
+                requireArguments().getParcelable("orderPayment") ?: DineInOrderPayment()
             Handler(Looper.getMainLooper()).postDelayed({
                 val dineInModel = CheckOutDineInDataModel(
                     requireArguments().getInt("id") ?: 0,
@@ -133,7 +134,7 @@ class PaymentBoldPosFragment : Fragment() {
                     dineInAdapterList = requireArguments()?.getParcelableArrayList(Constants.DINE_IN_ADAPTER_LIST),
                     dineInOrderDetails = requireArguments()?.getParcelable(Constants.PRINT_DATA_DINE_IN)
                 )
-                Log.e(TAG,"dineInModel:  ${Gson().toJson(dineInModel)}")
+                Log.e(TAG, "dineInModel:  ${Gson().toJson(dineInModel)}")
                 loadCategoryFragment(CheckoutDineInFragmentNew(dineInModel))
             }, 100)
         } else {
@@ -175,7 +176,7 @@ class PaymentBoldPosFragment : Fragment() {
         super.onPause()
         Log.e(TAG, "onPause")
         if (!prefProvider.getValueboolean(SPLIT_ENABLE, false)) {
-            if(prefProvider.getValue(ORDER_TYPE, TAKEOUT)== DINE_IN){
+            if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == DINE_IN) {
                 removeCustomer()
                 dineInPaymentViewModel.deleteCart()
                 prefProvider.setValue(Constants.ORDER_TYPE, Constants.TAKEOUT)

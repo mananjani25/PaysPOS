@@ -3284,12 +3284,6 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                         "isFromActiveOrder"
                                     )
                                 ) {
-                                    Log.e(
-                                        TAG,
-                                        "kitchenPrinterList:  ${Gson().toJson(kitchenPrinterList)}"
-                                    )
-
-
                                     for (i in 0 until kitchenPrinterList.size) {
                                         kitchenPrinterList[i].orderTypes.forEach {
 

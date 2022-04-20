@@ -175,8 +175,6 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
 
             isSelectedCount = bundle.getInt("split")
             binding.tvCustom.text = "Custom ($isSelectedCount Ways)"
-            binding.tvwaysplit?.visible()
-            binding.tvwaysplit?.text = "$isSelectedCount Way Split Amount"
             tipsetupGlobal(tipAmount, isSelectedCount)
         }
         requireActivity().supportFragmentManager.setFragmentResultListener(
@@ -219,7 +217,6 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
             binding.tvCustom.text = "Custom"
             isSelectedCount = 1
             tipsetupGlobal(tipAmount, isSelectedCount)
-            binding.tvwaysplit?.visibility = View.INVISIBLE
             binding.tvFullAMounttxt.visibility = View.VISIBLE
 
         }
@@ -243,8 +240,6 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
             binding.tvCustom.text = "Custom"
             isSelectedCount = 2
             tipsetupGlobal(tipAmount, isSelectedCount)
-            binding.tvwaysplit?.visible()
-            binding.tvwaysplit?.text = "$isSelectedCount Way Split Amount"
             binding.tvFullAMounttxt.visibility = View.INVISIBLE
 
         }
@@ -267,8 +262,6 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
             binding.tvCustom.text = "Custom"
             isSelectedCount = 3
             tipsetupGlobal(tipAmount, isSelectedCount)
-            binding.tvwaysplit?.visible()
-            binding.tvwaysplit?.text = "$isSelectedCount Way Split Amount"
             binding.tvFullAMounttxt.visibility = View.INVISIBLE
         }
         binding.tv4ways.setOnClickListener {
@@ -290,8 +283,6 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
             binding.tvCustom.text = "Custom"
             isSelectedCount = 4
             tipsetupGlobal(tipAmount, isSelectedCount)
-            binding.tvwaysplit?.visible()
-            binding.tvwaysplit?.text = "$isSelectedCount Way Split Amount"
             binding.tvFullAMounttxt.visibility = View.INVISIBLE
         }
         binding.tv5ways.setOnClickListener {
@@ -313,8 +304,6 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
             binding.tvCustom.text = "Custom"
             isSelectedCount = 5
             tipsetupGlobal(tipAmount, isSelectedCount)
-            binding.tvwaysplit?.visible()
-            binding.tvwaysplit?.text = "$isSelectedCount Way Split Amount"
             binding.tvFullAMounttxt.visibility = View.INVISIBLE
         }
         binding.tv6ways.setOnClickListener {
@@ -336,8 +325,6 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
             binding.tvCustom.text = "Custom"
             isSelectedCount = 6
             tipsetupGlobal(tipAmount, isSelectedCount)
-            binding.tvwaysplit?.visible()
-            binding.tvwaysplit?.text = "$isSelectedCount Way Split Amount"
             binding.tvFullAMounttxt.visibility = View.INVISIBLE
         }
         binding.tvCustom.setOnClickListener {
