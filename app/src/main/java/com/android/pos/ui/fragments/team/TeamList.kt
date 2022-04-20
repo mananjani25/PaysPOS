@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.R
 import com.android.pos.data.entities.Employee
 import com.android.pos.databinding.FragmentTeamListBinding
+import com.android.pos.di.RolePermission
 import com.android.pos.ui.activities.MainActivity
 import com.android.pos.ui.adapter.TeamsAdapter
 import com.android.pos.utils.AlertUtils
@@ -26,9 +27,11 @@ import com.android.pos.utils.callback.CustomCallback
 import com.android.pos.utils.callback.OperationCallback
 import com.android.pos.utils.extensions.alert
 import com.android.pos.utils.extensions.showAlert
+import com.android.pos.utils.extensions.visible
 import com.android.pos.utils.statusUtils.Status
 import com.android.pos.utils.sticky_recycler.StickyHeaderLayoutManager
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class TeamList : Fragment(), CustomCallback, OperationCallback {
@@ -39,7 +42,8 @@ class TeamList : Fragment(), CustomCallback, OperationCallback {
     var adapter: TeamsAdapter = TeamsAdapter()
     private var empObject: Employee? = null
     var count = 0
-
+    @Inject
+    lateinit var rolePermission: RolePermission
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -57,7 +61,19 @@ class TeamList : Fragment(), CustomCallback, OperationCallback {
 
         Log.e("Calling", "onCreateView")
 
+        setUpHeader()
+
         return binding.root
+    }
+
+    private fun setUpHeader() {
+        binding.layoutTool.txtTimeSheet.visible()
+
+        binding.layoutTool.txtTimeSheet.setOnClickListener {
+            if (rolePermission.hasEmployeeTimesheetPermission(binding.root)) {
+                findNavController().navigate(R.id.action_teamList_to_teamMemberTimeSheetFragment)
+            }
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
