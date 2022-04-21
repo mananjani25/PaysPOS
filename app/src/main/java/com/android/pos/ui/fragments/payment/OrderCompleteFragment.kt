@@ -804,6 +804,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
     private fun customerPrintWholeOrder() {
 
         var guestPos = requireArguments().getInt(GUEST_POSITION)
+        Log.e(TAG,"getGuestPosition  ${guestPos}")
+
         var listItem: java.util.ArrayList<TbItem> = arrayListOf()
         var listItemWT: java.util.ArrayList<TbItem> = arrayListOf()
         for (i in 1 until dineInList.size) {
@@ -1652,7 +1654,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             builder.addText(
                 padLine(
                     "Total Price",
-                    "$" + MethodUtils.roundOffAmountString(totalAmt),
+                    "$" + MethodUtils.roundOffAmountString(checkOutDineInModel.totalAmount),
                     if (customerSettingModel.fonts == Constants.LARGE) {
                         24
                     } else {

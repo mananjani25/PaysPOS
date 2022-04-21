@@ -532,6 +532,11 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                             DINE_IN_GUEST_PAYMENT_DATA,
                             dineInDataModel.guestPaymentModel
                         )
+                        dineInDataModel.guestPosition?.let { it1 ->
+                            bundle.putInt(Constants.GUEST_POSITION,
+                                it1
+                            )
+                        }
 
                         if (findNavController().currentDestination?.id == R.id.paymentBoldPosFragment) {
 
@@ -619,6 +624,11 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                             DINE_IN_GUEST_PAYMENT_DATA,
                             dineInDataModel.guestPaymentModel
                         )
+                        dineInDataModel.guestPosition?.let { it1 ->
+                            bundle.putInt(Constants.GUEST_POSITION,
+                                it1
+                            )
+                        }
 
                         if (findNavController().currentDestination?.id == R.id.paymentBoldPosFragment) {
                             findNavController().navigate(
@@ -1989,6 +1999,11 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
 
                 bundle.putParcelable(PRINT_DATA_DINE_IN, dineInDataModel.dineInOrderDetails)
                 bundle.putParcelable(DINE_IN_GUEST_PAYMENT_DATA, dineInDataModel.guestPaymentModel)
+                dineInDataModel.guestPosition?.let { it1 ->
+                    bundle.putInt(Constants.GUEST_POSITION,
+                        it1
+                    )
+                }
                 if (findNavController().currentDestination?.id == R.id.paymentBoldPosFragment) {
                     findNavController().navigate(
                         R.id.action_paymentBoldPosFragment_to_orderComplete,
@@ -2072,6 +2087,11 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                 )
                 bundle.putParcelable(PRINT_DATA_DINE_IN, dineInDataModel.dineInOrderDetails)
                 bundle.putParcelable(DINE_IN_GUEST_PAYMENT_DATA, dineInDataModel.guestPaymentModel)
+                dineInDataModel.guestPosition?.let { it1 ->
+                    bundle.putInt(Constants.GUEST_POSITION,
+                        it1
+                    )
+                }
 
                 if (findNavController().currentDestination?.id == R.id.paymentBoldPosFragment) {
                     findNavController().navigate(

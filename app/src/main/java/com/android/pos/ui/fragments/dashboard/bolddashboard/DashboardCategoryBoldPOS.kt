@@ -591,6 +591,13 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                 cartList.addAll(it.toCollection(arrayListOf()))
             }
 
+            if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == DINE_IN){
+
+                binding.layoutHeader.txtKeypad.visibility = View.GONE
+            }
+            else{
+                binding.layoutHeader.txtKeypad.visibility = View.VISIBLE
+            }
 
         }
 

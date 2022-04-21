@@ -523,7 +523,6 @@ fun addOrderItemOpenOrder(
             builder.addFeedLine(1)
 
 
-
         }
     }
 
@@ -557,7 +556,13 @@ fun addWholeTbItemToGuest(
     )
 
 
-    val subTotal = (obj.price * obj.itemQuantity).toDouble()
+    var subTotal = (obj.price * obj.itemQuantity).toDouble()
+
+    if (obj.modifiers.isNotEmpty()) {
+        obj.modifiers.forEach {
+            subTotal += it.price * it.itemQuantity
+        }
+    }
     var WTTaxes = 0.0
     var serviceCharge = 0.0
 
@@ -601,10 +606,13 @@ fun addWholeTbItemToGuest(
             }
         }
 
-        Log.e(TAG, "serviceCharge  ${serviceCharge}")
-        Log.e(TAG, "serviceWTTaxes  ${WTTaxes}")
-        Log.e(TAG, "serviceSubTotal  ${subTotal}")
+
     }
+
+    Log.e(TAG, "serviceCharge  ${serviceCharge}")
+    Log.e(TAG, "serviceWTTaxes  ${WTTaxes}")
+    Log.e("DineInWholeTableItems", "serviceSubTotal  ${subTotal}")
+    Log.e("DineInWholeTableItems", "dineinguestCount:  ${guestCount}")
 
     var finalAmt = MethodUtils.roundOffAmount((subTotal) / guestCount)
     builder.addText(
