@@ -1646,6 +1646,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
 
                     var orderDiscount = 0.0
+                    var newLocalDiscountCal = 0.0
                     if (baseResponse.totalDiscount - totalItemDiscount > 0) {
                         orderDiscount = baseResponse.totalDiscount - totalItemDiscount
 

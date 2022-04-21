@@ -97,6 +97,7 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                     noItem = false
                     list.get(i).item?.let {
                         if (!it.isPaid) {
+                            guestDiscount += it.discountPrice
                             guestAmt += (it.itemQuantity * it.price) - it.discountPrice
                             guestSubTotal += (it.itemQuantity * it.price) - it.discountPrice
                             if (it.modifiers.isNotEmpty()) {
@@ -278,7 +279,7 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                     for (i in 0 until list.size) {
                         if (list[i].title?.lowercase() == "Whole Table".lowercase() && i != (list.size - 1)) {
 
-                            for (j in i+1 until list.size) {
+                            for (j in i + 1 until list.size) {
                                 if (list.get(j).isHeader == 1) {
                                     list.get(j).item?.let { it1 -> listItemWT.add(it1) }
                                 } else {
@@ -309,7 +310,7 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                     }
 
 
-                    Log.e(TAG,"listItemWTGuestPay:  ${Gson().toJson(listItemWT)}")
+                    Log.e(TAG, "listItemWTGuestPay:  ${Gson().toJson(listItemWT)}")
                     listner.onGuestPay(
                         list[position],
                         position,
@@ -358,6 +359,8 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                 }
                 if (listItem.isNotEmpty() || listItemWT.isNotEmpty()) {
 
+                    Log.e("AAjeCje","orderDiscount  ${list[0].orderDiscount}")
+                    Log.e("AAjeCje","guestDiscount  ${guestDiscount}")
                     listner.onGuestPrint(
                         listItem,
                         guestName,
@@ -366,7 +369,7 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                         MethodUtils.roundOffAmountDouble(finalAmt),
                         MethodUtils.roundOffAmountDouble(totalTaxAmt + list.get(0).wholeTableTax),
                         MethodUtils.roundOffAmountDouble(totalServiceCharge + list.get(0).wholeTableSurTax),
-                        list[0].orderDiscount
+                        list[0].orderDiscount + guestDiscount
                     )
                 }
 
