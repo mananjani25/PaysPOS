@@ -84,6 +84,8 @@ class CartFragment(
     private val dineInPayViewModel by activityViewModels<CheckoutDineInPaymentViewModel>()
     var updateBundle: Bundle? = null
     var isFromPayment: Boolean = false
+    var isActiveOrder: Boolean = false
+
     private var serviceChargesObserve: Observer<Resource<List<TbServiceCharge>>>? = null
     private lateinit var nameObserver: Observer<List<CartModel>>
     private lateinit var dineInCartAdapter: DineInAdapter
@@ -128,6 +130,14 @@ class CartFragment(
             dashboardHeaderId = arguments?.getInt("dashboardHeaderId")!!
 
         isFromPayment = arguments?.getBoolean("isFromPayment") ?: false
+        isActiveOrder = arguments?.getBoolean("isFromActiveOrder") ?: false
+
+
+
+
+
+
+
         setUpData()
         return binding.root
     }
@@ -189,13 +199,18 @@ class CartFragment(
                     paymentOfflineId,
                     orderOfflineId
                 )
-
             } else {
                 //  prefProvider.setValue(ORDER_TYPE, TAKEOUT)
                 Log.e("ORDER_TYPE", "Updated check")
             }
         } else {
             isOrderUpdate = false
+            if (isFromPayment) {
+                if (isActiveOrder) {
+                    viewModel.redeemLoyaltyInfo.needToApplyLoyalty =
+                        arguments?.getBoolean("isLoyaltyApplied") ?: false
+                }
+            }
             //   prefProvider.setValue(ORDER_TYPE, TAKEOUT)
             Log.e("ORDER_TYPE", "Updated check1")
         }
@@ -398,14 +413,18 @@ class CartFragment(
                 Log.e(TAG, "listSize  ${Gson().toJson(it)}")
                 if (it.isNotEmpty()) {
                     if (isFromPayment) {
-                        if(MethodUtils.isEnableCashDiscount(requireContext())){
+                        if (MethodUtils.isEnableCashDiscount(requireContext())) {
                             binding.linearCashDiscount.visible()
-                            if (prefProvider.getValue(OPTION_TYPE, "CashDiscount") == "CashDiscount") {
-                                binding.labelCashSurcharge?.text  = "Cash Discount"
-                            }else{
-                                binding.labelCashSurcharge?.text  = "SurCharge"
+                            if (prefProvider.getValue(
+                                    OPTION_TYPE,
+                                    "CashDiscount"
+                                ) == "CashDiscount"
+                            ) {
+                                binding.labelCashSurcharge?.text = "Cash Discount"
+                            } else {
+                                binding.labelCashSurcharge?.text = "SurCharge"
                             }
-                        }else{
+                        } else {
                             binding.linearCashDiscount.gone()
                         }
 
@@ -492,7 +511,7 @@ class CartFragment(
                         binding.lblLoyaltyPoints.visibility = View.GONE
                     }
 
-                    viewModel.itemCalculation(it,binding.txtTotal,requireContext())
+                    viewModel.itemCalculation(it, binding.txtTotal, requireContext())
 
 
                 } else {
@@ -542,14 +561,18 @@ class CartFragment(
 
                         cartlist = it as ArrayList<CartModel>
                         if (isFromPayment) {
-                            if(MethodUtils.isEnableCashDiscount(requireContext())){
+                            if (MethodUtils.isEnableCashDiscount(requireContext())) {
                                 binding.linearCashDiscount.visible()
-                                if (prefProvider.getValue(OPTION_TYPE, "CashDiscount") == "CashDiscount") {
-                                    binding.labelCashSurcharge?.text  = "Cash Discount"
-                                }else{
-                                    binding.labelCashSurcharge?.text  = "SurCharge"
+                                if (prefProvider.getValue(
+                                        OPTION_TYPE,
+                                        "CashDiscount"
+                                    ) == "CashDiscount"
+                                ) {
+                                    binding.labelCashSurcharge?.text = "Cash Discount"
+                                } else {
+                                    binding.labelCashSurcharge?.text = "SurCharge"
                                 }
-                            }else{
+                            } else {
                                 binding.linearCashDiscount.gone()
                             }
                             binding.linearButtonView.gone()
@@ -677,14 +700,18 @@ class CartFragment(
 
                     } else {
                         if (isFromPayment) {
-                            if(MethodUtils.isEnableCashDiscount(requireContext())){
+                            if (MethodUtils.isEnableCashDiscount(requireContext())) {
                                 binding.linearCashDiscount.visible()
-                                if (prefProvider.getValue(OPTION_TYPE, "CashDiscount") == "CashDiscount") {
-                                    binding.labelCashSurcharge?.text  = "Cash Discount"
-                                }else{
-                                    binding.labelCashSurcharge?.text  = "SurCharge"
+                                if (prefProvider.getValue(
+                                        OPTION_TYPE,
+                                        "CashDiscount"
+                                    ) == "CashDiscount"
+                                ) {
+                                    binding.labelCashSurcharge?.text = "Cash Discount"
+                                } else {
+                                    binding.labelCashSurcharge?.text = "SurCharge"
                                 }
-                            }else{
+                            } else {
                                 binding.linearCashDiscount.gone()
                             }
                             binding.linearButtonView.gone()
@@ -724,14 +751,19 @@ class CartFragment(
 
                     if (it.isNotEmpty()) {
                         if (isFromPayment) {
-                            if(MethodUtils.isEnableCashDiscount(requireContext())){
+                            viewModel.selectedCustomer = prefProvider.getCustomerData()
+                            if (MethodUtils.isEnableCashDiscount(requireContext())) {
                                 binding.linearCashDiscount.visible()
-                                if (prefProvider.getValue(OPTION_TYPE, "CashDiscount") == "CashDiscount") {
-                                    binding.labelCashSurcharge?.text  = "Cash Discount"
-                                }else{
-                                    binding.labelCashSurcharge?.text  = "SurCharge"
+                                if (prefProvider.getValue(
+                                        OPTION_TYPE,
+                                        "CashDiscount"
+                                    ) == "CashDiscount"
+                                ) {
+                                    binding.labelCashSurcharge?.text = "Cash Discount"
+                                } else {
+                                    binding.labelCashSurcharge?.text = "SurCharge"
                                 }
-                            }else{
+                            } else {
                                 binding.linearCashDiscount.gone()
                             }
                             binding.linearButtonView.gone()
@@ -789,6 +821,7 @@ class CartFragment(
                                             }"
                                         binding.txtLoyaltyPoints.text =
                                             "${viewModel.redeemLoyaltyInfo.usedLoyaltyPoints}"
+
                                     } else {
                                         binding.liinearInfoLayout.layoutParams.height =
                                             resources.getDimension(R.dimen._50sdp).toInt()
@@ -811,10 +844,13 @@ class CartFragment(
                                         }"
                                     binding.txtLoyaltyPoints.text =
                                         "${viewModel.redeemLoyaltyInfo.usedLoyaltyPoints}"
-                                    if (!viewModel.redeemLoyaltyInfo.needToApplyLoyalty) {
-                                        binding.checkloylaty.isChecked =
-                                            viewModel.redeemLoyaltyInfo.needToApplyLoyalty
-                                    }
+                                    binding.checkloylaty.isChecked =
+                                        viewModel.redeemLoyaltyInfo.needToApplyLoyalty
+                                    Log.d(
+                                        TAG,
+                                        "addObserver crash: " + viewModel.redeemLoyaltyInfo.needToApplyLoyalty
+                                    )
+                                    Log.d(TAG, "addObserver crash: " + viewModel.redeemLoyaltyInfo)
                                 }
                             }
                         } else {
@@ -877,25 +913,29 @@ class CartFragment(
 
         }
 
-        viewModel.showProgress.observe(viewLifecycleOwner) { event ->
-            event.getContentIfNotHandled()?.let {
-                if (it) {
-                    ProgressUtils.showProgressDialog(requireActivity())
-                } else {
-                    ProgressUtils.dismissProgressDialog()
-                }
-            }
-        }
-        viewModelPayment.showProgress.observe(viewLifecycleOwner) { event ->
-            event.getContentIfNotHandled()?.let {
-                if (it) {
-                    ProgressUtils.showProgressDialog(requireActivity())
-                } else {
-                    ProgressUtils.dismissProgressDialog()
-                }
-            }
-        }
 
+        if (view != null) {
+            viewModel.showProgress.observe(viewLifecycleOwner) { event ->
+                event.getContentIfNotHandled()?.let {
+                    if (it) {
+                        ProgressUtils.showProgressDialog(requireActivity())
+                    } else {
+                        ProgressUtils.dismissProgressDialog()
+                    }
+                }
+            }
+        }
+        if (view != null) {
+            viewModelPayment.showProgress.observe(viewLifecycleOwner) { event ->
+                event.getContentIfNotHandled()?.let {
+                    if (it) {
+                        ProgressUtils.showProgressDialog(requireActivity())
+                    } else {
+                        ProgressUtils.dismissProgressDialog()
+                    }
+                }
+            }
+        }
     }
 
 
@@ -905,6 +945,7 @@ class CartFragment(
         requireArguments().remove("update")
 
     }
+
 
     override fun onPause() {
         super.onPause()
