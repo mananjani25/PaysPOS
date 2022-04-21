@@ -20,13 +20,13 @@
             android:id="@+id/txtPrinterName"
             style="@style/CustomFontMediumStyle"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_gravity="center"
             android:layout_weight="1"
             android:gravity="center"
             android:text="@{model.printerName}"
             android:textColor="@color/txtColor"
-            android:textSize="@dimen/_5mdpi" />
+            android:textSize="@dimen/_6mdpi" />
 
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/imgPrinter"
@@ -36,17 +36,18 @@
             android:layout_weight="1"
             android:background="?attr/selectableItemBackground"
             android:clickable="true"
-            android:paddingTop="@dimen/_4sdp"
-            android:paddingBottom="@dimen/_4sdp"
+            android:paddingTop="@dimen/_2sdp"
+            android:paddingBottom="@dimen/_2sdp"
             android:src="@drawable/ic_print_24"
             android:tint="@color/txtColor" />
 
         <androidx.appcompat.widget.AppCompatImageView
             android:id="@+id/imgConnectionType"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_gravity="center"
             android:layout_weight="1"
+            android:paddingVertical="@dimen/_2sdp"
             android:src="@drawable/ic_baseline_wifi_24"
             android:tint="@color/txtColor" />
 
@@ -72,26 +73,28 @@
         <androidx.appcompat.widget.LinearLayoutCompat
             android:id="@+id/linearOption"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_gravity="center"
             android:layout_weight="1"
             android:gravity="center">
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/imgEdit"
-                android:layout_width="wrap_content"
+                android:layout_width="@dimen/_8sdp"
                 android:layout_height="wrap_content"
+                android:adjustViewBounds="true"
                 android:layout_marginEnd="@dimen/_3sdp"
                 android:src="@drawable/ic_baseline_edit_24"
                 android:tint="@color/txtColor" />
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/imgDelete"
-                android:layout_width="wrap_content"
+                android:layout_width="@dimen/_8sdp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/_3sdp"
                 android:src="@drawable/ic_baseline_delete_24"
-                android:tint="@color/txtColor" />
+                android:tint="@color/txtColor"
+                android:adjustViewBounds="true"/>
 
         </androidx.appcompat.widget.LinearLayoutCompat>
 

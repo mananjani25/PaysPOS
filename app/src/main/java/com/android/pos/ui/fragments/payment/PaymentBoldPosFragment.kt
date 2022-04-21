@@ -135,7 +135,8 @@ class PaymentBoldPosFragment : Fragment() {
                     splitModel,
                     dineInAdapterList = requireArguments()?.getParcelableArrayList(Constants.DINE_IN_ADAPTER_LIST),
                     dineInOrderDetails = requireArguments()?.getParcelable(Constants.PRINT_DATA_DINE_IN),
-                    guestPaymentModel = requireArguments()?.getParcelable(Constants.DINE_IN_GUEST_PAYMENT_DATA)
+                    guestPaymentModel = requireArguments()?.getParcelable(Constants.DINE_IN_GUEST_PAYMENT_DATA),
+                    guestPosition =  requireArguments()?.getInt(Constants.GUEST_POSITION)
                 )
                 Log.e(TAG, "dineInModel:  ${Gson().toJson(dineInModel)}")
                 loadCategoryFragment(CheckoutDineInFragmentNew(dineInModel))

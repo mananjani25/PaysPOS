@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.android.pos.R
 import com.android.pos.data.entities.LoyaltyProgramsModel
 import com.android.pos.databinding.ViewLoyaltyPointItemBinding
 import com.android.pos.ui.fragments.settings.loyaltypoints.LoyaltyPointViewModel
@@ -32,14 +33,26 @@ class LoyaltyPointAdapter(val viewModel: LoyaltyPointViewModel) :
     @SuppressLint("SetTextI18n")
     override fun onBindViewHolder(holder: LoyaltyPointAdapter.MyViewHolder, position: Int) {
         val itemBinding = holder.discountItemBinding
+        val context = itemBinding.root.context
         itemBinding.serviceChargeModel = loyaltyPointList[position]
         itemBinding.viewModel = viewModel
 
         val model = loyaltyPointList[position]
         if (model.rewardType == "%") {
-            itemBinding.txtLoyaltyValue.text = model.amount.toString() + "%"
+           // itemBinding.txtLoyaltyValue.text = model.amount.toString() + "%"
+            itemBinding.txtLoyaltyValue.text =
+                "" + String.format(context.getString(R.string.format) ,model.amount) + ""+context.getString(
+                    R.string.percentage_symbol
+                )
+
         } else {
-            itemBinding.txtLoyaltyValue.text = "$" + model.amount.toString()
+
+
+            //itemBinding.txtLoyaltyValue.text = "$" + model.amount.toString()
+
+            itemBinding.txtLoyaltyValue.text =
+                context.getString(R.string.symbole) +  ""+String.format(context.getString(R.string.format) , model.amount)
+
         }
 
         itemBinding.executePendingBindings()
