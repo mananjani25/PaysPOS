@@ -444,11 +444,16 @@ class CartFragment(
 
                     viewModel.setCartModel(it)
                     if (viewModel.order_note.isNotEmpty()) {
+                        binding.liinearInfoLayout.layoutParams.height =
+                            resources.getDimension(R.dimen._60sdp).toInt()
                         binding.relativeOrderNotes?.visibility = View.VISIBLE
                         binding.txtOrderNote?.text = viewModel.order_note
                     }else{
+                        binding.liinearInfoLayout.layoutParams.height =
+                            resources.getDimension(R.dimen._50sdp).toInt()
                         binding.relativeOrderNotes?.visibility = View.GONE
                     }
+
                     binding.txtSubTotal.text =
                         MethodUtils.roundOffAmount(viewModel.subTotalPrice)
                     binding.txtTax.text = MethodUtils.roundOffAmount(viewModel.totalTax)
@@ -482,7 +487,7 @@ class CartFragment(
                                         "${viewModel.redeemLoyaltyInfo.usedLoyaltyPoints}"
                                 } else {
                                     binding.liinearInfoLayout.layoutParams.height =
-                                        resources.getDimension(R.dimen._40sdp).toInt()
+                                        resources.getDimension(R.dimen._50sdp).toInt()
                                     binding.relativeLoylatyPoints.visibility = View.GONE
                                     binding.lblLoyaltyPoints.visibility = View.GONE
                                 }
@@ -508,7 +513,7 @@ class CartFragment(
                         }
                     } else {
                         binding.liinearInfoLayout.layoutParams.height =
-                            resources.getDimension(R.dimen._40sdp).toInt()
+                            resources.getDimension(R.dimen._50sdp).toInt()
                         binding.relativeLoylatyPoints.visibility = View.GONE
                         binding.lblLoyaltyPoints.visibility = View.GONE
                     }
@@ -537,7 +542,7 @@ class CartFragment(
                             binding.lblLoyaltyPoints.visibility = View.VISIBLE
                         } else {
                             binding.liinearInfoLayout.layoutParams.height =
-                                resources.getDimension(R.dimen._40sdp).toInt()
+                                resources.getDimension(R.dimen._50sdp).toInt()
                             binding.relativeLoylatyPoints.visibility = View.GONE
                             binding.lblLoyaltyPoints.visibility = View.GONE
                         }
@@ -635,9 +640,13 @@ class CartFragment(
                         binding.txtNoncashAdj.text =
                             MethodUtils.roundOffAmount(viewModel.cashdiscountAmount)
                         if (viewModel.order_note.isNotEmpty()) {
+                            binding.liinearInfoLayout.layoutParams.height =
+                                resources.getDimension(R.dimen._50sdp).toInt()
                             binding.relativeOrderNotes?.visibility = View.VISIBLE
                             binding.txtOrderNote?.text = viewModel.order_note
                         }else{
+                            binding.liinearInfoLayout.layoutParams.height =
+                                resources.getDimension(R.dimen._50sdp).toInt()
                             binding.relativeOrderNotes?.visibility = View.GONE
                         }
 //                        var data: TbCustomer? = prefProvider.getCustomerData()
@@ -692,13 +701,7 @@ class CartFragment(
 //                            binding.relativeLoylatyPoints.visibility = View.GONE
 //                            binding.lblLoyaltyPoints.visibility = View.GONE
 //                        }
-                        if (viewModel.order_note.isNotEmpty()) {
-                            binding.liinearInfoLayout.layoutParams.height =
-                                resources.getDimension(R.dimen._50sdp).toInt()
-                        } else {
-                            binding.liinearInfoLayout.layoutParams.height =
-                                resources.getDimension(R.dimen._40sdp).toInt()
-                        }
+
                         binding.relativeLoylatyPoints.visibility = View.GONE
                         binding.lblLoyaltyPoints.visibility = View.GONE
 
@@ -741,7 +744,7 @@ class CartFragment(
 //                        }
                         binding.relativeOrderNotes?.visibility = View.GONE
                         binding.liinearInfoLayout.layoutParams.height =
-                            resources.getDimension(R.dimen._40sdp).toInt()
+                            resources.getDimension(R.dimen._50sdp).toInt()
                         binding.relativeLoylatyPoints.visibility = View.GONE
                         binding.lblLoyaltyPoints.visibility = View.GONE
 
@@ -862,10 +865,10 @@ class CartFragment(
                         } else {
                             if (viewModel.order_note.isNotEmpty()) {
                                 binding.liinearInfoLayout.layoutParams.height =
-                                    resources.getDimension(R.dimen._50sdp).toInt()
+                                    resources.getDimension(R.dimen._60sdp).toInt()
                             } else {
                                 binding.liinearInfoLayout.layoutParams.height =
-                                    resources.getDimension(R.dimen._40sdp).toInt()
+                                    resources.getDimension(R.dimen._50sdp).toInt()
                             }
                             binding.relativeLoylatyPoints.visibility = View.GONE
                             binding.lblLoyaltyPoints.visibility = View.GONE
@@ -893,13 +896,13 @@ class CartFragment(
                                 binding.lblLoyaltyPoints.visibility = View.VISIBLE
                             } else {
                                 binding.liinearInfoLayout.layoutParams.height =
-                                    resources.getDimension(R.dimen._40sdp).toInt()
+                                    resources.getDimension(R.dimen._50sdp).toInt()
                                 binding.relativeLoylatyPoints.visibility = View.GONE
                                 binding.lblLoyaltyPoints.visibility = View.GONE
                             }
                         } else {
                             binding.liinearInfoLayout.layoutParams.height =
-                                resources.getDimension(R.dimen._40sdp).toInt()
+                                resources.getDimension(R.dimen._50sdp).toInt()
                             binding.relativeLoylatyPoints.visibility = View.GONE
                             binding.lblLoyaltyPoints.visibility = View.GONE
                         }
@@ -1165,7 +1168,7 @@ class CartFragment(
         viewModel.selectedCustomer = null
         viewModel.assignCustomer = null
         binding.liinearInfoLayout.layoutParams.height =
-            resources.getDimension(R.dimen._40sdp).toInt()
+            resources.getDimension(R.dimen._50sdp).toInt()
         binding.relativeLoylatyPoints.visibility = View.GONE
         binding.lblLoyaltyPoints.visibility = View.GONE
         displayCustomer()

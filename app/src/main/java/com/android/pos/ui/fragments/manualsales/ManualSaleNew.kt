@@ -907,7 +907,10 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
             val note = bundle.getString("note")
             val isOrderNote = bundle.getBoolean("isOrderNote")
             if (isOrderNote) {
-                note?.let { viewModel.addOrderNote(it) }
+                if (cartList?.isNotEmpty() == true) {
+                    cartList!![0].note = note.toString()
+                    viewModel.addCart(cartList!![0])
+                }
             } else {
                 cartItemModel.note = note.toString()
 

@@ -296,7 +296,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                     list.add(item)
                 } else if (type == UPDATE) {
 
-
+                    order_note = cartList[0].note
                     if (mPosition != -1) {
                         val model = cartList[0].items?.get(mPosition)
 
@@ -958,7 +958,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                         }
                     }
 
-
+                    order_note= cartList[0].note
                     serviceChargeCalculation(cartList)
                     subTotalPrice -= cartList[0].discountPrice
 
