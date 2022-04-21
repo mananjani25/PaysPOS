@@ -413,6 +413,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
                             variationAdapter.addVariations(it.variationsAttributes)
                             val variationList = ArrayList<VariationsAttribute>()
                             if (item.variationsAttributes.isNotEmpty()) {
+                                binding.dividerLine.root.visibility = View.VISIBLE
                                 val variation = item.variationsAttributes[0]
                                 variationList.add(variation)
                                 item.name =
@@ -426,7 +427,11 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
 
                                 }
                             }
+                            else
+                                binding.dividerLine.root.visibility = View.GONE
+
                             if (intArray!!.isNotEmpty()) {
+                                binding.dividerLine2.root.visibility = View.VISIBLE
 
                                 viewModel.modifierSet(intArray!!).observe(requireActivity()) {
                                     if (it.data != null && it.data.isNotEmpty()) {
@@ -446,7 +451,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
 
                             } else {
                                 binding.rvModifiersList.visibility = View.GONE
-                                binding.dividerLine.root.visibility = View.GONE
+                                binding.dividerLine2.root.visibility = View.GONE
                             }
 
                             variationAdapter?.showVariationPriceClick = { it: VariationsAttribute ->

@@ -160,7 +160,8 @@
                                 android:inputType="numberDecimal"
                                 android:paddingTop="@dimen/_5sdp"
                                 android:paddingBottom="@dimen/_5sdp"
-                                android:text="@={``+viewModel.loyaltyAmount}"
+                                android:text="@{String.format(@string/format,viewModel.loyaltyAmount)}"
+
                                 android:textColor="@color/txtColor"
                                 android:textColorHint="@color/hintColor"
                                 android:textSize="@dimen/_7mdpi"
