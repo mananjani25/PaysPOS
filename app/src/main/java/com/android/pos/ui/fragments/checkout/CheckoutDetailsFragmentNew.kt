@@ -798,7 +798,10 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder:Boolean = false) : Fragment
 
     fun getDataFromPref() {
         redeemLoyaltyInfo = viewModel.redeemLoyaltyInfo
-        if (prefProvider.getValue(Constants.WHOLE_AMOUNT, "").isEmpty()) {
+        if (prefProvider.getValue(Constants.WHOLE_AMOUNT, "").isEmpty() || prefProvider.getValue(
+                Constants.WHOLE_AMOUNT,
+                ""
+            ) == "0.0") {
             WholetotalPrice = viewModel.totalPrice
             prefProvider.setValue(
                 Constants.WHOLE_AMOUNT,
@@ -808,7 +811,10 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder:Boolean = false) : Fragment
             WholetotalPrice = prefProvider.getValue(Constants.WHOLE_AMOUNT, "").toDouble()
         }
 
-        if (prefProvider.getValue(Constants.SUB_TOTAL, "").isEmpty()) {
+        if (prefProvider.getValue(Constants.SUB_TOTAL, "").isEmpty() || prefProvider.getValue(
+                Constants.SUB_TOTAL,
+                ""
+            ) == "0.0") {
             subTotalPrice = viewModel.subTotalPrice
             prefProvider.setValue(
                 Constants.SUB_TOTAL,
@@ -818,7 +824,10 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder:Boolean = false) : Fragment
             subTotalPrice = prefProvider.getValue(Constants.SUB_TOTAL, "").toDouble()
         }
 
-        if (prefProvider.getValue(Constants.TAX_CHARGE, "").isEmpty()) {
+        if (prefProvider.getValue(Constants.TAX_CHARGE, "").isEmpty() || prefProvider.getValue(
+                Constants.TAX_CHARGE,
+                ""
+            ) == "0.0") {
             totalTax = viewModel.totalTax
             prefProvider.setValue(Constants.TAX_CHARGE, String.format("%.2f", viewModel.totalTax))
         } else {
@@ -826,7 +835,10 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder:Boolean = false) : Fragment
         }
 
 
-        if (prefProvider.getValue(Constants.SERVICE_CHARGE, "").isEmpty()) {
+        if (prefProvider.getValue(Constants.SERVICE_CHARGE, "").isEmpty() || prefProvider.getValue(
+                Constants.SERVICE_CHARGE,
+                ""
+            ) == "0.0") {
             totalServiceCharge = viewModel.totalServiceCharge
             prefProvider.setValue(
                 Constants.SERVICE_CHARGE,
@@ -837,7 +849,10 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder:Boolean = false) : Fragment
         }
 
 
-        if (prefProvider.getValue(Constants.TOTAL_DISCOUNT, "").isEmpty()) {
+        if (prefProvider.getValue(Constants.TOTAL_DISCOUNT, "").isEmpty() || prefProvider.getValue(
+                Constants.TOTAL_DISCOUNT,
+                ""
+            ) == "0.0") {
             totalDiscount = viewModel.totalDiscount
             prefProvider.setValue(
                 Constants.TOTAL_DISCOUNT,
@@ -848,20 +863,29 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder:Boolean = false) : Fragment
         }
 
 
-        if (prefProvider.getValue(Constants.TIP, "").isEmpty()) {
+        if (prefProvider.getValue(Constants.TIP, "").isEmpty() || prefProvider.getValue(
+                Constants.TIP,
+                ""
+            ) == "0.0") {
             tipAmount = viewModel.tip
             prefProvider.setValue(Constants.TIP, String.format("%.2f", viewModel.tip))
         } else {
             tipAmount = prefProvider.getValue(Constants.TIP, "").toDouble()
         }
 
-        if (prefProvider.getValue(Constants.TIP, "").isEmpty()) {
+        if (prefProvider.getValue(Constants.TIP, "").isEmpty() || prefProvider.getValue(
+                Constants.TIP,
+                ""
+            ) == "0.0") {
             tipAmount = viewModel.tip
             prefProvider.setValue(Constants.TIP, String.format("%.2f", viewModel.tip))
         } else {
             tipAmount = prefProvider.getValue(Constants.TIP, "").toDouble()
         }
-        if (prefProvider.getValue(Constants.CASH_DISCOUNT_SURCHARGE, "").isEmpty()) {
+        if (prefProvider.getValue(Constants.CASH_DISCOUNT_SURCHARGE, "").isEmpty() || prefProvider.getValue(
+                Constants.CASH_DISCOUNT_SURCHARGE,
+                ""
+            ) == "0.0") {
             cashDiscountSurcharge = viewModel.cashdiscountAmount
             prefProvider.setValue(
                 Constants.CASH_DISCOUNT_SURCHARGE,

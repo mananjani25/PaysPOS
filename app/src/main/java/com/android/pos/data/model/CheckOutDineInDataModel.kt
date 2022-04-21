@@ -16,7 +16,8 @@ data class CheckOutDineInDataModel(
     val splitModel: DineInOrderPayment,
     val dineInAdapterList:List<DineInModel>?= listOf(),
     val dineInOrderDetails:GetOrderDetailsResponse.Data?=null,
-    val guestPaymentModel:GuestDataModel?
+    val guestPaymentModel:GuestDataModel? = null,
+    val guestPosition:Int?=null
 
 ) : Parcelable {
 

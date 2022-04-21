@@ -522,10 +522,21 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
 
                         bundle.putDouble("noCashAdj", cashDiscountSurcharge)
                         bundle.putBoolean("isFromActiveOrder", false)
-                        bundle.putParcelableArrayList(DINE_IN_ADAPTER_LIST,dineInDataModel.dineInAdapterList?.toCollection(
-                            arrayListOf()))
-                        bundle.putParcelable(PRINT_DATA_DINE_IN,dineInDataModel.dineInOrderDetails)
-                        bundle.putParcelable(DINE_IN_GUEST_PAYMENT_DATA,dineInDataModel.guestPaymentModel)
+                        bundle.putParcelableArrayList(
+                            DINE_IN_ADAPTER_LIST, dineInDataModel.dineInAdapterList?.toCollection(
+                                arrayListOf()
+                            )
+                        )
+                        bundle.putParcelable(PRINT_DATA_DINE_IN, dineInDataModel.dineInOrderDetails)
+                        bundle.putParcelable(
+                            DINE_IN_GUEST_PAYMENT_DATA,
+                            dineInDataModel.guestPaymentModel
+                        )
+                        dineInDataModel.guestPosition?.let { it1 ->
+                            bundle.putInt(Constants.GUEST_POSITION,
+                                it1
+                            )
+                        }
 
                         if (findNavController().currentDestination?.id == R.id.paymentBoldPosFragment) {
 
@@ -603,10 +614,21 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
 
                         bundle.putDouble("noCashAdj", cashDiscountSurcharge)
                         bundle.putBoolean("isFromActiveOrder", false)
-                        bundle.putParcelableArrayList(DINE_IN_ADAPTER_LIST,dineInDataModel.dineInAdapterList?.toCollection(
-                            arrayListOf()))
-                        bundle.putParcelable(PRINT_DATA_DINE_IN,dineInDataModel.dineInOrderDetails)
-                        bundle.putParcelable(DINE_IN_GUEST_PAYMENT_DATA,dineInDataModel.guestPaymentModel)
+                        bundle.putParcelableArrayList(
+                            DINE_IN_ADAPTER_LIST, dineInDataModel.dineInAdapterList?.toCollection(
+                                arrayListOf()
+                            )
+                        )
+                        bundle.putParcelable(PRINT_DATA_DINE_IN, dineInDataModel.dineInOrderDetails)
+                        bundle.putParcelable(
+                            DINE_IN_GUEST_PAYMENT_DATA,
+                            dineInDataModel.guestPaymentModel
+                        )
+                        dineInDataModel.guestPosition?.let { it1 ->
+                            bundle.putInt(Constants.GUEST_POSITION,
+                                it1
+                            )
+                        }
 
                         if (findNavController().currentDestination?.id == R.id.paymentBoldPosFragment) {
                             findNavController().navigate(
@@ -917,7 +939,11 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
     fun getDataFromPref() {
         redeemLoyaltyInfo = viewModel.redeemLoyaltyInfo
         prefProvider.setValue(Constants.ORDER_TYPE, Constants.DINE_IN)
-        if (prefProvider.getValue(Constants.WHOLE_AMOUNT, "").isEmpty()) {
+        if (prefProvider.getValue(Constants.WHOLE_AMOUNT, "").isEmpty() || prefProvider.getValue(
+                Constants.WHOLE_AMOUNT,
+                ""
+            ) == "0.0"
+        ) {
             Log.e(TAG, "totalPrice  ${viewModel.totalPrice}")
 
             WholetotalPrice = viewModel.totalPrice
@@ -929,7 +955,10 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
             WholetotalPrice = prefProvider.getValue(Constants.WHOLE_AMOUNT, "").toDouble()
         }
 
-        if (prefProvider.getValue(Constants.SUB_TOTAL, "").isEmpty()) {
+        if (prefProvider.getValue(Constants.SUB_TOTAL, "").isEmpty() ||  prefProvider.getValue(
+                Constants.SUB_TOTAL,
+                ""
+            ) == "0.0") {
             subTotalPrice = viewModel.subTotalPrice
             prefProvider.setValue(
                 Constants.SUB_TOTAL,
@@ -939,7 +968,10 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
             subTotalPrice = prefProvider.getValue(Constants.SUB_TOTAL, "").toDouble()
         }
 
-        if (prefProvider.getValue(Constants.TAX_CHARGE, "").isEmpty()) {
+        if (prefProvider.getValue(Constants.TAX_CHARGE, "").isEmpty() ||  prefProvider.getValue(
+                Constants.TAX_CHARGE,
+                ""
+            ) == "0.0") {
             totalTax = viewModel.totalTax
             prefProvider.setValue(Constants.TAX_CHARGE, String.format("%.2f", viewModel.totalTax))
         } else {
@@ -947,7 +979,10 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
         }
 
 
-        if (prefProvider.getValue(Constants.SERVICE_CHARGE, "").isEmpty()) {
+        if (prefProvider.getValue(Constants.SERVICE_CHARGE, "").isEmpty() ||  prefProvider.getValue(
+                Constants.SERVICE_CHARGE,
+                ""
+            ) == "0.0") {
             totalServiceCharge = viewModel.totalServiceCharge
             prefProvider.setValue(
                 Constants.SERVICE_CHARGE,
@@ -958,7 +993,10 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
         }
 
 
-        if (prefProvider.getValue(Constants.TOTAL_DISCOUNT, "").isEmpty()) {
+        if (prefProvider.getValue(Constants.TOTAL_DISCOUNT, "").isEmpty() || prefProvider.getValue(
+                Constants.TOTAL_DISCOUNT,
+                ""
+            ) == "0.0") {
             totalDiscount = viewModel.totalDiscount
             prefProvider.setValue(
                 Constants.TOTAL_DISCOUNT,
@@ -969,20 +1007,29 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
         }
 
 
-        if (prefProvider.getValue(Constants.TIP, "").isEmpty()) {
+        if (prefProvider.getValue(Constants.TIP, "").isEmpty() || prefProvider.getValue(
+                Constants.TIP,
+                ""
+            ) == "0.0") {
             tipAmount = viewModel.tip
             prefProvider.setValue(Constants.TIP, String.format("%.2f", viewModel.tip))
         } else {
             tipAmount = prefProvider.getValue(Constants.TIP, "").toDouble()
         }
 
-        if (prefProvider.getValue(Constants.TIP, "").isEmpty()) {
+        if (prefProvider.getValue(Constants.TIP, "").isEmpty() || prefProvider.getValue(
+                Constants.TIP,
+                ""
+            ) == "0.0" ) {
             tipAmount = viewModel.tip
             prefProvider.setValue(Constants.TIP, String.format("%.2f", viewModel.tip))
         } else {
             tipAmount = prefProvider.getValue(Constants.TIP, "").toDouble()
         }
-        if (prefProvider.getValue(Constants.CASH_DISCOUNT_SURCHARGE, "").isEmpty()) {
+        if (prefProvider.getValue(Constants.CASH_DISCOUNT_SURCHARGE, "").isEmpty() ||  prefProvider.getValue(
+                Constants.CASH_DISCOUNT_SURCHARGE,
+                ""
+            ) == "0.0") {
             cashDiscountSurcharge = viewModel.cashdiscountAmount
             prefProvider.setValue(
                 Constants.CASH_DISCOUNT_SURCHARGE,
@@ -1965,12 +2012,20 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                 bundle.putBoolean("isGuestPaymentTotal", isLastPayment)
                 bundle.putBoolean("isGuest", isGuestPay)
                 bundle.putBoolean("isLastPayment", isLastPayment)
-                bundle.putParcelableArrayList(DINE_IN_ADAPTER_LIST,dineInDataModel.dineInAdapterList?.toCollection(
-                    arrayListOf()))
+                bundle.putParcelableArrayList(
+                    DINE_IN_ADAPTER_LIST, dineInDataModel.dineInAdapterList?.toCollection(
+                        arrayListOf()
+                    )
+                )
 
 
-                bundle.putParcelable(PRINT_DATA_DINE_IN,dineInDataModel.dineInOrderDetails)
-                bundle.putParcelable(DINE_IN_GUEST_PAYMENT_DATA,dineInDataModel.guestPaymentModel)
+                bundle.putParcelable(PRINT_DATA_DINE_IN, dineInDataModel.dineInOrderDetails)
+                bundle.putParcelable(DINE_IN_GUEST_PAYMENT_DATA, dineInDataModel.guestPaymentModel)
+                dineInDataModel.guestPosition?.let { it1 ->
+                    bundle.putInt(Constants.GUEST_POSITION,
+                        it1
+                    )
+                }
                 if (findNavController().currentDestination?.id == R.id.paymentBoldPosFragment) {
                     findNavController().navigate(
                         R.id.action_paymentBoldPosFragment_to_orderComplete,
@@ -2019,7 +2074,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                     splitAllAmounts(Constants.SERVICE_CHARGE, 0.0)
                     splitAllAmounts(Constants.CASH_DISCOUNT_SURCHARGE, 0.0)
                     splitAllAmounts(Constants.TIP, 0.0)
-                }  else {
+                } else {
                     bundle.putBoolean("isSpilt", true)
                     bundle.putBoolean("isSplitByNo", true)
                     bundle.putBoolean("isCustomCash", false)
@@ -2047,10 +2102,18 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
 
                 bundle.putDouble("noCashAdj", cashDiscountSurcharge)
                 bundle.putBoolean("isFromActiveOrder", false)
-                bundle.putParcelableArrayList(DINE_IN_ADAPTER_LIST,dineInDataModel.dineInAdapterList?.toCollection(
-                    arrayListOf()))
-                bundle.putParcelable(PRINT_DATA_DINE_IN,dineInDataModel.dineInOrderDetails)
-                bundle.putParcelable(DINE_IN_GUEST_PAYMENT_DATA,dineInDataModel.guestPaymentModel)
+                bundle.putParcelableArrayList(
+                    DINE_IN_ADAPTER_LIST, dineInDataModel.dineInAdapterList?.toCollection(
+                        arrayListOf()
+                    )
+                )
+                bundle.putParcelable(PRINT_DATA_DINE_IN, dineInDataModel.dineInOrderDetails)
+                bundle.putParcelable(DINE_IN_GUEST_PAYMENT_DATA, dineInDataModel.guestPaymentModel)
+                dineInDataModel.guestPosition?.let { it1 ->
+                    bundle.putInt(Constants.GUEST_POSITION,
+                        it1
+                    )
+                }
 
                 if (findNavController().currentDestination?.id == R.id.paymentBoldPosFragment) {
                     findNavController().navigate(

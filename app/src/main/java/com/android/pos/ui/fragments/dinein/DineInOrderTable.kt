@@ -843,7 +843,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         taxGuest: Double,
         serviceChargeGuest: Double,
         divideDiscount: Double,
-        dividedGuestAmt: Double
+        dividedGuestAmt: Double,
+        listItemWT: ArrayList<TbItem>
     ) {
 
         //New Drag and Drop
@@ -859,8 +860,6 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         bundle.putDouble("totalTaxB", taxGuest)
         bundle.putDouble("serviceChargeB", serviceChargeGuest)
         bundle.putDouble("dicountB", divideDiscount)
-
-
 
 
         val adapterList = dineInTableAdapter.getList()
@@ -988,19 +987,107 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 arrayListOf()
             )
         )
+        //whole table amount divided calculation
+        var wholeNewSubtotal = 0.0
+        var WTTaxes = 0.0
+        var serviceCharge = 0.0
 
+        Log.e("AAjeChange", "listItemWT:  ${Gson().toJson(listItemWT)}")
+        listItemWT.forEach {
+            val obj = it
+            wholeNewSubtotal += (obj.price * obj.itemQuantity).toDouble()
+
+            if (obj.modifiers.isNotEmpty()) {
+                obj.modifiers.forEach {
+                    wholeNewSubtotal += it.price * it.itemQuantity
+                }
+            }
+
+
+            obj.taxes?.forEach { tax ->
+                if (tax.isActive) {
+                    WTTaxes += if (tax.taxType == "Percentage") {
+
+                        var modifierPrice = 0.0
+                        val price =
+                            (obj.price * obj.itemQuantity) - obj.discountPrice
+
+                        obj.modifiers.forEach {
+                            modifierPrice += (it.price * it.itemQuantity)
+                        }
+
+                        val totalPrice = price + modifierPrice
+
+                        val itemTaxPrice =
+                            (tax.rate * totalPrice) / 100
+                        Log.e("itemTaxPrice", "" + itemTaxPrice)
+                        String.format("%.2f", itemTaxPrice)
+                            .toDouble()
+                    } else {
+
+                        String.format(
+                            "%.2f",
+                            tax.rate * obj.itemQuantity
+                        ).toDouble()
+                    }
+                }
+
+
+            }
+
+
+            if (serviceChargeList?.isNotEmpty() == true) {
+                Log.e("AajeChange", "serviceChargeList:  ${Gson().toJson(serviceChargeList)}")
+                serviceChargeList?.forEach {
+                    if (it.isEnabled) {
+                        serviceCharge += MethodUtils.roundOffAmountDouble((wholeNewSubtotal * it.percentage) / 100)
+                    }
+                }
+
+
+            }
+
+        }
+        Log.e("AajeChange", "wholeNewSubtotal  ${wholeNewSubtotal}")
+        Log.e("AajeChange", "WTTaxes  ${WTTaxes}")
+        Log.e("AajeChange", "serviceCharge  ${serviceCharge}")
+        Log.e("AajeChange", "totalGuestCount  ${totalGuestCount}")
+        wholeNewSubtotal = MethodUtils.roundOffAmountDouble(wholeNewSubtotal / totalGuestCount)
+        WTTaxes = MethodUtils.roundOffAmountDouble(WTTaxes / totalGuestCount)
+        serviceCharge = MethodUtils.roundOffAmountDouble(serviceCharge / totalGuestCount)
+
+        Log.e(
+            "FinalDetails",
+            "subTotal:  ${MethodUtils.roundOffAmountDouble(subTotalGuest + wholeNewSubtotal)}"
+        )
+        Log.e(
+            "FinalDetails",
+            "guestTotalTax:  ${MethodUtils.roundOffAmountDouble(taxGuest + WTTaxes)}"
+        )
+        Log.e(
+            "FinalDetails",
+            "dividedDiscount:  ${MethodUtils.roundOffAmountDouble(divideDiscount)}"
+        )
+        Log.e(
+            "FinalDetails",
+            "dividedCashdiscount :  ${MethodUtils.roundOffAmountDouble(divideCashDiscount)}"
+        )
+        Log.e(
+            "FinalDetails",
+            "guestTotalServiceCharge:  ${MethodUtils.roundOffAmountDouble(serviceChargeGuest + serviceCharge)}"
+        )
 
         val newGuestModel = GuestDataModel(
-            subTotal = subTotalGuest ,
-            totalTax = taxGuest,
-            totalAmount =  totalGuest,
-            totalDiscount = divideDiscount,
+            subTotal = subTotalGuest + wholeNewSubtotal,
+            totalTax = taxGuest + WTTaxes,
+            totalAmount = totalGuest,
+            totalDiscount = MethodUtils.roundOffAmountDouble(divideDiscount),
             cashDiscount = divideCashDiscount,
-            totalServiceCharge = serviceChargeGuest
+            totalServiceCharge = serviceChargeGuest + serviceCharge
 
         )
-        Log.e(TAG,"newGuestModel:  ${Gson().toJson(newGuestModel)}")
-        bundle.putParcelable(DINE_IN_GUEST_PAYMENT_DATA,newGuestModel)
+        Log.e(TAG, "newGuestModel:  ${Gson().toJson(newGuestModel)}")
+        bundle.putParcelable(DINE_IN_GUEST_PAYMENT_DATA, newGuestModel)
         //orderId?.let { it1 -> bundle.putInt("orderId", it1) }
 //        orderId?.let { it1 -> prefProvider.setValueInt("ORDER_ID", it1) }
         var wholeTableAmt = 0.0
@@ -1560,6 +1647,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
 
                     var orderDiscount = 0.0
+                    var newLocalDiscountCal = 0.0
                     if (baseResponse.totalDiscount - totalItemDiscount > 0) {
                         orderDiscount = baseResponse.totalDiscount - totalItemDiscount
 
@@ -4342,7 +4430,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                         builder.addTextLineSpace(30)
                         builder.addFeedUnit(30)
                         builder.addTextFont(Builder.FONT_E)
-                         builder.addTextAlign(Builder.ALIGN_CENTER)
+                        builder.addTextAlign(Builder.ALIGN_CENTER)
                         builder.addTextLang(Builder.LANG_EN)
                         addCustomerTextSize(builder, customerSettingModel.fonts)
                         builder.addTextStyle(
