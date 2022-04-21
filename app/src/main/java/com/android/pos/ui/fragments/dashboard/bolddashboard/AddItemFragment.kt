@@ -397,7 +397,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
     private fun setData() {
         binding.txtItem.text = "" + item?.name
         binding.txtPrice.text = MethodUtils.roundOffAmount(item.price)
-        if(view!=null){
+        if (view != null) {
             viewModel.getItemsbyId(item.itemId).observe(viewLifecycleOwner) {
 
                 it?.let { resource ->
@@ -413,6 +413,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
                                 variationAdapter.addVariations(it.variationsAttributes)
                                 val variationList = ArrayList<VariationsAttribute>()
                                 if (item.variationsAttributes.isNotEmpty()) {
+                                    binding.dividerLine.root.visibility = View.VISIBLE
                                     val variation = item.variationsAttributes[0]
                                     variationList.add(variation)
                                     item.name =
@@ -427,6 +428,10 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
                                     }
                                 }
                                 if (intArray!!.isNotEmpty()) {
+                                } else binding.dividerLine.root.visibility = View.GONE
+
+                                if (intArray!!.isNotEmpty()) {
+                                    binding.dividerLine2.root.visibility = View.VISIBLE
 
                                     viewModel.modifierSet(intArray!!).observe(requireActivity()) {
                                         if (it.data != null && it.data.isNotEmpty()) {
@@ -456,42 +461,43 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
 
                                 } else {
                                     binding.rvModifiersList.visibility = View.GONE
-                                    binding.dividerLine.root.visibility = View.GONE
+                                    binding.dividerLine2.root.visibility = View.GONE
                                 }
 
-                                variationAdapter?.showVariationPriceClick = { it: VariationsAttribute ->
-                                    if (!MethodUtils.isDoubleClick()) {
-                                        Log.e(TAG, "getpriceType:  ${it.priceType}")
-                                        if (it.priceType == "Variable") {
-                                            val bundle = Bundle().apply {
-                                                putParcelable("variationAttribute", it)
-                                            }
-                                            findNavController().navigate(
-                                                R.id.action_dashboardCategoryBoldPOS_to_addVariablePriceDialog,
-                                                bundle
-                                            )
+                                variationAdapter?.showVariationPriceClick =
+                                    { it: VariationsAttribute ->
+                                        if (!MethodUtils.isDoubleClick()) {
+                                            Log.e(TAG, "getpriceType:  ${it.priceType}")
+                                            if (it.priceType == "Variable") {
+                                                val bundle = Bundle().apply {
+                                                    putParcelable("variationAttribute", it)
+                                                }
+                                                findNavController().navigate(
+                                                    R.id.action_dashboardCategoryBoldPOS_to_addVariablePriceDialog,
+                                                    bundle
+                                                )
 
 
-                                        } else if (it.priceType == "Fixed") {
+                                            } else if (it.priceType == "Fixed") {
 
-                                            var variation: VariationsAttribute? = null
-                                            if (variationAdapter != null) {
-                                                variation = variationAdapter.getItem()
-                                            } else if (variation != null) {
-                                                variation = it
-                                            }
-
-
-
-                                            if (variation != null) {
-                                                variation.price?.let {
-                                                    item.price = it
+                                                var variation: VariationsAttribute? = null
+                                                if (variationAdapter != null) {
+                                                    variation = variationAdapter.getItem()
+                                                } else if (variation != null) {
+                                                    variation = it
                                                 }
 
-                                            } else {
-                                                item.price = item.price
+
+
+                                                if (variation != null) {
+                                                    variation.price?.let {
+                                                        item.price = it
+                                                    }
+
+                                                } else {
+                                                    item.price = item.price
+                                                }
                                             }
-                                        }
 
 //                                    if (item.variationsAttributes.isNotEmpty()) {
 //                                        val resultVariationDetails =
@@ -520,8 +526,8 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
 //                                            }
 //                                        }
 //                                    }
+                                        }
                                     }
-                                }
 
 
                             }
@@ -539,6 +545,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
 
             }
         }
+
 
 
 
