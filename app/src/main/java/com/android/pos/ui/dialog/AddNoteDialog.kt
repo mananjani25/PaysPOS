@@ -18,7 +18,9 @@ import com.android.pos.ui.adapter.NotesListAdapter
 import com.android.pos.ui.fragments.settings.notes.NoteListViewModel
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.callback.ItemCallback
+import com.android.pos.utils.extensions.gone
 import com.android.pos.utils.extensions.showAlert
+import com.android.pos.utils.extensions.visible
 import com.android.pos.utils.statusUtils.Status
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -75,7 +77,21 @@ class AddNoteDialog : DialogFragment(), ItemCallback {
 
 
         with(binding) {
-            edtNote.setText(item?.note)
+            if (isOrderNote) {
+                if (cartList?.get(0)?.note?.isNotEmpty() == true) {
+                    edtNote.setText(cartList?.get(0)?.note ?: "")
+                    binding.txtRemovenote?.visible()
+                } else {
+                    binding.txtRemovenote?.gone()
+                }
+            } else {
+                if (item?.note?.isNotEmpty() == true) {
+                    edtNote.setText(item?.note)
+                    binding.txtRemovenote?.visible()
+                } else {
+                    binding.txtRemovenote?.gone()
+                }
+            }
         }
 
         binding.txtSave.setOnClickListener {
@@ -86,6 +102,18 @@ class AddNoteDialog : DialogFragment(), ItemCallback {
         binding.imgBack.setOnClickListener {
             dismiss()
         }
+        binding.txtRemovenote?.setOnClickListener {
+            val result = Bundle().apply {
+                putString("note", "")
+                putParcelable("item", item)
+                putBoolean("isOrderNote", isOrderNote)
+                putParcelableArrayList("cartList", cartList)
+                headerItemPosition?.let { putInt("headerPos", it) }
+            }
+
+            setFragmentResult("request_key_note", result)
+            findNavController().navigateUp()
+        }
     }
 
 
@@ -93,7 +121,7 @@ class AddNoteDialog : DialogFragment(), ItemCallback {
         val result = Bundle().apply {
             putString("note", binding.edtNote.text.toString().trim())
             putParcelable("item", item)
-            putBoolean("isOrderNote",isOrderNote)
+            putBoolean("isOrderNote", isOrderNote)
             putParcelableArrayList("cartList", cartList)
             headerItemPosition?.let { putInt("headerPos", it) }
         }

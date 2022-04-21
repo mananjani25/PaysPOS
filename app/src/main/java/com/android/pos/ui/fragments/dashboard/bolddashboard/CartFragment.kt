@@ -446,6 +446,8 @@ class CartFragment(
                     if (viewModel.order_note.isNotEmpty()) {
                         binding.relativeOrderNotes?.visibility = View.VISIBLE
                         binding.txtOrderNote?.text = viewModel.order_note
+                    }else{
+                        binding.relativeOrderNotes?.visibility = View.GONE
                     }
                     binding.txtSubTotal.text =
                         MethodUtils.roundOffAmount(viewModel.subTotalPrice)
@@ -635,6 +637,8 @@ class CartFragment(
                         if (viewModel.order_note.isNotEmpty()) {
                             binding.relativeOrderNotes?.visibility = View.VISIBLE
                             binding.txtOrderNote?.text = viewModel.order_note
+                        }else{
+                            binding.relativeOrderNotes?.visibility = View.GONE
                         }
 //                        var data: TbCustomer? = prefProvider.getCustomerData()
 //                        if (data != null) {
@@ -789,6 +793,8 @@ class CartFragment(
                         if (viewModel.order_note.isNotEmpty()) {
                             binding.relativeOrderNotes?.visibility = View.VISIBLE
                             binding.txtOrderNote?.text = viewModel.order_note
+                        }else{
+                            binding.relativeOrderNotes?.visibility = View.GONE
                         }
                         binding.txtSubTotal.text =
                             MethodUtils.roundOffAmount(viewModel.subTotalPrice)

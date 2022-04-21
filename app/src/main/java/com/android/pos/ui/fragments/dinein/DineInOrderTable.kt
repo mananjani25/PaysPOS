@@ -489,6 +489,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             )
 
             bundle.putDouble("totalDiscount", totalDiscount)
+            bundle.putString("order_note",order_note)
             bundle.putParcelable("tableDetails", getOrderDetailsResponse?.floorPlanTable)
 
             orderId?.let { it1 -> bundle.putInt("orderId", it1) }
@@ -1219,7 +1220,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
     private fun navigateDineInOrderNew() {
 
-        viewModel.Basedata.observe(viewLifecycleOwner, { event ->
+        viewModel.Basedata.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let { baseResponse ->
                 if (baseResponse != null) {
                     order_note = baseResponse.note
@@ -1321,9 +1322,9 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                                         //Whole Table Calculation
                                         totalItemDiscount += it.discountAmount
 
-                                   /*     if (baseResponse.guestAttributes.get(i).isPaid) {
-                                            notPayAnyAmount = true
-                                        }*/
+                                        /*     if (baseResponse.guestAttributes.get(i).isPaid) {
+                                                 notPayAnyAmount = true
+                                             }*/
 
                                         //for add item in tbItem List and extract/convert data from API
                                         val itemDineIn: DineInModel = DineInModel()
@@ -1467,7 +1468,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
                     for (k in 0 until baseResponse.guestAttributes.size) {
                         val obj = baseResponse.guestAttributes.get(k)
-                        if (baseResponse.guestAttributes.get(k).isPaid){
+                        if (baseResponse.guestAttributes.get(k).isPaid) {
                             notPayAnyAmount = true
                         }
 
@@ -1723,7 +1724,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             }
 
 
-        })
+        }
 
     }
 

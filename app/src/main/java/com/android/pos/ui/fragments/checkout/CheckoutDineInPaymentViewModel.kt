@@ -1819,6 +1819,7 @@ class CheckoutDineInPaymentViewModel @Inject constructor(
                 name = it.name
                 price = it.price
                 order_item_id = item.orderItemId
+                modifier_id = it.id
                 totalPrice = MethodUtils.roundOffAmountDouble(it.price * it.itemQuantity)
                 it.modifierSetId?.let { modifier_set_id = it }
                 quantity = it.itemQuantity

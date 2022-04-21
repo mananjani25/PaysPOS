@@ -421,6 +421,9 @@ class OrderItemModifierAttribute {
     @SerializedName("order_id")
     var orderId: Int? = null
 
+    @SerializedName("modifier_id")
+    var modifier_id: Int? = null
+
     @SerializedName("price")
     var price: Double = 0.0
 

@@ -1858,6 +1858,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                 }
                 name = it.name
                 price = it.price
+                modifier_id = it.id
                 order_item_id = item.orderItemId
                 totalPrice = MethodUtils.roundOffAmountDouble(it.price * it.itemQuantity)
                 it.modifierSetId?.let { modifier_set_id = it }
@@ -2061,7 +2062,7 @@ class DashBoardCategoryViewModel @Inject constructor(
             employeeId = prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
             locationId = prefProvider.getValueInt(Constants.LOCATION_ID, 1)
             terminalId = prefProvider.getValueInt(Constants.TERMINAL_ID, 0)
-            note = ""
+            note = cartModel.note
             openOrderType = "DineIn"
             orderTypeId = 2
             subTotal = MethodUtils.roundOffAmountDouble(subTotalPrice)

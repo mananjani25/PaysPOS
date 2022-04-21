@@ -174,7 +174,11 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder:Boolean = false) : Fragment
         ) { _: String, bundle: Bundle ->
 
             isSelectedCount = bundle.getInt("split")
-            binding.tvCustom.text = "Custom ($isSelectedCount Ways)"
+            if(isSelectedCount>1){
+                binding.tvCustom.text = "Custom ($isSelectedCount Ways)"
+            }else{
+                binding.tvCustom.text = "Custom"
+            }
             tipsetupGlobal(tipAmount, isSelectedCount)
         }
         requireActivity().supportFragmentManager.setFragmentResultListener(
@@ -1044,10 +1048,32 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder:Boolean = false) : Fragment
 
     private fun setupTabDesign() {
         binding.linearTab1.setOnClickListener {
+            isSelectedCount = 1
+            tipsetupGlobal(tipAmount, isSelectedCount)
             loadPaymentLayout()
         }
         binding.linearTab2.setOnClickListener {
+            isSelectedCount = 1
+            tipsetupGlobal(tipAmount, isSelectedCount)
             loadSplitLayout()
+            binding.tvFullAmount.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
+            binding.tv2ways.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
+            binding.tv3ways.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
+            binding.tv4ways.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
+            binding.tv5ways.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
+            binding.tv6ways.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
+            binding.tvCustom.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
+            binding.tvFullAmount.setTextColor(resources.getColor(R.color.txtColor))
+            binding.tv2ways.setTextColor(resources.getColor(R.color.txtColor))
+            binding.tv3ways.setTextColor(resources.getColor(R.color.txtColor))
+            binding.tv4ways.setTextColor(resources.getColor(R.color.txtColor))
+            binding.tv5ways.setTextColor(resources.getColor(R.color.txtColor))
+            binding.tv6ways.setTextColor(resources.getColor(R.color.txtColor))
+            binding.tvCustom.setTextColor(resources.getColor(R.color.txtColor))
+            binding.tvCustom.text = "Custom"
+            isSelectedCount = 1
+            tipsetupGlobal(tipAmount, isSelectedCount)
+            binding.tvFullAMounttxt.visibility = View.VISIBLE
         }
     }
 
