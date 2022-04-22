@@ -372,6 +372,7 @@ class DashBoardCategoryViewModel @Inject constructor(
         } else {
             if (cartList?.get(0)?.orderType == DINE_IN) {
                 val cartModel = cartList[0]
+                order_note = cartList[0].note
                 cartModel.dineInList = dineInList
                 if (type == ADD || type == UPDATE) {
                     var index = -1
