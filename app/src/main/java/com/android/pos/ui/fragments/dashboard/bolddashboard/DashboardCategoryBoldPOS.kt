@@ -407,7 +407,28 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
 
         }
         binding.layoutHeader.txtDineIn.setOnClickListener {
-            findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_dineInFragment)
+            if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == DINE_IN) {
+                if(cartList.isNotEmpty()){
+                    val dList = cartList[0].dineInList ?: arrayListOf()
+                    Log.e(TAG, "dList:  ${Gson().toJson(dList)}")
+                    var updateDinein = arguments?.getBoolean("is_dine_in_edit")?:false
+                    if(!updateDinein){
+                        if (dList.isNotEmpty()) {
+                            dList[0].floorPlanTable?.id?.let {
+                                viewModel.getTableStatus(
+                                    it, "Available"
+                                )
+                            }
+                            findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_dineInFragment)
+                        }
+                    }else{
+                        findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_dineInFragment)
+                    }
+                }
+            }else{
+                findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_dineInFragment)
+            }
+
         }
         binding.layoutHeader.imgDrawer.setOnClickListener {
             findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_menuFragment)
@@ -802,12 +823,13 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                 prefProvider.setValue(ORDER_TYPE, DINE_IN)
                 prefProvider.setValue(Constants.ORDER_TYPE_NAME, DINE_IN)
                 prefProvider.setValueInt(Constants.ORDER_TYPE_ID, 2)
+
+                cartList[0].note = arguments?.getString("order_note").toString()
                 Log.e("AAjeDine","cartdiscountPrice  ${cartList[0].discountPrice}")
                 Log.e("AAjeDine","dineTotalDiscount  ${arguments?.getDouble("totalDiscount") }")
                 cartList[0].discountPrice = arguments?.getDouble("totalDiscount") ?: 0.0
                 viewModel.cartLogic(cartList, null, Constants.ADD, false, dineInList = dineInList)
                 viewModel.orderItemDiscount = arguments?.getDouble("totalDiscount") ?: 0.0
-                viewModel.order_note = arguments?.getString("order_note").toString()
 
             }
 

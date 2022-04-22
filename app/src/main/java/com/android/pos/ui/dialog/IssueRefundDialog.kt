@@ -32,6 +32,7 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
 
     private var loyaltyAmount: Double = 0.0
     private var applyDiscount: Double = 0.0
+    private var cashdiscountdiv :Double =0.0
     private lateinit var refundData: RefundRequestModel
     private var totalServiceCharge: Double = 0.0
     private var refundAmount: Double = 0.0
@@ -219,6 +220,7 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
                                 paymentOrderDetailsResponse.data.service_charge_amount
                             cash_discount_or_surcharge_refunded =
                                 paymentOrderDetailsResponse.data.cash_discount_or_surcharge
+                            subtotal_refunded = paymentOrderDetailsResponse.data.sub_total
                         }
                     }
 
@@ -314,6 +316,8 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
         totalTax = 0.0
         applyDiscount = 0.0
         loyaltyAmount = 0.0
+        cashdiscountdiv = 0.0
+        var subtotal_divid = 0.0
         val orderItemRefundsAttributesList =
             ArrayList<RefundRequestModel.PaymentRefund.OrderItemRefundsAttribute>()
 
@@ -357,7 +361,7 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
                 }
 
                 totalItemPrice += subTotalPrice
-
+                subtotal_divid+=subTotalPrice
             }
             val orderItemRefundsAttributeModel =
                 RefundRequestModel.PaymentRefund.OrderItemRefundsAttribute()
@@ -379,36 +383,21 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
 
         if (paymentOrderDetailsResponse.data.payment_type == "Cash") {
             if (paymentOrderDetailsResponse.data.cash_discount_type == "CashDiscount") {
-                if (count == refundItemListAdapter.itemCount) {
-                    totalItemPrice -= (MethodUtils.calculateCashDiscount(
-                        totalItemPrice,
-                        prefProvider,
-                        requireContext()
-                    ))
-                } else {
-                    totalItemPrice -= (MethodUtils.calculateCashDiscount(
-                        totalItemPrice,
-                        prefProvider,
-                        requireContext()
-                    ) / refundItemListAdapter.itemCount)
-                }
-
+                cashdiscountdiv = (MethodUtils.calculateCashDiscount(
+                    totalItemPrice,
+                    prefProvider,
+                    requireContext()
+                ))
+                totalItemPrice -= cashdiscountdiv
             }
         } else if (paymentOrderDetailsResponse.data.payment_type == "Card") {
             if (paymentOrderDetailsResponse.data.cash_discount_type == "SurCharge") {
-                if (count == refundItemListAdapter.itemCount) {
-                    totalItemPrice += (MethodUtils.calculateCashDiscount(
-                        totalItemPrice,
-                        prefProvider,
-                        requireContext()
-                    ))
-                } else {
-                    totalItemPrice += (MethodUtils.calculateCashDiscount(
-                        totalItemPrice,
-                        prefProvider,
-                        requireContext()
-                    ) / refundItemListAdapter.itemCount)
-                }
+                cashdiscountdiv = (MethodUtils.calculateCashDiscount(
+                    totalItemPrice,
+                    prefProvider,
+                    requireContext()
+                ))
+                totalItemPrice += cashdiscountdiv
             }
         }
 
@@ -422,6 +411,9 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
                 orderItemRefundsAttributes = orderItemRefundsAttributesList
                 taxRefunded = totalTax
                 serviceChargeRefunded = totalServiceCharge
+                subtotal_refunded = subtotal_divid
+                cash_discount_or_surcharge_refunded =
+                    cashdiscountdiv
                 tipsRefunded =  if (paymentOrderDetailsResponse.data.payment_type == "Cash") 0.0 else paymentOrderDetailsResponse.data.tips
             }
         }

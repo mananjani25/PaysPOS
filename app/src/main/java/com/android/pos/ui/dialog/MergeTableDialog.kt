@@ -96,8 +96,8 @@ class MergeTableDialog : DialogFragment() {
         listTable = arrayListOf()
 
 
-        listFloor.add(MergeFloorModel(0, "Select floor"))
-        listTable.add(MergeTableModel(0, "Select table", 0, "Select floor", false, 0, null, 0))
+        listFloor.add(MergeFloorModel(0, "Select Floor"))
+        listTable.add(MergeTableModel(0, "Select Table", 0, "Select Floor", false, 0, null, 0))
         listFloorPlan?.forEach {
             listFloor.add(MergeFloorModel(it.id, it.name))
 
@@ -300,7 +300,7 @@ class MergeTableDialog : DialogFragment() {
                         }
                     } else {
                         AlertUtils.showCustomAlertWithListenerWithOK(
-                            requireContext(), "Please Select Table"
+                            requireContext(), "Please Select Floor and Table"
                         ) { _, _ ->
 
                         }
@@ -333,7 +333,7 @@ class MergeTableDialog : DialogFragment() {
                         )
                     } else {
                         AlertUtils.showCustomAlertWithListenerWithOK(
-                            requireContext(), "Please Select Table"
+                            requireContext(), "Please Select Floor and Table"
                         ) { _, _ ->
 
                         }
@@ -379,7 +379,7 @@ class MergeTableDialog : DialogFragment() {
                         )
                     } else {
                         AlertUtils.showCustomAlertWithListenerWithOK(
-                            requireContext(), "Please Select Table"
+                            requireContext(), "Please Select Floor and Table"
                         ) { _, _ ->
 
                         }
@@ -399,7 +399,7 @@ class MergeTableDialog : DialogFragment() {
                 }
                 if(valdate){
                     AlertUtils.showCustomAlertWithListenerWithOK(
-                        requireContext(), "Please Select Table"
+                        requireContext(), "Please Select Floor and Table"
                     ) { _, _ ->
 
                     }

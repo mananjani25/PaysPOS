@@ -790,6 +790,13 @@
             app:destination="@id/assignCustomerOrderFragment"
             app:enterAnim="@anim/nav_default_enter_anim" />
         <action
+            android:id="@+id/action_manualSaleNew__to_addDiscountDialog"
+            app:destination="@id/addDiscountDialog" />
+
+        <action
+            android:id="@+id/action_manualSaleNew__to_addNoteDialog"
+            app:destination="@id/addNoteDialog" />
+        <action
             android:id="@+id/action_manualSaleNew_to_addNoteDialog"
             app:destination="@id/addNoteDialog"
             app:enterAnim="@anim/nav_default_enter_anim" />

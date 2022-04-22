@@ -28,6 +28,8 @@ data class RefundRequestModel(
         var reasonForRefund: String = "",
         @SerializedName("service_charge_refunded")
         var serviceChargeRefunded: Double = 0.0,
+        @SerializedName("subtotal_refunded")
+        var subtotal_refunded: Double = 0.0,
         @SerializedName("tax_refunded")
         var taxRefunded: Double = 0.0,
         @SerializedName("terminal_id")

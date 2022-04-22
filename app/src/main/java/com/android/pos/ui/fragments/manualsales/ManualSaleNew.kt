@@ -13,6 +13,7 @@ import android.view.*
 import android.widget.*
 import androidx.appcompat.widget.*
 import androidx.appcompat.widget.PopupMenu
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResultListener
@@ -60,6 +61,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
     private var cartList: List<CartModel>? = null
     private lateinit var cartAdapter: ManualSaleCartAdapter
     private var cartItemModel = TbItem()
+    var orderDiscount = 0.0
     private val viewModel by activityViewModels<DashBoardCategoryViewModel>()
     var amountToBepaid = 0.0
     var totalquantity = 0
@@ -91,7 +93,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
 
         getDiscountList()
 
-        binding.layoutHeader.edtSearch.visibility=View.GONE
+        binding.layoutHeader.edtSearch.visibility = View.GONE
 
         return binding.root
     }
@@ -157,7 +159,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
         binding.layoutHeader.txtKeypad.setTextColor(requireContext().resources.getColor(R.color.btnColor))
         binding.layoutHeader.txtHome.visibility = View.VISIBLE
         binding.layoutHeader.txtTransaction.setOnClickListener {
-            if(rolePermission.hasTransactionPermission(binding.root)){
+            if (rolePermission.hasTransactionPermission(binding.root)) {
                 findNavController().navigate(R.id.action_manualSalesNew_to_transactionFragment)
             }
 
@@ -271,6 +273,17 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                         "%.2f",
                         viewModel.totalPrice
                     )
+                    if (viewModel.order_note.isNotEmpty()) {
+                        binding.linearBottomInfo?.layoutParams?.height =
+                            resources.getDimension(R.dimen._60sdp).toInt()
+                        binding.relativeOrderNotes?.visible()
+                        binding.txtOrderNote!!.text = viewModel.order_note
+
+                    } else {
+                        binding.relativeOrderNotes?.gone()
+                        binding.linearBottomInfo?.layoutParams?.height =
+                            resources.getDimension(R.dimen._50sdp).toInt()
+                    }
                 } else {
 
                     cartAdapter.clearList()
@@ -564,6 +577,11 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
 
             val popupMenu = PopupMenu(requireContext(), it)
             popupMenu.menuInflater.inflate(R.menu.manual_sale_menu, popupMenu.menu)
+            if (cartList?.isEmpty() == true) {
+                popupMenu.menu.findItem(R.id.menu_order_discount).isVisible = false
+                popupMenu.menu.findItem(R.id.menu_order_note).isVisible = false
+            }
+
             if (prefProvider.getValue(Constants.CUSTOMER_NAME, "").isEmpty())
                 popupMenu.menu.findItem(R.id.menu_remove_customer).isVisible = false
             popupMenu.setOnMenuItemClickListener { menuItem ->
@@ -593,6 +611,12 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                         }
 
                     }
+                    R.id.menu_order_note -> {
+                        findNavController().navigate(
+                            R.id.action_manualSaleNew_to_addNoteDialog,
+                            bundleOf("isOrderNote" to true, "cartList" to cartList)
+                        )
+                    }
                     R.id.menu_remove_customer -> {
 
                         if (cartList?.isNotEmpty() == true && cartList!![0].customer != null) {
@@ -601,6 +625,20 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                         }
                         clearCustomer()
 
+                    }
+                    R.id.menu_order_discount -> {
+                        val bundle = Bundle()
+                        bundle.putBoolean("isOrderDiscount", true)
+                        bundle.putDouble("totalPrice", viewModel.totalPrice)
+                        if (cartList?.isNotEmpty() == true) {
+                            bundle.putDouble("orderDiscountPrice", cartList!![0].discountPrice)
+                            bundle.putString("orderDiscountType", cartList!![0].discountType)
+                            bundle.putDouble("selectedvalue", cartList!![0].discountSelectdValue)
+                        }
+                        findNavController().navigate(
+                            R.id.action_manualSaleNew__to_addDiscountDialog,
+                            bundle
+                        )
                     }
                 }
                 true
@@ -843,17 +881,46 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
 
 
         }
+        setFragmentResultListener("request_key_discount_order") { _: String, bundle: Bundle ->
+            val result = bundle.getParcelable<TbDiscount>("data")
+            val value = bundle.getDouble("value")
+            if (result != null && viewModel.totalPrice != 0.0) {
+                orderDiscount = result.percentage
+
+                val discountApplyPrice = viewModel.totalPrice
+                val price = discountApplyPrice - orderDiscount
+
+                if (cartList?.isNotEmpty() == true) {
+                    cartList!![0].discountPrice = orderDiscount
+                    cartList!![0].discountSelectdValue = value
+                    cartList!![0].discountType = result.discountType
+                    if (result.id != -1) {
+                        cartList!![0].discountId = result.id
+                    }
+                    viewModel.addCart(cartList!![0])
+                }
+
+
+            }
+        }
         setFragmentResultListener("request_key_note") { requestKey: String, bundle: Bundle ->
             val note = bundle.getString("note")
+            val isOrderNote = bundle.getBoolean("isOrderNote")
+            if (isOrderNote) {
+                if (cartList?.isNotEmpty() == true) {
+                    cartList!![0].note = note.toString()
+                    viewModel.addCart(cartList!![0])
+                }
+            } else {
+                cartItemModel.note = note.toString()
 
-            cartItemModel.note = note.toString()
-
-            cartItemModel?.let {
-                viewModel.manualSalecartLogic(
-                    cartList,
-                    it,
-                    Constants.UPDATE
-                )
+                cartItemModel?.let {
+                    viewModel.manualSalecartLogic(
+                        cartList,
+                        it,
+                        Constants.UPDATE
+                    )
+                }
             }
         }
         setFragmentResultListener("request_key_discount") { requestKey: String, bundle: Bundle ->
@@ -1375,7 +1442,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
             closeDialog(dialog)
         }
         linearCust.setOnClickListener {
-            if(rolePermission.hasCustomerPermission(binding.root)){
+            if (rolePermission.hasCustomerPermission(binding.root)) {
                 findNavController().navigate(R.id.action_manualSaleNew_to_customer)
                 closeDialog(dialog)
             }
