@@ -597,15 +597,16 @@ class CartFragment(
 
                         }
                         Log.e(TAG, "getPAyment:  ${isFromPayment}")
+                        Log.e(TAG, "isGuestPayment:  ${isGuestPayment}")
 
-                        if (isFromPaymentDinein && isGuestPayment) {
-                            Log.e(TAG, "TotalPrice:  ${requireArguments().getDouble("totalPrice")}")
+                        if (isFromPaymentDinein) {
                             Log.e(TAG, "guestCalModel:  ${Gson().toJson(guestCalModel)}")
                             viewModel.itemCalculationForDineInPayment(
                                 it[0],
                                 binding.txtTotal,
                                 requireContext(),
-                                guestCalModel!!
+                                guestCalModel!!,
+                                isGuestPayment
                             )
                         } else {
                             Log.e(TAG, "WithOutDineIn")

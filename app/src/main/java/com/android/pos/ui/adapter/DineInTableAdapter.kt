@@ -246,10 +246,10 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             var guestOrderDisShare = 0.0
             Log.e(TAG, "")
             if (list.get(0).orderDiscount > 0) {
-                guestOrderDisShare =
-                    (finalAmt * list.get(0).orderDiscount) / (list.get(0).orderTotalAmount + list.get(
-                        0
-                    ).orderDiscount)
+                 guestOrderDisShare =
+                    MethodUtils.roundOffAmountDouble(list[0].orderDiscount / (list[0].totalGuestCount ))
+              /*  guestOrderDisShare =
+                    (finalAmt * list.get(0).orderDiscount) / (list.get(0).orderTotalAmount + list.get(0).orderDiscount)*/
 
                 Log.e("TODAY", "guestOrderDisShare  ${guestOrderDisShare}")
 

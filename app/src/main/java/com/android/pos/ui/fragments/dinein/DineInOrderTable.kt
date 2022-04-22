@@ -280,6 +280,28 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         }
 
         binding.btnPayNew.setOnClickListener {
+            //new Calculation for total Discount
+            var dividedOrderDiscount = 0.0
+            if (paidGuestAmount > 0 && globalOrderDiscount > 0.0) {
+                var eachGuestDiscount =
+                    MethodUtils.roundOffAmountDouble(globalOrderDiscount / (getOrderDetailsResponse?.guestAttributes?.size!! - 1))
+
+
+                dividedOrderDiscount = globalOrderDiscount - (eachGuestDiscount * paidGuestAmount)
+
+            }
+            Log.e("DicountDine", "dividedOrderDiscount  ${dividedOrderDiscount}")
+            Log.e("DicountDine", "paidGuestAmount  ${paidGuestAmount}")
+            Log.e(
+                "DicountDine",
+                "totalGuestCount  ${(getOrderDetailsResponse?.guestAttributes?.size!! - 1)}"
+            )
+
+
+            if (totalDiscount > dividedOrderDiscount) {
+                totalDiscount -= dividedOrderDiscount
+            }
+
 
             val adapterList = dineInTableAdapter.getList()
             var offlineId = randomOfflineId()
@@ -396,7 +418,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 //            viewModelPayment.totalServiceCharge = MethodUtils.roundOffAmountDouble(serviceCharge)
 //            viewModelPayment.totalDiscount = MethodUtils.roundOffAmountDouble(totalDiscount)
 
-            Log.e("AAJE","subTotalDInin:  ${MethodUtils.roundOffAmountDouble(subTotalDInin)}")
+            Log.e("AAJE", "subTotalDInin:  ${MethodUtils.roundOffAmountDouble(subTotalDInin)}")
             bundle.putDouble("totalPrice", MethodUtils.roundOffAmountDouble(toFinalAmt))
             bundle.putDouble("subTotalPrice", MethodUtils.roundOffAmountDouble(subTotalDInin))
             bundle.putDouble("totalTax", MethodUtils.roundOffAmountDouble(finalTaxAmt))
@@ -1087,12 +1109,12 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         )
 
         val newGuestModel = GuestDataModel(
-            subTotal = subTotalGuest + wholeNewSubtotal,
-            totalTax = taxGuest + WTTaxes,
+            subTotal = MethodUtils.roundOffAmountDouble(subTotalGuest + wholeNewSubtotal),
+            totalTax = MethodUtils.roundOffAmountDouble(taxGuest + WTTaxes),
             totalAmount = totalGuest,
             totalDiscount = MethodUtils.roundOffAmountDouble(divideDiscount),
-            cashDiscount = divideCashDiscount,
-            totalServiceCharge = serviceChargeGuest + serviceCharge
+            cashDiscount = MethodUtils.roundOffAmountDouble(divideCashDiscount),
+            totalServiceCharge =MethodUtils.roundOffAmountDouble( serviceChargeGuest + serviceCharge)
 
         )
         Log.e(TAG, "newGuestModel:  ${Gson().toJson(newGuestModel)}")
@@ -1700,7 +1722,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     serviceCharge = totalServiceChargeAmount
                     totalDiscount = orderDiscount + totalItemDiscount
                     finalTaxAmt = totalTaxAmount
-                    Log.e(TAG,"GotsubTotalDInin  ${subTotalDInin}")
+                    Log.e(TAG, "GotsubTotalDInin  ${subTotalDInin}")
                     binding.txtTotalAmountNew.text = MethodUtils.roundOffAmount(
                         finalAmount
                     )
@@ -1833,6 +1855,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         viewModel.Basedata.observe(viewLifecycleOwner, { event ->
             event.getContentIfNotHandled()?.let { baseResponse ->
                 if (baseResponse != null) {
+                    getOrderDetailsResponse = baseResponse
                     subTotalWT = 0.0
                     serviceCharge = 0.0
                     totalDiscount = 0.0

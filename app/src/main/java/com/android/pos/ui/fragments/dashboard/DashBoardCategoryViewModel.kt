@@ -1082,9 +1082,9 @@ class DashBoardCategoryViewModel @Inject constructor(
                     }
                 }
             }
-            Log.e("AjjeDine","totalDis ${totalDis}")
-            Log.e("AjjeDine","totalDineItemDis ${totalDineItemDis}")
-            Log.e("AjjeDine","totalDiscount ${totalDiscount}")
+            Log.e("AjjeDine", "totalDis ${totalDis}")
+            Log.e("AjjeDine", "totalDineItemDis ${totalDineItemDis}")
+            Log.e("AjjeDine", "totalDiscount ${totalDiscount}")
 
 
             var finalTotal = 0.0
@@ -2431,7 +2431,8 @@ class DashBoardCategoryViewModel @Inject constructor(
         cartModel: CartModel,
         txtTotal: AppCompatTextView,
         context: Context,
-        model: GuestPaymentCalculationModel
+        model: GuestPaymentCalculationModel,
+        isGuestPayment: Boolean
     ) {
 
         var totalAmmount = 0.0
@@ -2445,12 +2446,14 @@ class DashBoardCategoryViewModel @Inject constructor(
         var amountToBePaid = 0.0
         if (cartModel.orderType == DINE_IN) {
 
-            subTotalPrice = model.subTotal
-            totalTax = model.tax
-            totalServiceCharge = model.serviceCharge
-            totalDiscount = model.totalDiscount
-            order_note = cartModel.note
-            /*   cartModel.dineInList?.forEach { dine ->
+            if (isGuestPayment) {
+
+                subTotalPrice = model.subTotal
+                totalTax = model.tax
+                totalServiceCharge = model.serviceCharge
+                totalDiscount = model.totalDiscount
+                order_note = cartModel.note
+                /*   cartModel.dineInList?.forEach { dine ->
 
                    dine.items.forEach { item ->
                        totalCount += item.itemQuantity
@@ -2470,11 +2473,11 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                }
    */
-            totalServiceCharge = model.serviceCharge
-            // serviceChargeCalculationModel(cartModel)
-            subTotalPrice -= cartModel.discountPrice
-            totalDiscount += cartModel.discountPrice
-            /*   cartModel.dineInList?.forEach {
+                totalServiceCharge = model.serviceCharge
+                // serviceChargeCalculationModel(cartModel)
+                subTotalPrice -= model.totalDiscount
+                //  totalDiscount += cartModel.discountPrice
+                /*   cartModel.dineInList?.forEach {
                    it.items.forEach {
                        totalDiscount += if (!it.isManualSales) {
                            (it.discountPrice * it.itemQuantity)
@@ -2485,41 +2488,125 @@ class DashBoardCategoryViewModel @Inject constructor(
                }
    */
 
-            var finalTotal = 0.0
-            finalTotal = (subTotalPrice + totalTax + totalServiceCharge)
-            cashDiscountType = prefProvider.getValue(Constants.OPTION_TYPE, "")
-            //loyalty point and price calculation
-            amountToBePaid = finalTotal
-            if (selectedCustomer == null) {
+                var finalTotal = 0.0
+                finalTotal = (subTotalPrice + totalTax + totalServiceCharge)
+                cashDiscountType = prefProvider.getValue(Constants.OPTION_TYPE, "")
+                //loyalty point and price calculation
+                amountToBePaid = finalTotal
+
+                totalPrice = MethodUtils.roundOffAmountDouble(finalTotal)
+                /* if (selectedCustomer == null) {
                 totalPrice = amountToBePaid
-                /* MethodUtils.setPriceTextView(
+                *//* MethodUtils.setPriceTextView(
                      txtTotalAmount,
                      amountToBePaid
-                 )*/
+                 )*//*
             } else {
-                /*checkAppliedLoyaltyProgram(
+                *//*checkAppliedLoyaltyProgram(
                     selectedCustomer,
                     amountToBePaid,
                     txtTotalAmount
-                )*/
+                )*//*
                 redeemLoyaltyInfo.getAmountToBePaid()?.let {
                     totalPrice = it
                 }
-            }
+            }*/
 
-            if (MethodUtils.isEnableCashDiscount(context)) {
-                cashdiscountAmount = MethodUtils.calculateCashDiscount(
-                    totalPrice,
-                    prefProvider,
-                    context
-                )
+                if (MethodUtils.isEnableCashDiscount(context)) {
+                    cashdiscountAmount = MethodUtils.calculateCashDiscount(
+                        totalPrice,
+                        prefProvider,
+                        context
+                    )
+                } else {
+                    cashdiscountAmount = 0.0
+                }
+
+                MethodUtils.setPriceTextView(txtTotal, model.total)
+
+
             } else {
-                cashdiscountAmount = 0.0
+                Log.e(TAG, "NotDineInGuest")
+                subTotalPrice = model.subTotal
+                totalTax = model.tax
+                totalServiceCharge = model.serviceCharge
+                totalDiscount = cartModel.discountPrice
+                order_note = cartModel.note
+                // subTotalPrice = model.subTotal
+                /*   cartModel.dineInList?.forEach { dine ->
+
+                       dine.items.forEach { item ->
+                           totalCount += item.itemQuantity
+                           subTotalPrice += if (!item.isManualSales) {
+                               (item.price * item.itemQuantity) - (item.discountPrice * item.itemQuantity)
+                           } else {
+                               (item.price * item.itemQuantity) - item.discountPrice
+                           }
+
+                           taxCalculation(item)
+
+                           item.modifiers.forEach {
+                               subTotalPrice += (it.price * it.itemQuantity)
+                           }
+                       }
+
+
+                   }
+       */
+                totalServiceCharge = model.serviceCharge
+                // serviceChargeCalculationModel(cartModel)
+                //subTotalPrice -= cartModel.discountPrice
+                //totalDiscount += cartModel.discountPrice
+                /*   cartModel.dineInList?.forEach {
+                       it.items.forEach {
+                           totalDiscount += if (!it.isManualSales) {
+                               (it.discountPrice * it.itemQuantity)
+                           } else {
+                               it.discountPrice
+                           }
+                       }
+                   }
+       */
+
+                var finalTotal = 0.0
+                finalTotal = (subTotalPrice + totalTax + totalServiceCharge)
+                cashDiscountType = prefProvider.getValue(Constants.OPTION_TYPE, "")
+                //loyalty point and price calculation
+                amountToBePaid = finalTotal
+                totalPrice = finalTotal
+
+                Log.e(TAG,"newDAstotalPrice  ${totalPrice}")
+                if (selectedCustomer == null) {
+                    totalPrice = amountToBePaid
+                    /* MethodUtils.setPriceTextView(
+                         txtTotalAmount,
+                         amountToBePaid
+                     )*/
+                } else {
+                    /*checkAppliedLoyaltyProgram(
+                        selectedCustomer,
+                        amountToBePaid,
+                        txtTotalAmount
+                    )*/
+                    redeemLoyaltyInfo.getAmountToBePaid()?.let {
+                        totalPrice = it
+                    }
+                }
+
+                if (MethodUtils.isEnableCashDiscount(context)) {
+                    cashdiscountAmount = MethodUtils.calculateCashDiscount(
+                        totalPrice,
+                        prefProvider,
+                        context
+                    )
+                } else {
+                    cashdiscountAmount = 0.0
+                }
+
+                MethodUtils.setPriceTextView(txtTotal, model.total)
+
+
             }
-
-            MethodUtils.setPriceTextView(txtTotal, model.total)
-
-
         } else {
 
             if (cartModel.items?.isEmpty() == false) {

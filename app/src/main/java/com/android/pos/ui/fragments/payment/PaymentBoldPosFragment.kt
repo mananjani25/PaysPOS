@@ -13,6 +13,7 @@ import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.data.model.CheckOutDineInDataModel
 import com.android.pos.data.model.DineinCartPaymentModel
+import com.android.pos.data.model.GuestDataModel
 import com.android.pos.data.model.GuestPaymentCalculationModel
 import com.android.pos.data.model.requestModel.DineInOrderPayment
 import com.android.pos.data.model.requestModel.GuestPaymentRequest
@@ -82,15 +83,19 @@ class PaymentBoldPosFragment : Fragment() {
 
             val isGuest = arguments?.getBoolean("isGuestPay") ?: false
             if (isGuest) {
+
+                val data =
+                    requireArguments().getParcelable<GuestDataModel>(Constants.DINE_IN_GUEST_PAYMENT_DATA)
+                Log.e("GuestData", "Data ${Gson().toJson(data)}")
                 dineinCartPaymentModel =
                     requireArguments().getParcelable<DineinCartPaymentModel>("dineinPaymentModel")
                 var model = GuestPaymentCalculationModel(
-                    requireArguments().getDouble("subTotalB"),
-                    requireArguments().getDouble("totalB"),
-                    requireArguments().getDouble("serviceChargeB"),
-                    requireArguments().getDouble("totalTaxB"),
-                    requireArguments().getDouble("divideCashDiscount"),
-                    requireArguments().getDouble("dicountB"),
+                    data?.subTotal?.toDouble() ?: 0.0,
+                    data?.totalAmount?.toDouble() ?: 0.0,
+                    data?.totalServiceCharge?.toDouble() ?: 0.0,
+                    data?.totalTax?.toDouble() ?: 0.0,
+                    data?.cashDiscount?.toDouble() ?: 0.0,
+                    data?.totalDiscount?.toDouble() ?: 0.0,
                     requireArguments().getInt("id"),
                     dineinCartPaymentModel
 
@@ -98,8 +103,9 @@ class PaymentBoldPosFragment : Fragment() {
                 )
                 guestRequestModel = requireArguments().getParcelable("model")
 
-                loadCartFragment(CartFragment(null, null, true, model,true))
+                loadCartFragment(CartFragment(null, null, true, model, true))
             } else {
+                Log.e(TAG,"elsePAymentDion")
 
                 var model = GuestPaymentCalculationModel(
                     requireArguments().getDouble("subTotalPrice"),
@@ -111,7 +117,7 @@ class PaymentBoldPosFragment : Fragment() {
 
 
                     )
-                loadCartFragment(CartFragment(null, null, true, model,false))
+                loadCartFragment(CartFragment(null, null, true, model, false))
 
             }
         } else {
@@ -136,7 +142,7 @@ class PaymentBoldPosFragment : Fragment() {
                     dineInAdapterList = requireArguments()?.getParcelableArrayList(Constants.DINE_IN_ADAPTER_LIST),
                     dineInOrderDetails = requireArguments()?.getParcelable(Constants.PRINT_DATA_DINE_IN),
                     guestPaymentModel = requireArguments()?.getParcelable(Constants.DINE_IN_GUEST_PAYMENT_DATA),
-                    guestPosition =  requireArguments()?.getInt(Constants.GUEST_POSITION)
+                    guestPosition = requireArguments()?.getInt(Constants.GUEST_POSITION)
                 )
                 Log.e(TAG, "dineInModel:  ${Gson().toJson(dineInModel)}")
                 loadCategoryFragment(CheckoutDineInFragmentNew(dineInModel))
