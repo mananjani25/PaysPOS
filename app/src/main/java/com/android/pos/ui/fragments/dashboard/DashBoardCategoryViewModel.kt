@@ -1058,6 +1058,20 @@ class DashBoardCategoryViewModel @Inject constructor(
 
             serviceChargeCalculationModel(cartModel)
             subTotalPrice -= cartModel.discountPrice
+            var totalDis = cartModel.discountPrice
+            var totalDineItemDis = 0.0
+            cartModel.dineInList?.forEach {
+                it.items.forEach {
+                    totalDineItemDis += if (!it.isManualSales) {
+                        (it.discountPrice * it.itemQuantity)
+                    } else {
+                        it.discountPrice
+                    }
+                }
+            }
+
+
+
             totalDiscount += cartModel.discountPrice
             cartModel.dineInList?.forEach {
                 it.items.forEach {
@@ -1068,6 +1082,9 @@ class DashBoardCategoryViewModel @Inject constructor(
                     }
                 }
             }
+            Log.e("AjjeDine","totalDis ${totalDis}")
+            Log.e("AjjeDine","totalDineItemDis ${totalDineItemDis}")
+            Log.e("AjjeDine","totalDiscount ${totalDiscount}")
 
 
             var finalTotal = 0.0

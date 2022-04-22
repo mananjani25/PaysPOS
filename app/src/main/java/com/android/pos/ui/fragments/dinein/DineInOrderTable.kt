@@ -78,6 +78,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
     private var dineInData: CreateOrderResponse.Data? = null
     private var orderId: Int? = null
     private var order_note = ""
+    private var globalOrderDiscount = 0.0
     private var getOrderDetailsResponse: GetOrderDetailsResponse.Data? = null
     private val TAG = "DineInOrderTable"
     private lateinit var dineInTableAdapter: DineInTableAdapter
@@ -488,8 +489,15 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 newList
             )
 
-            bundle.putDouble("totalDiscount", totalDiscount)
-            bundle.putString("order_note",order_note)
+            Log.e("OrderFre", "APIDISc  ${getOrderDetailsResponse?.totalDiscount?.toDouble()}")
+            Log.e("OrderFre", "totalDiscount  ${totalDiscount}")
+            Log.e("OrderFre", "OrderDiscount  ${globalOrderDiscount}")
+
+            bundle.putDouble(
+                "totalDiscount",
+                globalOrderDiscount
+            )
+            bundle.putString("order_note", order_note)
             bundle.putParcelable("tableDetails", getOrderDetailsResponse?.floorPlanTable)
 
             orderId?.let { it1 -> bundle.putInt("orderId", it1) }
@@ -1311,6 +1319,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             event.getContentIfNotHandled()?.let { baseResponse ->
                 if (baseResponse != null) {
                     order_note = baseResponse.note
+                    globalOrderDiscount = 0.0
                     //Manan's Code
                     //for Merge Icon
                     if (baseResponse.floorPlanTable.status == MERGEDANDOCCUPIED) {
@@ -1650,6 +1659,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     var newLocalDiscountCal = 0.0
                     if (baseResponse.totalDiscount - totalItemDiscount > 0) {
                         orderDiscount = baseResponse.totalDiscount - totalItemDiscount
+                        globalOrderDiscount = baseResponse.totalDiscount - totalItemDiscount
 
                     }
                     totalServiceChargeAmount = 0.0
