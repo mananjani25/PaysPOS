@@ -98,7 +98,7 @@ class PaymentBoldPosFragment : Fragment() {
                 )
                 guestRequestModel = requireArguments().getParcelable("model")
 
-                loadCartFragment(CartFragment(null, null, true, model))
+                loadCartFragment(CartFragment(null, null, true, model,true))
             } else {
 
                 var model = GuestPaymentCalculationModel(
@@ -111,7 +111,7 @@ class PaymentBoldPosFragment : Fragment() {
 
 
                     )
-                loadCartFragment(CartFragment(null, null, true, model))
+                loadCartFragment(CartFragment(null, null, true, model,false))
 
             }
         } else {

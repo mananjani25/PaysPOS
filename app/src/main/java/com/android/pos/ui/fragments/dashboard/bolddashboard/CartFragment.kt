@@ -59,7 +59,8 @@ class CartFragment(
     val itemClickListner: ItemClickListner?,
     val itemListner: ItemListner?,
     val isFromPaymentDinein: Boolean = false,
-    val guestCalModel: GuestPaymentCalculationModel? = null
+    val guestCalModel: GuestPaymentCalculationModel? = null,
+    val isGuestPayment: Boolean = false,
 ) :
     Fragment(), MyCallback,
     DineInAdapter.DineInCallback {
@@ -597,7 +598,7 @@ class CartFragment(
                         }
                         Log.e(TAG, "getPAyment:  ${isFromPayment}")
 
-                        if (isFromPaymentDinein) {
+                        if (isFromPaymentDinein && isGuestPayment) {
                             Log.e(TAG, "TotalPrice:  ${requireArguments().getDouble("totalPrice")}")
                             Log.e(TAG, "guestCalModel:  ${Gson().toJson(guestCalModel)}")
                             viewModel.itemCalculationForDineInPayment(
