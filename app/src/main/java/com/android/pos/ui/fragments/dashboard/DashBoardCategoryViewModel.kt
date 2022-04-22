@@ -296,7 +296,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                     list.add(item)
                 } else if (type == UPDATE) {
 
-
+                    order_note = cartList[0].note
                     if (mPosition != -1) {
                         val model = cartList[0].items?.get(mPosition)
 
@@ -372,6 +372,7 @@ class DashBoardCategoryViewModel @Inject constructor(
         } else {
             if (cartList?.get(0)?.orderType == DINE_IN) {
                 val cartModel = cartList[0]
+                order_note = cartList[0].note
                 cartModel.dineInList = dineInList
                 if (type == ADD || type == UPDATE) {
                     var index = -1
@@ -958,7 +959,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                         }
                     }
 
-
+                    order_note= cartList[0].note
                     serviceChargeCalculation(cartList)
                     subTotalPrice -= cartList[0].discountPrice
 
