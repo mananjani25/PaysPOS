@@ -75,7 +75,7 @@ class ActiveOrderFragment(
     private lateinit var startTime: TimePickerDialog.OnTimeSetListener
     private lateinit var endTime: TimePickerDialog.OnTimeSetListener
 
-    val myCalendar =  Calendar.getInstance()
+    val myCalendar = Calendar.getInstance()
     val myCalendar1 = Calendar.getInstance()
     val myCalendar2 = Calendar.getInstance()
     val myCalendar3 = Calendar.getInstance()
@@ -327,7 +327,7 @@ class ActiveOrderFragment(
                         Constants.CUSTOMER_NAME,
                         order.customer.firstName + " " + order.customer.lastName
                     )
-                    prefProvider.setValueInt(Constants.CUSTOMER_ID,order.customer.id)
+                    prefProvider.setValueInt(Constants.CUSTOMER_ID, order.customer.id)
                     prefProvider.saveCustomerData(TbCustomer.customerMapping(order.customer))
                 }
 
@@ -362,7 +362,7 @@ class ActiveOrderFragment(
                         Constants.CUSTOMER_NAME,
                         order.customer.firstName + " " + order.customer.lastName
                     )
-                    prefProvider.setValueInt(Constants.CUSTOMER_ID,order.customer.id)
+                    prefProvider.setValueInt(Constants.CUSTOMER_ID, order.customer.id)
                     prefProvider.saveCustomerData(TbCustomer.customerMapping(order.customer))
                 }
                 dashboardViewModel.addCart(
@@ -442,15 +442,16 @@ class ActiveOrderFragment(
                         /* putParcelable("refundData", refundData)
                          putDouble("refundAmount", subTotalPrice)*/
 
-                        putInt("orderId",order.id)
-                        putString("startDate",viewModel.startDate.value.toString())
-                        putString("endDate",viewModel.endDate.value.toString())
+                        putInt("orderId", order.id)
+                        putString("startDate", viewModel.startDate.value.toString())
+                        putString("endDate", viewModel.endDate.value.toString())
                     }
 
                     findNavController().navigate(
                         R.id.action_order_fragment_to_reason_for_cancel_order_dialog,
                         bundle
-                    )                }
+                    )
+                }
             }
         }
 
@@ -789,7 +790,10 @@ class ActiveOrderFragment(
                 )
 
             Log.e(TAG, "getVanueLogo:  ${prefProvider.getValue(Constants.VENUE_LOGO, "")}")
-            if (customerSettingModel.showVenueLogo && prefProvider.getValue(Constants.VENUE_LOGO, "")
+            if (customerSettingModel.showVenueLogo && prefProvider.getValue(
+                    Constants.VENUE_LOGO,
+                    ""
+                )
                     .isNotEmpty()
             ) {
                 builder.addFeedLine(1)
@@ -992,7 +996,8 @@ class ActiveOrderFragment(
                     )
 
                     builder.addText(
-                        "Order Time:" + Constants.getReceiptFormatDateFromUTCServer(requireContext(),
+                        "Order Time:" + Constants.getReceiptFormatDateFromUTCServer(
+                            requireContext(),
                             receiptModel?.createdAt.toString()
                         )
                     )
@@ -1106,7 +1111,8 @@ class ActiveOrderFragment(
                     builder.addText(
                         padLine(
                             if (customerSettingModel.showOrderTime) {
-                                "Order Time:" + Constants.getReceiptFormatDateFromUTCServer(requireContext(),
+                                "Order Time:" + Constants.getReceiptFormatDateFromUTCServer(
+                                    requireContext(),
                                     receiptModel?.createdAt.toString()
                                 )
                             } else {
@@ -1361,61 +1367,61 @@ class ActiveOrderFragment(
             if (receiptModel?.isLoyaltyApplied == true && receiptModel?.loyaltyAmount != 0.0) {
 
 
-                        builder.addTextLineSpace(30)
-                        builder.addFeedUnit(30)
-                        builder.addTextFont(Builder.FONT_E)
-                        // builder.addTextAlign(Builder.ALIGN_LEFT)
-                        builder.addTextLang(Builder.LANG_EN)
-                        addCustomerTextSize(builder, customerSettingModel.fonts)
-                        builder.addTextStyle(
-                            Builder.FALSE,
-                            Builder.FALSE,
-                            Builder.FALSE,
-                            Builder.COLOR_1
-                        )
+                builder.addTextLineSpace(30)
+                builder.addFeedUnit(30)
+                builder.addTextFont(Builder.FONT_E)
+                // builder.addTextAlign(Builder.ALIGN_LEFT)
+                builder.addTextLang(Builder.LANG_EN)
+                addCustomerTextSize(builder, customerSettingModel.fonts)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.COLOR_1
+                )
 
-                        builder.addText(
-                            padLine(
-                                "Used Loyalty Amount",
-                                "-$" + receiptModel?.loyaltyAmount?.let {
-                                    MethodUtils.roundOffAmountString(
-                                        it
-                                    )
-                                },
-                                if (customerSettingModel.fonts == Constants.LARGE) {
-                                    24
-                                } else {
-                                    48
-                                }
+                builder.addText(
+                    padLine(
+                        "Used Loyalty Amount",
+                        "-$" + receiptModel?.loyaltyAmount?.let {
+                            MethodUtils.roundOffAmountString(
+                                it
                             )
-                        )
-
-
-
-                    builder.addTextLineSpace(30)
-                    builder.addFeedUnit(30)
-                    builder.addTextFont(Builder.FONT_E)
-                    // builder.addTextAlign(Builder.ALIGN_LEFT)
-                    builder.addTextLang(Builder.LANG_EN)
-                    addCustomerTextSize(builder, customerSettingModel.fonts)
-                    builder.addTextStyle(
-                        Builder.FALSE,
-                        Builder.FALSE,
-                        Builder.FALSE,
-                        Builder.COLOR_1
+                        },
+                        if (customerSettingModel.fonts == Constants.LARGE) {
+                            24
+                        } else {
+                            48
+                        }
                     )
+                )
 
-                    builder.addText(
-                        padLine(
-                            "Used Loyalty Points",
-                            receiptModel?.usedRewardPoints.toString(),
-                            if (customerSettingModel.fonts == Constants.LARGE) {
-                                24
-                            } else {
-                                48
-                            }
-                        )
+
+
+                builder.addTextLineSpace(30)
+                builder.addFeedUnit(30)
+                builder.addTextFont(Builder.FONT_E)
+                // builder.addTextAlign(Builder.ALIGN_LEFT)
+                builder.addTextLang(Builder.LANG_EN)
+                addCustomerTextSize(builder, customerSettingModel.fonts)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.COLOR_1
+                )
+
+                builder.addText(
+                    padLine(
+                        "Used Loyalty Points",
+                        receiptModel?.usedRewardPoints.toString(),
+                        if (customerSettingModel.fonts == Constants.LARGE) {
+                            24
+                        } else {
+                            48
+                        }
                     )
+                )
 
             }
 
@@ -1562,11 +1568,7 @@ class ActiveOrderFragment(
                     addTipsList(
                         builder,
                         tipsList,
-                        if (receiptModel.totalDiscount != 0.0) {
-                            (receiptModel.totalAmount.toDouble() - receiptModel.totalDiscount.toDouble())
-                        } else {
-                            receiptModel.totalAmount
-                        },
+                        receiptModel.totalAmount.toDouble(),
                         customerSettingModel.fonts
                     )
 

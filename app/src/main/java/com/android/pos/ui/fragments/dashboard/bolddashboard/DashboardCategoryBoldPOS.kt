@@ -103,6 +103,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
         getLoyaltyPrograms()
 
         checkDineInEditOrder()
+        printerProgress()
 
         binding.lifecycleOwner = this
         return binding.root
@@ -591,11 +592,10 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                 cartList.addAll(it.toCollection(arrayListOf()))
             }
 
-            if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == DINE_IN){
+            if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == DINE_IN) {
 
                 binding.layoutHeader.txtKeypad.visibility = View.GONE
-            }
-            else{
+            } else {
                 binding.layoutHeader.txtKeypad.visibility = View.VISIBLE
             }
 
@@ -802,7 +802,9 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                 prefProvider.setValue(ORDER_TYPE, DINE_IN)
                 prefProvider.setValue(Constants.ORDER_TYPE_NAME, DINE_IN)
                 prefProvider.setValueInt(Constants.ORDER_TYPE_ID, 2)
-
+                Log.e("AAjeDine","cartdiscountPrice  ${cartList[0].discountPrice}")
+                Log.e("AAjeDine","dineTotalDiscount  ${arguments?.getDouble("totalDiscount") }")
+                cartList[0].discountPrice = arguments?.getDouble("totalDiscount") ?: 0.0
                 viewModel.cartLogic(cartList, null, Constants.ADD, false, dineInList = dineInList)
                 viewModel.orderItemDiscount = arguments?.getDouble("totalDiscount") ?: 0.0
                 viewModel.order_note = arguments?.getString("order_note").toString()
@@ -852,50 +854,60 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
         type: String,
         createOrderResponse: CreateOrderResponse
     ) {
-        if (PrinterClass.getPrinter() == null) {
-            var printer: Print? = Print(requireContext())
-            if (printer != null) {
-                /* printer.setStatusChangeEventCallback(this)
-                 printer.setBatteryStatusChangeEventCallback(this)*/
-            }
 
-            val enabled = Print.TRUE
+        try {
+            PrinterClass.closePrinter()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        /*if (PrinterClass.getPrinter() == null) {*/
+        var printer: Print? = Print(requireContext())
+        if (printer != null) {
+            /* printer.setStatusChangeEventCallback(this)
+             printer.setBatteryStatusChangeEventCallback(this)*/
+        }
 
-            try {
+        val enabled = Print.TRUE
 
-                printer?.openPrinter(
-                    if (data.printer_type == Constants.BLUETOOTH) {
-                        Print.DEVTYPE_BLUETOOTH
-                    } else {
-                        Print.DEVTYPE_TCP
-                    },
-                    data.ipAddress,
-                    enabled,
-                    1000
-                )
-                //  printer?.setStatusChangeEventCallback(this)
+        try {
 
-            } catch (e: Exception) {
-                Log.e(TAG, "PrinterException: " + e.message)
-                printer = null
-                ProgressUtils.dismissProgressDialog()
-                findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
+            printer?.openPrinter(
+                if (data.printer_type == Constants.BLUETOOTH) {
+                    Print.DEVTYPE_BLUETOOTH
+                } else {
+                    Print.DEVTYPE_TCP
+                },
+                data.ipAddress,
+                enabled,
+                1000
+            )
+            //  printer?.setStatusChangeEventCallback(this)
 
-            }
+        } catch (e: Exception) {
+            Log.e(TAG, "PrinterException: " + e.message)
+            printer = null
+            viewModel.downloadFinished(false)
+            findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
 
-            if (printer != null) {
-                PrinterClass.setPrinter(printer)
+        }
 
-                generateKitchenReceipt(data, type, createOrderResponse.data)
 
-            }
+        if (printer != null) {
+            PrinterClass.setPrinter(printer)
+
+            generateKitchenReceipt(data, type, createOrderResponse.data)
 
         } else {
             Log.e(TAG, "PrinterIsNotNull:")
-            ProgressUtils.dismissProgressDialog()
+            viewModel.downloadFinished(false)
             findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
+
         }
 
+        /* } else {
+
+         }
+ */
     }
 
     private fun observeSaveOrder() {
@@ -923,7 +935,8 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                 Status.SUCCESS -> {
                     Log.e(TAG, "getKitchenPrinterList:  ${Gson().toJson(it.data)}")
                     ProgressUtils.dismissProgressDialog()
-                    ProgressUtils.showProgressDialog(requireActivity())
+                    viewModel.downloadFinished(true)
+
 
                     if (it.data?.isNotEmpty() == true) {
 
@@ -936,7 +949,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                             )
                         }
                     } else {
-                        ProgressUtils.dismissProgressDialog()
+                        viewModel.downloadFinished(false)
                         findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
                     }
 
@@ -1282,12 +1295,12 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                 )
 
                 PrinterClass.closePrinter()
-                ProgressUtils.dismissProgressDialog()
+                viewModel.downloadFinished(false)
                 findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
 
                 //PrinterClass.getPrinter()?.sendData(builder, 0, status, battery)
             } catch (e: Exception) {
-                ProgressUtils.dismissProgressDialog()
+                viewModel.downloadFinished(false)
                 findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
                 /*PrinterClass.closePrinter()
                 e.printStackTrace()
@@ -1298,7 +1311,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
 
         } catch (e: Exception) {
             e.printStackTrace()
-            ProgressUtils.dismissProgressDialog()
+            viewModel.downloadFinished(false)
             findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
         }
 
@@ -1314,5 +1327,19 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
         })
     }
 
+    private fun printerProgress() {
+
+        if (view != null) {
+            viewModel.isLoading.observe(viewLifecycleOwner) { event ->
+
+                if (event) {
+                    ProgressUtils.showProgressDialog(requireActivity())
+                } else {
+                    ProgressUtils.dismissProgressDialog()
+                }
+
+            }
+        }
+    }
 
 }

@@ -380,8 +380,11 @@ class CartFragment(
                 prefProvider.setValue(Constants.ORDER_TYPE_NAME, Constants.DINE_IN)
                 prefProvider.setValueInt(Constants.ORDER_TYPE_ID, 2)
 
-                viewModel.cartLogic(cartlist, null, Constants.ADD, false, dineInList = dineInList)
                 viewModel.orderItemDiscount = arguments?.getDouble("totalDiscount") ?: 0.0
+                Log.e(TAG, "DineInEditDiscount ${arguments?.getDouble("totalDiscount")}")
+                viewModel.totalDiscount = arguments?.getDouble("totalDiscount") ?: 0.0
+                viewModel.cartLogic(cartlist, null, Constants.ADD, false, dineInList = dineInList)
+
 
             }
 
@@ -446,7 +449,7 @@ class CartFragment(
                     if (viewModel.order_note.isNotEmpty()) {
                         binding.relativeOrderNotes?.visibility = View.VISIBLE
                         binding.txtOrderNote?.text = viewModel.order_note
-                    }else{
+                    } else {
                         binding.relativeOrderNotes?.visibility = View.GONE
                     }
                     binding.txtSubTotal.text =
@@ -597,7 +600,6 @@ class CartFragment(
                         if (isFromPaymentDinein) {
                             Log.e(TAG, "TotalPrice:  ${requireArguments().getDouble("totalPrice")}")
                             Log.e(TAG, "guestCalModel:  ${Gson().toJson(guestCalModel)}")
-
                             viewModel.itemCalculationForDineInPayment(
                                 it[0],
                                 binding.txtTotal,
@@ -637,7 +639,7 @@ class CartFragment(
                         if (viewModel.order_note.isNotEmpty()) {
                             binding.relativeOrderNotes?.visibility = View.VISIBLE
                             binding.txtOrderNote?.text = viewModel.order_note
-                        }else{
+                        } else {
                             binding.relativeOrderNotes?.visibility = View.GONE
                         }
 //                        var data: TbCustomer? = prefProvider.getCustomerData()
@@ -793,7 +795,7 @@ class CartFragment(
                         if (viewModel.order_note.isNotEmpty()) {
                             binding.relativeOrderNotes?.visibility = View.VISIBLE
                             binding.txtOrderNote?.text = viewModel.order_note
-                        }else{
+                        } else {
                             binding.relativeOrderNotes?.visibility = View.GONE
                         }
                         binding.txtSubTotal.text =

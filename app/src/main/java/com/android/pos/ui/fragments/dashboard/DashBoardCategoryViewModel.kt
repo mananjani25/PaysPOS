@@ -486,7 +486,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                     Log.e(TAG, "dineInHeaderPosition:  ${dineInHeaderPosition}")
                     Log.e(TAG, "selectedItemPositionDine  ${selectedItemPositionDine}")
                     Log.e(TAG, "dineInHeaderNew  ${dineInSelectedItemHeaderPos}")
-                    Log.e(TAG,"dineInList ${Gson().toJson(dine)}")
+                    Log.e(TAG, "dineInList ${Gson().toJson(dine)}")
 
                     dineInSelectedItemHeaderPos?.let {
                         dine.get(it).items.remove(
@@ -1409,12 +1409,12 @@ class DashBoardCategoryViewModel @Inject constructor(
 
         }
     }
+
     fun clearTableAll() {
         CoroutineScope(Dispatchers.IO).launch {
             posRepository.clearTableManually()
         }
     }
-
 
 
     fun clearTable() {
@@ -2590,4 +2590,11 @@ class DashBoardCategoryViewModel @Inject constructor(
 
 
     }
+
+    var isLoading = MutableLiveData<Boolean>()
+
+    fun downloadFinished(value: Boolean) {
+        isLoading.value = value
+    }
+
 }
