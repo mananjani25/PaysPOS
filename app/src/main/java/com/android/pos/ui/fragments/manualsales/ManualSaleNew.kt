@@ -27,11 +27,8 @@ import com.android.pos.data.remote.Constants.CUSTOMER_NAME
 import com.android.pos.data.remote.Constants.KEY
 import com.android.pos.data.remote.Constants.LOYALTY_ADDED
 import com.android.pos.data.remote.Constants.MANUALSALE
-import com.android.pos.data.remote.Constants.MANUAL_SALE_CATEGORY_ID
-import com.android.pos.data.remote.Constants.MANUAL_SALE_ITEM_ID
 import com.android.pos.data.remote.Constants.TAKEOUT
 import com.android.pos.databinding.FragmentManualSaleNewBinding
-
 import com.android.pos.di.PrefProvider
 import com.android.pos.di.RolePermission
 import com.android.pos.ui.adapter.ManualSaleCartAdapter
@@ -46,7 +43,6 @@ import com.android.pos.utils.extensions.visible
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
-import kotlin.random.Random
 
 @AndroidEntryPoint
 class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
@@ -87,10 +83,6 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
         binding.lifecycleOwner = this
         getLoyaltyPrograms()
         getServiceCharge()
-        Log.e(TAG, "CategoryId: ${prefProvider.getValueInt(MANUAL_SALE_CATEGORY_ID, 1)}")
-        Log.e(TAG, "CategoryItemId: ${prefProvider.getValueInt(MANUAL_SALE_ITEM_ID, 1)}")
-        Log.e(TAG, "cartDetails: $arguments")
-
         getDiscountList()
 
         binding.layoutHeader.edtSearch.visibility = View.GONE
@@ -933,7 +925,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                     cartModel.discountPrice = calculateDiscountPercentage(
                         cartAdapter.getItem(pos).price,
                         result.percentage
-                    )
+                    ) * cartModel.itemQuantity
                     cartModel.discountId = result.id
                     cartModel.discountType = result.discountType
                     cartModel.isDiscountDefault = true
@@ -943,14 +935,11 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
 
                 } else if (result.discountType == "Amount") {
                     val cartModel = cartAdapter.getItem(pos)
-                    cartModel.discountPrice = result.percentage
+                    cartModel.discountPrice = MethodUtils.roundOffAmountDouble(result.percentage * cartModel.itemQuantity)
                     cartModel.isDiscountDefault = false
                     cartModel.discountType = result.discountType
                     viewModel.manualSalecartLogic(cartList, cartModel, Constants.UPDATE)
 
-
-
-                    Log.e(TAG, "DiscountInDollar")
                 } else {
                     val cartModel = cartAdapter.getItem(pos)
                     cartModel.discountPrice = 0.0
@@ -1172,7 +1161,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                         model.discountPrice = calculateDiscountPercentage(
                             model.price * totalquantity,
                             result.percentage
-                        )
+                        ) * model.itemQuantity
                         model.discountId = result.id
                         model.discountType = result.discountType
                         model.isManualSales = true
@@ -1184,7 +1173,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
 
                     } else if (result.discountType == "Amount") {
 
-                        model.discountPrice = result.percentage
+                        model.discountPrice = result.percentage * model.itemQuantity
                         model.discountId = result.id
                         model.discountType = result.discountType
                         model.isManualSales = true
