@@ -53,7 +53,7 @@
                 android:layout_marginRight="@dimen/_10sdp"
                 android:gravity="center"
                 android:padding="@dimen/_4sdp"
-                android:text="@string/employee_report"
+                android:text="@string/team_membet_report_summary"
                 android:textColor="@color/txtColor"
                 android:textSize="@dimen/_6mdpi" />
 

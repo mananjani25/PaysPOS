@@ -646,6 +646,7 @@
     <string name="employee_data">Employee Data</string>
     <string name="payment_details">Payment Details</string>
     <string name="employee_report">Employee Report</string>
+    <string name="team_membet_report_summary">Team Member Report Summary</string>
     <string name="other_details">Other Details</string>
     <string name="service_charge_details">Service Charge Details</string>
     <string name="tips_details">Tips Details</string>
