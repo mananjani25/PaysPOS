@@ -151,13 +151,13 @@ data class OpenOrderResponse(
                 @SerializedName("order_item_taxes")
                 val orderItemTax: List<OrderItemTax>,
                 @SerializedName("price")
-                val price: Double,
+                var price: Double,
                 @SerializedName("quantity")
                 val quantity: Int,
                 @SerializedName("timestamp")
                 val timestamp: String,
                 @SerializedName("total_price")
-                val totalPrice: Double,
+                var totalPrice: Double,
                 @SerializedName("order_item_variation")
                 val order_item_variation: OrderItemVariationAttribute?,
 

@@ -60,7 +60,7 @@
                 android:layout_weight="1"
                 android:layout_gravity="center_vertical"
                 android:gravity="center_vertical"
-                android:text="@{@string/symbole +``+String.format(@string/format,model.price)}"
+
                 android:textColor="@color/white"
                 android:textSize="@dimen/_5mdpi"
                 tools:text="$12.00"
@@ -74,7 +74,7 @@
                 android:layout_gravity="center_vertical"
                 android:layout_weight="1"
                 android:gravity="center_vertical"
-                android:text="@{@string/symbole +``+String.format(@string/format,model.price)}"
+
                 android:textColor="@color/white"
                 android:textSize="@dimen/_5mdpi"
                 tools:text="$12.00"

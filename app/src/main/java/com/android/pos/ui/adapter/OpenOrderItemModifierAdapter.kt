@@ -1,19 +1,27 @@
 package com.android.pos.ui.adapter
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.data.model.responseModel.OpenOrderResponse
 import com.android.pos.databinding.ViewOpenOrderItemModifiersBinding
-import com.android.pos.databinding.ViewOpenOrderItemsBinding
+import com.android.pos.utils.MethodUtils
+import com.google.gson.Gson
 
 class OpenOrderItemModifierAdapter :
     RecyclerView.Adapter<OpenOrderItemModifierAdapter.MyViewHolder>() {
     var list = ArrayList<OpenOrderResponse.Data.Order.OrderItem.OrderItemModifier>()
+    private val TAG = "OpenOrderItemModifier"
 
     inner class MyViewHolder(private val binding: ViewOpenOrderItemModifiersBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(item: OpenOrderResponse.Data.Order.OrderItem.OrderItemModifier) {
+            Log.e(TAG,"ModifierItem:  ${Gson().toJson(item)}")
+
+            binding.txtPrice.text = MethodUtils.roundOffAmount(item.price)
+            binding.txtCustomerName.text = MethodUtils.roundOffAmount(item.price * item.quantity)
+
             binding.model = item
             binding.executePendingBindings()
 

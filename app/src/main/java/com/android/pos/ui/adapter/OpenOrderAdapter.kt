@@ -2,6 +2,7 @@ package com.android.pos.ui.adapter
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -9,19 +10,17 @@ import android.widget.Filter
 import android.widget.Filterable
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
-import androidx.recyclerview.widget.DividerItemDecoration
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.R
 import com.android.pos.data.model.responseModel.OpenOrderResponse
 import com.android.pos.data.remote.Constants.PRINT_PAID
 import com.android.pos.data.remote.Constants.PRINT_UNPAID
 import com.android.pos.databinding.ViewOpenOrderItemBinding
-
 import com.android.pos.utils.TimeFormatUtils
 import com.android.pos.utils.callback.OrderCallBack
 import com.android.pos.utils.extensions.gone
 import com.android.pos.utils.extensions.visible
+import com.google.gson.Gson
 import java.util.*
 
 class OpenOrderAdapter(val context: Context) :
@@ -29,6 +28,7 @@ class OpenOrderAdapter(val context: Context) :
 
     var orderList = ArrayList<OpenOrderResponse.Data.Order>()
     var filterList = ArrayList<OpenOrderResponse.Data.Order>()
+    private val TAG = "OpenOrderAdapter"
 
     private var mCallback: OrderCallBack? = null
     fun setCallback(callback: OrderCallBack) {
@@ -80,6 +80,8 @@ class OpenOrderAdapter(val context: Context) :
 
                 adapter = OpenOrderItemsAdapter()
                 binding.rvOpenOrder.adapter = adapter
+                Log.e(TAG,"OpenOrderorderItems:  ${Gson().toJson(item.orderItems)}")
+
                 adapter!!.addAll(item.orderItems)
             } else {
                 binding.rvOpenOrder.gone()
