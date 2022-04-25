@@ -829,7 +829,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                 Log.e("AAjeDine","dineTotalDiscount  ${arguments?.getDouble("totalDiscount") }")
                 cartList[0].discountPrice = arguments?.getDouble("totalDiscount") ?: 0.0
                 viewModel.cartLogic(cartList, null, Constants.ADD, false, dineInList = dineInList)
-                viewModel.orderItemDiscount = arguments?.getDouble("totalDiscount") ?: 0.0
+               // viewModel.orderItemDiscount = arguments?.getDouble("totalDiscount") ?: 0.0
 
             }
 
