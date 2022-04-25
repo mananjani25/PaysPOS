@@ -298,7 +298,9 @@ fun addTipsList(
 
 fun addOrdersForKitchenDineIn(
     builder: Builder,
-    list: ArrayList<TbItem>
+    list: ArrayList<TbItem>,
+    fontSizeH:Int=1,
+    fontSizeW:Int=1
 ): Builder {
 
 
@@ -310,7 +312,7 @@ fun addOrdersForKitchenDineIn(
         builder.addTextFont(Builder.FONT_C)
         builder.addTextLang(Builder.LANG_EN)
         builder.addTextAlign(Builder.ALIGN_LEFT)
-        builder.addTextSize(1, 2)
+        builder.addTextSize(fontSizeH, fontSizeW)
         builder.addTextStyle(
             Builder.FALSE,
             Builder.FALSE,
@@ -329,7 +331,7 @@ fun addOrdersForKitchenDineIn(
                 //builder.addTextLineSpace(20)
                 builder.addTextAlign(Builder.ALIGN_LEFT)
                 builder.addTextLang(Builder.LANG_EN)
-                builder.addTextSize(1, 2)
+                builder.addTextSize(fontSizeH, fontSizeW)
                 builder.addTextStyle(
                     Builder.FALSE,
                     Builder.FALSE,
@@ -351,7 +353,7 @@ fun addOrdersForKitchenDineIn(
             //builder.addTextLineSpace(20)
             builder.addTextAlign(Builder.ALIGN_LEFT)
             builder.addTextLang(Builder.LANG_EN)
-            builder.addTextSize(1, 2)
+            builder.addTextSize(fontSizeH, fontSizeW)
             builder.addTextStyle(
                 Builder.FALSE,
                 Builder.FALSE,
@@ -369,7 +371,9 @@ fun addOrdersForKitchenDineIn(
 
 fun addOrdersForKitchen(
     builder: Builder,
-    list: List<CreateOrderResponse.Data.Order.OrderItem>
+    list: List<CreateOrderResponse.Data.Order.OrderItem>,
+    fontSizeH:Int = 1,
+    fontSizeW:Int = 1
 ): Builder {
     for (i in 0 until list.size) {
         val obj = list.get(i)
@@ -378,7 +382,7 @@ fun addOrdersForKitchen(
         builder.addTextFont(Builder.FONT_C)
         builder.addTextLang(Builder.LANG_EN)
         builder.addTextAlign(Builder.ALIGN_LEFT)
-        builder.addTextSize(1, 2)
+        builder.addTextSize(fontSizeH, fontSizeW)
         builder.addTextStyle(
             Builder.FALSE,
             Builder.FALSE,
@@ -397,7 +401,7 @@ fun addOrdersForKitchen(
                 //builder.addTextLineSpace(20)
                 builder.addTextAlign(Builder.ALIGN_LEFT)
                 builder.addTextLang(Builder.LANG_EN)
-                builder.addTextSize(1, 2)
+                builder.addTextSize(fontSizeH, fontSizeW)
                 builder.addTextStyle(
                     Builder.FALSE,
                     Builder.FALSE,
@@ -419,7 +423,7 @@ fun addOrdersForKitchen(
             //builder.addTextLineSpace(20)
             builder.addTextAlign(Builder.ALIGN_LEFT)
             builder.addTextLang(Builder.LANG_EN)
-            builder.addTextSize(1, 2)
+            builder.addTextSize(fontSizeH, fontSizeW)
             builder.addTextStyle(
                 Builder.FALSE,
                 Builder.FALSE,

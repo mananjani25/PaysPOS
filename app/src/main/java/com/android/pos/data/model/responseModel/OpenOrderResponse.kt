@@ -94,7 +94,7 @@ data class OpenOrderResponse(
             @SerializedName("cash_discount_or_surcharge")
             val cash_discount_or_surcharge: Double,
             @SerializedName("total_discount")
-            val totalDiscount: Double,
+            var totalDiscount: Double,
             @SerializedName("total_service_charges")
             val totalServiceCharges: Double,
             @SerializedName("total_tax_amount")
@@ -123,7 +123,7 @@ data class OpenOrderResponse(
                 @SerializedName("completed_in_kitchen")
                 val completedInKitchen: Boolean,
                 @SerializedName("discount_amount")
-                val discountAmount: Double,
+                var discountAmount: Double,
                 @SerializedName("discount_id")
                 val discountId: Int? = null,
                 @SerializedName("discount_type")

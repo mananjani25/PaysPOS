@@ -5205,6 +5205,26 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 customerReceiptPrinters.name
             }
 
+
+            var fontSizeH = 1
+            var fontSizeW = 1
+            when (kitchenSettingModel.fonts) {
+                Constants.SMALL -> {
+                    fontSizeH = 1
+                    fontSizeW = 1
+                }
+                Constants.MEDIUM -> {
+                    fontSizeH = 1
+                    fontSizeW = 2
+                }
+                Constants.LARGE -> {
+                    fontSizeH = 2
+                    fontSizeW = 2
+                }
+
+
+            }
+
             builder = Builder(pname, PrinterClass.language, requireActivity())
 
             if (kitchenSettingModel.showOrderType) {
@@ -5213,7 +5233,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 builder.addFeedLine(0)
                 builder.addTextFont(Builder.FONT_E)
                 builder.addTextLang(Builder.LANG_EN)
-                builder.addTextSize(2, 2)
+                builder.addTextSize(fontSizeH, fontSizeW)
                 builder.addTextStyle(
                     Builder.FALSE,
                     Builder.FALSE,
@@ -5229,7 +5249,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             builder.addTextFont(Builder.FONT_E)
             //  builder.addTextAlign(Builder.ALIGN_LEFT)
             builder.addTextLang(Builder.LANG_EN)
-            builder.addTextSize(1, 1)
+            builder.addTextSize(fontSizeH, fontSizeW)
             builder.addTextStyle(
                 Builder.FALSE,
                 Builder.FALSE,
@@ -5244,7 +5264,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             builder.addTextFont(Builder.FONT_E)
             //  builder.addTextAlign(Builder.ALIGN_LEFT)
             builder.addTextLang(Builder.LANG_EN)
-            builder.addTextSize(1, 1)
+            builder.addTextSize(fontSizeH, fontSizeW)
             builder.addTextStyle(
                 Builder.FALSE,
                 Builder.FALSE,
@@ -5265,7 +5285,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             builder.addTextFont(Builder.FONT_E)
             //  builder.addTextAlign(Builder.ALIGN_LEFT)
             builder.addTextLang(Builder.LANG_EN)
-            builder.addTextSize(1, 1)
+            builder.addTextSize(fontSizeH, fontSizeW)
             builder.addTextStyle(
                 Builder.FALSE,
                 Builder.FALSE,
@@ -5292,7 +5312,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 builder.addTextFont(Builder.FONT_E)
                 //  builder.addTextAlign(Builder.ALIGN_LEFT)
                 builder.addTextLang(Builder.LANG_EN)
-                builder.addTextSize(1, 1)
+                builder.addTextSize(fontSizeH, fontSizeW)
                 builder.addTextStyle(
                     Builder.FALSE,
                     Builder.FALSE,
@@ -5312,7 +5332,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             builder.addTextFont(Builder.FONT_E)
             //  builder.addTextAlign(Builder.ALIGN_LEFT)
             builder.addTextLang(Builder.LANG_EN)
-            builder.addTextSize(1, 1)
+            builder.addTextSize(fontSizeH, fontSizeW)
             builder.addTextStyle(
                 Builder.FALSE,
                 Builder.FALSE,
@@ -5337,7 +5357,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             builder.addTextFont(Builder.FONT_B)
             //builder.addTextLineSpace(20)
             builder.addTextLang(Builder.LANG_EN)
-            builder.addTextSize(1, 1)
+            builder.addTextSize(fontSizeH, fontSizeW)
             builder.addTextStyle(
                 Builder.FALSE,
                 Builder.FALSE,
@@ -5348,7 +5368,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             addHorizontalKitchenLine(builder)
 
 
-            addOrdersForKitchenDineIn(builder, item)
+            addOrdersForKitchenDineIn(builder, item,fontSizeH,fontSizeW)
 
             if (getOrderDetailsResponse?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote) {
                 builder.addTextLineSpace(30)
@@ -5358,7 +5378,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 builder.addTextAlign(Builder.ALIGN_LEFT)
                 //builder.addTextLineSpace(20)
                 builder.addTextLang(Builder.LANG_EN)
-                builder.addTextSize(1, 1)
+                builder.addTextSize(fontSizeH, fontSizeW)
                 builder.addTextStyle(
                     Builder.FALSE,
                     Builder.FALSE,
@@ -5373,7 +5393,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 builder.addTextFont(Builder.FONT_E)
                 builder.addTextAlign(Builder.ALIGN_LEFT)
                 builder.addTextLang(Builder.LANG_EN)
-                builder.addTextSize(1, 1)
+                builder.addTextSize(fontSizeH, fontSizeW)
                 builder.addTextStyle(
                     Builder.FALSE,
                     Builder.FALSE,

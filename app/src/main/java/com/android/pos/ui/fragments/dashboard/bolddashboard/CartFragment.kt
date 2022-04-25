@@ -1257,6 +1257,7 @@ class CartFragment(
             if (cartlist.isEmpty()) {
                 popupMenu.menu.findItem(R.id.menu_discount).isVisible = false
                 popupMenu.menu.findItem(R.id.menu_order_note).isVisible = false
+                popupMenu.menu.findItem(R.id.menu_clear_cart).isVisible =false
             }
 
             if (prefProvider.getValueInt(CUSTOMER_ID, -1) == -1) {

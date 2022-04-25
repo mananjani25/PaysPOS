@@ -959,7 +959,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                         }
                     }
 
-                    order_note= cartList[0].note
+                    order_note = cartList[0].note
                     serviceChargeCalculation(cartList)
                     subTotalPrice -= cartList[0].discountPrice
 
@@ -1155,6 +1155,8 @@ class DashBoardCategoryViewModel @Inject constructor(
                         it.discountPrice
                     }
                 }
+                Log.e("OpenOrderCh", "cartDiscount  ${cartModel.discountPrice}")
+                Log.e("OpenOrderCh", "totalDiscounts  ${totalDiscount}")
 
                 var finalTotal = 0.0
                 finalTotal = (subTotalPrice + totalTax + totalServiceCharge)
@@ -2576,7 +2578,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                 amountToBePaid = finalTotal
                 totalPrice = finalTotal
 
-                Log.e(TAG,"newDAstotalPrice  ${totalPrice}")
+                Log.e(TAG, "newDAstotalPrice  ${totalPrice}")
                 if (selectedCustomer == null) {
                     totalPrice = amountToBePaid
                     /* MethodUtils.setPriceTextView(

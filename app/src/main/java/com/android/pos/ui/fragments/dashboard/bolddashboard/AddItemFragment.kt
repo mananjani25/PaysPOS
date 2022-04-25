@@ -330,10 +330,13 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
                 putInt("headerPos", viewModel.dineInHeaderPosition)
             }
 
-            findNavController().navigate(
-                R.id.action_dashboardCategoryBoldPOS_to_addNoteDialog,
-                bundle
-            )
+            if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
+                findNavController().navigate(
+                    R.id.action_dashboardCategoryBoldPOS_to_addNoteDialog,
+                    bundle
+
+                )
+            }
         }
 
         binding.txtRemoveItem.setOnClickListener {

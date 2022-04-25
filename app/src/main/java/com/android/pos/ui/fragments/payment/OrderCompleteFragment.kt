@@ -4706,6 +4706,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         data: PrinterResponse.Data.KitchenReceiptPrinters,
         type: String
     ) {
+
+        PrinterClass.closePrinter()
         if (PrinterClass.getPrinter() == null) {
             requireActivity().runOnUiThread {
                 ProgressUtils.showProgressDialog(requireActivity())
@@ -4768,6 +4770,25 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 customerReceiptPrinters.name
             }
 
+            var fontSizeH = 1
+            var fontSizeW = 1
+            when (kitchenSettingModel.fonts) {
+                Constants.SMALL -> {
+                    fontSizeH = 1
+                    fontSizeW = 1
+                }
+                Constants.MEDIUM -> {
+                    fontSizeH = 1
+                    fontSizeW = 2
+                }
+                LARGE -> {
+                    fontSizeH = 2
+                    fontSizeW = 2
+                }
+
+
+            }
+
             builder = Builder(pname, PrinterClass.language, requireActivity())
 
             if (kitchenSettingModel.showOrderType) {
@@ -4776,7 +4797,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 builder.addFeedLine(0)
                 builder.addTextFont(Builder.FONT_E)
                 builder.addTextLang(Builder.LANG_EN)
-                builder.addTextSize(2, 2)
+                builder.addTextSize(fontSizeH, fontSizeW)
                 builder.addTextStyle(
                     Builder.FALSE,
                     Builder.FALSE,
@@ -4799,7 +4820,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 builder.addFeedLine(1)
                 builder.addTextFont(Builder.FONT_E)
                 builder.addTextLang(Builder.LANG_EN)
-                builder.addTextSize(2, 2)
+                builder.addTextSize(fontSizeH, fontSizeW)
                 builder.addTextStyle(
                     Builder.FALSE,
                     Builder.FALSE,
@@ -4816,7 +4837,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             builder.addTextFont(Builder.FONT_E)
             //  builder.addTextAlign(Builder.ALIGN_LEFT)
             builder.addTextLang(Builder.LANG_EN)
-            builder.addTextSize(1, 1)
+            builder.addTextSize(fontSizeH, fontSizeW)
             builder.addTextStyle(
                 Builder.FALSE,
                 Builder.FALSE,
@@ -4837,7 +4858,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             builder.addTextFont(Builder.FONT_E)
             //  builder.addTextAlign(Builder.ALIGN_LEFT)
             builder.addTextLang(Builder.LANG_EN)
-            builder.addTextSize(1, 1)
+            builder.addTextSize(fontSizeH, fontSizeW)
             builder.addTextStyle(
                 Builder.FALSE,
                 Builder.FALSE,
@@ -4860,7 +4881,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 builder.addTextFont(Builder.FONT_E)
                 //  builder.addTextAlign(Builder.ALIGN_LEFT)
                 builder.addTextLang(Builder.LANG_EN)
-                builder.addTextSize(1, 1)
+                builder.addTextSize(fontSizeH, fontSizeW)
                 builder.addTextStyle(
                     Builder.FALSE,
                     Builder.FALSE,
@@ -4880,7 +4901,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             builder.addTextFont(Builder.FONT_E)
             //  builder.addTextAlign(Builder.ALIGN_LEFT)
             builder.addTextLang(Builder.LANG_EN)
-            builder.addTextSize(1, 1)
+            builder.addTextSize(fontSizeH, fontSizeW)
             builder.addTextStyle(
                 Builder.FALSE,
                 Builder.FALSE,
@@ -4904,7 +4925,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             builder.addTextFont(Builder.FONT_B)
             //builder.addTextLineSpace(20)
             builder.addTextLang(Builder.LANG_EN)
-            builder.addTextSize(1, 1)
+            builder.addTextSize(fontSizeH, fontSizeW)
             builder.addTextStyle(
                 Builder.FALSE,
                 Builder.FALSE,
@@ -4914,7 +4935,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
             addHorizontalKitchenLine(builder)
 
-            receiptModel?.order?.orderItems?.let { addOrdersForKitchen(builder, it) }
+            receiptModel?.order?.orderItems?.let { addOrdersForKitchen(builder, it,fontSizeH,fontSizeW) }
 
             if (receiptModel?.order?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote) {
                 builder.addTextLineSpace(30)
@@ -4924,7 +4945,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 builder.addTextAlign(Builder.ALIGN_LEFT)
                 //builder.addTextLineSpace(20)
                 builder.addTextLang(Builder.LANG_EN)
-                builder.addTextSize(1, 1)
+                builder.addTextSize(fontSizeH, fontSizeW)
                 builder.addTextStyle(
                     Builder.FALSE,
                     Builder.FALSE,
@@ -4939,7 +4960,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 builder.addTextFont(Builder.FONT_E)
                 builder.addTextAlign(Builder.ALIGN_CENTER)
                 builder.addTextLang(Builder.LANG_EN)
-                builder.addTextSize(1, 1)
+                builder.addTextSize(fontSizeH, fontSizeW)
                 builder.addTextStyle(
                     Builder.FALSE,
                     Builder.FALSE,
@@ -4962,7 +4983,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     //builder.addTextLineSpace(20)
                     builder.addTextAlign(Builder.ALIGN_LEFT)
                     builder.addTextLang(Builder.LANG_EN)
-                    builder.addTextSize(1, 1)
+                    builder.addTextSize(fontSizeH, fontSizeW)
                     builder.addTextStyle(
                         Builder.FALSE,
                         Builder.FALSE,
@@ -4974,7 +4995,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     builder.addTextFont(Builder.FONT_B)
                     //builder.addTextLineSpace(20)
                     builder.addTextLang(Builder.LANG_EN)
-                    builder.addTextSize(1, 1)
+                    builder.addTextSize(fontSizeH, fontSizeW)
                     builder.addTextStyle(
                         Builder.FALSE,
                         Builder.FALSE,
@@ -4991,7 +5012,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         builder.addTextAlign(Builder.ALIGN_LEFT)
                         //builder.addTextLineSpace(20)
                         builder.addTextLang(Builder.LANG_EN)
-                        builder.addTextSize(1, 1)
+                        builder.addTextSize(fontSizeH, fontSizeW)
                         builder.addTextStyle(
                             Builder.FALSE,
                             Builder.FALSE,
@@ -5012,7 +5033,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                             builder.addTextAlign(Builder.ALIGN_LEFT)
                             //builder.addTextLineSpace(20)
                             builder.addTextLang(Builder.LANG_EN)
-                            builder.addTextSize(1, 1)
+                            builder.addTextSize(fontSizeH, fontSizeW)
                             builder.addTextStyle(
                                 Builder.FALSE,
                                 Builder.FALSE,
@@ -5056,7 +5077,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                 builder.addTextAlign(Builder.ALIGN_LEFT)
                                 //builder.addTextLineSpace(20)
                                 builder.addTextLang(Builder.LANG_EN)
-                                builder.addTextSize(1, 1)
+                                builder.addTextSize(fontSizeH, fontSizeW)
                                 builder.addTextStyle(
                                     Builder.FALSE,
                                     Builder.FALSE,

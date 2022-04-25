@@ -21,7 +21,10 @@ import com.android.pos.data.model.responseModel.*
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.DINE_IN
 import com.android.pos.data.remote.Constants.EMPLOYEE_NAME
+import com.android.pos.data.remote.Constants.LARGE
+import com.android.pos.data.remote.Constants.MEDIUM
 import com.android.pos.data.remote.Constants.ORDER_TYPE
+import com.android.pos.data.remote.Constants.SMALL
 import com.android.pos.data.remote.Constants.SPLIT_ENABLE
 import com.android.pos.data.remote.Constants.TAKEOUT
 import com.android.pos.databinding.FragmentDashboardCategoryBoldPosBinding
@@ -408,11 +411,11 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
         }
         binding.layoutHeader.txtDineIn.setOnClickListener {
             if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == DINE_IN) {
-                if(cartList.isNotEmpty()){
+                if (cartList.isNotEmpty()) {
                     val dList = cartList[0].dineInList ?: arrayListOf()
                     Log.e(TAG, "dList:  ${Gson().toJson(dList)}")
-                    var updateDinein = arguments?.getBoolean("is_dine_in_edit")?:false
-                    if(!updateDinein){
+                    var updateDinein = arguments?.getBoolean("is_dine_in_edit") ?: false
+                    if (!updateDinein) {
                         if (dList.isNotEmpty()) {
                             dList[0].floorPlanTable?.id?.let {
                                 viewModel.getTableStatus(
@@ -421,11 +424,11 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                             }
                             findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_dineInFragment)
                         }
-                    }else{
+                    } else {
                         findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_dineInFragment)
                     }
                 }
-            }else{
+            } else {
                 findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_dineInFragment)
             }
 
@@ -825,11 +828,11 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                 prefProvider.setValueInt(Constants.ORDER_TYPE_ID, 2)
 
                 cartList[0].note = arguments?.getString("order_note").toString()
-                Log.e("AAjeDine","cartdiscountPrice  ${cartList[0].discountPrice}")
-                Log.e("AAjeDine","dineTotalDiscount  ${arguments?.getDouble("totalDiscount") }")
+                Log.e("AAjeDine", "cartdiscountPrice  ${cartList[0].discountPrice}")
+                Log.e("AAjeDine", "dineTotalDiscount  ${arguments?.getDouble("totalDiscount")}")
                 cartList[0].discountPrice = arguments?.getDouble("totalDiscount") ?: 0.0
                 viewModel.cartLogic(cartList, null, Constants.ADD, false, dineInList = dineInList)
-               // viewModel.orderItemDiscount = arguments?.getDouble("totalDiscount") ?: 0.0
+                // viewModel.orderItemDiscount = arguments?.getDouble("totalDiscount") ?: 0.0
 
             }
 
@@ -1005,7 +1008,28 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                 customerReceiptPrinters.name
             }
 
+            var fontSizeH = 1
+            var fontSizeW = 1
+            when (kitchenSettingModel.fonts) {
+                SMALL -> {
+                    fontSizeH = 1
+                    fontSizeW = 1
+                }
+                MEDIUM -> {
+                    fontSizeH = 1
+                    fontSizeW = 2
+                }
+                LARGE -> {
+                    fontSizeH = 2
+                    fontSizeW = 2
+                }
+
+
+            }
+
             builder = Builder(pname, PrinterClass.language, requireActivity())
+            Log.e(TAG, "kitchenFonts:  ${kitchenSettingModel.fonts}")
+            Log.e(TAG, "kitfontSize:  ${fontSizeH}")
 
             if (kitchenSettingModel.showOrderType) {
 
@@ -1013,7 +1037,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                 builder.addFeedLine(0)
                 builder.addTextFont(Builder.FONT_E)
                 builder.addTextLang(Builder.LANG_EN)
-                builder.addTextSize(2, 2)
+                builder.addTextSize(fontSizeH, fontSizeW)
                 builder.addTextStyle(
                     Builder.FALSE,
                     Builder.FALSE,
@@ -1031,7 +1055,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
             builder.addFeedLine(1)
             builder.addTextFont(Builder.FONT_E)
             builder.addTextLang(Builder.LANG_EN)
-            builder.addTextSize(2, 2)
+            builder.addTextSize(fontSizeH, fontSizeW)
             builder.addTextStyle(
                 Builder.FALSE,
                 Builder.FALSE,
@@ -1049,7 +1073,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
             builder.addTextFont(Builder.FONT_E)
             //  builder.addTextAlign(Builder.ALIGN_LEFT)
             builder.addTextLang(Builder.LANG_EN)
-            builder.addTextSize(1, 1)
+            builder.addTextSize(fontSizeH, fontSizeW)
             builder.addTextStyle(
                 Builder.FALSE,
                 Builder.FALSE,
@@ -1070,7 +1094,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
             builder.addTextFont(Builder.FONT_E)
             //  builder.addTextAlign(Builder.ALIGN_LEFT)
             builder.addTextLang(Builder.LANG_EN)
-            builder.addTextSize(1, 1)
+            builder.addTextSize(fontSizeH, fontSizeW)
             builder.addTextStyle(
                 Builder.FALSE,
                 Builder.FALSE,
@@ -1093,7 +1117,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                 builder.addTextFont(Builder.FONT_E)
                 //  builder.addTextAlign(Builder.ALIGN_LEFT)
                 builder.addTextLang(Builder.LANG_EN)
-                builder.addTextSize(1, 1)
+                builder.addTextSize(fontSizeH, fontSizeW)
                 builder.addTextStyle(
                     Builder.FALSE,
                     Builder.FALSE,
@@ -1113,7 +1137,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
             builder.addTextFont(Builder.FONT_E)
             //  builder.addTextAlign(Builder.ALIGN_LEFT)
             builder.addTextLang(Builder.LANG_EN)
-            builder.addTextSize(1, 1)
+            builder.addTextSize(fontSizeH, fontSizeW)
             builder.addTextStyle(
                 Builder.FALSE,
                 Builder.FALSE,
@@ -1137,7 +1161,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
             builder.addTextFont(Builder.FONT_B)
             //builder.addTextLineSpace(20)
             builder.addTextLang(Builder.LANG_EN)
-            builder.addTextSize(1, 1)
+            builder.addTextSize(fontSizeH, fontSizeW)
             builder.addTextStyle(
                 Builder.FALSE,
                 Builder.FALSE,
@@ -1147,7 +1171,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
 
             addHorizontalKitchenLine(builder)
 
-            receiptModel?.order?.orderItems?.let { addOrdersForKitchen(builder, it) }
+            receiptModel?.order?.orderItems?.let { addOrdersForKitchen(builder, it, fontSizeH,fontSizeW) }
 
             if (receiptModel?.order?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote) {
                 builder.addTextLineSpace(30)
@@ -1157,7 +1181,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                 builder.addTextAlign(Builder.ALIGN_LEFT)
                 //builder.addTextLineSpace(20)
                 builder.addTextLang(Builder.LANG_EN)
-                builder.addTextSize(1, 1)
+                builder.addTextSize(fontSizeH, fontSizeW)
                 builder.addTextStyle(
                     Builder.FALSE,
                     Builder.FALSE,
@@ -1172,7 +1196,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                 builder.addTextFont(Builder.FONT_E)
                 builder.addTextAlign(Builder.ALIGN_LEFT)
                 builder.addTextLang(Builder.LANG_EN)
-                builder.addTextSize(1, 1)
+                builder.addTextSize(fontSizeH, fontSizeW)
                 builder.addTextStyle(
                     Builder.FALSE,
                     Builder.FALSE,
@@ -1195,7 +1219,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                     //builder.addTextLineSpace(20)
                     builder.addTextAlign(Builder.ALIGN_LEFT)
                     builder.addTextLang(Builder.LANG_EN)
-                    builder.addTextSize(1, 1)
+                    builder.addTextSize(fontSizeH, fontSizeW)
                     builder.addTextStyle(
                         Builder.FALSE,
                         Builder.FALSE,
@@ -1207,7 +1231,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                     builder.addTextFont(Builder.FONT_B)
                     //builder.addTextLineSpace(20)
                     builder.addTextLang(Builder.LANG_EN)
-                    builder.addTextSize(1, 1)
+                    builder.addTextSize(fontSizeH, fontSizeW)
                     builder.addTextStyle(
                         Builder.FALSE,
                         Builder.FALSE,
@@ -1224,7 +1248,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                         builder.addTextAlign(Builder.ALIGN_LEFT)
                         //builder.addTextLineSpace(20)
                         builder.addTextLang(Builder.LANG_EN)
-                        builder.addTextSize(1, 1)
+                        builder.addTextSize(fontSizeH, fontSizeW)
                         builder.addTextStyle(
                             Builder.FALSE,
                             Builder.FALSE,
@@ -1245,7 +1269,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                             builder.addTextAlign(Builder.ALIGN_LEFT)
                             //builder.addTextLineSpace(20)
                             builder.addTextLang(Builder.LANG_EN)
-                            builder.addTextSize(1, 1)
+                            builder.addTextSize(fontSizeH, fontSizeW)
                             builder.addTextStyle(
                                 Builder.FALSE,
                                 Builder.FALSE,
@@ -1287,7 +1311,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                             builder.addTextAlign(Builder.ALIGN_LEFT)
                             //builder.addTextLineSpace(20)
                             builder.addTextLang(Builder.LANG_EN)
-                            builder.addTextSize(1, 1)
+                            builder.addTextSize(fontSizeH, fontSizeW)
                             builder.addTextStyle(
                                 Builder.FALSE,
                                 Builder.FALSE,
