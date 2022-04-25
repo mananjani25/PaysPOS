@@ -979,7 +979,7 @@ class CartFragment(
         Log.e(TAG, "onDineinItemClick ${position}")
 
         viewModel.selectedItemPositionDine = position
-        viewModel.dineInHeaderPosition = headerPosition
+       // viewModel.dineInHeaderPosition = headerPosition
         viewModel.dineInSelectedItemHeaderPos = headerPosition
 
         itemClickListner?.onItemUpdate(item)
