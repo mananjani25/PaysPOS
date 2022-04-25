@@ -249,7 +249,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
             if (isUpdateItem) {
                 if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == Constants.DINE_IN) {
                     val dineInList = cartList[0].dineInList
-                    dineInList?.get(0)?.headerPosition = viewModel.dineInHeaderPosition
+                    dineInList?.get(0)?.headerPosition = viewModel.dineInSelectedItemHeaderPos
                     dineInList?.get(0)?.selectedPosition = viewModel.dineInSelectedItemHeaderPos
                     viewModel.cartLogic(
                         cartList,
@@ -268,7 +268,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
                     val dineInList = cartList[0].dineInList
                     Log.e(TAG, "dineInList:  ${Gson().toJson(dineInList)}")
                     if (dineInList?.isNotEmpty() == true && dineInList != null) {
-                        dineInList[0].selectedPosition = viewModel.dineInSelectedItemHeaderPos
+                        dineInList[0].selectedPosition = viewModel.dineInHeaderPosition
                         viewModel.cartLogic(cartList, item, Constants.ADD, false, dineInList)
                     }
                 } else {
@@ -433,7 +433,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
                                     binding.dividerLine2.root.visibility = View.VISIBLE
 
                                     viewModel.modifierSet(intArray!!).observe(requireActivity()) {
-                                        if (it.data != null && it.data.isNotEmpty()) {
+                                        if (it.data != null && it.data.isNotEmpty() && view != null) {
                                             adapter = ItemModifierSetAdapter(
                                                 viewModel,
                                                 item.itemId,
