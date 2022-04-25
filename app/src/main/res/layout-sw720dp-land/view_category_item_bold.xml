@@ -22,7 +22,7 @@
             android:lines="4"
             android:maxLines="4"
             android:paddingStart="@dimen/_5sdp"
-            android:paddingTop="@dimen/_5sdp"
+            android:paddingTop="@dimen/_3sdp"
             android:paddingEnd="@dimen/_5sdp"
             android:paddingBottom="@dimen/_2sdp"
             tools:text="FOOD"

@@ -12,25 +12,30 @@
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/txtOrderId"
             style="@style/HistoryItemHeaderText"
-            android:text="@string/order_id_nstatus" />
+            android:text="@string/order_id_nstatus"
+            android:gravity="center_vertical"/>
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/txtDateTime"
             style="@style/HistoryItemHeaderText"
             android:layout_weight="1.5"
-            android:text="@string/date_time" />
+            android:text="@string/date_time"
+            android:gravity="center_vertical"/>
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/txtOrderDetails"
             style="@style/HistoryItemHeaderText"
-            android:layout_weight="4"
-            android:text="@string/order_details" />
+            android:layout_weight="3"
+            android:text="@string/order_details"
+            android:gravity="center_vertical"
+            />
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/txtPartType"
             style="@style/HistoryItemHeaderText"
             android:gravity="center"
-            android:text="@string/pay_type" />
+            android:text="@string/pay_type"
+            />
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/txtLoyaltyPoints"

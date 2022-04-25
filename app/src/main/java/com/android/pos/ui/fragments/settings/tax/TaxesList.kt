@@ -76,7 +76,7 @@ class TaxesList : Fragment() , ItemCallback {
 
 
     private fun getTaxListObserver() {
-        viewModel.getTaxList.observe(viewLifecycleOwner, {
+        viewModel.getTaxList.observe(viewLifecycleOwner) {
 
 
             it?.let { resource ->
@@ -102,7 +102,7 @@ class TaxesList : Fragment() , ItemCallback {
                     }
                 }
             }
-        })
+        }
     }
 
     private fun notifyAdapter() {

@@ -657,6 +657,7 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
             binding.edtAmount.setText(removeLastCharacter(binding.edtAmount.text.toString()))
 
         } else {
+            Log.e(TAG,"discountAmount${binding.edtAmount.text.toString().trim()}")
             binding.edtAmount.append(number)
         }
     }
