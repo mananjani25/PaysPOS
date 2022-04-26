@@ -166,7 +166,9 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder:Boolean = false) : Fragment
             tipAmount = bundle.getDouble("tipAmount")
             viewModel.setTipAmount(tipAmount)
             tipID = bundle.getInt("tipId")
+            isSelectedCount = 1
             tipAmountCalculation()
+            loadPaymentLayout()
         }
         requireActivity().supportFragmentManager.setFragmentResultListener(
             "request_key_split",
@@ -200,7 +202,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder:Boolean = false) : Fragment
 
         binding.linearNextSplit.setOnClickListener {
             loadPaymentLayout()
-            setupPaymentScreen(isSelectedCount)
+            tipAmountCalculation()
+//            setupPaymentScreen(isSelectedCount)
         }
         binding.tvFullAmount.setOnClickListener {
             binding.tvFullAmount.setBackgroundDrawable(resources.getDrawable(R.drawable.button_action_hover))

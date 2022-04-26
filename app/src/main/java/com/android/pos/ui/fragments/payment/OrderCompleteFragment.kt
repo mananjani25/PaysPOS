@@ -300,7 +300,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 var title = "Split "
                 viewModel.addSplitToDatabase(
                     title,
-                    paidAmount - splitChange,
+                    (paidAmount + tipAmount) - splitChange,
                     remainingAmount
                 )
                 binding.txtTitle.text =
@@ -441,7 +441,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 var title = "Split "
                 viewModel.addSplitToDatabase(
                     title,
-                    paidAmount - splitChange,
+                    (paidAmount + tipAmount) - splitChange,
                     remainingAmount
                 )
                 binding.txtTitle.text =

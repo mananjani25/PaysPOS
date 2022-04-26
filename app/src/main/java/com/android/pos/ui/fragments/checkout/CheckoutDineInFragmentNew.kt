@@ -201,7 +201,9 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
             tipAmount = bundle.getDouble("tipAmount")
             viewModel.setTipAmount(tipAmount)
             tipID = bundle.getInt("tipId")
+            isSelectedCount = 1
             tipAmountCalculation()
+            loadPaymentLayout()
         }
         requireActivity().supportFragmentManager.setFragmentResultListener(
             "request_key_split",
@@ -242,7 +244,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
 
         binding.linearNextSplit.setOnClickListener {
             loadPaymentLayout()
-            setupPaymentScreen(isSelectedCount)
+            tipAmountCalculation()
         }
         binding.tvFullAmount.setOnClickListener {
             listtextview = arrayListOf()
