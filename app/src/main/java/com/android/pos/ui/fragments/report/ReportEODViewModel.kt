@@ -9,7 +9,6 @@ import com.android.pos.data.entities.Employee
 import com.android.pos.data.model.responseModel.EodReportResponse
 import com.android.pos.data.model.responseModel.report.Terminal
 import com.android.pos.data.remote.Constants
-import com.android.pos.data.remote.Constants.TERMINAL_ID
 import com.android.pos.data.repositories.PosRepository
 import com.android.pos.di.PrefProvider
 import com.android.pos.utils.Event
@@ -102,7 +101,7 @@ class ReportEODViewModel @Inject constructor(
                 posRepository.getReportEOD(
                     startDate = startDate.value.toString(),
                     endDate = endDate.value.toString(),
-                    terminalId = prefProvider.getValueInt(TERMINAL_ID, 0).toString(),
+                    terminalId = "",
                     employee_id = selectedTerminalId,
                     email = emailId
 

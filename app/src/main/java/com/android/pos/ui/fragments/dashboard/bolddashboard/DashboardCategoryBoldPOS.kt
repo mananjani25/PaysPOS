@@ -42,6 +42,7 @@ import com.android.pos.utils.statusUtils.Status
 import com.epson.eposprint.Builder
 import com.epson.eposprint.Print
 import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -967,9 +968,26 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
 
                     if (isupdate) {
                         var model = prefProvider.getValue(OPEN_ORDER_ITEMS, "")
-                        Log.e(TAG,"getItemsModel  ${Gson().toJson(model)}")
-                        var itemModel = Gson().fromJson(model,OpenOrderResponse.Data.Order.OrderItem::class.java)
-                        Log.e(TAG, "getTbItems  ${Gson().toJson(itemModel)}")
+                        Log.e(TAG, "getItemsModel  ${Gson().toJson(model)}")
+
+                        /* val gson = Gson()
+                         val type: Type = object :
+                             TypeToken<ArrayList<CreateOrderResponse.Data.Order.OrderItem?>?>() {}.getType()
+                         var dataOrder =
+                             Gson().fromJson<CreateOrderResponse.Data.Order.OrderItem>(model, type)
+                         Log.e(TAG, "dataOrder   ${Gson().toJson(dataOrder)}")
+ */
+                        val serializedObject: String = prefProvider.getValue(OPEN_ORDER_ITEMS, "")
+                        if (serializedObject.isNotEmpty()) {
+                            val gson = Gson()
+                            val type = object :
+                                TypeToken<List<CreateOrderResponse.Data.Order.OrderItem?>?>() {}.type
+                            var arrayItems = gson.fromJson<Any>(serializedObject, type)
+
+                            Log.e(TAG, "arrayItems:  ${Gson().toJson(arrayItems)}")
+                        }
+
+
 
                     }
 
@@ -978,12 +996,6 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
 
                         for (i in 0 until it.data.size) {
 
-                            if (isupdate) {
-                                var model = prefProvider.getValue(OPEN_ORDER_ITEMS, "")
-
-                                Log.e(TAG, "getTbItems  ${Gson().fromJson<OpenOrderResponse.Data.Order.OrderItem>(model,OpenOrderResponse.Data.Order.OrderItem::class.java)}")
-
-                            } else {
 
                                 initKitchenPrinter(
                                     it.data.get(i),
@@ -991,7 +1003,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                                     createOrderResponse
                                 )
                             }
-                        }
+
                     } else {
                         viewModel.downloadFinished(false)
                         findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)

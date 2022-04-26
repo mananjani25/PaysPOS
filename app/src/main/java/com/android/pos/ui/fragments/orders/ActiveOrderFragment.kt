@@ -334,6 +334,7 @@ class ActiveOrderFragment(
                 order.totalDiscount = order.totalDiscount - itemDiscountTotal
 
                 Log.e(TAG, "OpenORderUpdateOrder:  ${Gson().toJson(order)}")
+                prefProvider.setValue(Constants.ORDER_TYPE, OPEN_ORDER)
 
                 if (order.customer != null) {
                     prefProvider.setValue(
@@ -343,7 +344,7 @@ class ActiveOrderFragment(
                     prefProvider.setValueInt(Constants.CUSTOMER_ID, order.customer.id)
                     prefProvider.saveCustomerData(TbCustomer.customerMapping(order.customer))
                 }
-             //   prefProvider.setValue(Constants.OPEN_ORDER_ITEMS, Gson().toJson(order.orderItems))
+                prefProvider.setValue(Constants.OPEN_ORDER_ITEMS, Gson().toJson(order.orderItems))
 
                 dashboardViewModel.addCart(
                     cartModel(order)
