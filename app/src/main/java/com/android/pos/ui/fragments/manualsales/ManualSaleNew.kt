@@ -414,10 +414,14 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
 
                     val manualItems = cartList!![0].items
                     val mainItems = mainCartList[0].items
-
                     val mergeItems = merge(mainItems!!, manualItems!!)
 
                     mainCartList[0].items = mergeItems
+                    if (cartList!![0].discountPrice != 0.00)
+                        mainCartList[0].discountPrice = cartList!![0].discountPrice
+
+                    if (cartList!![0].note.isNotEmpty())
+                        mainCartList[0].note = cartList!![0].note
 
                     viewModel.addCart(mainCartList[0])
 
@@ -935,7 +939,8 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
 
                 } else if (result.discountType == "Amount") {
                     val cartModel = cartAdapter.getItem(pos)
-                    cartModel.discountPrice = MethodUtils.roundOffAmountDouble(result.percentage * cartModel.itemQuantity)
+                    cartModel.discountPrice =
+                        MethodUtils.roundOffAmountDouble(result.percentage * cartModel.itemQuantity)
                     cartModel.isDiscountDefault = false
                     cartModel.discountType = result.discountType
                     viewModel.manualSalecartLogic(cartList, cartModel, Constants.UPDATE)
