@@ -1199,6 +1199,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                 }
             }
             val bundle = Bundle().apply {
+                putInt("totalquantity", totalquantity)
                 putBoolean("isFromDetails", true)
                 putParcelable("model", model)
             }

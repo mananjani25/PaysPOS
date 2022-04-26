@@ -39,6 +39,7 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
     private var orderDiscountType: String = ""
     private var orderDiscountPrice: Double = 0.0
     private var totalOrderPrice: Double = 0.0
+    private var itemQuantity: Int = 0
     private var isOrderDiscount: Boolean = false
     private lateinit var binding: DailogAddDiscountBinding
     private val viewModel by activityViewModels<DiscountListViewModel>()
@@ -80,6 +81,7 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
         isFromDetails = requireArguments().getBoolean("isFromDetails", false)
         val model: TbItem? = requireArguments().getParcelable("model")
         itemOrderDiscount = requireArguments().getDouble("itemOrderDiscount")
+        itemQuantity = requireArguments().getInt("totalquantity")
         defaultModel = model ?: TbItem()
 
         Log.e(TAG, "dataModel ${Gson().toJson(model)}")
@@ -417,7 +419,7 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
         }
 
         binding.txtSave.setOnClickListener {
-
+            defaultModel.itemQuantity=itemQuantity
             if (selectedListPos != -1) {
 
                 val model = discountAdapter.getItem(selectedListPos)
