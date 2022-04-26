@@ -320,21 +320,20 @@ class ActiveOrderFragment(
         val order = adapter.getItem(pos)
         when (status) {
             "UPDATE" -> {
-                var itemDiscountTotal : Double = 0.0
+                var itemDiscountTotal: Double = 0.0
                 order.orderItems.forEach {
                     if (it.discountAmount != 0.0) {
-                       // itemDiscountTotal += MethodUtils.roundOffAmountDouble(it.discountAmount)
+                        // itemDiscountTotal += MethodUtils.roundOffAmountDouble(it.discountAmount)
                         it.discountAmount =
                             MethodUtils.roundOffAmountDouble(it.discountAmount / it.quantity)
                     }
                 }
-                Log.e(TAG,"itemDiscountTotal:  ${itemDiscountTotal}")
-                Log.e(TAG,"totalOrderDiscount  ${order.totalDiscount}")
+                Log.e(TAG, "itemDiscountTotal:  ${itemDiscountTotal}")
+                Log.e(TAG, "totalOrderDiscount  ${order.totalDiscount}")
 
                 order.totalDiscount = order.totalDiscount - itemDiscountTotal
 
                 Log.e(TAG, "OpenORderUpdateOrder:  ${Gson().toJson(order)}")
-                prefProvider.setValue(Constants.ORDER_TYPE, OPEN_ORDER)
 
                 if (order.customer != null) {
                     prefProvider.setValue(
@@ -344,6 +343,7 @@ class ActiveOrderFragment(
                     prefProvider.setValueInt(Constants.CUSTOMER_ID, order.customer.id)
                     prefProvider.saveCustomerData(TbCustomer.customerMapping(order.customer))
                 }
+             //   prefProvider.setValue(Constants.OPEN_ORDER_ITEMS, Gson().toJson(order.orderItems))
 
                 dashboardViewModel.addCart(
                     cartModel(order)

@@ -23,6 +23,7 @@ import com.android.pos.data.remote.Constants.DINE_IN
 import com.android.pos.data.remote.Constants.EMPLOYEE_NAME
 import com.android.pos.data.remote.Constants.LARGE
 import com.android.pos.data.remote.Constants.MEDIUM
+import com.android.pos.data.remote.Constants.OPEN_ORDER_ITEMS
 import com.android.pos.data.remote.Constants.ORDER_TYPE
 import com.android.pos.data.remote.Constants.SMALL
 import com.android.pos.data.remote.Constants.SPLIT_ENABLE
@@ -959,19 +960,37 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
             when (it.status) {
                 Status.SUCCESS -> {
                     Log.e(TAG, "getKitchenPrinterList:  ${Gson().toJson(it.data)}")
+                    Log.e(TAG, "isUpdateOrder  ${isupdate}")
+
                     ProgressUtils.dismissProgressDialog()
                     viewModel.downloadFinished(true)
+
+                    if (isupdate) {
+                        var model = prefProvider.getValue(OPEN_ORDER_ITEMS, "")
+                        Log.e(TAG,"getItemsModel  ${Gson().toJson(model)}")
+                        var itemModel = Gson().fromJson(model,OpenOrderResponse.Data.Order.OrderItem::class.java)
+                        Log.e(TAG, "getTbItems  ${Gson().toJson(itemModel)}")
+
+                    }
 
 
                     if (it.data?.isNotEmpty() == true) {
 
                         for (i in 0 until it.data.size) {
 
-                            initKitchenPrinter(
-                                it.data.get(i),
-                                Constants.KITCHEN,
-                                createOrderResponse
-                            )
+                            if (isupdate) {
+                                var model = prefProvider.getValue(OPEN_ORDER_ITEMS, "")
+
+                                Log.e(TAG, "getTbItems  ${Gson().fromJson<OpenOrderResponse.Data.Order.OrderItem>(model,OpenOrderResponse.Data.Order.OrderItem::class.java)}")
+
+                            } else {
+
+                                initKitchenPrinter(
+                                    it.data.get(i),
+                                    Constants.KITCHEN,
+                                    createOrderResponse
+                                )
+                            }
                         }
                     } else {
                         viewModel.downloadFinished(false)
@@ -1171,7 +1190,14 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
 
             addHorizontalKitchenLine(builder)
 
-            receiptModel?.order?.orderItems?.let { addOrdersForKitchen(builder, it, fontSizeH,fontSizeW) }
+            receiptModel?.order?.orderItems?.let {
+                addOrdersForKitchen(
+                    builder,
+                    it,
+                    fontSizeH,
+                    fontSizeW
+                )
+            }
 
             if (receiptModel?.order?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote) {
                 builder.addTextLineSpace(30)

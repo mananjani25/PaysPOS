@@ -572,6 +572,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
             if (cartList?.isEmpty() == true) {
                 popupMenu.menu.findItem(R.id.menu_order_discount).isVisible = false
                 popupMenu.menu.findItem(R.id.menu_order_note).isVisible = false
+                popupMenu.menu.findItem(R.id.menu_clear_cart).isVisible = false
             }
 
             if (prefProvider.getValue(Constants.CUSTOMER_NAME, "").isEmpty())
