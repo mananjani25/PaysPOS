@@ -401,6 +401,8 @@ class DashBoardCategoryViewModel @Inject constructor(
                         }
 
 
+
+
                         if (index != -1) {
                             val model =
                                 cartList[0].dineInList?.get(selectedHeader)?.items?.get(index)
