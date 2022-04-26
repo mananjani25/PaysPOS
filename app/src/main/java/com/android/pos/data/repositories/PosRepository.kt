@@ -806,8 +806,7 @@ class PosRepository @Inject constructor(
         startDate: String,
         endDate: String,
         terminalId: String
-    ) =
-        apiHelperNew.getReportSummary(startDate, endDate, terminalId)
+    ) = apiHelperNew.getReportSummary(startDate, endDate, terminalId)
 
     suspend fun getReportEOD(
         startDate: String,

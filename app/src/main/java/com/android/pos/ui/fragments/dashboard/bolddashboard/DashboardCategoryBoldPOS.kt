@@ -969,25 +969,91 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                     if (isupdate) {
                         var model = prefProvider.getValue(OPEN_ORDER_ITEMS, "")
                         Log.e(TAG, "getItemsModel  ${Gson().toJson(model)}")
+                        var printOrderItems:
+                                ArrayList<CreateOrderResponse.Data.Order.OrderItem> =
+                            arrayListOf()
 
-                        /* val gson = Gson()
-                         val type: Type = object :
-                             TypeToken<ArrayList<CreateOrderResponse.Data.Order.OrderItem?>?>() {}.getType()
-                         var dataOrder =
-                             Gson().fromJson<CreateOrderResponse.Data.Order.OrderItem>(model, type)
-                         Log.e(TAG, "dataOrder   ${Gson().toJson(dataOrder)}")
- */
                         val serializedObject: String = prefProvider.getValue(OPEN_ORDER_ITEMS, "")
                         if (serializedObject.isNotEmpty()) {
                             val gson = Gson()
                             val type = object :
                                 TypeToken<List<CreateOrderResponse.Data.Order.OrderItem?>?>() {}.type
-                            var arrayItems = gson.fromJson<Any>(serializedObject, type)
+                            var arrayItems: ArrayList<CreateOrderResponse.Data.Order.OrderItem> =
+                                gson.fromJson<Any>(
+                                    serializedObject,
+                                    type
+                                ) as ArrayList<CreateOrderResponse.Data.Order.OrderItem>
 
                             Log.e(TAG, "arrayItems:  ${Gson().toJson(arrayItems)}")
+                            var itemIds: ArrayList<Int> = arrayListOf()
+                            arrayItems.forEach {
+                                itemIds.add(it.id)
+                            }
+
+                            createOrderResponse.data.order.orderItems.forEachIndexed { index, orderItem ->
+
+                                if (itemIds.contains(orderItem.id)) {
+                                    if (arrayItems[index].quantity != orderItem.quantity) {
+                                        if (orderItem.quantity > arrayItems[index].quantity) {
+                                            orderItem.quantity =
+                                                orderItem.quantity - arrayItems[index].quantity
+                                            if (!printOrderItems.contains(orderItem)) {
+                                                printOrderItems.add(orderItem)
+                                            }
+                                        }
+
+                                    }
+                                    else{
+
+                                    }
+
+                                }
+                                else{
+                                    printOrderItems.add(orderItem)
+                                }
+
+
+                            }
+
+
+                            /*arrayItems.forEach { it1 ->
+
+                                createOrderResponse.data.order.orderItems.forEach {
+
+
+
+                                    if (it1.id == it.id) {
+                                        if (it1.quantity != it.quantity) {
+                                            if (it.quantity > it1.quantity) {
+                                                it.quantity = it.quantity - it1.quantity
+                                                if (!printOrderItems.contains(it)) {
+                                                    printOrderItems.add(it)
+                                                }
+                                            }
+
+                                        } else if (it1.quantity > it.quantity) {
+
+                                        }
+
+                                    } else if (!printOrderItems.contains(it)) {
+
+
+                                        printOrderItems.add(it)
+                                    }
+
+                                }
+
+
+                            }*/
+
+                            Log.e(TAG, "printOrderitems  ${Gson().toJson(printOrderItems)}")
+
+                            createOrderResponse.data.order.orderItems = arrayListOf()
+
+                            createOrderResponse.data.order.orderItems = printOrderItems
                         }
 
-
+                        prefProvider.setValue(OPEN_ORDER_ITEMS, "")
 
                     }
 
@@ -997,12 +1063,12 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                         for (i in 0 until it.data.size) {
 
 
-                                initKitchenPrinter(
-                                    it.data.get(i),
-                                    Constants.KITCHEN,
-                                    createOrderResponse
-                                )
-                            }
+                            initKitchenPrinter(
+                                it.data.get(i),
+                                Constants.KITCHEN,
+                                createOrderResponse
+                            )
+                        }
 
                     } else {
                         viewModel.downloadFinished(false)
