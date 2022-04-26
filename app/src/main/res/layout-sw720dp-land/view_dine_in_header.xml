@@ -31,7 +31,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:layout_weight="0.6"
+                    android:layout_weight="0.8"
                     android:gravity="center"
                     android:layout_marginStart="@dimen/_1sdp">
 
@@ -41,7 +41,6 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        android:layout_marginLeft="@dimen/_10sdp"
                         android:button="@drawable/dine_in_fire_selector"
                         android:checked="false"
                         android:gravity="center" />
@@ -51,7 +50,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_gravity="center_vertical"
-                    android:layout_weight="2.4">
+                    android:layout_weight="1.9">
 
                     <TextView
                         android:id="@+id/txtTableName"
@@ -60,11 +59,11 @@
                         android:layout_height="match_parent"
                         android:layout_gravity="center"
                         android:gravity="start|center_vertical"
-                        android:paddingStart="@dimen/_12sdp"
                         android:text="Whole Table"
-
                         android:textColor="@color/white"
-                        android:textSize="@dimen/_7mdpi" />
+                        android:textSize="@dimen/_7mdpi"
+                        android:paddingStart="@dimen/_14sdp"
+                        />
                 </LinearLayout>
 
             </LinearLayout>

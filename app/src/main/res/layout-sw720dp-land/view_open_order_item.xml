@@ -216,7 +216,7 @@
                     android:layout_marginRight="@dimen/_5sdp"
                     android:layout_marginBottom="@dimen/_10sdp"
                     android:layout_weight="1"
-                    android:background="@drawable/background_square_border_grey"
+                    android:background="@drawable/border_orange"
                     android:gravity="center"
                     android:padding="@dimen/_10sdp"
                     android:text="@string/tv_edit_order"

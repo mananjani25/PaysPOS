@@ -21,6 +21,7 @@ import com.android.pos.data.model.responseModel.CreateOrderResponse
 import com.android.pos.data.model.responseModel.PrinterResponse
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.ADD
+import com.android.pos.data.remote.Constants.BASE_URL_NEW
 import com.android.pos.data.remote.Constants.BUSINESS_ADDRESS
 import com.android.pos.data.remote.Constants.BUSINESS_NAME
 import com.android.pos.data.remote.Constants.BUSINESS_PHONE_NO
@@ -35,6 +36,7 @@ import com.android.pos.data.remote.Constants.ORDER_TYPE
 import com.android.pos.data.remote.Constants.SYSTEM_TIMEZONE
 import com.android.pos.data.remote.Constants.UPDATE
 import com.android.pos.data.remote.Constants.VENUE_LOGO
+import com.android.pos.data.remote.NetworkConnectionInterceptor
 import com.android.pos.data.repositories.PosRepository
 import com.android.pos.data.repositories.TaxServiceChargeRepository
 import com.android.pos.data.repositories.TipDiscountRepository
@@ -71,7 +73,8 @@ class DashBoardCategoryViewModel @Inject constructor(
     private val prefProvider: PrefProvider,
     private val taxServiceChargeRepository: TaxServiceChargeRepository,
     private val tipDiscountRepository: TipDiscountRepository,
-    private val rolePermission: RolePermission
+    private val rolePermission: RolePermission,
+    private val networkConnectionInterceptor: NetworkConnectionInterceptor
 ) : ViewModel() {
 
 
@@ -1364,7 +1367,8 @@ class DashBoardCategoryViewModel @Inject constructor(
 
 
     fun logoutAPI() {
-
+       // networkConnectionInterceptor.setHostBaseUrl(prefProvider.getValue(BASE_URL_NEW,""))
+        Log.d(TAG,"baseUrl${prefProvider.getValue(BASE_URL_NEW,"")}")
         _showProgress.value = Event(true)
         viewModelScope.launch {
             val dataClockout = HashMap<String, String>()
