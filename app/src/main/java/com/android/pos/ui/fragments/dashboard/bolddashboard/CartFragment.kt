@@ -1368,7 +1368,16 @@ class CartFragment(
                 prefProvider.setValue(Constants.TIP, "")
                 prefProvider.setValue(Constants.TAX_CHARGE, "")
                 prefProvider.setValue(Constants.SERVICE_CHARGE, "")
-                findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_paymentBoldPosFragment)
+                if(isOrderUpdate){
+                    var bundle:Bundle = Bundle()
+                    bundle.putInt("orderId", orderId!!)
+                    bundle.putInt("paymentId", paymentId!!)
+                    bundle.putString("paymentOfflineId", paymentOfflineId)
+                    bundle.putString("orderOfflineId", orderOfflineId)
+                    findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_paymentBoldPosFragment,bundle)
+                }else{
+                    findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_paymentBoldPosFragment)
+                }
             } else {
                 AlertUtils.showCustomAlertWithListenerWithOK(
                     requireContext(),
