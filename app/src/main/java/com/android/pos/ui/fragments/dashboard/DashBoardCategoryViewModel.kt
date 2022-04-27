@@ -305,6 +305,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                         if (model != null) {
                             model.itemQuantity = item.itemQuantity
+                            model.note = item.note
                             if (item.isEdited) {
                                 model.isEdited = item.isEdited
                             }
