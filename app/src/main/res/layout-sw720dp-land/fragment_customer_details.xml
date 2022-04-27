@@ -114,7 +114,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        android:hint="@string/name"
+                        android:hint="@string/tv_name"
                         android:textColorHint="@color/hint_color"
                         android:textSize="@dimen/_5sdp" />
 
