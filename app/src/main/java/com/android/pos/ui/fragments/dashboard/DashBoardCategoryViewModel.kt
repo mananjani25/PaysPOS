@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.os.StrictMode
 import android.util.Base64
 import android.util.Log
 import androidx.appcompat.widget.AppCompatTextView
@@ -2228,7 +2227,11 @@ class DashBoardCategoryViewModel @Inject constructor(
 
 
                                 try {
-                                    if (it.data.logo != null) {
+                                    Log.e(TAG,"getURL  ${prefProvider.getValue(
+                                        Constants.VENUE_LOGO_URL,
+                                        ""
+                                    )}")
+                                  /*  if (it.data.logo != null) {
                                         if (it.data.logo.logoUrl.isNotEmpty() && !prefProvider.getValue(
                                                 Constants.VENUE_LOGO_URL,
                                                 ""
@@ -2239,10 +2242,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                                     .build()
 
                                             StrictMode.setThreadPolicy(policy)
-                                            prefProvider.setValue(
-                                                Constants.VENUE_LOGO_URL,
-                                                it.data.logo.logoUrl
-                                            )
+
                                             val bitmap = getBitmapFromURL(it.data.logo.logoUrl)
                                             var baseBitmap =
                                                 bitmap?.let { it1 -> encodeTobase64(it1) }
@@ -2255,10 +2255,14 @@ class DashBoardCategoryViewModel @Inject constructor(
                                                     )
                                                 }
                                             }
+                                            prefProvider.setValue(
+                                                Constants.VENUE_LOGO_URL,
+                                                it.data.logo.logoUrl
+                                            )
                                         }
 
 
-                                    }
+                                    }*/
 
                                 } catch (e: Exception) {
                                     e.printStackTrace()
