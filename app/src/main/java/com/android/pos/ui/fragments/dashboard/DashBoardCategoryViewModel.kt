@@ -1371,8 +1371,8 @@ class DashBoardCategoryViewModel @Inject constructor(
 
 
     fun logoutAPI() {
-       // networkConnectionInterceptor.setHostBaseUrl(prefProvider.getValue(BASE_URL_NEW,""))
-        Log.d(TAG,"baseUrl${prefProvider.getValue(BASE_URL_NEW,"")}")
+        // networkConnectionInterceptor.setHostBaseUrl(prefProvider.getValue(BASE_URL_NEW,""))
+        Log.d(TAG, "baseUrl${prefProvider.getValue(BASE_URL_NEW, "")}")
         _showProgress.value = Event(true)
         viewModelScope.launch {
             val dataClockout = HashMap<String, String>()
@@ -2212,28 +2212,33 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                                 try {
                                     if (it.data.logo != null) {
-                                        Log.e(
-                                            TAG,
-                                            "VenueLogo  ${Gson().toJson(it.data.logo.logoUrl)}"
-                                        )
-                                          if (it.data.logo.logoUrl.isNotEmpty()) {
-                                              val policy: StrictMode.ThreadPolicy =
-                                                  StrictMode.ThreadPolicy.Builder().permitAll().build()
+                                        if (it.data.logo.logoUrl.isNotEmpty() && !prefProvider.getValue(
+                                                Constants.VENUE_LOGO_URL,
+                                                ""
+                                            ).equals(it.data.logo.logoUrl)
+                                        ) {
+                                            val policy: StrictMode.ThreadPolicy =
+                                                StrictMode.ThreadPolicy.Builder().permitAll()
+                                                    .build()
 
-                                              StrictMode.setThreadPolicy(policy)
-                                              val bitmap = getBitmapFromURL(it.data.logo.logoUrl)
-                                              var baseBitmap =
-                                                  bitmap?.let { it1 -> encodeTobase64(it1) }
-                                              if (baseBitmap?.isNotEmpty() == true) {
-                                                  Log.d(TAG, "syncSettingModule: "+baseBitmap)
-                                                  baseBitmap?.let { it1 ->
-                                                      prefProvider.setValue(
-                                                          VENUE_LOGO,
-                                                          it1
-                                                      )
-                                                  }
-                                              }
-                                          }
+                                            StrictMode.setThreadPolicy(policy)
+                                            prefProvider.setValue(
+                                                Constants.VENUE_LOGO_URL,
+                                                it.data.logo.logoUrl
+                                            )
+                                            val bitmap = getBitmapFromURL(it.data.logo.logoUrl)
+                                            var baseBitmap =
+                                                bitmap?.let { it1 -> encodeTobase64(it1) }
+                                            if (baseBitmap?.isNotEmpty() == true) {
+                                                Log.d(TAG, "syncSettingModule: " + baseBitmap)
+                                                baseBitmap?.let { it1 ->
+                                                    prefProvider.setValue(
+                                                        VENUE_LOGO,
+                                                        it1
+                                                    )
+                                                }
+                                            }
+                                        }
 
 
                                     }

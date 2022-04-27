@@ -271,6 +271,7 @@ object Constants {
     const val BUSINESS_WEBSITE = "business_website"
     const val IS_PRINTER_QUEUE_ENABLE = "is_printer_queue_enable"
     const val VENUE_LOGO = "venue_logo"
+    const val VENUE_LOGO_URL = "venue_logo_url"
 
     const val CUSTOMER_ID = "customer_id"
 

@@ -8,7 +8,6 @@ import `in`.madapps.placesautocomplete.model.PlaceDetails
 import android.annotation.SuppressLint
 import android.content.Context
 import android.location.Geocoder
-import android.os.Build
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -47,6 +46,8 @@ class AddressListAdapter(val refreshCallBack: (Int) -> Unit, val context: Contex
         val edtCity: EditText = binding.root.findViewById(R.id.edtCity)
         val edtState: EditText = binding.root.findViewById(R.id.edtState)
         val edtZip: EditText = binding.root.findViewById(R.id.edtZip)
+        val edtCountry: Spinner = binding.root.findViewById(R.id.edtAddress)
+
 
         fun bind(model: CreateCustomerRequestModel.Customer.Addresses, pos: Int) {
             if (pos == 0) {
@@ -55,14 +56,18 @@ class AddressListAdapter(val refreshCallBack: (Int) -> Unit, val context: Contex
                 binding.imgDelete.visibility = View.VISIBLE
             }
 
+
         }
 
         init {
 
             binding.imgDelete.setOnClickListener {
 
-                if (bindingAdapterPosition <= templist.size) {
+                if (templist.get(bindingAdapterPosition).id != null && templist.get(bindingAdapterPosition).id != 0 ) {
                     templist.get(bindingAdapterPosition)._destroy = "true"
+                }
+                else{
+                    templist.removeAt(bindingAdapterPosition)
                 }
 
                 list.removeAt(bindingAdapterPosition)
@@ -80,6 +85,7 @@ class AddressListAdapter(val refreshCallBack: (Int) -> Unit, val context: Contex
             }
 
 
+
             binding.edtAddress.onItemSelectedListener =
                 object : AdapterView.OnItemSelectedListener {
                     override fun onItemSelected(
@@ -88,14 +94,46 @@ class AddressListAdapter(val refreshCallBack: (Int) -> Unit, val context: Contex
                         position: Int,
                         id: Long
                     ) {
-                        if (Build.VERSION.SDK_INT < 23) {
-                            (parent?.getChildAt(0) as TextView).setTextAppearance(
-                                view?.context,
-                                R.style.SpinnerTheme
-                            )
+                        Log.e(TAG, "OnItemSelected ${country[position]}")
+                        list[bindingAdapterPosition].country = country[position]
+                        notifyItemChanged(bindingAdapterPosition)
+                        notifyItemRangeChanged(bindingAdapterPosition, list.size)
+
+                        if (list[bindingAdapterPosition].country?.lowercase() == "Canada".lowercase()) {
+                            parent?.getChildAt(1)?.isSelected = true
                         } else {
-                            (parent?.getChildAt(0) as TextView).setTextAppearance(R.style.SpinnerTheme);
+
+                            parent?.getChildAt(0)?.isSelected = true
+
                         }
+
+                        /*if (Build.VERSION.SDK_INT < 23) {
+                            if (country[position].lowercase() == "Canada".lowercase()) {
+
+
+                                (parent?.getChildAt(1) as TextView).setTextAppearance(
+                                    view?.context,
+                                    R.style.SpinnerTheme
+                                )
+                            } else {
+
+
+                                (parent?.getChildAt(0) as TextView).setTextAppearance(
+                                    view?.context,
+                                    R.style.SpinnerTheme
+                                )
+                            }
+                        } else {
+                            if (country[position].lowercase() == "Canada".lowercase()) {
+
+
+                                parent?.getChildAt(1)?.isSelected = true
+                            } else {
+
+                                parent?.getChildAt(0)?.isSelected = true
+
+                            }
+                        }*/
 
 
                     }
@@ -169,10 +207,14 @@ class AddressListAdapter(val refreshCallBack: (Int) -> Unit, val context: Contex
                                 templist[layoutPosition].address1 = street
                                 templist[layoutPosition].address2 = suite
                                 templist[layoutPosition].city = city
-                                templist[layoutPosition].country = "United States"
+                                templist[layoutPosition].country =
+                                    binding.edtAddress.selectedItem.toString()
 
                                 templist[layoutPosition].state = state
                                 templist[layoutPosition].postcode = zip
+
+
+
 
                                 Log.e(TAG, "Updatelist:  ${Gson().toJson(templist)}")
                             } catch (e: Exception) {
@@ -219,6 +261,66 @@ class AddressListAdapter(val refreshCallBack: (Int) -> Unit, val context: Contex
         holder.edtCity.setText(list[position].city)
         holder.edtSuite.setText(list[position].address2)
         holder.edtState.setText(list[position].state)
+
+        Log.e(TAG, "getcountry:  ${list[position].country}")
+        if (list[position].country?.isNotEmpty() == true) {
+
+            if (list[position].country?.lowercase() == "United States".lowercase() && holder.edtCountry.adapter != null) {
+                holder.edtCountry.setSelection(0)
+            } else {
+                holder.edtCountry.setSelection(1)
+            }
+        }
+
+        /*  if (list[position].country.isNullOrEmpty()) {
+              if (list[position].country?.lowercase() == "Canada".lowercase()) {
+
+                  if (Build.VERSION.SDK_INT < 23) {
+
+                      (holder.edtCountry.getChildAt(1) as TextView).setTextAppearance(
+                          holder.edtCountry.context,
+                          R.style.SpinnerTheme
+                      )
+                  } else {
+                      (holder.edtCountry.getChildAt(1) as TextView).setTextAppearance(R.style.SpinnerTheme);
+                  }
+              } else if (list[position].country?.lowercase() == "United States".lowercase()){
+
+                  if (Build.VERSION.SDK_INT < 23) {
+                      (holder.edtCountry.getChildAt(0) as TextView).setTextAppearance(
+                          holder.edtCountry.context,
+                          R.style.SpinnerTheme
+                      )
+                  } else {
+                      (holder.edtCountry.getChildAt(0) as TextView).setTextAppearance(R.style.SpinnerTheme);
+                  }
+              }
+          }*/
+
+        /* if (list[position].country.isNullOrEmpty()) {
+             if (list[position].country?.lowercase() == "Canada".lowercase()) {
+                 holder.edtCountry.setSelection(1)
+                 if (Build.VERSION.SDK_INT < 23) {
+
+                     (holder.edtCountry.getChildAt(1) as TextView).setTextAppearance(
+                         holder.edtCountry.context,
+                         R.style.SpinnerTheme
+                     )
+                 } else {
+                     (holder.edtCountry.getChildAt(1) as TextView).setTextAppearance(R.style.SpinnerTheme);
+                 }
+             } else if (list[position].country?.lowercase() == "United States".lowercase()){
+                 holder.edtCountry.setSelection(0)
+                 if (Build.VERSION.SDK_INT < 23) {
+                     (holder.edtCountry.getChildAt(0) as TextView).setTextAppearance(
+                         holder.edtCountry.context,
+                         R.style.SpinnerTheme
+                     )
+                 } else {
+                     (holder.edtCountry.getChildAt(0) as TextView).setTextAppearance(R.style.SpinnerTheme);
+                 }
+             }
+         }*/
 
 
         /*  holder.edtStreet.setText(list[position].address1)
