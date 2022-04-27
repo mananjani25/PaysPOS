@@ -19,6 +19,7 @@ import com.android.pos.data.model.requestModel.DineInOrderPayment
 import com.android.pos.data.model.requestModel.GuestPaymentRequest
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.DINE_IN
+import com.android.pos.data.remote.Constants.OPEN_ORDER
 import com.android.pos.data.remote.Constants.ORDER_TYPE
 import com.android.pos.data.remote.Constants.REDIRECT_FROM
 import com.android.pos.data.remote.Constants.SPLIT_ENABLE
@@ -159,7 +160,24 @@ class PaymentBoldPosFragment : Fragment() {
             if (prefProvider.getValueboolean(Constants.SPLIT_ENABLE, false)) {
                 AlertUtils.showCustomAlert(requireContext(), "Please complete all payment.")
             } else {
-                findNavController().popBackStack()
+                if(prefProvider.getValue(ORDER_TYPE, TAKEOUT)== OPEN_ORDER){
+                    val navController = findNavController()
+                    var bundle :Bundle = Bundle()
+                    bundle.putBoolean("update",true)
+                    bundle.putInt("orderId",orderId!!)
+                    bundle.putInt("paymentId",paymentId!!)
+                    bundle.putString("paymentOfflineId",paymentOfflineId)
+                    bundle.putString("orderOfflineId",orderOfflineId)
+                    var bundle1:Bundle = Bundle()
+                    bundle1.putBundle("updateBundle",bundle)
+                    navController.previousBackStackEntry?.savedStateHandle?.set(
+                        "data", bundle1
+                    )
+                    navController.popBackStack()
+                }else{
+                    findNavController().popBackStack()
+                }
+
             }
         }
 
