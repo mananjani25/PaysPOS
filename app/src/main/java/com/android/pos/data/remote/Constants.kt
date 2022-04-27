@@ -84,7 +84,7 @@ object Constants {
 
     const val PICK_UP = "Pickup"
     const val DELIVERY = "Delivery"
-
+    const val OPEN_ORDER_ITEMS = "Open_Order_Items"
 
     //Api End Points
     const val USERS_LOG_IN = "users/log_in"

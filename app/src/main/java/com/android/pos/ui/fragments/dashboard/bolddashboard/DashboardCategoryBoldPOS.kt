@@ -23,6 +23,7 @@ import com.android.pos.data.remote.Constants.DINE_IN
 import com.android.pos.data.remote.Constants.EMPLOYEE_NAME
 import com.android.pos.data.remote.Constants.LARGE
 import com.android.pos.data.remote.Constants.MEDIUM
+import com.android.pos.data.remote.Constants.OPEN_ORDER_ITEMS
 import com.android.pos.data.remote.Constants.ORDER_TYPE
 import com.android.pos.data.remote.Constants.SMALL
 import com.android.pos.data.remote.Constants.SPLIT_ENABLE
@@ -41,6 +42,7 @@ import com.android.pos.utils.statusUtils.Status
 import com.epson.eposprint.Builder
 import com.epson.eposprint.Print
 import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -959,13 +961,107 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
             when (it.status) {
                 Status.SUCCESS -> {
                     Log.e(TAG, "getKitchenPrinterList:  ${Gson().toJson(it.data)}")
+                    Log.e(TAG, "isUpdateOrder  ${isupdate}")
+
                     ProgressUtils.dismissProgressDialog()
                     viewModel.downloadFinished(true)
+
+                    if (isupdate) {
+                        var model = prefProvider.getValue(OPEN_ORDER_ITEMS, "")
+                        Log.e(TAG, "getItemsModel  ${Gson().toJson(model)}")
+                        var printOrderItems:
+                                ArrayList<CreateOrderResponse.Data.Order.OrderItem> =
+                            arrayListOf()
+
+                        val serializedObject: String = prefProvider.getValue(OPEN_ORDER_ITEMS, "")
+                        if (serializedObject.isNotEmpty()) {
+                            val gson = Gson()
+                            val type = object :
+                                TypeToken<List<CreateOrderResponse.Data.Order.OrderItem?>?>() {}.type
+                            var arrayItems: ArrayList<CreateOrderResponse.Data.Order.OrderItem> =
+                                gson.fromJson<Any>(
+                                    serializedObject,
+                                    type
+                                ) as ArrayList<CreateOrderResponse.Data.Order.OrderItem>
+
+                            Log.e(TAG, "arrayItems:  ${Gson().toJson(arrayItems)}")
+                            var itemIds: ArrayList<Int> = arrayListOf()
+                            arrayItems.forEach {
+                                itemIds.add(it.id)
+                            }
+
+                            createOrderResponse.data.order.orderItems.forEachIndexed { index, orderItem ->
+
+                                if (itemIds.contains(orderItem.id)) {
+                                    if (arrayItems[index].quantity != orderItem.quantity) {
+                                        if (orderItem.quantity > arrayItems[index].quantity) {
+                                            orderItem.quantity =
+                                                orderItem.quantity - arrayItems[index].quantity
+                                            if (!printOrderItems.contains(orderItem)) {
+                                                printOrderItems.add(orderItem)
+                                            }
+                                        }
+
+                                    }
+                                    else{
+
+                                    }
+
+                                }
+                                else{
+                                    printOrderItems.add(orderItem)
+                                }
+
+
+                            }
+
+
+                            /*arrayItems.forEach { it1 ->
+
+                                createOrderResponse.data.order.orderItems.forEach {
+
+
+
+                                    if (it1.id == it.id) {
+                                        if (it1.quantity != it.quantity) {
+                                            if (it.quantity > it1.quantity) {
+                                                it.quantity = it.quantity - it1.quantity
+                                                if (!printOrderItems.contains(it)) {
+                                                    printOrderItems.add(it)
+                                                }
+                                            }
+
+                                        } else if (it1.quantity > it.quantity) {
+
+                                        }
+
+                                    } else if (!printOrderItems.contains(it)) {
+
+
+                                        printOrderItems.add(it)
+                                    }
+
+                                }
+
+
+                            }*/
+
+                            Log.e(TAG, "printOrderitems  ${Gson().toJson(printOrderItems)}")
+
+                            createOrderResponse.data.order.orderItems = arrayListOf()
+
+                            createOrderResponse.data.order.orderItems = printOrderItems
+                        }
+
+                        prefProvider.setValue(OPEN_ORDER_ITEMS, "")
+
+                    }
 
 
                     if (it.data?.isNotEmpty() == true) {
 
                         for (i in 0 until it.data.size) {
+
 
                             initKitchenPrinter(
                                 it.data.get(i),
@@ -973,6 +1069,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                                 createOrderResponse
                             )
                         }
+
                     } else {
                         viewModel.downloadFinished(false)
                         findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
@@ -1171,7 +1268,14 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
 
             addHorizontalKitchenLine(builder)
 
-            receiptModel?.order?.orderItems?.let { addOrdersForKitchen(builder, it, fontSizeH,fontSizeW) }
+            receiptModel?.order?.orderItems?.let {
+                addOrdersForKitchen(
+                    builder,
+                    it,
+                    fontSizeH,
+                    fontSizeW
+                )
+            }
 
             if (receiptModel?.order?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote) {
                 builder.addTextLineSpace(30)

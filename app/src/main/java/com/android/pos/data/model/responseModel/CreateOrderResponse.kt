@@ -69,7 +69,7 @@ data class CreateOrderResponse(
             @SerializedName("open_order_type_id")
             val openOrderTypeId: Any,
             @SerializedName("order_items")
-            val orderItems: List<OrderItem>,
+            var orderItems: List<OrderItem>,
             @SerializedName("order_service_charges")
             val orderServiceCharges: List<OrderServiceCharge>,
             @SerializedName("order_type")
@@ -226,7 +226,7 @@ data class CreateOrderResponse(
                 @SerializedName("price")
                 val price: Double,
                 @SerializedName("quantity")
-                val quantity: Int,
+                var quantity: Int,
                 @SerializedName("timestamp")
                 val timestamp: String,
                 @SerializedName("total_price")
