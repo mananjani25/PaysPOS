@@ -1348,7 +1348,7 @@ class ActiveOrderFragment(
 
 
 
-            if (receiptModel.cash_discount_or_surcharge != null) {
+            if (receiptModel.cash_discount_or_surcharge != 0.0) {
                 builder.addTextLineSpace(30)
                 builder.addFeedUnit(30)
                 builder.addTextFont(Builder.FONT_E)
@@ -1362,21 +1362,39 @@ class ActiveOrderFragment(
                     Builder.COLOR_1
                 )
 
-                builder.addText(
-                    padLine(
-                        "Cash Discount",
-                        if (receiptModel.cash_discount_or_surcharge == 0.0) {
-                            "$" + MethodUtils.roundOffAmountString(receiptModel.cash_discount_or_surcharge!!)
-                        } else {
-                            "-$" + MethodUtils.roundOffAmountString(receiptModel.cash_discount_or_surcharge!!)
-                        },
-                        if (customerSettingModel.fonts == Constants.LARGE) {
-                            24
-                        } else {
-                            48
-                        }
+
+                if (receiptModel.payments.isNotEmpty() && receiptModel.payments.get(receiptModel.payments.size - 1).paymentType.lowercase() == "Card".lowercase()) {
+                    builder.addText(
+                        padLine(
+                            "SurCharge",
+                            "$" + MethodUtils.roundOffAmountString(receiptModel.cash_discount_or_surcharge!!),
+                            if (customerSettingModel.fonts == Constants.LARGE) {
+                                24
+                            } else {
+                                48
+                            }
+                        )
                     )
-                )
+                }
+                else{
+
+                    builder.addText(
+                        padLine(
+                            "Cash Discount",
+                            if (receiptModel.cash_discount_or_surcharge == 0.0) {
+                                "$" + MethodUtils.roundOffAmountString(receiptModel.cash_discount_or_surcharge!!)
+                            } else {
+                                "-$" + MethodUtils.roundOffAmountString(receiptModel.cash_discount_or_surcharge!!)
+                            },
+                            if (customerSettingModel.fonts == Constants.LARGE) {
+                                24
+                            } else {
+                                48
+                            }
+                        )
+                    )
+
+                }
             }
 
             if (receiptModel?.isLoyaltyApplied == true && receiptModel?.loyaltyAmount != 0.0) {

@@ -804,7 +804,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
     private fun customerPrintWholeOrder() {
 
         var guestPos = requireArguments().getInt(GUEST_POSITION)
-        Log.e(TAG,"getGuestPosition  ${guestPos}")
+        Log.e(TAG, "getGuestPosition  ${guestPos}")
 
         var listItem: java.util.ArrayList<TbItem> = arrayListOf()
         var listItemWT: java.util.ArrayList<TbItem> = arrayListOf()
@@ -4097,10 +4097,14 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 )
             }
 
+            if (receiptModel?.order?.payments?.isNotEmpty() == true && receiptModel?.order?.payments?.get(
+                    receiptModel?.order?.payments?.size!! - 1
+                )?.paymentType?.lowercase() == "Card".lowercase() && receiptModel?.order?.payments?.get(
+                    receiptModel?.order?.payments?.size!! - 1
+                )?.cash_discount_type?.lowercase() == "SurCharge".lowercase()
+            ) {
 
-
-
-            if (receiptModel?.order?.totalCashDiscountFee != null) {
+                if (receiptModel?.order?.totalCashDiscountFee != null) {
                 builder.addTextLineSpace(30)
                 builder.addFeedUnit(30)
                 builder.addTextFont(Builder.FONT_E)
@@ -4116,12 +4120,10 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                 builder.addText(
                     padLine(
-                        "Cash Discount",
-                        if (receiptModel?.order?.totalCashDiscountFee == 0.0) {
-                            "$" + MethodUtils.roundOffAmountString(receiptModel?.order?.totalCashDiscountFee!!)
-                        } else {
-                            "-$" + MethodUtils.roundOffAmountString(receiptModel?.order?.totalCashDiscountFee!!)
-                        },
+                        "SurCharge",
+                        "$" + MethodUtils.roundOffAmountString(receiptModel?.order?.totalCashDiscountFee!!)
+
+                        ,
                         if (customerSettingModel.fonts == LARGE) {
                             24
                         } else {
@@ -4129,7 +4131,46 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         }
                     )
                 )
+                }
+
+
+            } else if (receiptModel?.order?.payments?.isNotEmpty() == true && receiptModel?.order?.payments?.get(
+                    receiptModel?.order?.payments?.size!! - 1
+                )?.cash_discount_type?.lowercase() == "CashDiscount".lowercase()
+            ) {
+
+                if (receiptModel?.order?.totalCashDiscountFee != null) {
+                    builder.addTextLineSpace(30)
+                    builder.addFeedUnit(30)
+                    builder.addTextFont(Builder.FONT_E)
+                    // builder.addTextAlign(Builder.ALIGN_LEFT)
+                    builder.addTextLang(Builder.LANG_EN)
+                    addCustomerTextSize(builder, customerSettingModel.fonts)
+                    builder.addTextStyle(
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.COLOR_1
+                    )
+
+                    builder.addText(
+                        padLine(
+                            "Cash Discount",
+                            if (receiptModel?.order?.totalCashDiscountFee == 0.0) {
+                                "$" + MethodUtils.roundOffAmountString(receiptModel?.order?.totalCashDiscountFee!!)
+                            } else {
+                                "-$" + MethodUtils.roundOffAmountString(receiptModel?.order?.totalCashDiscountFee!!)
+                            },
+                            if (customerSettingModel.fonts == LARGE) {
+                                24
+                            } else {
+                                48
+                            }
+                        )
+                    )
+                }
             }
+
 
 
 
@@ -4935,7 +4976,14 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
             addHorizontalKitchenLine(builder)
 
-            receiptModel?.order?.orderItems?.let { addOrdersForKitchen(builder, it,fontSizeH,fontSizeW) }
+            receiptModel?.order?.orderItems?.let {
+                addOrdersForKitchen(
+                    builder,
+                    it,
+                    fontSizeH,
+                    fontSizeW
+                )
+            }
 
             if (receiptModel?.order?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote) {
                 builder.addTextLineSpace(30)
