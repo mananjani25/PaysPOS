@@ -1122,6 +1122,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
 
 
             model.note = edtNote.text.toString().trim()
+            Log.e("TAG","notes${edtNote.text.toString().trim()}")
             model.itemQuantity = txtQty.text.toString().toInt()
             model.name = edtItemName.text.toString()
 
