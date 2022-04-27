@@ -142,8 +142,10 @@ open class PaymentViewModel @Inject constructor(
                                     _queueStart.value = Event(createOrderResponse)
 
                                 } else {
-                                    if (createOrderResponse.data.order.orderType != "Dine In") {
+                                    if (createOrderResponse.data.order.orderType != "Dine In" && response.data.order.payments[response.data.order.payments.size - 1].paymentType != "Card") {
                                         cashLogApi(createOrderResponse, "in")
+                                    }else{
+                                        _data.value = Event(createOrderResponse)
                                     }
                                 }
 
@@ -1653,7 +1655,11 @@ open class PaymentViewModel @Inject constructor(
                                 if (onlySave) {
                                     _data.value = Event(createOrderResponse)
                                 } else {
-                                    cashLogApi(createOrderResponse, "in")
+                                    if (response.data.order.payments[response.data.order.payments.size - 1].paymentType != "Card") {
+                                        cashLogApi(createOrderResponse, "in")
+                                    }else{
+                                        _data.value = Event(createOrderResponse)
+                                    }
                                 }
 
 
