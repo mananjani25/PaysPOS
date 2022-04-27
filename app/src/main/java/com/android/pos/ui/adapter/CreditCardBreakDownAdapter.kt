@@ -19,7 +19,7 @@ class CreditCardBreakDownAdapter(val hideRefund: Boolean) :
         fun bind(keyValueList: EodReportResponse.Data.CreditCardBreakdown) {
 
             binding.txtPrice.text = keyValueList.showFormattedValue()
-            binding.txtRefund.text = keyValueList.showFormattedValue()
+            binding.txtRefund.text = keyValueList.showFormattedValueTips()
             binding.txtTitle.text = keyValueList.key
 
         }
