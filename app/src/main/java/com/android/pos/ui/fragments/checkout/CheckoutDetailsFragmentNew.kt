@@ -1460,7 +1460,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder:Boolean = false) : Fragment
         val jsonArray1 = magtekRequestUtils.processData(
             (paymentAmount * 100).toInt(),
             TLVParser.getHexString(data),
-            Constants.SALE
+            Constants.AUTHORIZE
         )
 
         networkCall(jsonArray1, 2)
@@ -1519,7 +1519,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder:Boolean = false) : Fragment
                     val jsonArray1 = magtekRequestUtils.processData(
                         (paymentAmount * 100).toInt(),
                         MTParser.getHexString(data.ByteArray()),
-                        Constants.SALE
+                        Constants.AUTHORIZE
                     )
 
                     networkCall(jsonArray1, 2)

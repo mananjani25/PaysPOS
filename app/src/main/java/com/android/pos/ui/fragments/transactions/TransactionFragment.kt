@@ -215,7 +215,7 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
         setFragmentResultListener("request_key_tips") { requestKey: String, bundle: Bundle ->
             tipAmount = bundle.getDouble("tipAmount")
 
-            if (singleTransaction?.payableType == "Card"){
+            if (singleTransaction?.paymentType == "Card"){
                 magtekCall(tipAmount)
             }else {
                 tipCall()
