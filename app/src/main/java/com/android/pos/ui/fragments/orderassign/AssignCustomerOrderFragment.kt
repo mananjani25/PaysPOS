@@ -135,6 +135,7 @@ class AssignCustomerOrderFragment : Fragment(), ItemCallback {
             val navController = findNavController()
             var bundle = Bundle()
             bundle.putString("SELECTED_DATE", selectedDate)
+            bundle.putBundle("updateBundle",arguments)
             bundle.putString(Constants.KEY, "FROM_CUSTOMER")
             navController.previousBackStackEntry?.savedStateHandle?.set(
                 "data", bundle
@@ -147,7 +148,13 @@ class AssignCustomerOrderFragment : Fragment(), ItemCallback {
             findNavController().navigate(R.id.action_assignCustomerOrderFragment_to_addEditCustomer)
         }
         binding.txtHome.setOnClickListener {
-            findNavController().navigate(R.id.action_assignCustomerOrderFragment_to_dashboard_category_new)
+            var bundle :Bundle = Bundle()
+            bundle.putBoolean("update",arguments?.getBoolean("update")?:false)
+            bundle.putInt("orderId",arguments?.getInt("orderId")!!)
+            bundle.putInt("paymentId",arguments?.getInt("paymentId")!!)
+            bundle.putString("paymentOfflineId",arguments?.getString("paymentOfflineId"))
+            bundle.putString("orderOfflineId",arguments?.getString("orderOfflineId"))
+            findNavController().navigate(R.id.action_assignCustomerOrderFragment_to_dashboard_category_new,bundle)
         }
 
     }
@@ -206,6 +213,7 @@ class AssignCustomerOrderFragment : Fragment(), ItemCallback {
             putBoolean("OPEN_ORDER", false)
             putString("SELECTED_DATE", selectedDate)
             putBoolean("isEdit", true)
+            putBundle("updateBundle",arguments)
             putString(Constants.KEY, "FROM_CUSTOMER")
 
             isFromDineIn?.let { putBoolean("DINE_IN", it) }
@@ -223,10 +231,7 @@ class AssignCustomerOrderFragment : Fragment(), ItemCallback {
         }
 
         val navController = findNavController()
-        navController.previousBackStackEntry?.savedStateHandle?.set(
-            Constants.KEY,
-            "FROM_CUSTOMER"
-        )
+        navController.previousBackStackEntry?.savedStateHandle?.set("data",result)
         navController.popBackStack()
 
 

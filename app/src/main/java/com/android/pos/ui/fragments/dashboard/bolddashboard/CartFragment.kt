@@ -134,7 +134,36 @@ class CartFragment(
         isActiveOrder = arguments?.getBoolean("isFromActiveOrder") ?: false
 
 
+        findNavController().currentBackStackEntry?.savedStateHandle?.getLiveData<Bundle>("data")
+            ?.observe(viewLifecycleOwner) { it ->
+                if (it.getBundle("updateBundle") != null) {
+                    updateBundle = it.getBundle("updateBundle")
+                    isOrderUpdate = updateBundle?.getBoolean("update")?:false
+                    Log.e(TAG, "isOrderUpdateReq:  $isOrderUpdate")
+                    if (isOrderUpdate) {
+                        orderId = updateBundle?.getInt("orderId")
+                        paymentId = updateBundle?.getInt("paymentId")
+                        paymentOfflineId = updateBundle?.getString("paymentOfflineId").toString()
+                        orderOfflineId = updateBundle?.getString("orderOfflineId").toString()
+                        viewModel.redeemLoyaltyInfo.needToApplyLoyalty =
+                            updateBundle?.getBoolean("isLoyaltyApplied")!!
 
+                        viewModelPayment.updateOrder(
+                            isOrderUpdate,
+                            orderId,
+                            paymentId,
+                            paymentOfflineId,
+                            orderOfflineId
+                        )
+                    } else {
+                        //  prefProvider.setValue(ORDER_TYPE, TAKEOUT)
+                        Log.e("ORDER_TYPE", "Updated check")
+                    }
+                    uiSave()
+
+                }
+
+            }
 
 
 
@@ -1242,7 +1271,25 @@ class CartFragment(
             if (isFromPayment) {
                 findNavController().navigate(R.id.action_paymentBoldPosFragment_to_assignCustomerOrderFragment)
             } else {
-                findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_assignCustomerOrderFragment)
+                if (isOrderUpdate) {
+                    var bundle: Bundle = Bundle()
+                    bundle.putInt("orderId", orderId!!)
+                    bundle.putInt("paymentId", paymentId!!)
+                    bundle.putString("paymentOfflineId", paymentOfflineId)
+                    bundle.putString("orderOfflineId", orderOfflineId)
+                    bundle.putBoolean(
+                        "isLoyaltyApplied",
+                        viewModel.redeemLoyaltyInfo.needToApplyLoyalty
+                    )
+                    bundle.putBoolean("update", isOrderUpdate)
+                    findNavController().navigate(
+                        R.id.action_dashboardCategoryBoldPOS_to_assignCustomerOrderFragment,
+                        bundle
+                    )
+                } else {
+                    findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_assignCustomerOrderFragment)
+                }
+
             }
         }
 
