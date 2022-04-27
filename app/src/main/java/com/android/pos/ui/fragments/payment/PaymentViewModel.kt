@@ -1257,7 +1257,7 @@ open class PaymentViewModel @Inject constructor(
                     var modifierPrice = 0.0
 
                     val price =
-                        (items.price * items.itemQuantity) - items.discountPrice
+                        (items.price * items.itemQuantity) - (items.discountPrice * items.itemQuantity)
 
                     items.modifiers.forEach {
                         modifierPrice += (it.price * it.itemQuantity)
@@ -1268,11 +1268,15 @@ open class PaymentViewModel @Inject constructor(
                     val itemTaxPrice =
                         (tax.rate * totalPrice) / 100
 
+                    Log.e("Tax Amount 1", itemTaxPrice.toString())
+
                     orderItemTaxesAttribute.taxTotalAmount =
                         MethodUtils.roundOffAmountDouble(itemTaxPrice)
                 } else {
 
                     val ss = tax.rate * items.itemQuantity
+
+                    Log.e("Tax Amount", ss.toString())
 
                     orderItemTaxesAttribute.taxTotalAmount =
                         MethodUtils.roundOffAmountDouble((ss))
