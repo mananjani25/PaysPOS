@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.os.StrictMode
 import android.util.Base64
 import android.util.Log
 import androidx.appcompat.widget.AppCompatTextView
@@ -2214,7 +2215,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                             TAG,
                                             "VenueLogo  ${Gson().toJson(it.data.logo.logoUrl)}"
                                         )
-                                        /*  if (it.data.logo.logoUrl.isNotEmpty()) {
+                                          if (it.data.logo.logoUrl.isNotEmpty()) {
                                               val policy: StrictMode.ThreadPolicy =
                                                   StrictMode.ThreadPolicy.Builder().permitAll().build()
 
@@ -2223,6 +2224,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                               var baseBitmap =
                                                   bitmap?.let { it1 -> encodeTobase64(it1) }
                                               if (baseBitmap?.isNotEmpty() == true) {
+                                                  Log.d(TAG, "syncSettingModule: "+baseBitmap)
                                                   baseBitmap?.let { it1 ->
                                                       prefProvider.setValue(
                                                           VENUE_LOGO,
@@ -2230,7 +2232,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                                       )
                                                   }
                                               }
-                                          }*/
+                                          }
 
 
                                     }
