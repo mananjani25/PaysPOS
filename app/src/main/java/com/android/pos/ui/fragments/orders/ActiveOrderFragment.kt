@@ -370,6 +370,17 @@ class ActiveOrderFragment(
             }
             "PAY" -> {
 
+                prefProvider.setValue("PaidAmount", "")
+                prefProvider.setValue(Constants.WHOLE_AMOUNT, "")
+                prefProvider.setValueInt("cardCount", 0)
+                prefProvider.setValue(Constants.SUB_TOTAL, "")
+                prefProvider.setValue(Constants.CASH_DISCOUNT_SURCHARGE, "")
+                prefProvider.setValue(Constants.TOTAL_DISCOUNT, "")
+                prefProvider.setValue(Constants.TIP, "")
+                prefProvider.setValue(Constants.TAX_CHARGE, "")
+                prefProvider.setValue(Constants.SERVICE_CHARGE, "")
+
+                dashboardViewModel.deleteCart()
                 prefProvider.setValue(Constants.ORDER_TYPE, OPEN_ORDER)
 
                 if (order.customer != null) {
@@ -380,6 +391,8 @@ class ActiveOrderFragment(
                     prefProvider.setValueInt(Constants.CUSTOMER_ID, order.customer.id)
                     prefProvider.saveCustomerData(TbCustomer.customerMapping(order.customer))
                 }
+
+                Log.e(TAG,"getOrder  ${Gson().toJson(order)}")
                 dashboardViewModel.addCart(
                     cartModel(order)
                 )

@@ -436,24 +436,32 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
 
         }
         binding.layoutHeader.imgDrawer.setOnClickListener {
-            findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_menuFragment)
+            if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
+                findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_menuFragment)
+            }
 
         }
         binding.layoutHeader.txtOpenOrder.setOnClickListener {
-            findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
+            if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
+                findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
+            }
         }
 
         binding.layoutHeader.linearSwitchUser.setOnClickListener {
             var bundle = Bundle()
             bundle.putBoolean("isSwap", true)
             bundle.putBoolean("isDashboard", false)
-            findNavController().navigate(
-                R.id.action_dashboardCategoryBoldPOS_to_passcode,
-                bundle
-            )
+            if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
+                findNavController().navigate(
+                    R.id.action_dashboardCategoryBoldPOS_to_passcode,
+                    bundle
+                )
+            }
         }
         binding.layoutHeader.ivLock.setOnClickListener {
-            findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_reportEODFragment)
+            if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
+                findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_reportEODFragment)
+            }
         }
         binding.layoutHeaderCheckout.imgDrawer.setOnClickListener {
             binding.layoutHeaderCheckout.rlRoot.visibility = View.GONE
