@@ -5,6 +5,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.databinding.ViewMagtekProDeviceBinding
 import com.android.pos.utils.callback.ItemCallback
+import com.android.pos.utils.extensions.setOnSingleClickListener
 import com.magtek.mobile.android.mtusdk.IDevice
 
 class MagtakProAdapter :
@@ -30,9 +31,12 @@ class MagtakProAdapter :
                 binding.txtStatus.text = "Disconnect"
             }
 
-            binding.root.setOnClickListener {
+            binding.txtStatus.setOnSingleClickListener {
 
-                mCallback.onItemClickListener(it, bindingAdapterPosition)
+                if (isConnected) {
+                    mCallback.onItemClickListener(null, bindingAdapterPosition)
+                } else
+                    mCallback.onItemClickListener(it, bindingAdapterPosition)
             }
         }
 
@@ -72,6 +76,7 @@ class MagtakProAdapter :
 
     fun update(isConnected: Boolean) {
         this.isConnected = isConnected
+        notifyDataSetChanged()
     }
 
 }

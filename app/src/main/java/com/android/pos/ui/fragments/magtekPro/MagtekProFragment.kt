@@ -16,7 +16,9 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.android.pos.R
+import com.android.pos.data.remote.Constants.DYNANA_FLAX
 import com.android.pos.databinding.FragmentTagtekBinding
+import com.android.pos.di.PrefProvider
 import com.android.pos.ui.fragments.magtek.MagtekViewModel
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.ProgressUtils
@@ -35,6 +37,9 @@ class MagtekProFragment : Fragment(), ItemCallback, IDeviceListCallback {
     private var adapter: MagtakProAdapter? = null
     private lateinit var binding: FragmentTagtekBinding
     private val viewModel by viewModels<MagtekViewModel>()
+
+    @Inject
+    lateinit var prefProvider: PrefProvider
 
     @Inject
     lateinit var mSessionManager: SessionManager
@@ -95,6 +100,12 @@ class MagtekProFragment : Fragment(), ItemCallback, IDeviceListCallback {
 
     private fun updateList(deviceList: List<IDevice>) {
         adapter?.add(deviceList)
+
+        if (prefProvider.getValueboolean(DYNANA_FLAX, false)) {
+            adapter?.update(true)
+        } else {
+            adapter?.update(false)
+        }
     }
 
     override fun OnDeviceList(deviceList: MutableList<IDevice>?) {
@@ -150,12 +161,17 @@ class MagtekProFragment : Fragment(), ItemCallback, IDeviceListCallback {
 
     override fun onItemClickListener(view: View?, pos: Int) {
 
-        device = adapter?.getItem(pos)
-        if (device != null) {
-            mSessionManager.device = device
-            mSessionManager.connectDevice()
-        }
+        ProgressUtils.showProgressDialog(requireActivity())
 
+        if (view == null) {
+            mSessionManager.disconnectDevice()
+        } else {
+            device = adapter?.getItem(pos)
+            if (device != null) {
+                mSessionManager.device = device
+                mSessionManager.connectDevice()
+            }
+        }
 
     }
 
@@ -167,6 +183,8 @@ class MagtekProFragment : Fragment(), ItemCallback, IDeviceListCallback {
             mSessionManager.device = device
             mSessionManager.connectDevice()
         }
+
+
     }
 
 
@@ -181,12 +199,17 @@ class MagtekProFragment : Fragment(), ItemCallback, IDeviceListCallback {
                         Log.e("", "[CONNECTED]")
                         ProgressUtils.dismissProgressDialog()
                         updateUIControls(true)
+                        prefProvider.setValueboolean(DYNANA_FLAX, true)
 
                     }
                     ConnectionState.Disconnected -> {
                         Log.e("", "[DISCONNECTED]")
                         updateUIControls(false)
                         AlertUtils.showCustomAlert(requireContext(), "DISCONNECTED")
+
+                        ProgressUtils.dismissProgressDialog()
+                        prefProvider.setValueboolean(DYNANA_FLAX, false)
+
                     }
                     ConnectionState.Disconnecting -> {
                         Log.e("", "[DISCONNECTING]")
@@ -195,7 +218,7 @@ class MagtekProFragment : Fragment(), ItemCallback, IDeviceListCallback {
                     ConnectionState.Connecting -> {
                         Log.e("", "[CONNECTING]")
 
-                        ProgressUtils.showProgressDialog(requireActivity())
+
 
                     }
                     else -> ""

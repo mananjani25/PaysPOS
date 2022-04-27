@@ -558,4 +558,6 @@ object Constants {
     const val REDIRECT_FROM = "redirect_from"
     const val MANUAL_SALE = "manual_sale"
 
+    const val DYNANA_FLAX = "DYNAMO_FLAX"
+
 }
