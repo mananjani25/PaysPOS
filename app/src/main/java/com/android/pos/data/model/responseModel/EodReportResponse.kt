@@ -90,7 +90,7 @@ data class EodReportResponse(
                     }
 
                     else -> {
-                        showFormattedValue()
+                        showFormattedValueTips()
                     }
 
 
