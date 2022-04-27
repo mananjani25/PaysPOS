@@ -775,8 +775,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             bundle.putDouble("divideCashDiscount", totalDiscount)
             bundle.putDouble("totalTax", totalTaxAmount)
             prefProvider.setValueInt(PAYMENT_ID, 0)
-            navController.previousBackStackEntry?.savedStateHandle?.set("data", bundle)
-            navController.popBackStack()
+            if (findNavController().currentDestination?.id == R.id.orderCompleteFragment) {
+                navController.previousBackStackEntry?.savedStateHandle?.set("data", bundle)
+                navController.popBackStack()
+            }
+
         } else {
             val navController = findNavController()
             var bundle = Bundle()
@@ -796,8 +799,10 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             Log.e(TAG, "ORDER_ID:  ${prefProvider.getValueInt("ORDER_ID", -1)}")
             //  saveDataInPrefrences()
             prefProvider.setValueInt(PAYMENT_ID, 0)
-            navController.previousBackStackEntry?.savedStateHandle?.set("data", bundle)
-            navController.popBackStack()
+            if (findNavController().currentDestination?.id == R.id.orderCompleteFragment) {
+                navController.previousBackStackEntry?.savedStateHandle?.set("data", bundle)
+                navController.popBackStack()
+            }
         }
     }
 

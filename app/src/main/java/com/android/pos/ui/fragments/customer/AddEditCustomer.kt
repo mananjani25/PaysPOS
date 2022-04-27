@@ -25,6 +25,7 @@ import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.extensions.liveSnackBar
 import com.google.android.material.snackbar.Snackbar
+import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 import java.text.SimpleDateFormat
 import java.util.*
@@ -267,6 +268,7 @@ class AddEditCustomer : Fragment() {
     private fun onClick() {
         binding.imgAddressAdd.setOnClickListener {
 
+            Log.e(TAG,"adapterGetAddress  ${Gson().toJson(adapter.getList())}")
             if (adapter.getList().isEmpty()) {
                 modelAddress = CreateCustomerRequestModel.Customer.Addresses()
                 modelAddress.apply {
@@ -277,7 +279,7 @@ class AddEditCustomer : Fragment() {
                     modelAddress
                 )
 
-            } else if (adapter.getList()[adapter.getList().size - 1].address1.isNotEmpty() || adapter.getList()[adapter.getList().size - 1].city.isNotEmpty()) {
+            } else if (adapter.getList()[adapter.getList().size - 1].address1.isNotEmpty() || adapter.getList()[adapter.getList().size - 1].city.isNotEmpty() || adapter.getList().get(adapter.getList().size - 1)._destroy == "true") {
                 Log.d("yash", "onClick: " + adapter.getList()[adapter.getList().size - 1].address1)
                 modelAddress = CreateCustomerRequestModel.Customer.Addresses()
                 modelAddress.apply {
