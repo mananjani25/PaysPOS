@@ -1323,28 +1323,45 @@ class DashBoardCategoryViewModel @Inject constructor(
     private fun taxCalculation(item: TbItem) {
         item.taxes?.forEach { tax ->
             if (tax.isActive) {
+
+                var modifierPrice = 0.0
+                val price =
+                    (item.price * item.itemQuantity) - (item.discountPrice * item.itemQuantity)
+
+                item.modifiers.forEach {
+                    modifierPrice += (it.price * it.itemQuantity)
+                }
+
+                val totalPrice = price + modifierPrice
+
+
                 totalTax += if (tax.taxType == "Percentage") {
                     Log.d("yash", "taxCalculation: " + tax.taxType)
 
-                    var modifierPrice = 0.0
-                    val price =
-                        (item.price * item.itemQuantity) - (item.discountPrice * item.itemQuantity)
 
-                    item.modifiers.forEach {
-                        modifierPrice += (it.price * it.itemQuantity)
+                    if (totalPrice < 0.0){
+
+                        String.format("%.2f", 0.00)
+                            .toDouble()
+                    }else {
+                        val itemTaxPrice =
+                            (tax.rate * totalPrice) / 100
+                        Log.e("itemTaxPrice", "" + itemTaxPrice)
+                        String.format("%.2f", itemTaxPrice)
+                            .toDouble()
                     }
 
-                    val totalPrice = price + modifierPrice
-
-                    val itemTaxPrice =
-                        (tax.rate * totalPrice) / 100
-                    Log.e("itemTaxPrice", "" + itemTaxPrice)
-                    String.format("%.2f", itemTaxPrice)
-                        .toDouble()
                 } else {
                     Log.d("yash", "taxCalculation: " + tax.taxType)
-                    String.format("%.2f", tax.rate * item.itemQuantity)
-                        .toDouble()
+
+                    if (totalPrice < 0.0){
+                        String.format("%.2f", 0.00)
+                            .toDouble()
+                    }else {
+                        String.format("%.2f", tax.rate * item.itemQuantity)
+                            .toDouble()
+                    }
+
                 }
             }
         }
