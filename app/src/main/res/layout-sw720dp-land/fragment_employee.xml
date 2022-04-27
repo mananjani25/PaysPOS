@@ -36,7 +36,7 @@
                 >
 
                 <TextView
-                    style="@style/CustomFontRegularStyle"
+                    style="@style/CustomFontSemiBold"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
@@ -45,7 +45,7 @@
                     android:padding="@dimen/_5sdp"
                     android:text="@string/time_tracking"
                     android:textColor="@color/txtColor"
-                    android:textSize="@dimen/_6mdpi" />
+                    android:textSize="@dimen/_7mdpi" />
 
                 <com.google.android.material.switchmaterial.SwitchMaterial
                     android:id="@+id/time_tracker"
@@ -84,6 +84,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:gravity="center"
+            android:visibility="gone"
             android:padding="@dimen/_5sdp"
             android:text="Allow team member to clock in and out from any POS point of sale.View and edit shifts in POS Soft Dashboard"
             android:textColor="@color/hint_color"
@@ -96,7 +97,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:layout_marginTop="@dimen/_20sdp">
+            >
 
             <View
                 android:layout_width="match_parent"
@@ -119,10 +120,10 @@
                     android:layout_marginStart="@dimen/_5sdp"
                     android:layout_weight="1"
                     android:gravity="start"
-                    android:paddingVertical="@dimen/_9sdp"
+                    android:paddingVertical="@dimen/_10sdp"
                     android:text="@string/team_member_time_tracking"
                     android:textColor="@color/txtColor"
-                    android:textSize="@dimen/_7mdpi" />
+                    android:textSize="@dimen/setting_inner_text_size" />
 
 
                 <androidx.appcompat.widget.AppCompatImageView
@@ -154,10 +155,10 @@
                     android:layout_marginStart="@dimen/_5sdp"
                     android:layout_weight="1"
                     android:gravity="start"
-                    android:paddingVertical="@dimen/_9sdp"
+                    android:paddingVertical="@dimen/_10sdp"
                     android:text="@string/user_access_permission"
                     android:textColor="@color/txtColor"
-                    android:textSize="@dimen/_7mdpi" />
+                    android:textSize="@dimen/setting_inner_text_size" />
 
 
                 <androidx.appcompat.widget.AppCompatImageView

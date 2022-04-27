@@ -216,6 +216,10 @@ class TransactionDetailsFragment : Fragment() {
                     it.data.order.created_at,
                     context
                 )
+                if (it.data.order.note.isNotEmpty()) {
+                    binding.llNotes.visibility = View.VISIBLE
+                    binding.tvNote.text = it.data.order.note.toString()
+                }
 
                 if (it.data.order.customer != null) {
                     binding.tvCustomerName.text =
@@ -281,6 +285,7 @@ class TransactionDetailsFragment : Fragment() {
                     if (paymentDetailsResponse.data.payment_type == "Card") {
                         if (paymentDetailsResponse.data.cash_discount_type == "SurCharge") {
                             binding.linearCashDiscount.visibility = View.VISIBLE
+                            binding.labelCashsurcharge?.text = "SurCharge"
                             binding.txtCashAmounntDiscount.setTextColor(
                                 ContextCompat.getColor(
                                     requireContext(),
@@ -297,6 +302,7 @@ class TransactionDetailsFragment : Fragment() {
                     } else {
                         if (paymentDetailsResponse.data.cash_discount_type == "CashDiscount") {
                             binding.linearCashDiscount.visibility = View.VISIBLE
+                            binding.labelCashsurcharge?.text = "Cash Discount"
                             binding.txtCashAmounntDiscount.setTextColor(
                                 ContextCompat.getColor(
                                     requireContext(),
@@ -1005,9 +1011,9 @@ class TransactionDetailsFragment : Fragment() {
                     padLine(
                         "Cash Discount",
                         if (paymentDetailsResponse.data.cash_discount_or_surcharge != 0.0) {
-                            "$" + MethodUtils.roundOffAmountString(paymentDetailsResponse.data?.cash_discount_or_surcharge)
+                            "-$" + MethodUtils.roundOffAmountString(paymentDetailsResponse.data?.cash_discount_or_surcharge)
                         } else {
-                            "-$" + MethodUtils.roundOffAmountString(paymentDetailsResponse.data.order?.cash_discount_or_surcharge)
+                            "$" + MethodUtils.roundOffAmountString(paymentDetailsResponse.data.order?.cash_discount_or_surcharge)
                         },
                         if (customerSettingModel.fonts == Constants.LARGE) {
                             24
@@ -1016,6 +1022,67 @@ class TransactionDetailsFragment : Fragment() {
                         }
                     )
                 )
+            }
+
+
+            if (paymentDetailsResponse?.data?.is_loyalty_applied == true){
+
+                if (paymentDetailsResponse?.data?.loyalty_amount != 0.0){
+                    builder.addTextLineSpace(30)
+                    builder.addFeedUnit(30)
+                    builder.addTextFont(Builder.FONT_E)
+                    // builder.addTextAlign(Builder.ALIGN_LEFT)
+                    builder.addTextLang(Builder.LANG_EN)
+                    addCustomerTextSize(builder, customerSettingModel.fonts)
+                    builder.addTextStyle(
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.COLOR_1
+                    )
+
+                    builder.addText(
+                        padLine(
+                            "Used Loyalty Amount",
+                            "-$" + paymentDetailsResponse.data?.loyalty_amount?.let {
+                                MethodUtils.roundOffAmountString(
+                                    it.toDouble())
+                            },
+                            if (customerSettingModel.fonts == Constants.LARGE) {
+                                24
+                            } else {
+                                48
+                            }
+                        )
+                    )
+                }
+
+                if (paymentDetailsResponse?.data?.used_reward_points != 0){
+                    builder.addTextLineSpace(30)
+                    builder.addFeedUnit(30)
+                    builder.addTextFont(Builder.FONT_E)
+                    // builder.addTextAlign(Builder.ALIGN_LEFT)
+                    builder.addTextLang(Builder.LANG_EN)
+                    addCustomerTextSize(builder, customerSettingModel.fonts)
+                    builder.addTextStyle(
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.COLOR_1
+                    )
+
+                    builder.addText(
+                        padLine(
+                            "Used Loyalty Points",
+                            paymentDetailsResponse?.data?.used_reward_points.toString(),
+                            if (customerSettingModel.fonts == Constants.LARGE) {
+                                24
+                            } else {
+                                48
+                            }
+                        )
+                    )
+                }
             }
 
             builder.addTextLineSpace(30)

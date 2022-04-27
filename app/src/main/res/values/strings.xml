@@ -100,7 +100,7 @@
     <string name="delete_employee_message">Are you sure, you want to delete Employee?</string>
     <string name="clockout_message">Are you sure, you want to Clockout?</string>
     <string name="delete_item_message">Are you sure, you want to delete this item?</string>
-    <string name="delete_items_message">Are you sure, you want to clear items?</string>
+    <string name="delete_items_message">Are you sure, you want to delete this order?</string>
     <string name="delete_employee_role_message">Are you sure, you want to delete Team Member Role?</string>
     <string name="delete_printer_message">Are you sure, you want to delete the Printer?</string>
 
@@ -438,7 +438,8 @@
     <string name="tv_add_new_role_name">Add Role Name</string>
     <string name="role_name">Role Name</string>
     <string name="tv_assign_member">Assign Team Members</string>
-    <string name="clear_items">Clear Cart</string>
+    <string name="clear_items">Delete Order</string> //changed value by zeeshan as per Rohan's suggestion
+    <!--<string name="delete_order">Delete Order</string>-->
     <string name="split_amount">Split Amount</string>
     <string name="connect_a_reader_to_swipe_insert_or_tap">Connect a reader to swipe, insert or tap</string>
     <string name="manual_credit_card_entry">Manual Credit Card Entry</string>
@@ -458,7 +459,7 @@
     <string name="add_to_cart">Add to Cart</string>
     <string name="direct_pay">Direct Pay</string>
     <string name="order_subtotal">Order Subtotal</string>
-    <string name="payment_subtotal">Subtotal</string>
+    <string name="payment_subtotal">Sub Total</string>
     <string name="customer_item">Customer Item</string>
     <string name="tv_modifier_all">Modifier All</string>
     <string name="tv_assign_role_to_employee">Assign Employee to Role</string>
@@ -637,7 +638,7 @@
     <string name="pending_payments">Pending Payments</string>
     <string name="tax_details">Tax Details</string>
     <string name="discount_details">Discount Details</string>
-    <string name="sales_tax_summary">Sales Tax Summary</string>
+    <string name="sales_tax_summary">Sales And Taxes Summary</string>
     <string name="cash_event_summary">Cash Event Summary</string>
     <string name="total_external_payments">Total External Payments</string>
     <string name="total_payments">Total Payments</string>
@@ -645,6 +646,7 @@
     <string name="employee_data">Employee Data</string>
     <string name="payment_details">Payment Details</string>
     <string name="employee_report">Employee Report</string>
+    <string name="team_membet_report_summary">Team Member Report Summary</string>
     <string name="other_details">Other Details</string>
     <string name="service_charge_details">Service Charge Details</string>
     <string name="tips_details">Tips Details</string>
@@ -786,6 +788,10 @@
     <string name="note_title_">Note Title<font color='#E90C0C'>*</font></string>
     <string name="add_order">Add Order</string>
     <string name="hide">Hide</string>
+    <string name="add_order_discount">Add Order Discount</string>
+    <string name="printers">Printers</string>
+    <string name="order_type_n_team_name">ORDER TYPE/TEAM NAME</string>
+    <string name="time_sheet">Time Sheet</string>
 
 
 </resources>

@@ -208,6 +208,13 @@
             android:id="@+id/action_inventory_to_createOption"
             app:destination="@id/createOption"
             app:enterAnim="@anim/nav_default_enter_anim" />
+
+
+        <action
+            android:id="@+id/action_inventory_to_menuFragment"
+            app:destination="@id/menuFragment"
+            app:popUpToInclusive="true" />
+
     </fragment>
     <action
         android:id="@+id/action_global_inventory"
@@ -220,6 +227,16 @@
         <action
             android:id="@+id/action_teamList_to_dashboardCategoryNew"
             app:destination="@id/dashboardCategoryBoldPOS" />
+        <action
+            android:id="@+id/action_teamList_to_menupos"
+            app:destination="@id/menuFragment" />
+
+        <action
+            android:id="@+id/action_teamList_to_teamMemberTimeSheetFragment"
+            app:destination="@id/teamMemberTimeSheetFragment"
+            app:enterAnim="@anim/nav_default_enter_anim" />
+
+
     </fragment>
     <action
         android:id="@+id/action_global_teamList"
@@ -299,6 +316,12 @@
             app:enterAnim="@anim/nav_default_enter_anim" />
 
 
+        <action
+            android:id="@+id/action_settings_to_menuFragment"
+            app:destination="@id/menuFragment"
+            app:popUpToInclusive="true" />
+
+
     </fragment>
     <action
         android:id="@+id/action_global_settings"
@@ -372,6 +395,12 @@
             app:destination="@id/dashboardCategoryBoldPOS"
             app:popUpTo="@id/reports"
             app:popUpToInclusive="true" />
+
+        <action
+            android:id="@+id/action_reports_to_menuFragment"
+            app:destination="@id/menuFragment"
+            app:popUpToInclusive="true" />
+
 
     </fragment>
     <action
@@ -761,6 +790,13 @@
             app:destination="@id/assignCustomerOrderFragment"
             app:enterAnim="@anim/nav_default_enter_anim" />
         <action
+            android:id="@+id/action_manualSaleNew__to_addDiscountDialog"
+            app:destination="@id/addDiscountDialog" />
+
+        <action
+            android:id="@+id/action_manualSaleNew__to_addNoteDialog"
+            app:destination="@id/addNoteDialog" />
+        <action
             android:id="@+id/action_manualSaleNew_to_addNoteDialog"
             app:destination="@id/addNoteDialog"
             app:enterAnim="@anim/nav_default_enter_anim" />
@@ -855,7 +891,8 @@
     <fragment
         android:id="@+id/orderCompleteFragment"
         android:name="com.android.pos.ui.fragments.payment.OrderCompleteFragment"
-        android:label="OrderCompleteFragment">
+        android:label="OrderCompleteFragment"
+        >
         <argument
             android:name="isDineIn"
             android:defaultValue="false"

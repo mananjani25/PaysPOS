@@ -32,7 +32,13 @@ class Hardware : Fragment() {
     ): View? {
         binding = FragmentHardwareBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = this
+        setUpHeader()
         return binding.root
+    }
+
+    private fun setUpHeader() {
+        binding.header.txtSave.text=getString(R.string.tv_home)
+        binding.header.txtTitle.text=getString(R.string.hardware)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -45,10 +51,10 @@ class Hardware : Fragment() {
 
     private fun onClick() {
 
-        binding.imgBack.setOnClickListener {
+        binding.header.imgBack.setOnClickListener {
             findNavController().navigateUp()
         }
-        binding.txtHome.setOnClickListener {
+        binding.header.txtSave.setOnClickListener {
             findNavController().navigate(R.id.action_hardware_to_dashboardCategoryNew)
         }
         binding.txtPrinter.setOnClickListener {

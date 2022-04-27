@@ -19,14 +19,15 @@
             android:layout_gravity="center"
             android:ellipsize="end"
             android:gravity="center"
-            android:lines="2"
-            android:maxLines="2"
+            android:lines="4"
+            android:maxLines="4"
             android:paddingStart="@dimen/_5sdp"
-            android:paddingTop="@dimen/_5sdp"
+            android:paddingTop="@dimen/_3sdp"
             android:paddingEnd="@dimen/_5sdp"
             android:paddingBottom="@dimen/_2sdp"
             tools:text="FOOD"
-            android:textColor="@color/black"
+            android:background="@drawable/item_selector"
+            android:textColor="@drawable/text_selector"
             android:textSize="@dimen/_6mdpi" />
 
         <TextView
@@ -44,7 +45,8 @@
             android:paddingBottom="@dimen/_5sdp"
             android:maxLines="1"
             android:text="@string/_0_00"
-            android:textColor="@color/black"
+            android:background="@drawable/item_selector"
+            android:textColor="@drawable/text_selector"
             android:textSize="@dimen/_5mdpi" />
 
     </androidx.appcompat.widget.LinearLayoutCompat>

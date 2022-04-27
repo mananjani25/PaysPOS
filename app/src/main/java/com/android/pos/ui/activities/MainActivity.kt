@@ -10,6 +10,7 @@ import android.os.Bundle
 import android.provider.MediaStore
 import android.util.Log
 import android.view.View
+import android.view.WindowManager
 import android.widget.ImageView
 import android.widget.Toast
 import androidx.activity.viewModels
@@ -66,11 +67,22 @@ class MainActivity : BaseScannerActivity() {
     private lateinit var mFirebaseAnalytics: FirebaseAnalytics
     var broadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
-            AlertUtils.showCustomAlertWithYesNoListener(
-                context,
-                "You are clocked out in different System.\n Do you want to clock out forcefully in your System."
-            ) { _, _ ->
-                clockoutFromSystem()
+            var message = intent?.getStringExtra("message")
+            var isAuto = intent?.getBooleanExtra("isAuto",false)
+            if (isAuto == true) {
+                AlertUtils.showCustomAlertWithYesNoListener(
+                    context,
+                    message
+                ) { _, _ ->
+                    clockoutFromSystem()
+                }
+            } else {
+                AlertUtils.showCustomAlertWithYesNoListener(
+                    context,
+                    "You are clocked out in different System.\n Do you want to clock out forcefully in your System."
+                ) { _, _ ->
+                    clockoutFromSystem()
+                }
             }
         }
 
@@ -104,6 +116,8 @@ class MainActivity : BaseScannerActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN)
+
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
         registerReceiver(broadcastReceiver, IntentFilter(Constants.SEND_CLOCKOUT_NOTIFICATION))
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -113,6 +127,8 @@ class MainActivity : BaseScannerActivity() {
         binding = DataBindingUtil.setContentView(this, R.layout.parent_activity)
         supportActionBar?.hide()
         binding.lifecycleOwner = this
+
+
 
         val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
         drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)

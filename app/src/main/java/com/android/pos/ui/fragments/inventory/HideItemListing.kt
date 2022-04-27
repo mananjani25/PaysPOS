@@ -1,5 +1,6 @@
 package com.android.pos.ui.fragments.inventory
 
+import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.text.Editable
@@ -30,10 +31,11 @@ import com.android.pos.utils.statusUtils.Status
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class HideItemListing : Fragment(),ItemCallback {
+class HideItemListing(val clickedPosition: Int) : Fragment(),ItemCallback {
 
     private var isreOrder: Boolean = false
     private var deleteAndHide: Boolean = false
+    var listSize:Int?=0
 
     private var deletePos: Int = -1
     private var deleteObj: TbItem? = null
@@ -160,13 +162,14 @@ class HideItemListing : Fragment(),ItemCallback {
 
     private fun itemsObserver() {
 
-        viewModel.showItemsList.observe(viewLifecycleOwner, {
+        viewModel.showItemsList.observe(viewLifecycleOwner) {
 
             it?.let { resource ->
                 when (resource.status) {
                     Status.SUCCESS -> {
                         binding.rvAllItemList.visibility = View.VISIBLE
                         binding.progressCircular.visibility = View.GONE
+                        listSize = it.data?.size
                         it.data?.let { it1 ->
                             adapter.add(it1)
                             binding.edtSearch.hint = "Search (" + it1.size + ") Items"
@@ -184,7 +187,7 @@ class HideItemListing : Fragment(),ItemCallback {
             }
 
 
-        })
+        }
     }
 
     private fun deleteObserver() {
@@ -199,6 +202,11 @@ class HideItemListing : Fragment(),ItemCallback {
                     viewModel.reOrder(adapter.getAll())
                 }
                 // viewModel.dbDeleteAndHide(deleteObj!!.itemId, deleteAndHide)
+
+                val intent = Intent()
+                intent.action = "inventory"
+                intent.putExtra("position", clickedPosition)
+                requireContext().sendBroadcast(intent)
             }
         })
 

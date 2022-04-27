@@ -43,6 +43,7 @@ import com.android.pos.data.remote.Constants.GET_PRINTERS
 import com.android.pos.data.remote.Constants.GET_TEAM_MODULE
 import com.android.pos.data.remote.Constants.HIDE_CATEGORY
 import com.android.pos.data.remote.Constants.HIDE_ITEM
+import com.android.pos.data.remote.Constants.INVENTORY_COUNTS
 import com.android.pos.data.remote.Constants.ITEMS
 import com.android.pos.data.remote.Constants.ITEM_UPDATE_DELETE
 import com.android.pos.data.remote.Constants.KITCHEN_RECEIPT_SETTINGS
@@ -728,4 +729,6 @@ interface ApiService {
     @GET(ORDER_COUNTS)
     suspend fun orderCounts( @Query("start_date") startDate: String?,
                              @Query("end_date") endDate: String?): OrderCountsResponse
+    @GET(INVENTORY_COUNTS)
+    suspend fun inventoryCounts(): InventoryCountsResponse
 }

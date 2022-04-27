@@ -10,6 +10,10 @@
         android:background="@color/bg_color"
         android:orientation="vertical">
 
+        <include android:id="@+id/header"
+            layout="@layout/view_header_toolbar"/>
+
+<!--
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
@@ -29,9 +33,9 @@
                 android:id="@+id/imgSync"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
                 android:layout_marginEnd="@dimen/_5sdp"
                 android:layout_toLeftOf="@+id/txtHome"
-                android:layout_centerVertical="true"
                 android:background="?attr/selectableItemBackground"
                 android:padding="@dimen/_6sdp"
                 android:src="@drawable/ic_baseline_sync_24"
@@ -68,6 +72,7 @@
                 android:textSize="@dimen/_7mdpi" />
 
         </RelativeLayout>
+-->
 
         <include layout="@layout/divider" />
 
@@ -356,6 +361,7 @@
                         android:textAllCaps="true"
                         android:textColor="@color/txtColor"
                         android:textSize="@dimen/_6mdpi" />
+
 
                     <androidx.appcompat.widget.AppCompatTextView
                         android:id="@+id/txtAction3"

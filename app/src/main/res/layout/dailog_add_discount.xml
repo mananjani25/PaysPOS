@@ -182,9 +182,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="@dimen/_5sdp"
-                    tools:itemCount="3"
                     android:orientation="horizontal"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    tools:itemCount="3"
                     tools:listitem="@layout/view_dialog_discount_list" />
 
                 <androidx.appcompat.widget.LinearLayoutCompat
@@ -364,12 +364,12 @@
                         android:layout_width="match_parent"
                         android:layout_height="@dimen/_20sdp"
                         android:layout_gravity="center"
+                        android:layout_marginRight="@dimen/_10sdp"
                         android:layout_weight="1"
                         android:background="@drawable/button_selected"
                         android:clickable="true"
                         android:enabled="true"
                         android:focusable="true"
-                        android:layout_marginRight="@dimen/_10sdp"
                         android:gravity="center"
                         android:padding="@dimen/_5sdp"
                         android:text="Add"

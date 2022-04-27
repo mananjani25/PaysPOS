@@ -150,7 +150,8 @@
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:layout_marginTop="@dimen/_5sdp"
-            android:layout_marginBottom="@dimen/_5sdp" />
+            android:layout_marginBottom="@dimen/_5sdp"
+            android:visibility="gone"/>
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvModifiersList"
@@ -167,7 +168,8 @@
             android:layout_width="match_parent"
             android:layout_height="1dp"
             android:layout_marginTop="@dimen/_5sdp"
-            android:layout_marginBottom="@dimen/_5sdp" />
+            android:layout_marginBottom="@dimen/_5sdp"
+            android:visibility="gone"/>
 
 
         <LinearLayout
@@ -216,7 +218,7 @@
                 android:layout_marginStart="@dimen/_2sdp"
                 android:layout_marginEnd="@dimen/_4sdp"
                 android:layout_weight="1"
-                android:background="@color/btnColorDark"
+                android:background="@color/colorRed"
                 android:gravity="center"
                 android:padding="@dimen/_5sdp"
                 android:text="@string/remove_item"

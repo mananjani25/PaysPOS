@@ -1,6 +1,7 @@
 package com.android.pos.ui.fragments.payment
 
 
+import android.content.Context
 import android.content.Context.WINDOW_SERVICE
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -20,6 +21,7 @@ import com.android.pos.data.entities.CartModel
 import com.android.pos.data.entities.RedeemLoyaltyInfo
 import com.android.pos.data.entities.TbItem
 import com.android.pos.data.model.DineInModel
+import com.android.pos.data.model.GuestDataModel
 import com.android.pos.data.model.SplitBundleModel
 import com.android.pos.data.model.SplitDetailListModel
 import com.android.pos.data.model.responseModel.*
@@ -48,7 +50,9 @@ import com.android.pos.databinding.FragmentOrderCompletBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.adapter.SplitListAdapter
 import com.android.pos.utils.*
+import com.android.pos.utils.extensions.gone
 import com.android.pos.utils.extensions.liveSnackBar
+import com.android.pos.utils.extensions.visible
 import com.android.pos.utils.printer.PrinterClass
 import com.android.pos.utils.printer.PrinterClass.BLUETOOTH_TIMEOUT
 import com.android.pos.utils.statusUtils.Status
@@ -124,6 +128,12 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
     private var tipsList: List<GetTipReponse.Data> = listOf()
     private lateinit var splitAdapter: SplitListAdapter
 
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+
+
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -131,6 +141,14 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
     ): View? {
         binding = FragmentOrderCompletBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = this
+
+        if (requireArguments().getBoolean("isSpilt")) {
+            observeSplitList()
+        } else {
+            prefProvider.setValue(Constants.SPLIT_PAY_AMOUNT, "")
+        }
+        getKitchenReceiptSettings()
+
         observeTipsList()
 
         findNavController().currentBackStackEntry?.savedStateHandle?.getLiveData<Bundle>("data")
@@ -149,12 +167,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         binding.rvSplits.adapter = splitAdapter
         noCashAdjGlobal =
             MethodUtils.roundOffAmountDouble(requireArguments().getDouble("noCashAdj"))
-        if (requireArguments().getBoolean("isSpilt")) {
-            observeSplitList()
-        } else {
-            prefProvider.setValue(Constants.SPLIT_PAY_AMOUNT, "")
-        }
-        getKitchenReceiptSettings()
+
         return binding.root
     }
 
@@ -174,6 +187,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
             if (it != null) {
                 kitchenSettingModel = it
+                Log.e(TAG, "isFromCustomer:  ${isFromCustomer}")
                 if (!isFromCustomer) {
                     getKitchenPrinters()
                 }
@@ -220,6 +234,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             receiptModel = requireArguments().getParcelable("receiptData")
             splitValue = requireArguments().getInt("splitValue")
             isLastPayment = requireArguments().getBoolean("isLastPayment", false)
+            Log.e(TAG, "isLastPaymentDine:  ${isLastPayment}")
             isGuest = requireArguments().getBoolean("isGuest")
             isGuestPaymentTotal = requireArguments().getBoolean("isGuestPaymentTotal")
             isSpilt = requireArguments().getBoolean("isSpilt")
@@ -276,15 +291,16 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 binding.llHome.visibility = View.GONE
                 binding.llNoReceipt.text = "Next Payment"
                 binding.llNoReceipt.setTextColor(requireActivity().resources.getColor(R.color.white))
-                binding.llNoReceipt.background = requireContext().getDrawable(R.drawable.button_selected)
-                binding.linearTopHeaderSplit.visibility = View.VISIBLE
+                binding.llNoReceipt.background =
+                    requireContext().getDrawable(R.drawable.button_selected)
+                // binding.linearTopHeaderSplit.visibility = View.VISIBLE
                 binding.txtHome.visibility = View.GONE
 
 
                 var title = "Split "
                 viewModel.addSplitToDatabase(
                     title,
-                    paidAmount - splitChange,
+                    (paidAmount + tipAmount) - splitChange,
                     remainingAmount
                 )
                 binding.txtTitle.text =
@@ -309,85 +325,92 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         changeAmtGlobal =
                             MethodUtils.roundOffAmountDouble(paidAmount - WholetotalPrice)
                                 .toDouble()
+                        binding.txtChangeAmount.visible()
                         binding.txtChangeAmount.text =
                             MethodUtils.roundOffAmount(paidAmount - WholetotalPrice) + " Change"
                         binding.txtPaymentAmount.text =
-                            "will remain Out of " + MethodUtils.roundOffAmount(paidAmount + tipAmount)
+                            MethodUtils.roundOffAmount(paidAmount + tipAmount) + " payment successful"
 
                     } else {
                         changeAmtGlobal = MethodUtils.roundOffAmountDouble(0.0).toDouble()
-
+                        binding.txtChangeAmount.gone()
                         binding.txtChangeAmount.text =
                             MethodUtils.roundOffAmount(0.0) + " Change"
                     }
                 } else if (remainingAmount < paidAmount) {
                     if (isCustomCash && splitChange != 0.0) {
                         changeAmtGlobal = MethodUtils.roundOffAmountDouble(splitChange).toDouble()
+                        binding.txtChangeAmount.visible()
                         binding.txtChangeAmount.text =
                             MethodUtils.roundOffAmount(splitChange) + " Change"
                         binding.txtPaymentAmount.text =
-                            "will remain Out of " + MethodUtils.roundOffAmount((paidAmount + tipAmount))
+                            MethodUtils.roundOffAmount((paidAmount + tipAmount)) + " payment successful"
                     } else {
 
                         val changeValue = (paidAmount - dis_charge_value) - remainingAmount
                         if (changeValue > 0.0) {
                             changeAmtGlobal =
                                 MethodUtils.roundOffAmountDouble(changeValue).toDouble()
+                            binding.txtChangeAmount.visible()
                             binding.txtChangeAmount.text =
                                 MethodUtils.roundOffAmount(changeValue) + " Change"
                         }
                         binding.txtPaymentAmount.text =
-                            "will remain  Out of " + MethodUtils.roundOffAmount((paidAmount + tipAmount))
+                            MethodUtils.roundOffAmount((paidAmount + tipAmount)) + " payment successful"
                     }
                 } else {
                     if (isCustomCash && splitChange != 0.0) {
                         changeAmtGlobal = MethodUtils.roundOffAmountDouble(splitChange).toDouble()
+                        binding.txtChangeAmount.visible()
                         binding.txtChangeAmount.text =
                             MethodUtils.roundOffAmount(splitChange) + " Change"
                         binding.txtPaymentAmount.text =
-                            "will remain Out of " + MethodUtils.roundOffAmount((paidAmount + tipAmount))
+                            MethodUtils.roundOffAmount((paidAmount + tipAmount)) + " payment successful"
                     } else {
                         binding.txtPaymentAmount.text =
-                            "will remain Out of " + MethodUtils.roundOffAmount(paidAmount + tipAmount)
+                            MethodUtils.roundOffAmount(paidAmount + tipAmount) + " payment successful"
                     }
                 }
             } else {
                 binding.linerContent.visibility = View.VISIBLE
                 binding.llHome.visibility = View.VISIBLE
                 binding.txtHome.visibility = View.GONE
-                binding.linearTopHeaderSplit.visibility = View.GONE
+                //  binding.linearTopHeaderSplit.visibility = View.GONE
                 binding.viewSplitLine.visibility = View.GONE
-                binding.llNoReceipt.visibility = View.VISIBLE
+                binding.llNoReceipt.visibility = View.GONE
                 binding.linearSplitLayout.visibility = View.GONE
                 binding.txtRemainingAmount.visibility = View.GONE
                 binding.txtRemainingAmountLabel.visibility = View.GONE
                 binding.llNoReceipt.text = getString(R.string.no_receipt)
                 binding.llNoReceipt.setTextColor(requireActivity().resources.getColor(R.color.txtColor))
-                binding.llNoReceipt.background = requireContext().getDrawable(R.drawable.background_square_border_grey)
+                binding.llNoReceipt.background =
+                    requireContext().getDrawable(R.drawable.background_square_border_grey)
                 viewModel.deleteSplitDb()
                 if (isCustomCash) {
                     binding.txtTitle.text =
                         MethodUtils.roundOffAmount(paidAmount)
                     binding.txtPaymentAmount.text =
-                        "will remain Out of " + MethodUtils.roundOffAmount(paidAmount)
+                        MethodUtils.roundOffAmount(paidAmount) + " payment successful"
 
                 } else {
                     binding.txtTitle.text =
                         MethodUtils.roundOffAmount(paidAmount + tipAmount)
                     binding.txtPaymentAmount.text =
-                        "will remain Out of " + MethodUtils.roundOffAmount(paidAmount + tipAmount)
+                        MethodUtils.roundOffAmount(paidAmount + tipAmount) + " payment successful"
                 }
 
 
                 if (isCustomCash) {
                     changeAmtGlobal =
                         MethodUtils.roundOffAmountDouble(remainingAmount - tipAmount).toDouble()
+                    binding.txtChangeAmount.visible()
                     binding.txtChangeAmount.text =
                         MethodUtils.roundOffAmount(remainingAmount - tipAmount) + " Change"
                 } else {
                     if (remainingAmount < 0) {
                         changeAmtGlobal =
                             MethodUtils.roundOffAmountDouble(remainingAmount - tipAmount).toDouble()
+                        binding.txtChangeAmount.visible()
                         binding.txtChangeAmount.text =
                             MethodUtils.roundOffAmount(remainingAmount - tipAmount) + " Change"
                     }
@@ -411,13 +434,14 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 binding.llHome.visibility = View.GONE
                 binding.llNoReceipt.text = "Next Payment"
                 binding.llNoReceipt.setTextColor(requireActivity().resources.getColor(R.color.white))
-                binding.llNoReceipt.background = requireContext().getDrawable(R.drawable.button_selected)
-                binding.linearTopHeaderSplit.visibility = View.VISIBLE
+                binding.llNoReceipt.background =
+                    requireContext().getDrawable(R.drawable.button_selected)
+                //  binding.linearTopHeaderSplit.visibility = View.VISIBLE
                 binding.txtHome.visibility = View.GONE
                 var title = "Split "
                 viewModel.addSplitToDatabase(
                     title,
-                    paidAmount - splitChange,
+                    (paidAmount + tipAmount) - splitChange,
                     remainingAmount
                 )
                 binding.txtTitle.text =
@@ -426,33 +450,36 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 if (remainingAmount < paidAmount) {
                     if (isCustomCash && splitChange != 0.0) {
                         changeAmtGlobal = MethodUtils.roundOffAmountDouble(splitChange)
+                        binding.txtChangeAmount.visible()
                         binding.txtChangeAmount.text =
                             MethodUtils.roundOffAmount(splitChange) + " Change"
                         binding.txtPaymentAmount.text =
-                            "will remain Out of " + MethodUtils.roundOffAmount((paidAmount + tipAmount))
+                            MethodUtils.roundOffAmount((paidAmount + tipAmount)) + " payment successful"
                     } else {
                         var temp_Change =
                             MethodUtils.roundOffAmountDouble((paidAmount - dis_charge_value) - remainingAmount)
                         if (!(temp_Change.equals(0.0) || temp_Change.equals(0) || temp_Change <= 0.0)) {
                             changeAmtGlobal =
                                 MethodUtils.roundOffAmountDouble((paidAmount - dis_charge_value) - remainingAmount)
+                            binding.txtChangeAmount.visible()
                             binding.txtChangeAmount.text =
                                 MethodUtils.roundOffAmount((paidAmount - dis_charge_value) - remainingAmount) + " Change"
                         }
                         binding.txtPaymentAmount.text =
-                            "will remain Out of " + MethodUtils.roundOffAmount((paidAmount + tipAmount))
+                            MethodUtils.roundOffAmount((paidAmount + tipAmount)) + " payment successful"
                     }
 
                 } else {
                     if (isCustomCash && splitChange != 0.0) {
                         changeAmtGlobal = MethodUtils.roundOffAmountDouble(splitChange)
+                        binding.txtChangeAmount.visible()
                         binding.txtChangeAmount.text =
                             MethodUtils.roundOffAmount(splitChange) + " Change"
                         binding.txtPaymentAmount.text =
-                            "will remain Out of " + MethodUtils.roundOffAmount((paidAmount + tipAmount))
+                            MethodUtils.roundOffAmount((paidAmount + tipAmount)) + " payment successful"
                     } else {
                         binding.txtPaymentAmount.text =
-                            "will remain Out of " + MethodUtils.roundOffAmount(paidAmount + tipAmount)
+                            MethodUtils.roundOffAmount(paidAmount + tipAmount) + " payment successful"
                     }
                 }
             } else {
@@ -461,47 +488,50 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     if (isLastPayment) {
                         binding.llHome.visibility = View.VISIBLE
                         binding.txtHome.visibility = View.GONE
-                        binding.linearTopHeaderSplit.visibility = View.GONE
+                        // binding.linearTopHeaderSplit.visibility = View.GONE
                         binding.llCheckOut.visibility = View.GONE
                     } else {
                         binding.llHome.visibility = View.GONE
                         binding.txtHome.visibility = View.GONE
-                        binding.linearTopHeaderSplit.visibility = View.VISIBLE
+                        //  binding.linearTopHeaderSplit.visibility = View.VISIBLE
                         binding.llCheckOut.visibility = View.VISIBLE
                     }
                 } else {
                     binding.llHome.visibility = View.VISIBLE
                     binding.txtHome.visibility = View.GONE
-                    binding.linearTopHeaderSplit.visibility = View.GONE
+                    //  binding.linearTopHeaderSplit.visibility = View.GONE
                     binding.llCheckOut.visibility = View.GONE
                 }
 
                 binding.linearSplitLayout.visibility = View.GONE
                 binding.linerContent.visibility = View.VISIBLE
-                binding.llNoReceipt.visibility = View.VISIBLE
+                binding.llNoReceipt.visibility = View.GONE
                 binding.txtRemainingAmount.visibility = View.GONE
                 binding.txtRemainingAmountLabel.visibility = View.GONE
                 binding.llNoReceipt.text = getString(R.string.no_receipt)
                 binding.llNoReceipt.setTextColor(requireActivity().resources.getColor(R.color.txtColor))
-                binding.llNoReceipt.background = requireContext().getDrawable(R.drawable.background_square_border_grey)
+                binding.llNoReceipt.background =
+                    requireContext().getDrawable(R.drawable.background_square_border_grey)
                 viewModel.deleteSplitDb()
                 binding.txtTitle.text =
                     MethodUtils.roundOffAmount(paidAmount + tipAmount)
 
                 if (isCustomCash) {
                     changeAmtGlobal = MethodUtils.roundOffAmountDouble(remainingAmount - tipAmount)
+                    binding.txtChangeAmount.visible()
                     binding.txtChangeAmount.text =
                         MethodUtils.roundOffAmount(remainingAmount - tipAmount) + " Change"
                 } else {
                     if (remainingAmount < 0) {
                         changeAmtGlobal = MethodUtils.roundOffAmountDouble(remainingAmount)
+                        binding.txtChangeAmount.visible()
                         binding.txtChangeAmount.text =
                             MethodUtils.roundOffAmount(remainingAmount) + " Change"
                     }
                 }
 
                 binding.txtPaymentAmount.text =
-                    "will remain Out of " + MethodUtils.roundOffAmount(paidAmount + tipAmount)
+                    MethodUtils.roundOffAmount(paidAmount + tipAmount) + " payment successful"
 
 
             }
@@ -517,7 +547,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             }
         }
 
-        binding.txtNextbutton.setOnClickListener(this)
+        //  binding.txtNextbutton.setOnClickListener(this)
         binding.txtHome.setOnClickListener(this)
         binding.txtAddCustomer.setOnClickListener(this)
         binding.llMessage.setOnClickListener(this)
@@ -774,6 +804,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
     private fun customerPrintWholeOrder() {
 
         var guestPos = requireArguments().getInt(GUEST_POSITION)
+        Log.e(TAG,"getGuestPosition  ${guestPos}")
+
         var listItem: java.util.ArrayList<TbItem> = arrayListOf()
         var listItemWT: java.util.ArrayList<TbItem> = arrayListOf()
         for (i in 1 until dineInList.size) {
@@ -793,8 +825,6 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
         }
         customerPrinterDineIn?.forEach {
-
-
             initDineInPrinter(
                 it,
                 Constants.CUSTOMER,
@@ -862,15 +892,22 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     PrinterClass.setPrinter(printer)
                     if (isGuest) {
 
+                        val checkOutDineInModel =
+                            requireArguments().getParcelable<GuestDataModel>(Constants.DINE_IN_GUEST_PAYMENT_DATA)
+                        Log.e(TAG, "checkOutDineInModel:  ${Gson().toJson(checkOutDineInModel)}")
 
-                        generateGuestPrint(
-                            customerReceiptPrinters,
-                            type,
-                            paymentType,
-                            listGuestItem,
-                            guestName,
-                            listWTitems,
-                        )
+
+                        if (checkOutDineInModel != null) {
+                            generateGuestPrint(
+                                customerReceiptPrinters,
+                                type,
+                                paymentType,
+                                listGuestItem,
+                                guestName,
+                                listWTitems,
+                                checkOutDineInModel
+                            )
+                        }
 
                     } else {
 
@@ -896,6 +933,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         listGuestItem: ArrayList<TbItem>,
         guestName: String,
         listWTitems: ArrayList<TbItem>,
+        checkOutDineInModel: GuestDataModel?,
 
         ) {
         var guestSubTotal = 0.0
@@ -1402,6 +1440,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     Builder.FALSE,
                     Builder.COLOR_1
                 )
+
+
+
                 builder.addText(
                     padLine(
                         "Total Discount",
@@ -1410,7 +1451,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                             "$" + MethodUtils.roundOffAmountString(0.0)
                         } else {
 
-                            "-$" + MethodUtils.roundOffAmountString(finaldisLocal)
+                            "-$" + MethodUtils.roundOffAmountString(
+                                checkOutDineInModel?.totalDiscount ?: 0.0
+                            )
 
                         },
                         if (customerSettingModel.fonts == Constants.LARGE) {
@@ -1441,7 +1484,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 padLine(
                     "Sub Total",
                     "$" + MethodUtils.roundOffAmountString(
-                        subTotalWT - orderDiscount
+                        (checkOutDineInModel?.subTotal!!) - orderDiscount
                     ),
                     if (customerSettingModel.fonts == Constants.LARGE) {
                         24
@@ -1466,10 +1509,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     Builder.COLOR_1
                 )
 
+
                 builder.addText(
                     padLine(
                         "Tax",
-                        "$" + MethodUtils.roundOffAmountString(totalTaxAmount),
+                        "$" + MethodUtils.roundOffAmountString(checkOutDineInModel?.totalTax),
                         if (customerSettingModel.fonts == Constants.LARGE) {
                             24
                         } else {
@@ -1493,10 +1537,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 Builder.COLOR_1
             )
 
+
             builder.addText(
                 padLine(
                     "Service Charge",
-                    "$" + MethodUtils.roundOffAmountString(serviceCharge),
+                    "$" + MethodUtils.roundOffAmountString(checkOutDineInModel?.totalServiceCharge!!),
                     if (customerSettingModel.fonts == Constants.LARGE) {
                         24
                     } else {
@@ -1593,9 +1638,10 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 Builder.TRUE,
                 Builder.COLOR_1
             )
+
             var totalAmt =
                 MethodUtils.roundOffAmountDouble(
-                    subTotalWT + totalTaxAmount + serviceCharge - orderDiscount
+                    (checkOutDineInModel?.subTotal!!) + checkOutDineInModel?.totalTax + checkOutDineInModel?.totalServiceCharge!! - orderDiscount
                 )
 
             if (payTypeGlb == "Cash") {
@@ -1608,7 +1654,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             builder.addText(
                 padLine(
                     "Total Price",
-                    "$" + MethodUtils.roundOffAmountString(totalAmt),
+                    "$" + MethodUtils.roundOffAmountString(checkOutDineInModel.totalAmount),
                     if (customerSettingModel.fonts == Constants.LARGE) {
                         24
                     } else {
@@ -1941,7 +1987,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 builder.addFeedLine(1)
 
                 builder.addTextFont(Builder.FONT_E)
-                builder.addTextAlign(Builder.ALIGN_LEFT)
+                builder.addTextAlign(Builder.ALIGN_CENTER)
                 builder.addTextLang(Builder.LANG_EN)
                 builder.addTextSize(1, 1)
                 builder.addTextStyle(
@@ -2500,7 +2546,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             builder.addText(
                 padLine(
                     "Sub Total",
-                    "$" + MethodUtils.roundOffAmountString(subTotalWT),
+                    "$" + MethodUtils.roundOffAmountString(getDineInOrderDetails?.subTotal ?: 0.0),
                     if (customerSettingModel.fonts == Constants.LARGE) {
                         24
                     } else {
@@ -2527,7 +2573,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 builder.addText(
                     padLine(
                         "Tax",
-                        "$" + MethodUtils.roundOffAmountString(totalTaxAmount),
+                        "$" + MethodUtils.roundOffAmountString(
+                            getDineInOrderDetails?.totalTaxAmount ?: 0.0
+                        ),
                         if (customerSettingModel.fonts == Constants.LARGE) {
                             24
                         } else {
@@ -2537,32 +2585,34 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 )
             }
 
-            if (serviceCharge != null) {
-                builder.addTextLineSpace(30)
-                builder.addFeedUnit(30)
-                builder.addTextFont(Builder.FONT_E)
-                // builder.addTextAlign(Builder.ALIGN_LEFT)
-                builder.addTextLang(Builder.LANG_EN)
-                addCustomerTextSize(builder, customerSettingModel.fonts)
-                builder.addTextStyle(
-                    Builder.FALSE,
-                    Builder.FALSE,
-                    Builder.FALSE,
-                    Builder.COLOR_1
-                )
 
-                builder.addText(
-                    padLine(
-                        "Service Charge",
-                        "$" + MethodUtils.roundOffAmountString(serviceCharge),
-                        if (customerSettingModel.fonts == Constants.LARGE) {
-                            24
-                        } else {
-                            48
-                        }
-                    )
+            builder.addTextLineSpace(30)
+            builder.addFeedUnit(30)
+            builder.addTextFont(Builder.FONT_E)
+            // builder.addTextAlign(Builder.ALIGN_LEFT)
+            builder.addTextLang(Builder.LANG_EN)
+            addCustomerTextSize(builder, customerSettingModel.fonts)
+            builder.addTextStyle(
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.COLOR_1
+            )
+
+            builder.addText(
+                padLine(
+                    "Service Charge",
+                    "$" + MethodUtils.roundOffAmountString(
+                        getDineInOrderDetails?.totalServiceCharges ?: 0.0
+                    ),
+                    if (customerSettingModel.fonts == Constants.LARGE) {
+                        24
+                    } else {
+                        48
+                    }
                 )
-            }
+            )
+
 
             if (getDineInOrderDetails?.totalTips != 0.0) {
 
@@ -2685,7 +2735,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 Builder.COLOR_1
             )
             var totalAmt =
-                MethodUtils.roundOffAmountDouble(subTotalWT + serviceCharge + totalTaxAmount)
+                MethodUtils.roundOffAmountDouble(
+                    (getDineInOrderDetails?.subTotal
+                        ?: 0.0) + (getDineInOrderDetails?.totalServiceCharges
+                        ?: 0.0) + (getDineInOrderDetails?.totalTaxAmount ?: 0.0)
+                )
 
             if (payTypeGlb == "Cash") {
 
@@ -3037,7 +3091,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 builder.addFeedLine(1)
 
                 builder.addTextFont(Builder.FONT_E)
-                builder.addTextAlign(Builder.ALIGN_LEFT)
+                builder.addTextAlign(Builder.ALIGN_CENTER)
                 builder.addTextLang(Builder.LANG_EN)
                 builder.addTextSize(1, 1)
                 builder.addTextStyle(
@@ -3111,8 +3165,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
     private fun moveToCheckOut() {
         if (isDineIn) {
-            if (isGuestPaymentTotal) {
+            if (!isLastPayment) {
                 val bundle = Bundle()
+                Log.e(TAG, "guestorderID ${orderID}")
                 bundle.putInt("orderId", orderID)
 
                 findNavController().navigate(
@@ -3126,7 +3181,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
     override fun onStop() {
         super.onStop()
-        if (!isSpilt){
+        if (!isSpilt) {
             removeCustomer()
 
 
@@ -3247,26 +3302,15 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                 "isFromActiveOrder"
                             )
                         ) {*/
-                        Log.e(
-                            TAG,
-                            "customerReceiptdeliveryType:  ${receiptModel?.order?.deliveryType}"
-                        )
-                        Log.e(TAG, "getSplitSize:  ${splitList.size}")
-                        Log.e(TAG, "getSplitISSplit :${isSpilt}")
+
                         val remain = requireArguments().getDouble("remainingAmount")
                         Log.e(TAG, "remainAMount  ${remain}")
 
-                        if (MethodUtils.roundOffAmountDouble(remain).toDouble() > 0) {
+                        if (!requireArguments().getBoolean("isSpilt")) {
                             if (!requireArguments().getBoolean("isDineIn") && !requireArguments().getBoolean(
                                     "isFromActiveOrder"
                                 )
                             ) {
-                                Log.e(
-                                    TAG,
-                                    "kitchenPrinterList:  ${Gson().toJson(kitchenPrinterList)}"
-                                )
-
-
                                 for (i in 0 until kitchenPrinterList.size) {
                                     kitchenPrinterList[i].orderTypes.forEach {
 
@@ -3294,6 +3338,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                             }
                         }
+
                         /*else if (!requireArguments().getBoolean("isDineIn") && !requireArguments().getBoolean(
                                 "isFromActiveOrder"
                             )
@@ -3332,6 +3377,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         }
 */
                         if (requireArguments().getBoolean("isDineIn")) {
+                            Log.e(TAG, "IsDineIn True: ")
                             customerPrintWholeOrder()
 
                         } else {
@@ -4085,6 +4131,69 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 )
             }
 
+
+
+            if (receiptModel?.order?.payments?.isNotEmpty() == true) {
+                if (receiptModel?.order?.payments?.get(receiptModel?.order?.payments!!.size - 1)?.isLoyaltyApplied == true && receiptModel?.order?.payments!![receiptModel?.order?.payments!!.size - 1].loyaltyUSedPoints != 0) {
+                    if (receiptModel?.order?.loyaltyAmount != 0.0) {
+                        builder.addTextLineSpace(30)
+                        builder.addFeedUnit(30)
+                        builder.addTextFont(Builder.FONT_E)
+                        // builder.addTextAlign(Builder.ALIGN_LEFT)
+                        builder.addTextLang(Builder.LANG_EN)
+                        addCustomerTextSize(builder, customerSettingModel.fonts)
+                        builder.addTextStyle(
+                            Builder.FALSE,
+                            Builder.FALSE,
+                            Builder.FALSE,
+                            Builder.COLOR_1
+                        )
+
+                        builder.addText(
+                            padLine(
+                                "Used Loyalty Amount",
+                                "-$" + receiptModel?.order?.loyaltyAmount?.let {
+                                    MethodUtils.roundOffAmountString(
+                                        it
+                                    )
+                                },
+                                if (customerSettingModel.fonts == Constants.LARGE) {
+                                    24
+                                } else {
+                                    48
+                                }
+                            )
+                        )
+                    }
+
+
+                    builder.addTextLineSpace(30)
+                    builder.addFeedUnit(30)
+                    builder.addTextFont(Builder.FONT_E)
+                    // builder.addTextAlign(Builder.ALIGN_LEFT)
+                    builder.addTextLang(Builder.LANG_EN)
+                    addCustomerTextSize(builder, customerSettingModel.fonts)
+                    builder.addTextStyle(
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.COLOR_1
+                    )
+
+                    builder.addText(
+                        padLine(
+                            "Used Loyalty Points",
+                            receiptModel?.order?.payments!![receiptModel?.order?.payments!!.size - 1].loyaltyUSedPoints.toString(),
+                            if (customerSettingModel.fonts == LARGE) {
+                                24
+                            } else {
+                                48
+                            }
+                        )
+                    )
+                }
+            }
+
             builder.addTextLineSpace(30)
             builder.addFeedUnit(30)
 
@@ -4511,7 +4620,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             }
 
 
-            if (receiptModel?.order?.note != null && receiptModel?.order?.note != "" && customerSettingModel.showOrderNote) {
+            Log.e(TAG, "showOrderNote:  ${receiptModel?.order?.note}")
+            if (receiptModel?.order?.note != null && receiptModel?.order?.note != "") {
 
                 builder.addFeedLine(2)
                 builder.addTextFont(Builder.FONT_B)
@@ -4528,7 +4638,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 builder.addFeedLine(1)
 
                 builder.addTextFont(Builder.FONT_E)
-                builder.addTextAlign(Builder.ALIGN_LEFT)
+                builder.addTextAlign(Builder.ALIGN_CENTER)
                 builder.addTextLang(Builder.LANG_EN)
                 builder.addTextSize(1, 1)
                 builder.addTextStyle(
@@ -4596,6 +4706,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         data: PrinterResponse.Data.KitchenReceiptPrinters,
         type: String
     ) {
+
+        PrinterClass.closePrinter()
         if (PrinterClass.getPrinter() == null) {
             requireActivity().runOnUiThread {
                 ProgressUtils.showProgressDialog(requireActivity())
@@ -4658,6 +4770,25 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 customerReceiptPrinters.name
             }
 
+            var fontSizeH = 1
+            var fontSizeW = 1
+            when (kitchenSettingModel.fonts) {
+                Constants.SMALL -> {
+                    fontSizeH = 1
+                    fontSizeW = 1
+                }
+                Constants.MEDIUM -> {
+                    fontSizeH = 1
+                    fontSizeW = 2
+                }
+                LARGE -> {
+                    fontSizeH = 2
+                    fontSizeW = 2
+                }
+
+
+            }
+
             builder = Builder(pname, PrinterClass.language, requireActivity())
 
             if (kitchenSettingModel.showOrderType) {
@@ -4666,7 +4797,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 builder.addFeedLine(0)
                 builder.addTextFont(Builder.FONT_E)
                 builder.addTextLang(Builder.LANG_EN)
-                builder.addTextSize(2, 2)
+                builder.addTextSize(fontSizeH, fontSizeW)
                 builder.addTextStyle(
                     Builder.FALSE,
                     Builder.FALSE,
@@ -4689,7 +4820,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 builder.addFeedLine(1)
                 builder.addTextFont(Builder.FONT_E)
                 builder.addTextLang(Builder.LANG_EN)
-                builder.addTextSize(2, 2)
+                builder.addTextSize(fontSizeH, fontSizeW)
                 builder.addTextStyle(
                     Builder.FALSE,
                     Builder.FALSE,
@@ -4706,7 +4837,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             builder.addTextFont(Builder.FONT_E)
             //  builder.addTextAlign(Builder.ALIGN_LEFT)
             builder.addTextLang(Builder.LANG_EN)
-            builder.addTextSize(1, 1)
+            builder.addTextSize(fontSizeH, fontSizeW)
             builder.addTextStyle(
                 Builder.FALSE,
                 Builder.FALSE,
@@ -4727,7 +4858,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             builder.addTextFont(Builder.FONT_E)
             //  builder.addTextAlign(Builder.ALIGN_LEFT)
             builder.addTextLang(Builder.LANG_EN)
-            builder.addTextSize(1, 1)
+            builder.addTextSize(fontSizeH, fontSizeW)
             builder.addTextStyle(
                 Builder.FALSE,
                 Builder.FALSE,
@@ -4750,7 +4881,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 builder.addTextFont(Builder.FONT_E)
                 //  builder.addTextAlign(Builder.ALIGN_LEFT)
                 builder.addTextLang(Builder.LANG_EN)
-                builder.addTextSize(1, 1)
+                builder.addTextSize(fontSizeH, fontSizeW)
                 builder.addTextStyle(
                     Builder.FALSE,
                     Builder.FALSE,
@@ -4770,7 +4901,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             builder.addTextFont(Builder.FONT_E)
             //  builder.addTextAlign(Builder.ALIGN_LEFT)
             builder.addTextLang(Builder.LANG_EN)
-            builder.addTextSize(1, 1)
+            builder.addTextSize(fontSizeH, fontSizeW)
             builder.addTextStyle(
                 Builder.FALSE,
                 Builder.FALSE,
@@ -4794,7 +4925,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             builder.addTextFont(Builder.FONT_B)
             //builder.addTextLineSpace(20)
             builder.addTextLang(Builder.LANG_EN)
-            builder.addTextSize(1, 1)
+            builder.addTextSize(fontSizeH, fontSizeW)
             builder.addTextStyle(
                 Builder.FALSE,
                 Builder.FALSE,
@@ -4804,7 +4935,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
             addHorizontalKitchenLine(builder)
 
-            receiptModel?.order?.orderItems?.let { addOrdersForKitchen(builder, it) }
+            receiptModel?.order?.orderItems?.let { addOrdersForKitchen(builder, it,fontSizeH,fontSizeW) }
 
             if (receiptModel?.order?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote) {
                 builder.addTextLineSpace(30)
@@ -4814,7 +4945,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 builder.addTextAlign(Builder.ALIGN_LEFT)
                 //builder.addTextLineSpace(20)
                 builder.addTextLang(Builder.LANG_EN)
-                builder.addTextSize(1, 1)
+                builder.addTextSize(fontSizeH, fontSizeW)
                 builder.addTextStyle(
                     Builder.FALSE,
                     Builder.FALSE,
@@ -4827,9 +4958,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 builder.addFeedUnit(30)
 
                 builder.addTextFont(Builder.FONT_E)
-                builder.addTextAlign(Builder.ALIGN_LEFT)
+                builder.addTextAlign(Builder.ALIGN_CENTER)
                 builder.addTextLang(Builder.LANG_EN)
-                builder.addTextSize(1, 1)
+                builder.addTextSize(fontSizeH, fontSizeW)
                 builder.addTextStyle(
                     Builder.FALSE,
                     Builder.FALSE,
@@ -4852,7 +4983,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     //builder.addTextLineSpace(20)
                     builder.addTextAlign(Builder.ALIGN_LEFT)
                     builder.addTextLang(Builder.LANG_EN)
-                    builder.addTextSize(1, 1)
+                    builder.addTextSize(fontSizeH, fontSizeW)
                     builder.addTextStyle(
                         Builder.FALSE,
                         Builder.FALSE,
@@ -4864,7 +4995,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     builder.addTextFont(Builder.FONT_B)
                     //builder.addTextLineSpace(20)
                     builder.addTextLang(Builder.LANG_EN)
-                    builder.addTextSize(1, 1)
+                    builder.addTextSize(fontSizeH, fontSizeW)
                     builder.addTextStyle(
                         Builder.FALSE,
                         Builder.FALSE,
@@ -4881,7 +5012,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         builder.addTextAlign(Builder.ALIGN_LEFT)
                         //builder.addTextLineSpace(20)
                         builder.addTextLang(Builder.LANG_EN)
-                        builder.addTextSize(1, 1)
+                        builder.addTextSize(fontSizeH, fontSizeW)
                         builder.addTextStyle(
                             Builder.FALSE,
                             Builder.FALSE,
@@ -4902,7 +5033,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                             builder.addTextAlign(Builder.ALIGN_LEFT)
                             //builder.addTextLineSpace(20)
                             builder.addTextLang(Builder.LANG_EN)
-                            builder.addTextSize(1, 1)
+                            builder.addTextSize(fontSizeH, fontSizeW)
                             builder.addTextStyle(
                                 Builder.FALSE,
                                 Builder.FALSE,
@@ -4946,7 +5077,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                 builder.addTextAlign(Builder.ALIGN_LEFT)
                                 //builder.addTextLineSpace(20)
                                 builder.addTextLang(Builder.LANG_EN)
-                                builder.addTextSize(1, 1)
+                                builder.addTextSize(fontSizeH, fontSizeW)
                                 builder.addTextStyle(
                                     Builder.FALSE,
                                     Builder.FALSE,
@@ -5052,7 +5183,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         prefProvider.setValue(Constants.TIPS_AMOUNT_DINEIN, "")
         prefProvider.setValue(Constants.TAX_CHARGE_DINEIN, "")
         prefProvider.setValue(Constants.SERVICE_CHARGE_DINEIN, "")
-        prefProvider.setValueInt("orderId",-1)
+        prefProvider.setValueInt("orderId", -1)
 
 
     }

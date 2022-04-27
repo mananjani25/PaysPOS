@@ -83,7 +83,9 @@
         <activity
             android:name=".ui.activities.MainActivity"
             android:screenOrientation="landscape"
-            android:windowSoftInputMode="adjustResize">
+            android:windowSoftInputMode="stateAlwaysHidden|adjustResize"
+            android:windowTranslucentNavigation="true"
+            android:windowTranslucentStatus="true" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

@@ -46,17 +46,16 @@ class RolePermission @Inject constructor(
                 }
             }
         }
-        root?.showAlert("You do not have Permission to Access this Feature.. \nPlease Contact your Manager.")
+        root?.showAlert("You do not have permission to access this feature.\nPlease contact your manager.")
         return false
     }
 
     fun hasUserAccessPermission(root: View?): Boolean {
-        val permission =
-            prefProvider.isManager() || prefProvider.isOwner() || prefProvider.isAdmin()
+            val permission = prefProvider.isOwner() || prefProvider.isAdmin()
         return if (permission) {
             true
         } else {
-            root?.showAlert("You do not have Permission to Access this Feature.")
+            root?.showAlert("You do not have permission to access this feature.")
             false
         }
     }

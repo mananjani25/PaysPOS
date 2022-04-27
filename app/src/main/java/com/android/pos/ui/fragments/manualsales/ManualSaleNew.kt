@@ -13,6 +13,7 @@ import android.view.*
 import android.widget.*
 import androidx.appcompat.widget.*
 import androidx.appcompat.widget.PopupMenu
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResultListener
@@ -26,11 +27,8 @@ import com.android.pos.data.remote.Constants.CUSTOMER_NAME
 import com.android.pos.data.remote.Constants.KEY
 import com.android.pos.data.remote.Constants.LOYALTY_ADDED
 import com.android.pos.data.remote.Constants.MANUALSALE
-import com.android.pos.data.remote.Constants.MANUAL_SALE_CATEGORY_ID
-import com.android.pos.data.remote.Constants.MANUAL_SALE_ITEM_ID
 import com.android.pos.data.remote.Constants.TAKEOUT
 import com.android.pos.databinding.FragmentManualSaleNewBinding
-
 import com.android.pos.di.PrefProvider
 import com.android.pos.di.RolePermission
 import com.android.pos.ui.adapter.ManualSaleCartAdapter
@@ -45,7 +43,6 @@ import com.android.pos.utils.extensions.visible
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
-import kotlin.random.Random
 
 @AndroidEntryPoint
 class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
@@ -60,6 +57,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
     private var cartList: List<CartModel>? = null
     private lateinit var cartAdapter: ManualSaleCartAdapter
     private var cartItemModel = TbItem()
+    var orderDiscount = 0.0
     private val viewModel by activityViewModels<DashBoardCategoryViewModel>()
     var amountToBepaid = 0.0
     var totalquantity = 0
@@ -85,13 +83,9 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
         binding.lifecycleOwner = this
         getLoyaltyPrograms()
         getServiceCharge()
-        Log.e(TAG, "CategoryId: ${prefProvider.getValueInt(MANUAL_SALE_CATEGORY_ID, 1)}")
-        Log.e(TAG, "CategoryItemId: ${prefProvider.getValueInt(MANUAL_SALE_ITEM_ID, 1)}")
-        Log.e(TAG, "cartDetails: $arguments")
-
         getDiscountList()
 
-        binding.layoutHeader.edtSearch.visibility=View.GONE
+        binding.layoutHeader.edtSearch.visibility = View.GONE
 
         return binding.root
     }
@@ -157,7 +151,9 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
         binding.layoutHeader.txtKeypad.setTextColor(requireContext().resources.getColor(R.color.btnColor))
         binding.layoutHeader.txtHome.visibility = View.VISIBLE
         binding.layoutHeader.txtTransaction.setOnClickListener {
-            findNavController().navigate(R.id.action_manualSalesNew_to_transactionFragment)
+            if (rolePermission.hasTransactionPermission(binding.root)) {
+                findNavController().navigate(R.id.action_manualSalesNew_to_transactionFragment)
+            }
 
         }
         binding.layoutHeader.imgSync.setOnClickListener {
@@ -261,7 +257,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                         "%.2f",
                         viewModel.totalPrice
                     )
-                    binding.tvDiscount.text = "$" + String.format(
+                    binding.tvDiscount.text = "-$" + String.format(
                         "%.2f",
                         viewModel.totalDiscount
                     )
@@ -269,6 +265,17 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                         "%.2f",
                         viewModel.totalPrice
                     )
+                    if (viewModel.order_note.isNotEmpty()) {
+                        binding.linearBottomInfo?.layoutParams?.height =
+                            resources.getDimension(R.dimen._60sdp).toInt()
+                        binding.relativeOrderNotes?.visible()
+                        binding.txtOrderNote!!.text = viewModel.order_note
+
+                    } else {
+                        binding.relativeOrderNotes?.gone()
+                        binding.linearBottomInfo?.layoutParams?.height =
+                            resources.getDimension(R.dimen._50sdp).toInt()
+                    }
                 } else {
 
                     cartAdapter.clearList()
@@ -407,10 +414,14 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
 
                     val manualItems = cartList!![0].items
                     val mainItems = mainCartList[0].items
-
                     val mergeItems = merge(mainItems!!, manualItems!!)
 
                     mainCartList[0].items = mergeItems
+                    if (cartList!![0].discountPrice != 0.00)
+                        mainCartList[0].discountPrice = cartList!![0].discountPrice
+
+                    if (cartList!![0].note.isNotEmpty())
+                        mainCartList[0].note = cartList!![0].note
 
                     viewModel.addCart(mainCartList[0])
 
@@ -562,6 +573,12 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
 
             val popupMenu = PopupMenu(requireContext(), it)
             popupMenu.menuInflater.inflate(R.menu.manual_sale_menu, popupMenu.menu)
+            if (cartList?.isEmpty() == true) {
+                popupMenu.menu.findItem(R.id.menu_order_discount).isVisible = false
+                popupMenu.menu.findItem(R.id.menu_order_note).isVisible = false
+                popupMenu.menu.findItem(R.id.menu_clear_cart).isVisible = false
+            }
+
             if (prefProvider.getValue(Constants.CUSTOMER_NAME, "").isEmpty())
                 popupMenu.menu.findItem(R.id.menu_remove_customer).isVisible = false
             popupMenu.setOnMenuItemClickListener { menuItem ->
@@ -577,7 +594,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                                     prefProvider.setValueInt(Constants.CUSTOMER_ID, -1)
                                     binding.txtTotalAmount.text = "$0.00"
                                     binding.txtTotal.text = "$0.00"
-                                    binding.tvDiscount.text = "$0.00"
+                                    binding.tvDiscount.text = "-$0.00"
                                     binding.txtSubTotal.text = "$0.00"
                                     binding.txtTotalTax.text = "$0.00"
                                     binding.txtServiceCharge.text = "$0.00"
@@ -591,6 +608,12 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                         }
 
                     }
+                    R.id.menu_order_note -> {
+                        findNavController().navigate(
+                            R.id.action_manualSaleNew_to_addNoteDialog,
+                            bundleOf("isOrderNote" to true, "cartList" to cartList)
+                        )
+                    }
                     R.id.menu_remove_customer -> {
 
                         if (cartList?.isNotEmpty() == true && cartList!![0].customer != null) {
@@ -599,6 +622,20 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                         }
                         clearCustomer()
 
+                    }
+                    R.id.menu_order_discount -> {
+                        val bundle = Bundle()
+                        bundle.putBoolean("isOrderDiscount", true)
+                        bundle.putDouble("totalPrice", viewModel.totalPrice)
+                        if (cartList?.isNotEmpty() == true) {
+                            bundle.putDouble("orderDiscountPrice", cartList!![0].discountPrice)
+                            bundle.putString("orderDiscountType", cartList!![0].discountType)
+                            bundle.putDouble("selectedvalue", cartList!![0].discountSelectdValue)
+                        }
+                        findNavController().navigate(
+                            R.id.action_manualSaleNew__to_addDiscountDialog,
+                            bundle
+                        )
                     }
                 }
                 true
@@ -841,17 +878,46 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
 
 
         }
+        setFragmentResultListener("request_key_discount_order") { _: String, bundle: Bundle ->
+            val result = bundle.getParcelable<TbDiscount>("data")
+            val value = bundle.getDouble("value")
+            if (result != null && viewModel.totalPrice != 0.0) {
+                orderDiscount = result.percentage
+
+                val discountApplyPrice = viewModel.totalPrice
+                val price = discountApplyPrice - orderDiscount
+
+                if (cartList?.isNotEmpty() == true) {
+                    cartList!![0].discountPrice = orderDiscount
+                    cartList!![0].discountSelectdValue = value
+                    cartList!![0].discountType = result.discountType
+                    if (result.id != -1) {
+                        cartList!![0].discountId = result.id
+                    }
+                    viewModel.addCart(cartList!![0])
+                }
+
+
+            }
+        }
         setFragmentResultListener("request_key_note") { requestKey: String, bundle: Bundle ->
             val note = bundle.getString("note")
+            val isOrderNote = bundle.getBoolean("isOrderNote")
+            if (isOrderNote) {
+                if (cartList?.isNotEmpty() == true) {
+                    cartList!![0].note = note.toString()
+                    viewModel.addCart(cartList!![0])
+                }
+            } else {
+                cartItemModel.note = note.toString()
 
-            cartItemModel.note = note.toString()
-
-            cartItemModel?.let {
-                viewModel.manualSalecartLogic(
-                    cartList,
-                    it,
-                    Constants.UPDATE
-                )
+                cartItemModel?.let {
+                    viewModel.manualSalecartLogic(
+                        cartList,
+                        it,
+                        Constants.UPDATE
+                    )
+                }
             }
         }
         setFragmentResultListener("request_key_discount") { requestKey: String, bundle: Bundle ->
@@ -864,7 +930,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                     cartModel.discountPrice = calculateDiscountPercentage(
                         cartAdapter.getItem(pos).price,
                         result.percentage
-                    )
+                    ) * cartModel.itemQuantity
                     cartModel.discountId = result.id
                     cartModel.discountType = result.discountType
                     cartModel.isDiscountDefault = true
@@ -874,14 +940,12 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
 
                 } else if (result.discountType == "Amount") {
                     val cartModel = cartAdapter.getItem(pos)
-                    cartModel.discountPrice = result.percentage
+                    cartModel.discountPrice =
+                        MethodUtils.roundOffAmountDouble(result.percentage * cartModel.itemQuantity)
                     cartModel.isDiscountDefault = false
                     cartModel.discountType = result.discountType
                     viewModel.manualSalecartLogic(cartList, cartModel, Constants.UPDATE)
 
-
-
-                    Log.e(TAG, "DiscountInDollar")
                 } else {
                     val cartModel = cartAdapter.getItem(pos)
                     cartModel.discountPrice = 0.0
@@ -1103,7 +1167,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                         model.discountPrice = calculateDiscountPercentage(
                             model.price * totalquantity,
                             result.percentage
-                        )
+                        ) * model.itemQuantity
                         model.discountId = result.id
                         model.discountType = result.discountType
                         model.isManualSales = true
@@ -1115,7 +1179,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
 
                     } else if (result.discountType == "Amount") {
 
-                        model.discountPrice = result.percentage
+                        model.discountPrice = result.percentage * model.itemQuantity
                         model.discountId = result.id
                         model.discountType = result.discountType
                         model.isManualSales = true
@@ -1141,6 +1205,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                 }
             }
             val bundle = Bundle().apply {
+                putInt("totalquantity", totalquantity)
                 putBoolean("isFromDetails", true)
                 putParcelable("model", model)
             }
@@ -1358,7 +1423,9 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
         }
 
         linearCash.setOnClickListener {
-            findNavController().navigate(R.id.action_manualSaleNew_to_Cashlog)
+            if (rolePermission.hasCashLogPermission(binding.root)) {
+                findNavController().navigate(R.id.action_manualSaleNew_to_Cashlog)
+            }
             closeDialog(dialog)
         }
 
@@ -1371,8 +1438,10 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
             closeDialog(dialog)
         }
         linearCust.setOnClickListener {
-            findNavController().navigate(R.id.action_manualSaleNew_to_customer)
-            closeDialog(dialog)
+            if (rolePermission.hasCustomerPermission(binding.root)) {
+                findNavController().navigate(R.id.action_manualSaleNew_to_customer)
+                closeDialog(dialog)
+            }
         }
         linearReports.setOnClickListener {
             findNavController().navigate(R.id.action_manualSaleNew_to_reports)

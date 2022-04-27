@@ -67,7 +67,7 @@
                 android:layout_gravity="center_vertical"
                 android:layout_weight="1"
                 android:gravity="center_vertical"
-                android:text="@{@string/symbole +``+String.format(@string/format,model.price)}"
+
                 android:textColor="@color/white"
                 android:textSize="@dimen/_6mdpi"
                 android:paddingLeft="@dimen/_2sdp"
@@ -81,7 +81,7 @@
                 android:layout_gravity="center_vertical"
                 android:layout_weight="1"
                 android:gravity="center_vertical"
-                android:text="@{@string/symbole +``+String.format(@string/format,model.totalPrice)}"
+
                 android:textColor="@color/white"
                 android:textSize="@dimen/_6mdpi"
                 tools:text="$12.00" />

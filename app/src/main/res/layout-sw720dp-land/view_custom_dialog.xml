@@ -5,6 +5,7 @@
     android:layout_height="wrap_content"
     android:layout_gravity="center"
     android:gravity="center"
+    android:background="@color/bg_color"
     android:orientation="vertical"
     tools:ignore="MissingDefaultResource">
 
@@ -21,12 +22,13 @@
 
     <androidx.appcompat.widget.AppCompatTextView
         android:id="@+id/tvMessage"
-        style="@style/CustomFontMediumStyle"
+        style="@style/CustomFontRegularStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/_5sdp"
         android:layout_marginBottom="@dimen/_10sdp"
         android:gravity="center"
+        android:textColor="@color/txtColor"
         android:padding="@dimen/_8sdp"
         android:text="Do you want to delete?"
         android:textSize="@dimen/_6mdpi" />

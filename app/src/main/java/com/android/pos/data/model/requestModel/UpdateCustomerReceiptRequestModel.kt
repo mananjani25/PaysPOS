@@ -11,7 +11,7 @@ data class UpdateCustomerReceiptRequestModel(
     var showModifiers: Boolean = false,
     @SerializedName("show_order_note")
 
-    val showOrderNote: Boolean = false,
+    var showOrderNote: Boolean = false,
 
     @SerializedName("show_split_amount")
     var showSplitAmount: Boolean = false,

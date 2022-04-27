@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
+import androidx.appcompat.widget.PopupMenu
 import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
@@ -22,6 +23,7 @@ import com.android.pos.ui.adapter.UserPermissionListAdapter
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.SwipeHelper
+import com.android.pos.utils.callback.ItemCallback
 import com.android.pos.utils.extensions.alert
 import com.android.pos.utils.extensions.liveSnackBar
 import com.android.pos.utils.extensions.showAlert
@@ -31,7 +33,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class UserAccessPermissionListFragment : Fragment() {
+class UserAccessPermissionListFragment : Fragment() ,ItemCallback{
 
     private var position: Int = -1
     private lateinit var binding: FragmentUserAccessPermissionListBinding
@@ -59,6 +61,7 @@ class UserAccessPermissionListFragment : Fragment() {
         )
 
         binding.lifecycleOwner = this
+        setHeader()
 
         setUpRecyclerView()
         getUserRoleListObserver()
@@ -72,10 +75,10 @@ class UserAccessPermissionListFragment : Fragment() {
             )
         }
 
-        binding.imgClose.setOnClickListener {
+        binding.header.imgBack.setOnClickListener {
             backPressManage()
         }
-        binding.txtHome.setOnClickListener {
+        binding.header.txtSave.setOnClickListener {
             findNavController().navigate(R.id.action_userAccessPermissionListFragment_to_dashboardCategory)
         }
 
@@ -90,11 +93,19 @@ class UserAccessPermissionListFragment : Fragment() {
         return binding.root
     }
 
+    private fun setHeader() {
+        binding.header.txtTitle.text=getString(R.string.tv_user_access_permission)
+        binding.header.txtSave.text=getString(R.string.tv_home)
+    }
+
+
 
     private fun setUpRecyclerView() {
         userPermissionListAdapter = UserPermissionListAdapter()
         binding.rvUserPermissionList.adapter = userPermissionListAdapter
 
+        userPermissionListAdapter.setCallback(this)
+/*
         object : SwipeHelper(activity, binding.rvUserPermissionList) {
             override fun instantiateUnderlayButton(
                 viewHolder: RecyclerView.ViewHolder?,
@@ -145,6 +156,7 @@ class UserAccessPermissionListFragment : Fragment() {
                 })
             }
         }
+*/
     }
 
     private fun getUserRoleListObserver() {
@@ -223,5 +235,45 @@ class UserAccessPermissionListFragment : Fragment() {
 
     private fun setupSnackbar() =
         binding.root.liveSnackBar(this, viewModel.snackbarText, Snackbar.LENGTH_SHORT)
+
+    override fun onItemClickListener(view: View?, pos: Int) {
+        val popupMenu = view?.let { PopupMenu(requireContext(), it) }
+        popupMenu?.menuInflater?.inflate(R.menu.edit_delete_menu, popupMenu.menu)
+        popupMenu?.setOnMenuItemClickListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.menu_edit -> {
+                    userPermissionObject = userPermissionListAdapter.getItem(pos)
+                    val bundle = Bundle()
+                    bundle.putBoolean("isEdit", true)
+                    bundle.putParcelable("userPermissionObject", userPermissionObject)
+
+                    //     var bundle= bundleOf()
+                    findNavController().navigate(
+                        R.id.action_userAccessPermissionListFragment_to_userAccessPermissionFragment,
+                        bundle
+                    )
+                }
+                R.id.menu_delete -> {
+                    activity?.let {
+                        alert(
+                            getString(R.string.app_name),
+                            getString(R.string.delete_employee_role_message)
+                        ) {
+                            positiveButton(getString(R.string.tv_delete)) {
+                                // Do positive stuff here
+                                userPermissionObject = userPermissionListAdapter.getItem(pos)
+                                viewModel.delete(userPermissionListAdapter.getItem(pos).id)
+                            }
+                            negativeButton(R.string.tv_cancel) {
+                                // Do negative stuff here
+                            }
+                        }
+                    }
+                }
+            }
+            true
+        }
+        popupMenu?.show()
+    }
 
 }

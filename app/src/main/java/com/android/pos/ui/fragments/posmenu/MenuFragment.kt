@@ -12,6 +12,7 @@ import com.android.pos.R
 import com.android.pos.data.remote.Constants
 import com.android.pos.databinding.FragmentMenuBinding
 import com.android.pos.di.PrefProvider
+import com.android.pos.di.RolePermission
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.android.pos.utils.extensions.alert
 import dagger.hilt.android.AndroidEntryPoint
@@ -20,6 +21,9 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class MenuFragment : DialogFragment() {
     private lateinit var binding: FragmentMenuBinding
+
+    @Inject
+    lateinit var rolePermission: RolePermission
     private val viewModel by viewModels<DashBoardCategoryViewModel>()
     @Inject
     lateinit var prefProvider: PrefProvider
@@ -31,10 +35,17 @@ class MenuFragment : DialogFragment() {
         binding = FragmentMenuBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = this
 
+        setUpHeader()
 
 
         return binding.root
     }
+
+    private fun setUpHeader() {
+        binding.header.txtTitle.text=getString(R.string.menu)
+        binding.header.txtSave.text=getString(R.string.tv_home)
+    }
+
     override fun getTheme(): Int {
         return R.style.DialogTheme
     }
@@ -49,8 +60,8 @@ class MenuFragment : DialogFragment() {
         viewModel.logout.observe(viewLifecycleOwner, { event ->
             event.getContentIfNotHandled()?.let {
                 if (it) {
+                    viewModel.clearTableAll()
                     prefProvider.setClear()
-                    viewModel.clearTable()
                     prefProvider.setValue(Constants.AUTH_TOKEN, "")
                     findNavController().navigate(R.id.action_global_login)
 
@@ -62,7 +73,7 @@ class MenuFragment : DialogFragment() {
     }
 
     private fun onClick() {
-        binding.txtHome.setOnClickListener {
+        binding.header.txtSave.setOnClickListener {
             findNavController().navigateUp()
             /*findNavController().navigateUp()*/
         }
@@ -72,27 +83,37 @@ class MenuFragment : DialogFragment() {
         binding.linearHardware.setOnClickListener {
             findNavController().navigate(R.id.action_menuFragment_to_hardware)
         }
-        binding.imgBack.setOnClickListener {
+        binding.header.imgBack.setOnClickListener {
             findNavController().navigateUp()
         }
         binding.linearInventory.setOnClickListener {
-            findNavController().navigate(R.id.action_menuFragment_to_inventory)
+            if (rolePermission.hasInventoryPermission(binding.root)){
+                findNavController().navigate(R.id.action_menuFragment_to_inventory)
+            }
         }
 
         binding.linearOrders.setOnClickListener {
             findNavController().navigate(R.id.action_menuFragment_to_orders)
         }
         binding.linearTeam.setOnClickListener {
-            findNavController().navigate(R.id.action_menuFragment_to_teamList)
+            if(rolePermission.hasEmployeePermission(binding.root)){
+                findNavController().navigate(R.id.action_menuFragment_to_teamList)
+            }
         }
         binding.linearTransactions.setOnClickListener {
-            findNavController().navigate(R.id.action_menuFragment_to_transactionFragment)
+            if (rolePermission.hasTransactionPermission(binding.root)){
+                findNavController().navigate(R.id.action_menuFragment_to_transactionFragment)
+            }
         }
         binding.linearCashLog.setOnClickListener {
-            findNavController().navigate(R.id.action_menuFragment_to_cashLogFragment)
+            if (rolePermission.hasCashLogPermission(binding.root)) {
+                findNavController().navigate(R.id.action_menuFragment_to_cashLogFragment)
+            }
         }
         binding.linearCustomers.setOnClickListener {
-            findNavController().navigate(R.id.action_menuFragment_to_customer)
+            if(rolePermission.hasCustomerPermission(binding.root)) {
+                findNavController().navigate(R.id.action_menuFragment_to_customer)
+            }
         }
         binding.linearReports.setOnClickListener {
             findNavController().navigate(R.id.action_menuFragment_to_reports)

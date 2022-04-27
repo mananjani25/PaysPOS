@@ -1,5 +1,6 @@
 package com.android.pos.ui.fragments.inventory
 
+import android.content.Intent
 import android.graphics.Color
 import android.os.Bundle
 import android.text.Editable
@@ -29,11 +30,12 @@ import com.android.pos.utils.statusUtils.Status
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class Options : Fragment(), TextWatcher,ItemCallback {
+class Options(val clickedPosition: Int) : Fragment(), TextWatcher,ItemCallback {
     private lateinit var binding: FragmentOptionsBinding
     private var isreOrder: Boolean = false
     var dragFrom = -1
     var dragTo = -1
+    var listSize:Int?=0
     private lateinit var adapter: OptionListAdapter
     private val viewModel by viewModels<OptionSetViewModel>()
     override fun onCreateView(
@@ -190,7 +192,7 @@ class Options : Fragment(), TextWatcher,ItemCallback {
 
     private fun deleteObserve() {
 
-        viewModel.data.observe(viewLifecycleOwner, { event ->
+        viewModel.data.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
                 if (!isreOrder)
                     AlertUtils.showCustomAlert(requireActivity(), it.message)
@@ -199,8 +201,13 @@ class Options : Fragment(), TextWatcher,ItemCallback {
                     isreOrder = false
                     viewModel.reOrder(adapter.getAll())
                 }
+
+                val intent = Intent()
+                intent.action = "inventory"
+                intent.putExtra("position", clickedPosition)
+                requireContext().sendBroadcast(intent)
             }
-        })
+        }
 
     }
 

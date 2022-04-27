@@ -52,7 +52,7 @@ class Customer : Fragment(),ItemCallback {
     private var isLastPage = false
     private var firstDetailLoad = false
     private var deletedPos: Int? = null
-
+    var isIn=false
     val data = LinkedHashMap<String, String>()
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -177,11 +177,23 @@ class Customer : Fragment(),ItemCallback {
                             //setUpRecyclerView()
 
                             try {
-                                if (!firstDetailLoad) {
-                                    loadFragment(data[0])
-                                }
-                            } catch (e: Exception) {
 
+                                if (!firstDetailLoad) {
+                                    //loadFragment(data[0])
+                                    for (i in data.indices){
+                                        if (data.get(i).isSelcted){
+                                            customerAdapter.isSelectedPos=i
+                                            loadFragment(data[i])
+                                            isIn=true
+                                            break
+                                        }
+                                    }
+                                }
+                                if (!isIn)
+                                    loadFragment(data[0])
+
+                            } catch (e: Exception) {
+                                e.printStackTrace()
                             }
 
                         }

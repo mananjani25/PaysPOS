@@ -172,7 +172,42 @@
                         android:layout_height="match_parent"
                         android:layout_weight="1"
                         android:orientation="vertical">
+                        <androidx.appcompat.widget.LinearLayoutCompat
+                            android:id="@+id/relative_order_notes"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/_1sdp"
+                            android:orientation="horizontal"
+                            android:visibility="gone"
+                            android:padding="@dimen/_1sdp">
 
+                            <androidx.appcompat.widget.AppCompatTextView
+                                style="@style/CustomFontMediumStyle"
+                                android:layout_width="0dp"
+                                android:layout_weight="5"
+                                android:layout_gravity="center"
+                                android:gravity="center_vertical"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentStart="true"
+                                android:layout_marginStart="@dimen/_3sdp"
+                                android:text="@string/note"
+                                android:textColor="@color/dark_gray"
+                                android:textSize="@dimen/_6mdpi" />
+
+                            <androidx.appcompat.widget.AppCompatTextView
+                                android:id="@+id/txt_order_note"
+                                style="@style/CustomFontBold"
+                                android:layout_width="0dp"
+                                android:layout_weight="5"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentEnd="true"
+                                android:layout_marginEnd="@dimen/_3sdp"
+                                android:gravity="end"
+                                android:text=""
+                                android:singleLine="true"
+                                android:textColor="@color/txtColor"
+                                android:textSize="@dimen/text_size_medium" />
+                        </androidx.appcompat.widget.LinearLayoutCompat>
                         <RelativeLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -308,7 +343,7 @@
                                 android:layout_alignParentEnd="true"
                                 android:layout_marginEnd="@dimen/_5sdp"
                                 android:gravity="end"
-                                android:text="$ 0.00"
+                                android:text="-$0.00"
                                 android:textColor="@color/colorRed"
                                 android:textSize="@dimen/text_size_medium" />
                         </RelativeLayout>
@@ -321,15 +356,15 @@
                             android:layout_marginTop="@dimen/_1sdp"
                             android:orientation="horizontal"
                             android:padding="@dimen/_1sdp"
-                            android:visibility="visible">
+                            android:visibility="gone">
 
                             <androidx.appcompat.widget.AppCompatTextView
+                                android:id="@+id/label_cashSurcharge"
                                 style="@style/CustomFontMediumStyle"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_alignParentStart="true"
                                 android:layout_marginStart="@dimen/_3sdp"
-                                android:text="@string/balance_due"
                                 android:textColor="@color/dark_gray"
                                 android:textSize="@dimen/_6mdpi" />
 
@@ -455,6 +490,7 @@
                                 android:textColor="@color/txtColor"
                                 android:textSize="@dimen/text_size_medium" />
                         </RelativeLayout>
+
 
 
                     </androidx.appcompat.widget.LinearLayoutCompat>

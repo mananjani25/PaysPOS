@@ -84,7 +84,7 @@ object Constants {
 
     const val PICK_UP = "Pickup"
     const val DELIVERY = "Delivery"
-
+    const val OPEN_ORDER_ITEMS = "Open_Order_Items"
 
     //Api End Points
     const val USERS_LOG_IN = "users/log_in"
@@ -112,6 +112,7 @@ object Constants {
     const val GUEST_POSITION = "guest_position"
     const val GUEST_COUNT = "guest_count"
     const val DINE_IN_ADAPTER_LIST = "dine_in_adapter_list"
+    const val DINE_IN_GUEST_PAYMENT_DATA = "dine_in_guest_payment_data"
     const val SYNC_VENUE_DATA = "locations/sync_data"
     const val SYNC_VENUE_DETAILS = "locations/setting_data"
     const val ORDER_TYPES = "order_types"
@@ -280,6 +281,9 @@ object Constants {
     const val PENDING = "PENDING"
     const val IN_PROCESS = "IN PROCESS"
     const val COMPLETED = "COMPLETED"
+
+    const val INVENTORY_COUNTS = "items/inventories_count"
+
 
     fun createRequestModelForUpdatePritnerType(
         oldList: ArrayList<PrinterResponse.Data.OrderTypes>?,

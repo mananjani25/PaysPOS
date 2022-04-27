@@ -187,7 +187,7 @@ class MergeTableSelectionAdapter : RecyclerView.Adapter<MergeTableSelectionAdapt
 
     fun addItem(model: MergeTableListModel) {
         list.add(model)
-        notifyDataSetChanged()
+        notifyItemInserted(list.size-1)
 
     }
 

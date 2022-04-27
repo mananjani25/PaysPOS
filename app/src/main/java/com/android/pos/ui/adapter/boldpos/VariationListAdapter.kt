@@ -124,7 +124,11 @@ class VariationListAdapter() :
     }
 
     fun getItem(): VariationsAttribute {
-        return variationList[mpos]
+        if (mpos != -1) {
+            return variationList[mpos]
+        }else {
+            return variationList[0]
+        }
     }
 
     fun selectItem(id: Int) {

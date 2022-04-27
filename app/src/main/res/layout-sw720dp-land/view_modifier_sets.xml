@@ -34,6 +34,16 @@
             android:paddingEnd="@dimen/_5sdp"
             android:paddingBottom="@dimen/_2sdp">
 
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/imgReorder"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:padding="@dimen/_5sdp"
+                android:layout_marginRight="@dimen/_5sdp"
+                app:srcCompat="@drawable/ic_baseline_menu" />
+
+
             <androidx.appcompat.widget.LinearLayoutCompat
                 android:layout_width="0dp"
                 android:layout_gravity="center_vertical"
@@ -75,13 +85,6 @@
                 android:layout_marginEnd="@dimen/_10sdp"
                 android:src="@{model.isChecked ? @drawable/ic_check_circle: @drawable/ic_uncheck_circle}" />
 
-            <androidx.appcompat.widget.AppCompatImageView
-                android:id="@+id/imgReorder"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:padding="@dimen/_3sdp"
-                app:srcCompat="@drawable/ic_baseline_menu" />
 
             <include
                 android:id="@+id/layout_menu"

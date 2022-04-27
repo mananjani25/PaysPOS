@@ -33,9 +33,6 @@ class InventoryAdapter(
                 binding.firstview.visibility = View.GONE
             }
 
-            if (isHide) {
-                binding.txtCount.gone()
-            }else  binding.txtCount.visible()
 
             if (item.isSelected) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {

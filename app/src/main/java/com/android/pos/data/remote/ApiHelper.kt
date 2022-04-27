@@ -514,4 +514,7 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
     suspend fun orderCounts(startDate: String?, endDate: String?) =
         getResult { apiService.orderCounts(startDate,endDate) }
 
+    suspend fun inventoryCounts() =
+        getResult { apiService.inventoryCounts() }
+
 }

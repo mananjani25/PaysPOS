@@ -21,11 +21,16 @@ import com.android.pos.data.model.responseModel.*
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.DINE_IN
 import com.android.pos.data.remote.Constants.EMPLOYEE_NAME
+import com.android.pos.data.remote.Constants.LARGE
+import com.android.pos.data.remote.Constants.MEDIUM
+import com.android.pos.data.remote.Constants.OPEN_ORDER_ITEMS
 import com.android.pos.data.remote.Constants.ORDER_TYPE
+import com.android.pos.data.remote.Constants.SMALL
 import com.android.pos.data.remote.Constants.SPLIT_ENABLE
 import com.android.pos.data.remote.Constants.TAKEOUT
 import com.android.pos.databinding.FragmentDashboardCategoryBoldPosBinding
 import com.android.pos.di.PrefProvider
+import com.android.pos.di.RolePermission
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.android.pos.ui.fragments.payment.PaymentViewModel
 import com.android.pos.utils.*
@@ -37,11 +42,13 @@ import com.android.pos.utils.statusUtils.Status
 import com.epson.eposprint.Builder
 import com.epson.eposprint.Print
 import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
+    private var dineInList: List<DineInModel>? = null
     private var cartList: ArrayList<CartModel> = arrayListOf()
     private lateinit var binding: FragmentDashboardCategoryBoldPosBinding
     private val viewModel by activityViewModels<DashBoardCategoryViewModel>()
@@ -62,6 +69,8 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
     private var orderFloorDetails: GetOrderDetailsResponse.Data.FloorPlanTable =
         GetOrderDetailsResponse.Data.FloorPlanTable()
 
+    @Inject
+    lateinit var rolePermission: RolePermission
     private var orderId: Int? = null
     private var orderOfflineId: String = ""
     private var paymentOfflineId: String = ""
@@ -76,6 +85,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+        syncData()
 
         binding = FragmentDashboardCategoryBoldPosBinding.inflate(inflater, container, false)
         val callback: OnBackPressedCallback =
@@ -96,8 +106,9 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
         dineInUpdateOrder()
         navigateDineInOrder()
         getLoyaltyPrograms()
-        syncData()
+
         checkDineInEditOrder()
+        printerProgress()
 
         binding.lifecycleOwner = this
         return binding.root
@@ -199,8 +210,9 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
 
         setFragmentResultListener("request_key_note") { requestKey: String, bundle: Bundle ->
             val note = bundle.getString("note")
+            val isOrderNote = bundle.getBoolean("isOrderNote")
             val singleItem = bundle.getParcelable<TbItem>("item")
-           // val cartList = bundle.getParcelableArrayList<CartModel>("cartList")
+            // val cartList = bundle.getParcelableArrayList<CartModel>("cartList")
             var dineInArrayList: List<DineInModel>? = null
 /*
             if (prefProvider.getValue(
@@ -215,18 +227,24 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
 */
 
 
-
-            singleItem?.note = note.toString()
-            singleItem?.let {
-                dineInArrayList?.let { it1 ->
-                    viewModel.cartLogic(
-                        cartList,
-                        it,
-                        Constants.UPDATE,
-                        false
-                    )
+            if (isOrderNote) {
+                viewModel.addOrderNote(note.toString())
+                /* cartList[0].note = note.toString()
+                 viewModel.addCart(cartList[0])*/
+            } else {
+                singleItem?.note = note.toString()
+                singleItem?.let {
+                    dineInArrayList?.let { it1 ->
+                        viewModel.cartLogic(
+                            cartList,
+                            it,
+                            Constants.UPDATE,
+                            false
+                        )
+                    }
                 }
             }
+
         }
 
     }
@@ -335,7 +353,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
             findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_paymentBoldPosFragment)
         } else {
             loadCartFragment(CartFragment(this, this))
-            loadCategoryFragment(CategoryFragment(this,binding.layoutHeader.edtSearch))
+            loadCategoryFragment(CategoryFragment(this, binding.layoutHeader.edtSearch))
         }
         binding.layoutHeader.txtUserName.text =
             prefProvider.getValue(EMPLOYEE_NAME, "")
@@ -388,11 +406,34 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
     private fun onClick() {
 
         binding.layoutHeader.txtTransaction.setOnClickListener {
-            findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_transactionFragment)
+            if (rolePermission.hasTransactionPermission(binding.root)) {
+                findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_transactionFragment)
+            }
 
         }
         binding.layoutHeader.txtDineIn.setOnClickListener {
-            findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_dineInFragment)
+            if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == DINE_IN) {
+                if (cartList.isNotEmpty()) {
+                    val dList = cartList[0].dineInList ?: arrayListOf()
+                    Log.e(TAG, "dList:  ${Gson().toJson(dList)}")
+                    var updateDinein = arguments?.getBoolean("is_dine_in_edit") ?: false
+                    if (!updateDinein) {
+                        if (dList.isNotEmpty()) {
+                            dList[0].floorPlanTable?.id?.let {
+                                viewModel.getTableStatus(
+                                    it, "Available"
+                                )
+                            }
+                            findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_dineInFragment)
+                        }
+                    } else {
+                        findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_dineInFragment)
+                    }
+                }
+            } else {
+                findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_dineInFragment)
+            }
+
         }
         binding.layoutHeader.imgDrawer.setOnClickListener {
             findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_menuFragment)
@@ -417,7 +458,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
         binding.layoutHeaderCheckout.imgDrawer.setOnClickListener {
             binding.layoutHeaderCheckout.rlRoot.visibility = View.GONE
             binding.layoutHeader.rlRoot.visibility = View.VISIBLE
-            loadCategoryFragment(CategoryFragment(this,binding.layoutHeader.edtSearch))
+            loadCategoryFragment(CategoryFragment(this, binding.layoutHeader.edtSearch))
         }
 
         binding.layoutHeader.imgSync.setOnClickListener {
@@ -437,24 +478,25 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
          )
      }*/
         binding.layoutHeader.txtKeypad.setOnClickListener {
-            //loadKeyPadFragment(KeyPadManualSaleFragment())
-            viewModel.deleteManualSaleCart()
-            binding.layoutHeader.txtKeypad.setTextColor(resources.getColor(R.color.btnColor))
-            binding.layoutHeader.txtKeypad.setTypeface(
-                binding.layoutHeader.txtKeypad.typeface,
-                Typeface.BOLD
-            )
-            binding.layoutHeader.txtOpenOrder.setTextColor(resources.getColor(R.color.txtColor))
-            binding.layoutHeader.txtOpenOrder.setTypeface(
-                binding.layoutHeader.txtOpenOrder.typeface,
-                Typeface.NORMAL
-            )
-            var bundle: Bundle = Bundle()
-            bundle.putParcelableArrayList("carttlist", cartList)
-            findNavController().navigate(
-                R.id.action_dashboardCategoryBoldPOS_to_manualSalesNew,
-                bundle
-            )
+            if (rolePermission.hasManualSalesPermission(binding.root)) {
+                viewModel.deleteManualSaleCart()
+                binding.layoutHeader.txtKeypad.setTextColor(resources.getColor(R.color.btnColor))
+                binding.layoutHeader.txtKeypad.setTypeface(
+                    binding.layoutHeader.txtKeypad.typeface,
+                    Typeface.BOLD
+                )
+                binding.layoutHeader.txtOpenOrder.setTextColor(resources.getColor(R.color.txtColor))
+                binding.layoutHeader.txtOpenOrder.setTypeface(
+                    binding.layoutHeader.txtOpenOrder.typeface,
+                    Typeface.NORMAL
+                )
+                var bundle: Bundle = Bundle()
+                bundle.putParcelableArrayList("carttlist", cartList)
+                findNavController().navigate(
+                    R.id.action_dashboardCategoryBoldPOS_to_manualSalesNew,
+                    bundle
+                )
+            }
         }
 
 
@@ -462,8 +504,6 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
 
 
     override fun onItemSelected(item: TbItem) {
-        Log.e(TAG, "getitem:  ${Gson().toJson(item)}")
-        Log.e(TAG, "OrderTYpe:  ${prefProvider.getValue(ORDER_TYPE, TAKEOUT)}")
 
         if (item.modifier_set_ids.isNotEmpty() || item.variationsAttributes.isNotEmpty()) {
             val fragment = AddItemFragment.newInstance(item, this, cartList, false)
@@ -478,7 +518,12 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
             if (cartList.size > 0) {
 
                 if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == Constants.DINE_IN) {
-                    if(cartList[0].dineInList!!.isNotEmpty()){
+                    if (cartList[0].dineInList?.isEmpty() == true) {
+                        cartList[0].dineInList = dineInList
+                    }
+
+                    Log.e(TAG, "dineInCartListData:  ${Gson().toJson(cartList[0].dineInList)}")
+                    if (cartList[0].dineInList?.isNotEmpty() == true) {
                         var dineInList = cartList[0].dineInList
                         dineInList!![0]?.selectedPosition = viewModel.dineInHeaderPosition
                         viewModel.cartLogic(
@@ -498,8 +543,13 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
     }
 
 
-    override fun onCancelItemSelected() {
-        loadCategoryFragment(CategoryFragment(this,binding.layoutHeader.edtSearch))
+    override fun onCancelItemSelected(isCancel: Boolean) {
+        if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == DINE_IN && isCancel) {
+            arguments?.clear()
+            findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_self)
+        } else {
+            loadCategoryFragment(CategoryFragment(this, binding.layoutHeader.edtSearch))
+        }
 
     }
 
@@ -568,6 +618,12 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                 cartList.addAll(it.toCollection(arrayListOf()))
             }
 
+            if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == DINE_IN) {
+
+                binding.layoutHeader.txtKeypad.visibility = View.GONE
+            } else {
+                binding.layoutHeader.txtKeypad.visibility = View.VISIBLE
+            }
 
         }
 
@@ -773,8 +829,12 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                 prefProvider.setValue(Constants.ORDER_TYPE_NAME, DINE_IN)
                 prefProvider.setValueInt(Constants.ORDER_TYPE_ID, 2)
 
+                cartList[0].note = arguments?.getString("order_note").toString()
+                Log.e("AAjeDine", "cartdiscountPrice  ${cartList[0].discountPrice}")
+                Log.e("AAjeDine", "dineTotalDiscount  ${arguments?.getDouble("totalDiscount")}")
+                cartList[0].discountPrice = arguments?.getDouble("totalDiscount") ?: 0.0
                 viewModel.cartLogic(cartList, null, Constants.ADD, false, dineInList = dineInList)
-                viewModel.orderItemDiscount = arguments?.getDouble("totalDiscount") ?: 0.0
+                // viewModel.orderItemDiscount = arguments?.getDouble("totalDiscount") ?: 0.0
 
             }
 
@@ -821,50 +881,60 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
         type: String,
         createOrderResponse: CreateOrderResponse
     ) {
-        if (PrinterClass.getPrinter() == null) {
-            var printer: Print? = Print(requireContext())
-            if (printer != null) {
-                /* printer.setStatusChangeEventCallback(this)
-                 printer.setBatteryStatusChangeEventCallback(this)*/
-            }
 
-            val enabled = Print.TRUE
+        try {
+            PrinterClass.closePrinter()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+        /*if (PrinterClass.getPrinter() == null) {*/
+        var printer: Print? = Print(requireContext())
+        if (printer != null) {
+            /* printer.setStatusChangeEventCallback(this)
+             printer.setBatteryStatusChangeEventCallback(this)*/
+        }
 
-            try {
+        val enabled = Print.TRUE
 
-                printer?.openPrinter(
-                    if (data.printer_type == Constants.BLUETOOTH) {
-                        Print.DEVTYPE_BLUETOOTH
-                    } else {
-                        Print.DEVTYPE_TCP
-                    },
-                    data.ipAddress,
-                    enabled,
-                    1000
-                )
-                //  printer?.setStatusChangeEventCallback(this)
+        try {
 
-            } catch (e: Exception) {
-                Log.e(TAG, "PrinterException: " + e.message)
-                printer = null
-                ProgressUtils.dismissProgressDialog()
-                findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
+            printer?.openPrinter(
+                if (data.printer_type == Constants.BLUETOOTH) {
+                    Print.DEVTYPE_BLUETOOTH
+                } else {
+                    Print.DEVTYPE_TCP
+                },
+                data.ipAddress,
+                enabled,
+                1000
+            )
+            //  printer?.setStatusChangeEventCallback(this)
 
-            }
+        } catch (e: Exception) {
+            Log.e(TAG, "PrinterException: " + e.message)
+            printer = null
+            viewModel.downloadFinished(false)
+            findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
 
-            if (printer != null) {
-                PrinterClass.setPrinter(printer)
+        }
 
-                generateKitchenReceipt(data, type, createOrderResponse.data)
 
-            }
+        if (printer != null) {
+            PrinterClass.setPrinter(printer)
+
+            generateKitchenReceipt(data, type, createOrderResponse.data)
 
         } else {
             Log.e(TAG, "PrinterIsNotNull:")
-            ProgressUtils.dismissProgressDialog()
+            viewModel.downloadFinished(false)
             findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
+
         }
 
+        /* } else {
+
+         }
+ */
     }
 
     private fun observeSaveOrder() {
@@ -891,12 +961,107 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
             when (it.status) {
                 Status.SUCCESS -> {
                     Log.e(TAG, "getKitchenPrinterList:  ${Gson().toJson(it.data)}")
+                    Log.e(TAG, "isUpdateOrder  ${isupdate}")
+
                     ProgressUtils.dismissProgressDialog()
-                    ProgressUtils.showProgressDialog(requireActivity())
+                    viewModel.downloadFinished(true)
+
+                    if (isupdate) {
+                        var model = prefProvider.getValue(OPEN_ORDER_ITEMS, "")
+                        Log.e(TAG, "getItemsModel  ${Gson().toJson(model)}")
+                        var printOrderItems:
+                                ArrayList<CreateOrderResponse.Data.Order.OrderItem> =
+                            arrayListOf()
+
+                        val serializedObject: String = prefProvider.getValue(OPEN_ORDER_ITEMS, "")
+                        if (serializedObject.isNotEmpty()) {
+                            val gson = Gson()
+                            val type = object :
+                                TypeToken<List<CreateOrderResponse.Data.Order.OrderItem?>?>() {}.type
+                            var arrayItems: ArrayList<CreateOrderResponse.Data.Order.OrderItem> =
+                                gson.fromJson<Any>(
+                                    serializedObject,
+                                    type
+                                ) as ArrayList<CreateOrderResponse.Data.Order.OrderItem>
+
+                            Log.e(TAG, "arrayItems:  ${Gson().toJson(arrayItems)}")
+                            var itemIds: ArrayList<Int> = arrayListOf()
+                            arrayItems.forEach {
+                                itemIds.add(it.id)
+                            }
+
+                            createOrderResponse.data.order.orderItems.forEachIndexed { index, orderItem ->
+
+                                if (itemIds.contains(orderItem.id)) {
+                                    if (arrayItems[index].quantity != orderItem.quantity) {
+                                        if (orderItem.quantity > arrayItems[index].quantity) {
+                                            orderItem.quantity =
+                                                orderItem.quantity - arrayItems[index].quantity
+                                            if (!printOrderItems.contains(orderItem)) {
+                                                printOrderItems.add(orderItem)
+                                            }
+                                        }
+
+                                    }
+                                    else{
+
+                                    }
+
+                                }
+                                else{
+                                    printOrderItems.add(orderItem)
+                                }
+
+
+                            }
+
+
+                            /*arrayItems.forEach { it1 ->
+
+                                createOrderResponse.data.order.orderItems.forEach {
+
+
+
+                                    if (it1.id == it.id) {
+                                        if (it1.quantity != it.quantity) {
+                                            if (it.quantity > it1.quantity) {
+                                                it.quantity = it.quantity - it1.quantity
+                                                if (!printOrderItems.contains(it)) {
+                                                    printOrderItems.add(it)
+                                                }
+                                            }
+
+                                        } else if (it1.quantity > it.quantity) {
+
+                                        }
+
+                                    } else if (!printOrderItems.contains(it)) {
+
+
+                                        printOrderItems.add(it)
+                                    }
+
+                                }
+
+
+                            }*/
+
+                            Log.e(TAG, "printOrderitems  ${Gson().toJson(printOrderItems)}")
+
+                            createOrderResponse.data.order.orderItems = arrayListOf()
+
+                            createOrderResponse.data.order.orderItems = printOrderItems
+                        }
+
+                        prefProvider.setValue(OPEN_ORDER_ITEMS, "")
+
+                    }
+
 
                     if (it.data?.isNotEmpty() == true) {
 
                         for (i in 0 until it.data.size) {
+
 
                             initKitchenPrinter(
                                 it.data.get(i),
@@ -904,8 +1069,9 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                                 createOrderResponse
                             )
                         }
+
                     } else {
-                        ProgressUtils.dismissProgressDialog()
+                        viewModel.downloadFinished(false)
                         findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
                     }
 
@@ -939,7 +1105,28 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                 customerReceiptPrinters.name
             }
 
+            var fontSizeH = 1
+            var fontSizeW = 1
+            when (kitchenSettingModel.fonts) {
+                SMALL -> {
+                    fontSizeH = 1
+                    fontSizeW = 1
+                }
+                MEDIUM -> {
+                    fontSizeH = 1
+                    fontSizeW = 2
+                }
+                LARGE -> {
+                    fontSizeH = 2
+                    fontSizeW = 2
+                }
+
+
+            }
+
             builder = Builder(pname, PrinterClass.language, requireActivity())
+            Log.e(TAG, "kitchenFonts:  ${kitchenSettingModel.fonts}")
+            Log.e(TAG, "kitfontSize:  ${fontSizeH}")
 
             if (kitchenSettingModel.showOrderType) {
 
@@ -947,7 +1134,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                 builder.addFeedLine(0)
                 builder.addTextFont(Builder.FONT_E)
                 builder.addTextLang(Builder.LANG_EN)
-                builder.addTextSize(2, 2)
+                builder.addTextSize(fontSizeH, fontSizeW)
                 builder.addTextStyle(
                     Builder.FALSE,
                     Builder.FALSE,
@@ -965,7 +1152,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
             builder.addFeedLine(1)
             builder.addTextFont(Builder.FONT_E)
             builder.addTextLang(Builder.LANG_EN)
-            builder.addTextSize(2, 2)
+            builder.addTextSize(fontSizeH, fontSizeW)
             builder.addTextStyle(
                 Builder.FALSE,
                 Builder.FALSE,
@@ -983,7 +1170,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
             builder.addTextFont(Builder.FONT_E)
             //  builder.addTextAlign(Builder.ALIGN_LEFT)
             builder.addTextLang(Builder.LANG_EN)
-            builder.addTextSize(1, 1)
+            builder.addTextSize(fontSizeH, fontSizeW)
             builder.addTextStyle(
                 Builder.FALSE,
                 Builder.FALSE,
@@ -1004,7 +1191,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
             builder.addTextFont(Builder.FONT_E)
             //  builder.addTextAlign(Builder.ALIGN_LEFT)
             builder.addTextLang(Builder.LANG_EN)
-            builder.addTextSize(1, 1)
+            builder.addTextSize(fontSizeH, fontSizeW)
             builder.addTextStyle(
                 Builder.FALSE,
                 Builder.FALSE,
@@ -1027,7 +1214,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                 builder.addTextFont(Builder.FONT_E)
                 //  builder.addTextAlign(Builder.ALIGN_LEFT)
                 builder.addTextLang(Builder.LANG_EN)
-                builder.addTextSize(1, 1)
+                builder.addTextSize(fontSizeH, fontSizeW)
                 builder.addTextStyle(
                     Builder.FALSE,
                     Builder.FALSE,
@@ -1047,7 +1234,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
             builder.addTextFont(Builder.FONT_E)
             //  builder.addTextAlign(Builder.ALIGN_LEFT)
             builder.addTextLang(Builder.LANG_EN)
-            builder.addTextSize(1, 1)
+            builder.addTextSize(fontSizeH, fontSizeW)
             builder.addTextStyle(
                 Builder.FALSE,
                 Builder.FALSE,
@@ -1071,7 +1258,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
             builder.addTextFont(Builder.FONT_B)
             //builder.addTextLineSpace(20)
             builder.addTextLang(Builder.LANG_EN)
-            builder.addTextSize(1, 1)
+            builder.addTextSize(fontSizeH, fontSizeW)
             builder.addTextStyle(
                 Builder.FALSE,
                 Builder.FALSE,
@@ -1081,7 +1268,14 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
 
             addHorizontalKitchenLine(builder)
 
-            receiptModel?.order?.orderItems?.let { addOrdersForKitchen(builder, it) }
+            receiptModel?.order?.orderItems?.let {
+                addOrdersForKitchen(
+                    builder,
+                    it,
+                    fontSizeH,
+                    fontSizeW
+                )
+            }
 
             if (receiptModel?.order?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote) {
                 builder.addTextLineSpace(30)
@@ -1091,7 +1285,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                 builder.addTextAlign(Builder.ALIGN_LEFT)
                 //builder.addTextLineSpace(20)
                 builder.addTextLang(Builder.LANG_EN)
-                builder.addTextSize(1, 1)
+                builder.addTextSize(fontSizeH, fontSizeW)
                 builder.addTextStyle(
                     Builder.FALSE,
                     Builder.FALSE,
@@ -1106,7 +1300,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                 builder.addTextFont(Builder.FONT_E)
                 builder.addTextAlign(Builder.ALIGN_LEFT)
                 builder.addTextLang(Builder.LANG_EN)
-                builder.addTextSize(1, 1)
+                builder.addTextSize(fontSizeH, fontSizeW)
                 builder.addTextStyle(
                     Builder.FALSE,
                     Builder.FALSE,
@@ -1129,7 +1323,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                     //builder.addTextLineSpace(20)
                     builder.addTextAlign(Builder.ALIGN_LEFT)
                     builder.addTextLang(Builder.LANG_EN)
-                    builder.addTextSize(1, 1)
+                    builder.addTextSize(fontSizeH, fontSizeW)
                     builder.addTextStyle(
                         Builder.FALSE,
                         Builder.FALSE,
@@ -1141,7 +1335,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                     builder.addTextFont(Builder.FONT_B)
                     //builder.addTextLineSpace(20)
                     builder.addTextLang(Builder.LANG_EN)
-                    builder.addTextSize(1, 1)
+                    builder.addTextSize(fontSizeH, fontSizeW)
                     builder.addTextStyle(
                         Builder.FALSE,
                         Builder.FALSE,
@@ -1158,7 +1352,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                         builder.addTextAlign(Builder.ALIGN_LEFT)
                         //builder.addTextLineSpace(20)
                         builder.addTextLang(Builder.LANG_EN)
-                        builder.addTextSize(1, 1)
+                        builder.addTextSize(fontSizeH, fontSizeW)
                         builder.addTextStyle(
                             Builder.FALSE,
                             Builder.FALSE,
@@ -1179,7 +1373,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                             builder.addTextAlign(Builder.ALIGN_LEFT)
                             //builder.addTextLineSpace(20)
                             builder.addTextLang(Builder.LANG_EN)
-                            builder.addTextSize(1, 1)
+                            builder.addTextSize(fontSizeH, fontSizeW)
                             builder.addTextStyle(
                                 Builder.FALSE,
                                 Builder.FALSE,
@@ -1221,7 +1415,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                             builder.addTextAlign(Builder.ALIGN_LEFT)
                             //builder.addTextLineSpace(20)
                             builder.addTextLang(Builder.LANG_EN)
-                            builder.addTextSize(1, 1)
+                            builder.addTextSize(fontSizeH, fontSizeW)
                             builder.addTextStyle(
                                 Builder.FALSE,
                                 Builder.FALSE,
@@ -1251,12 +1445,12 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                 )
 
                 PrinterClass.closePrinter()
-                ProgressUtils.dismissProgressDialog()
+                viewModel.downloadFinished(false)
                 findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
 
                 //PrinterClass.getPrinter()?.sendData(builder, 0, status, battery)
             } catch (e: Exception) {
-                ProgressUtils.dismissProgressDialog()
+                viewModel.downloadFinished(false)
                 findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
                 /*PrinterClass.closePrinter()
                 e.printStackTrace()
@@ -1267,7 +1461,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
 
         } catch (e: Exception) {
             e.printStackTrace()
-            ProgressUtils.dismissProgressDialog()
+            viewModel.downloadFinished(false)
             findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
         }
 
@@ -1283,5 +1477,19 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
         })
     }
 
+    private fun printerProgress() {
+
+        if (view != null) {
+            viewModel.isLoading.observe(viewLifecycleOwner) { event ->
+
+                if (event) {
+                    ProgressUtils.showProgressDialog(requireActivity())
+                } else {
+                    ProgressUtils.dismissProgressDialog()
+                }
+
+            }
+        }
+    }
 
 }

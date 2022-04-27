@@ -2,11 +2,10 @@ package com.android.pos.ui.adapter
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import androidx.recyclerview.widget.DividerItemDecoration
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.data.model.responseModel.OpenOrderResponse
 import com.android.pos.databinding.ViewOpenOrderItemsBinding
+import com.android.pos.utils.MethodUtils
 
 
 class OpenOrderItemsAdapter :
@@ -17,6 +16,20 @@ class OpenOrderItemsAdapter :
         RecyclerView.ViewHolder(binding.root) {
         private var adapter: OpenOrderItemModifierAdapter? = null
         fun bind(item: OpenOrderResponse.Data.Order.OrderItem) {
+            var totalPri = item.totalPrice
+            var price = item.price
+            if (item.orderItemModifiers.isNotEmpty()) {
+
+                item.orderItemModifiers.forEach {
+                    totalPri += (it.price * it.quantity)
+                    price += it.price
+                }
+
+
+            }
+            binding.txtPrice.text = MethodUtils.roundOffAmountString(price)
+            binding.CustomFontRegularStyle.text = MethodUtils.roundOffAmountString(totalPri)
+
             binding.model = item
             binding.executePendingBindings()
 

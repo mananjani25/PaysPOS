@@ -52,7 +52,8 @@
                 android:padding="@dimen/_5sdp"
                 android:text="@{serviceChargeModel.name}"
                 android:textColor="@color/txtColor"
-                android:textSize="@dimen/_5mdpi" />
+                android:textSize="@dimen/setting_inner_text_size"
+                />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/txtLoyaltyValue"
@@ -65,7 +66,7 @@
                 android:gravity="start"
                 android:padding="@dimen/_5sdp"
                 android:textColor="@color/txtColor"
-                android:textSize="@dimen/_5mdpi" />
+                android:textSize="@dimen/setting_inner_sub_text_size" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 style="@style/CustomFontSemiBold"
@@ -77,7 +78,7 @@
                 android:padding="@dimen/_5sdp"
                 android:text="@{``+serviceChargeModel.rewardPoint}"
                 android:textColor="@color/txtColor"
-                android:textSize="@dimen/_5mdpi" />
+                android:textSize="@dimen/setting_inner_sub_text_size" />
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:layout_width="wrap_content"
@@ -85,7 +86,8 @@
                 android:layout_gravity="center"
                 android:layout_marginStart="@dimen/_5sdp"
                 android:layout_marginEnd="@dimen/_10sdp"
-                app:srcCompat="@drawable/ic_play" />
+                app:srcCompat="@drawable/ic_play"
+                android:visibility="gone"/>
 
             <include
                 android:id="@+id/layout_menu"

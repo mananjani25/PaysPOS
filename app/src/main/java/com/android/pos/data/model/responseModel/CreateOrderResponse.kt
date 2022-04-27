@@ -69,7 +69,7 @@ data class CreateOrderResponse(
             @SerializedName("open_order_type_id")
             val openOrderTypeId: Any,
             @SerializedName("order_items")
-            val orderItems: List<OrderItem>,
+            var orderItems: List<OrderItem>,
             @SerializedName("order_service_charges")
             val orderServiceCharges: List<OrderServiceCharge>,
             @SerializedName("order_type")
@@ -109,7 +109,9 @@ data class CreateOrderResponse(
             @SerializedName("guest_attributes")
             var guestAttributes: List<GuestAttributes>,
             @SerializedName("venue_website")
-            val venue_website: String
+            val venue_website: String,
+            @SerializedName("loyalty_amount")
+            val loyaltyAmount:Double
         ) {
 
             @Parcelize
@@ -224,7 +226,7 @@ data class CreateOrderResponse(
                 @SerializedName("price")
                 val price: Double,
                 @SerializedName("quantity")
-                val quantity: Int,
+                var quantity: Int,
                 @SerializedName("timestamp")
                 val timestamp: String,
                 @SerializedName("total_price")
@@ -335,7 +337,12 @@ data class CreateOrderResponse(
                 @SerializedName("transaction_id")
                 val transactionId: String,
                 @SerializedName("updated_at")
-                val updatedAt: String
+                val updatedAt: String,
+                @SerializedName("is_loyalty_applied")
+                val isLoyaltyApplied: Boolean = false,
+                @SerializedName("used_reward_points")
+                val loyaltyUSedPoints: Int = 0
+
             )
         }
 

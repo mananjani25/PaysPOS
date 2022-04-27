@@ -421,6 +421,9 @@ class OrderItemModifierAttribute {
     @SerializedName("order_id")
     var orderId: Int? = null
 
+    @SerializedName("modifier_id")
+    var modifier_id: Int? = null
+
     @SerializedName("price")
     var price: Double = 0.0
 
@@ -491,7 +494,7 @@ class PaymentAttributes : Parcelable {
     var cardNumber: String = ""
 
     @SerializedName("card_type")
-    var cardType: Int = 0
+    var cardType: Int? = null
 
     @SerializedName("cash_discount_or_surcharge")
     var cash_discount_or_surcharge: Double = 0.0

@@ -1028,7 +1028,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                 }
                 makePayment()
 
-            }
+            }9+
             R.id.llCredit -> {
                 paymentType = "Card"
                 setUpPaymentTypeWiseData("Card")
@@ -1163,8 +1163,12 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                 orderOfflineId
             )
 
+        if (cartItems?.isNotEmpty() == true && cartList?.items?.isEmpty() == true) {
+            cartList?.items = cartItems
+        }
         if (isSplitByNo) {
             Log.e(TAG, "isSplitByNo:  ${isSplitByNo}")
+
             val myRequest = cartList?.let {
                 viewModel.createOrderRequestForCard(
                     it,

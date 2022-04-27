@@ -30,6 +30,7 @@
                     android:layout_alignParentStart="true"
                     android:layout_centerVertical="true"
                     android:layout_marginStart="@dimen/_5sdp"
+                    android:background="?attr/selectableItemBackground"
                     android:padding="@dimen/_6sdp"
                     android:src="@drawable/ic_baseline_menu" />
 
@@ -101,20 +102,38 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
+                <TextView
+                    android:id="@+id/txtTimeSheet"
+                    style="@style/CustomFontBold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="@dimen/_50sdp"
+                    android:text="TIME SHEET"
+                    android:textAllCaps="true"
+                    android:textColor="@color/btnColor"
+                    android:textSize="@dimen/_6mdpi"
+                    app:layout_constraintRight_toLeftOf="@+id/txtHome"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    android:visibility="gone"
+                    />
+
+
 
                 <TextView
                     android:id="@+id/txtHome"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="@dimen/_10sdp"
+                    android:layout_height="match_parent"
                     android:fontFamily="@font/sf_pro_display_semibold"
-                    android:padding="@dimen/_6sdp"
                     android:text="@string/tv_home"
+                    android:gravity="center"
                     android:textAllCaps="true"
-                    android:textColor="@color/txt_color_blue"
-                    android:textSize="@dimen/_6mdpi"
+                    android:textColor="@color/white"
+                    android:background="@drawable/button_action_hover"
+                    android:paddingHorizontal="@dimen/padding_home_button"
+                    android:textSize="@dimen/_7mdpi"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/imgOptionMenuContainer"
+                    app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <TextView

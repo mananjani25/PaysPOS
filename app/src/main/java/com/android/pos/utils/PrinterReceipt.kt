@@ -298,7 +298,9 @@ fun addTipsList(
 
 fun addOrdersForKitchenDineIn(
     builder: Builder,
-    list: ArrayList<TbItem>
+    list: ArrayList<TbItem>,
+    fontSizeH:Int=1,
+    fontSizeW:Int=1
 ): Builder {
 
 
@@ -310,7 +312,7 @@ fun addOrdersForKitchenDineIn(
         builder.addTextFont(Builder.FONT_C)
         builder.addTextLang(Builder.LANG_EN)
         builder.addTextAlign(Builder.ALIGN_LEFT)
-        builder.addTextSize(1, 2)
+        builder.addTextSize(fontSizeH, fontSizeW)
         builder.addTextStyle(
             Builder.FALSE,
             Builder.FALSE,
@@ -329,7 +331,7 @@ fun addOrdersForKitchenDineIn(
                 //builder.addTextLineSpace(20)
                 builder.addTextAlign(Builder.ALIGN_LEFT)
                 builder.addTextLang(Builder.LANG_EN)
-                builder.addTextSize(1, 2)
+                builder.addTextSize(fontSizeH, fontSizeW)
                 builder.addTextStyle(
                     Builder.FALSE,
                     Builder.FALSE,
@@ -351,7 +353,7 @@ fun addOrdersForKitchenDineIn(
             //builder.addTextLineSpace(20)
             builder.addTextAlign(Builder.ALIGN_LEFT)
             builder.addTextLang(Builder.LANG_EN)
-            builder.addTextSize(1, 2)
+            builder.addTextSize(fontSizeH, fontSizeW)
             builder.addTextStyle(
                 Builder.FALSE,
                 Builder.FALSE,
@@ -369,7 +371,9 @@ fun addOrdersForKitchenDineIn(
 
 fun addOrdersForKitchen(
     builder: Builder,
-    list: List<CreateOrderResponse.Data.Order.OrderItem>
+    list: List<CreateOrderResponse.Data.Order.OrderItem>,
+    fontSizeH:Int = 1,
+    fontSizeW:Int = 1
 ): Builder {
     for (i in 0 until list.size) {
         val obj = list.get(i)
@@ -378,7 +382,7 @@ fun addOrdersForKitchen(
         builder.addTextFont(Builder.FONT_C)
         builder.addTextLang(Builder.LANG_EN)
         builder.addTextAlign(Builder.ALIGN_LEFT)
-        builder.addTextSize(1, 2)
+        builder.addTextSize(fontSizeH, fontSizeW)
         builder.addTextStyle(
             Builder.FALSE,
             Builder.FALSE,
@@ -397,7 +401,7 @@ fun addOrdersForKitchen(
                 //builder.addTextLineSpace(20)
                 builder.addTextAlign(Builder.ALIGN_LEFT)
                 builder.addTextLang(Builder.LANG_EN)
-                builder.addTextSize(1, 2)
+                builder.addTextSize(fontSizeH, fontSizeW)
                 builder.addTextStyle(
                     Builder.FALSE,
                     Builder.FALSE,
@@ -419,7 +423,7 @@ fun addOrdersForKitchen(
             //builder.addTextLineSpace(20)
             builder.addTextAlign(Builder.ALIGN_LEFT)
             builder.addTextLang(Builder.LANG_EN)
-            builder.addTextSize(1, 2)
+            builder.addTextSize(fontSizeH, fontSizeW)
             builder.addTextStyle(
                 Builder.FALSE,
                 Builder.FALSE,
@@ -505,6 +509,25 @@ fun addOrderItemOpenOrder(
             }
 
         }
+
+        if (obj.note.isNotEmpty()) {
+            builder.addTextLineSpace(30)
+            builder.addFeedUnit(30)
+            builder.addTextFont(Builder.FONT_E)
+            builder.addTextAlign(Builder.ALIGN_LEFT)
+            builder.addTextLang(Builder.LANG_EN)
+            addCustomerTextSize(builder, font)
+            builder.addTextStyle(
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.COLOR_1
+            )
+            builder.addText("   Note: " + obj.note)
+            builder.addFeedLine(1)
+
+
+        }
     }
 
 
@@ -537,7 +560,13 @@ fun addWholeTbItemToGuest(
     )
 
 
-    val subTotal = (obj.price * obj.itemQuantity).toDouble()
+    var subTotal = (obj.price * obj.itemQuantity).toDouble()
+
+    if (obj.modifiers.isNotEmpty()) {
+        obj.modifiers.forEach {
+            subTotal += it.price * it.itemQuantity
+        }
+    }
     var WTTaxes = 0.0
     var serviceCharge = 0.0
 
@@ -581,10 +610,13 @@ fun addWholeTbItemToGuest(
             }
         }
 
-        Log.e(TAG, "serviceCharge  ${serviceCharge}")
-        Log.e(TAG, "serviceWTTaxes  ${WTTaxes}")
-        Log.e(TAG, "serviceSubTotal  ${subTotal}")
+
     }
+
+    Log.e(TAG, "serviceCharge  ${serviceCharge}")
+    Log.e(TAG, "serviceWTTaxes  ${WTTaxes}")
+    Log.e("DineInWholeTableItems", "serviceSubTotal  ${subTotal}")
+    Log.e("DineInWholeTableItems", "dineinguestCount:  ${guestCount}")
 
     var finalAmt = MethodUtils.roundOffAmount((subTotal) / guestCount)
     builder.addText(
@@ -708,6 +740,24 @@ fun addOrderItemForDineIn(
 
     }
 
+    if (obj.note.isNotEmpty()) {
+        builder.addTextLineSpace(30)
+        builder.addFeedUnit(30)
+        builder.addTextFont(Builder.FONT_E)
+        builder.addTextAlign(Builder.ALIGN_LEFT)
+        builder.addTextLang(Builder.LANG_EN)
+        addCustomerTextSize(builder, font)
+        builder.addTextStyle(
+            Builder.FALSE,
+            Builder.FALSE,
+            Builder.FALSE,
+            Builder.COLOR_1
+        )
+        builder.addText("   Note: " + obj.note)
+        builder.addFeedLine(1)
+
+    }
+
 
     return builder
 }
@@ -781,6 +831,26 @@ fun addOrderItems(
             }
 
         }
+
+        if (obj.note.isNotEmpty()) {
+            builder.addTextLineSpace(30)
+            builder.addFeedUnit(30)
+            builder.addTextFont(Builder.FONT_E)
+            builder.addTextAlign(Builder.ALIGN_LEFT)
+            builder.addTextLang(Builder.LANG_EN)
+            addCustomerTextSize(builder, font)
+            builder.addTextStyle(
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.COLOR_1
+            )
+            builder.addText("   Note: " + obj.note)
+            builder.addFeedLine(1)
+
+        }
+
+
     }
 
 

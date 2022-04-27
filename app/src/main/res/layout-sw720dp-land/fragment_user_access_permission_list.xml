@@ -11,6 +11,9 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
+        <include android:id="@+id/header"
+            layout="@layout/view_header_toolbar"/>
+<!--
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -48,6 +51,7 @@
                 android:textColor="@color/btnColor"
                 android:textSize="@dimen/_7mdpi" />
         </LinearLayout>
+-->
 
         <View
             android:layout_width="match_parent"

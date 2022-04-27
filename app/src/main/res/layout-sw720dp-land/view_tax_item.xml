@@ -52,8 +52,8 @@
                 android:gravity="start"
                 android:padding="@dimen/_5sdp"
                 android:text="@{taxModel.name}"
-                android:textColor="@color/color65"
-                android:textSize="@dimen/_5mdpi" />
+                android:textColor="@color/txtColor"
+                android:textSize="@dimen/setting_inner_text_size" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/tvRate"
@@ -65,7 +65,7 @@
                 android:gravity="start"
                 android:padding="@dimen/_5sdp"
                 android:textColor="@color/btnColor"
-                android:textSize="@dimen/_5mdpi" />
+                android:textSize="@dimen/setting_inner_sub_text_size" />
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:layout_width="wrap_content"
@@ -74,7 +74,8 @@
                 android:layout_marginStart="@dimen/_5sdp"
                 android:padding="@dimen/_2sdp"
                 android:layout_marginEnd="@dimen/_10sdp"
-                app:srcCompat="@drawable/ic_play" />
+                app:srcCompat="@drawable/ic_play"
+                android:visibility="gone"/>
 
             <include
                 android:id="@+id/layout_menu"

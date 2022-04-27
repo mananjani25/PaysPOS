@@ -25,12 +25,14 @@ import com.android.pos.R
 import com.android.pos.data.entities.*
 import com.android.pos.data.model.DineInModel
 import com.android.pos.data.model.DineinCartPaymentModel
+import com.android.pos.data.model.GuestDataModel
 import com.android.pos.data.model.requestModel.*
 import com.android.pos.data.model.responseModel.*
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.DINE_IN
 import com.android.pos.data.remote.Constants.DINE_IN_ADAPTER_LIST
 import com.android.pos.data.remote.Constants.DINE_IN_DISCOUNT
+import com.android.pos.data.remote.Constants.DINE_IN_GUEST_PAYMENT_DATA
 import com.android.pos.data.remote.Constants.DINE_IN_SERVICECHARGE
 import com.android.pos.data.remote.Constants.DINE_IN_SUBTOTAL
 import com.android.pos.data.remote.Constants.DINE_IN_TAX
@@ -75,6 +77,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
     private var cartList: CartModel? = null
     private var dineInData: CreateOrderResponse.Data? = null
     private var orderId: Int? = null
+    private var order_note = ""
+    private var globalOrderDiscount = 0.0
     private var getOrderDetailsResponse: GetOrderDetailsResponse.Data? = null
     private val TAG = "DineInOrderTable"
     private lateinit var dineInTableAdapter: DineInTableAdapter
@@ -276,11 +280,34 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         }
 
         binding.btnPayNew.setOnClickListener {
+            //new Calculation for total Discount
+            var dividedOrderDiscount = 0.0
+            if (paidGuestAmount > 0 && globalOrderDiscount > 0.0) {
+                var eachGuestDiscount =
+                    MethodUtils.roundOffAmountDouble(globalOrderDiscount / (getOrderDetailsResponse?.guestAttributes?.size!! - 1))
+
+
+                dividedOrderDiscount = globalOrderDiscount - (eachGuestDiscount * paidGuestAmount)
+
+            }
+            Log.e("DicountDine", "dividedOrderDiscount  ${dividedOrderDiscount}")
+            Log.e("DicountDine", "paidGuestAmount  ${paidGuestAmount}")
+            Log.e(
+                "DicountDine",
+                "totalGuestCount  ${(getOrderDetailsResponse?.guestAttributes?.size!! - 1)}"
+            )
+
+
+            if (totalDiscount > dividedOrderDiscount) {
+                totalDiscount -= dividedOrderDiscount
+            }
+
 
             val adapterList = dineInTableAdapter.getList()
             var offlineId = randomOfflineId()
 
             cartList = getCartModel(adapterList.toCollection(arrayListOf()))
+            cartList?.note = order_note
             viewModelPayment.addCart(cartList!!)
 
             totalTax = 0.0
@@ -391,6 +418,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 //            viewModelPayment.totalServiceCharge = MethodUtils.roundOffAmountDouble(serviceCharge)
 //            viewModelPayment.totalDiscount = MethodUtils.roundOffAmountDouble(totalDiscount)
 
+            Log.e("AAJE", "subTotalDInin:  ${MethodUtils.roundOffAmountDouble(subTotalDInin)}")
             bundle.putDouble("totalPrice", MethodUtils.roundOffAmountDouble(toFinalAmt))
             bundle.putDouble("subTotalPrice", MethodUtils.roundOffAmountDouble(subTotalDInin))
             bundle.putDouble("totalTax", MethodUtils.roundOffAmountDouble(finalTaxAmt))
@@ -461,7 +489,13 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
                     for (j in i + 1 until list.size) {
                         if (list[j].isHeader == 1) {
-                            list[j].item?.let { it1 -> listTbItem.add(it1) }
+                            list[j].item?.let { it1 ->
+                                if (it1.discountPrice != 0.0){
+                                    it1.discountPrice = MethodUtils.roundOffAmountDouble(it1.discountPrice / it1.itemQuantity)
+                                }
+                                Log.e(TAG,"updateItemForDiscount  ${Gson().toJson(it1)}")
+                                listTbItem.add(it1)
+                            }
 
                         } else {
                             break
@@ -484,7 +518,15 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 newList
             )
 
-            bundle.putDouble("totalDiscount", totalDiscount)
+            Log.e("OrderFre", "APIDISc  ${getOrderDetailsResponse?.totalDiscount?.toDouble()}")
+            Log.e("OrderFre", "totalDiscount  ${totalDiscount}")
+            Log.e("OrderFre", "OrderDiscount  ${globalOrderDiscount}")
+
+            bundle.putDouble(
+                "totalDiscount",
+                globalOrderDiscount
+            )
+            bundle.putString("order_note", order_note)
             bundle.putParcelable("tableDetails", getOrderDetailsResponse?.floorPlanTable)
 
             orderId?.let { it1 -> bundle.putInt("orderId", it1) }
@@ -838,22 +880,23 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         taxGuest: Double,
         serviceChargeGuest: Double,
         divideDiscount: Double,
-        dividedGuestAmt:Double
+        dividedGuestAmt: Double,
+        listItemWT: ArrayList<TbItem>
     ) {
 
         //New Drag and Drop
 
-        Log.e("TODAYBOLD","subTotalB  ${subTotalGuest + dividedGuestAmt}")
-        Log.e("TODAYBOLD","totalGuest ${totalGuest}")
-        Log.e("TODAYBOLD","taxGuest ${taxGuest}")
-        Log.e("TODAYBOLD","serviceChargeGuest  ${serviceChargeGuest}")
-        Log.e("TODAYBOLD","divideDiscount ${divideDiscount}")
+        Log.e("TODAYBOLD", "subTotalB  ${subTotalGuest + dividedGuestAmt}")
+        Log.e("TODAYBOLD", "totalGuest ${totalGuest}")
+        Log.e("TODAYBOLD", "taxGuest ${taxGuest}")
+        Log.e("TODAYBOLD", "serviceChargeGuest  ${serviceChargeGuest}")
+        Log.e("TODAYBOLD", "divideDiscount ${divideDiscount}")
         val bundle = Bundle()
-        bundle.putDouble("subTotalB",subTotalGuest + dividedGuestAmt)
-        bundle.putDouble("totalB",totalGuest)
-        bundle.putDouble("totalTaxB",taxGuest)
-        bundle.putDouble("serviceChargeB",serviceChargeGuest)
-        bundle.putDouble("dicountB",divideDiscount)
+        bundle.putDouble("subTotalB", subTotalGuest + dividedGuestAmt)
+        bundle.putDouble("totalB", totalGuest)
+        bundle.putDouble("totalTaxB", taxGuest)
+        bundle.putDouble("serviceChargeB", serviceChargeGuest)
+        bundle.putDouble("dicountB", divideDiscount)
 
 
         val adapterList = dineInTableAdapter.getList()
@@ -981,6 +1024,107 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 arrayListOf()
             )
         )
+        //whole table amount divided calculation
+        var wholeNewSubtotal = 0.0
+        var WTTaxes = 0.0
+        var serviceCharge = 0.0
+
+        Log.e("AAjeChange", "listItemWT:  ${Gson().toJson(listItemWT)}")
+        listItemWT.forEach {
+            val obj = it
+            wholeNewSubtotal += (obj.price * obj.itemQuantity).toDouble()
+
+            if (obj.modifiers.isNotEmpty()) {
+                obj.modifiers.forEach {
+                    wholeNewSubtotal += it.price * it.itemQuantity
+                }
+            }
+
+
+            obj.taxes?.forEach { tax ->
+                if (tax.isActive) {
+                    WTTaxes += if (tax.taxType == "Percentage") {
+
+                        var modifierPrice = 0.0
+                        val price =
+                            (obj.price * obj.itemQuantity) - obj.discountPrice
+
+                        obj.modifiers.forEach {
+                            modifierPrice += (it.price * it.itemQuantity)
+                        }
+
+                        val totalPrice = price + modifierPrice
+
+                        val itemTaxPrice =
+                            (tax.rate * totalPrice) / 100
+                        Log.e("itemTaxPrice", "" + itemTaxPrice)
+                        String.format("%.2f", itemTaxPrice)
+                            .toDouble()
+                    } else {
+
+                        String.format(
+                            "%.2f",
+                            tax.rate * obj.itemQuantity
+                        ).toDouble()
+                    }
+                }
+
+
+            }
+
+
+            if (serviceChargeList?.isNotEmpty() == true) {
+                Log.e("AajeChange", "serviceChargeList:  ${Gson().toJson(serviceChargeList)}")
+                serviceChargeList?.forEach {
+                    if (it.isEnabled) {
+                        serviceCharge += MethodUtils.roundOffAmountDouble((wholeNewSubtotal * it.percentage) / 100)
+                    }
+                }
+
+
+            }
+
+        }
+        Log.e("AajeChange", "wholeNewSubtotal  ${wholeNewSubtotal}")
+        Log.e("AajeChange", "WTTaxes  ${WTTaxes}")
+        Log.e("AajeChange", "serviceCharge  ${serviceCharge}")
+        Log.e("AajeChange", "totalGuestCount  ${totalGuestCount}")
+        wholeNewSubtotal = MethodUtils.roundOffAmountDouble(wholeNewSubtotal / totalGuestCount)
+        WTTaxes = MethodUtils.roundOffAmountDouble(WTTaxes / totalGuestCount)
+        serviceCharge = MethodUtils.roundOffAmountDouble(serviceCharge / totalGuestCount)
+
+        Log.e(
+            "FinalDetails",
+            "subTotal:  ${MethodUtils.roundOffAmountDouble(subTotalGuest + wholeNewSubtotal)}"
+        )
+        Log.e(
+            "FinalDetails",
+            "guestTotalTax:  ${MethodUtils.roundOffAmountDouble(taxGuest + WTTaxes)}"
+        )
+        Log.e(
+            "FinalDetails",
+            "dividedDiscount:  ${MethodUtils.roundOffAmountDouble(divideDiscount)}"
+        )
+        Log.e(
+            "FinalDetails",
+            "dividedCashdiscount :  ${MethodUtils.roundOffAmountDouble(divideCashDiscount)}"
+        )
+        Log.e(
+            "FinalDetails",
+            "guestTotalServiceCharge:  ${MethodUtils.roundOffAmountDouble(serviceChargeGuest + serviceCharge)}"
+        )
+
+        val newGuestModel = GuestDataModel(
+            subTotal = MethodUtils.roundOffAmountDouble(subTotalGuest + wholeNewSubtotal),
+            totalTax = MethodUtils.roundOffAmountDouble(taxGuest + WTTaxes),
+            totalAmount = totalGuest,
+            totalDiscount = MethodUtils.roundOffAmountDouble(divideDiscount),
+            cashDiscount = MethodUtils.roundOffAmountDouble(divideCashDiscount),
+            totalServiceCharge =MethodUtils.roundOffAmountDouble( serviceChargeGuest + serviceCharge)
+
+        )
+        Log.e(TAG, "newGuestModel:  ${Gson().toJson(newGuestModel)}")
+        bundle.putParcelable(DINE_IN_GUEST_PAYMENT_DATA, newGuestModel)
         //orderId?.let { it1 -> bundle.putInt("orderId", it1) }
 //        orderId?.let { it1 -> prefProvider.setValueInt("ORDER_ID", it1) }
         var wholeTableAmt = 0.0
@@ -1200,9 +1344,11 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
     private fun navigateDineInOrderNew() {
 
-        viewModel.Basedata.observe(viewLifecycleOwner, { event ->
+        viewModel.Basedata.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let { baseResponse ->
                 if (baseResponse != null) {
+                    order_note = baseResponse.note
+                    globalOrderDiscount = 0.0
                     //Manan's Code
                     //for Merge Icon
                     if (baseResponse.floorPlanTable.status == MERGEDANDOCCUPIED) {
@@ -1301,9 +1447,9 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                                         //Whole Table Calculation
                                         totalItemDiscount += it.discountAmount
 
-                                        if (it.isPaid) {
-                                            notPayAnyAmount = true
-                                        }
+                                        /*     if (baseResponse.guestAttributes.get(i).isPaid) {
+                                                 notPayAnyAmount = true
+                                             }*/
 
                                         //for add item in tbItem List and extract/convert data from API
                                         val itemDineIn: DineInModel = DineInModel()
@@ -1447,6 +1593,9 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
                     for (k in 0 until baseResponse.guestAttributes.size) {
                         val obj = baseResponse.guestAttributes.get(k)
+                        if (baseResponse.guestAttributes.get(k).isPaid) {
+                            notPayAnyAmount = true
+                        }
 
                         obj.guestItemAttributes.forEach {
                             baseResponse.orderItems.forEach { oi ->
@@ -1536,8 +1685,10 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
 
                     var orderDiscount = 0.0
+                    var newLocalDiscountCal = 0.0
                     if (baseResponse.totalDiscount - totalItemDiscount > 0) {
                         orderDiscount = baseResponse.totalDiscount - totalItemDiscount
+                        globalOrderDiscount = baseResponse.totalDiscount - totalItemDiscount
 
                     }
                     totalServiceChargeAmount = 0.0
@@ -1577,6 +1728,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     serviceCharge = totalServiceChargeAmount
                     totalDiscount = orderDiscount + totalItemDiscount
                     finalTaxAmt = totalTaxAmount
+                    Log.e(TAG, "GotsubTotalDInin  ${subTotalDInin}")
                     binding.txtTotalAmountNew.text = MethodUtils.roundOffAmount(
                         finalAmount
                     )
@@ -1688,12 +1840,19 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                         }
                     }
 
+                    Log.e(TAG, "notPayAnyAmount  ${notPayAnyAmount}")
+                    if (notPayAnyAmount) {
+                        binding.txtEditOrder.visibility = View.GONE
+                    } else {
+                        binding.txtEditOrder.visibility = View.VISIBLE
+                    }
+
 
                 }
             }
 
 
-        })
+        }
 
     }
 
@@ -1702,6 +1861,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         viewModel.Basedata.observe(viewLifecycleOwner, { event ->
             event.getContentIfNotHandled()?.let { baseResponse ->
                 if (baseResponse != null) {
+                    getOrderDetailsResponse = baseResponse
                     subTotalWT = 0.0
                     serviceCharge = 0.0
                     totalDiscount = 0.0
@@ -2909,7 +3069,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
                 if (printer != null) {
                     PrinterClass.setPrinter(printer)
-                    if (guestPrint) {
+                    if (guestPrint && getOrderDetailsResponse?.guestAttributes?.size!! > 2) {
                         generateGuestPrint(
                             customerReceiptPrinters,
                             type,
@@ -4311,7 +4471,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                         builder.addTextLineSpace(30)
                         builder.addFeedUnit(30)
                         builder.addTextFont(Builder.FONT_E)
-                        // builder.addTextAlign(Builder.ALIGN_LEFT)
+                        builder.addTextAlign(Builder.ALIGN_CENTER)
                         builder.addTextLang(Builder.LANG_EN)
                         addCustomerTextSize(builder, customerSettingModel.fonts)
                         builder.addTextStyle(
@@ -5045,6 +5205,26 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 customerReceiptPrinters.name
             }
 
+
+            var fontSizeH = 1
+            var fontSizeW = 1
+            when (kitchenSettingModel.fonts) {
+                Constants.SMALL -> {
+                    fontSizeH = 1
+                    fontSizeW = 1
+                }
+                Constants.MEDIUM -> {
+                    fontSizeH = 1
+                    fontSizeW = 2
+                }
+                Constants.LARGE -> {
+                    fontSizeH = 2
+                    fontSizeW = 2
+                }
+
+
+            }
+
             builder = Builder(pname, PrinterClass.language, requireActivity())
 
             if (kitchenSettingModel.showOrderType) {
@@ -5053,7 +5233,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 builder.addFeedLine(0)
                 builder.addTextFont(Builder.FONT_E)
                 builder.addTextLang(Builder.LANG_EN)
-                builder.addTextSize(2, 2)
+                builder.addTextSize(fontSizeH, fontSizeW)
                 builder.addTextStyle(
                     Builder.FALSE,
                     Builder.FALSE,
@@ -5069,7 +5249,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             builder.addTextFont(Builder.FONT_E)
             //  builder.addTextAlign(Builder.ALIGN_LEFT)
             builder.addTextLang(Builder.LANG_EN)
-            builder.addTextSize(1, 1)
+            builder.addTextSize(fontSizeH, fontSizeW)
             builder.addTextStyle(
                 Builder.FALSE,
                 Builder.FALSE,
@@ -5084,7 +5264,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             builder.addTextFont(Builder.FONT_E)
             //  builder.addTextAlign(Builder.ALIGN_LEFT)
             builder.addTextLang(Builder.LANG_EN)
-            builder.addTextSize(1, 1)
+            builder.addTextSize(fontSizeH, fontSizeW)
             builder.addTextStyle(
                 Builder.FALSE,
                 Builder.FALSE,
@@ -5105,7 +5285,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             builder.addTextFont(Builder.FONT_E)
             //  builder.addTextAlign(Builder.ALIGN_LEFT)
             builder.addTextLang(Builder.LANG_EN)
-            builder.addTextSize(1, 1)
+            builder.addTextSize(fontSizeH, fontSizeW)
             builder.addTextStyle(
                 Builder.FALSE,
                 Builder.FALSE,
@@ -5132,7 +5312,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 builder.addTextFont(Builder.FONT_E)
                 //  builder.addTextAlign(Builder.ALIGN_LEFT)
                 builder.addTextLang(Builder.LANG_EN)
-                builder.addTextSize(1, 1)
+                builder.addTextSize(fontSizeH, fontSizeW)
                 builder.addTextStyle(
                     Builder.FALSE,
                     Builder.FALSE,
@@ -5152,7 +5332,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             builder.addTextFont(Builder.FONT_E)
             //  builder.addTextAlign(Builder.ALIGN_LEFT)
             builder.addTextLang(Builder.LANG_EN)
-            builder.addTextSize(1, 1)
+            builder.addTextSize(fontSizeH, fontSizeW)
             builder.addTextStyle(
                 Builder.FALSE,
                 Builder.FALSE,
@@ -5177,7 +5357,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             builder.addTextFont(Builder.FONT_B)
             //builder.addTextLineSpace(20)
             builder.addTextLang(Builder.LANG_EN)
-            builder.addTextSize(1, 1)
+            builder.addTextSize(fontSizeH, fontSizeW)
             builder.addTextStyle(
                 Builder.FALSE,
                 Builder.FALSE,
@@ -5188,7 +5368,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             addHorizontalKitchenLine(builder)
 
 
-            addOrdersForKitchenDineIn(builder, item)
+            addOrdersForKitchenDineIn(builder, item,fontSizeH,fontSizeW)
 
             if (getOrderDetailsResponse?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote) {
                 builder.addTextLineSpace(30)
@@ -5198,7 +5378,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 builder.addTextAlign(Builder.ALIGN_LEFT)
                 //builder.addTextLineSpace(20)
                 builder.addTextLang(Builder.LANG_EN)
-                builder.addTextSize(1, 1)
+                builder.addTextSize(fontSizeH, fontSizeW)
                 builder.addTextStyle(
                     Builder.FALSE,
                     Builder.FALSE,
@@ -5213,7 +5393,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 builder.addTextFont(Builder.FONT_E)
                 builder.addTextAlign(Builder.ALIGN_LEFT)
                 builder.addTextLang(Builder.LANG_EN)
-                builder.addTextSize(1, 1)
+                builder.addTextSize(fontSizeH, fontSizeW)
                 builder.addTextStyle(
                     Builder.FALSE,
                     Builder.FALSE,

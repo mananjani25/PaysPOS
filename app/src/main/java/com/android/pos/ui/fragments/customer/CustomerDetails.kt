@@ -405,6 +405,7 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
 
     override fun onclickedReorder(order: Orders) {
         order.id?.let {
+            viewModel.deleteCart()
             viewModel.apiCallOrderDetails(orderId = order.id)
         } ?: viewModel.showError(getString(R.string.error_order_id_not_available))
 

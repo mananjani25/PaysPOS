@@ -18,14 +18,18 @@ import com.android.pos.data.model.MergeTableModel
 import com.android.pos.data.model.requestModel.OrderAttributeRequestModel
 import com.android.pos.data.model.responseModel.GetFloorPlanDetailResponse
 import com.android.pos.data.model.responseModel.GetOrderDetailsResponse
+import com.android.pos.data.remote.Constants.AVAILABLE
+import com.android.pos.data.remote.Constants.EMPLOYEE_ID
 import com.android.pos.data.remote.Constants.OCCUPIED
 import com.android.pos.databinding.DialogMergeTableSelectionBinding
+import com.android.pos.di.PrefProvider
 import com.android.pos.ui.adapter.MergeTableSelectionAdapter
 import com.android.pos.ui.fragments.dinein.DineInViewModel
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.ProgressUtils
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MergeTableDialog : DialogFragment() {
@@ -43,6 +47,9 @@ class MergeTableDialog : DialogFragment() {
 
     var listTable: ArrayList<MergeTableModel> = arrayListOf()
     var listFloor: ArrayList<MergeFloorModel> = arrayListOf()
+
+    @Inject
+    lateinit var prefProvider: PrefProvider
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -96,27 +103,58 @@ class MergeTableDialog : DialogFragment() {
         listTable = arrayListOf()
 
 
-        listFloor.add(MergeFloorModel(0, "Select floor"))
-        listTable.add(MergeTableModel(0, "Select table", 0, "Select floor", false, 0, null, 0))
+        listFloor.add(MergeFloorModel(0, "Select Floor"))
+        listTable.add(MergeTableModel(0, "Select Table", 0, "Select Floor", false, 0, null, 0))
         listFloorPlan?.forEach {
             listFloor.add(MergeFloorModel(it.id, it.name))
 
             it.floor_plan_tables.forEach { table ->
-                listTable.add(
-                    MergeTableModel(
-                        table.id, table.table_name, it.id, it.name, if (table.status == OCCUPIED) {
-                            true
-                        } else {
-                            false
-                        }, orderId = if (table.order_details != null) {
-                            table.order_details.id
-                        } else {
-                            null
-                        },
-                        orderDetails = table.order_details,
-                        chairCount = table.chair_count
+                if (table.status == AVAILABLE){
+                    listTable.add(
+                        MergeTableModel(
+                            table.id,
+                            table.table_name,
+                            it.id,
+                            it.name,
+                            if (table.status == OCCUPIED) {
+                                true
+                            } else {
+                                false
+                            },
+                            orderId = if (table.order_details != null) {
+                                table.order_details.id
+                            } else {
+                                null
+                            },
+                            orderDetails = table.order_details,
+                            chairCount = table.chair_count
+                        )
                     )
-                )
+
+                }
+               else if (table.lock_by_id != null && table.lock_by_id ==  prefProvider.getValueInt(
+                        EMPLOYEE_ID,0)) {
+                    listTable.add(
+                        MergeTableModel(
+                            table.id,
+                            table.table_name,
+                            it.id,
+                            it.name,
+                            if (table.status == OCCUPIED) {
+                                true
+                            } else {
+                                false
+                            },
+                            orderId = if (table.order_details != null) {
+                                table.order_details.id
+                            } else {
+                                null
+                            },
+                            orderDetails = table.order_details,
+                            chairCount = table.chair_count
+                        )
+                    )
+                }
             }
         }
 
@@ -282,14 +320,29 @@ class MergeTableDialog : DialogFragment() {
 
                 if (listSecondaryOrderDetails.size == 0) {
                     //This is for Every Empty Table for both Primary and Secondary
+                    var childzero = false
+                    childIds.forEach {
+                        if (it.toString() != "0") {
+                            childzero = true
+                            return@forEach
+                        }
+                    }
+                    if (parentTableId != 0 && childzero) {
+                        parentTableId?.let { it1 ->
+                            viewModel.mergeTable(
+                                it1,
+                                childIds,
+                                null,
+                                null
+                            )
+                        }
+                    } else {
+                        AlertUtils.showCustomAlertWithListenerWithOK(
+                            requireContext(), "Please Select Floor and Table"
+                        ) { _, _ ->
 
-                    parentTableId?.let { it1 ->
-                        viewModel.mergeTable(
-                            it1,
-                            childIds,
-                            null,
-                            null
-                        )
+                        }
+
                     }
 
 
@@ -301,15 +354,28 @@ class MergeTableDialog : DialogFragment() {
                         listSecondaryOrderDetails.get(0),
                         tableMergeList
                     )
+                    var childzero = false
+                    childIds.forEach {
+                        if (it.toString() != "0") {
+                            childzero = true
+                            return@forEach
+                        }
+                    }
 
-                    viewModel.mergeTable(
-                        parentTableId ?: 0,
-                        childIds,
-                        orderModel = orderModel,
-                        orderId = orderModel.id
+                    if (parentTableId != 0 && childzero) {
+                        viewModel.mergeTable(
+                            parentTableId ?: 0,
+                            childIds,
+                            orderModel = orderModel,
+                            orderId = orderModel.id
+                        )
+                    } else {
+                        AlertUtils.showCustomAlertWithListenerWithOK(
+                            requireContext(), "Please Select Floor and Table"
+                        ) { _, _ ->
 
-                    )
-
+                        }
+                    }
                 } else {
                     //Multiple Occupied and Other's Available
                     var orderModel =
@@ -335,18 +401,52 @@ class MergeTableDialog : DialogFragment() {
                     }
                     var mergedOrderIds = android.text.TextUtils.join(",", listOrderIds)
 
-                    viewModel.mergeTable(parentTableId ?: 0, childIds, mergedOrderIds, orderModel)
+                    var childzero = false
+                    childIds.forEach {
+                        if (it.toString() != "0") {
+                            childzero = true
+                            return@forEach
+                        }
+                    }
+                    if (parentTableId != 0 && childzero) {
+                        viewModel.mergeTable(
+                            parentTableId ?: 0,
+                            childIds,
+                            mergedOrderIds,
+                            orderModel
+                        )
+                    } else {
+                        AlertUtils.showCustomAlertWithListenerWithOK(
+                            requireContext(), "Please Select Floor and Table"
+                        ) { _, _ ->
+
+                        }
+
+                    }
 
 
                 }
 
 
             } else if (isDuplicateIdTrue) {
+                var valdate = false
+                for (i in allIds.indices) {
+                    if (allIds[i] == 0) {
+                        valdate =true
+                    }
+                }
+                if(valdate){
+                    AlertUtils.showCustomAlertWithListenerWithOK(
+                        requireContext(), "Please Select Floor and Table"
+                    ) { _, _ ->
 
-                AlertUtils.showCustomAlertWithListenerWithOK(
-                    requireContext(), "Same table can't be merged."
-                ) { _, _ ->
+                    }
+                }else{
+                    AlertUtils.showCustomAlertWithListenerWithOK(
+                        requireContext(), "Same table can't be merged."
+                    ) { _, _ ->
 
+                    }
                 }
 
 

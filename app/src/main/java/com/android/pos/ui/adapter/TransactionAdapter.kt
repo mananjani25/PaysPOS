@@ -61,7 +61,7 @@ class TransactionAdapter(val viewModel: TransactionViewModel) :
 
             val model = filterList[position]
 
-            itemBinding.tvDate.text =convertCurrentDate(filterList[position].createdAt, context)
+            itemBinding.tvDate.text = convertCurrentDate(filterList[position].createdAt, context)
             itemBinding.tvTime.text = convertCurrentTime(
                 filterList[position].createdAt, context
             )
@@ -73,8 +73,10 @@ class TransactionAdapter(val viewModel: TransactionViewModel) :
                 )
 */
 
-            itemBinding.txtCustomerName.text =
-                (model.customer?.firstName ?: "") + " " + (model.customer?.lastName ?: "")
+            itemBinding.txtCustomerName.text = (model.customer?.firstName
+                ?: "") + " " + (model.customer?.lastName ?: "")
+
+            itemBinding.txtTeamName?.text = model.employeeName
 
             if (model.refundedAmount != 0.0) {
                 itemBinding.tvRefundedAmount.visibility = View.VISIBLE

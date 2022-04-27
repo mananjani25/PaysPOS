@@ -9,10 +9,10 @@
         android:layout_height="match_parent">
 
         <RelativeLayout
-            android:visibility="visible"
             android:id="@+id/relative_main"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:visibility="visible">
 
             <androidx.appcompat.widget.LinearLayoutCompat
                 android:id="@+id/tab_linear"
@@ -308,7 +308,6 @@
 
 
                         <TextView
-                            android:visibility="gone"
                             android:id="@+id/tvOther"
                             style="@style/CustomFontSemiBold"
                             android:layout_width="wrap_content"
@@ -318,16 +317,17 @@
                             android:layout_marginEnd="@dimen/_15sdp"
                             android:text="@string/tv_other"
                             android:textColor="@color/txtColor"
-                            android:textSize="@dimen/_7mdpi" />
+                            android:textSize="@dimen/_7mdpi"
+                            android:visibility="gone" />
 
                         <androidx.appcompat.widget.LinearLayoutCompat
                             android:id="@+id/llPaymentLink"
-                            android:visibility="gone"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_below="@+id/tvOther"
                             android:layout_marginTop="@dimen/_5sdp"
                             android:orientation="horizontal"
+                            android:visibility="gone"
                             android:weightSum="3">
 
                             <androidx.appcompat.widget.AppCompatTextView
@@ -575,11 +575,11 @@
 
         <androidx.appcompat.widget.LinearLayoutCompat
             android:id="@+id/llManualCard"
-            android:visibility="gone"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@color/bg_color"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:visibility="gone">
 
 
             <androidx.appcompat.widget.LinearLayoutCompat
@@ -589,11 +589,18 @@
 
                 <ImageView
                     android:id="@+id/imgBackManualCard"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_vertical"
-                    android:padding="@dimen/_5sdp"
-                    android:src="@drawable/ic_arrow_back" />
+                    android:layout_width="@dimen/_20sdp"
+                    android:layout_height="@dimen/_15sdp"
+                    android:layout_gravity="center"
+                    android:background="?attr/selectableItemBackground"
+                    android:paddingStart="@dimen/_8sdp"
+                    android:paddingTop="@dimen/_2sdp"
+                    android:paddingEnd="@dimen/_2sdp"
+                    android:paddingBottom="@dimen/_2sdp"
+                    android:src="@mipmap/ic_left_arrow"
+                    app:tint="@color/drawable_ic_color" />
+
+
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:layout_width="match_parent"

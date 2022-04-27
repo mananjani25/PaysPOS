@@ -16,6 +16,7 @@ import com.android.pos.data.remote.Constants.EMAIL
 import com.android.pos.data.remote.Constants.LOCATION_ID
 import com.android.pos.data.remote.Constants.TERMINAL_ID
 import com.android.pos.data.remote.Constants.USERNAME
+import com.android.pos.data.remote.NetworkConnectionInterceptor
 import com.android.pos.data.repositories.UserRepository
 import com.android.pos.di.PrefProvider
 import com.android.pos.utils.Event
@@ -29,7 +30,8 @@ import javax.inject.Inject
 @HiltViewModel
 class LoginViewModel @Inject constructor(
     private val userRepository: UserRepository,
-    private val prefProvider: PrefProvider
+    private val prefProvider: PrefProvider,
+    private val networkConnectionInterceptor: NetworkConnectionInterceptor
 ) :
     ViewModel() {
 
@@ -82,10 +84,11 @@ class LoginViewModel @Inject constructor(
                                             it1
                                         )
                                     }
+                                    //networkConnectionInterceptor.setHostBaseUrl(it.data.baseUrl + "/")
+
                                 }
 
                                 defaultTerminalCall(device_token)
-
 
                             } else {
                                 _snackbarText.value = Event(resource.message)

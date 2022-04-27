@@ -4,10 +4,12 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.android.pos.R
 import com.android.pos.data.entities.TbItem
 import com.android.pos.databinding.ViewCategoryItemBoldBinding
 import com.android.pos.ui.adapter.CategoryItemAdapter1
 import com.android.pos.utils.MethodUtils
+import com.android.pos.utils.extensions.gone
 import com.android.pos.utils.extensions.visible
 
 class ItemAdapter(
@@ -18,20 +20,20 @@ class ItemAdapter(
     inner class MyViewHolder(private val binding: ViewCategoryItemBoldBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(model: TbItem?) {
-            binding.txtCategoryName.text = "" + model?.name
-            binding.txtPrice.visible()
-            binding.txtPrice.text = model?.price?.let { MethodUtils.roundOffAmount(it) }
+            binding.txtCategoryName.text = "" + model?.name+"\n\n"+model?.price?.let { MethodUtils.roundOffAmount(it) }
+            binding.txtPrice.gone()
+           // binding.txtPrice.text = model?.price?.let { MethodUtils.roundOffAmount(it) }
 
         }
 
         init {
-
-            binding.linearItem.setOnClickListener {
+            binding.txtCategoryName.setOnClickListener {
                 list[bindingAdapterPosition]?.let { listener.onClick(it) }
-
             }
+//            binding.txtCategoryName.setOnClickListener {
+//              //  list[bindingAdapterPosition]?.let { listener.onClick(it) }
+//            }
         }
-
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemAdapter.MyViewHolder {

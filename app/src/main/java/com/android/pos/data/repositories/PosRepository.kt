@@ -113,7 +113,7 @@ class PosRepository @Inject constructor(
     suspend fun syncVenueDetails() = apiHelperNew.syncVenueDetails()
 
 
-    suspend fun syncInventory() = apiHelperNew.syncVenueData()
+    suspend fun syncInventory() =  apiHelperNew.syncVenueData()
 
 
     fun venueDataLocal() = performGetOperationDatabase(
@@ -806,8 +806,7 @@ class PosRepository @Inject constructor(
         startDate: String,
         endDate: String,
         terminalId: String
-    ) =
-        apiHelperNew.getReportSummary(startDate, endDate, terminalId)
+    ) = apiHelperNew.getReportSummary(startDate, endDate, terminalId)
 
     suspend fun getReportEOD(
         startDate: String,
@@ -821,6 +820,9 @@ class PosRepository @Inject constructor(
     suspend fun getOrderHistory(id: String) =
         apiHelperNew.getOrderHistory(id)
 
+    suspend fun clearTableManually(){
+        appDatabase.clearAllTables()
+    }
     suspend fun clearTable() {
 
         Log.e("clear Db Table", "-------")
@@ -846,10 +848,17 @@ class PosRepository @Inject constructor(
         appDatabase.printerDao().deleteCustomerPrinters()
         appDatabase.kitchenSettingsDao().delete()
         appDatabase.customerSettingsDao().delete()
+        appDatabase.cancelOrderReasonDao().delete()
+        appDatabase.cashDiscountDao().delete()
+        appDatabase.cartDao().delete()
+
     }
 
     fun orderCounts(startDate: String?, endDate: String?) =
         performGetOperationNew(networkCall = { apiHelperNew.orderCounts(startDate, endDate) })
+
+    fun inventoryCounts() =
+        performGetOperationNew(networkCall = { apiHelperNew.inventoryCounts() })
 
     suspend fun addCardReader(tbCardReader: TbCardReader) {
         appDatabase.cardReaderDao().add(tbCardReader)

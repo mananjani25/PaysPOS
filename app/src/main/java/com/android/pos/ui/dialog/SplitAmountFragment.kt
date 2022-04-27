@@ -24,7 +24,7 @@ class SplitAmountFragment : DialogFragment(), View.OnClickListener, TextWatcher 
     private var splitAmount: Double = 0.0
     private var isCustom: Boolean = false
     private var totalPrice: Double = 0.0
-    private var splitValue: Int = -1
+    private var splitValue: Int = 1
     private lateinit var binding: DailogSplitAmountBinding
     var current = ""
 

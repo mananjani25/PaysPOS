@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.R
 import com.android.pos.data.entities.Employee
 import com.android.pos.databinding.FragmentTeamListBinding
+import com.android.pos.di.RolePermission
 import com.android.pos.ui.activities.MainActivity
 import com.android.pos.ui.adapter.TeamsAdapter
 import com.android.pos.utils.AlertUtils
@@ -26,9 +27,11 @@ import com.android.pos.utils.callback.CustomCallback
 import com.android.pos.utils.callback.OperationCallback
 import com.android.pos.utils.extensions.alert
 import com.android.pos.utils.extensions.showAlert
+import com.android.pos.utils.extensions.visible
 import com.android.pos.utils.statusUtils.Status
 import com.android.pos.utils.sticky_recycler.StickyHeaderLayoutManager
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class TeamList : Fragment(), CustomCallback, OperationCallback {
@@ -38,7 +41,9 @@ class TeamList : Fragment(), CustomCallback, OperationCallback {
     private val viewModel by viewModels<TeamListViewModel>()
     var adapter: TeamsAdapter = TeamsAdapter()
     private var empObject: Employee? = null
-
+    var count = 0
+    @Inject
+    lateinit var rolePermission: RolePermission
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -51,17 +56,24 @@ class TeamList : Fragment(), CustomCallback, OperationCallback {
         configureToolbar()
         observeShowProgress()
 
-        if (empObject != null) {
-            loadTeamDetails(empObject)
-        } else {
-            loadTeamDetails(null)
-        }
         loadTeams()
         deleteEmployee()
 
         Log.e("Calling", "onCreateView")
 
+        setUpHeader()
+
         return binding.root
+    }
+
+    private fun setUpHeader() {
+        binding.layoutTool.txtTimeSheet.visible()
+
+        binding.layoutTool.txtTimeSheet.setOnClickListener {
+            if (rolePermission.hasEmployeeTimesheetPermission(binding.root)) {
+                findNavController().navigate(R.id.action_teamList_to_teamMemberTimeSheetFragment)
+            }
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -144,7 +156,6 @@ class TeamList : Fragment(), CustomCallback, OperationCallback {
                 ) { pos ->
 
 
-
                 })
 
             }
@@ -167,7 +178,7 @@ class TeamList : Fragment(), CustomCallback, OperationCallback {
 
     private fun loadTeams() {
 
-        viewModel.employeeData().observe(viewLifecycleOwner, {
+        viewModel.employeeData().observe(viewLifecycleOwner) {
             it?.let { resource ->
                 when (resource.status) {
                     Status.SUCCESS -> {
@@ -177,6 +188,8 @@ class TeamList : Fragment(), CustomCallback, OperationCallback {
 
                             adapter.setSelected(selectedPos)
 
+
+                        count = resource.data?.size!!
                         adapter.setPeople(
                             resource.data as MutableList<Employee>,
                             requireActivity()
@@ -191,6 +204,12 @@ class TeamList : Fragment(), CustomCallback, OperationCallback {
 
                             }
 
+
+                        if (empObject != null) {
+                            loadTeamDetails(empObject)
+                        } else {
+                            loadTeamDetails(null)
+                        }
                     }
                     Status.ERROR -> {
                         ProgressUtils.dismissProgressDialog()
@@ -202,7 +221,7 @@ class TeamList : Fragment(), CustomCallback, OperationCallback {
                     }
                 }
             }
-        })
+        }
     }
 
 
@@ -211,7 +230,7 @@ class TeamList : Fragment(), CustomCallback, OperationCallback {
         binding.layoutTool.txtSubTitle.text = ""
         binding.layoutTool.txtEdit.visibility = View.GONE
         binding.layoutTool.imgDrawer.setOnClickListener {
-            (requireActivity() as MainActivity).enableDrawer()
+            findNavController().navigate(R.id.action_teamList_to_menupos)
         }
         binding.layoutTool.imgOptionMenu.setImageResource(R.drawable.ic_add)
         binding.layoutTool.imgOptionMenuContainer.visibility = View.GONE
@@ -237,15 +256,16 @@ class TeamList : Fragment(), CustomCallback, OperationCallback {
             }
 
             empObject = data
-        }else{
+        } else {
             binding.layoutTool.txtEdit.visibility = View.GONE
-            binding.layoutTool.txtSubTitle.text =""
+            binding.layoutTool.txtSubTitle.text = ""
         }
 
         val teamDetails = TeamDetails()
 
         val args = Bundle()
         args.putParcelable("data", data)
+        args.putInt("count", count)
         teamDetails.arguments = args
 
         val fm: FragmentManager = requireActivity().supportFragmentManager
@@ -264,7 +284,7 @@ class TeamList : Fragment(), CustomCallback, OperationCallback {
         val popupMenu = view?.let { PopupMenu(requireContext(), it) }
         popupMenu?.menuInflater?.inflate(R.menu.edit_delete__hide_menu, popupMenu.menu)
         popupMenu?.menu?.findItem(R.id.menu_edit)?.isVisible = false
-        popupMenu?.menu?.findItem(R.id.menu_hide)?.isVisible=false
+        popupMenu?.menu?.findItem(R.id.menu_hide)?.isVisible = false
         popupMenu?.setOnMenuItemClickListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.menu_delete -> {

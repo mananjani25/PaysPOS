@@ -1128,6 +1128,7 @@ open class PaymentViewModel @Inject constructor(
 
                 name = it.name
                 price = it.price
+                modifier_id = it.id
                 order_item_id = item.orderItemId
                 totalPrice = MethodUtils.roundOffAmountDouble(it.price * it.itemQuantity)
                 modifier_set_id = it.modifierSetId ?: 0

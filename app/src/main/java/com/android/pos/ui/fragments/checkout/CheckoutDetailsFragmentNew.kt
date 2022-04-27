@@ -53,7 +53,7 @@ import java.util.*
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
+class CheckoutDetailsFragmentNew(val isFromOpenOrder:Boolean = false) : Fragment(), magtekCallback,
     DeleteOptionCallback, IDeviceListCallback {
     private var isManualCard: Boolean = false
     private lateinit var binding: FragmentCheckoutDetailsNewBinding
@@ -166,7 +166,9 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
             tipAmount = bundle.getDouble("tipAmount")
             viewModel.setTipAmount(tipAmount)
             tipID = bundle.getInt("tipId")
+            isSelectedCount = 1
             tipAmountCalculation()
+            loadPaymentLayout()
         }
         requireActivity().supportFragmentManager.setFragmentResultListener(
             "request_key_split",
@@ -174,7 +176,11 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
         ) { _: String, bundle: Bundle ->
 
             isSelectedCount = bundle.getInt("split")
-            binding.tvCustom.text = "Custom ($isSelectedCount Ways)"
+            if(isSelectedCount>1){
+                binding.tvCustom.text = "Custom ($isSelectedCount Ways)"
+            }else{
+                binding.tvCustom.text = "Custom"
+            }
             tipsetupGlobal(tipAmount, isSelectedCount)
         }
         requireActivity().supportFragmentManager.setFragmentResultListener(
@@ -196,7 +202,8 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
 
         binding.linearNextSplit.setOnClickListener {
             loadPaymentLayout()
-            setupPaymentScreen(isSelectedCount)
+            tipAmountCalculation()
+//            setupPaymentScreen(isSelectedCount)
         }
         binding.tvFullAmount.setOnClickListener {
             binding.tvFullAmount.setBackgroundDrawable(resources.getDrawable(R.drawable.button_action_hover))
@@ -354,6 +361,7 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
     private fun observeData() {
         paymentviewModel.data.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
+                Log.e(TAG, "receiptData: ${Gson().toJson(it.data)}")
                 viewModel.redeemLoyaltyInfo = RedeemLoyaltyInfo()
                 prefProvider.setValueInt("ORDER_ID", it.data.order.id)
 
@@ -515,7 +523,7 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
                         bundle.putDouble("TipAmount", tipAmount)
 
                         bundle.putDouble("noCashAdj", cashDiscountSurcharge)
-                        bundle.putBoolean("isFromActiveOrder", false)
+                        bundle.putBoolean("isFromActiveOrder", isFromOpenOrder)
 
 
                         if (findNavController().currentDestination?.id == R.id.paymentBoldPosFragment) {
@@ -554,7 +562,7 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
                         )
                         prefProvider.setValue(Constants.WHOLE_AMOUNT, remainingValue.toString())
 
-                        if (remainingValue == 0.0) {
+                        if (remainingValue == 0.0 || remainingValue <= 0.0) {
                             bundle.putBoolean("isSpilt", false)
                             bundle.putBoolean("isSplitByNo", false)
                             prefProvider.setValueboolean(Constants.SPLIT_ENABLE, false)
@@ -565,7 +573,7 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
                             splitAllAmounts(Constants.SERVICE_CHARGE, 0.0)
                             splitAllAmounts(Constants.CASH_DISCOUNT_SURCHARGE, 0.0)
                             splitAllAmounts(Constants.TIP, 0.0)
-                        } else {
+                        }  else {
                             bundle.putBoolean("isSpilt", true)
                             bundle.putBoolean("isSplitByNo", true)
                             bundle.putBoolean("isCustomCash", false)
@@ -592,7 +600,7 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
                         bundle.putDouble("TipAmount", tipAmount)
 
                         bundle.putDouble("noCashAdj", cashDiscountSurcharge)
-                        bundle.putBoolean("isFromActiveOrder", false)
+                        bundle.putBoolean("isFromActiveOrder", isFromOpenOrder)
 
                         if (findNavController().currentDestination?.id == R.id.paymentBoldPosFragment) {
                             findNavController().navigate(
@@ -793,7 +801,10 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
 
     fun getDataFromPref() {
         redeemLoyaltyInfo = viewModel.redeemLoyaltyInfo
-        if (prefProvider.getValue(Constants.WHOLE_AMOUNT, "").isEmpty()) {
+        if (prefProvider.getValue(Constants.WHOLE_AMOUNT, "").isEmpty() || prefProvider.getValue(
+                Constants.WHOLE_AMOUNT,
+                ""
+            ) == "0.0") {
             WholetotalPrice = viewModel.totalPrice
             prefProvider.setValue(
                 Constants.WHOLE_AMOUNT,
@@ -803,7 +814,10 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
             WholetotalPrice = prefProvider.getValue(Constants.WHOLE_AMOUNT, "").toDouble()
         }
 
-        if (prefProvider.getValue(Constants.SUB_TOTAL, "").isEmpty()) {
+        if (prefProvider.getValue(Constants.SUB_TOTAL, "").isEmpty() || prefProvider.getValue(
+                Constants.SUB_TOTAL,
+                ""
+            ) == "0.0") {
             subTotalPrice = viewModel.subTotalPrice
             prefProvider.setValue(
                 Constants.SUB_TOTAL,
@@ -813,7 +827,10 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
             subTotalPrice = prefProvider.getValue(Constants.SUB_TOTAL, "").toDouble()
         }
 
-        if (prefProvider.getValue(Constants.TAX_CHARGE, "").isEmpty()) {
+        if (prefProvider.getValue(Constants.TAX_CHARGE, "").isEmpty() || prefProvider.getValue(
+                Constants.TAX_CHARGE,
+                ""
+            ) == "0.0") {
             totalTax = viewModel.totalTax
             prefProvider.setValue(Constants.TAX_CHARGE, String.format("%.2f", viewModel.totalTax))
         } else {
@@ -821,7 +838,10 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
         }
 
 
-        if (prefProvider.getValue(Constants.SERVICE_CHARGE, "").isEmpty()) {
+        if (prefProvider.getValue(Constants.SERVICE_CHARGE, "").isEmpty() || prefProvider.getValue(
+                Constants.SERVICE_CHARGE,
+                ""
+            ) == "0.0") {
             totalServiceCharge = viewModel.totalServiceCharge
             prefProvider.setValue(
                 Constants.SERVICE_CHARGE,
@@ -832,7 +852,10 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
         }
 
 
-        if (prefProvider.getValue(Constants.TOTAL_DISCOUNT, "").isEmpty()) {
+        if (prefProvider.getValue(Constants.TOTAL_DISCOUNT, "").isEmpty() || prefProvider.getValue(
+                Constants.TOTAL_DISCOUNT,
+                ""
+            ) == "0.0") {
             totalDiscount = viewModel.totalDiscount
             prefProvider.setValue(
                 Constants.TOTAL_DISCOUNT,
@@ -843,20 +866,29 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
         }
 
 
-        if (prefProvider.getValue(Constants.TIP, "").isEmpty()) {
+        if (prefProvider.getValue(Constants.TIP, "").isEmpty() || prefProvider.getValue(
+                Constants.TIP,
+                ""
+            ) == "0.0") {
             tipAmount = viewModel.tip
             prefProvider.setValue(Constants.TIP, String.format("%.2f", viewModel.tip))
         } else {
             tipAmount = prefProvider.getValue(Constants.TIP, "").toDouble()
         }
 
-        if (prefProvider.getValue(Constants.TIP, "").isEmpty()) {
+        if (prefProvider.getValue(Constants.TIP, "").isEmpty() || prefProvider.getValue(
+                Constants.TIP,
+                ""
+            ) == "0.0") {
             tipAmount = viewModel.tip
             prefProvider.setValue(Constants.TIP, String.format("%.2f", viewModel.tip))
         } else {
             tipAmount = prefProvider.getValue(Constants.TIP, "").toDouble()
         }
-        if (prefProvider.getValue(Constants.CASH_DISCOUNT_SURCHARGE, "").isEmpty()) {
+        if (prefProvider.getValue(Constants.CASH_DISCOUNT_SURCHARGE, "").isEmpty() || prefProvider.getValue(
+                Constants.CASH_DISCOUNT_SURCHARGE,
+                ""
+            ) == "0.0") {
             cashDiscountSurcharge = viewModel.cashdiscountAmount
             prefProvider.setValue(
                 Constants.CASH_DISCOUNT_SURCHARGE,
@@ -932,6 +964,9 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
 
     private fun tipAmountCalculation() {
         if (tipAmount == 0.00) {
+            binding.tvsplittip?.gone()
+            binding.tvtipcard?.gone()
+            binding.tvtipcash?.gone()
             MethodUtils.setPriceTextView(
                 binding.tvCash,
                 getCalCashDiscWithAmount(WholetotalPrice, true) / isSelectedCount
@@ -966,9 +1001,13 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
                 (getCalCashDiscWithAmount(WholetotalPrice, false) / isSelectedCount) + tipAmount
             )
             binding.tvCash.text =
-                "Cash (" + binding.tvCash.text + ") (" + MethodUtils.roundOffAmount(tipAmount) + " Tip Added)"
+                "Cash (" + binding.tvCash.text + ")"
+            binding.tvtipcash?.visible()
+            binding.tvtipcash?.text = "(" + MethodUtils.roundOffAmount(tipAmount) + " Tip Added)"
             binding.tvCard.text =
-                "Card (" + binding.tvCard.text + ") (" + MethodUtils.roundOffAmount(tipAmount) + " Tip Added)"
+                "Card (" + binding.tvCard.text + ")"
+            binding.tvtipcard?.visible()
+            binding.tvtipcard?.text = "(" + MethodUtils.roundOffAmount(tipAmount) + " Tip Added)"
             MethodUtils.getCashPaymentOptionList(
                 (getCalCashDiscWithAmount(WholetotalPrice, true) / isSelectedCount) + tipAmount,
                 binding.tvCash1,
@@ -982,7 +1021,9 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
                 ) / isSelectedCount) + tipAmount
             )
             binding.tvAmount.text =
-                binding.tvAmount.text.toString() + " (" + tipAmount + " Tip Added)"
+                binding.tvAmount.text.toString()
+            binding.tvsplittip?.visible()
+            binding.tvsplittip?.text = "(" + MethodUtils.roundOffAmount(tipAmount) + " Tip Added)"
         }
     }
 
@@ -1011,6 +1052,7 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
 
     private fun tipsetupGlobal(tipAmount: Double, isSelectCount: Int) {
         if (tipAmount == 0.0) {
+            binding.tvsplittip?.gone()
             MethodUtils.setPriceTextView(
                 binding.tvAmount,
                 getCalCashDiscWithAmount(
@@ -1025,16 +1067,40 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
                 ) / isSelectCount) + tipAmount
             )
             binding.tvAmount.text =
-                binding.tvAmount.text.toString() + " (" + MethodUtils.roundOffAmount(tipAmount) + " Tip Added)"
+                binding.tvAmount.text.toString()
+            binding.tvsplittip?.visible()
+            binding.tvsplittip?.text = "(" + MethodUtils.roundOffAmount(tipAmount) + " Tip Added)"
         }
     }
 
     private fun setupTabDesign() {
         binding.linearTab1.setOnClickListener {
+            isSelectedCount = 1
+            tipsetupGlobal(tipAmount, isSelectedCount)
             loadPaymentLayout()
         }
         binding.linearTab2.setOnClickListener {
+            isSelectedCount = 1
+            tipsetupGlobal(tipAmount, isSelectedCount)
             loadSplitLayout()
+            binding.tvFullAmount.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
+            binding.tv2ways.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
+            binding.tv3ways.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
+            binding.tv4ways.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
+            binding.tv5ways.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
+            binding.tv6ways.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
+            binding.tvCustom.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
+            binding.tvFullAmount.setTextColor(resources.getColor(R.color.txtColor))
+            binding.tv2ways.setTextColor(resources.getColor(R.color.txtColor))
+            binding.tv3ways.setTextColor(resources.getColor(R.color.txtColor))
+            binding.tv4ways.setTextColor(resources.getColor(R.color.txtColor))
+            binding.tv5ways.setTextColor(resources.getColor(R.color.txtColor))
+            binding.tv6ways.setTextColor(resources.getColor(R.color.txtColor))
+            binding.tvCustom.setTextColor(resources.getColor(R.color.txtColor))
+            binding.tvCustom.text = "Custom"
+            isSelectedCount = 1
+            tipsetupGlobal(tipAmount, isSelectedCount)
+            binding.tvFullAMounttxt.visibility = View.VISIBLE
         }
     }
 
@@ -1064,6 +1130,18 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
         paymentType = "Card"
         Log.e(TAG, "cartList:  ${Gson().toJson(cartList)}")
         Log.e(TAG, "cartListcartItems:  ${Gson().toJson(cartItems)}")
+        if (orderId != -1 && orderId != 0) {
+            paymentviewModel.updateOrder(
+                true,
+                orderId,
+                paymentId,
+                paymentOfflineId,
+                orderOfflineId
+            )
+        } else {
+            paymentviewModel.updateOrder(false, null, null, "", "")
+        }
+        paymentviewModel.saveOrder(false)
         val myRequest = cartList?.let {
             paymentviewModel.createOrderRequestForCard(
                 it,
@@ -1087,7 +1165,7 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
         }
         Log.e(TAG, "myRequestOriginal ${Gson().toJson(myRequest)}")
         if (myRequest != null) {
-            paymentviewModel.totalPayAmount(viewModel.totalPrice)
+            paymentviewModel.totalPayAmount(paymentAmount)
             paymentAttributesRequest(myRequest)
         }
     }
@@ -1411,7 +1489,7 @@ class CheckoutDetailsFragmentNew : Fragment(), magtekCallback,
                         ConnectionState.Connected -> {
                             Log.e("", "[CONNECTED]")
 
-                           // ProgressUtils.dismissProgressDialog()
+                            // ProgressUtils.dismissProgressDialog()
 
                             startTransaction()
                         }

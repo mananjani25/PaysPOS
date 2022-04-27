@@ -21,9 +21,10 @@
                 android:layout_width="@dimen/_15sdp"
                 android:layout_height="@dimen/_15sdp"
                 android:layout_gravity="center_vertical"
-                android:padding="@dimen/_2sdp"
-                android:src="@drawable/ic_arrow_back"
-                 />
+                android:padding="@dimen/_5sdp"
+                android:src="@mipmap/ic_left_arrow"
+                app:tint="@color/drawable_ic_color"
+                />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:layout_width="match_parent"

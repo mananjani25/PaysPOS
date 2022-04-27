@@ -237,7 +237,8 @@ class AddCustomerViewModel @Inject constructor(
                                         addresses = customerListReposne.data.addresses,
                                         enroll_to_loyalty = customerListReposne.data.enroll_to_loyalty,
                                         final_reward = customerListReposne.data.final_reward,
-                                        company = customerListReposne.data.company
+                                        company = customerListReposne.data.company,
+                                        isSelcted =true,
                                     )
 
 

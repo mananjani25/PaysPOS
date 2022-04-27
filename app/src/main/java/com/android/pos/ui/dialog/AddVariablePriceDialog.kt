@@ -78,7 +78,7 @@ class AddVariablePriceDialog : DialogFragment(), TextWatcher {
 
             var bundle: Bundle = Bundle()
             bundle.putParcelable("data", variationAttribute)
-            requireActivity().supportFragmentManager.setFragmentResult("request_variable", bundle)
+            setNavigationResult(DIALOG_KEY_VARIATION_DETAILS, variationAttribute)
             findNavController().popBackStack()
         }
 
