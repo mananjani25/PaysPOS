@@ -796,12 +796,12 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                 "%.2f",
                 getCalCashDiscWithAmount(WholetotalPrice, false) / isSelectedCount
             ).toDouble()
-//           makePaymentCreditCard()
-            if (device == 0) {
+           makePaymentCreditCard()
+          /*  if (device == 0) {
                 magtekPaymentCall()
             } else {
                 magtekProPaymentCall()
-            }
+            }*/
         }
         binding.llManualCardEntry.setOnClickListener {
             binding.frameLayoutId.visible()

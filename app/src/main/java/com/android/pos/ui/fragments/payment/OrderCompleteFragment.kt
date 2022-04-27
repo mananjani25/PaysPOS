@@ -804,7 +804,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
     private fun customerPrintWholeOrder() {
 
         var guestPos = requireArguments().getInt(GUEST_POSITION)
-        Log.e(TAG,"getGuestPosition  ${guestPos}")
+        Log.e(TAG, "getGuestPosition  ${guestPos}")
 
         var listItem: java.util.ArrayList<TbItem> = arrayListOf()
         var listItemWT: java.util.ArrayList<TbItem> = arrayListOf()
@@ -943,9 +943,6 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         var orderDiscount = 0.0
 
         val guestCount = dineInList.size - 1
-        Log.e(TAG, "guestCount:  ${guestCount}")
-
-
 
         listGuestItem.forEach {
             guestSubTotal += (it.price * it.itemQuantity) - it.discountPrice
@@ -2064,7 +2061,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     }, PrinterClass.language, requireActivity()
                 )
 
-
+            Log.e(TAG, "receiptModelDineinData  ${Gson().toJson(receiptModel)}")
             if (customerSettingModel.showVenueLogo && prefProvider.getValue(VENUE_LOGO, "")
                     .isNotEmpty()
             ) {
@@ -2675,7 +2672,39 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         }
                     )
                 )
+            } else if (payTypeGlb.lowercase() == "Card".lowercase()) {
+
+                builder.addTextLineSpace(30)
+                builder.addFeedUnit(30)
+                builder.addTextFont(Builder.FONT_E)
+                // builder.addTextAlign(Builder.ALIGN_LEFT)
+                builder.addTextLang(Builder.LANG_EN)
+                addCustomerTextSize(builder, customerSettingModel.fonts)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.COLOR_1
+                )
+                builder.addText(
+                    padLine(
+                        "SurCharge",
+                        "" + MethodUtils.roundOffAmount(
+                            receiptModel?.order?.payments?.get(
+                                receiptModel?.order?.payments?.size!! - 1
+                            )?.cash_discount_or_surcharge!!
+                        ),
+                        if (customerSettingModel.fonts == LARGE) {
+                            24
+                        } else {
+                            48
+                        }
+                    )
+                )
+
+
             }
+
 
             /*if (getDineInOrderDetails?.cash_discount_or_surcharge != null) {
                 builder.addTextLineSpace(30)
@@ -2740,6 +2769,10 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         ?: 0.0) + (getDineInOrderDetails?.totalServiceCharges
                         ?: 0.0) + (getDineInOrderDetails?.totalTaxAmount ?: 0.0)
                 )
+
+            if (payTypeGlb.lowercase() == "Card".lowercase()) {
+                totalAmt += receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.cash_discount_or_surcharge!!
+            }
 
             if (payTypeGlb == "Cash") {
 
@@ -2924,19 +2957,15 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                 builder.addFeedLine(1)
 
+
+
                 addHorizontalLine(builder)
 
                 if (tipsList.isNotEmpty()) {
                     addTipsList(
                         builder,
                         tipsList,
-                        if (totalDiscount != 0.0) {
-                            (subTotalWT + serviceCharge + totalTaxAmount - (getDineInOrderDetails?.totalDiscount?.toDouble()
-                                ?: 0.0))
-                        } else {
-                            (subTotalWT + serviceCharge + totalTaxAmount - (getDineInOrderDetails?.totalDiscount
-                                ?: 0.0))
-                        },
+                        receiptModel?.order?.totalAmount?.toDouble() ?: 0.0,
                         customerSettingModel.fonts
                     )
 
@@ -2974,7 +3003,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 )
             }
 
-            if (getDineInOrderDetails?.payments?.isNotEmpty() == true) {
+            if (receiptModel?.order?.payments?.isNotEmpty() == true) {
                 builder.addTextLineSpace(30)
                 builder.addFeedUnit(30)
                 builder.addTextFont(Builder.FONT_E)
@@ -2991,7 +3020,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 builder.addText(
                     padLine(
                         "Transaction Type",
-                        getDineInOrderDetails?.payments?.get(0)?.paymentType,
+                        receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.paymentType,
                         if (customerSettingModel.fonts == Constants.LARGE) {
                             24
                         } else {
@@ -3000,6 +3029,33 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     )
                 )
             }
+
+            /*  if (getDineInOrderDetails?.payments?.isNotEmpty() == true) {
+                  builder.addTextLineSpace(30)
+                  builder.addFeedUnit(30)
+                  builder.addTextFont(Builder.FONT_E)
+                  // builder.addTextAlign(Builder.ALIGN_LEFT)
+                  builder.addTextLang(Builder.LANG_EN)
+                  addCustomerTextSize(builder, customerSettingModel.fonts)
+                  builder.addTextStyle(
+                      Builder.FALSE,
+                      Builder.FALSE,
+                      Builder.TRUE,
+                      Builder.COLOR_1
+                  )
+
+                  builder.addText(
+                      padLine(
+                          "Transaction Type",
+                          getDineInOrderDetails?.payments?.get(0)?.paymentType,
+                          if (customerSettingModel.fonts == Constants.LARGE) {
+                              24
+                          } else {
+                              48
+                          }
+                      )
+                  )
+              }*/
             /*if (customerSettingModel.showCustomerAddress != false or customerSettingModel.showCustomerPhone != false or customerSettingModel.showCustomerName) {
 
                 if (receiptModel?.order?.customer != null) {
@@ -3669,7 +3725,6 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             )
             builder.addTextAlign(Builder.ALIGN_CENTER)
             builder.addText(receiptModel?.order?.orderType + "\n")
-            Log.e(TAG, "orderType:  ${receiptModel?.order?.orderType}")
             if (receiptModel?.order?.orderType?.lowercase() == OPEN_ORDER.lowercase()
                 || receiptModel?.order?.orderType?.lowercase() == OPEN_ORDER.lowercase()
             ) {
@@ -4097,39 +4152,78 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 )
             }
 
+            if (receiptModel?.order?.payments?.isNotEmpty() == true && receiptModel?.order?.payments?.get(
+                    receiptModel?.order?.payments?.size!! - 1
+                )?.paymentType?.lowercase() == "Card".lowercase() && receiptModel?.order?.payments?.get(
+                    receiptModel?.order?.payments?.size!! - 1
+                )?.cash_discount_type?.lowercase() == "SurCharge".lowercase()
+            ) {
 
-
-
-            if (receiptModel?.order?.totalCashDiscountFee != null) {
-                builder.addTextLineSpace(30)
-                builder.addFeedUnit(30)
-                builder.addTextFont(Builder.FONT_E)
-                // builder.addTextAlign(Builder.ALIGN_LEFT)
-                builder.addTextLang(Builder.LANG_EN)
-                addCustomerTextSize(builder, customerSettingModel.fonts)
-                builder.addTextStyle(
-                    Builder.FALSE,
-                    Builder.FALSE,
-                    Builder.FALSE,
-                    Builder.COLOR_1
-                )
-
-                builder.addText(
-                    padLine(
-                        "Cash Discount",
-                        if (receiptModel?.order?.totalCashDiscountFee == 0.0) {
-                            "$" + MethodUtils.roundOffAmountString(receiptModel?.order?.totalCashDiscountFee!!)
-                        } else {
-                            "-$" + MethodUtils.roundOffAmountString(receiptModel?.order?.totalCashDiscountFee!!)
-                        },
-                        if (customerSettingModel.fonts == LARGE) {
-                            24
-                        } else {
-                            48
-                        }
+                if (receiptModel?.order?.totalCashDiscountFee != null) {
+                    builder.addTextLineSpace(30)
+                    builder.addFeedUnit(30)
+                    builder.addTextFont(Builder.FONT_E)
+                    // builder.addTextAlign(Builder.ALIGN_LEFT)
+                    builder.addTextLang(Builder.LANG_EN)
+                    addCustomerTextSize(builder, customerSettingModel.fonts)
+                    builder.addTextStyle(
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.COLOR_1
                     )
-                )
+
+                    builder.addText(
+                        padLine(
+                            "SurCharge",
+                            "$" + MethodUtils.roundOffAmountString(receiptModel?.order?.totalCashDiscountFee!!),
+                            if (customerSettingModel.fonts == LARGE) {
+                                24
+                            } else {
+                                48
+                            }
+                        )
+                    )
+                }
+
+
+            } else if (receiptModel?.order?.payments?.isNotEmpty() == true && receiptModel?.order?.payments?.get(
+                    receiptModel?.order?.payments?.size!! - 1
+                )?.cash_discount_type?.lowercase() == "CashDiscount".lowercase()
+            ) {
+
+                if (receiptModel?.order?.totalCashDiscountFee != null) {
+                    builder.addTextLineSpace(30)
+                    builder.addFeedUnit(30)
+                    builder.addTextFont(Builder.FONT_E)
+                    // builder.addTextAlign(Builder.ALIGN_LEFT)
+                    builder.addTextLang(Builder.LANG_EN)
+                    addCustomerTextSize(builder, customerSettingModel.fonts)
+                    builder.addTextStyle(
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.COLOR_1
+                    )
+
+                    builder.addText(
+                        padLine(
+                            "Cash Discount",
+                            if (receiptModel?.order?.totalCashDiscountFee == 0.0) {
+                                "$" + MethodUtils.roundOffAmountString(receiptModel?.order?.totalCashDiscountFee!!)
+                            } else {
+                                "-$" + MethodUtils.roundOffAmountString(receiptModel?.order?.totalCashDiscountFee!!)
+                            },
+                            if (customerSettingModel.fonts == LARGE) {
+                                24
+                            } else {
+                                48
+                            }
+                        )
+                    )
+                }
             }
+
 
 
 
@@ -4476,7 +4570,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             builder.addText(
                 padLine(
                     "Transaction Type",
-                    receiptModel?.order?.payments?.get(0)?.paymentType,
+                    receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.paymentType,
                     if (customerSettingModel.fonts == LARGE) {
                         24
                     } else {
@@ -4485,8 +4579,83 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 )
             )
 
-            Log.e(TAG, "customerDetails:   ${Gson().toJson(receiptModel?.order?.customer)}")
-            Log.e(TAG, "customerSettingModel  ${Gson().toJson(customerSettingModel)}")
+            if (receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.paymentType?.lowercase() == "Card".lowercase()) {
+                builder.addTextLineSpace(30)
+                builder.addFeedUnit(30)
+                builder.addTextFont(Builder.FONT_E)
+                // builder.addTextAlign(Builder.ALIGN_LEFT)
+                builder.addTextLang(Builder.LANG_EN)
+                addCustomerTextSize(builder, customerSettingModel.fonts)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.TRUE,
+                    Builder.COLOR_1
+                )
+
+                builder.addText(
+                    padLine(
+                        "",
+                        receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.cardName,
+                        if (customerSettingModel.fonts == LARGE) {
+                            24
+                        } else {
+                            48
+                        }
+                    )
+                )
+
+                builder.addTextLineSpace(30)
+                builder.addFeedUnit(30)
+                builder.addTextFont(Builder.FONT_E)
+                // builder.addTextAlign(Builder.ALIGN_LEFT)
+                builder.addTextLang(Builder.LANG_EN)
+                addCustomerTextSize(builder, customerSettingModel.fonts)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.TRUE,
+                    Builder.COLOR_1
+                )
+
+                builder.addText(
+                    padLine(
+                        "",
+                        receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.cardType,
+                        if (customerSettingModel.fonts == LARGE) {
+                            24
+                        } else {
+                            48
+                        }
+                    )
+                )
+                builder.addTextLineSpace(30)
+                builder.addFeedUnit(30)
+                builder.addTextFont(Builder.FONT_E)
+                // builder.addTextAlign(Builder.ALIGN_LEFT)
+                builder.addTextLang(Builder.LANG_EN)
+                addCustomerTextSize(builder, customerSettingModel.fonts)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.TRUE,
+                    Builder.COLOR_1
+                )
+
+                builder.addText(
+                    padLine(
+                        "",
+                        receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.cardNumber,
+                        if (customerSettingModel.fonts == LARGE) {
+                            24
+                        } else {
+                            48
+                        }
+                    )
+                )
+
+            }
+
             if (customerSettingModel.showCustomerAddress or customerSettingModel.showCustomerPhone or customerSettingModel.showCustomerName) {
 
                 if (receiptModel?.order?.customer != null) {
@@ -4935,7 +5104,14 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
             addHorizontalKitchenLine(builder)
 
-            receiptModel?.order?.orderItems?.let { addOrdersForKitchen(builder, it,fontSizeH,fontSizeW) }
+            receiptModel?.order?.orderItems?.let {
+                addOrdersForKitchen(
+                    builder,
+                    it,
+                    fontSizeH,
+                    fontSizeW
+                )
+            }
 
             if (receiptModel?.order?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote) {
                 builder.addTextLineSpace(30)

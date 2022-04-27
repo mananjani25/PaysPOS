@@ -47,6 +47,7 @@ class PaymentBoldPosFragment : Fragment() {
     private var guestRequestModel: GuestPaymentRequest? = null
 
     private val dineInPaymentViewModel by viewModels<CheckoutDineInPaymentViewModel>()
+    private var isFromActiveOrder:Boolean = false
 
     @Inject
     lateinit var prefProvider: PrefProvider
@@ -59,7 +60,7 @@ class PaymentBoldPosFragment : Fragment() {
         binding = FragmentPaymentBoldPosBinding.inflate(inflater, container, false)
         binding.layoutHeaderCheckout.rlRoot.visibility = View.VISIBLE
         binding.lifecycleOwner = this
-
+        isFromActiveOrder = arguments?.getBoolean("isFromActiveOrder") ?: false
         orderId = arguments?.getInt("orderId")
 
         Log.e("orderId :: ", orderId.toString())
@@ -191,7 +192,16 @@ class PaymentBoldPosFragment : Fragment() {
                 dineInPaymentViewModel.deleteCart()
                 prefProvider.setValue(Constants.ORDER_TYPE, Constants.TAKEOUT)
             }
+
+            if (isFromActiveOrder){
+                removeCustomer()
+                viewModel.deleteCart()
+                prefProvider.setValue(Constants.ORDER_TYPE, Constants.TAKEOUT)
+
+            }
         }
+
+
     }
 
     private fun loadCartFragment(frag: Fragment) {

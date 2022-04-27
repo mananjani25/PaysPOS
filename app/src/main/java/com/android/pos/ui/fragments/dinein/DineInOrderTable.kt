@@ -3,6 +3,7 @@ package com.android.pos.ui.fragments.dinein
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.Point
 import android.graphics.drawable.BitmapDrawable
 import android.os.Build
@@ -3179,6 +3180,28 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 )
 
 
+            if (customerSettingModel.showVenueLogo && prefProvider.getValue(Constants.VENUE_LOGO, "")
+                    .isNotEmpty()
+            ) {
+                builder.addFeedLine(1)
+                builder.addTextAlign(Builder.ALIGN_CENTER)
+
+                /* var bitmap = getBitmapFromURL(prefProvider.getValue(VENUE_LOGO, ""))*/
+
+                val decodedString: ByteArray = android.util.Base64.decode(
+                    prefProvider.getValue(Constants.VENUE_LOGO, ""),
+                    android.util.Base64.DEFAULT
+                )
+                val bitmap: Bitmap =
+                    BitmapFactory.decodeByteArray(decodedString, 0, decodedString.size)
+
+                val newBitmap = Bitmap.createScaledBitmap(bitmap!!, 210, 210, true)
+                builder.addImage(
+                    newBitmap, 0, 0,
+                    newBitmap.width, newBitmap.height, Builder.COLOR_1, Builder.MODE_MONO,
+                    Builder.HALFTONE_DITHER, 1.0
+                )
+            }
 
             if (paymentType.isNotEmpty()) {
                 builder.addTextFont(Builder.FONT_E)
@@ -4105,6 +4128,28 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 )
 
 
+            if (customerSettingModel.showVenueLogo && prefProvider.getValue(Constants.VENUE_LOGO, "")
+                    .isNotEmpty()
+            ) {
+                builder.addFeedLine(1)
+                builder.addTextAlign(Builder.ALIGN_CENTER)
+
+                /* var bitmap = getBitmapFromURL(prefProvider.getValue(VENUE_LOGO, ""))*/
+
+                val decodedString: ByteArray = android.util.Base64.decode(
+                    prefProvider.getValue(Constants.VENUE_LOGO, ""),
+                    android.util.Base64.DEFAULT
+                )
+                val bitmap: Bitmap =
+                    BitmapFactory.decodeByteArray(decodedString, 0, decodedString.size)
+
+                val newBitmap = Bitmap.createScaledBitmap(bitmap!!, 210, 210, true)
+                builder.addImage(
+                    newBitmap, 0, 0,
+                    newBitmap.width, newBitmap.height, Builder.COLOR_1, Builder.MODE_MONO,
+                    Builder.HALFTONE_DITHER, 1.0
+                )
+            }
 
             if (paymentType.isNotEmpty()) {
                 builder.addTextFont(Builder.FONT_E)
@@ -4660,41 +4705,6 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             }
 
 
-
-
-            if (cashDiscountGlobal > 0) {
-                builder.addTextLineSpace(30)
-                builder.addFeedUnit(30)
-                builder.addTextFont(Builder.FONT_E)
-                // builder.addTextAlign(Builder.ALIGN_LEFT)
-                builder.addTextLang(Builder.LANG_EN)
-                addCustomerTextSize(builder, customerSettingModel.fonts)
-                builder.addTextStyle(
-                    Builder.FALSE,
-                    Builder.FALSE,
-                    Builder.FALSE,
-                    Builder.COLOR_1
-                )
-
-                builder.addText(
-                    padLine(
-                        "Cash Discount",
-
-                        "-$" + MethodUtils.roundOffAmountString(cashDiscountGlobal),
-                        if (customerSettingModel.fonts == Constants.LARGE) {
-                            24
-                        } else {
-                            48
-                        }
-                    )
-                )
-            }
-
-            builder.addTextLineSpace(30)
-            builder.addFeedUnit(30)
-
-
-
             builder.addTextLineSpace(30)
             builder.addFeedUnit(30)
 
@@ -4836,11 +4846,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     addTipsList(
                         builder,
                         tipsList,
-                        if (viewModel.totalDiscountAmount != 0.0) {
-                            (subTotalWT + serviceCharge + viewModel.totalTaxAmount - getOrderDetailsResponse?.totalDiscount!!.toDouble())
-                        } else {
-                            (subTotalWT + serviceCharge + viewModel.totalTaxAmount - getOrderDetailsResponse?.totalDiscount!!.toDouble())
-                        },
+                        totalAmt,
                         customerSettingModel.fonts
                     )
 
