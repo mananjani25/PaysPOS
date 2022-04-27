@@ -508,7 +508,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
         }
 
         binding.btnPay.setOnClickListener {
-            if (binding.txtTotalAmount.text.toString() != "$0.00" && cartList?.isNotEmpty() == true) {
+            if ( cartList?.isNotEmpty() == true) {
 /*
                 if (cartList?.isNotEmpty() == true) {
                     dashboardViewModel.mAllWords(

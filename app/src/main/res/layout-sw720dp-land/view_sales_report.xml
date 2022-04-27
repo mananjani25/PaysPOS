@@ -27,7 +27,7 @@
             android:id="@+id/txtValue"
             style="@style/ReportItemText"
             android:gravity="end"
-            android:text="@{keyValue.showFormattedValue()}"
+            android:text="@{keyValue.showData()}"
             tools:text="$103.59" />
 
 

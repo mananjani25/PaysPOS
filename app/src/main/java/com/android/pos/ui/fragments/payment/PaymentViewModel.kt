@@ -142,8 +142,10 @@ open class PaymentViewModel @Inject constructor(
                                     _queueStart.value = Event(createOrderResponse)
 
                                 } else {
-                                    if (createOrderResponse.data.order.orderType != "Dine In") {
+                                    if (createOrderResponse.data.order.orderType != "Dine In" && response.data.order.payments[response.data.order.payments.size - 1].paymentType != "Card") {
                                         cashLogApi(createOrderResponse, "in")
+                                    }else{
+                                        _data.value = Event(createOrderResponse)
                                     }
                                 }
 
@@ -1041,7 +1043,7 @@ open class PaymentViewModel @Inject constructor(
 
             orderItemsAttribute.category_id = item.categoryId
 
-            orderItemsAttribute.discountAmount = (item.discountPrice * item.itemQuantity)
+            orderItemsAttribute.discountAmount = (item.discountPrice)
             orderItemsAttribute.discountType = item.discountType
             if (item.discountId != -1)
                 orderItemsAttribute.discountId = item.discountId
@@ -1257,7 +1259,7 @@ open class PaymentViewModel @Inject constructor(
                     var modifierPrice = 0.0
 
                     val price =
-                        (items.price * items.itemQuantity) - items.discountPrice
+                        (items.price * items.itemQuantity) - (items.discountPrice * items.itemQuantity)
 
                     items.modifiers.forEach {
                         modifierPrice += (it.price * it.itemQuantity)
@@ -1268,11 +1270,15 @@ open class PaymentViewModel @Inject constructor(
                     val itemTaxPrice =
                         (tax.rate * totalPrice) / 100
 
+                    Log.e("Tax Amount 1", itemTaxPrice.toString())
+
                     orderItemTaxesAttribute.taxTotalAmount =
                         MethodUtils.roundOffAmountDouble(itemTaxPrice)
                 } else {
 
                     val ss = tax.rate * items.itemQuantity
+
+                    Log.e("Tax Amount", ss.toString())
 
                     orderItemTaxesAttribute.taxTotalAmount =
                         MethodUtils.roundOffAmountDouble((ss))
@@ -1649,7 +1655,11 @@ open class PaymentViewModel @Inject constructor(
                                 if (onlySave) {
                                     _data.value = Event(createOrderResponse)
                                 } else {
-                                    cashLogApi(createOrderResponse, "in")
+                                    if (response.data.order.payments[response.data.order.payments.size - 1].paymentType != "Card") {
+                                        cashLogApi(createOrderResponse, "in")
+                                    }else{
+                                        _data.value = Event(createOrderResponse)
+                                    }
                                 }
 
 

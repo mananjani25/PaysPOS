@@ -3,7 +3,6 @@ package com.android.pos.ui.fragments.magtekPro
 import android.content.Context
 import android.graphics.*
 import android.util.Log
-import com.android.pos.ui.dialog.PayByGuestDialog
 import com.android.pos.ui.fragments.checkout.CheckoutDetailsFragmentNew
 import com.android.pos.ui.fragments.checkout.CheckoutDineInFragmentNew
 import com.magtek.mobile.android.mtcms.MTParser
@@ -17,6 +16,7 @@ import kotlin.experimental.and
 open class SessionManager @Inject constructor(@ApplicationContext private val mContext: Context) :
     IEventSubscriber, IConfigurationCallback,
     IFallbackAdapter {
+    private var isFragment: Boolean = false
     var device: IDevice? = null
     private var mOutputFragment: CheckoutDetailsFragmentNew? = null
     private var mDevicesFragment: MagtekProFragment? = null
@@ -34,14 +34,17 @@ open class SessionManager @Inject constructor(@ApplicationContext private val mC
 
     fun setOutputFragment(outputFragment: CheckoutDetailsFragmentNew?) {
         mOutputFragment = outputFragment
+        isFragment = false
     }
 
     fun setDineInFragment(outputFragment: CheckoutDineInFragmentNew?) {
         mDineInFragment = outputFragment
+        isFragment = false
     }
 
     open fun setDevicesFragment(devicesFragment: MagtekProFragment) {
         mDevicesFragment = devicesFragment
+        isFragment = true
     }
 
     fun sendToOutput(data: String?) {
@@ -220,7 +223,8 @@ open class SessionManager @Inject constructor(@ApplicationContext private val mC
     override fun OnEvent(eventType: EventType, data: IData) {
         Log.d(TAG, "OnEvent: eventType=$eventType")
         try {
-            mDevicesFragment?.processEvent(eventType, data)
+            if (isFragment)
+                mDevicesFragment?.processEvent(eventType, data)
             mOutputFragment?.processEvent(eventType, data)
             mDineInFragment?.processEvent(eventType, data)
 
