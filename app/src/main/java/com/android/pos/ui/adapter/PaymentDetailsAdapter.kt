@@ -22,18 +22,18 @@ class PaymentDetailsAdapter(val hideRefund: Boolean) :
             if (keyValueList.size == 1) {
                 val obj = keyValueList[0]
                 binding.txtTitle.text = obj.key
-                binding.txtPrice.text = obj.showFormattedValue()
+                binding.txtPrice.text = obj.showData()
             } else if (keyValueList.size == 2) {
                 val obj = keyValueList[0]
                 binding.txtTitle.text = obj.key
-                binding.txtPrice.text = obj.showFormattedValue()
+                binding.txtPrice.text = obj.showData()
 
                 if (hideRefund) {
                     binding.txtRefund.gone()
                 } else {
                     binding.txtRefund.visible()
                     val obj2 = keyValueList[1]
-                    binding.txtRefund.text = obj2.showFormattedValue()
+                    binding.txtRefund.text = obj2.showData()
                 }
             }
         }

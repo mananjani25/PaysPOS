@@ -65,6 +65,46 @@ data class EodReportResponse(
             @SerializedName("value")
             val value: Double
         ) {
+
+            fun showData() =
+
+                when {
+
+                    key.trim() == "Refund" -> {
+                        showFormattedValueMinus()
+                    }
+
+                    else -> {
+                        showFormattedValue()
+                    }
+
+
+                }
+
+            fun showDataTip() =
+
+                when {
+
+                    key.trim() == "Refund" -> {
+                        showFormattedValueMinusTip()
+                    }
+
+                    else -> {
+                        showFormattedValue()
+                    }
+
+
+                }
+
+            private fun showFormattedValueMinus() = if (value == 0.0 || value == 0.00) "$0.00" else  "-$" + String.format(
+                "%.2f", value
+            )
+
+
+            private fun showFormattedValueMinusTip() = if (tips == 0.0 || tips == 0.00) "$0.00" else "-$" + String.format(
+                "%.2f", tips
+            )
+
             fun showFormattedValue() = "$" + String.format(
                 "%.2f", value ?: 0.0
             )
@@ -72,6 +112,8 @@ data class EodReportResponse(
             fun showFormattedValueTips() = "$" + String.format(
                 "%.2f", tips ?: 0.0
             )
+
+
         }
 
         data class ClockInClockOut(
