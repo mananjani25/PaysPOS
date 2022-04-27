@@ -661,12 +661,11 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder:Boolean = false) : Fragment
                 getCalCashDiscWithAmount(WholetotalPrice, false) / isSelectedCount
             ).toDouble()
             //   makePaymentCreditCard()
-            makePaymentCreditCard()
-           /* if (device == 0) {
-                magtekPaymentCall()
-            } else {
-                magtekProPaymentCall()
-            }*/
+                 if (device == 0) {
+                    magtekPaymentCall()
+                } else {
+                    magtekProPaymentCall()
+                }
         }
         binding.llManualCardEntry.setOnClickListener {
             binding.frameLayoutId.visible()
