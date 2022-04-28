@@ -41,6 +41,7 @@ open class MagtekModule @Inject constructor(
     val prefProvider: PrefProvider
 ) : AppCompatActivity() {
 
+    private var handlerStop: Boolean = false
     private var dataRecv: Boolean = false
     private var m_startTransactionActionPending = false
     var m_scra: MTSCRA? = null
@@ -63,6 +64,12 @@ open class MagtekModule @Inject constructor(
 
 
     private var mScraHandler = Handler(Looper.getMainLooper()) { msg ->
+
+        Log.e("handlerStop", handlerStop.toString())
+
+        if (handlerStop)
+           return@Handler true
+
         when (msg.what) {
             OnDeviceConnectionStateChanged -> {
 
@@ -234,7 +241,7 @@ open class MagtekModule @Inject constructor(
     }
 
 
-     fun startTransaction() {
+    fun startTransaction() {
         Log.e("[Start Transaction 2]", "Result=$")
         if (m_scra != null) {
             val timeLimit: Byte = 0x3C
@@ -504,15 +511,16 @@ open class MagtekModule @Inject constructor(
     open fun cancelTransaction() {
         if (m_scra != null) {
             val result = m_scra!!.cancelTransaction()
-            listner?.processStart("Cancel Transaction",true)
+            listner?.processStart("Cancel Transaction", true)
             Log.e("[Cancel Transaction]", "(Result=$result)")
         }
     }
 
 
-    fun stopListner() {
+    fun stopListner(boolean: Boolean) {
 
-        mScraHandler.removeCallbacksAndMessages(null)
+        handlerStop = boolean
+
     }
 
 

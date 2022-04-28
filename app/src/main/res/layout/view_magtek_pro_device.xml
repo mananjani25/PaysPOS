@@ -37,7 +37,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/_5sdp"
-            android:background="@color/btnColor"
+            android:background="@drawable/btn_background_selector"
+
             android:paddingHorizontal="@dimen/_30sdp"
             android:paddingVertical="@dimen/_10sdp"
             android:text="Connect"

@@ -240,6 +240,7 @@ class MagtekFragment : Fragment(), ItemCallback, magtekCallback {
                     }
                 }
                 MTConnectionState.Disconnected -> {
+                    Log.e("Disconnected", true.toString())
                     if (selectedPos != -1) {
 
                         val cardReader = adapter?.getItem(selectedPos)
@@ -267,6 +268,13 @@ class MagtekFragment : Fragment(), ItemCallback, magtekCallback {
             }
         } else {
             magtekModule.closeDevice()
+
+            val cardReader = adapter?.getItem(selectedPos)
+            cardReader?.status = 0
+            if (cardReader != null) {
+                adapter?.update(selectedPos, 0)
+                viewModel.updateCardReader(cardReader)
+            }
         }
 
 

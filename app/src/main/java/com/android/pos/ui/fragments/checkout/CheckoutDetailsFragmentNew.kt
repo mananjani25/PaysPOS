@@ -53,8 +53,11 @@ import java.util.*
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class CheckoutDetailsFragmentNew(val isFromOpenOrder:Boolean = false) : Fragment(), magtekCallback,
+class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragment(), magtekCallback,
     DeleteOptionCallback, IDeviceListCallback {
+    private var isError: Boolean = false
+    private var isCardRev: Boolean = false
+    private var isInsert: Boolean = false
     private var isManualCard: Boolean = false
     private lateinit var binding: FragmentCheckoutDetailsNewBinding
     private val TAG = "DashboardCategoryBold"
@@ -176,9 +179,9 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder:Boolean = false) : Fragment
         ) { _: String, bundle: Bundle ->
 
             isSelectedCount = bundle.getInt("split")
-            if(isSelectedCount>1){
+            if (isSelectedCount > 1) {
                 binding.tvCustom.text = "Custom ($isSelectedCount Ways)"
-            }else{
+            } else {
                 binding.tvCustom.text = "Custom"
             }
             tipsetupGlobal(tipAmount, isSelectedCount)
@@ -364,6 +367,10 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder:Boolean = false) : Fragment
                 Log.e(TAG, "receiptData: ${Gson().toJson(it.data)}")
                 viewModel.redeemLoyaltyInfo = RedeemLoyaltyInfo()
                 prefProvider.setValueInt("ORDER_ID", it.data.order.id)
+
+
+                isInsert = false
+                isCardRev = false
 
                 viewModel.setTipAmount(0.0)
                 when {
@@ -573,7 +580,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder:Boolean = false) : Fragment
                             splitAllAmounts(Constants.SERVICE_CHARGE, 0.0)
                             splitAllAmounts(Constants.CASH_DISCOUNT_SURCHARGE, 0.0)
                             splitAllAmounts(Constants.TIP, 0.0)
-                        }  else {
+                        } else {
                             bundle.putBoolean("isSpilt", true)
                             bundle.putBoolean("isSplitByNo", true)
                             bundle.putBoolean("isCustomCash", false)
@@ -661,11 +668,15 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder:Boolean = false) : Fragment
                 getCalCashDiscWithAmount(WholetotalPrice, false) / isSelectedCount
             ).toDouble()
             //   makePaymentCreditCard()
-                 if (device == 0) {
-                    magtekPaymentCall()
-                } else {
-                    magtekProPaymentCall()
-                }
+
+
+            magtekModule.stopListner(false)
+
+            if (device == 0) {
+                magtekPaymentCall()
+            } else {
+                magtekProPaymentCall()
+            }
         }
         binding.llManualCardEntry.setOnClickListener {
             binding.frameLayoutId.visible()
@@ -804,7 +815,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder:Boolean = false) : Fragment
         if (prefProvider.getValue(Constants.WHOLE_AMOUNT, "").isEmpty() || prefProvider.getValue(
                 Constants.WHOLE_AMOUNT,
                 ""
-            ) == "0.0") {
+            ) == "0.0"
+        ) {
             WholetotalPrice = viewModel.totalPrice
             prefProvider.setValue(
                 Constants.WHOLE_AMOUNT,
@@ -817,7 +829,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder:Boolean = false) : Fragment
         if (prefProvider.getValue(Constants.SUB_TOTAL, "").isEmpty() || prefProvider.getValue(
                 Constants.SUB_TOTAL,
                 ""
-            ) == "0.0") {
+            ) == "0.0"
+        ) {
             subTotalPrice = viewModel.subTotalPrice
             prefProvider.setValue(
                 Constants.SUB_TOTAL,
@@ -830,7 +843,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder:Boolean = false) : Fragment
         if (prefProvider.getValue(Constants.TAX_CHARGE, "").isEmpty() || prefProvider.getValue(
                 Constants.TAX_CHARGE,
                 ""
-            ) == "0.0") {
+            ) == "0.0"
+        ) {
             totalTax = viewModel.totalTax
             prefProvider.setValue(Constants.TAX_CHARGE, String.format("%.2f", viewModel.totalTax))
         } else {
@@ -841,7 +855,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder:Boolean = false) : Fragment
         if (prefProvider.getValue(Constants.SERVICE_CHARGE, "").isEmpty() || prefProvider.getValue(
                 Constants.SERVICE_CHARGE,
                 ""
-            ) == "0.0") {
+            ) == "0.0"
+        ) {
             totalServiceCharge = viewModel.totalServiceCharge
             prefProvider.setValue(
                 Constants.SERVICE_CHARGE,
@@ -855,7 +870,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder:Boolean = false) : Fragment
         if (prefProvider.getValue(Constants.TOTAL_DISCOUNT, "").isEmpty() || prefProvider.getValue(
                 Constants.TOTAL_DISCOUNT,
                 ""
-            ) == "0.0") {
+            ) == "0.0"
+        ) {
             totalDiscount = viewModel.totalDiscount
             prefProvider.setValue(
                 Constants.TOTAL_DISCOUNT,
@@ -869,7 +885,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder:Boolean = false) : Fragment
         if (prefProvider.getValue(Constants.TIP, "").isEmpty() || prefProvider.getValue(
                 Constants.TIP,
                 ""
-            ) == "0.0") {
+            ) == "0.0"
+        ) {
             tipAmount = viewModel.tip
             prefProvider.setValue(Constants.TIP, String.format("%.2f", viewModel.tip))
         } else {
@@ -879,16 +896,19 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder:Boolean = false) : Fragment
         if (prefProvider.getValue(Constants.TIP, "").isEmpty() || prefProvider.getValue(
                 Constants.TIP,
                 ""
-            ) == "0.0") {
+            ) == "0.0"
+        ) {
             tipAmount = viewModel.tip
             prefProvider.setValue(Constants.TIP, String.format("%.2f", viewModel.tip))
         } else {
             tipAmount = prefProvider.getValue(Constants.TIP, "").toDouble()
         }
-        if (prefProvider.getValue(Constants.CASH_DISCOUNT_SURCHARGE, "").isEmpty() || prefProvider.getValue(
+        if (prefProvider.getValue(Constants.CASH_DISCOUNT_SURCHARGE, "")
+                .isEmpty() || prefProvider.getValue(
                 Constants.CASH_DISCOUNT_SURCHARGE,
                 ""
-            ) == "0.0") {
+            ) == "0.0"
+        ) {
             cashDiscountSurcharge = viewModel.cashdiscountAmount
             prefProvider.setValue(
                 Constants.CASH_DISCOUNT_SURCHARGE,
@@ -1375,6 +1395,10 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder:Boolean = false) : Fragment
     }
 
     override fun OnCardDataReceived(imtCardData: IMTCardData) {
+
+        magtekModule.stopListner(true)
+        isCardRev = true
+
         ProgressUtils.dismissProgressDialog()
 
         val jsonArray1 = magtekModule.m_scra?.let {
@@ -1387,7 +1411,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder:Boolean = false) : Fragment
             )
         }
 
-        networkCall(jsonArray1, 1)
+        if (!isInsert)
+            networkCall(jsonArray1, 1)
 
     }
 
@@ -1415,6 +1440,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder:Boolean = false) : Fragment
                 response: Response<PaymentResponse>
             ) {
                 ProgressUtils.dismissProgressDialog()
+
                 if (response.isSuccessful) {
                     Log.e("onResponse", Gson().toJson(response.body()))
                     if (response.body() != null && response.body()!![0].transactionOutput != null) {
@@ -1424,11 +1450,18 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder:Boolean = false) : Fragment
                                 magtekModule.closeDevice()
                             paymentviewModel.setMagensaResponse(Gson().toJson(response.body()!![0]))
                             makePaymentCreditCard()
+                            isInsert = true
+                            isCardRev = true
+                            isError = false
                         } else {
                             AlertUtils.showCustomAlert(
                                 requireContext(),
                                 response.body()!![0].transactionOutput?.transactionMessage
                             )
+                            isInsert = false
+                            isCardRev = false
+                            isError = true
+                            magtekModule.stopListner(false)
                         }
 
                         if (isDynamo())
@@ -1441,6 +1474,10 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder:Boolean = false) : Fragment
                                 response.body()!![0].mPPGv4WSFault?.faultCode + "\n" +
                                         response.body()!![0].mPPGv4WSFault?.faultReason
                             )
+                        isInsert = false
+                        isCardRev = false
+                        isError = true
+                        magtekModule.stopListner(false)
                     }
                 }
             }
@@ -1448,6 +1485,11 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder:Boolean = false) : Fragment
             override fun onFailure(call: Call<PaymentResponse>, t: Throwable) {
 
                 ProgressUtils.dismissProgressDialog()
+
+                isInsert = false
+                isCardRev = false
+                isError = true
+                magtekModule.stopListner(false)
             }
         })
     }
@@ -1455,15 +1497,21 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder:Boolean = false) : Fragment
 
     override fun OnARQCReceived(data: ByteArray) {
 
+
+        magtekModule.stopListner(true)
+
+        isInsert = true
+
         ProgressUtils.dismissProgressDialog()
 
         val jsonArray1 = magtekRequestUtils.processData(
             (paymentAmount * 100).toInt(),
             TLVParser.getHexString(data),
-            Constants.SALE
+            Constants.AUTHORIZE
         )
 
-        networkCall(jsonArray1, 2)
+        if (!isCardRev)
+            networkCall(jsonArray1, 2)
 
     }
 
@@ -1519,7 +1567,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder:Boolean = false) : Fragment
                     val jsonArray1 = magtekRequestUtils.processData(
                         (paymentAmount * 100).toInt(),
                         MTParser.getHexString(data.ByteArray()),
-                        Constants.SALE
+                        Constants.AUTHORIZE
                     )
 
                     networkCall(jsonArray1, 2)

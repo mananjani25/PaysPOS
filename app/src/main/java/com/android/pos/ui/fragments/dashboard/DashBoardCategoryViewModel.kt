@@ -2325,6 +2325,8 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 posRepository.addAllCountryList(it.data.phoneCountrylist)
                                 _callCashDiscount.value = Event(true)
 
+                                prefProvider.setValue(Constants.MAGENSA_SETTINGS, "")
+
                                 if (it.data.magensaSettings.isNotEmpty()) {
                                     prefProvider.setValue(
                                         Constants.MAGENSA_SETTINGS,
