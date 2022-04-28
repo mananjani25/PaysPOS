@@ -338,7 +338,7 @@ class MergeTableDialog : DialogFragment() {
                         }
                     } else {
                         AlertUtils.showCustomAlertWithListenerWithOK(
-                            requireContext(), "Please Select Floor and Table"
+                            requireContext(), "Please select Floor and Table"
                         ) { _, _ ->
 
                         }
@@ -371,7 +371,7 @@ class MergeTableDialog : DialogFragment() {
                         )
                     } else {
                         AlertUtils.showCustomAlertWithListenerWithOK(
-                            requireContext(), "Please Select Floor and Table"
+                            requireContext(), "Please select Floor and Table"
                         ) { _, _ ->
 
                         }
@@ -417,7 +417,7 @@ class MergeTableDialog : DialogFragment() {
                         )
                     } else {
                         AlertUtils.showCustomAlertWithListenerWithOK(
-                            requireContext(), "Please Select Floor and Table"
+                            requireContext(), "Please select Floor and Table"
                         ) { _, _ ->
 
                         }
@@ -437,7 +437,7 @@ class MergeTableDialog : DialogFragment() {
                 }
                 if(valdate){
                     AlertUtils.showCustomAlertWithListenerWithOK(
-                        requireContext(), "Please Select Floor and Table"
+                        requireContext(), "Please select Floor and Table"
                     ) { _, _ ->
 
                     }
