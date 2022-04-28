@@ -7,7 +7,7 @@ import com.google.gson.annotations.SerializedName
 import kotlinx.parcelize.Parcelize
 
 
-class   OrderAttributeRequestModel {
+class OrderAttributeRequestModel {
 
     @SerializedName("customer_attributes")
     var customerAttributes: CustomerAttributes? = null
@@ -324,6 +324,9 @@ class OrderItemsAttribute {
 
     @SerializedName("_destroy")
     var isDestroy: Boolean = false
+
+    @SerializedName("is_fired")
+    var isFired: Boolean = false
 }
 
 class OrderItemTaxesAttribute {

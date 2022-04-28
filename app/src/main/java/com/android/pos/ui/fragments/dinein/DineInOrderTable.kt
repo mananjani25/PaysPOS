@@ -491,10 +491,11 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     for (j in i + 1 until list.size) {
                         if (list[j].isHeader == 1) {
                             list[j].item?.let { it1 ->
-                                if (it1.discountPrice != 0.0){
-                                    it1.discountPrice = MethodUtils.roundOffAmountDouble(it1.discountPrice / it1.itemQuantity)
+                                if (it1.discountPrice != 0.0) {
+                                    it1.discountPrice =
+                                        MethodUtils.roundOffAmountDouble(it1.discountPrice / it1.itemQuantity)
                                 }
-                                Log.e(TAG,"updateItemForDiscount  ${Gson().toJson(it1)}")
+                                Log.e(TAG, "updateItemForDiscount  ${Gson().toJson(it1)}")
                                 listTbItem.add(it1)
                             }
 
@@ -1121,7 +1122,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             totalAmount = totalGuest,
             totalDiscount = MethodUtils.roundOffAmountDouble(divideDiscount),
             cashDiscount = MethodUtils.roundOffAmountDouble(divideCashDiscount),
-            totalServiceCharge =MethodUtils.roundOffAmountDouble( serviceChargeGuest + serviceCharge)
+            totalServiceCharge = MethodUtils.roundOffAmountDouble(serviceChargeGuest + serviceCharge)
 
         )
         Log.e(TAG, "newGuestModel:  ${Gson().toJson(newGuestModel)}")
@@ -3180,7 +3181,10 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 )
 
 
-            if (customerSettingModel.showVenueLogo && prefProvider.getValue(Constants.VENUE_LOGO, "")
+            if (customerSettingModel.showVenueLogo && prefProvider.getValue(
+                    Constants.VENUE_LOGO,
+                    ""
+                )
                     .isNotEmpty()
             ) {
                 builder.addFeedLine(1)
@@ -4128,7 +4132,10 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 )
 
 
-            if (customerSettingModel.showVenueLogo && prefProvider.getValue(Constants.VENUE_LOGO, "")
+            if (customerSettingModel.showVenueLogo && prefProvider.getValue(
+                    Constants.VENUE_LOGO,
+                    ""
+                )
                     .isNotEmpty()
             ) {
                 builder.addFeedLine(1)
@@ -5374,7 +5381,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             addHorizontalKitchenLine(builder)
 
 
-            addOrdersForKitchenDineIn(builder, item,fontSizeH,fontSizeW)
+            addOrdersForKitchenDineIn(builder, item, fontSizeH, fontSizeW)
 
             if (getOrderDetailsResponse?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote) {
                 builder.addTextLineSpace(30)

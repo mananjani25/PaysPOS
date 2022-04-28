@@ -15,8 +15,7 @@
 
         <include
             android:id="@+id/layout_header_checkout"
-            layout="@layout/layout_header_checkout_details"
-            />
+            layout="@layout/layout_header_checkout_details" />
 
         <include layout="@layout/divider" />
 
@@ -47,6 +46,7 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="0.6">
+
 
                 <FrameLayout
                     android:id="@+id/frameLayout"
