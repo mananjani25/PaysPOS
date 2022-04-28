@@ -60,7 +60,6 @@ class AddEditCustomer : Fragment() {
         //edit.setFilters(new InputFilter[] { filter })
 
 
-
         setUpSnackBar()
         showObserveProgress()
         navigate()
@@ -111,7 +110,7 @@ class AddEditCustomer : Fragment() {
                     adapter.notifyItemChanged(adapterPos)
                 }
             }
-        },requireContext())
+        }, requireContext())
         binding.rvAddresses.adapter = adapter
 
     }
@@ -164,8 +163,8 @@ class AddEditCustomer : Fragment() {
 
             val editModel: TbCustomer? =
                 requireArguments().getParcelable<TbCustomer>(
-            "dataModel"
-            )
+                    "dataModel"
+                )
 
             if (editModel?.id != null) {
                 viewModel.isEditData(isEdit, editModel?.id!!)
@@ -177,7 +176,8 @@ class AddEditCustomer : Fragment() {
                 editModel?.enroll_to_loyalty
 
 
-            binding.chkIsLoyalty.isChecked = viewModel.addCustomerDetails.value?.data?.enroll_to_loyalty!!
+            binding.chkIsLoyalty.isChecked =
+                viewModel.addCustomerDetails.value?.data?.enroll_to_loyalty!!
 
 
             /*Log.e(TAG, "Date  ${getDay(editModel?.birth_date!!)}")
@@ -268,7 +268,7 @@ class AddEditCustomer : Fragment() {
     private fun onClick() {
         binding.imgAddressAdd.setOnClickListener {
 
-            Log.e(TAG,"adapterGetAddress  ${Gson().toJson(adapter.getList())}")
+            Log.e(TAG, "adapterGetAddress  ${Gson().toJson(adapter.getList())}")
             if (adapter.getList().isEmpty()) {
                 modelAddress = CreateCustomerRequestModel.Customer.Addresses()
                 modelAddress.apply {
@@ -279,7 +279,9 @@ class AddEditCustomer : Fragment() {
                     modelAddress
                 )
 
-            } else if (adapter.getList()[adapter.getList().size - 1].address1.isNotEmpty() || adapter.getList()[adapter.getList().size - 1].city.isNotEmpty() || adapter.getList().get(adapter.getList().size - 1)._destroy == "true") {
+            } else if (adapter.getList()[adapter.getList().size - 1].address1.isNotEmpty() || adapter.getList()[adapter.getList().size - 1].city.isNotEmpty() || adapter.getList()
+                    .get(adapter.getList().size - 1)._destroy == "true"
+            ) {
                 Log.d("yash", "onClick: " + adapter.getList()[adapter.getList().size - 1].address1)
                 modelAddress = CreateCustomerRequestModel.Customer.Addresses()
                 modelAddress.apply {
@@ -294,8 +296,23 @@ class AddEditCustomer : Fragment() {
         }
 
         binding.header.txtSave.setOnClickListener {
-            viewModel.setAddressList(adapter.getList())
-            viewModel.submit()
+            if (!isEdit) {
+
+                if (adapter.getList().size == 1 && adapter.getList()
+                        .get(adapter.getList().size - 1).address1.isEmpty() && adapter.getList()
+                        .get(adapter.getList().size - 1).address2.isEmpty() && adapter.getList()
+                        .get(adapter.getList().size - 1).city.isEmpty() && adapter.getList()
+                        .get(adapter.getList().size - 1).postcode.isEmpty()
+                ) {
+
+                    viewModel.setAddressList(arrayListOf())
+                } else {
+                    viewModel.setAddressList(adapter.getList())
+                }
+            } else {
+                viewModel.setAddressList(adapter.getList())
+            }
+             viewModel.submit()
         }
     }
 

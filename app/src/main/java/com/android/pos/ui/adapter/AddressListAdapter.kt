@@ -63,10 +63,9 @@ class AddressListAdapter(val refreshCallBack: (Int) -> Unit, val context: Contex
 
             binding.imgDelete.setOnClickListener {
 
-                if (templist.get(bindingAdapterPosition).id != null && templist.get(bindingAdapterPosition).id != 0 ) {
+                if (templist.get(bindingAdapterPosition).id != null) {
                     templist.get(bindingAdapterPosition)._destroy = "true"
-                }
-                else{
+                } else {
                     templist.removeAt(bindingAdapterPosition)
                 }
 
@@ -252,7 +251,7 @@ class AddressListAdapter(val refreshCallBack: (Int) -> Unit, val context: Contex
     }
 
     override fun onBindViewHolder(holder: AddressListAdapter.MyViewHolder, position: Int) {
-        Log.e(TAG, "BindListSize:  ${list.get(position).address1}")
+
         holder.bind(list[position], position)
 
 
@@ -262,7 +261,6 @@ class AddressListAdapter(val refreshCallBack: (Int) -> Unit, val context: Contex
         holder.edtSuite.setText(list[position].address2)
         holder.edtState.setText(list[position].state)
 
-        Log.e(TAG, "getcountry:  ${list[position].country}")
         if (list[position].country?.isNotEmpty() == true) {
 
             if (list[position].country?.lowercase() == "United States".lowercase() && holder.edtCountry.adapter != null) {

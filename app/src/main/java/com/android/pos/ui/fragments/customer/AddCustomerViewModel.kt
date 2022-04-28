@@ -145,9 +145,22 @@ class AddCustomerViewModel @Inject constructor(
 
          }
  */
+        Log.e(TAG, "getPhoneNo:  ${phoneNo.value}")
         if (TextUtils.isEmpty(value?.data?.first_name?.trim())) {
             _snackbarText.value = Event(R.string.first_name_validate)
+        } else if (phoneNo.value != null && phoneNo.value?.isNotEmpty() == true && phoneNo.value?.length!! < 10) {
+            _snackbarText.value = Event(R.string.valid_phone_no_validate)
         }
+
+        /*else if (value?.data?.phones_attributes?.isNotEmpty() == true && value?.data?.phones_attributes?.get(
+                value?.data?.phones_attributes?.size!! - 1
+            )?.phone_number?.isNotEmpty() == true
+        ) {
+            if (value?.data?.phones_attributes?.get(value?.data?.phones_attributes?.size!! - 1)?.phone_number?.length!! < 10){
+
+            }
+
+        }*/
         /*else if (TextUtils.isEmpty(value?.data?.last_name?.trim())) {
             _snackbarText.value = Event(R.string.last_name_validate)
         }*/
@@ -238,7 +251,7 @@ class AddCustomerViewModel @Inject constructor(
                                         enroll_to_loyalty = customerListReposne.data.enroll_to_loyalty,
                                         final_reward = customerListReposne.data.final_reward,
                                         company = customerListReposne.data.company,
-                                        isSelcted =true,
+                                        isSelcted = true,
                                     )
 
 
