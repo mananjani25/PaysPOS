@@ -141,7 +141,7 @@
                                 android:layout_width="0dp"
                                 android:layout_height="@dimen/_30sdp"
                                 android:layout_weight="1"
-                                android:background="@drawable/background_txt_selector"
+                                android:background="@drawable/border_orange"
                                 android:gravity="center_horizontal"
                                 android:orientation="horizontal"
                                 android:paddingVertical="@dimen/_5sdp">

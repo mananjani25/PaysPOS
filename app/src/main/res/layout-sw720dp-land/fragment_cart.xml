@@ -184,7 +184,7 @@
                             <androidx.appcompat.widget.AppCompatTextView
                                 style="@style/CustomFontMediumStyle"
                                 android:layout_width="0dp"
-                                android:layout_weight="5"
+                                android:layout_weight="1"
                                 android:layout_gravity="center"
                                 android:gravity="center_vertical"
                                 android:layout_height="wrap_content"
@@ -204,7 +204,9 @@
                                 android:layout_marginEnd="@dimen/_3sdp"
                                 android:gravity="end"
                                 android:text=""
-                                android:singleLine="true"
+                                android:maxLines="2"
+                                android:ellipsize="none"
+                                android:singleLine="false"
                                 android:textColor="@color/txtColor"
                                 android:textSize="@dimen/text_size_medium" />
                         </androidx.appcompat.widget.LinearLayoutCompat>

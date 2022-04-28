@@ -91,70 +91,75 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        initControls()
-        initObservers()
-        loadTerminals()
-        viewModel.setCurrentDate(myCalendar)
+        try {
+            initControls()
+            initObservers()
+            loadTerminals()
+            viewModel.setCurrentDate(myCalendar)
 
-        binding.txtHome.setOnClickListener {
-            findNavController().navigate(R.id.action_settings_to_dashboardCategory)
-        }
-        binding.imgBack.setOnClickListener {
-            findNavController().navigateUp()
-        }
-        binding.txtSearch.setOnClickListener {
-            viewModel.getReportSummary("")
-        }
-
-        binding.txtEmail.setOnClickListener {
-
-
-            viewModel.getEmployeeEmail(viewModel.selectedTerminalId.toInt()).observe(viewLifecycleOwner) {
-
-                if (it.status == Status.SUCCESS) {
-                    val bundle = Bundle()
-                    bundle.putBoolean("EOD", true)
-                    bundle.putInt("type", 2)
-                    bundle.putString("email", it.data?.email)
-                    findNavController().navigate(
-                        R.id.action_reportEODFragment_to_sendReceiptFragment,
-                        bundle
-                    )
-                }
+            binding.txtHome.setOnClickListener {
+                findNavController().navigate(R.id.action_settings_to_dashboardCategory)
+            }
+            binding.imgBack.setOnClickListener {
+                findNavController().navigateUp()
+            }
+            binding.txtSearch.setOnClickListener {
+                viewModel.getReportSummary("")
             }
 
-
-            //  viewModel.getReportSummary("")
-        }
-
-        setFragmentResultListener("request_key_eod") { requestKey: String, bundle: Bundle ->
+            binding.txtEmail.setOnClickListener {
 
 
-            bundle.getString("email")?.let { viewModel.getReportSummary(it) }
-        }
+                viewModel.getEmployeeEmail(viewModel.selectedTerminalId.toInt()).observe(viewLifecycleOwner) {
 
-        binding.txtClockOut.setOnClickListener {
-
-            alert(
-                getString(R.string.app_name),
-                getString(R.string.clockout_message)
-            ) {
-                positiveButton(getString(android.R.string.ok)) {
-                    //  viewModelClockOut.submit()
-
-                    val bundle = Bundle()
-                    bundle.putBoolean("isDashboard", true)
-                    bundle.putBoolean("isSwap",false)
-                    findNavController().navigate(
-                        R.id.action_reportEODFragment_to_passcode,
-                        bundle
-                    )
+                    if (it.status == Status.SUCCESS) {
+                        val bundle = Bundle()
+                        bundle.putBoolean("EOD", true)
+                        bundle.putInt("type", 2)
+                        bundle.putString("email", it.data?.email)
+                        findNavController().navigate(
+                            R.id.action_reportEODFragment_to_sendReceiptFragment,
+                            bundle
+                        )
+                    }
                 }
-                negativeButton(R.string.tv_cancel) {
-                    // Do negative stuff here
+
+
+                //  viewModel.getReportSummary("")
+            }
+
+            setFragmentResultListener("request_key_eod") { _: String, bundle: Bundle ->
+
+
+                bundle.getString("email")?.let { viewModel.getReportSummary(it) }
+            }
+
+            binding.txtClockOut.setOnClickListener {
+
+                alert(
+                    getString(R.string.app_name),
+                    getString(R.string.clockout_message)
+                ) {
+                    positiveButton(getString(android.R.string.ok)) {
+                        //  viewModelClockOut.submit()
+
+                        val bundle = Bundle()
+                        bundle.putBoolean("isDashboard", true)
+                        bundle.putBoolean("isSwap",false)
+                        findNavController().navigate(
+                            R.id.action_reportEODFragment_to_passcode,
+                            bundle
+                        )
+                    }
+                    negativeButton(R.string.tv_cancel) {
+                        // Do negative stuff here
+                    }
                 }
             }
+        }catch (e:Exception){
+            e.printStackTrace()
         }
+
     }
 
     private fun initControls() {

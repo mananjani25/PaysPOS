@@ -148,6 +148,10 @@ class AddCustomerViewModel @Inject constructor(
         if (TextUtils.isEmpty(value?.data?.first_name?.trim())) {
             _snackbarText.value = Event(R.string.first_name_validate)
         }
+        else if (value?.data?.phones_attributes?.size != 0&&value?.data?.phones_attributes?.get(0)?.phone_number?.length!=10) {
+            _snackbarText.value = Event(R.string.valid_phone_no_validate)
+        }
+
         /*else if (TextUtils.isEmpty(value?.data?.last_name?.trim())) {
             _snackbarText.value = Event(R.string.last_name_validate)
         }*/
@@ -238,7 +242,7 @@ class AddCustomerViewModel @Inject constructor(
                                         enroll_to_loyalty = customerListReposne.data.enroll_to_loyalty,
                                         final_reward = customerListReposne.data.final_reward,
                                         company = customerListReposne.data.company,
-                                        isSelcted =true,
+                                        isSelcted = true,
                                     )
 
 
