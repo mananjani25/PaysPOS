@@ -61,6 +61,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
     var ordertypelist: ArrayList<TbOrderType> = arrayListOf()
     private var kitchenSettingModel = GetKitchenReceiptSettingsResponse.Data()
     var isupdate = false
+    var reorder = false
     var orderDiscount = 0.0
     var dineInResult: Bundle? = null
     var resultData: TbCustomer? = null
@@ -287,6 +288,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
         onClick()
 
         isupdate = requireArguments().getBoolean("update")
+        reorder = requireArguments().getBoolean("reorder")
 
         if (isupdate) {
 
@@ -380,6 +382,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
             putInt("fragmentId", binding.frameLayout.id)
             putInt("checkoutHeaderId", binding.layoutHeaderCheckout.rlRoot.id)
             putInt("dashboardHeaderId", binding.layoutHeader.rlRoot.id)
+            putBoolean("reorder", reorder)
             if (arguments != null) {
                 putBundle("updateBundle", arguments)
             }
