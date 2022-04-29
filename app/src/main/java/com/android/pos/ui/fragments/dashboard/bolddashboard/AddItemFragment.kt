@@ -176,7 +176,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
 
             item.itemQuantity = qty
 
-            Log.e("TAG","price - ${item.price.toString()+" "+ item.variationsAttributes}")
+            Log.e("TAG", "price - ${item.price.toString() + " " + item.variationsAttributes}")
             if (item.price == 0.0 && item.variationsAttributes.isNotEmpty()) {
                 AlertUtils.showCustomAlert(
                     requireActivity(),
@@ -559,10 +559,12 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
             binding.txtRemoveItem.visibility = View.VISIBLE
             binding.txtDone.text = "Update"
 
+
         } else {
             binding.txtRemoveItem.visibility = View.GONE
             binding.txtAddNote.visibility = View.GONE
             binding.txtAddDiscount.visibility = View.GONE
+            binding.dividerUpdate.root.visibility = View.GONE
         }
 
     }
