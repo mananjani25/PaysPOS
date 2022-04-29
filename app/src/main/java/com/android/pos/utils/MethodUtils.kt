@@ -4,12 +4,14 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.os.SystemClock
+import android.provider.Settings
 import android.text.TextUtils
 import android.util.Log
 import android.view.inputmethod.InputMethodManager
 import android.widget.TextView
 import androidx.appcompat.widget.AppCompatEditText
 import androidx.appcompat.widget.AppCompatTextView
+import androidx.fragment.app.FragmentActivity
 import com.android.pos.MainApplication
 import com.android.pos.R
 import com.android.pos.data.model.requestModel.CreateCategoryRequestModel
@@ -37,6 +39,14 @@ class MethodUtils {
         private var fourthValue: Double = 0.0
         private var thirdValue: Double = 0.0
         private var secondValue: Int = 0
+
+        @SuppressLint("HardwareIds")
+        fun getDeviceId(requireActivity: FragmentActivity): String {
+            return Settings.Secure.getString(
+                requireActivity.contentResolver,
+                Settings.Secure.ANDROID_ID
+            )
+        }
 
         @SuppressLint("SetTextI18n")
         fun setPriceEditText(appCompatEditText: AppCompatEditText, price: Double) {

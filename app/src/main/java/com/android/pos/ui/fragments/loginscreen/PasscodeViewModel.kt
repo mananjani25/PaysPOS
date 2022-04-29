@@ -17,6 +17,7 @@ import com.android.pos.data.remote.Constants.TERMINAL_ID
 import com.android.pos.data.repositories.UserRepository
 import com.android.pos.di.PrefProvider
 import com.android.pos.utils.Event
+import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.statusUtils.Status
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
@@ -41,20 +42,22 @@ class PasscodeViewModel @Inject constructor(
 
     private var isDashboard: Boolean = false
 
+
+    private val _data1 = MutableLiveData<Event<Boolean>>()
+    val data1: LiveData<Event<Boolean>> = _data1
+
+
     fun isDashboardData(isDashboard: Boolean) {
         this.isDashboard = isDashboard
     }
 
 
-     fun defaultTerminalCall(device_token: String) {
+    fun defaultTerminalCall(device_token: String, deviceId: String) {
         _showProgress.value = Event(true)
-        Log.e(TERMINAL_ID, prefProvider.getValue(Constants.UNIQUE_ID, ""))
-        var unique_id = prefProvider.getValue(Constants.UNIQUE_ID, "")
         viewModelScope.launch {
-//            delay(3000)
 
             val defaultTerminal =
-                userRepository.getDefaultTerminal(unique_id, device_token)
+                userRepository.getDefaultTerminal(deviceId, device_token)
             when (defaultTerminal.status) {
                 Status.SUCCESS -> {
                     _showProgress.value = Event(false)
@@ -63,8 +66,8 @@ class PasscodeViewModel @Inject constructor(
 
                             prefProvider.setValueInt(TERMINAL_ID, terminalResponse.terminalData.id)
 
-
                         } else {
+                            _data1.value = Event(false)
                             _snackbarText.value = Event(defaultTerminal.message.toString())
                         }
 
@@ -73,8 +76,11 @@ class PasscodeViewModel @Inject constructor(
 
                 }
                 Status.ERROR -> {
+                    prefProvider.setValue(Constants.AUTH_TOKEN, "")
+                    _data1.value = Event(false)
                     _snackbarText.value = Event(defaultTerminal.message.toString())
                     _showProgress.value = Event(false)
+
                 }
 
                 Status.LOADING -> {

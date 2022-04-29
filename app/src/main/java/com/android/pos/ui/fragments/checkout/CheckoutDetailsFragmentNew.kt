@@ -1655,7 +1655,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         val transaction = Transaction(
             60,
             paymentMethods,
-            "1.0",
+            paymentAmount.toString(),
             "",
             true,
             true,

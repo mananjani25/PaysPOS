@@ -22,6 +22,7 @@ import com.android.pos.databinding.FragmentPasscodeBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.activities.MainActivity
 import com.android.pos.utils.AlertUtils
+import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.ProgressUtils
 import dagger.hilt.android.AndroidEntryPoint
 import java.text.SimpleDateFormat
@@ -93,7 +94,9 @@ class Passcode : Fragment() {
         isLogin = arguments?.getBoolean("isLogin") ?: false
 
         if (isLogin)
-        viewModel.defaultTerminalCall(prefProvider.getValue("device_token", ""))
+            viewModel.defaultTerminalCall(prefProvider.getValue("device_token", ""),
+                MethodUtils.getDeviceId(requireActivity())
+            )
 
 
         return binding.root
@@ -272,9 +275,9 @@ class Passcode : Fragment() {
         }
         binding.passcodeView.backspace.setOnClickListener {
             clearBackground()
-            var text = binding.passcodeView.circlePin.text.toString()
+            val text = binding.passcodeView.circlePin.text.toString()
             if (text.isNotEmpty()) {
-                var temptext = text.substring(0, text.length - 1)
+                val temptext = text.substring(0, text.length - 1)
                 binding.passcodeView.circlePin.setText(temptext)
             }
         }
@@ -365,6 +368,14 @@ class Passcode : Fragment() {
                 } else {
                     findNavController().navigate(R.id.action_passcode_to_dashboardCategoryBoldPOS)
                 }
+            }
+        }
+
+        viewModel.data1.observe(viewLifecycleOwner) { event ->
+            event.getContentIfNotHandled()?.let {
+                Log.e("action_passcode", it.toString())
+                    findNavController().navigate(R.id.action_passcode_to_login)
+
             }
         }
 

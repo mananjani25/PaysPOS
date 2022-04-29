@@ -96,6 +96,12 @@
             app:destination="@id/dashboardCategoryBoldPOS"
             app:enterAnim="@anim/nav_default_enter_anim"
             app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_passcode_to_login"
+            app:enterAnim="@anim/nav_default_enter_anim"
+            app:popUpToInclusive="true"
+            app:popUpTo="@id/passcode"
+            app:destination="@id/login" />
     </fragment>
     <fragment
         android:id="@+id/dashboard"
