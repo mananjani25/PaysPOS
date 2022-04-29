@@ -175,7 +175,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
 
 
             item.itemQuantity = qty
-            val modifiers=adapter.getSelectedModifiers()
+
 
 
             var isPriceNull=true
@@ -192,14 +192,14 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
                     return@forEach
                 }
             }*/
-            Log.e("TAG", "price - ${item.price.toString() + " variatiions :  " + item.variationsAttributes + " modifiers : "+modifiers}")
-            if (item.price == 0.0 && item.variationsAttributes.isNotEmpty()/*&&isPriceNull*/) {
+            Log.e("TAG", "price - ${item.price.toString() + " variatiions :  " + item.variationsAttributes + " modifiers : "}")
+          /*  if (item.price == 0.0 && item.variationsAttributes.isNotEmpty()*//*&&isPriceNull*//*) {
                 AlertUtils.showCustomAlert(
                     requireActivity(),
                     "Please enter atleast one price of item"
                 )
                 return@setOnClickListener
-            }
+            }*/
 
 
 
