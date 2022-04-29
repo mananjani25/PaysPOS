@@ -215,7 +215,7 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
         setFragmentResultListener("request_key_tips") { requestKey: String, bundle: Bundle ->
             tipAmount = bundle.getDouble("tipAmount")
 
-            if (singleTransaction?.payableType == "Card"){
+            if (singleTransaction?.paymentType == "Card"){
                 magtekCall(tipAmount)
             }else {
                 tipCall()
@@ -971,11 +971,11 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
 
             Constants.FIRST_DATA_GATEWAY == magtekRequestUtils.gatewayName() -> {
 
-                val amount = singleTransaction?.amount?.plus(refundAmount)
+                val amount = refundAmount
 
                 jsonArray =
                     model.transactionOutput?.token?.let { it1 ->
-                        amount?.times(100)?.let {
+                        amount.times(100).let {
                             magtekRequestUtils.processTokenFirstData(
                                 it.toInt(),
                                 it1,

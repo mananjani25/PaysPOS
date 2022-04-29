@@ -34,7 +34,7 @@ class MagtakAdapter :
             }
 
 
-            binding.root.setOnClickListener {
+            binding.txtStatus.setOnClickListener {
 
                 mCallback.onItemClickListener(it, bindingAdapterPosition)
             }

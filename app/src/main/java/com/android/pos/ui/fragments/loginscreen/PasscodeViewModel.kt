@@ -1,5 +1,6 @@
 package com.android.pos.ui.fragments.loginscreen
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -18,6 +19,7 @@ import com.android.pos.di.PrefProvider
 import com.android.pos.utils.Event
 import com.android.pos.utils.statusUtils.Status
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -41,6 +43,46 @@ class PasscodeViewModel @Inject constructor(
 
     fun isDashboardData(isDashboard: Boolean) {
         this.isDashboard = isDashboard
+    }
+
+
+     fun defaultTerminalCall(device_token: String) {
+        _showProgress.value = Event(true)
+        Log.e(TERMINAL_ID, prefProvider.getValue(Constants.UNIQUE_ID, ""))
+        var unique_id = prefProvider.getValue(Constants.UNIQUE_ID, "")
+        viewModelScope.launch {
+//            delay(3000)
+
+            val defaultTerminal =
+                userRepository.getDefaultTerminal(unique_id, device_token)
+            when (defaultTerminal.status) {
+                Status.SUCCESS -> {
+                    _showProgress.value = Event(false)
+                    defaultTerminal.data.let { terminalResponse ->
+                        if (terminalResponse?.status == 200) {
+
+                            prefProvider.setValueInt(TERMINAL_ID, terminalResponse.terminalData.id)
+
+
+                        } else {
+                            _snackbarText.value = Event(defaultTerminal.message.toString())
+                        }
+
+                    }
+
+
+                }
+                Status.ERROR -> {
+                    _snackbarText.value = Event(defaultTerminal.message.toString())
+                    _showProgress.value = Event(false)
+                }
+
+                Status.LOADING -> {
+                    _showProgress.value = Event(true)
+                }
+            }
+
+        }
     }
 
 

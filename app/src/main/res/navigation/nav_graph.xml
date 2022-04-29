@@ -11,6 +11,11 @@
         android:name="com.android.pos.ui.fragments.loginscreen.LoginFragment"
         android:label="Login"
         tools:layout="@layout/fragment_login">
+
+        <argument
+            android:name="isLogin"
+            android:defaultValue="false"
+            app:argType="boolean" />
         <action
             android:id="@+id/action_login_to_passcode"
             app:destination="@id/passcode"

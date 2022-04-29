@@ -32,6 +32,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class Passcode : Fragment() {
 
+    private var isLogin: Boolean = false
     private lateinit var binding: FragmentPasscodeBinding
     private val viewModel by viewModels<PasscodeViewModel>()
     var isDashboard: Boolean = false
@@ -87,8 +88,17 @@ class Passcode : Fragment() {
         setupSnackbar()
         observeShowProgress()
         navigate()
+
+
+        isLogin = arguments?.getBoolean("isLogin") ?: false
+
+        if (isLogin)
+        viewModel.defaultTerminalCall(prefProvider.getValue("device_token", ""))
+
+
         return binding.root
     }
+
 
     private fun setTimeandDate() {
         val sdf = SimpleDateFormat("hh:mm aa")

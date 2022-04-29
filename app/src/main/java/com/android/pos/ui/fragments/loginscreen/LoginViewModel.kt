@@ -88,7 +88,9 @@ class LoginViewModel @Inject constructor(
 
                                 }
 
-                                defaultTerminalCall(device_token)
+                                _data.value = Event(true)
+
+//                                defaultTerminalCall(device_token)
 
                             } else {
                                 _snackbarText.value = Event(resource.message)
@@ -115,18 +117,19 @@ class LoginViewModel @Inject constructor(
     }
 
     private suspend fun defaultTerminalCall(device_token: String) {
-
+        _showProgress.value = Event(true)
         Log.e(TERMINAL_ID, prefProvider.getValue(Constants.UNIQUE_ID, ""))
 //        qwerty123
 //        d219617861d4ce4b
         var unique_id = prefProvider.getValue(Constants.UNIQUE_ID, "")
         viewModelScope.launch {
-            delay(1000)
+            delay(3000)
+
             val defaultTerminal =
                 userRepository.getDefaultTerminal(unique_id, device_token)
             when (defaultTerminal.status) {
                 Status.SUCCESS -> {
-
+                    _showProgress.value = Event(false)
                     defaultTerminal.data.let { terminalResponse ->
                         if (terminalResponse?.status == 200) {
 

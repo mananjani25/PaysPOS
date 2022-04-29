@@ -52,9 +52,9 @@ class LoginFragment : Fragment() {
             if (!prefProvider.getValueboolean(IS_CLOCKOUT, false)) {
                 findNavController().navigate(R.id.action_login_to_passcode)
             } else {
-                if(prefProvider.getValueboolean("clockOutFromNoti",false)){
-                    findNavController().navigate(R.id.action_login_to_passcode,arguments)
-                }else{
+                if (prefProvider.getValueboolean("clockOutFromNoti", false)) {
+                    findNavController().navigate(R.id.action_login_to_passcode, arguments)
+                } else {
                     findNavController().navigate(R.id.action_login_to_dashboardCategoryBoldPOS)
                 }
 
@@ -142,7 +142,10 @@ class LoginFragment : Fragment() {
         viewModel.data.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
                 if (it) {
-                    findNavController().navigate(R.id.action_login_to_passcode)
+                    val bundle = Bundle().apply {
+                        putBoolean("isLogin", true)
+                    }
+                    findNavController().navigate(R.id.action_login_to_passcode, bundle)
                 }
             }
         }

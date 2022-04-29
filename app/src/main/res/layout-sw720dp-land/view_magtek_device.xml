@@ -11,6 +11,7 @@
     </data>
 
     <LinearLayout
+        android:padding="@dimen/_5sdp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal">
@@ -25,7 +26,7 @@
             android:background="?attr/selectableItemBackground"
             android:padding="@dimen/_5sdp"
             android:text="@{model.name}"
-            android:textSize="@dimen/_5mdpi" />
+            android:textSize="@dimen/_6mdpi" />
 
         <TextView
             android:id="@+id/txtStatus"
@@ -33,14 +34,12 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/_5sdp"
-            android:background="@color/btnColor"
-            android:paddingStart="@dimen/_20sdp"
-            android:paddingTop="@dimen/_7sdp"
-            android:paddingEnd="@dimen/_20sdp"
-            android:paddingBottom="@dimen/_7sdp"
+            android:background="@drawable/btn_background_selector"
+            android:paddingHorizontal="@dimen/_40sdp"
+            android:paddingVertical="@dimen/_20sdp"
             android:text="Connect"
             android:textColor="@color/white"
-            android:textSize="@dimen/_7mdpi" />
+            android:textSize="@dimen/_6mdpi" />
 
     </LinearLayout>
 </layout>

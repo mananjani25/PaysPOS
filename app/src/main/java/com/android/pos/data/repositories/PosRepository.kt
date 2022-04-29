@@ -826,8 +826,7 @@ class PosRepository @Inject constructor(
     suspend fun clearTable() {
 
         Log.e("clear Db Table", "-------")
-        appDatabase.characterDao().delete()
-        appDatabase.categoryDao().delete()
+        appDatabase.categoryDao().delete1()
         appDatabase.itemDao().delete()
         appDatabase.taxDao().delete()
         appDatabase.tipDao().delete()
@@ -850,7 +849,6 @@ class PosRepository @Inject constructor(
         appDatabase.customerSettingsDao().delete()
         appDatabase.cancelOrderReasonDao().delete()
         appDatabase.cashDiscountDao().delete()
-        appDatabase.cartDao().delete()
 
     }
 

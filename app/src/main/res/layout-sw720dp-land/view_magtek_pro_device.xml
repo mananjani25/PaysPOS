@@ -13,19 +13,23 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="horizontal"
+        android:padding="@dimen/_5sdp">
 
 
         <TextView
             android:id="@+id/txtTitle"
             style="@style/CustomFontRegularStyle"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_gravity="center"
             android:layout_weight="1"
             android:background="?attr/selectableItemBackground"
+            android:gravity="center|start"
             android:padding="@dimen/_5sdp"
             android:text="@{model.Name()}"
-            android:textSize="@dimen/_5mdpi" />
+            android:textSize="@dimen/_6mdpi"
+            tools:text="Name" />
 
         <TextView
             android:id="@+id/txtStatus"
@@ -33,14 +37,13 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/_5sdp"
-            android:background="@color/btnColor"
-            android:paddingStart="@dimen/_5sdp"
-            android:paddingTop="@dimen/_3sdp"
-            android:paddingEnd="@dimen/_5sdp"
-            android:paddingBottom="@dimen/_3sdp"
+            android:background="@drawable/btn_background_selector"
+
+            android:paddingHorizontal="@dimen/_40sdp"
+            android:paddingVertical="@dimen/_20sdp"
             android:text="Connect"
             android:textColor="@color/white"
-            android:textSize="@dimen/_5mdpi" />
+            android:textSize="@dimen/_6mdpi" />
 
     </LinearLayout>
 </layout>

@@ -39,8 +39,103 @@ interface CategoryDao {
     @Query("DELETE FROM TbCategory where TbCategory.id  = :id")
     suspend fun deleteCategoryById(id: Int?)
 
+
     @Query("DELETE FROM TbCategory")
     suspend fun delete()
+
+    @Query("DELETE FROM TbItem")
+    suspend fun deleteItem()
+
+    @Query("DELETE FROM TbTax")
+    suspend fun deleteTax()
+
+    @Query("DELETE FROM TbTips")
+    suspend fun deleteTip()
+
+    @Query("DELETE FROM TbDiscount")
+    suspend fun deleteDiscount()
+
+    @Query("DELETE FROM TbNotes")
+    suspend fun deleteNote()
+
+    @Query("DELETE FROM TbServiceCharge")
+    suspend fun deleteSc()
+
+    @Query("DELETE FROM CartModel")
+    suspend fun deleteCart()
+
+    @Query("DELETE FROM TbEmployee")
+    suspend fun deleteEmp()
+
+    @Query("DELETE FROM TbCustomer")
+    suspend fun deleteCustomerTb()
+
+    @Query("DELETE FROM TbTeamRole")
+    suspend fun deleteTeamRole()
+
+    @Query("DELETE FROM TbModule")
+    suspend fun deleteModule()
+
+    @Query("DELETE FROM ModifierSet")
+    suspend fun deleteModifierSet()
+
+    @Query("DELETE FROM OptionSet")
+    suspend fun deleteOptionSet()
+
+    @Query("DELETE FROM TbOrderType")
+    suspend fun deleteOT()
+
+    @Query("DELETE FROM TbTerminals")
+    suspend fun deleteTerminal()
+
+    @Query("DELETE FROM ItemModifierSets")
+    suspend fun deleteModifierSets()
+
+    @Query("DELETE FROM TbKitchenPrint")
+    suspend fun deleteKitchenPrinters()
+
+    @Query("DELETE FROM TbCustomerPrint")
+    suspend fun deleteCustomerPrinters()
+
+    @Query("DELETE FROM TbKitchenSettings")
+    suspend fun deleteKS()
+
+    @Query("DELETE FROM TbCustomerSettings")
+    suspend fun deleteCS()
+
+    @Query("DELETE FROM TbCancelOrderReason")
+    suspend fun deleteCOR()
+
+    @Query("DELETE FROM CashDiscount")
+    suspend fun deleteCD()
+
+    @Transaction
+    suspend fun delete1(){
+        delete()
+        deleteItem()
+        deleteTax()
+        deleteTip()
+        deleteDiscount()
+        deleteNote()
+        deleteSc()
+        deleteCart()
+        deleteEmp()
+        deleteCustomerTb()
+        deleteTeamRole()
+        deleteModule()
+        deleteModifierSet()
+        deleteOptionSet()
+
+        deleteOT()
+        deleteTerminal()
+        deleteModifierSets()
+        deleteKitchenPrinters()
+        deleteCustomerPrinters()
+        deleteKS()
+        deleteCS()
+        deleteCOR()
+        deleteCD()
+    }
 
     @Query("UPDATE TbCategory SET sort = :sort WHERE  TbCategory.id = :id")
     fun updateSorting(id: Int, sort: Int?): Int

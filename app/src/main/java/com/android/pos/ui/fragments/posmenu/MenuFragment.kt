@@ -11,6 +11,7 @@ import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.data.remote.Constants
 import com.android.pos.databinding.FragmentMenuBinding
+import com.android.pos.di.ApiModule.BASE_URL
 import com.android.pos.di.PrefProvider
 import com.android.pos.di.RolePermission
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
@@ -57,18 +58,20 @@ class MenuFragment : DialogFragment() {
     }
 
     private fun observeShowProgress() {
-        viewModel.logout.observe(viewLifecycleOwner, { event ->
+        viewModel.logout.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
                 if (it) {
                     viewModel.clearTableAll()
+                    viewModel.clearTable()
                     prefProvider.setClear()
                     prefProvider.setValue(Constants.AUTH_TOKEN, "")
+                    prefProvider.setValue(Constants.BASE_URL_NEW, BASE_URL)
                     findNavController().navigate(R.id.action_global_login)
 
 
                 }
             }
-        })
+        }
 
     }
 
