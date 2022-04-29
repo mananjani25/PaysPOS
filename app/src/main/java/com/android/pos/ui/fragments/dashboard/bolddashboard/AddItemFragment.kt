@@ -176,6 +176,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
 
             item.itemQuantity = qty
 
+            Log.e("TAG","price - ${item.price.toString()+" "+ item.variationsAttributes}")
             if (item.price == 0.0 && item.variationsAttributes.isNotEmpty()) {
                 AlertUtils.showCustomAlert(
                     requireActivity(),

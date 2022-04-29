@@ -3,36 +3,52 @@ package com.android.pos.ui.adapter.boldpos
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.android.pos.R
 import com.android.pos.data.entities.TbItem
 import com.android.pos.databinding.ViewCategoryItemBoldBinding
 import com.android.pos.ui.adapter.CategoryItemAdapter1
 import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.extensions.gone
-import com.android.pos.utils.extensions.visible
 
 class ItemAdapter(
     val context: Context,
     var list: ArrayList<TbItem?>,
-    val listener: CategoryItemAdapter1.CategoryItemList
+
+    val listener: CategoryItemAdapter1.CategoryItemList,
+    var lastChecked:TextView?=null
 ) : RecyclerView.Adapter<ItemAdapter.MyViewHolder>() {
+    private var mpos: Int = -2
+
     inner class MyViewHolder(private val binding: ViewCategoryItemBoldBinding) :
         RecyclerView.ViewHolder(binding.root) {
+        val checkedTextView=binding.txtCategoryName
         fun bind(model: TbItem?) {
             binding.txtCategoryName.text = "" + model?.name+"\n\n"+model?.price?.let { MethodUtils.roundOffAmount(it) }
             binding.txtPrice.gone()
-           // binding.txtPrice.text = model?.price?.let { MethodUtils.roundOffAmount(it) }
+            if (mpos == absoluteAdapterPosition) {
+
+                if (lastChecked!=null){
+                    lastChecked?.isSelected=false
+                }
+                lastChecked=checkedTextView
+                binding.txtCategoryName.isSelected=true
+            }
+            else{
+                binding.txtCategoryName.isSelected=false
+
+            }
 
         }
 
         init {
             binding.txtCategoryName.setOnClickListener {
+                if (lastChecked!=null){
+                    lastChecked?.isSelected=false
+                }
+                lastChecked=checkedTextView
                 list[bindingAdapterPosition]?.let { listener.onClick(it) }
             }
-//            binding.txtCategoryName.setOnClickListener {
-//              //  list[bindingAdapterPosition]?.let { listener.onClick(it) }
-//            }
         }
     }
 
@@ -64,4 +80,9 @@ class ItemAdapter(
         this.list = arrayListOf()
         notifyDataSetChanged()
     }
+
+    fun setPos(selectedId: Int) {
+        mpos =selectedId
+    }
+
 }

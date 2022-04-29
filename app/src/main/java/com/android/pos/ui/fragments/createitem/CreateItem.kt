@@ -468,7 +468,9 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback {
 
 
         binding.chooseCategory.setOnClickListener(this)
+        binding.ivCategory.setOnClickListener(this)
         binding.chooseTax.setOnClickListener(this)
+        binding.ivTax.setOnClickListener(this)
         binding.imgEdit.setOnClickListener(this)
         binding.llTapToEdit.setOnClickListener(this)
 
@@ -521,20 +523,18 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback {
     override fun onClick(v: View?) {
         when (v?.id) {
             R.id.chooseCategory -> {
-                val bundle = Bundle().apply {
-                    putInt("selectedId", selectedId)
-                }
-                if (findNavController().currentDestination?.id == R.id.createItem) {
-                    findNavController().navigate(R.id.action_createItem_to_categoriesDialog, bundle)
-                }
+                openCategoryDialog()
+
+            }
+            R.id.ivCategory -> {
+                openCategoryDialog()
+
             }
             R.id.chooseTax -> {
-                val bundle = Bundle().apply {
-                    putStringArrayList("selectedId", viewModel.getSelectedTaxList())
-                }
-                if (findNavController().currentDestination?.id == R.id.createItem) {
-                    findNavController().navigate(R.id.action_createItem_to_taxesDialog, bundle)
-                }
+                openTaxDialog()
+            }
+            R.id.ivTax -> {
+                openTaxDialog()
             }
             R.id.imgEdit -> {
                 var profileImg = ""
@@ -556,6 +556,24 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback {
                 bundle.putString("imgUrl", profileImg)
                 findNavController().navigate(R.id.action_createItem_to_itemEditTitleDialog, bundle)
             }
+        }
+    }
+
+    private fun openTaxDialog() {
+        val bundle = Bundle().apply {
+            putStringArrayList("selectedId", viewModel.getSelectedTaxList())
+        }
+        if (findNavController().currentDestination?.id == R.id.createItem) {
+            findNavController().navigate(R.id.action_createItem_to_taxesDialog, bundle)
+        }
+    }
+
+    private fun openCategoryDialog() {
+        val bundle = Bundle().apply {
+            putInt("selectedId", selectedId)
+        }
+        if (findNavController().currentDestination?.id == R.id.createItem) {
+            findNavController().navigate(R.id.action_createItem_to_categoriesDialog, bundle)
         }
     }
 

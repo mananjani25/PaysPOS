@@ -234,6 +234,13 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
         }
         itemAdapter.list.clear()
         itemAdapter.list = itemList
+        for (i in itemList.indices){
+            if (itemList[i]?.itemId ==model.itemID){
+                itemAdapter.setPos(i)
+                break
+            }
+        }
+
         itemAdapter.notifyDataSetChanged()
 
 
@@ -327,6 +334,7 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
         }
         Log.e(TAG, " newlistItems: ${Gson().toJson(listItems)}")
         if (listItems.isNotEmpty()) {
+            itemAdapter.setPos(-2)
             itemAdapter.addList(listItems)
         } else {
             Log.e(TAG, "ItemAdapterEmpty")
