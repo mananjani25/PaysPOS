@@ -56,7 +56,7 @@
                 android:paddingEnd="@dimen/_8sdp"
                 android:paddingBottom="@dimen/_7sdp"
                 android:text="Done"
-                android:textColor="@color/txtColor"
+                android:textColor="@color/white"
                 android:textSize="@dimen/_7mdpi" />
 
             <TextView
@@ -73,7 +73,7 @@
                 android:paddingEnd="@dimen/_8sdp"
                 android:paddingBottom="@dimen/_7sdp"
                 android:text="Cancel"
-                android:textColor="@color/txtColor"
+                android:textColor="@color/white"
                 android:textSize="@dimen/_7mdpi" />
 
             <LinearLayout
@@ -112,7 +112,7 @@
                         android:paddingEnd="@dimen/_12sdp"
                         android:paddingBottom="@dimen/_7sdp"
                         android:text="1"
-                        android:textColor="@color/txtColor"
+                        android:textColor="@color/white"
                         android:textSize="@dimen/_7mdpi" />
 
 
