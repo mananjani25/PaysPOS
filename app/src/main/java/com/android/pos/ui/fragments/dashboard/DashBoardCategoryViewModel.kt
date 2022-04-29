@@ -12,6 +12,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.android.pos.MainApplication
 import com.android.pos.data.db.AppDatabase
 import com.android.pos.data.entities.*
 import com.android.pos.data.model.DineInModel
@@ -45,6 +46,7 @@ import com.android.pos.di.PrefProvider
 import com.android.pos.di.RolePermission
 import com.android.pos.utils.Event
 import com.android.pos.utils.MethodUtils
+import com.android.pos.utils.Pref
 import com.android.pos.utils.TimeFormatUtils
 import com.android.pos.utils.statusUtils.Resource
 import com.android.pos.utils.statusUtils.Status
@@ -2411,6 +2413,12 @@ class DashBoardCategoryViewModel @Inject constructor(
                                     )
                                 } else prefProvider.setValue(Constants.MAGENSA_SETTINGS, "")
 
+                                MainApplication.getInstance()
+                                    ?.let { it1 -> Pref.setValue(it1,Constants.MAGENSA_SETTINGS1, "") }
+
+
+                                MainApplication.getInstance()
+                                    ?.let { it1 -> Pref.setValue(it1,Constants.MAGENSA_SETTINGS1,Gson().toJson(it.data.magensaSettings[0])) }
 
                             }
 

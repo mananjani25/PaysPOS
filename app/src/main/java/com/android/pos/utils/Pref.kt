@@ -10,7 +10,7 @@ object Pref {
     private var sharedPreferences: SharedPreferences? = null
     private fun openPref(context: Context) {
         sharedPreferences = context.getSharedPreferences(
-            context.resources.getString(R.string.app_name),
+            context.resources.getString(R.string.app_name)+" APP",
             Context.MODE_PRIVATE
         )
     }

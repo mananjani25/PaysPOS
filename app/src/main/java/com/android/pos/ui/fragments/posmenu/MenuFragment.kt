@@ -15,6 +15,7 @@ import com.android.pos.di.ApiModule.BASE_URL
 import com.android.pos.di.PrefProvider
 import com.android.pos.di.RolePermission
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
+import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.extensions.alert
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -61,6 +62,7 @@ class MenuFragment : DialogFragment() {
         viewModel.logout.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
                 if (it) {
+                  //  MethodUtils.clearAppData(requireActivity())
                     viewModel.clearTableAll()
                     viewModel.clearTable()
                     prefProvider.setClear()

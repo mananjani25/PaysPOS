@@ -2,7 +2,10 @@ package com.android.pos.utils
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.app.ActivityManager
 import android.content.Context
+import android.content.Context.ACTIVITY_SERVICE
+import android.os.Build
 import android.os.SystemClock
 import android.provider.Settings
 import android.text.TextUtils
@@ -456,6 +459,7 @@ class MethodUtils {
             val m: Matcher = p.matcher(str)
             return m.matches()
         }
+
         fun isValidCardExpNumber(str: String?): Boolean {
             // Regex to check valid CVV number.
             val regex = "/^(0[1-9]|1[0-2])\\/?([0-9]{2})\$/"
@@ -465,6 +469,24 @@ class MethodUtils {
             }
             val m: Matcher = p.matcher(str)
             return m.matches()
+        }
+
+        fun clearAppData(requireActivity: FragmentActivity) {
+            try {
+                // clearing app data
+                if (Build.VERSION_CODES.KITKAT <= Build.VERSION.SDK_INT) {
+                    (requireActivity.getSystemService(ACTIVITY_SERVICE) as ActivityManager?)?.clearApplicationUserData() // note: it has a return value!
+                } else {
+
+                    val packageName: String =
+                        requireActivity.packageName
+                    Log.e("packageName",packageName)
+                    val runtime = Runtime.getRuntime()
+                    runtime.exec("pm clear $packageName")
+                }
+            } catch (e: java.lang.Exception) {
+                e.printStackTrace()
+            }
         }
     }
 
