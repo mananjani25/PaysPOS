@@ -56,8 +56,8 @@ class PrefProvider @Inject constructor(@ApplicationContext context: Context) {
         openPref()
         val prefsPrivateEditor = sharedPreferences!!.edit()
         prefsPrivateEditor!!.putString(key, value)
-        prefsPrivateEditor.apply()
-      //  sharedPreferences = null
+        prefsPrivateEditor.commit()
+        sharedPreferences = null
     }
 
     fun setValueInt(
@@ -67,8 +67,8 @@ class PrefProvider @Inject constructor(@ApplicationContext context: Context) {
         openPref()
         val prefsPrivateEditor = sharedPreferences!!.edit()
         prefsPrivateEditor!!.putInt(key, value)
-        prefsPrivateEditor.apply()
-       // sharedPreferences = null
+        prefsPrivateEditor.commit()
+        sharedPreferences = null
     }
 
 
@@ -79,8 +79,8 @@ class PrefProvider @Inject constructor(@ApplicationContext context: Context) {
         openPref()
         val prefsPrivateEditor = sharedPreferences!!.edit()
         prefsPrivateEditor!!.putLong(key, value.toLong())
-        prefsPrivateEditor.apply()
-       // sharedPreferences = null
+        prefsPrivateEditor.commit()
+        sharedPreferences = null
     }
 
     fun getValueDouble(
@@ -89,7 +89,7 @@ class PrefProvider @Inject constructor(@ApplicationContext context: Context) {
     ): Double {
         openPref()
         val result = sharedPreferences!!.getFloat(key, defaultValue.toFloat())
-      //  sharedPreferences = null
+        sharedPreferences = null
         return result.toDouble()
     }
 
@@ -99,7 +99,7 @@ class PrefProvider @Inject constructor(@ApplicationContext context: Context) {
     ): Boolean {
         openPref()
         val result = sharedPreferences!!.getBoolean(key, defaultValue)
-      //  sharedPreferences = null
+        sharedPreferences = null
         return result
     }
 
@@ -111,8 +111,8 @@ class PrefProvider @Inject constructor(@ApplicationContext context: Context) {
         openPref()
         val prefsPrivateEditor = sharedPreferences!!.edit()
         prefsPrivateEditor!!.putBoolean(key, value)
-        prefsPrivateEditor.apply()
-       // sharedPreferences = null
+        prefsPrivateEditor.commit()
+        sharedPreferences = null
     }
 
 
@@ -120,7 +120,7 @@ class PrefProvider @Inject constructor(@ApplicationContext context: Context) {
         openPref()
         val prefsPrivateEditor = sharedPreferences!!.edit().clear().apply()
 //        prefsPrivateEditor!!.clear().apply()
-      //  sharedPreferences = null
+        sharedPreferences = null
     }
 
     fun saveCustomerData(customer: TbCustomer?) {
@@ -192,7 +192,7 @@ class PrefProvider @Inject constructor(@ApplicationContext context: Context) {
          openPref(context)
          val prefsPrivateEditor = sharedPreferences!!.edit()
          prefsPrivateEditor!!.putString(key, json)
-         prefsPrivateEditor.apply()
+         prefsPrivateEditor.commit()
          sharedPreferences = null
      }
 

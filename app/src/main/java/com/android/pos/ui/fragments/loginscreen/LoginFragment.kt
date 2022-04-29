@@ -12,14 +12,15 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
-import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.AUTH_TOKEN
 import com.android.pos.data.remote.Constants.IS_CLOCKOUT
 import com.android.pos.databinding.FragmentLoginBinding
 import com.android.pos.di.PrefProvider
+import com.android.pos.utils.MethodUtils.Companion.getDeviceId
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.extensions.liveSnackBar
 import com.google.android.gms.tasks.OnCompleteListener
@@ -47,6 +48,7 @@ class LoginFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
 
+        Log.e("LoginFragment","Calling")
 
         if (prefProvider.getValue(AUTH_TOKEN, "").toString().isNotEmpty()) {
             if (!prefProvider.getValueboolean(IS_CLOCKOUT, false)) {
@@ -83,9 +85,9 @@ class LoginFragment : Fragment() {
             copy()
         }
 
-        binding.terminalId.text = getDeviceId()
+        binding.terminalId.text = getDeviceId(requireActivity())
 
-        prefProvider.setValue(Constants.UNIQUE_ID, binding.terminalId.text.toString().trim())
+      //  prefProvider.setValue(Constants.UNIQUE_ID, binding.terminalId.text.toString().trim())
 
         return binding.root
     }
@@ -156,12 +158,6 @@ class LoginFragment : Fragment() {
         binding.root.liveSnackBar(this, viewModel.snackbarText, Snackbar.LENGTH_SHORT)
     }
 
-    @SuppressLint("HardwareIds")
-    private fun getDeviceId(): String {
-        return Settings.Secure.getString(
-            requireActivity().contentResolver,
-            Settings.Secure.ANDROID_ID
-        )
-    }
+
 
 }
