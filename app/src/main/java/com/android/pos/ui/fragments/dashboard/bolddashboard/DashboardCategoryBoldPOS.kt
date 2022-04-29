@@ -288,6 +288,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
         onClick()
 
         isupdate = requireArguments().getBoolean("update")
+        viewModel.setOpenOrderUpdate(isupdate)
         reorder = requireArguments().getBoolean("reorder")
 
         if (isupdate) {
@@ -1015,13 +1016,11 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                                             }
                                         }
 
-                                    }
-                                    else{
+                                    } else {
 
                                     }
 
-                                }
-                                else{
+                                } else {
                                     printOrderItems.add(orderItem)
                                 }
 
@@ -1074,17 +1073,15 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                     if (it.data?.isNotEmpty() == true && createOrderResponse.data.order.orderItems.isNotEmpty()) {
 
 
+                        for (i in 0 until it.data.size) {
 
-                            for (i in 0 until it.data.size) {
 
-
-                                initKitchenPrinter(
-                                    it.data.get(i),
-                                    Constants.KITCHEN,
-                                    createOrderResponse
-                                )
-                            }
-
+                            initKitchenPrinter(
+                                it.data.get(i),
+                                Constants.KITCHEN,
+                                createOrderResponse
+                            )
+                        }
 
 
                     } else {

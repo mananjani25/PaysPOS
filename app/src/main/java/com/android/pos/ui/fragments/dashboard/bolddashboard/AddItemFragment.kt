@@ -342,7 +342,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
 
         binding.txtRemoveItem.setOnClickListener {
 
-            item.isEdited = false
+            makeItemEdited(item)
 
             if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == DINE_IN) {
 
@@ -775,5 +775,13 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
         }
     }*/
 
+    }
+
+    private fun makeItemEdited(item: TbItem) {
+        Log.e(TAG,"isOrderUpdateOpen:  ${Gson().toJson(viewModel.openOrderUpdate)}")
+        if (viewModel.openOrderUpdate == true) {
+            //for open order and edit cart
+            item.isEdited = true
+        }
     }
 }

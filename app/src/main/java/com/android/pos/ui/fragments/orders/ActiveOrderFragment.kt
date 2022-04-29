@@ -409,6 +409,7 @@ class ActiveOrderFragment(
                         requireContext()
                     )
                 )
+                Log.e(TAG,"getTotalDiscount  ${order.totalDiscount}")
                 bundle.putDouble("subTotalPrice", order.subTotal)
                 bundle.putDouble("totalTax", order.totalTaxAmount)
                 bundle.putDouble("totalDiscount", order.totalDiscount)
