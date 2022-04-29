@@ -86,6 +86,7 @@ class CartFragment(
     var updateBundle: Bundle? = null
     var isFromPayment: Boolean = false
     var isActiveOrder: Boolean = false
+    var reorder: Boolean = false
 
     private var serviceChargesObserve: Observer<Resource<List<TbServiceCharge>>>? = null
     private lateinit var nameObserver: Observer<List<CartModel>>
@@ -118,7 +119,9 @@ class CartFragment(
             updateBundle = arguments?.getBundle("updateBundle")
         }
 
-
+        if(arguments?.getBoolean("reorder")!=null){
+            reorder = arguments?.getBoolean("reorder")!!
+        }
         if (arguments?.getBoolean("isFromPayment") != null) {
             isFromPayment = arguments?.getBoolean("isFromPayment")!!
         }
@@ -645,6 +648,7 @@ class CartFragment(
                         } else {
                             Log.e(TAG, "WithOutDineIn")
                             viewModel.itemCalculationCartModel(
+                                reorder,
                                 it[0],
                                 binding.txtTotal,
                                 requireContext()
@@ -821,6 +825,7 @@ class CartFragment(
 
                         cartlist = it as ArrayList<CartModel>
                         viewModel.itemCalculationCartModel(
+                            reorder,
                             it[0],
                             binding.txtTotal,
                             requireContext()
@@ -1212,6 +1217,7 @@ class CartFragment(
     private fun refreshItemCalculation() {
         if (cartlist.size > 0) {
             viewModel.itemCalculationCartModel(
+                reorder,
                 cartlist[0],
                 binding.txtTotal,
                 requireContext()

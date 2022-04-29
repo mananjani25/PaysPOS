@@ -1025,6 +1025,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     @SuppressLint("SetTextI18n")
     fun itemCalculationCartModel(
+        reorder: Boolean,
         cartModel: CartModel,
         txtTotalAmount: AppCompatTextView,
         context: Context
@@ -1131,75 +1132,150 @@ class DashBoardCategoryViewModel @Inject constructor(
 
             if (cartModel.items?.isEmpty() == false) {
 
+                if (reorder) {
+                    cartModel.items?.forEach { item ->
+                        totalCount += item.itemQuantity
+                        subTotalPrice += if (!item.isManualSales) {
+                            (item.price * item.itemQuantity)- (item.discountPrice * item.itemQuantity)
+                        } else {
+                            (item.price * item.itemQuantity)- item.discountPrice
+                        }
 
-                cartModel.items?.forEach { item ->
-                    totalCount += item.itemQuantity
-                    subTotalPrice += if (!item.isManualSales) {
-                        (item.price * item.itemQuantity) - (item.discountPrice * item.itemQuantity)
+                        taxCalculation(item)
+
+                        item.modifiers.forEach {
+                            subTotalPrice += (it.price * it.itemQuantity)
+
+                        }
+                    }
+
+
+                    serviceChargeCalculationModel(cartModel)
+
+                    totalDiscount = cartModel.discountPrice
+                    subTotalPrice -=cartModel.discountPrice
+                    order_note = cartModel.note
+                    cartModel.items!!.forEach {
+                        totalDiscount += if (!it.isManualSales) {
+                            (it.discountPrice * it.itemQuantity)
+                        } else {
+                            it.discountPrice
+                        }
+                    }
+
+                    var finalTotal = 0.0
+                    Log.d(TAG, "reorder: subtotal " + subTotalPrice)
+                    Log.d(TAG, "reorder: totaltax " + totalTax)
+                    Log.d(TAG, "reorder: servicec " + totalServiceCharge)
+                    Log.d(TAG, "reorder: discount " + totalDiscount)
+                    finalTotal = (subTotalPrice + totalTax + totalServiceCharge)
+
+
+
+                    cashDiscountType = prefProvider.getValue(Constants.OPTION_TYPE, "")
+                    //loyalty point and price calculation
+                    amountToBePaid = finalTotal
+                    if (selectedCustomer == null) {
+                        totalPrice = amountToBePaid
+                        MethodUtils.setPriceTextView(
+                            txtTotalAmount,
+                            amountToBePaid
+                        )
                     } else {
-                        (item.price * item.itemQuantity) - item.discountPrice
+                        checkAppliedLoyaltyProgram(
+                            selectedCustomer,
+                            amountToBePaid,
+                            txtTotalAmount
+                        )
+                        redeemLoyaltyInfo.getAmountToBePaid()?.let {
+                            totalPrice = it
+                        }
                     }
 
-                    taxCalculation(item)
-
-                    item.modifiers.forEach {
-                        subTotalPrice += (it.price * it.itemQuantity)
-
-                    }
-                }
-
-
-                serviceChargeCalculationModel(cartModel)
-                subTotalPrice -= cartModel.discountPrice
-
-                totalDiscount += cartModel.discountPrice
-                order_note = cartModel.note
-                cartModel.items!!.forEach {
-                    totalDiscount += if (!it.isManualSales) {
-                        (it.discountPrice * it.itemQuantity)
+                    if (MethodUtils.isEnableCashDiscount(context)) {
+                        cashdiscountAmount = MethodUtils.calculateCashDiscount(
+                            totalPrice,
+                            prefProvider,
+                            context
+                        )
                     } else {
-                        it.discountPrice
+                        cashdiscountAmount = 0.0
                     }
-                }
-                Log.e("OpenOrderCh", "cartDiscount  ${cartModel.discountPrice}")
-                Log.e("OpenOrderCh", "totalDiscounts  ${totalDiscount}")
 
-                var finalTotal = 0.0
-                finalTotal = (subTotalPrice + totalTax + totalServiceCharge)
+                    Log.e("amountToBePaid", "" + totalPrice)
 
-
-
-                cashDiscountType = prefProvider.getValue(Constants.OPTION_TYPE, "")
-                //loyalty point and price calculation
-                amountToBePaid = finalTotal
-                if (selectedCustomer == null) {
-                    totalPrice = amountToBePaid
-                    MethodUtils.setPriceTextView(
-                        txtTotalAmount,
-                        amountToBePaid
-                    )
                 } else {
-                    checkAppliedLoyaltyProgram(
-                        selectedCustomer,
-                        amountToBePaid,
-                        txtTotalAmount
-                    )
-                    redeemLoyaltyInfo.getAmountToBePaid()?.let {
-                        totalPrice = it
+                    cartModel.items?.forEach { item ->
+                        totalCount += item.itemQuantity
+                        subTotalPrice += if (!item.isManualSales) {
+                            (item.price * item.itemQuantity) - (item.discountPrice * item.itemQuantity)
+                        } else {
+                            (item.price * item.itemQuantity) - item.discountPrice
+                        }
+
+                        taxCalculation(item)
+
+
+                        item.modifiers.forEach {
+                            subTotalPrice += (it.price * it.itemQuantity)
+
+                        }
                     }
+
+                    serviceChargeCalculationModel(cartModel)
+                    subTotalPrice -= cartModel.discountPrice
+
+                    totalDiscount += cartModel.discountPrice
+                    order_note = cartModel.note
+                    cartModel.items!!.forEach {
+                        totalDiscount += if (!it.isManualSales) {
+                            (it.discountPrice * it.itemQuantity)
+                        } else {
+                            it.discountPrice
+                        }
+                    }
+                    Log.e("OpenOrderCh", "cartDiscount  ${cartModel.discountPrice}")
+                    Log.e("OpenOrderCh", "totalDiscounts  ${totalDiscount}")
+
+                    var finalTotal = 0.0
+                    finalTotal = (subTotalPrice + totalTax + totalServiceCharge)
+
+
+
+                    cashDiscountType = prefProvider.getValue(Constants.OPTION_TYPE, "")
+                    //loyalty point and price calculation
+                    amountToBePaid = finalTotal
+                    if (selectedCustomer == null) {
+                        totalPrice = amountToBePaid
+                        MethodUtils.setPriceTextView(
+                            txtTotalAmount,
+                            amountToBePaid
+                        )
+                    } else {
+                        checkAppliedLoyaltyProgram(
+                            selectedCustomer,
+                            amountToBePaid,
+                            txtTotalAmount
+                        )
+                        redeemLoyaltyInfo.getAmountToBePaid()?.let {
+                            totalPrice = it
+                        }
+                    }
+
+                    if (MethodUtils.isEnableCashDiscount(context)) {
+                        cashdiscountAmount = MethodUtils.calculateCashDiscount(
+                            totalPrice,
+                            prefProvider,
+                            context
+                        )
+                    } else {
+                        cashdiscountAmount = 0.0
+                    }
+
+                    Log.e("amountToBePaid", "" + totalPrice)
                 }
 
-                if (MethodUtils.isEnableCashDiscount(context)) {
-                    cashdiscountAmount = MethodUtils.calculateCashDiscount(
-                        totalPrice,
-                        prefProvider,
-                        context
-                    )
-                } else {
-                    cashdiscountAmount = 0.0
-                }
 
-                Log.e("amountToBePaid", "" + totalPrice)
             } else {
 
                 nonCashAdj = 0.0
@@ -1340,11 +1416,11 @@ class DashBoardCategoryViewModel @Inject constructor(
                     Log.d("yash", "taxCalculation: " + tax.taxType)
 
 
-                    if (totalPrice < 0.0){
+                    if (totalPrice < 0.0) {
 
                         String.format("%.2f", 0.00)
                             .toDouble()
-                    }else {
+                    } else {
                         val itemTaxPrice =
                             (tax.rate * totalPrice) / 100
                         Log.e("itemTaxPrice", "" + itemTaxPrice)
@@ -1355,10 +1431,10 @@ class DashBoardCategoryViewModel @Inject constructor(
                 } else {
                     Log.d("yash", "taxCalculation: " + tax.taxType)
 
-                    if (totalPrice < 0.0){
+                    if (totalPrice < 0.0) {
                         String.format("%.2f", 0.00)
                             .toDouble()
-                    }else {
+                    } else {
                         String.format("%.2f", tax.rate * item.itemQuantity)
                             .toDouble()
                     }
@@ -2227,42 +2303,46 @@ class DashBoardCategoryViewModel @Inject constructor(
 
 
                                 try {
-                                    Log.e(TAG,"getURL  ${prefProvider.getValue(
-                                        Constants.VENUE_LOGO_URL,
-                                        ""
-                                    )}")
-                                  /*  if (it.data.logo != null) {
-                                        if (it.data.logo.logoUrl.isNotEmpty() && !prefProvider.getValue(
+                                    Log.e(
+                                        TAG, "getURL  ${
+                                            prefProvider.getValue(
                                                 Constants.VENUE_LOGO_URL,
                                                 ""
-                                            ).equals(it.data.logo.logoUrl)
-                                        ) {
-                                            val policy: StrictMode.ThreadPolicy =
-                                                StrictMode.ThreadPolicy.Builder().permitAll()
-                                                    .build()
-
-                                            StrictMode.setThreadPolicy(policy)
-
-                                            val bitmap = getBitmapFromURL(it.data.logo.logoUrl)
-                                            var baseBitmap =
-                                                bitmap?.let { it1 -> encodeTobase64(it1) }
-                                            if (baseBitmap?.isNotEmpty() == true) {
-                                                Log.d(TAG, "syncSettingModule: " + baseBitmap)
-                                                baseBitmap?.let { it1 ->
-                                                    prefProvider.setValue(
-                                                        VENUE_LOGO,
-                                                        it1
-                                                    )
-                                                }
-                                            }
-                                            prefProvider.setValue(
-                                                Constants.VENUE_LOGO_URL,
-                                                it.data.logo.logoUrl
                                             )
-                                        }
+                                        }"
+                                    )
+                                    /*  if (it.data.logo != null) {
+                                          if (it.data.logo.logoUrl.isNotEmpty() && !prefProvider.getValue(
+                                                  Constants.VENUE_LOGO_URL,
+                                                  ""
+                                              ).equals(it.data.logo.logoUrl)
+                                          ) {
+                                              val policy: StrictMode.ThreadPolicy =
+                                                  StrictMode.ThreadPolicy.Builder().permitAll()
+                                                      .build()
+
+                                              StrictMode.setThreadPolicy(policy)
+
+                                              val bitmap = getBitmapFromURL(it.data.logo.logoUrl)
+                                              var baseBitmap =
+                                                  bitmap?.let { it1 -> encodeTobase64(it1) }
+                                              if (baseBitmap?.isNotEmpty() == true) {
+                                                  Log.d(TAG, "syncSettingModule: " + baseBitmap)
+                                                  baseBitmap?.let { it1 ->
+                                                      prefProvider.setValue(
+                                                          VENUE_LOGO,
+                                                          it1
+                                                      )
+                                                  }
+                                              }
+                                              prefProvider.setValue(
+                                                  Constants.VENUE_LOGO_URL,
+                                                  it.data.logo.logoUrl
+                                              )
+                                          }
 
 
-                                    }*/
+                                      }*/
 
                                 } catch (e: Exception) {
                                     e.printStackTrace()
