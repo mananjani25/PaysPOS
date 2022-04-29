@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.LinearLayout
 import androidx.appcompat.widget.AppCompatTextView
+import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
@@ -110,7 +111,7 @@ class DineInFragment : Fragment() {
 
     private fun onClick() {
         binding.layoutHeader.txtTransaction.setOnClickListener {
-            if(rolePermission.hasTransactionPermission(binding.root)){
+            if (rolePermission.hasTransactionPermission(binding.root)) {
                 findNavController().navigate(R.id.action_dineInFragment_to_transactionFragment)
             }
         }
@@ -461,16 +462,19 @@ class DineInFragment : Fragment() {
     private fun clickInInflatedLayout(): View.OnClickListener {
         return View.OnClickListener { v ->
             val dineInFloorTableModel = v.tag as GetFloorPlanResponse.Data.FloorPlanTable
-            Log.e(TAG,"dineInFloorTableModel:  ${Gson().toJson(dineInFloorTableModel)}")
+            Log.e(TAG, "dineInFloorTableModel:  ${Gson().toJson(dineInFloorTableModel)}")
             if (dineInFloorTableModel.status == OCCUPIED) {
                 if (dineInFloorTableModel.lock_by_id == prefProvider.getValueInt(
                         EMPLOYEE_ID,
                         0
                     ) || prefProvider.isAdmin()
                 ) {
-                    Log.d(TAG, "clickInInflatedLayout: current "+prefProvider.getValueInt(EMPLOYEE_ID,0))
-                    Log.d(TAG, "clickInInflatedLayout: dynamic "+dineInFloorTableModel.lock_by_id)
-                    Log.d(TAG, "clickInInflatedLayout: isadmin "+prefProvider.isAdmin())
+                    Log.d(
+                        TAG,
+                        "clickInInflatedLayout: current " + prefProvider.getValueInt(EMPLOYEE_ID, 0)
+                    )
+                    Log.d(TAG, "clickInInflatedLayout: dynamic " + dineInFloorTableModel.lock_by_id)
+                    Log.d(TAG, "clickInInflatedLayout: isadmin " + prefProvider.isAdmin())
                     if (dineInFloorTableModel.currentOrderDetails != null) {
                         val bundle = Bundle()
                         bundle.putBoolean("isFromFloor", true)
@@ -480,6 +484,26 @@ class DineInFragment : Fragment() {
 
                         findNavController().navigate(
                             R.id.action_dineInFragment_to_dineInOrderTable,
+                            bundle
+                        )
+                    } else if (dineInFloorTableModel.lock_by_id == prefProvider.getValueInt(
+                            EMPLOYEE_ID, 0
+                        )
+                    ) {
+                        prefProvider.setValue(Constants.ORDER_TYPE, Constants.DINE_IN)
+                        prefProvider.setValue(Constants.ORDER_TYPE_NAME, Constants.DINE_IN)
+                        val bundle = bundleOf(
+                            "isFromDineIn" to true,
+                            "numberOfGuest" to dineInFloorTableModel.chairCount,
+                            "floorplan" to dineInFloorTableModel
+                        )
+                        prefProvider.setValueInt(
+                            Constants.DINE_IN_TABLE_ID,
+                            dineInFloorTableModel.id
+                        )
+                        prefProvider.setValueboolean(Constants.DINE_IN_STATUS, true)
+                        findNavController().navigate(
+                            R.id.action_dineInFragment_to_dashboardCategoryBoldPOS,
                             bundle
                         )
                     } else {
@@ -495,13 +519,13 @@ class DineInFragment : Fragment() {
                         }
 
 
-                     /*   val bundle = Bundle()
-                        bundle.putBoolean("isMerged", false)
-                        bundle.putParcelable("dineInFloorTableObject", dineInFloorTableModel)
-                        findNavController().navigate(
-                            R.id.action_dineInFragment_to_dineInGuestFragment,
-                            bundle
-                        )*/
+                        /*   val bundle = Bundle()
+                           bundle.putBoolean("isMerged", false)
+                           bundle.putParcelable("dineInFloorTableObject", dineInFloorTableModel)
+                           findNavController().navigate(
+                               R.id.action_dineInFragment_to_dineInGuestFragment,
+                               bundle
+                           )*/
                     }
 
                 } else {
@@ -527,7 +551,7 @@ class DineInFragment : Fragment() {
                     bundle
                 )
 
-            } else if (dineInFloorTableModel.status == MERGED  ) {
+            } else if (dineInFloorTableModel.status == MERGED) {
                 Log.e(TAG, "dineInFloorTableModel:  ${Gson().toJson(dineInFloorTableModel)}")
 
                 val bundle = Bundle()

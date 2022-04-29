@@ -1112,6 +1112,11 @@
             android:id="@+id/action_dineInFragment_to_menuFragment"
             app:destination="@id/menuFragment"
             app:enterAnim="@anim/nav_default_enter_anim" />
+        <action
+            android:id="@+id/action_dineInFragment_to_dashboardCategoryBoldPOS"
+            app:destination="@id/dashboardCategoryBoldPOS"
+            app:popUpTo="@id/dineInFragment"
+            app:popUpToInclusive="true" />
     </fragment>
     <fragment
         android:id="@+id/dineInGuestFragment"
