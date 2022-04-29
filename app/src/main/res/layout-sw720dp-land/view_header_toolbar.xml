@@ -67,9 +67,9 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
+            android:layout_below="@+id/txtSave"
             android:background="@color/view"
-            tools:ignore="MissingDefaultResource"
-            android:layout_below="@+id/txtSave">
+            tools:ignore="MissingDefaultResource">
 
         </View>
 

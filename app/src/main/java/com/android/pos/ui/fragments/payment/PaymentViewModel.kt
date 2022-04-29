@@ -35,7 +35,7 @@ open class PaymentViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val TAG = "PaymentViewModel"
-    private var isUpdateOrder: Boolean = false
+     var isUpdateOrder: Boolean = false
     private var onlySave: Boolean = false
     private var totalPayAmounts: Double = 0.0
     private var orderId: Int? = null

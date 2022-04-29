@@ -49,7 +49,6 @@
             android:imeOptions="actionNext"
             android:inputType="textVisiblePassword"
             android:padding="@dimen/_9sdp"
-
             android:textColor="@color/txtColor"
             android:textColorHint="@color/hintColor"
             android:textSize="@dimen/_7mdpi" />

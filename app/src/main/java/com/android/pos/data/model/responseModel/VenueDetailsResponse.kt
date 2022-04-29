@@ -126,9 +126,17 @@ data class VenueDetailsResponse(
             val name: String,
             @SerializedName("url")
             val logoUrl: String,
+            @SerializedName("thumb")
+            val thumb:Thumb,
             @SerializedName("record")
             val record: Record
+
         ) {
+            data class Thumb(
+                @SerializedName("url")
+                val thumbUrl:String
+            )
+
             data class Record(
                 @SerializedName("business_name")
                 val businessName: String,

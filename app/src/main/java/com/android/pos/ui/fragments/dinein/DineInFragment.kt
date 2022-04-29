@@ -461,6 +461,7 @@ class DineInFragment : Fragment() {
     private fun clickInInflatedLayout(): View.OnClickListener {
         return View.OnClickListener { v ->
             val dineInFloorTableModel = v.tag as GetFloorPlanResponse.Data.FloorPlanTable
+            Log.e(TAG,"dineInFloorTableModel:  ${Gson().toJson(dineInFloorTableModel)}")
             if (dineInFloorTableModel.status == OCCUPIED) {
                 if (dineInFloorTableModel.lock_by_id == prefProvider.getValueInt(
                         EMPLOYEE_ID,
@@ -526,7 +527,7 @@ class DineInFragment : Fragment() {
                     bundle
                 )
 
-            } else if (dineInFloorTableModel.status == MERGED || prefProvider.isAdmin()) {
+            } else if (dineInFloorTableModel.status == MERGED  ) {
                 Log.e(TAG, "dineInFloorTableModel:  ${Gson().toJson(dineInFloorTableModel)}")
 
                 val bundle = Bundle()

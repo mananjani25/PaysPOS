@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.os.StrictMode
 import android.util.Base64
 import android.util.Log
 import androidx.appcompat.widget.AppCompatTextView
@@ -2303,46 +2304,42 @@ class DashBoardCategoryViewModel @Inject constructor(
 
 
                                 try {
-                                    Log.e(
-                                        TAG, "getURL  ${
-                                            prefProvider.getValue(
+                                    Log.e(TAG,"getURL  ${prefProvider.getValue(
+                                        Constants.VENUE_LOGO_URL,
+                                        ""
+                                    )}")
+                                   if (it.data.logo != null) {
+                                        if (it.data.logo.logoUrl.isNotEmpty() && !prefProvider.getValue(
                                                 Constants.VENUE_LOGO_URL,
                                                 ""
+                                            ).equals(it.data.logo.thumb.thumbUrl)
+                                        ) {
+                                            val policy: StrictMode.ThreadPolicy =
+                                                StrictMode.ThreadPolicy.Builder().permitAll()
+                                                    .build()
+
+                                            StrictMode.setThreadPolicy(policy)
+
+                                            val bitmap = getBitmapFromURL(it.data.logo.thumb.thumbUrl)
+                                            var baseBitmap =
+                                                bitmap?.let { it1 -> encodeTobase64(it1) }
+                                            if (baseBitmap?.isNotEmpty() == true) {
+                                                Log.d(TAG, "syncSettingModule: " + baseBitmap)
+                                                baseBitmap?.let { it1 ->
+                                                    prefProvider.setValue(
+                                                        VENUE_LOGO,
+                                                        it1
+                                                    )
+                                                }
+                                            }
+                                            prefProvider.setValue(
+                                                Constants.VENUE_LOGO_URL,
+                                                it.data.logo.thumb.thumbUrl
                                             )
-                                        }"
-                                    )
-                                    /*  if (it.data.logo != null) {
-                                          if (it.data.logo.logoUrl.isNotEmpty() && !prefProvider.getValue(
-                                                  Constants.VENUE_LOGO_URL,
-                                                  ""
-                                              ).equals(it.data.logo.logoUrl)
-                                          ) {
-                                              val policy: StrictMode.ThreadPolicy =
-                                                  StrictMode.ThreadPolicy.Builder().permitAll()
-                                                      .build()
-
-                                              StrictMode.setThreadPolicy(policy)
-
-                                              val bitmap = getBitmapFromURL(it.data.logo.logoUrl)
-                                              var baseBitmap =
-                                                  bitmap?.let { it1 -> encodeTobase64(it1) }
-                                              if (baseBitmap?.isNotEmpty() == true) {
-                                                  Log.d(TAG, "syncSettingModule: " + baseBitmap)
-                                                  baseBitmap?.let { it1 ->
-                                                      prefProvider.setValue(
-                                                          VENUE_LOGO,
-                                                          it1
-                                                      )
-                                                  }
-                                              }
-                                              prefProvider.setValue(
-                                                  Constants.VENUE_LOGO_URL,
-                                                  it.data.logo.logoUrl
-                                              )
-                                          }
+                                        }
 
 
-                                      }*/
+                                    }
 
                                 } catch (e: Exception) {
                                     e.printStackTrace()

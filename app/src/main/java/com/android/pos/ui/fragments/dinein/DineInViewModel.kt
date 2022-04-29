@@ -568,6 +568,8 @@ class DineInViewModel @Inject constructor(
                 model.quantity = it.quantity
                 model.totalPrice = it.totalPrice
                 model.price = it.price
+                model.isFired = it.isFired
+
 
                 var modifierList: ArrayList<OrderItemModifierAttribute> = arrayListOf()
                 it.orderItemModifiers.forEach { modifier ->
@@ -665,6 +667,7 @@ class DineInViewModel @Inject constructor(
                         guestItemAttr.itemId = it.itemId
                         guestItemAttr.quantity = it.quantity
                         guestItemAttr.timestamp = it.timestamp
+                        guestItemAttr.isFired = it.is_fired
                         guestItemList.add(guestItemAttr)
 
 
@@ -699,6 +702,7 @@ class DineInViewModel @Inject constructor(
                         guestItemAttr.itemId = it.itemId
                         guestItemAttr.quantity = it.quantity
                         guestItemAttr.timestamp = it.timestamp
+                        guestItemAttr.isFired = it.is_fired
                         guestItemList.add(guestItemAttr)
 
 
@@ -830,6 +834,11 @@ class DineInViewModel @Inject constructor(
             model.quantity = it.quantity
             model.totalPrice = it.totalPrice
             model.price = it.price
+            model.isFired = it.isFired
+
+
+            Log.e(TAG, "isFired:  ${it.isFired}")
+
 
             var modifierList: ArrayList<OrderItemModifierAttribute> = arrayListOf()
             it.orderItemModifiers.forEach { modifier ->
@@ -921,6 +930,7 @@ class DineInViewModel @Inject constructor(
                 guestItemAttr.itemId = it.itemId
                 guestItemAttr.quantity = it.quantity
                 guestItemAttr.timestamp = it.timestamp
+                guestItemAttr.isFired = it.is_fired
                 guestItemList.add(guestItemAttr)
 
 

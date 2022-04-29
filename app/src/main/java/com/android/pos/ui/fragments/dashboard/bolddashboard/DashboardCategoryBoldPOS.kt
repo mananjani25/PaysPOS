@@ -938,7 +938,9 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
         } else {
             Log.e(TAG, "PrinterIsNotNull:")
             viewModel.downloadFinished(false)
-            findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
+            if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
+                findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
+            }
 
         }
 
@@ -972,12 +974,12 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
             when (it.status) {
                 Status.SUCCESS -> {
                     Log.e(TAG, "getKitchenPrinterList:  ${Gson().toJson(it.data)}")
-                    Log.e(TAG, "isUpdateOrder  ${isupdate}")
+                    Log.e(TAG, "isUpdateOrder  ${viewModelPayment.isUpdateOrder}")
 
                     ProgressUtils.dismissProgressDialog()
                     viewModel.downloadFinished(true)
 
-                    if (isupdate) {
+                    if (viewModelPayment.isUpdateOrder) {
                         var model = prefProvider.getValue(OPEN_ORDER_ITEMS, "")
                         Log.e(TAG, "getItemsModel  ${Gson().toJson(model)}")
                         var printOrderItems:
@@ -1069,17 +1071,21 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                     }
 
 
-                    if (it.data?.isNotEmpty() == true) {
-
-                        for (i in 0 until it.data.size) {
+                    if (it.data?.isNotEmpty() == true && createOrderResponse.data.order.orderItems.isNotEmpty()) {
 
 
-                            initKitchenPrinter(
-                                it.data.get(i),
-                                Constants.KITCHEN,
-                                createOrderResponse
-                            )
-                        }
+
+                            for (i in 0 until it.data.size) {
+
+
+                                initKitchenPrinter(
+                                    it.data.get(i),
+                                    Constants.KITCHEN,
+                                    createOrderResponse
+                                )
+                            }
+
+
 
                     } else {
                         viewModel.downloadFinished(false)

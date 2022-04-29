@@ -7,7 +7,7 @@ import com.google.gson.annotations.SerializedName
 import kotlinx.parcelize.Parcelize
 
 
-class   OrderAttributeRequestModel {
+class OrderAttributeRequestModel {
 
     @SerializedName("customer_attributes")
     var customerAttributes: CustomerAttributes? = null
@@ -237,7 +237,9 @@ class GuestItemsAttributes(
     @SerializedName("guest_id") var guestId: Int? = null,
     @SerializedName("_destroy") var Destroy: Boolean = false,
     @SerializedName("percentage") var percentage: Int? = null,
-    @SerializedName("timestamp") var timestamp: String? = null
+    @SerializedName("timestamp") var timestamp: String? = null,
+    @SerializedName("is_fired") var isFired: Boolean = false
+
 
 )
 
@@ -322,6 +324,9 @@ class OrderItemsAttribute {
 
     @SerializedName("_destroy")
     var isDestroy: Boolean = false
+
+    @SerializedName("is_fired")
+    var isFired: Boolean = false
 }
 
 class OrderItemTaxesAttribute {
