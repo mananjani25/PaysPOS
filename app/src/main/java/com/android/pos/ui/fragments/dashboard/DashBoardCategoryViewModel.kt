@@ -1865,6 +1865,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                 orderItemsAttribute.price = item.price
                 orderItemsAttribute.quantity = item.itemQuantity
                 orderItemsAttribute.terminalId = cartModel.terminalId
+                orderItemsAttribute.isFired = cartModel.isFired
 
 
                 Log.e(TAG, "TimeStampMo: ${item.timeStamp}")
