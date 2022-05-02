@@ -27,7 +27,6 @@ import com.android.pos.utils.*
 import com.android.pos.utils.extensions.liveSnackBar
 import com.android.pos.utils.extensions.showAlert
 import com.android.pos.utils.statusUtils.Status
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
