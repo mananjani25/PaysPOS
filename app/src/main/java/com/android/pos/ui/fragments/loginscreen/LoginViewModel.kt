@@ -20,6 +20,7 @@ import com.android.pos.data.remote.Constants.TERMINAL_ID
 import com.android.pos.data.remote.Constants.USERNAME
 import com.android.pos.data.remote.NetworkConnectionInterceptor
 import com.android.pos.data.repositories.UserRepository
+import com.android.pos.di.ApiModule
 import com.android.pos.di.PrefProvider
 import com.android.pos.utils.Event
 import com.android.pos.utils.statusUtils.Status
@@ -74,8 +75,14 @@ class LoginViewModel @Inject constructor(
                         resource.data.let { logInResponse ->
                             if (logInResponse?.status == 200) {
 
+                                prefProvider.setClear()
+                                delay(1000)
+
+
+
                                 resource.data?.let {
 //                                    _data.value = Event(true)
+
                                     prefProvider.setValue(AUTH_TOKEN, it.data.authToken)
                                     prefProvider.setValue(BASE_URL_NEW, it.data.baseUrl + "/")
                                     prefProvider.setValueInt(LOCATION_ID, it.data.locationId)

@@ -20,6 +20,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class Hardware : Fragment() {
     private lateinit var binding: FragmentHardwareBinding
+
     @Inject
     lateinit var prefProvider: PrefProvider
 
@@ -37,8 +38,8 @@ class Hardware : Fragment() {
     }
 
     private fun setUpHeader() {
-        binding.header.txtSave.text=getString(R.string.tv_home)
-        binding.header.txtTitle.text=getString(R.string.hardware)
+        binding.header.txtSave.text = getString(R.string.tv_home)
+        binding.header.txtTitle.text = getString(R.string.hardware)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -68,31 +69,11 @@ class Hardware : Fragment() {
             findNavController().navigate(R.id.action_hardware_to_printerQueue)
         }
         binding.txtCardMachine.setOnClickListener {
-            val device = prefProvider.getValueInt(Constants.MAGTEK_HARDWARE, 0)
 
-            activity?.let {
-                MaterialAlertDialogBuilder(it, R.style.MaterialAlertDialogText)
-                    .setTitle("Choose Card Reader Device")
-                    .setSingleChoiceItems(
-                        choices,
-                        device
-                    ) { dialogInterface, i ->
+            findNavController().navigate(
+                R.id.action_hardware_to_cardRederDialog
+            )
 
-                        Log.e("setSingleChoice pos", i.toString())
-
-                        dialogInterface.dismiss()
-                        prefProvider.setValueInt(Constants.MAGTEK_HARDWARE, i)
-
-                        if (i == 0) {
-                            // eDynamo
-                            findNavController().navigate(R.id.action_hardware_to_magtekFragment)
-                        } else {
-                            // DynaFlex
-                            findNavController().navigate(R.id.action_hardware_to_magtekProFragment)
-                        }
-                    }
-                    .show()
-            }
         }
 
 

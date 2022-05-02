@@ -5,16 +5,17 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.os.Build
 import android.os.Handler
+import android.util.Log
 import androidx.appcompat.app.AppCompatDelegate
 import com.android.pos.utils.scanner.helpers.AvailableScanner
 import com.android.pos.utils.scanner.helpers.Barcode
 import com.android.pos.utils.scanner.helpers.Foreground
 import com.android.pos.utils.scanner.helpers.ScannerAppEngine
 import com.google.firebase.FirebaseApp
-import com.testfairy.TestFairy
 import com.zebra.scannercontrol.DCSScannerInfo
 import com.zebra.scannercontrol.SDKHandler
 import dagger.hilt.android.HiltAndroidApp
+import java.io.File
 
 @HiltAndroidApp
 class MainApplication : Application() {
@@ -99,6 +100,35 @@ class MainApplication : Application() {
         //bluetooth mac address
         var btAddress: String? = ""
 
+
+        fun clearApplicationData() {
+            val cache: File? = getInstance()?.cacheDir
+            val appDir = File(cache?.parent)
+            if (appDir.exists()) {
+                val children: Array<String> = appDir.list()
+                for (s in children) {
+                    if (s != "lib") {
+                        deleteDir(File(appDir, s))
+                        Log.i("TAG", "File /data/data/APP_PACKAGE/$s DELETED")
+                    }
+                }
+            }
+        }
+
+        private fun deleteDir(dir: File?): Boolean {
+            if (dir != null && dir.isDirectory) {
+                val children: Array<String> = dir.list()
+                for (i in children.indices) {
+                    val success = deleteDir(File(dir, children[i]))
+                    if (!success) {
+                        return false
+                    }
+                }
+            }
+            return dir?.delete() ?: false
+        }
+
+
     }
 
     /**
@@ -119,5 +149,7 @@ class MainApplication : Application() {
             notificationManager?.createNotificationChannel(channel)
         }
     }
+
+
 
 }

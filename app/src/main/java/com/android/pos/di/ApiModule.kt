@@ -6,6 +6,7 @@ import com.android.pos.data.remote.ApiService
 import com.android.pos.data.remote.Constants.AUTH_TOKEN
 import com.android.pos.data.remote.Constants.BASE_URL_NEW
 import com.android.pos.data.remote.NetworkConnectionInterceptor
+import com.squareup.okhttp.HttpUrl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -22,7 +23,7 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object ApiModule {
 
-   // private const val BASE_URL = "https://possoft.io/api/v1/"
+    // private const val BASE_URL = "https://possoft.io/api/v1/"
     public const val BASE_URL = "https://boldpos.site/api/v1/"  // for BOLD POS
     //  private const val BASE_URL = "http://34.205.43.53/api/v1/"
     //private const val BASE_URL = "https://possoft.io/api/v1/"
@@ -33,6 +34,11 @@ object ApiModule {
         @ApplicationContext app: Context
     ) = NetworkConnectionInterceptor(app)
 
+
+    var host: String = ""
+        set(url) {
+            field = HttpUrl.parse(url)!!.host()
+        }
 
     @Provides
     fun getRetrofit(
@@ -45,11 +51,14 @@ object ApiModule {
                 OkHttpClient.Builder().connectTimeout(10000, TimeUnit.MILLISECONDS)
                     .addInterceptor { chain ->
                         chain.proceed(chain.request().newBuilder().also {
+
+
                             val authToken = prefProvider.getValue(AUTH_TOKEN, "")
                             println("authToken ::  $authToken")
                             println("BASE_URL :: ${prefProvider.getValue(BASE_URL_NEW, BASE_URL)}")
                             if (authToken!!.isNotEmpty())
                                 it.addHeader("TOKEN", authToken)
+
                         }.build())
                     }.also { client ->
                         if (BuildConfig.DEBUG) {

@@ -13,12 +13,14 @@
 
     <androidx.appcompat.widget.LinearLayoutCompat
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:orientation="vertical">
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:paddingTop="@dimen/_2sdp"
+            android:paddingBottom="@dimen/_2sdp">
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/imgBack"
@@ -27,7 +29,7 @@
                 android:layout_centerVertical="true"
                 android:layout_gravity="center"
                 android:background="?attr/selectableItemBackground"
-                android:padding="@dimen/_4sdp"
+                android:padding="@dimen/_5sdp"
                 app:srcCompat="@drawable/ic_cancel_black"
                 app:tint="@color/txtColor" />
 
@@ -48,7 +50,8 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                tools:ignore="RelativeOverlap">
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/txtRefresh"
@@ -58,14 +61,17 @@
 
                     android:layout_gravity="center"
                     android:layout_marginEnd="@dimen/_5sdp"
+                    android:background="@drawable/button_action_hover"
                     android:gravity="center"
-                    android:paddingStart="@dimen/_15sdp"
-                    android:paddingTop="@dimen/_5sdp"
+                    android:paddingStart="@dimen/_10sdp"
+                    android:paddingTop="@dimen/_8sdp"
                     android:paddingEnd="@dimen/_10sdp"
-                    android:paddingBottom="@dimen/_5sdp"
+                    android:paddingBottom="@dimen/_8sdp"
                     android:text="@string/refresh"
-                    android:textColor="@color/btnColor"
-                    android:textSize="@dimen/_6mdpi" />
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/_7mdpi"
+                    app:textAllCaps="true" />
+
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/txtHome"
@@ -74,14 +80,18 @@
                     android:layout_height="wrap_content"
                     android:layout_alignParentEnd="true"
                     android:layout_gravity="center"
+                    android:layout_marginEnd="@dimen/_5sdp"
+                    android:background="@drawable/button_action_hover"
                     android:gravity="center"
+                    android:paddingHorizontal="@dimen/padding_home_button"
                     android:paddingStart="@dimen/_10sdp"
-                    android:paddingTop="@dimen/_5sdp"
+                    android:paddingTop="@dimen/_8sdp"
                     android:paddingEnd="@dimen/_10sdp"
-                    android:paddingBottom="@dimen/_5sdp"
+                    android:paddingBottom="@dimen/_8sdp"
                     android:text="@string/tv_home"
-                    android:textColor="@color/btnColor"
-                    android:textSize="@dimen/_6mdpi" />
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/_7mdpi"
+                    app:textAllCaps="true" />
 
             </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -95,9 +105,9 @@
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/rvDeviceList"
-            android:layout_marginTop="@dimen/_15sdp"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_marginTop="@dimen/_15sdp"
             android:orientation="vertical"
             android:visibility="visible"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"

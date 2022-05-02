@@ -118,7 +118,7 @@ class PrefProvider @Inject constructor(@ApplicationContext context: Context) {
 
     fun setClear() {
         openPref()
-        val prefsPrivateEditor = sharedPreferences!!.edit().clear().apply()
+        val prefsPrivateEditor = sharedPreferences!!.edit().clear().commit()
 //        prefsPrivateEditor!!.clear().apply()
         sharedPreferences = null
     }

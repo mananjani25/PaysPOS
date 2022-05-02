@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.os.Build
 import android.os.StrictMode
 import android.util.Base64
 import android.util.Log
@@ -1139,9 +1140,9 @@ class DashBoardCategoryViewModel @Inject constructor(
                     cartModel.items?.forEach { item ->
                         totalCount += item.itemQuantity
                         subTotalPrice += if (!item.isManualSales) {
-                            (item.price * item.itemQuantity)- (item.discountPrice * item.itemQuantity)
+                            (item.price * item.itemQuantity) - (item.discountPrice * item.itemQuantity)
                         } else {
-                            (item.price * item.itemQuantity)- item.discountPrice
+                            (item.price * item.itemQuantity) - item.discountPrice
                         }
 
                         taxCalculation(item)
@@ -1156,7 +1157,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                     serviceChargeCalculationModel(cartModel)
 
                     totalDiscount = cartModel.discountPrice
-                    subTotalPrice -=cartModel.discountPrice
+                    subTotalPrice -= cartModel.discountPrice
                     order_note = cartModel.note
                     cartModel.items!!.forEach {
                         totalDiscount += if (!it.isManualSales) {
@@ -2306,11 +2307,15 @@ class DashBoardCategoryViewModel @Inject constructor(
 
 
                                 try {
-                                    Log.e(TAG,"getURL  ${prefProvider.getValue(
-                                        Constants.VENUE_LOGO_URL,
-                                        ""
-                                    )}")
-                                   if (it.data.logo != null) {
+                                    Log.e(
+                                        TAG, "getURL  ${
+                                            prefProvider.getValue(
+                                                Constants.VENUE_LOGO_URL,
+                                                ""
+                                            )
+                                        }"
+                                    )
+                                    if (it.data.logo != null) {
                                         if (it.data.logo.logoUrl.isNotEmpty() && !prefProvider.getValue(
                                                 Constants.VENUE_LOGO_URL,
                                                 ""
@@ -2322,7 +2327,8 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                                             StrictMode.setThreadPolicy(policy)
 
-                                            val bitmap = getBitmapFromURL(it.data.logo.thumb.thumbUrl)
+                                            val bitmap =
+                                                getBitmapFromURL(it.data.logo.thumb.thumbUrl)
                                             var baseBitmap =
                                                 bitmap?.let { it1 -> encodeTobase64(it1) }
                                             if (baseBitmap?.isNotEmpty() == true) {
@@ -2414,11 +2420,23 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 } else prefProvider.setValue(Constants.MAGENSA_SETTINGS, "")
 
                                 MainApplication.getInstance()
-                                    ?.let { it1 -> Pref.setValue(it1,Constants.MAGENSA_SETTINGS1, "") }
+                                    ?.let { it1 ->
+                                        Pref.setValue(
+                                            it1,
+                                            Constants.MAGENSA_SETTINGS1,
+                                            ""
+                                        )
+                                    }
 
-
-                                MainApplication.getInstance()
-                                    ?.let { it1 -> Pref.setValue(it1,Constants.MAGENSA_SETTINGS1,Gson().toJson(it.data.magensaSettings[0])) }
+                                if (it.data.magensaSettings.isNotEmpty())
+                                    MainApplication.getInstance()
+                                        ?.let { it1 ->
+                                            Pref.setValue(
+                                                it1,
+                                                Constants.MAGENSA_SETTINGS1,
+                                                Gson().toJson(it.data.magensaSettings[0])
+                                            )
+                                        }
 
                             }
 
@@ -2824,6 +2842,19 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     fun downloadFinished(value: Boolean) {
         isLoading.value = value
+    }
+
+    fun clearAppData() {
+
+        viewModelScope.launch {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                MainApplication.getInstance()?.deleteSharedPreferences("POS Android")
+            }
+            //MainApplication.clearApplicationData()
+
+        }
+
+
     }
 
 }

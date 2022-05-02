@@ -471,19 +471,13 @@ class MethodUtils {
             return m.matches()
         }
 
-        fun clearAppData(requireActivity: FragmentActivity) {
+        fun clearAppData() {
             try {
-                // clearing app data
-                if (Build.VERSION_CODES.KITKAT <= Build.VERSION.SDK_INT) {
-                    (requireActivity.getSystemService(ACTIVITY_SERVICE) as ActivityManager?)?.clearApplicationUserData() // note: it has a return value!
-                } else {
 
-                    val packageName: String =
-                        requireActivity.packageName
-                    Log.e("packageName",packageName)
-                    val runtime = Runtime.getRuntime()
-                    runtime.exec("pm clear $packageName")
-                }
+
+                val runtime = Runtime.getRuntime()
+                runtime.exec("pm clear com.android.pos")
+
             } catch (e: java.lang.Exception) {
                 e.printStackTrace()
             }

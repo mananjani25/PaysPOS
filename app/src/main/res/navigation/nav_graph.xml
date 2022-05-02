@@ -1288,6 +1288,9 @@
         <action
             android:id="@+id/action_hardware_to_magtekProFragment"
             app:destination="@id/magtekProFragment" />
+        <action
+            android:id="@+id/action_hardware_to_cardRederDialog"
+            app:destination="@id/cardRederDialog" />
     </fragment>
     <dialog
         android:id="@+id/printerTypeSelection"
@@ -1501,6 +1504,17 @@
         android:id="@+id/mergeTableDialogOld"
         android:name="com.android.pos.ui.dialog.MergeTableDialog"
         android:label="MergeTableDialog" />
+    <dialog
+        android:id="@+id/cardRederDialog"
+        android:name="com.android.pos.ui.dialog.CardRederDialog"
+        android:label="CardRederDialog" >
+        <action
+            android:id="@+id/action_cardRederDialog_to_magtekFragment"
+            app:destination="@id/magtekFragment" />
+        <action
+            android:id="@+id/action_cardRederDialog_to_magtekProFragment"
+            app:destination="@id/magtekProFragment" />
+    </dialog>
 
 
 </navigation>

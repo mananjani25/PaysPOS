@@ -314,6 +314,7 @@ class MagtekFragment : Fragment(), ItemCallback, magtekCallback {
     @SuppressLint("MissingPermission")
     private fun addCardReader(bluetoothDevice: BluetoothDevice) {
 
+        if (view != null)
         viewModel.cardReaderById(bluetoothDevice.address.replace(":", ""))
             .observe(viewLifecycleOwner) {
 
