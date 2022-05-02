@@ -22,7 +22,7 @@
                 android:layout_gravity="center"
                 android:padding="@dimen/_5sdp"
                 app:srcCompat="@drawable/ic_cancel_white"
-                 />
+                />
 
             <androidx.appcompat.widget.AppCompatTextView
                 style="@style/CustomFontSemiBold"
@@ -97,6 +97,16 @@
                 android:layout_gravity="center"
                 android:layout_weight="1"
                 android:visibility="gone" />
+            <TextView
+                android:id="@+id/txt_nodata"
+                style="@style/CustomFontBold"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center"
+                android:text="No Taxes available"
+                android:textColor="@color/txtColor"
+                android:textSize="@dimen/_7mdpi"
+                android:visibility="visible" />
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rvTaxes"
