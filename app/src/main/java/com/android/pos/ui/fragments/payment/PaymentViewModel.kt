@@ -1126,6 +1126,7 @@ open class PaymentViewModel @Inject constructor(
         val orderItemModifierAttributeList: ArrayList<OrderItemModifierAttribute> =
             arrayListOf()
 
+        Log.e(TAG,"getmodifiers:  ${Gson().toJson(item.modifiers)}")
         item.modifiers.forEach {
 
             val orderItemModifierAttribute = OrderItemModifierAttribute().apply {
