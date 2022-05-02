@@ -278,10 +278,12 @@ class ActiveOrderFragment(
                     Status.SUCCESS -> {
                         ProgressUtils.dismissProgressDialog()
                         resource.data?.let {
+
                             if (it.data.orders.isNotEmpty()) {
                                 binding.rvOpenOrder.visibility = View.VISIBLE
                                 binding.llNoData.visibility = View.GONE
                                 val data = it.data.orders
+
                                 adapter.add(data)
                                 Log.e("DATA", data.size.toString())
                             } else {
@@ -392,7 +394,7 @@ class ActiveOrderFragment(
                     prefProvider.saveCustomerData(TbCustomer.customerMapping(order.customer))
                 }
 
-                Log.e(TAG,"getOrder  ${Gson().toJson(order)}")
+                Log.e(TAG, "getOrder  ${Gson().toJson(order)}")
                 dashboardViewModel.addCart(
                     cartModel(order)
                 )
@@ -409,6 +411,7 @@ class ActiveOrderFragment(
                         requireContext()
                     )
                 )
+                Log.e(TAG, "getTotalDiscount  ${order.totalDiscount}")
                 bundle.putDouble("subTotalPrice", order.subTotal)
                 bundle.putDouble("totalTax", order.totalTaxAmount)
                 bundle.putDouble("totalDiscount", order.totalDiscount)
@@ -1388,8 +1391,7 @@ class ActiveOrderFragment(
                             }
                         )
                     )
-                }
-                else{
+                } else {
 
                     builder.addText(
                         padLine(

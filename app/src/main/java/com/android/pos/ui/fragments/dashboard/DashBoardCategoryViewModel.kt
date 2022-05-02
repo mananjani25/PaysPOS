@@ -115,6 +115,9 @@ class DashBoardCategoryViewModel @Inject constructor(
     private val _updateOrder = MutableLiveData<Event<Any?>>()
     val updateOrder: LiveData<Event<Any?>> = _updateOrder
 
+    var openOrderUpdate: Boolean ? =false
+
+
     fun getCustomerReceiptSettings() = posRepository.getCustomerReceiptSettings()
 
     fun getKitchenReceiptSettings() = posRepository.getKitchenReceiptSettings()
@@ -122,6 +125,10 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     fun venueDataLocal(): LiveData<Resource<List<CategoryWithInventory?>>> {
         return posRepository.venueDataLocal()
+    }
+
+    fun setOpenOrderUpdate(value: Boolean) {
+        this.openOrderUpdate = value
     }
 
     fun orderTypes(): LiveData<Resource<List<TbOrderType>>> {
@@ -640,6 +647,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                         Log.e(TAG, "DeleteIndex  ${index}")
                         if (index != -1) {
                             val model = cartList[0].items?.get(index)
+                            Log.e(TAG, "getItem  ${Gson().toJson(cartList[0].items?.get(index))}")
                             if (model != null) {
                                 //delete from cart
                                 if (item?.isEdited == true) {
@@ -1138,6 +1146,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                 if (reorder) {
                     cartModel.items?.forEach { item ->
+
                         totalCount += item.itemQuantity
                         subTotalPrice += if (!item.isManualSales) {
                             (item.price * item.itemQuantity) - (item.discountPrice * item.itemQuantity)
@@ -1210,19 +1219,22 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                 } else {
                     cartModel.items?.forEach { item ->
-                        totalCount += item.itemQuantity
-                        subTotalPrice += if (!item.isManualSales) {
-                            (item.price * item.itemQuantity) - (item.discountPrice * item.itemQuantity)
-                        } else {
-                            (item.price * item.itemQuantity) - item.discountPrice
-                        }
+                        if (!item.isDestroy) {
 
-                        taxCalculation(item)
+                            totalCount += item.itemQuantity
+                            subTotalPrice += if (!item.isManualSales) {
+                                (item.price * item.itemQuantity) - (item.discountPrice * item.itemQuantity)
+                            } else {
+                                (item.price * item.itemQuantity) - item.discountPrice
+                            }
+
+                            taxCalculation(item)
 
 
-                        item.modifiers.forEach {
-                            subTotalPrice += (it.price * it.itemQuantity)
+                            item.modifiers.forEach {
+                                subTotalPrice += (it.price * it.itemQuantity)
 
+                            }
                         }
                     }
 
@@ -1856,6 +1868,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                 orderItemsAttribute.price = item.price
                 orderItemsAttribute.quantity = item.itemQuantity
                 orderItemsAttribute.terminalId = cartModel.terminalId
+                orderItemsAttribute.isFired = cartModel.isFired
 
 
                 Log.e(TAG, "TimeStampMo: ${item.timeStamp}")

@@ -117,7 +117,8 @@ class RefundItemListAdapter(val viewModel: TransactionDetailsViewModel) :
                 "bind: [" + absoluteAdapterPosition + "] loyaltyAmountPerItem : " + loyaltyAmountPerItem
             )
 
-            var totalItemPrice: Double = (item.totalPrice - item.discountAmount)
+            var totalItemPrice: Double = 0.0
+            totalItemPrice = item.price * item.quantity
 
             item.orderItemTaxes.forEach { tax ->
                 tax.taxTotalAmount.let {
@@ -129,6 +130,9 @@ class RefundItemListAdapter(val viewModel: TransactionDetailsViewModel) :
             item.orderItemModifiers.forEach { modifiers ->
                 totalItemPrice += (modifiers.price * modifiers.quantity)
             }
+
+            totalItemPrice -= item.discountAmount
+
             Log.d(
                 "yash",
                 "bind: [" + absoluteAdapterPosition + "] totalItemPrice : " + totalItemPrice

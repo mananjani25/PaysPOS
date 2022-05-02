@@ -285,7 +285,7 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
             paymentOrderDetailsResponse.data.order.order_items,
             serviceChargesList,
             MethodUtils.calculateCashDiscount(
-                paymentOrderDetailsResponse.data.sub_total + paymentOrderDetailsResponse.data.tax_amount + paymentOrderDetailsResponse.data.service_charge_amount,
+                (paymentOrderDetailsResponse.data.sub_total + paymentOrderDetailsResponse.data.tax_amount + paymentOrderDetailsResponse.data.service_charge_amount) - paymentOrderDetailsResponse.data.loyalty_amount!!,
                 prefProvider,
                 requireContext()
             ),

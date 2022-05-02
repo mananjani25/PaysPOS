@@ -56,7 +56,7 @@
                     android:paddingEnd="@dimen/_8sdp"
                     android:paddingBottom="@dimen/_7sdp"
                     android:text="Done"
-                    android:textColor="@color/txtColor"
+                    android:textColor="@color/white"
                     android:textSize="@dimen/_7mdpi" />
 
                 <TextView
@@ -73,7 +73,7 @@
                     android:paddingEnd="@dimen/_8sdp"
                     android:paddingBottom="@dimen/_7sdp"
                     android:text="Cancel"
-                    android:textColor="@color/txtColor"
+                    android:textColor="@color/white"
                     android:textSize="@dimen/_7mdpi" />
 
                 <LinearLayout
@@ -112,7 +112,7 @@
                             android:paddingEnd="@dimen/_12sdp"
                             android:paddingBottom="@dimen/_7sdp"
                             android:text="1"
-                            android:textColor="@color/txtColor"
+                            android:textColor="@color/white"
                             android:textSize="@dimen/_7mdpi" />
 
 
@@ -140,39 +140,6 @@
                 layout="@layout/divider"
                 android:layout_width="match_parent"
                 android:layout_height="1dp" />
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rvVariationList"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
-                app:spanCount="4" />
-
-            <include
-                android:id="@+id/dividerLine"
-                layout="@layout/divider"
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_marginTop="@dimen/_5sdp"
-                android:layout_marginBottom="@dimen/_5sdp" />
-
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rvModifiersList"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="@dimen/_4sdp"
-                android:layout_marginEnd="@dimen/_4sdp"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                app:spanCount="4" />
-
-            <include
-                android:id="@+id/dividerLine2"
-                layout="@layout/divider"
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_marginTop="@dimen/_5sdp"
-                android:layout_marginBottom="@dimen/_5sdp" />
-
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -230,6 +197,47 @@
 
 
             </LinearLayout>
+
+            <include
+                android:id="@+id/dividerUpdate"
+                layout="@layout/divider"
+                android:layout_width="match_parent"
+                android:layout_height="1dp" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvVariationList"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+                app:spanCount="4" />
+
+            <include
+                android:id="@+id/dividerLine"
+                layout="@layout/divider"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="@dimen/_5sdp"
+                android:layout_marginBottom="@dimen/_5sdp" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvModifiersList"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/_4sdp"
+                android:layout_marginEnd="@dimen/_4sdp"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                app:spanCount="4" />
+
+            <include
+                android:id="@+id/dividerLine2"
+                layout="@layout/divider"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="@dimen/_5sdp"
+                android:layout_marginBottom="@dimen/_5sdp" />
+
+
+
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>

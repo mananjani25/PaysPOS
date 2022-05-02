@@ -11,6 +11,7 @@ import com.android.pos.R
 import com.android.pos.data.entities.TbCategory
 import com.android.pos.databinding.ViewCategoryBinding
 import com.android.pos.utils.callback.ItemCallback
+import com.android.pos.utils.extensions.gone
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -35,6 +36,7 @@ class CategoriesListAdapter(private val isChoose: Boolean) :
                 binding.firstviewCategory.visibility = View.GONE
             }
             if (isChoose) {
+                binding.layoutMenu.imgOrderMenu.gone()
                 if (mpos == absoluteAdapterPosition) {
                     binding.imageCheck.setImageResource(R.drawable.ic_outline_radio_button_checked)
 

@@ -35,7 +35,7 @@ open class PaymentViewModel @Inject constructor(
 ) : ViewModel() {
 
     private val TAG = "PaymentViewModel"
-     var isUpdateOrder: Boolean = false
+    var isUpdateOrder: Boolean = false
     private var onlySave: Boolean = false
     private var totalPayAmounts: Double = 0.0
     private var orderId: Int? = null
@@ -144,7 +144,7 @@ open class PaymentViewModel @Inject constructor(
                                 } else {
                                     if (createOrderResponse.data.order.orderType != "Dine In" && response.data.order.payments[response.data.order.payments.size - 1].paymentType != "Card") {
                                         cashLogApi(createOrderResponse, "in")
-                                    }else{
+                                    } else {
                                         _data.value = Event(createOrderResponse)
                                     }
                                 }
@@ -1043,9 +1043,9 @@ open class PaymentViewModel @Inject constructor(
 
             orderItemsAttribute.category_id = item.categoryId
 
-            if (item.isManualSales){
+            if (item.isManualSales) {
                 orderItemsAttribute.discountAmount = (item.discountPrice)
-            }else{
+            } else {
                 orderItemsAttribute.discountAmount = (item.discountPrice * item.itemQuantity)
             }
 
@@ -1126,6 +1126,7 @@ open class PaymentViewModel @Inject constructor(
         val orderItemModifierAttributeList: ArrayList<OrderItemModifierAttribute> =
             arrayListOf()
 
+        Log.e(TAG,"getmodifiers:  ${Gson().toJson(item.modifiers)}")
         item.modifiers.forEach {
 
             val orderItemModifierAttribute = OrderItemModifierAttribute().apply {
@@ -1264,9 +1265,9 @@ open class PaymentViewModel @Inject constructor(
                     var modifierPrice = 0.0
 
                     var price = 0.0
-                    price = if (!items.isManualSales){
+                    price = if (!items.isManualSales) {
                         (items.price * items.itemQuantity) - (items.discountPrice * items.itemQuantity)
-                    }else {
+                    } else {
                         (items.price * items.itemQuantity) - (items.discountPrice)
                     }
 
@@ -1667,7 +1668,7 @@ open class PaymentViewModel @Inject constructor(
                                 } else {
                                     if (response.data.order.payments[response.data.order.payments.size - 1].paymentType != "Card") {
                                         cashLogApi(createOrderResponse, "in")
-                                    }else{
+                                    } else {
                                         _data.value = Event(createOrderResponse)
                                     }
                                 }

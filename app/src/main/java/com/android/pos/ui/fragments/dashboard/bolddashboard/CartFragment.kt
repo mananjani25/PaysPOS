@@ -119,7 +119,7 @@ class CartFragment(
             updateBundle = arguments?.getBundle("updateBundle")
         }
 
-        if(arguments?.getBoolean("reorder")!=null){
+        if (arguments?.getBoolean("reorder") != null) {
             reorder = arguments?.getBoolean("reorder")!!
         }
         if (arguments?.getBoolean("isFromPayment") != null) {
@@ -141,7 +141,7 @@ class CartFragment(
             ?.observe(viewLifecycleOwner) { it ->
                 if (it.getBundle("updateBundle") != null) {
                     updateBundle = it.getBundle("updateBundle")
-                    isOrderUpdate = updateBundle?.getBoolean("update")?:false
+                    isOrderUpdate = updateBundle?.getBoolean("update") ?: false
                     Log.e(TAG, "isOrderUpdateReq:  $isOrderUpdate")
                     if (isOrderUpdate) {
                         orderId = updateBundle?.getInt("orderId")
@@ -484,7 +484,7 @@ class CartFragment(
                             resources.getDimension(R.dimen._60sdp).toInt()
                         binding.relativeOrderNotes?.visibility = View.VISIBLE
                         binding.txtOrderNote?.text = viewModel.order_note
-                    }else{
+                    } else {
                         binding.liinearInfoLayout.layoutParams.height =
                             resources.getDimension(R.dimen._50sdp).toInt()
                         binding.relativeOrderNotes?.visibility = View.GONE
@@ -681,7 +681,7 @@ class CartFragment(
                                 resources.getDimension(R.dimen._50sdp).toInt()
                             binding.relativeOrderNotes?.visibility = View.VISIBLE
                             binding.txtOrderNote?.text = viewModel.order_note
-                        }else{
+                        } else {
                             binding.liinearInfoLayout.layoutParams.height =
                                 resources.getDimension(R.dimen._50sdp).toInt()
                             binding.relativeOrderNotes?.visibility = View.GONE
@@ -794,6 +794,10 @@ class CartFragment(
                     binding.rvCartList.visible()
 
                     if (it.isNotEmpty()) {
+                        viewModel.destroyedList.clear()
+                        it[0].items?.filter { item -> item.isDestroy }?.let {
+                            viewModel.destroyedList.addAll(it)
+                        }
                         if (isFromPayment) {
                             viewModel.selectedCustomer = prefProvider.getCustomerData()
                             if (MethodUtils.isEnableCashDiscount(requireContext())) {
@@ -819,9 +823,19 @@ class CartFragment(
                         binding.rvCartList.removeAllViews()
                         binding.rvCartList.removeAllViewsInLayout()
 
+                        var filterItems = arrayListOf<TbItem>()
+                        it[0].items?.filter {
+                            !it.isDestroy
+                        }.let {
 
-                        it[0].items?.toCollection(arrayListOf())
-                            ?.let { it1 -> cartAdapter.setList(it1) }
+                            filterItems.addAll(it!!.toCollection(arrayListOf()))
+                        }
+
+                        cartAdapter.setList(filterItems)
+                        /*it[0].items?.toCollection(arrayListOf())
+                            ?.let { it1 ->
+                                cartAdapter.setList(it1)
+                            }*/
 
                         cartlist = it as ArrayList<CartModel>
                         viewModel.itemCalculationCartModel(
@@ -1020,7 +1034,7 @@ class CartFragment(
         Log.e(TAG, "onDineinItemClick ${position}")
 
         viewModel.selectedItemPositionDine = position
-       // viewModel.dineInHeaderPosition = headerPosition
+        // viewModel.dineInHeaderPosition = headerPosition
         viewModel.dineInSelectedItemHeaderPos = headerPosition
 
         itemClickListner?.onItemUpdate(item)
@@ -1310,7 +1324,7 @@ class CartFragment(
             if (cartlist.isEmpty()) {
                 popupMenu.menu.findItem(R.id.menu_discount).isVisible = false
                 popupMenu.menu.findItem(R.id.menu_order_note).isVisible = false
-                popupMenu.menu.findItem(R.id.menu_clear_cart).isVisible =false
+                popupMenu.menu.findItem(R.id.menu_clear_cart).isVisible = false
             }
 
             if (prefProvider.getValueInt(CUSTOMER_ID, -1) == -1) {
@@ -1374,14 +1388,17 @@ class CartFragment(
                 prefProvider.setValue(Constants.TIP, "")
                 prefProvider.setValue(Constants.TAX_CHARGE, "")
                 prefProvider.setValue(Constants.SERVICE_CHARGE, "")
-                if(isOrderUpdate){
-                    var bundle:Bundle = Bundle()
+                if (isOrderUpdate) {
+                    var bundle: Bundle = Bundle()
                     bundle.putInt("orderId", orderId!!)
                     bundle.putInt("paymentId", paymentId!!)
                     bundle.putString("paymentOfflineId", paymentOfflineId)
                     bundle.putString("orderOfflineId", orderOfflineId)
-                    findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_paymentBoldPosFragment,bundle)
-                }else{
+                    findNavController().navigate(
+                        R.id.action_dashboardCategoryBoldPOS_to_paymentBoldPosFragment,
+                        bundle
+                    )
+                } else {
                     findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_paymentBoldPosFragment)
                 }
             } else {

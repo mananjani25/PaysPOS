@@ -137,6 +137,9 @@
         <action
             android:id="@+id/action_createItem_to_editVariationDialog"
             app:destination="@id/editVariationDialog" />
+        <action
+            android:id="@+id/action_createItem_to_modifiersDialog"
+            app:destination="@id/modifiers" />
 
         <argument
             android:name="productCode"
@@ -1118,6 +1121,11 @@
             android:id="@+id/action_dineInFragment_to_menuFragment"
             app:destination="@id/menuFragment"
             app:enterAnim="@anim/nav_default_enter_anim" />
+        <action
+            android:id="@+id/action_dineInFragment_to_dashboardCategoryBoldPOS"
+            app:destination="@id/dashboardCategoryBoldPOS"
+            app:popUpTo="@id/dineInFragment"
+            app:popUpToInclusive="true" />
     </fragment>
     <fragment
         android:id="@+id/dineInGuestFragment"

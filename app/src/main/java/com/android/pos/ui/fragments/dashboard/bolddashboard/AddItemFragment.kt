@@ -176,14 +176,30 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
 
             item.itemQuantity = qty
 
-            Log.e("TAG","price - ${item.price.toString()+" "+ item.variationsAttributes}")
-            if (item.price == 0.0 && item.variationsAttributes.isNotEmpty()) {
+
+
+            var isPriceNull=true
+
+          /*  item.variationsAttributes.forEach {
+                if (it.price!=0.00){
+                    adapter.getSelectedModifiers().forEach {
+                        if (it.price!=0.00)
+                        {
+                            // item.price=it.price
+                            isPriceNull=false
+                        }
+                    }
+                    return@forEach
+                }
+            }*/
+            Log.e("TAG", "price - ${item.price.toString() + " variatiions :  " + item.variationsAttributes + " modifiers : "}")
+          /*  if (item.price == 0.0 && item.variationsAttributes.isNotEmpty()*//*&&isPriceNull*//*) {
                 AlertUtils.showCustomAlert(
                     requireActivity(),
                     "Please enter atleast one price of item"
                 )
                 return@setOnClickListener
-            }
+            }*/
 
 
 
@@ -342,7 +358,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
 
         binding.txtRemoveItem.setOnClickListener {
 
-            item.isEdited = false
+            makeItemEdited(item)
 
             if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == DINE_IN) {
 
@@ -559,10 +575,12 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
             binding.txtRemoveItem.visibility = View.VISIBLE
             binding.txtDone.text = "Update"
 
+
         } else {
             binding.txtRemoveItem.visibility = View.GONE
             binding.txtAddNote.visibility = View.GONE
             binding.txtAddDiscount.visibility = View.GONE
+            binding.dividerUpdate.root.visibility = View.GONE
         }
 
     }
@@ -773,5 +791,13 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
         }
     }*/
 
+    }
+
+    private fun makeItemEdited(item: TbItem) {
+        Log.e(TAG,"isOrderUpdateOpen:  ${Gson().toJson(viewModel.openOrderUpdate)}")
+        if (viewModel.openOrderUpdate == true) {
+            //for open order and edit cart
+            item.isEdited = true
+        }
     }
 }
