@@ -10,6 +10,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.appcompat.widget.PopupMenu
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
@@ -33,7 +34,9 @@ import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.AmountTextWatcher
 import com.android.pos.utils.MethodUtils.Companion.isDoubleClick
 import com.android.pos.utils.ProgressUtils
+import com.android.pos.utils.callback.ItemCallback
 import com.android.pos.utils.callback.UpdateVariationCallback
+import com.android.pos.utils.extensions.alert
 import com.android.pos.utils.extensions.getNavigationResultLiveData
 import com.android.pos.utils.extensions.liveSnackBar
 import com.bumptech.glide.Glide
@@ -48,7 +51,7 @@ import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback {
+class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback , ItemCallback {
 
     private var productCode: String? = ""
     private var imagePath: String? = ""
@@ -393,7 +396,7 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback {
 
         adapter = ModifierSetsListAdapter(true)
         binding.rvModifiersList.adapter = adapter
-
+        adapter.setCallback(this)
         variationListAdapter = VariationListAdapter(viewModel)
         variationListAdapter.setCallback(this)
         binding.rvVariationList.adapter = variationListAdapter
@@ -665,4 +668,39 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback {
             .format(DecodeFormat.DEFAULT).priority(Priority.IMMEDIATE).centerCrop()
             .into(binding.imgItem)
     }
+
+    override fun onItemClickListener(view: View?, pos: Int) {
+        val popupMenu = view?.let { PopupMenu(requireContext(), it) }
+        popupMenu?.menuInflater?.inflate(R.menu.edit_delete_menu, popupMenu.menu)
+        popupMenu?.menu?.findItem(R.id.menu_delete)?.isVisible = false
+
+        popupMenu?.setOnMenuItemClickListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.menu_edit -> {
+                    position1 = pos
+                    val bundle = Bundle().apply {
+                        putBoolean("isEdit", true)
+                        putParcelable("modifierObject", adapter.getItem(pos))
+                    }
+                    findNavController().navigate(
+                        R.id.action_createItem_to_editModifiersDialog,
+                        bundle
+                    )
+                }
+            }
+            true
+        }
+        popupMenu?.show()
+    }
+
+    /*if (isDoubleClick()) return
+    position1 = pos
+    val bundle = Bundle().apply {
+        putBoolean("isEdit", true)
+        putParcelable("modifierObject", adapter.getItem(pos))
+    }
+    findNavController().navigate(
+    R.id.action_createItem_to_editModifiersDialog,
+    bundle
+    )*/
 }
