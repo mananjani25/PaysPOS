@@ -131,12 +131,7 @@ class RefundItemListAdapter(val viewModel: TransactionDetailsViewModel) :
                 totalItemPrice += (modifiers.price * modifiers.quantity)
             }
 
-            totalItemPrice -= item.discountAmount
 
-            Log.d(
-                "yash",
-                "bind: [" + absoluteAdapterPosition + "] totalItemPrice : " + totalItemPrice
-            )
 
             var totalServiceCharge = 0.0
             serviceChargeList.forEach {
@@ -148,6 +143,7 @@ class RefundItemListAdapter(val viewModel: TransactionDetailsViewModel) :
                 "yash",
                 "bind: [" + absoluteAdapterPosition + "] totalServiceCharge : " + totalServiceCharge
             )
+
             var cashDiscountDivide = 0.0
             if (paymentType == "Cash") {
                 if (cashdiscountType == "CashDiscount") {
@@ -163,6 +159,11 @@ class RefundItemListAdapter(val viewModel: TransactionDetailsViewModel) :
                 "bind: [" + absoluteAdapterPosition + "] cashDiscountDivide : " + cashDiscountDivide
             )
 
+            Log.d(
+                "yash",
+                "bind: [" + absoluteAdapterPosition + "] totalItemPrice : " + totalItemPrice
+            )
+            totalItemPrice -= item.discountAmount
             totalItemPrice += (totalTax + totalServiceCharge) - orderDiscount - loyaltyAmountPerItem
             if (paymentType == "Cash") {
                 totalItemPrice -= cashDiscountDivide

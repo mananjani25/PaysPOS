@@ -115,7 +115,9 @@ fun View.liveSnackBar(
 
 fun View.showAlert(message: String?) {
     // Snackbar.make(this, snackbarText, timeLength).show()
-    AlertUtils.showCustomAlert(context, message)
+    if (message?.isNotEmpty() == true){
+        AlertUtils.showCustomAlert(context, message)
+    }
 }
 
 fun Context.getRandomMaterialColor(typeColor: String): Int {

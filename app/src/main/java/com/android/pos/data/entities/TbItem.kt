@@ -64,6 +64,7 @@ class TbItem : Parcelable {
     var isEdited: Boolean = false
     var guestItemId: Int? = null
     var isDestroy:Boolean = false
+    var reorder:Boolean = false
 
     var manualSaleId: String = UUID.randomUUID().toString()
 

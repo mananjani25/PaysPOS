@@ -348,7 +348,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     } else {
 
                         val changeValue = (paidAmount - dis_charge_value) - remainingAmount
-                        if (changeValue > 0.0) {
+                        if (Math.round(changeValue) > 0.0) {
                             changeAmtGlobal =
                                 MethodUtils.roundOffAmountDouble(changeValue).toDouble()
                             binding.txtChangeAmount.visible()

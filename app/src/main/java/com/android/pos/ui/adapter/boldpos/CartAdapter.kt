@@ -40,11 +40,16 @@ class CartAdapter : RecyclerView.Adapter<CartAdapter.MyViewHolder>() {
                 binding.tvDiscountRate.visibility = View.VISIBLE
                 binding.txtTotalPrice.strike = true
                 var dPrice = 0.0
-                dPrice = if (!item.isManualSales) {
-                    totalPrice(item) - (item.discountPrice * item.itemQuantity)
-                } else {
+                dPrice = if (item.reorder) {
                     totalPrice(item) - item.discountPrice
+                } else {
+                    if (!item.isManualSales) {
+                        totalPrice(item) - (item.discountPrice * item.itemQuantity)
+                    } else {
+                        totalPrice(item) - item.discountPrice
+                    }
                 }
+
                 MethodUtils.setPriceTextView(binding.tvDiscountRate, dPrice)
             } else {
                 binding.txtTotalPrice.strike = false
@@ -75,7 +80,11 @@ class CartAdapter : RecyclerView.Adapter<CartAdapter.MyViewHolder>() {
         init {
 
             binding.root.setOnClickListener {
-                mCallback.onItemClickListener(it, cartList[bindingAdapterPosition],bindingAdapterPosition)
+                mCallback.onItemClickListener(
+                    it,
+                    cartList[bindingAdapterPosition],
+                    bindingAdapterPosition
+                )
             }
         }
 

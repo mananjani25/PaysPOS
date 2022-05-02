@@ -214,6 +214,7 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
             customer = assignCustomer(order)
             items = inventoryList(order)
             note = order.note
+            reorder = true
             var itemDiscount = 0.0
             items?.forEach {
                 itemDiscount += it.discountPrice
@@ -308,6 +309,7 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
                 sort = 0
                 imageUrl = ""
                 thumbImageUrl = ""
+                reorder = true
                 categoryId = it.categoryId
                 categoryName = ""
                 taxes = taxes(it.orderItemTaxes, order.locationId)
