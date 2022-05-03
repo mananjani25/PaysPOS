@@ -148,13 +148,19 @@ class AssignCustomerOrderFragment : Fragment(), ItemCallback {
             findNavController().navigate(R.id.action_assignCustomerOrderFragment_to_addEditCustomer)
         }
         binding.txtHome.setOnClickListener {
-            var bundle :Bundle = Bundle()
-            bundle.putBoolean("update",arguments?.getBoolean("update")?:false)
-            bundle.putInt("orderId",arguments?.getInt("orderId")!!)
-            bundle.putInt("paymentId",arguments?.getInt("paymentId")!!)
-            bundle.putString("paymentOfflineId",arguments?.getString("paymentOfflineId"))
-            bundle.putString("orderOfflineId",arguments?.getString("orderOfflineId"))
-            findNavController().navigate(R.id.action_assignCustomerOrderFragment_to_dashboard_category_new,bundle)
+            if(arguments!=null){
+
+                var bundle :Bundle = Bundle()
+                bundle.putBoolean("update",arguments?.getBoolean("update")?:false)
+                bundle.putInt("orderId",arguments?.getInt("orderId")!!)
+                bundle.putInt("paymentId",arguments?.getInt("paymentId")!!)
+                bundle.putString("paymentOfflineId",arguments?.getString("paymentOfflineId"))
+                bundle.putString("orderOfflineId",arguments?.getString("orderOfflineId"))
+                findNavController().navigate(R.id.action_assignCustomerOrderFragment_to_dashboard_category_new,bundle)
+            }else{
+                findNavController().navigate(R.id.action_assignCustomerOrderFragment_to_dashboard_category_new)
+            }
+
         }
 
     }

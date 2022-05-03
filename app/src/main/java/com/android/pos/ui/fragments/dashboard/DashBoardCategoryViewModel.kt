@@ -1019,7 +1019,6 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     @SuppressLint("SetTextI18n")
     fun itemCalculationCartModel(
-        reorder: Boolean,
         cartModel: CartModel,
         txtTotalAmount: AppCompatTextView,
         context: Context
@@ -1126,16 +1125,11 @@ class DashBoardCategoryViewModel @Inject constructor(
 
             if (cartModel.items?.isEmpty() == false) {
 
-                if (reorder) {
+                if (cartModel.reorder) {
                     cartModel.items?.forEach { item ->
-
                         totalCount += item.itemQuantity
-                        subTotalPrice += if (!item.isManualSales) {
-                            (item.price * item.itemQuantity) - (item.discountPrice * item.itemQuantity)
-                        } else {
-                            (item.price * item.itemQuantity) - item.discountPrice
-                        }
-
+                        totalDiscount += item.discountPrice
+                        subTotalPrice += (item.price * item.itemQuantity) - item.discountPrice
                         taxCalculation(item)
 
                         item.modifiers.forEach {
@@ -1147,16 +1141,9 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                     serviceChargeCalculationModel(cartModel)
 
-                    totalDiscount = cartModel.discountPrice
+                    totalDiscount += cartModel.discountPrice
                     subTotalPrice -= cartModel.discountPrice
                     order_note = cartModel.note
-                    cartModel.items!!.forEach {
-                        totalDiscount += if (!it.isManualSales) {
-                            (it.discountPrice * it.itemQuantity)
-                        } else {
-                            it.discountPrice
-                        }
-                    }
 
                     var finalTotal = 0.0
                     Log.d(TAG, "reorder: subtotal " + subTotalPrice)
@@ -1202,14 +1189,8 @@ class DashBoardCategoryViewModel @Inject constructor(
                 } else {
                     cartModel.items?.forEach { item ->
                         if (!item.isDestroy) {
-
                             totalCount += item.itemQuantity
-                            subTotalPrice += if (!item.isManualSales) {
-                                (item.price * item.itemQuantity) - (item.discountPrice * item.itemQuantity)
-                            } else {
-                                (item.price * item.itemQuantity) - item.discountPrice
-                            }
-
+                            subTotalPrice += (item.price * item.itemQuantity) - item.discountPrice
                             taxCalculation(item)
 
 

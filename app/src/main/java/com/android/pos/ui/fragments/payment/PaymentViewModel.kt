@@ -1046,7 +1046,11 @@ open class PaymentViewModel @Inject constructor(
             if (item.isManualSales) {
                 orderItemsAttribute.discountAmount = (item.discountPrice)
             } else {
-                orderItemsAttribute.discountAmount = (item.discountPrice * item.itemQuantity)
+                if (cartModel.reorder) {
+                    orderItemsAttribute.discountAmount = (item.discountPrice)
+                } else {
+                    orderItemsAttribute.discountAmount = (item.discountPrice * item.itemQuantity)
+                }
             }
 
             orderItemsAttribute.discountType = item.discountType
@@ -1126,7 +1130,7 @@ open class PaymentViewModel @Inject constructor(
         val orderItemModifierAttributeList: ArrayList<OrderItemModifierAttribute> =
             arrayListOf()
 
-        Log.e(TAG,"getmodifiers:  ${Gson().toJson(item.modifiers)}")
+        Log.e(TAG, "getmodifiers:  ${Gson().toJson(item.modifiers)}")
         item.modifiers.forEach {
 
             val orderItemModifierAttribute = OrderItemModifierAttribute().apply {

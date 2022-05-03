@@ -97,21 +97,32 @@ class TaxesDialog : DialogFragment(), View.OnClickListener {
 
     private fun initObservers() {
 
-        viewModel.enableTaxes.observe(viewLifecycleOwner, {
+        viewModel.enableTaxes.observe(viewLifecycleOwner) {
 
             it?.let { resource ->
                 when (resource.status) {
                     Status.SUCCESS -> {
-                        binding.rvTaxes.visibility = View.VISIBLE
+
+
                         binding.progressCircular.visibility = View.GONE
 
-                        it.data?.let { it1 ->
-                            if (selectedIds?.isNotEmpty() == true) {
-                                it1.forEach { taxData ->
-                                    taxData.isChecked = (selectedIds?.contains(taxData.id.toString()) == true)
+                        if (it.data?.isNotEmpty() == true) {
+                            binding.rvTaxes.visibility = View.VISIBLE
+                            binding.txtNodata.visibility = View.GONE
+
+                            it.data.let { it1 ->
+                                if (selectedIds?.isNotEmpty() == true) {
+                                    it1.forEach { taxData ->
+                                        taxData.isChecked =
+                                            (selectedIds?.contains(taxData.id.toString()) == true)
+                                    }
                                 }
+                                adapter.addList(it1)
                             }
-                            adapter.addList(it1)
+
+                        } else {
+                            binding.rvTaxes.visibility = View.GONE
+                            binding.txtNodata.visibility = View.VISIBLE
                         }
                     }
                     Status.ERROR -> {
@@ -126,6 +137,6 @@ class TaxesDialog : DialogFragment(), View.OnClickListener {
             }
 
 
-        })
+        }
     }
 }
