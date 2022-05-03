@@ -23,6 +23,7 @@ import com.android.pos.databinding.DailogAddTipsBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.adapter.DialogTipsListAdapter
 import com.android.pos.ui.fragments.settings.tip.TipListViewModel
+import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.AmountTextWatcher
 import com.android.pos.utils.MethodUtils
 import com.google.gson.Gson
@@ -255,6 +256,11 @@ class AddTipsDialog : DialogFragment(), DialogTipsListAdapter.DiscountInterface 
 
             val stAmount = binding.edtAmount.text.toString().replace("$", "")
 
+            if (stAmount.isEmpty() && stAmount.toDouble() < 0) {
+                AlertUtils.showCustomAlert(requireContext(), "Please enter tip amount")
+                return@setOnClickListener
+            }
+
             if (stAmount.isNotEmpty() && stAmount != "0.00") {
                 amount = binding.edtAmount.text.toString().replace("$", "").trim().toDouble()
             }
@@ -264,10 +270,13 @@ class AddTipsDialog : DialogFragment(), DialogTipsListAdapter.DiscountInterface 
                 tipID?.let { putInt("tipId", tipID ?: 0) }
 
             }
-            if(isFromTransaction){
+            if (isFromTransaction) {
                 setFragmentResult("request_key_tips", result)
-            }else{
-                requireActivity().supportFragmentManager.setFragmentResult("request_key_tips", result)
+            } else {
+                requireActivity().supportFragmentManager.setFragmentResult(
+                    "request_key_tips",
+                    result
+                )
             }
 
             findNavController().navigateUp()

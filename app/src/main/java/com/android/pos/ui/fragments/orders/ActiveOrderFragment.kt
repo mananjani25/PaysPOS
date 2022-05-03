@@ -174,6 +174,7 @@ class ActiveOrderFragment(
             myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth)
             TimePickerDialog(
                 requireActivity(),
+                android.R.style.Theme_Material_Light_Dialog,
                 startTime,
                 myCalendar2.get(2),
                 myCalendar2.get(2),
@@ -188,6 +189,7 @@ class ActiveOrderFragment(
 
             TimePickerDialog(
                 requireActivity(),
+                android.R.style.Theme_Material_Light_Dialog,
                 endTime,
                 myCalendar3.get(2),
                 myCalendar3.get(2),
@@ -2009,7 +2011,7 @@ class ActiveOrderFragment(
             event.getContentIfNotHandled()?.let {
                 //currentPage = 1
                 DatePickerDialog(
-                    requireActivity(), startDate, myCalendar
+                    requireActivity(), android.R.style.Theme_Material_Light_Dialog,startDate, myCalendar
                         .get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
                     myCalendar.get(Calendar.DAY_OF_MONTH)
 
@@ -2020,17 +2022,21 @@ class ActiveOrderFragment(
     }
 
     private fun endDatePickerObserver() {
-        viewModel.endDateSelection.observe(requireActivity(), { event ->
+        viewModel.endDateSelection.observe(requireActivity()) { event ->
             event.getContentIfNotHandled()?.let {
                 //currentPage = 1
                 DatePickerDialog(
-                    requireActivity(), endDate, myCalendar1
-                        .get(Calendar.YEAR), myCalendar1.get(Calendar.MONTH),
+                    requireActivity(),
+                    android.R.style.Theme_Material_Light_Dialog,
+                    endDate,
+                    myCalendar1
+                        .get(Calendar.YEAR),
+                    myCalendar1.get(Calendar.MONTH),
                     myCalendar1.get(Calendar.DAY_OF_MONTH)
 
                 ).show()
             }
-        })
+        }
     }
 
     private fun searchFilter() {

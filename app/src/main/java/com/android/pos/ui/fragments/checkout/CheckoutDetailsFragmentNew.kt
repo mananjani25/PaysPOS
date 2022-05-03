@@ -667,16 +667,16 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 "%.2f",
                 getCalCashDiscWithAmount(WholetotalPrice, false) / isSelectedCount
             ).toDouble()
-            //   makePaymentCreditCard()
+               makePaymentCreditCard()
 
 
-            magtekModule.stopListner(false)
-
-            if (device == 0) {
-                magtekPaymentCall()
-            } else {
-                magtekProPaymentCall()
-            }
+//            magtekModule.stopListner(false)
+//
+//            if (device == 0) {
+//                magtekPaymentCall()
+//            } else {
+//                magtekProPaymentCall()
+//            }
         }
         binding.llManualCardEntry.setOnClickListener {
             binding.frameLayoutId.visible()

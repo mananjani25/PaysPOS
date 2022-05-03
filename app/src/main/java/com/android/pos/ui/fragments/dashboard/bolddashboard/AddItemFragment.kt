@@ -330,6 +330,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
                 putBoolean("isFromDetails", true)
                 putParcelable("model", item)
                 putDouble("itemOrderDiscount", perItemDiscount)
+                putInt("totalquantity", totalItemswithQuantity)
             }
 
             findNavController().navigate(

@@ -27,8 +27,8 @@ class OpenOrderItemsAdapter :
 
 
             }
-            binding.txtPrice.text = MethodUtils.roundOffAmountString(price)
-            binding.CustomFontRegularStyle.text = MethodUtils.roundOffAmountString(totalPri)
+            binding.txtPrice.text = MethodUtils.roundOffAmount(price)
+            binding.CustomFontRegularStyle.text = MethodUtils.roundOffAmount(totalPri)
 
             binding.model = item
             binding.executePendingBindings()

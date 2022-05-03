@@ -324,7 +324,7 @@ class AddEditCustomer : Fragment() {
         val mDay = c.get(Calendar.DAY_OF_MONTH)
 
         val datePicker: DatePickerDialog =
-            DatePickerDialog(requireContext(), object : DatePickerDialog.OnDateSetListener {
+            DatePickerDialog(requireContext(),android.R.style.Theme_Material_Light_Dialog, object : DatePickerDialog.OnDateSetListener {
                 override fun onDateSet(
                     view: DatePicker?,
                     year: Int,

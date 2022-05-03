@@ -72,7 +72,7 @@ class ServiceChargeList : Fragment(),ItemCallback {
     }
 
     private fun getTaxListObserver() {
-        viewModel.getDiscountList.observe(viewLifecycleOwner, {
+        viewModel.getDiscountList.observe(viewLifecycleOwner) {
 
 
             it?.let { resource ->
@@ -81,7 +81,7 @@ class ServiceChargeList : Fragment(),ItemCallback {
                         ProgressUtils.dismissProgressDialog()
                         binding.rvServiceCharge.visibility = View.VISIBLE
                         resource.data?.let { taxList ->
-                        Collections.reverse(taxList)
+                            Collections.reverse(taxList)
                             setTaxData(taxList)
                         }
                     }
@@ -96,21 +96,21 @@ class ServiceChargeList : Fragment(),ItemCallback {
                     }
                 }
             }
-        })
+        }
     }
 
     private fun notifyAdapter() {
-        viewModel.notifydata.observe(viewLifecycleOwner, { event ->
+        viewModel.notifydata.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
 
                 viewModel.updateData(serviceChargeListadapter.serviceChargeList, it)
             }
-        })
+        }
     }
 
     private fun observeShowProgress() {
 
-        viewModel.showProgress.observe(viewLifecycleOwner, { event ->
+        viewModel.showProgress.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
                 if (it) {
                     ProgressUtils.showProgressDialog(requireActivity())
@@ -118,7 +118,7 @@ class ServiceChargeList : Fragment(),ItemCallback {
                     ProgressUtils.dismissProgressDialog()
                 }
             }
-        })
+        }
 
     }
 
@@ -132,11 +132,11 @@ class ServiceChargeList : Fragment(),ItemCallback {
 
     private fun deleteServiceCharge() {
 
-        viewModel.data.observe(viewLifecycleOwner, { event ->
+        viewModel.data.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
 
 
-            AlertUtils.showCustomAlert(requireActivity(), it.message)
+                AlertUtils.showCustomAlert(requireActivity(), it.message)
                 discountListUpdateDelete.remove(serviceChargeObject)
                 serviceChargeListadapter.addServiceCharge(discountListUpdateDelete)
                 serviceChargeListadapter.notifyItemRemoved(position)
@@ -146,7 +146,7 @@ class ServiceChargeList : Fragment(),ItemCallback {
                 )
 
             }
-        })
+        }
 
     }
 

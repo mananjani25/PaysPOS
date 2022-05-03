@@ -297,7 +297,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 binding.txtHome.visibility = View.GONE
 
 
-                var title = "Split "
+                val title = "Split "
                 viewModel.addSplitToDatabase(
                     title,
                     (paidAmount + tipAmount) - splitChange,

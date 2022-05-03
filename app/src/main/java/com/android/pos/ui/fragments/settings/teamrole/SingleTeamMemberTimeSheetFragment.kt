@@ -108,7 +108,7 @@ class SingleTeamMemberTimeSheetFragment : Fragment() {
             event.getContentIfNotHandled()?.let {
 
                 DatePickerDialog(
-                    requireActivity(), startDate, myCalendar
+                    requireActivity(),android.R.style.Theme_Material_Light_Dialog, startDate, myCalendar
                         .get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
                     myCalendar.get(Calendar.DAY_OF_MONTH)
 
@@ -123,7 +123,7 @@ class SingleTeamMemberTimeSheetFragment : Fragment() {
             event.getContentIfNotHandled()?.let {
 
                 DatePickerDialog(
-                    requireActivity(), endDate, myCalendar1
+                    requireActivity(),android.R.style.Theme_Material_Light_Dialog, endDate, myCalendar1
                         .get(Calendar.YEAR), myCalendar1.get(Calendar.MONTH),
                     myCalendar1.get(Calendar.DAY_OF_MONTH)
 
