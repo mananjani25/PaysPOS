@@ -551,25 +551,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 }
                             }
                         }
-//                        list.forEachIndexed { pos, tbItem ->
-//                            if (item != null) {
-//                                if (tbItem.itemId == item.itemId && checkVariation(
-//                                        tbItem,
-//                                        item
-//                                    ) && checkModifier(tbItem, item)
-//                                ) {
-//                                    //   if (checkModifier(tbItem, item)) {
-//                                    index = pos
-//                                    return@forEachIndexed
-//                                    //  }
-//                                }
-//                            }
-//
-//                            /*if (tbItem.itemId == item.itemId && checkModifier(tbItem, item)) {
-//                            index = pos
-//                            return@forEachIndexed
-//                        }*/
-//                        }
+
                         if (index != -1) {
                             val model = cartList[0].items?.get(index)
                             Log.d(TAG, "cartLogic: " + index)
@@ -601,7 +583,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                             if (item.isEdited) {
                                                 model.isEdited = item.isEdited
                                             }
-                                            itemDiscountApply(model, item)
+                                         //   itemDiscountApply(model, item)
                                         }
 
                                         list[index] = model
