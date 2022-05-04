@@ -8,9 +8,11 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
+import com.android.pos.data.model.HardwareModel
 import com.android.pos.data.remote.Constants
 import com.android.pos.databinding.FragmentHardwareBinding
 import com.android.pos.di.PrefProvider
+import com.android.pos.ui.adapter.HardwareListAdapter
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -18,6 +20,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class Hardware : Fragment() {
     private lateinit var binding: FragmentHardwareBinding
+
     @Inject
     lateinit var prefProvider: PrefProvider
 
@@ -35,8 +38,8 @@ class Hardware : Fragment() {
     }
 
     private fun setUpHeader() {
-        binding.header.txtSave.text=getString(R.string.tv_home)
-        binding.header.txtTitle.text=getString(R.string.hardware)
+        binding.header.txtSave.text = getString(R.string.tv_home)
+        binding.header.txtTitle.text = getString(R.string.hardware)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -66,32 +69,11 @@ class Hardware : Fragment() {
             findNavController().navigate(R.id.action_hardware_to_printerQueue)
         }
         binding.txtCardMachine.setOnClickListener {
-            val device = prefProvider.getValueInt(Constants.MAGTEK_HARDWARE, 0)
-            val width = (resources.displayMetrics.widthPixels * 0.50).toInt()
-            val height = (resources.displayMetrics.heightPixels * 0.25).toInt()
-            activity?.let {
-                MaterialAlertDialogBuilder(it, R.style.MaterialAlertDialogText)
-                    .setTitle("Choose Card Reader Device")
-                    .setSingleChoiceItems(
-                        choices,
-                        device
-                    ) { dialogInterface, i ->
 
-                        Log.e("setSingleChoice pos", i.toString())
+            findNavController().navigate(
+                R.id.action_hardware_to_cardRederDialog
+            )
 
-                        dialogInterface.dismiss()
-                        prefProvider.setValueInt(Constants.MAGTEK_HARDWARE, i)
-
-                        if (i == 0) {
-                            // eDynamo
-                            findNavController().navigate(R.id.action_hardware_to_magtekFragment)
-                        } else {
-                            // DynaFlex
-                            findNavController().navigate(R.id.action_hardware_to_magtekProFragment)
-                        }
-                    }
-                    .show().window?.setLayout(width,height)
-            }
         }
 
 

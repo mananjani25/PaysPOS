@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.os.Build
 import android.os.StrictMode
 import android.util.Base64
 import android.util.Log
@@ -12,6 +13,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.android.pos.MainApplication
 import com.android.pos.data.db.AppDatabase
 import com.android.pos.data.entities.*
 import com.android.pos.data.model.DineInModel
@@ -45,6 +47,7 @@ import com.android.pos.di.PrefProvider
 import com.android.pos.di.RolePermission
 import com.android.pos.utils.Event
 import com.android.pos.utils.MethodUtils
+import com.android.pos.utils.Pref
 import com.android.pos.utils.TimeFormatUtils
 import com.android.pos.utils.statusUtils.Resource
 import com.android.pos.utils.statusUtils.Status
@@ -548,25 +551,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 }
                             }
                         }
-//                        list.forEachIndexed { pos, tbItem ->
-//                            if (item != null) {
-//                                if (tbItem.itemId == item.itemId && checkVariation(
-//                                        tbItem,
-//                                        item
-//                                    ) && checkModifier(tbItem, item)
-//                                ) {
-//                                    //   if (checkModifier(tbItem, item)) {
-//                                    index = pos
-//                                    return@forEachIndexed
-//                                    //  }
-//                                }
-//                            }
-//
-//                            /*if (tbItem.itemId == item.itemId && checkModifier(tbItem, item)) {
-//                            index = pos
-//                            return@forEachIndexed
-//                        }*/
-//                        }
+
                         if (index != -1) {
                             val model = cartList[0].items?.get(index)
                             Log.d(TAG, "cartLogic: " + index)
@@ -598,7 +583,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                             if (item.isEdited) {
                                                 model.isEdited = item.isEdited
                                             }
-                                            itemDiscountApply(model, item)
+                                         //   itemDiscountApply(model, item)
                                         }
 
                                         list[index] = model
@@ -2410,6 +2395,24 @@ class DashBoardCategoryViewModel @Inject constructor(
                                     )
                                 } else prefProvider.setValue(Constants.MAGENSA_SETTINGS, "")
 
+                                MainApplication.getInstance()
+                                    ?.let { it1 ->
+                                        Pref.setValue(
+                                            it1,
+                                            Constants.MAGENSA_SETTINGS1,
+                                            ""
+                                        )
+                                    }
+
+                                if (it.data.magensaSettings.isNotEmpty())
+                                    MainApplication.getInstance()
+                                        ?.let { it1 ->
+                                            Pref.setValue(
+                                                it1,
+                                                Constants.MAGENSA_SETTINGS1,
+                                                Gson().toJson(it.data.magensaSettings[0])
+                                            )
+                                        }
 
                             }
 
@@ -2815,6 +2818,19 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     fun downloadFinished(value: Boolean) {
         isLoading.value = value
+    }
+
+    fun clearAppData() {
+
+        viewModelScope.launch {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                MainApplication.getInstance()?.deleteSharedPreferences("POS Android")
+            }
+            //MainApplication.clearApplicationData()
+
+        }
+
+
     }
 
 }

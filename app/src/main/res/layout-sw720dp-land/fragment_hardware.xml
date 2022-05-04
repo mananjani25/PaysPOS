@@ -12,54 +12,6 @@
 
         <include android:id="@+id/header"
             layout="@layout/view_header_toolbar"/>
-<!--
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <androidx.appcompat.widget.AppCompatImageView
-                android:id="@+id/imgBack"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:layout_gravity="center"
-                android:background="?attr/selectableItemBackground"
-                android:padding="@dimen/_6sdp"
-                app:srcCompat="@drawable/ic_arrow_back"
-                app:tint="@color/txtColor" />
-
-            <androidx.appcompat.widget.AppCompatTextView
-                style="@style/CustomFontBold"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
-                android:layout_gravity="center"
-                android:gravity="center"
-                android:padding="@dimen/_5mdpi"
-                android:text="@string/hardware"
-                android:textColor="@color/txtColor"
-                android:textSize="@dimen/_txtTitle"
-                android:visibility="visible" />
-
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/txtHome"
-                style="@style/CustomFontBold"
-                android:layout_width="wrap_content"
-                android:layout_height="@dimen/_23sdp"
-                android:layout_alignParentEnd="true"
-                android:layout_centerVertical="true"
-                android:layout_gravity="center"
-                android:gravity="center"
-                android:text="@string/tv_home"
-                android:textAllCaps="true"
-                android:textColor="@color/white"
-                android:textSize="@dimen/_5mdpi"
-                android:background="@drawable/button_action_hover"
-                android:paddingHorizontal="@dimen/padding_home_button"
-                tools:ignore="RelativeOverlap" />
-
-        </RelativeLayout>
--->
 
         <include layout="@layout/divider" />
 
@@ -91,7 +43,7 @@
                     android:layout_weight="0.9"
                     android:background="@drawable/border_orange"
                     android:gravity="center"
-                    android:paddingVertical="@dimen/_12sdp"
+                    android:paddingVertical="@dimen/_15sdp"
                     android:text="@string/printer"
                     android:textColor="@color/txtColor"
                     android:textSize="@dimen/_7mdpi" />
@@ -105,7 +57,7 @@
                     android:layout_weight="0.9"
                     android:background="@drawable/background_txt_selector"
                     android:gravity="center"
-                    android:paddingVertical="@dimen/_12sdp"
+                    android:paddingVertical="@dimen/_15sdp"
                     android:text="@string/credit_card_machine"
                     android:textColor="@color/txtColor"
                     android:textSize="@dimen/_7mdpi" />
@@ -119,7 +71,7 @@
                     android:layout_weight="0.9"
                     android:background="@drawable/background_txt_selector"
                     android:gravity="center"
-                    android:paddingVertical="@dimen/_12sdp"
+                    android:paddingVertical="@dimen/_15sdp"
                     android:text="@string/scan_gun"
                     android:textColor="@color/txtColor"
 
@@ -146,7 +98,7 @@
                     android:layout_weight="0.9"
                     android:background="@drawable/background_txt_selector"
                     android:gravity="center"
-                    android:paddingVertical="@dimen/_12sdp"
+                    android:paddingVertical="@dimen/_15sdp"
                     android:text="Printer Queue"
                     android:textColor="@color/txtColor"
 

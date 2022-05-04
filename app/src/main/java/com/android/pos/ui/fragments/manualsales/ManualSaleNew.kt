@@ -168,7 +168,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
         }
 
         binding.layoutHeader.linearSwitchUser.setOnClickListener {
-            var bundle = Bundle()
+            val bundle = Bundle()
             bundle.putBoolean("isSwap", true)
             bundle.putBoolean("isDashboard", false)
             findNavController().navigate(
@@ -425,10 +425,10 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
 
                     viewModel.addCart(mainCartList[0])
 
-                    //viewModel.deleteCart()
+                    viewModel.deleteManualSaleCart()
 
                     viewModel.manualSale(
-                        prefProvider.getValue(Constants.ORDER_TYPE, "").toString(),
+                        prefProvider.getValue(Constants.ORDER_TYPE, TAKEOUT).toString(),
                         prefProvider.getValueInt(
                             Constants.EMPLOYEE_ID, 0
                         )
@@ -470,7 +470,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                 if (cartList != null && cartList!!.isNotEmpty()) {
                     cartList?.forEach { it ->
                         it.isMaual = false
-                        it.orderType = prefProvider.getValue(Constants.ORDER_TYPE, "").toString()
+                        it.orderType = prefProvider.getValue(Constants.ORDER_TYPE, TAKEOUT).toString()
 
                     }
                     viewModel.saveManualSaleData(cartList!!)
@@ -854,12 +854,19 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
             tabItemMOdel.categoryId = manualCategoryId
 
             tabItemMOdel.taxes = taxList
+
+
+            Log.e("ordertypelist",Gson().toJson(viewModel.ordertypelist))
+
             viewModel.ordertypelist.forEach {
-                if (it.orderType == TAKEOUT) {
+                if (it.orderType == prefProvider.getValue(Constants.ORDER_TYPE, "TakeOut").toString()) {
                     tabItemMOdel.orderItemId = it.id
-                    prefProvider.setValue(Constants.ORDER_TYPE, "TakeOut")
+                    Log.e("orderTypeId", it.id.toString())
+                    prefProvider.setValue(Constants.ORDER_TYPE, it.orderType)
                 }
             }
+
+            Log.e("orderTypeId", tabItemMOdel.orderItemId.toString())
 
             viewModel.manualSalecartLogic(cartList, tabItemMOdel, ADD)
             binding.llKeypad.edtItemName.text?.clear()

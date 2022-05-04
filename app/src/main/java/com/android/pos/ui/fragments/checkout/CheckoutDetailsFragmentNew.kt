@@ -688,16 +688,16 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             if(cashDiscountType=="SurCharge"){
                 paymentAmount =  String.format("%.2f", paymentAmount+cashDiscountSurcharge).toDouble()
             }
-            makePaymentCreditCard()
+//            makePaymentCreditCard()
 
 
-//            magtekModule.stopListner(false)
-//
-//            if (device == 0) {
-//                magtekPaymentCall()
-//            } else {
-//                magtekProPaymentCall()
-//            }
+            magtekModule.stopListner(false)
+
+            if (device == 0) {
+                magtekPaymentCall()
+            } else {
+                magtekProPaymentCall()
+            }
         }
         binding.llManualCardEntry.setOnClickListener {
             binding.frameLayoutId.visible()
@@ -1316,31 +1316,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
     }
 
-    private fun showdialog() {
-        val builder: android.app.AlertDialog.Builder =
-            android.app.AlertDialog.Builder(requireContext())
-        builder.setTitle(" Card Reader Not Found")
-        builder.setMessage("Please enter mac address")
 
-        val input = EditText(requireContext())
-        input.hint = "14:42:FC:0B:FB:FF"
-        input.inputType = InputType.TYPE_CLASS_TEXT
-        builder.setView(input)
-
-        builder.setPositiveButton("OK") { dialog, which ->
-            val m_Text = input.text.toString().trim()
-
-            if (m_Text.isEmpty())
-                return@setPositiveButton
-
-            testDevice(m_Text)
-        }
-        builder.setNegativeButton(
-            "Cancel"
-        ) { dialog, which -> dialog.cancel() }
-
-        builder.show()
-    }
 
     private fun testDevice(m_Text: String) {
         if (magtekModule.m_scra?.isDeviceConnected == true) {
@@ -1357,6 +1333,10 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
     }
 
     override fun processStart(message: String, isDismiss: Boolean) {
+
+
+        isInsert = false
+        isCardRev = false
 
         ProgressUtils.setCallback(this)
         if (isDismiss) {

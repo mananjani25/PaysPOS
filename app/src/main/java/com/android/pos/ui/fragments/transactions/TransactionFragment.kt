@@ -176,6 +176,7 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
             myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth)
             TimePickerDialog(
                 requireActivity(),
+                android.R.style.Theme_Material_Light_Dialog,
                 startTime,
                 myCalendar2.get(2),
                 myCalendar2.get(2),
@@ -190,6 +191,7 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
 
             TimePickerDialog(
                 requireActivity(),
+                android.R.style.Theme_Material_Light_Dialog,
                 endTime,
                 myCalendar3.get(2),
                 myCalendar3.get(2),
@@ -215,12 +217,11 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
         setFragmentResultListener("request_key_tips") { requestKey: String, bundle: Bundle ->
             tipAmount = bundle.getDouble("tipAmount")
 
-            if (singleTransaction?.paymentType == "Card"){
+            if (singleTransaction?.paymentType == "Card") {
                 magtekCall(tipAmount)
-            }else {
+            } else {
                 tipCall()
             }
-
 
 
         }
@@ -290,16 +291,21 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
 
 
 
-        if (findNavController().currentBackStackEntry?.savedStateHandle?.getLiveData<Bundle>(KEY)?.value==null)
+        if (findNavController().currentBackStackEntry?.savedStateHandle?.getLiveData<Bundle>(KEY)?.value == null)
             apiCallTimeSheet()
-        else{
+        else {
             findNavController().currentBackStackEntry?.savedStateHandle?.getLiveData<Bundle>(KEY)
                 ?.observe(viewLifecycleOwner) { it ->
-                    it.getString("selectedorderType")?.toInt()?.let { it1 -> binding.includeView.spOrders.setSelection(it1) }
-                    it.getString("selectedtransactionType")?.toInt()?.let { it1 -> binding.includeView.spTransactionTypes.setSelection(it1) }
-                    it.getString("selectedroleType")?.toInt()?.let { it1 -> binding.includeView.spRoles.setSelection(it1) }
-                    it.getString("selectedemployeeType")?.toInt()?.let { it1 -> binding.includeView.spEmployees.setSelection(it1) }
-                    it.getString("selectedterminalType")?.toInt()?.let { it1 -> binding.includeView.spTerminals.setSelection(it1) }
+                    it.getString("selectedorderType")?.toInt()
+                        ?.let { it1 -> binding.includeView.spOrders.setSelection(it1) }
+                    it.getString("selectedtransactionType")?.toInt()
+                        ?.let { it1 -> binding.includeView.spTransactionTypes.setSelection(it1) }
+                    it.getString("selectedroleType")?.toInt()
+                        ?.let { it1 -> binding.includeView.spRoles.setSelection(it1) }
+                    it.getString("selectedemployeeType")?.toInt()
+                        ?.let { it1 -> binding.includeView.spEmployees.setSelection(it1) }
+                    it.getString("selectedterminalType")?.toInt()
+                        ?.let { it1 -> binding.includeView.spTerminals.setSelection(it1) }
                     apiCallTimeSheet()
                 }
         }
@@ -410,8 +416,12 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
             event.getContentIfNotHandled()?.let {
                 currentPage = 1
                 DatePickerDialog(
-                    requireActivity(), startDate, myCalendar
-                        .get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
+                    requireActivity(),
+                    android.R.style.Theme_Material_Light_Dialog,
+                    startDate,
+                    myCalendar
+                        .get(Calendar.YEAR),
+                    myCalendar.get(Calendar.MONTH),
                     myCalendar.get(Calendar.DAY_OF_MONTH)
 
                 ).show()
@@ -425,8 +435,12 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
             event.getContentIfNotHandled()?.let {
                 currentPage = 1
                 DatePickerDialog(
-                    requireActivity(), endDate, myCalendar1
-                        .get(Calendar.YEAR), myCalendar1.get(Calendar.MONTH),
+                    requireActivity(),
+                    android.R.style.Theme_Material_Light_Dialog,
+                    endDate,
+                    myCalendar1
+                        .get(Calendar.YEAR),
+                    myCalendar1.get(Calendar.MONTH),
                     myCalendar1.get(Calendar.DAY_OF_MONTH)
 
                 ).show()
@@ -973,20 +987,22 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
 
                 val amount = refundAmount
 
-                jsonArray =
-                    model.transactionOutput?.token?.let { it1 ->
-                        amount.times(100).let {
-                            magtekRequestUtils.processTokenFirstData(
-                                it.toInt(),
-                                it1,
-                                model.customerTransactionID ?: "",
-                                model.transactionOutput.transactionOutputDetails[0].value,
-                                Constants.CAPTURE
-                            )
+                if (model != null) {
+                    jsonArray =
+                        model.transactionOutput?.token?.let { it1 ->
+                            amount.times(100).let {
+                                magtekRequestUtils.processTokenFirstData(
+                                    it.toInt(),
+                                    it1,
+                                    model.customerTransactionID ?: "",
+                                    model.transactionOutput.transactionOutputDetails[0].value,
+                                    Constants.CAPTURE
+                                )
+                            }
                         }
-                    }
 
-                networkCall(jsonArray, 0)
+                    networkCall(jsonArray, 0)
+                }
             }
 
             // not support CAPTURE

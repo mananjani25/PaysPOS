@@ -88,7 +88,7 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
             if (mData.order.refund_detail.refunded_amount.equals(0.0)) {
 
                 if (mData.payment_type == "Card") {
-                    var totalamount_tip = mData.amount + mData.tips
+                    val totalamount_tip = mData.amount + mData.tips
                     MethodUtils.setRefundPriceTextView(
                         binding.tvTotalRefundAmount,
                         (totalamount_tip)
@@ -114,7 +114,7 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
                     binding.edtAmount.setText((price * 100).toString())
                 } else {
                     val price =
-                        (mData.amount + mData.tips) - mData.order.refund_detail.refunded_amount
+                        (mData.amount ) - mData.order.refund_detail.refunded_amount
                     MethodUtils.setRefundPriceTextView(
                         binding.tvTotalRefundAmount,
                         price
@@ -186,7 +186,7 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
                         binding.edtAmount.setText((price * 100).toString())
                     } else {
                         val price =
-                            (mData.amount + mData.tips) - mData.order.refund_detail.refunded_amount
+                            (mData.amount ) - mData.order.refund_detail.refunded_amount
                         MethodUtils.setRefundPriceTextView(
                             binding.tvTotalRefundAmount,
                             price
@@ -473,18 +473,15 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
                 }
 
             } else {
-                var newPrice = 0.0
-                if (paymentOrderDetailsResponse.data.payment_type == "Card") {
-                    newPrice =
-                        (paymentOrderDetailsResponse.data.amount + paymentOrderDetailsResponse.data.tips) - paymentOrderDetailsResponse.data.order.refund_detail.refunded_amount
+                val newPrice: Double = if (paymentOrderDetailsResponse.data.payment_type == "Card") {
+                    (paymentOrderDetailsResponse.data.amount + paymentOrderDetailsResponse.data.tips) - paymentOrderDetailsResponse.data.order.refund_detail.refunded_amount
                 } else {
-                    newPrice =
-                        paymentOrderDetailsResponse.data.amount - paymentOrderDetailsResponse.data.order.refund_detail.refunded_amount
+                    paymentOrderDetailsResponse.data.amount - paymentOrderDetailsResponse.data.order.refund_detail.refunded_amount
                 }
 
 
                 if (binding.edtAmount.text.toString().toDouble() > newPrice) {
-                    binding.edtAmount.setText(MethodUtils.roundOffAmountString(newPrice.toDouble()))
+                    binding.edtAmount.setText(MethodUtils.roundOffAmountString(newPrice))
                 }
             }
 

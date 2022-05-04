@@ -15,7 +15,10 @@ import com.android.pos.di.ApiModule.BASE_URL
 import com.android.pos.di.PrefProvider
 import com.android.pos.di.RolePermission
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
+import com.android.pos.utils.MethodUtils
+import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.extensions.alert
+import com.android.pos.utils.extensions.runOnUiThread
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -26,6 +29,7 @@ class MenuFragment : DialogFragment() {
     @Inject
     lateinit var rolePermission: RolePermission
     private val viewModel by viewModels<DashBoardCategoryViewModel>()
+
     @Inject
     lateinit var prefProvider: PrefProvider
     override fun onCreateView(
@@ -43,8 +47,8 @@ class MenuFragment : DialogFragment() {
     }
 
     private fun setUpHeader() {
-        binding.header.txtTitle.text=getString(R.string.menu)
-        binding.header.txtSave.text=getString(R.string.tv_home)
+        binding.header.txtTitle.text = getString(R.string.menu)
+        binding.header.txtSave.text = getString(R.string.tv_home)
     }
 
     override fun getTheme(): Int {
@@ -61,6 +65,11 @@ class MenuFragment : DialogFragment() {
         viewModel.logout.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
                 if (it) {
+
+
+
+                    viewModel.clearAppData()
+
                     viewModel.clearTableAll()
                     viewModel.clearTable()
                     prefProvider.setClear()
@@ -73,7 +82,21 @@ class MenuFragment : DialogFragment() {
             }
         }
 
+        if (view != null) {
+            viewModel.showProgress.observe(viewLifecycleOwner) { event ->
+                event.getContentIfNotHandled()?.let {
+                    if (it) {
+                        ProgressUtils.showProgressDialog(requireActivity())
+                    } else {
+                        ProgressUtils.dismissProgressDialog()
+                    }
+                }
+            }
+        }
+
     }
+
+
 
     private fun onClick() {
         binding.header.txtSave.setOnClickListener {
@@ -90,7 +113,7 @@ class MenuFragment : DialogFragment() {
             findNavController().navigateUp()
         }
         binding.linearInventory.setOnClickListener {
-            if (rolePermission.hasInventoryPermission(binding.root)){
+            if (rolePermission.hasInventoryPermission(binding.root)) {
                 findNavController().navigate(R.id.action_menuFragment_to_inventory)
             }
         }
@@ -99,12 +122,12 @@ class MenuFragment : DialogFragment() {
             findNavController().navigate(R.id.action_menuFragment_to_orders)
         }
         binding.linearTeam.setOnClickListener {
-            if(rolePermission.hasEmployeePermission(binding.root)){
+            if (rolePermission.hasEmployeePermission(binding.root)) {
                 findNavController().navigate(R.id.action_menuFragment_to_teamList)
             }
         }
         binding.linearTransactions.setOnClickListener {
-            if (rolePermission.hasTransactionPermission(binding.root)){
+            if (rolePermission.hasTransactionPermission(binding.root)) {
                 findNavController().navigate(R.id.action_menuFragment_to_transactionFragment)
             }
         }
@@ -114,7 +137,7 @@ class MenuFragment : DialogFragment() {
             }
         }
         binding.linearCustomers.setOnClickListener {
-            if(rolePermission.hasCustomerPermission(binding.root)) {
+            if (rolePermission.hasCustomerPermission(binding.root)) {
                 findNavController().navigate(R.id.action_menuFragment_to_customer)
             }
         }
@@ -131,12 +154,12 @@ class MenuFragment : DialogFragment() {
 
             }
 
-           // closeDialog(dialog)
+            // closeDialog(dialog)
         }
 
 
-
     }
+
     private fun closeDialog(dialog: Dialog?) {
         dialog?.dismiss()
     }

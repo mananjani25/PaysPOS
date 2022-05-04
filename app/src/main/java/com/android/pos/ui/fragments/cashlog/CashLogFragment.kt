@@ -132,6 +132,7 @@ class CashLogFragment : Fragment(), AdapterView.OnItemSelectedListener {
             myCalendar.set(Calendar.DAY_OF_MONTH, dayOfMonth)
             TimePickerDialog(
                 requireActivity(),
+                android.R.style.Theme_Material_Light_Dialog,
                 startTime,
                 myCalendar2.get(Calendar.HOUR),
                 myCalendar2.get(Calendar.MINUTE),
@@ -146,6 +147,7 @@ class CashLogFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
             TimePickerDialog(
                 requireActivity(),
+                android.R.style.Theme_Material_Light_Dialog,
                 endTime,
                 myCalendar3.get(Calendar.HOUR),
                 myCalendar3.get(Calendar.MINUTE),
@@ -256,7 +258,7 @@ class CashLogFragment : Fragment(), AdapterView.OnItemSelectedListener {
             event.getContentIfNotHandled()?.let {
 
                 DatePickerDialog(
-                    requireActivity(), startDate, myCalendar
+                    requireActivity(),android.R.style.Theme_Material_Light_Dialog, startDate, myCalendar
                         .get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
                     myCalendar.get(Calendar.DAY_OF_MONTH)
 
@@ -271,7 +273,7 @@ class CashLogFragment : Fragment(), AdapterView.OnItemSelectedListener {
             event.getContentIfNotHandled()?.let {
 
                 DatePickerDialog(
-                    requireActivity(), endDate, myCalendar1
+                    requireActivity(),android.R.style.Theme_Material_Light_Dialog, endDate, myCalendar1
                         .get(Calendar.YEAR), myCalendar1.get(Calendar.MONTH),
                     myCalendar1.get(Calendar.DAY_OF_MONTH)
 

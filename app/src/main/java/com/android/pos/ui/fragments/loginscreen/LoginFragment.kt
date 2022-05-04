@@ -1,10 +1,8 @@
 package com.android.pos.ui.fragments.loginscreen
 
-import android.annotation.SuppressLint
 import android.content.ClipboardManager
 import android.content.Context
 import android.os.Bundle
-import android.provider.Settings
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -12,13 +10,14 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
+import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.AUTH_TOKEN
 import com.android.pos.data.remote.Constants.IS_CLOCKOUT
 import com.android.pos.databinding.FragmentLoginBinding
+import com.android.pos.di.ApiModule
 import com.android.pos.di.PrefProvider
 import com.android.pos.utils.MethodUtils.Companion.getDeviceId
 import com.android.pos.utils.ProgressUtils
@@ -28,6 +27,7 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.messaging.FirebaseMessaging
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
+
 
 @AndroidEntryPoint
 class LoginFragment : Fragment() {
@@ -42,13 +42,13 @@ class LoginFragment : Fragment() {
     @Inject
     lateinit var prefProvider: PrefProvider
 
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
 
-        Log.e("LoginFragment","Calling")
 
         if (prefProvider.getValue(AUTH_TOKEN, "").toString().isNotEmpty()) {
             if (!prefProvider.getValueboolean(IS_CLOCKOUT, false)) {
@@ -147,6 +147,11 @@ class LoginFragment : Fragment() {
                     val bundle = Bundle().apply {
                         putBoolean("isLogin", true)
                     }
+                    ApiModule.host = prefProvider.getValue(
+                        Constants.BASE_URL_NEW,
+                        ApiModule.BASE_URL
+                    )
+
                     findNavController().navigate(R.id.action_login_to_passcode, bundle)
                 }
             }
