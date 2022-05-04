@@ -234,7 +234,11 @@ class AddEditCustomer : Fragment() {
             viewModel.addCustomerDetails.value?.data?.company = editModel.company ?: ""
             //binding.edtCompany.setText(editModel.company)
             if (editModel.birth_date != null) {
-                binding.edtBirthDay.setText("${editModel.birth_date}")
+                val inputFormat = SimpleDateFormat("MM/dd/yyyy")
+                var date  = inputFormat.parse(editModel.birth_date)
+                val outputFormat = SimpleDateFormat("MMM-dd-yyyy")
+                val formattedDate = outputFormat.format(date)
+                binding.edtBirthDay.setText(formattedDate)
             }
 
         } else {
@@ -337,9 +341,12 @@ class AddEditCustomer : Fragment() {
                     viewModel.addCustomerDetails.value?.data?.birthday_year = year.toString()
 
 
-                    val mon = (monthOfYear + 1)
-                    binding.edtBirthDay.text = "" + mon + "/" + dayOfMonth + "/" + year
+                    val calendar = Calendar.getInstance()
+                    calendar.set(year,monthOfYear,dayOfMonth)
+                    val outputFormat = SimpleDateFormat("MMM-dd-yyyy")
+                    var datestring = outputFormat.format(calendar.time)
 
+                    binding.edtBirthDay.text = datestring
 
                 }
 

@@ -289,7 +289,7 @@ class TransactionDetailsFragment : Fragment() {
                             binding.txtCashAmounntDiscount.setTextColor(
                                 ContextCompat.getColor(
                                     requireContext(),
-                                    R.color.colorRed
+                                    R.color.txtColor
                                 )
                             )
                             binding.txtCashAmounntDiscount.text = "+ $" + String.format(

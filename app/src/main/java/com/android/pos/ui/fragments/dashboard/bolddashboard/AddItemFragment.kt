@@ -18,6 +18,7 @@ import com.android.pos.data.remote.Constants.ORDER_TYPE
 import com.android.pos.data.remote.Constants.TAKEOUT
 import com.android.pos.data.remote.Constants.TERMINAL_ID
 import com.android.pos.databinding.FragmentAddItemBinding
+
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.adapter.ItemModifierSetAdapter
 import com.android.pos.ui.adapter.VariationDashboardListAdapter

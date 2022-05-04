@@ -30,6 +30,7 @@
                 android:layout_marginBottom="@dimen/_10sdp"
                 android:background="@drawable/button_action_hover"
                 android:gravity="center"
+                android:visibility="gone"
                 android:paddingVertical="@dimen/_7sdp"
                 android:paddingHorizontal="@dimen/_5sdp"
                 android:text="@string/add_service_charge_plus"

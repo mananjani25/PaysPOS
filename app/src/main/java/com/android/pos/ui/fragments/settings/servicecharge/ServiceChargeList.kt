@@ -20,16 +20,14 @@ import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.SwipeHelper
 import com.android.pos.utils.callback.ItemCallback
-import com.android.pos.utils.extensions.alert
-import com.android.pos.utils.extensions.liveSnackBar
-import com.android.pos.utils.extensions.showAlert
+import com.android.pos.utils.extensions.*
 import com.android.pos.utils.statusUtils.Status
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.*
 
 @AndroidEntryPoint
-class ServiceChargeList : Fragment(),ItemCallback {
+class ServiceChargeList : Fragment(), ItemCallback {
 
     private lateinit var binding: ServiceChargeFragmentBinding
 
@@ -81,7 +79,7 @@ class ServiceChargeList : Fragment(),ItemCallback {
                         ProgressUtils.dismissProgressDialog()
                         binding.rvServiceCharge.visibility = View.VISIBLE
                         resource.data?.let { taxList ->
-                        Collections.reverse(taxList)
+                            Collections.reverse(taxList)
                             setTaxData(taxList)
                         }
                     }
@@ -124,6 +122,11 @@ class ServiceChargeList : Fragment(),ItemCallback {
 
     private fun setTaxData(taxList: List<TbServiceCharge>) {
         discountListUpdateDelete = taxList as ArrayList<TbServiceCharge>
+        if (taxList.isEmpty()) {
+            binding.txtAddServiceCharge.visible()
+        } else {
+            binding.txtAddServiceCharge.gone()
+        }
         serviceChargeListadapter.apply {
             addServiceCharge(taxList)
             notifyDataSetChanged()
@@ -136,7 +139,7 @@ class ServiceChargeList : Fragment(),ItemCallback {
             event.getContentIfNotHandled()?.let {
 
 
-            AlertUtils.showCustomAlert(requireActivity(), it.message)
+                AlertUtils.showCustomAlert(requireActivity(), it.message)
                 discountListUpdateDelete.remove(serviceChargeObject)
                 serviceChargeListadapter.addServiceCharge(discountListUpdateDelete)
                 serviceChargeListadapter.notifyItemRemoved(position)

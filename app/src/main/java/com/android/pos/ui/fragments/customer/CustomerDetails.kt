@@ -28,6 +28,7 @@ import com.android.pos.utils.extensions.visible
 import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
+import java.text.SimpleDateFormat
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -95,6 +96,13 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
                 CUSTOMER_MODEL
             )!!
 
+        if(customerModel.birth_date?.isNotEmpty() == true){
+            val inputFormat = SimpleDateFormat("MM/dd/yyyy")
+            var date  = inputFormat.parse(customerModel.birth_date)
+            val outputFormat = SimpleDateFormat("MMM-dd-yyyy")
+            val formattedDate = outputFormat.format(date)
+            binding.txtBirthDate.setText(formattedDate)
+        }
         binding.model = customerModel
        // binding.executePendingBindings()
 

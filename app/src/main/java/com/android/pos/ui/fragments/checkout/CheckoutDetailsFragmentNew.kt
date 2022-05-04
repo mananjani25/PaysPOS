@@ -552,22 +552,41 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                         } else {
                             bundle.putDouble("PaidAmount", remainingAmount)
                         }
+                        Log.d(TAG, "observeData: paidAMount value :  "+paymentAmount)
 
                         val wholePrice =
                             prefProvider.getValue(Constants.WHOLE_AMOUNT, "0.0").toDouble()
+                        Log.d(TAG, "observeData: wholePrice value :  "+wholePrice)
                         bundle.putDouble("WholetotalPrice", wholePrice)
+                        Log.d(TAG, "observeData: cashDiscountSurcharge value :  "+cashDiscountSurcharge)
                         var remainingValue = 0.0
                         remainingValue = if (cashDiscountType == "SurCharge") {
                             (wholePrice + cashDiscountSurcharge) - paymentAmount
                         } else {
                             wholePrice - paymentAmount
                         }
+                        if (remainingValue <= 0.0) {
+                            remainingValue = 0.0
+                        }
+                        prefProvider.setValue(
+                            Constants.WHOLE_AMOUNT,
+                            String.format("%.2f", remainingValue))
 
+                        if(prefProvider.getValueboolean(Constants.SPLIT_ENABLE, false)==true){
+                            if(remainingValue!=cashDiscountSurcharge){
+                                prefProvider.setValue(
+                                    Constants.WHOLE_AMOUNT,
+                                    String.format("%.2f", remainingValue))
+
+                                remainingValue +=cashDiscountSurcharge
+                            }
+                        }
                         bundle.putDouble(
                             "remainingAmount",
-                            remainingValue
+                            String.format("%.2f", remainingValue).toDouble()
                         )
-                        prefProvider.setValue(Constants.WHOLE_AMOUNT, remainingValue.toString())
+                        Log.d(TAG, "observeData: remaining value :  "+String.format("%.2f", remainingValue))
+
 
                         if (remainingValue == 0.0 || remainingValue <= 0.0) {
                             bundle.putBoolean("isSpilt", false)
@@ -663,20 +682,22 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             totalDiscount = String.format("%.2f", totalDiscount / isSelectedCount).toDouble()
             cashDiscountSurcharge =
                 String.format("%.2f", cashDiscountSurcharge / isSelectedCount).toDouble()
-            paymentAmount = String.format(
-                "%.2f",
-                getCalCashDiscWithAmount(WholetotalPrice, false) / isSelectedCount
-            ).toDouble()
-            //   makePaymentCreditCard()
-
-
-            magtekModule.stopListner(false)
-
-            if (device == 0) {
-                magtekPaymentCall()
-            } else {
-                magtekProPaymentCall()
+            paymentAmount = String.format("%.2f", WholetotalPrice / isSelectedCount).toDouble()
+            Log.d(TAG, "paymentClick: cashDiscountSurcharge "+cashDiscountSurcharge)
+            Log.d(TAG, "paymentClick: paymentAmount  "+paymentAmount)
+            if(cashDiscountType=="SurCharge"){
+                paymentAmount =  String.format("%.2f", paymentAmount+cashDiscountSurcharge).toDouble()
             }
+            makePaymentCreditCard()
+
+
+//            magtekModule.stopListner(false)
+//
+//            if (device == 0) {
+//                magtekPaymentCall()
+//            } else {
+//                magtekProPaymentCall()
+//            }
         }
         binding.llManualCardEntry.setOnClickListener {
             binding.frameLayoutId.visible()
