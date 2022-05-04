@@ -203,6 +203,8 @@ class AddressListAdapter(val refreshCallBack: (Int) -> Unit, val context: Contex
 
                         if (placeDetails.address.isNotEmpty()) {
                             try {
+
+
                                 templist[layoutPosition].address1 = street
                                 templist[layoutPosition].address2 = suite
                                 templist[layoutPosition].city = city
@@ -211,6 +213,17 @@ class AddressListAdapter(val refreshCallBack: (Int) -> Unit, val context: Contex
 
                                 templist[layoutPosition].state = state
                                 templist[layoutPosition].postcode = zip
+
+
+                                list[layoutPosition].address1 = street
+                                list[layoutPosition].address2 = suite
+                                list[layoutPosition].city = city
+                                list[layoutPosition].country =
+                                    binding.edtAddress.selectedItem.toString()
+
+                                list[layoutPosition].state = state
+                                list[layoutPosition].postcode = zip
+
 
 
 
