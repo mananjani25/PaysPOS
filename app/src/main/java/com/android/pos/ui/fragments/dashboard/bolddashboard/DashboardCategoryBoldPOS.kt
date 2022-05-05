@@ -175,7 +175,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                         //discountPrice = item.discountPrice / item.itemQuantity
                         item.discountId = result.id
                         item.discountType = result.discountType
-                        item.isManualSales = false
+
                         viewModel.cartLogic(cartList, item, Constants.UPDATE, false)
 
                     }
@@ -184,7 +184,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                         item?.discountPrice = result.percentage
                         item?.discountId = 0
                         item?.discountType = result.discountType
-                        item?.isManualSales = false
+
 
                         viewModel.cartLogic(cartList, item, Constants.UPDATE, false)
                     }
@@ -192,7 +192,6 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                         item?.discountPrice = result.percentage
                         item?.discountId = 0
                         item?.discountType = result.discountType
-                        item?.isManualSales = false
 
                         viewModel.cartLogic(cartList, item, Constants.UPDATE, false)
 
@@ -274,10 +273,10 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                 totalPrice += items.price * items.itemQuantity
             }
 
-            (model.price * model.itemQuantity) + totalPrice
+            (model.price) + totalPrice
         } else {
 
-            model.price * model.itemQuantity
+            model.price
 
         }
     }

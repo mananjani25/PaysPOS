@@ -29,6 +29,8 @@ import com.android.pos.data.remote.Constants.BUSINESS_ADDRESS
 import com.android.pos.data.remote.Constants.BUSINESS_NAME
 import com.android.pos.data.remote.Constants.BUSINESS_PHONE_NO
 import com.android.pos.data.remote.Constants.BUSINESS_WEBSITE
+import com.android.pos.data.remote.Constants.CASH_DISCOUNT_SURCHARGE_AMOUNT_TYPE
+import com.android.pos.data.remote.Constants.CASH_DISCOUNT_SURCHARGE_RATE
 import com.android.pos.data.remote.Constants.DELETE
 import com.android.pos.data.remote.Constants.DINE_IN
 import com.android.pos.data.remote.Constants.DINE_IN_LIST_EDIT
@@ -115,7 +117,7 @@ class DashBoardCategoryViewModel @Inject constructor(
     private val _updateOrder = MutableLiveData<Event<Any?>>()
     val updateOrder: LiveData<Event<Any?>> = _updateOrder
 
-    var openOrderUpdate: Boolean ? =false
+    var openOrderUpdate: Boolean? = false
 
 
     fun getCustomerReceiptSettings() = posRepository.getCustomerReceiptSettings()
@@ -583,7 +585,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                             if (item.isEdited) {
                                                 model.isEdited = item.isEdited
                                             }
-                                         //   itemDiscountApply(model, item)
+                                            //   itemDiscountApply(model, item)
                                         }
 
                                         list[index] = model
@@ -902,11 +904,9 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                     dine.items.forEach { item ->
                         totalCount += item.itemQuantity
-                        if (!item.isManualSales) {
-                            subTotalPrice += (item.price * item.itemQuantity) - (item.discountPrice * item.itemQuantity)
-                        } else {
-                            subTotalPrice += (item.price * item.itemQuantity) - item.discountPrice
-                        }
+
+                        subTotalPrice += (item.price * item.itemQuantity) - (item.discountPrice * item.itemQuantity)
+
 
                         taxCalculation(item)
 
@@ -924,11 +924,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                 cartList[0].dineInList?.forEach {
                     it.items.forEach {
-                        if (!it.isManualSales) {
-                            totalDiscount += (it.discountPrice * it.itemQuantity)
-                        } else {
-                            totalDiscount += it.discountPrice
-                        }
+                        totalDiscount += (it.discountPrice * it.itemQuantity)
                     }
                 }
 
@@ -945,11 +941,8 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                     cartList[0].items?.forEach { item ->
                         totalCount += item.itemQuantity
-                        if (!item.isManualSales) {
-                            subTotalPrice += (item.price * item.itemQuantity) - (item.discountPrice * item.itemQuantity)
-                        } else {
-                            subTotalPrice += (item.price * item.itemQuantity) - item.discountPrice
-                        }
+                        subTotalPrice += (item.price * item.itemQuantity) - (item.discountPrice * item.itemQuantity)
+
 
                         taxCalculation(item)
 
@@ -967,11 +960,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                     totalDiscount += cartList[0].discountPrice
 
                     cartList[0].items!!.forEach {
-                        totalDiscount += if (!it.isManualSales) {
-                            (it.discountPrice * it.itemQuantity)
-                        } else {
-                            it.discountPrice
-                        }
+                        totalDiscount += (it.discountPrice * it.itemQuantity)
                     }
 
                     Log.e("totalDiscount", totalDiscount.toString())
@@ -1040,11 +1029,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                 dine.items.forEach { item ->
                     totalCount += item.itemQuantity
-                    subTotalPrice += if (!item.isManualSales) {
-                        (item.price * item.itemQuantity) - (item.discountPrice * item.itemQuantity)
-                    } else {
-                        (item.price * item.itemQuantity) - item.discountPrice
-                    }
+                    subTotalPrice += (item.price * item.itemQuantity) - (item.discountPrice * item.itemQuantity)
 
                     taxCalculation(item)
 
@@ -1063,11 +1048,9 @@ class DashBoardCategoryViewModel @Inject constructor(
             var totalDineItemDis = 0.0
             cartModel.dineInList?.forEach {
                 it.items.forEach {
-                    totalDineItemDis += if (!it.isManualSales) {
+                    totalDineItemDis +=
                         (it.discountPrice * it.itemQuantity)
-                    } else {
-                        it.discountPrice
-                    }
+
                 }
             }
 
@@ -1076,11 +1059,9 @@ class DashBoardCategoryViewModel @Inject constructor(
             totalDiscount += cartModel.discountPrice
             cartModel.dineInList?.forEach {
                 it.items.forEach {
-                    totalDiscount += if (!it.isManualSales) {
+                    totalDiscount +=
                         (it.discountPrice * it.itemQuantity)
-                    } else {
-                        it.discountPrice
-                    }
+
                 }
             }
             Log.e("AjjeDine", "totalDis ${totalDis}")
@@ -1129,7 +1110,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                     cartModel.items?.forEach { item ->
                         totalCount += item.itemQuantity
                         totalDiscount += item.discountPrice
-                        subTotalPrice += (item.price * item.itemQuantity) - item.discountPrice
+                        subTotalPrice += (item.price * item.itemQuantity) - (item.discountPrice * item.itemQuantity)
                         taxCalculation(item)
 
                         item.modifiers.forEach {
@@ -1187,10 +1168,23 @@ class DashBoardCategoryViewModel @Inject constructor(
                     Log.e("amountToBePaid", "" + totalPrice)
 
                 } else {
+
+                    nonCashAdj = 0.0
+                    totalPrice = 0.0
+                    totalCount = 0
+                    subTotalPrice = 0.0
+                    totalDiscount = 0.0
+                    totalTax = 0.0
+                    totalServiceCharge = 0.0
+
+
                     cartModel.items?.forEach { item ->
                         if (!item.isDestroy) {
                             totalCount += item.itemQuantity
-                            subTotalPrice += (item.price * item.itemQuantity) - item.discountPrice
+
+                            subTotalPrice += (item.price * item.itemQuantity) - (item.discountPrice * item.itemQuantity)
+
+
                             taxCalculation(item)
 
 
@@ -1207,11 +1201,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                     totalDiscount += cartModel.discountPrice
                     order_note = cartModel.note
                     cartModel.items!!.forEach {
-                        totalDiscount += if (!it.isManualSales) {
-                            (it.discountPrice * it.itemQuantity)
-                        } else {
-                            it.discountPrice
-                        }
+                        totalDiscount += it.discountPrice * it.itemQuantity
                     }
                     Log.e("OpenOrderCh", "cartDiscount  ${cartModel.discountPrice}")
                     Log.e("OpenOrderCh", "totalDiscounts  ${totalDiscount}")
@@ -2376,6 +2366,22 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 posRepository.addLoyaltyProgramFromDb(it.data.loyaltyPrograms)
                                 posRepository.deleteSurcharge()
                                 posRepository.addCashDiscountsFromDb(it.data.cash_discounts)
+
+                                if (it.data.cash_discounts.isNotEmpty()) {
+                                    it.data.cash_discounts.forEach {
+                                        if (it.is_active) {
+                                            prefProvider.setValue(
+                                                CASH_DISCOUNT_SURCHARGE_AMOUNT_TYPE,
+                                                it.amount_type
+                                            )
+                                            prefProvider.setValue(
+                                                CASH_DISCOUNT_SURCHARGE_RATE,
+                                                it.rate_or_amount.toString()
+                                            )
+                                        }
+                                    }
+                                }
+
                                 posRepository.deleteTeamRoleFromDb()
                                 posRepository.addTeamRoleFromDb(it.data.teamRoles)
                                 posRepository.deleteAllEmployee()

@@ -470,7 +470,8 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                 if (cartList != null && cartList!!.isNotEmpty()) {
                     cartList?.forEach { it ->
                         it.isMaual = false
-                        it.orderType = prefProvider.getValue(Constants.ORDER_TYPE, TAKEOUT).toString()
+                        it.orderType =
+                            prefProvider.getValue(Constants.ORDER_TYPE, TAKEOUT).toString()
 
                     }
                     viewModel.saveManualSaleData(cartList!!)
@@ -508,7 +509,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
         }
 
         binding.btnPay.setOnClickListener {
-            if ( cartList?.isNotEmpty() == true) {
+            if (cartList?.isNotEmpty() == true) {
 /*
                 if (cartList?.isNotEmpty() == true) {
                     dashboardViewModel.mAllWords(
@@ -856,10 +857,12 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
             tabItemMOdel.taxes = taxList
 
 
-            Log.e("ordertypelist",Gson().toJson(viewModel.ordertypelist))
+            Log.e("ordertypelist", Gson().toJson(viewModel.ordertypelist))
 
             viewModel.ordertypelist.forEach {
-                if (it.orderType == prefProvider.getValue(Constants.ORDER_TYPE, "TakeOut").toString()) {
+                if (it.orderType == prefProvider.getValue(Constants.ORDER_TYPE, "TakeOut")
+                        .toString()
+                ) {
                     tabItemMOdel.orderItemId = it.id
                     Log.e("orderTypeId", it.id.toString())
                     prefProvider.setValue(Constants.ORDER_TYPE, it.orderType)
@@ -937,7 +940,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                     cartModel.discountPrice = calculateDiscountPercentage(
                         cartAdapter.getItem(pos).price,
                         result.percentage
-                    ) * cartModel.itemQuantity
+                    )
                     cartModel.discountId = result.id
                     cartModel.discountType = result.discountType
                     cartModel.isDiscountDefault = true
@@ -1124,12 +1127,12 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                 val dis = model.discountPrice / model.itemQuantity
 
                 model.discountPrice =
-                    String.format("%.2f", (dis * txtQty.text.toString().toInt())).toDouble()
+                    String.format("%.2f", (dis)).toDouble()
             }
 
 
             model.note = edtNote.text.toString().trim()
-            Log.e("TAG","notes${edtNote.text.toString().trim()}")
+            Log.e("TAG", "notes${edtNote.text.toString().trim()}")
             model.itemQuantity = txtQty.text.toString().toInt()
             model.name = edtItemName.text.toString()
 
@@ -1173,9 +1176,9 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                     if (result.discountType == requireContext().getString(R.string.disc_percentage)) {
 
                         model.discountPrice = calculateDiscountPercentage(
-                            model.price * totalquantity,
+                            model.price ,
                             result.percentage
-                        ) * model.itemQuantity
+                        )
                         model.discountId = result.id
                         model.discountType = result.discountType
                         model.isManualSales = true
@@ -1187,7 +1190,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
 
                     } else if (result.discountType == "Amount") {
 
-                        model.discountPrice = result.percentage * model.itemQuantity
+                        model.discountPrice = result.percentage
                         model.discountId = result.id
                         model.discountType = result.discountType
                         model.isManualSales = true

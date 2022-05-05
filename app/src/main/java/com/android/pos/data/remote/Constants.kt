@@ -562,4 +562,7 @@ object Constants {
 
     const val DYNANA_FLAX = "DYNAMO_FLAX"
 
+    const val CASH_DISCOUNT_SURCHARGE_AMOUNT_TYPE = "cashDiscountSurchargeAmountType"
+    const val CASH_DISCOUNT_SURCHARGE_RATE = "cashDiscountSurchargeRate"
+
 }

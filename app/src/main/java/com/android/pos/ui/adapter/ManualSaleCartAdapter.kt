@@ -43,7 +43,7 @@ class ManualSaleCartAdapter : RecyclerView.Adapter<ManualSaleCartAdapter.MyViewH
             if (list[pos].discountPrice != 0.0) {
                 binding.txtTotalPrice.paintFlags =
                     binding.txtTotalPrice.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
-                val dPrice = (list[pos].price * list[pos].itemQuantity) - list[pos].discountPrice
+                val dPrice = (list[pos].price * list[pos].itemQuantity) - (list[pos].discountPrice * list[pos].itemQuantity )
 
                 MethodUtils.setPriceTextView(binding.tvDiscountRate, dPrice)
             } else {

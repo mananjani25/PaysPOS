@@ -1043,15 +1043,13 @@ open class PaymentViewModel @Inject constructor(
 
             orderItemsAttribute.category_id = item.categoryId
 
-            if (item.isManualSales) {
+
+            if (cartModel.reorder) {
                 orderItemsAttribute.discountAmount = (item.discountPrice)
             } else {
-                if (cartModel.reorder) {
-                    orderItemsAttribute.discountAmount = (item.discountPrice)
-                } else {
-                    orderItemsAttribute.discountAmount = (item.discountPrice * item.itemQuantity)
-                }
+                orderItemsAttribute.discountAmount = (item.discountPrice * item.itemQuantity)
             }
+
 
             orderItemsAttribute.discountType = item.discountType
             if (item.discountId != -1)
@@ -1269,11 +1267,9 @@ open class PaymentViewModel @Inject constructor(
                     var modifierPrice = 0.0
 
                     var price = 0.0
-                    price = if (!items.isManualSales) {
+                    price =
                         (items.price * items.itemQuantity) - (items.discountPrice * items.itemQuantity)
-                    } else {
-                        (items.price * items.itemQuantity) - (items.discountPrice)
-                    }
+
 
 
                     items.modifiers.forEach {

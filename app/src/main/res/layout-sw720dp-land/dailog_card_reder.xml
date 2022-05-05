@@ -25,7 +25,7 @@
                 android:paddingVertical="@dimen/_5sdp"
                 android:text="Choose Card Reader Device"
                 android:textColor="@color/btnColor"
-                android:textSize="@dimen/_7mdpi" />
+                android:textSize="@dimen/_8mdpi" />
 
 
             <androidx.appcompat.widget.LinearLayoutCompat

@@ -15,6 +15,8 @@ import com.android.pos.R
 import com.android.pos.data.entities.TbServiceCharge
 import com.android.pos.data.model.GetPaymentOrderDetailsResponse
 import com.android.pos.data.model.requestModel.RefundRequestModel
+import com.android.pos.data.remote.Constants.CASH_DISCOUNT_SURCHARGE_AMOUNT_TYPE
+import com.android.pos.data.remote.Constants.CASH_DISCOUNT_SURCHARGE_RATE
 import com.android.pos.databinding.DialogIssueRefundBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.adapter.RefundItemListAdapter
@@ -299,7 +301,9 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
         refundItemListAdapter.setSelectedItemList(
             paymentOrderDetailsResponse.data.order.order_items.toCollection(
                 arrayListOf()
-            )
+            ),
+            prefProvider.getValue(CASH_DISCOUNT_SURCHARGE_AMOUNT_TYPE,""),
+            prefProvider.getValue(CASH_DISCOUNT_SURCHARGE_RATE,"")
         )
         refundItemListAdapter.showItemSubTotal = {
 
