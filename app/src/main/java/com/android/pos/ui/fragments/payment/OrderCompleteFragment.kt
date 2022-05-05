@@ -297,7 +297,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 binding.txtHome.visibility = View.GONE
 
 
-                var title = "Split "
+                val title = "Split "
                 viewModel.addSplitToDatabase(
                     title,
                     (paidAmount + tipAmount) - splitChange,
@@ -327,24 +327,29 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                 .toDouble()
                         binding.txtChangeAmount.visible()
                         binding.txtChangeAmount.text =
-                            MethodUtils.roundOffAmount(paidAmount - WholetotalPrice) + " Change"
+                            MethodUtils.roundOffAmount(if ((paidAmount - WholetotalPrice) > 0) paidAmount - WholetotalPrice else 0.00) + " Change"
                         binding.txtPaymentAmount.text =
                             MethodUtils.roundOffAmount(paidAmount + tipAmount) + " payment successful"
+
+                        Log.e("Change 1", binding.txtChangeAmount.text.toString())
 
                     } else {
                         changeAmtGlobal = MethodUtils.roundOffAmountDouble(0.0).toDouble()
                         binding.txtChangeAmount.gone()
                         binding.txtChangeAmount.text =
                             MethodUtils.roundOffAmount(0.0) + " Change"
+                        Log.e("Change 2", binding.txtChangeAmount.text.toString())
                     }
                 } else if (remainingAmount < paidAmount) {
                     if (isCustomCash && splitChange != 0.0) {
                         changeAmtGlobal = MethodUtils.roundOffAmountDouble(splitChange).toDouble()
                         binding.txtChangeAmount.visible()
                         binding.txtChangeAmount.text =
-                            MethodUtils.roundOffAmount(splitChange) + " Change"
+                            MethodUtils.roundOffAmount(if (splitChange > 0) splitChange else 0.00) + " Change"
                         binding.txtPaymentAmount.text =
                             MethodUtils.roundOffAmount((paidAmount + tipAmount)) + " payment successful"
+
+                        Log.e("Change 2", binding.txtChangeAmount.text.toString())
                     } else {
 
                         val changeValue = (paidAmount - dis_charge_value) - remainingAmount
@@ -353,7 +358,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                 MethodUtils.roundOffAmountDouble(changeValue).toDouble()
                             binding.txtChangeAmount.visible()
                             binding.txtChangeAmount.text =
-                                MethodUtils.roundOffAmount(changeValue) + " Change"
+                                MethodUtils.roundOffAmount(if (changeValue > 0) changeValue else 0.00) + " Change"
+
+                            Log.e("Change 4", binding.txtChangeAmount.text.toString())
                         }
                         binding.txtPaymentAmount.text =
                             MethodUtils.roundOffAmount((paidAmount + tipAmount)) + " payment successful"
@@ -363,7 +370,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         changeAmtGlobal = MethodUtils.roundOffAmountDouble(splitChange).toDouble()
                         binding.txtChangeAmount.visible()
                         binding.txtChangeAmount.text =
-                            MethodUtils.roundOffAmount(splitChange) + " Change"
+                            MethodUtils.roundOffAmount(if (splitChange > 0) splitChange else 0.00) + " Change"
+
+                        Log.e("Change 5", binding.txtChangeAmount.text.toString())
                         binding.txtPaymentAmount.text =
                             MethodUtils.roundOffAmount((paidAmount + tipAmount)) + " payment successful"
                     } else {
@@ -404,15 +413,22 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     changeAmtGlobal =
                         MethodUtils.roundOffAmountDouble(remainingAmount - tipAmount).toDouble()
                     binding.txtChangeAmount.visible()
+
+                    val ca = remainingAmount - tipAmount
                     binding.txtChangeAmount.text =
-                        MethodUtils.roundOffAmount(remainingAmount - tipAmount) + " Change"
+                        MethodUtils.roundOffAmount(if (ca > 0) ca else 0.00) + " Change"
+
+                    Log.e("Change 6", binding.txtChangeAmount.text.toString())
                 } else {
                     if (remainingAmount < 0) {
                         changeAmtGlobal =
                             MethodUtils.roundOffAmountDouble(remainingAmount - tipAmount).toDouble()
                         binding.txtChangeAmount.visible()
+                        val ca = remainingAmount - tipAmount
                         binding.txtChangeAmount.text =
-                            MethodUtils.roundOffAmount(remainingAmount - tipAmount) + " Change"
+                            MethodUtils.roundOffAmount(if (ca > 0) ca else 0.00) + " Change"
+
+                        Log.e("Change 7", binding.txtChangeAmount.text.toString())
                     }
                 }
 
@@ -452,9 +468,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         changeAmtGlobal = MethodUtils.roundOffAmountDouble(splitChange)
                         binding.txtChangeAmount.visible()
                         binding.txtChangeAmount.text =
-                            MethodUtils.roundOffAmount(splitChange) + " Change"
+                            MethodUtils.roundOffAmount(if (splitChange > 0) splitChange else 0.00) + " Change"
                         binding.txtPaymentAmount.text =
                             MethodUtils.roundOffAmount((paidAmount + tipAmount)) + " payment successful"
+
+                        Log.e("Change 8", binding.txtChangeAmount.text.toString())
                     } else {
                         var temp_Change =
                             MethodUtils.roundOffAmountDouble((paidAmount - dis_charge_value) - remainingAmount)
@@ -462,8 +480,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                             changeAmtGlobal =
                                 MethodUtils.roundOffAmountDouble((paidAmount - dis_charge_value) - remainingAmount)
                             binding.txtChangeAmount.visible()
+                            val ca = (paidAmount - dis_charge_value) - remainingAmount
                             binding.txtChangeAmount.text =
-                                MethodUtils.roundOffAmount((paidAmount - dis_charge_value) - remainingAmount) + " Change"
+                                MethodUtils.roundOffAmount(if (ca > 0) ca else 0.00) + " Change"
+
+                            Log.e("Change 9", binding.txtChangeAmount.text.toString())
                         }
                         binding.txtPaymentAmount.text =
                             MethodUtils.roundOffAmount((paidAmount + tipAmount)) + " payment successful"
@@ -474,7 +495,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         changeAmtGlobal = MethodUtils.roundOffAmountDouble(splitChange)
                         binding.txtChangeAmount.visible()
                         binding.txtChangeAmount.text =
-                            MethodUtils.roundOffAmount(splitChange) + " Change"
+                            MethodUtils.roundOffAmount(if (splitChange > 0) splitChange else 0.00) + " Change"
+
+                        Log.e("Change 10", binding.txtChangeAmount.text.toString())
                         binding.txtPaymentAmount.text =
                             MethodUtils.roundOffAmount((paidAmount + tipAmount)) + " payment successful"
                     } else {
@@ -520,13 +543,13 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     changeAmtGlobal = MethodUtils.roundOffAmountDouble(remainingAmount - tipAmount)
                     binding.txtChangeAmount.visible()
                     binding.txtChangeAmount.text =
-                        MethodUtils.roundOffAmount(remainingAmount - tipAmount) + " Change"
+                        MethodUtils.roundOffAmount(if ((remainingAmount - tipAmount) > 0) remainingAmount - tipAmount else 0.00) + " Change"
                 } else {
                     if (remainingAmount < 0) {
                         changeAmtGlobal = MethodUtils.roundOffAmountDouble(remainingAmount)
                         binding.txtChangeAmount.visible()
                         binding.txtChangeAmount.text =
-                            MethodUtils.roundOffAmount(remainingAmount) + " Change"
+                            MethodUtils.roundOffAmount(if (remainingAmount > 0) remainingAmount else 0.00) + " Change"
                     }
                 }
 

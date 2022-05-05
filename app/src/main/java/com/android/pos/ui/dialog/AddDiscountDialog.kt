@@ -88,10 +88,11 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
 
         if (model?.discountId != -1 && model?.discountType == PERCENTAGE) {
             Log.e(TAG, "DiscountPercentage")
-
+            orderDiscountType = PERCENTAGE
             var disPercentage = 0.0
-            disPercentage = MethodUtils.roundOffAmountDouble(100 * model.discountPrice / model.price)
-            Log.e(TAG,"disPercentage  ${disPercentage}")
+            disPercentage =
+                MethodUtils.roundOffAmountDouble(100 * model.discountPrice / model.price)
+            Log.e(TAG, "disPercentage  ${disPercentage}")
 
 
         }
@@ -117,6 +118,12 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
             amountView()
         }
 
+        if (model?.discountType == PERCENTAGE) {
+            selectedCurrency = PERCENTAGE
+        } else if (model?.discountType == AMOUNT) {
+            selectedCurrency = AMOUNT
+        }
+
         binding.edtAmount.addTextChangedListener(this)
 
         setDiscountList()
@@ -129,20 +136,16 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
         if (!isOrderDiscount) {
             if (defaultModel.discountId == 0) {
                 binding.txtRemoveDiscount.visibility = View.GONE
-                Log.e(TAG,"edtAmountAppendFirst")
                 binding.edtAmount.append(MethodUtils.roundOffAmountString(defaultModel.discountPrice))
 
                 if (defaultModel.discountPrice != 0.0) {
                     if (defaultModel.discountType == getString(R.string.disc_percentage)) {
                         val applyDiscount =
                             (defaultModel.discountPrice * 100) / (itemPrice/*(defaultModel.price + modifierPrice) * defaultModel.itemQuantity*/)
-                        Log.e(TAG,"applyDiscountapplyDiscount  ${applyDiscount}")
                         binding.edtAmount.setText(MethodUtils.roundOffAmountString(applyDiscount))
-                        Log.e(TAG,"edtAmountSetSecond")
                         percentageView()
                     } else {
                         binding.edtAmount.setText(MethodUtils.roundOffAmountString(defaultModel.discountPrice))
-                        Log.e(TAG,"edtAmountSetSecond")
                         amountView()
                     }
                     binding.txtRemoveDiscount.visibility = View.VISIBLE
@@ -158,7 +161,6 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
                 if (defaultModel.discountType == getString(R.string.disc_percentage)) {
                     if (discountAdapter.selectedPosition != -1) {
                         val applydis = discountAdapter.discountList[selectedListPos].percentage
-                        Log.e(TAG,"applyDiscountapplyDiscount2  ${applydis}")
                         binding.edtAmount.setText(
                             MethodUtils.roundOffAmountString(
                                 Math.round(applydis)
@@ -166,11 +168,10 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
                             )
                         )
 
-                        Log.e(TAG,"edtAmountSetThird")
+                        Log.e(TAG, "edtAmountSetThird")
                     } else {
                         val applyDiscount =
                             (defaultModel.discountPrice * 100) / (itemPrice/*(defaultModel.price + modifierPrice) * defaultModel.itemQuantity*/)
-                        Log.e(TAG,"applyDiscountapplyDiscount3  ${applyDiscount}")
                         binding.edtAmount.setText(
                             MethodUtils.roundOffAmountString(
                                 Math.round(applyDiscount)
@@ -178,13 +179,12 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
                             )
                         )
 
-                        Log.e(TAG,"edtAmountSetThird")
+                        Log.e(TAG, "edtAmountSetThird")
                     }
 
                     percentageView()
                 } else {
                     binding.edtAmount.setText(MethodUtils.roundOffAmountString(defaultModel.discountPrice))
-                    Log.e(TAG,"edtAmountSetFour")
                     amountView()
                 }
             }
@@ -193,11 +193,9 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
 
                 if (orderDiscountType == getString(R.string.disc_percentage)) {
                     binding.edtAmount.setText(MethodUtils.roundOffAmountString(selectedvalue))
-                    Log.e(TAG,"edtAmountSetFive")
                     percentageView()
                 } else {
                     binding.edtAmount.setText(MethodUtils.roundOffAmountString(orderDiscountPrice))
-                    Log.e(TAG,"edtAmountSetFive")
                     amountView()
                 }
             }
@@ -294,7 +292,6 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
         binding.txtCurrencyDollar.setTextColor(requireActivity().resources.getColor(R.color.white))
         binding.txtCurrencyPercentage.setTextColor(requireActivity().resources.getColor(R.color.txtColor))
         binding.edtAmount.setText(binding.edtAmount.text.toString().trim())
-        Log.e(TAG,"edtAmountSetSix")
 
 
     }
@@ -314,7 +311,6 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
         binding.txtCurrencyDollar.setTextColor(requireActivity().resources.getColor(R.color.txtColor))
         binding.txtCurrencyPercentage.setTextColor(requireActivity().resources.getColor(R.color.white))
         binding.edtAmount.setText(binding.edtAmount.text.toString().trim())
-        Log.e(TAG,"edtAmountSetSeven")
 
 
     }
@@ -394,7 +390,7 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
                 }
                 discountAdapter.setList(it.data)
                 discountAdapter.setListner(this)
-                discountAdapter.setSelected(defaultModel?.discountId)
+                discountAdapter.setSelected(defaultModel.discountId)
             }
 
 
@@ -419,7 +415,7 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
         }
 
         binding.txtSave.setOnClickListener {
-            defaultModel.itemQuantity=itemQuantity
+            defaultModel.itemQuantity = itemQuantity
             if (selectedListPos != -1) {
 
                 val model = discountAdapter.getItem(selectedListPos)
@@ -464,8 +460,7 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
                 }
                 findNavController().navigateUp()
 
-            } else if (binding.edtAmount.text?.isNotEmpty() == true && binding.edtAmount.text.toString() != "0.00"
-            ) {
+            } else if (binding.edtAmount.text?.isNotEmpty() == true && binding.edtAmount.text.toString() != "0.00") {
 
 
                 discountModel =
@@ -564,7 +559,6 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
     }
 
     override fun selectedItem(model: TbDiscount, pos: Int) {
-        Log.e(TAG, "SelectedItem:  ${Gson().toJson(model)}")
 
         calculationDiscount(model, pos)
 
@@ -575,8 +569,6 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
 
             if (model.discountType == requireContext().getString(R.string.disc_percentage)) {
 
-                Log.e(TAG, "modelPercentagepercentage:  ${model.percentage}")
-                Log.e(TAG, "modelPercentagetotalOrderPrice  ${totalOrderPrice}")
                 val percentage = (totalOrderPrice * model.percentage) / 100
 
                 if (percentage <= totalOrderPrice) {
@@ -587,8 +579,6 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
                 }
 
             } else {
-                Log.e(TAG, "modelpercentage:  ${model.percentage}")
-                Log.e(TAG, "modeltotalOrderPrice  ${totalOrderPrice}")
                 if (model.percentage <= totalOrderPrice) {
 
                     setData(model, pos)
@@ -603,8 +593,6 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
         } else {
 
             if (model.discountType == requireContext().getString(R.string.disc_percentage)) {
-                Log.e(TAG, "modelPercentagepercentage:  ${model.percentage}")
-                Log.e(TAG, "modelPercentagetotalOrderPrice  ${itemPrice}")
 
                 val percentage = (itemPrice * model.percentage) / 100
 
@@ -615,8 +603,6 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
 
                 }
             } else {
-                Log.e(TAG, "modelpercentage:  ${model.percentage}")
-                Log.e(TAG, "modeltotalOrderPrice  ${itemPrice}")
                 if (model.percentage <= itemPrice) {
 
                     setData(model, pos)
@@ -662,7 +648,6 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
             binding.edtAmount.setText(removeLastCharacter(binding.edtAmount.text.toString()))
 
         } else {
-            Log.e(TAG,"discountAmount${binding.edtAmount.text.toString().trim()}")
             binding.edtAmount.append(number)
         }
     }
@@ -704,7 +689,7 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
                 if (isOrderDiscount) {
                     price = totalOrderPrice
                 } else {
-                    price = itemPrice - defaultModel.discountPrice
+                    price = itemPrice /*- defaultModel.discountPrice*/
                 }
 
                 if (defaultModel.discountPrice == 0.0) {

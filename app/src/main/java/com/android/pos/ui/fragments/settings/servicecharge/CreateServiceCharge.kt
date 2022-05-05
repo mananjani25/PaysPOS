@@ -69,6 +69,8 @@ class CreateServiceCharge : Fragment() {
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
 
         binding.header.txtSave.setOnClickListener {
+            var subPer = binding.editPercentage?.text.toString().split(" ")[0]
+            viewModel.createServiceChargeDetails.value?.percentage = subPer.toDouble()
             viewModel.submit()
         }
 

@@ -820,7 +820,7 @@
                     android:background="@color/backgroundColor"
                     android:gravity="center"
                     android:padding="@dimen/_4sdp"
-                    android:text="@string/save"
+                    android:text="Add to Cart"
                     android:textColor="@color/white"
                     android:textSize="@dimen/_7mdpi" />
 

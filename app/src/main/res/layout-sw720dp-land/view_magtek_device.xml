@@ -17,7 +17,7 @@
         android:orientation="horizontal">
 
 
-    <TextView
+        <TextView
             android:id="@+id/txtTitle"
             style="@style/CustomFontRegularStyle"
             android:layout_width="0dp"
@@ -26,7 +26,7 @@
             android:background="?attr/selectableItemBackground"
             android:padding="@dimen/_5sdp"
             android:text="@{model.name}"
-            android:textSize="@dimen/_6mdpi" />
+            android:textSize="@dimen/_10mdpi" />
 
         <TextView
             android:id="@+id/txtStatus"
@@ -35,11 +35,13 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="@dimen/_5sdp"
             android:background="@drawable/btn_background_selector"
-            android:paddingHorizontal="@dimen/_40sdp"
-            android:paddingVertical="@dimen/_20sdp"
+
+            android:paddingHorizontal="@dimen/_30sdp"
+            android:paddingVertical="@dimen/_10sdp"
             android:text="Connect"
+            android:textAllCaps="true"
             android:textColor="@color/white"
-            android:textSize="@dimen/_6mdpi" />
+            android:textSize="@dimen/_10mdpi" />
 
     </LinearLayout>
 </layout>

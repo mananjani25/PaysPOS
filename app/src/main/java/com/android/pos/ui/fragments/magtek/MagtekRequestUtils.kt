@@ -9,12 +9,14 @@ import com.android.pos.data.remote.Constants.EPX_GATEWAY
 import com.android.pos.data.remote.Constants.FIRST_DATA_GATEWAY
 import com.android.pos.data.remote.Constants.HEARTLAND_GATEWAY
 import com.android.pos.data.remote.Constants.MAGENSA_SETTINGS
+import com.android.pos.data.remote.Constants.MAGENSA_SETTINGS1
 import com.android.pos.data.remote.Constants.REFUND1
 import com.android.pos.data.remote.Constants.SALE
 import com.android.pos.data.remote.Constants.TSYS_GATEWAY
 import com.android.pos.data.remote.Constants.VANIT_EXORESS_GATEWAY
 import com.android.pos.data.remote.Constants.VOID
 import com.android.pos.di.PrefProvider
+import com.android.pos.utils.Pref
 import com.google.gson.Gson
 import com.google.gson.JsonArray
 import com.google.gson.JsonObject
@@ -31,7 +33,15 @@ class MagtekRequestUtils @Inject constructor(
     var magensaSettingModel: VenueDetailsResponse.Data.MagensaSettings? = null
 
     init {
-        val magensaSettings = prefProvider.getValue(MAGENSA_SETTINGS, "")
+//        val magensaSettings = prefProvider.getValue(MAGENSA_SETTINGS, "")
+
+        getValue()
+
+    }
+
+    private fun getValue() {
+        val magensaSettings = Pref.getValue(mContext, MAGENSA_SETTINGS1, "")
+
         magensaSettingModel =
             Gson().fromJson(magensaSettings, VenueDetailsResponse.Data.MagensaSettings::class.java)
     }
@@ -46,6 +56,8 @@ class MagtekRequestUtils @Inject constructor(
         expDate: String,
         cardCVV: String
     ): JsonArray {
+
+        getValue()
 
         val jsonArray = JsonArray()
 
@@ -81,6 +93,8 @@ class MagtekRequestUtils @Inject constructor(
         track2: String
     ): JsonArray {
 
+        getValue()
+
         val jsonArray = JsonArray()
 
 
@@ -114,7 +128,7 @@ class MagtekRequestUtils @Inject constructor(
 
         val jsonArray = JsonArray()
 
-
+        getValue()
         val processDataRequest = ProcessDataRequest(
             authentication = authentication(),
             customerTransactionID = System.currentTimeMillis().toString(),
@@ -154,6 +168,7 @@ class MagtekRequestUtils @Inject constructor(
         transactionType: Int,
     ): JsonArray {
 
+        getValue()
         val processTokenRequest = ProcessTokenRequest(
             additionalRequestData = additionalRequestDataList(payloadResponseValue),
             authentication = authentication(),

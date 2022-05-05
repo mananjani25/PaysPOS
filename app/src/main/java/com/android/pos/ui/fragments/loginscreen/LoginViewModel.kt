@@ -7,8 +7,10 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.android.pos.MainApplication
 import com.android.pos.R
 import com.android.pos.data.model.requestModel.LoginRequestModel
+import com.android.pos.data.model.responseModel.LogInResponse
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.AUTH_TOKEN
 import com.android.pos.data.remote.Constants.BASE_URL_NEW
@@ -18,6 +20,7 @@ import com.android.pos.data.remote.Constants.TERMINAL_ID
 import com.android.pos.data.remote.Constants.USERNAME
 import com.android.pos.data.remote.NetworkConnectionInterceptor
 import com.android.pos.data.repositories.UserRepository
+import com.android.pos.di.ApiModule
 import com.android.pos.di.PrefProvider
 import com.android.pos.utils.Event
 import com.android.pos.utils.statusUtils.Status
@@ -72,8 +75,14 @@ class LoginViewModel @Inject constructor(
                         resource.data.let { logInResponse ->
                             if (logInResponse?.status == 200) {
 
+                                prefProvider.setClear()
+                                delay(1000)
+
+
+
                                 resource.data?.let {
 //                                    _data.value = Event(true)
+
                                     prefProvider.setValue(AUTH_TOKEN, it.data.authToken)
                                     prefProvider.setValue(BASE_URL_NEW, it.data.baseUrl + "/")
                                     prefProvider.setValueInt(LOCATION_ID, it.data.locationId)
@@ -116,7 +125,7 @@ class LoginViewModel @Inject constructor(
 
     }
 
-    private suspend fun defaultTerminalCall(device_token: String) {
+    suspend fun defaultTerminalCall(device_token: String) {
         _showProgress.value = Event(true)
         Log.e(TERMINAL_ID, prefProvider.getValue(Constants.UNIQUE_ID, ""))
 //        qwerty123
@@ -157,5 +166,4 @@ class LoginViewModel @Inject constructor(
 
         }
     }
-
 }

@@ -261,7 +261,8 @@ class ReasonForRefundDialog : DialogFragment() {
         viewModel.refundPaymentApiCall(
             refundAmount,
             refundData,
-            binding.edtReasonForRefund.text.toString()
+            binding.edtReasonForRefund.text.toString(),
+            paymentType
         )
     }
 

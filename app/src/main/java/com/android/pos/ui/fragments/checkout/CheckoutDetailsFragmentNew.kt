@@ -552,22 +552,41 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                         } else {
                             bundle.putDouble("PaidAmount", remainingAmount)
                         }
+                        Log.d(TAG, "observeData: paidAMount value :  "+paymentAmount)
 
                         val wholePrice =
                             prefProvider.getValue(Constants.WHOLE_AMOUNT, "0.0").toDouble()
+                        Log.d(TAG, "observeData: wholePrice value :  "+wholePrice)
                         bundle.putDouble("WholetotalPrice", wholePrice)
+                        Log.d(TAG, "observeData: cashDiscountSurcharge value :  "+cashDiscountSurcharge)
                         var remainingValue = 0.0
                         remainingValue = if (cashDiscountType == "SurCharge") {
                             (wholePrice + cashDiscountSurcharge) - paymentAmount
                         } else {
                             wholePrice - paymentAmount
                         }
+                        if (remainingValue <= 0.0) {
+                            remainingValue = 0.0
+                        }
+                        prefProvider.setValue(
+                            Constants.WHOLE_AMOUNT,
+                            String.format("%.2f", remainingValue))
 
+                        if(prefProvider.getValueboolean(Constants.SPLIT_ENABLE, false)==true){
+                            if(remainingValue!=cashDiscountSurcharge){
+                                prefProvider.setValue(
+                                    Constants.WHOLE_AMOUNT,
+                                    String.format("%.2f", remainingValue))
+
+                                remainingValue +=cashDiscountSurcharge
+                            }
+                        }
                         bundle.putDouble(
                             "remainingAmount",
-                            remainingValue
+                            String.format("%.2f", remainingValue).toDouble()
                         )
-                        prefProvider.setValue(Constants.WHOLE_AMOUNT, remainingValue.toString())
+                        Log.d(TAG, "observeData: remaining value :  "+String.format("%.2f", remainingValue))
+
 
                         if (remainingValue == 0.0 || remainingValue <= 0.0) {
                             bundle.putBoolean("isSpilt", false)
@@ -663,11 +682,13 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             totalDiscount = String.format("%.2f", totalDiscount / isSelectedCount).toDouble()
             cashDiscountSurcharge =
                 String.format("%.2f", cashDiscountSurcharge / isSelectedCount).toDouble()
-            paymentAmount = String.format(
-                "%.2f",
-                getCalCashDiscWithAmount(WholetotalPrice, false) / isSelectedCount
-            ).toDouble()
-            //   makePaymentCreditCard()
+            paymentAmount = String.format("%.2f", WholetotalPrice / isSelectedCount).toDouble()
+            Log.d(TAG, "paymentClick: cashDiscountSurcharge "+cashDiscountSurcharge)
+            Log.d(TAG, "paymentClick: paymentAmount  "+paymentAmount)
+            if(cashDiscountType=="SurCharge"){
+                paymentAmount =  String.format("%.2f", paymentAmount+cashDiscountSurcharge).toDouble()
+            }
+//            makePaymentCreditCard()
 
 
             magtekModule.stopListner(false)
@@ -1295,31 +1316,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
     }
 
-    private fun showdialog() {
-        val builder: android.app.AlertDialog.Builder =
-            android.app.AlertDialog.Builder(requireContext())
-        builder.setTitle(" Card Reader Not Found")
-        builder.setMessage("Please enter mac address")
 
-        val input = EditText(requireContext())
-        input.hint = "14:42:FC:0B:FB:FF"
-        input.inputType = InputType.TYPE_CLASS_TEXT
-        builder.setView(input)
-
-        builder.setPositiveButton("OK") { dialog, which ->
-            val m_Text = input.text.toString().trim()
-
-            if (m_Text.isEmpty())
-                return@setPositiveButton
-
-            testDevice(m_Text)
-        }
-        builder.setNegativeButton(
-            "Cancel"
-        ) { dialog, which -> dialog.cancel() }
-
-        builder.show()
-    }
 
     private fun testDevice(m_Text: String) {
         if (magtekModule.m_scra?.isDeviceConnected == true) {
@@ -1336,6 +1333,10 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
     }
 
     override fun processStart(message: String, isDismiss: Boolean) {
+
+
+        isInsert = false
+        isCardRev = false
 
         ProgressUtils.setCallback(this)
         if (isDismiss) {

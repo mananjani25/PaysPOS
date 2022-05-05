@@ -99,7 +99,10 @@ class TransactionAdapter(val viewModel: TransactionViewModel) :
 
             itemBinding.txtTip.setOnClickListener {
 
-                mCallback?.onItemClickListener(it, position)
+                if (filterList[position].paymentType == "Card" && filterList[position].tips > 0) {
+
+                } else
+                    mCallback?.onItemClickListener(it, position)
             }
         }
     }

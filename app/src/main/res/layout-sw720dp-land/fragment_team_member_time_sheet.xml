@@ -160,19 +160,27 @@
             android:id="@+id/rvTeamTimeSheet"
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="9"
+            android:layout_weight="8"
             app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
             tools:listitem="@layout/view_item_timesheet" />
 
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_weight="2"
+            android:orientation="vertical"
+            android:layout_gravity="center_vertical"
+            android:gravity="center_vertical"
+            android:layout_marginStart="@dimen/_10sdp"
+            android:layout_marginBottom="@dimen/_1sdp"
+            android:layout_height="0dp">
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/tvEmployeeTotalHours"
             style="@style/CustomFontSemiBold"
             android:layout_width="wrap_content"
-            android:layout_height="0dp"
-            android:layout_weight="0.5"
-            android:layout_marginStart="@dimen/_10sdp"
-            android:layout_marginBottom="@dimen/_1sdp"
+            android:layout_height="wrap_content"
             android:gravity="center"
+            android:layout_marginBottom="@dimen/_3sdp"
             android:textColor="@color/btnColorDark"
             android:textSize="@dimen/_6mdpi"
             android:textStyle="bold" />
@@ -181,15 +189,12 @@
             android:id="@+id/tvEmployeeTotalWages"
             style="@style/CustomFontSemiBold"
             android:layout_width="wrap_content"
-            android:layout_height="0dp"
-            android:layout_weight="0.5"
-            android:layout_marginStart="@dimen/_10sdp"
-            android:layout_marginBottom="@dimen/_5sdp"
+            android:layout_height="wrap_content"
             android:gravity="center"
             android:textColor="@color/btnColorDark"
             android:textSize="@dimen/_6mdpi"
             android:textStyle="bold" />
-
+        </LinearLayout>
 
     </LinearLayout>
 </layout>

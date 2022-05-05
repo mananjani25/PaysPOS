@@ -95,7 +95,8 @@ class TransactionDetailsViewModel @Inject constructor(
     fun refundPaymentApiCall(
         refundAmount: Double,
         refundData: RefundRequestModel,
-        refundReason: String
+        refundReason: String,
+        paymentType: String
     ) {
 
         refundData.paymentRefund?.reasonForRefund = refundReason
@@ -114,12 +115,21 @@ class TransactionDetailsViewModel @Inject constructor(
 
                             resource.data?.let { createTaxResponse ->
 
-                                cashOutApi(
-                                    refundData,
-                                    refundAmount,
-                                    createTaxResponse,
-                                    refundReason
-                                )
+
+                                if (paymentType == "Card") {
+
+                                    _dataRefundDone.value = Event(createTaxResponse)
+
+                                } else {
+                                    cashOutApi(
+                                        refundData,
+                                        refundAmount,
+                                        createTaxResponse,
+                                        refundReason
+                                    )
+                                }
+
+
                             }
 
 

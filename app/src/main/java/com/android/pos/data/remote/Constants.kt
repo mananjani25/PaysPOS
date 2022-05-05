@@ -537,6 +537,7 @@ object Constants {
 
 
     const val MAGENSA_SETTINGS = "magensaSettings"
+    const val MAGENSA_SETTINGS1 = "magensaSettings1"
 
     const val ELAVON_GATEWAY = "Elavon"
     const val FIRST_DATA_GATEWAY = "Rapid Connect" //(First Data Nashville/Omaha/North)

@@ -273,7 +273,6 @@
                         android:layout_gravity="center"
                         android:layout_marginTop="@dimen/_3sdp"
                         android:layout_marginBottom="@dimen/_3sdp"
-                        android:text="@{model.birth_date}"
                         android:textColor="@color/txtColor"
                         android:textSize="@dimen/_6mdpi" />
 

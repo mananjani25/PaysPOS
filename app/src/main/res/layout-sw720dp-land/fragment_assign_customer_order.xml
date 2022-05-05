@@ -13,8 +13,7 @@
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="@dimen/_5sdp">
+            android:layout_height="wrap_content">
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/imgBack"
@@ -22,8 +21,8 @@
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
                 android:layout_gravity="center"
-                app:srcCompat="@drawable/ic_cancel_black"
-                 />
+                android:padding="@dimen/_6sdp"
+                app:srcCompat="@drawable/ic_cancel_black" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 style="@style/CustomFontSemiBold"
@@ -37,22 +36,21 @@
                 android:textSize="@dimen/_7mdpi" />
 
 
-            <androidx.appcompat.widget.AppCompatTextView
+            <TextView
                 android:id="@+id/txtHome"
                 style="@style/CustomFontBold"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="@dimen/_23sdp"
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
-
-                android:layout_marginStart="@dimen/_5sdp"
-                android:layout_marginTop="@dimen/_5sdp"
-                android:layout_marginEnd="@dimen/_5sdp"
-                android:layout_marginBottom="@dimen/_5sdp"
+                android:background="@drawable/button_action_hover"
+                android:gravity="center"
+                android:paddingHorizontal="@dimen/padding_home_button"
                 android:text="@string/tv_home"
-                android:textColor="@color/txt_color_blue"
-                android:textSize="@dimen/_5mdpi"
-                app:textAllCaps="true" />
+                android:textAllCaps="true"
+                android:textColor="@color/white"
+                android:textSize="@dimen/_7mdpi"
+                android:visibility="visible" />
 
 
         </RelativeLayout>
