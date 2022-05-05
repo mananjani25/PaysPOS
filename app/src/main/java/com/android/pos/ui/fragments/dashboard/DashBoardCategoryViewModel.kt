@@ -115,7 +115,7 @@ class DashBoardCategoryViewModel @Inject constructor(
     private val _updateOrder = MutableLiveData<Event<Any?>>()
     val updateOrder: LiveData<Event<Any?>> = _updateOrder
 
-    var openOrderUpdate: Boolean ? =false
+    var openOrderUpdate: Boolean? = false
 
 
     fun getCustomerReceiptSettings() = posRepository.getCustomerReceiptSettings()
@@ -583,7 +583,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                             if (item.isEdited) {
                                                 model.isEdited = item.isEdited
                                             }
-                                         //   itemDiscountApply(model, item)
+                                            //   itemDiscountApply(model, item)
                                         }
 
                                         list[index] = model
@@ -1024,7 +1024,6 @@ class DashBoardCategoryViewModel @Inject constructor(
         context: Context
     ) {
 
-
         var totalAmmount = 0.0
         nonCashAdj = 0.0
         totalPrice = 0.0
@@ -1210,9 +1209,11 @@ class DashBoardCategoryViewModel @Inject constructor(
                         totalDiscount += if (!it.isManualSales) {
                             (it.discountPrice * it.itemQuantity)
                         } else {
+                            Log.e(TAG,"discountedPrice  ${it.discountPrice}")
                             it.discountPrice
                         }
                     }
+
                     Log.e("OpenOrderCh", "cartDiscount  ${cartModel.discountPrice}")
                     Log.e("OpenOrderCh", "totalDiscounts  ${totalDiscount}")
 
