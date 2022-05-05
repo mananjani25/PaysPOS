@@ -977,7 +977,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                     Log.e("totalDiscount", totalDiscount.toString())
 
                     totalPrice = (subTotalPrice + totalTax + totalServiceCharge)
-
+                    cashDiscountType = prefProvider.getValue(Constants.OPTION_TYPE, "")
 
                     //loyalty point and price calculation
                     amountToBePaid = totalPrice
@@ -998,6 +998,15 @@ class DashBoardCategoryViewModel @Inject constructor(
                         )
                     }
 
+                    if (MethodUtils.isEnableCashDiscount(context)) {
+                        cashdiscountAmount = MethodUtils.calculateCashDiscount(
+                            totalPrice,
+                            prefProvider,
+                            context
+                        )
+                    } else {
+                        cashdiscountAmount = 0.0
+                    }
                     Log.e("amountToBePaid", "" + amountToBePaid)
                 } else {
 
