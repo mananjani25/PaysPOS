@@ -1209,7 +1209,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                         totalDiscount += if (!it.isManualSales) {
                             (it.discountPrice * it.itemQuantity)
                         } else {
-                            Log.e(TAG,"discountedPrice  ${it.discountPrice}")
+                            Log.e(TAG, "discountedPrice  ${it.discountPrice}")
                             it.discountPrice
                         }
                     }
