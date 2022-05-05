@@ -565,11 +565,15 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                             prefProvider.getValue(Constants.WHOLE_AMOUNT, "0.0").toDouble()
                         bundle.putDouble("WholetotalPrice", wholePrice)
                         var remainingValue = 0.0
-                        if (cashDiscountType == "SurCharge") {
-                            remainingValue = (wholePrice + cashDiscountSurcharge) - paymentAmount
+                        remainingValue = if (cashDiscountType == "SurCharge") {
+                            wholePrice - (paymentAmount - cashDiscountSurcharge)
                         } else {
-                            remainingValue = wholePrice - paymentAmount
+                            wholePrice - paymentAmount
                         }
+                        if (remainingValue <= 0.0) {
+                            remainingValue = 0.0
+                        }
+
 
                         bundle.putDouble(
                             "remainingAmount",
@@ -792,10 +796,13 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
             totalDiscount = String.format("%.2f", totalDiscount / isSelectedCount).toDouble()
             cashDiscountSurcharge =
                 String.format("%.2f", cashDiscountSurcharge / isSelectedCount).toDouble()
-            paymentAmount = String.format(
-                "%.2f",
-                getCalCashDiscWithAmount(WholetotalPrice, false) / isSelectedCount
-            ).toDouble()
+            paymentAmount = String.format("%.2f", WholetotalPrice / isSelectedCount).toDouble()
+            Log.d(TAG, "paymentClick: cashDiscountSurcharge " + cashDiscountSurcharge)
+            Log.d(TAG, "paymentClick: paymentAmount  " + paymentAmount)
+            if (cashDiscountType == "SurCharge") {
+                paymentAmount =
+                    String.format("%.2f", paymentAmount + cashDiscountSurcharge).toDouble()
+            }
          //  makePaymentCreditCard()
             if (device == 0) {
                 magtekPaymentCall()
@@ -879,10 +886,13 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
             totalDiscount = String.format("%.2f", totalDiscount / isSelectedCount).toDouble()
             cashDiscountSurcharge =
                 String.format("%.2f", cashDiscountSurcharge / isSelectedCount).toDouble()
-            paymentAmount = String.format(
-                "%.2f",
-                getCalCashDiscWithAmount(WholetotalPrice, false) / isSelectedCount
-            ).toDouble()
+            paymentAmount = String.format("%.2f", WholetotalPrice / isSelectedCount).toDouble()
+            Log.d(TAG, "paymentClick: cashDiscountSurcharge " + cashDiscountSurcharge)
+            Log.d(TAG, "paymentClick: paymentAmount  " + paymentAmount)
+            if (cashDiscountType == "SurCharge") {
+                paymentAmount =
+                    String.format("%.2f", paymentAmount + cashDiscountSurcharge).toDouble()
+            }
 
             val cardNumber = binding.edtCardNumber.rawText.toString().trim()
             val cardExpDate = binding.edtMMYY.rawText.toString().trim()

@@ -30,6 +30,7 @@ import com.android.pos.data.remote.Constants.BLUETOOTH
 import com.android.pos.data.remote.Constants.BUSINESS_ADDRESS
 import com.android.pos.data.remote.Constants.BUSINESS_NAME
 import com.android.pos.data.remote.Constants.BUSINESS_PHONE_NO
+import com.android.pos.data.remote.Constants.CASH_DISCOUNT_SURCHARGE
 import com.android.pos.data.remote.Constants.CUSTOMER
 import com.android.pos.data.remote.Constants.DINE_IN_ADAPTER_LIST
 import com.android.pos.data.remote.Constants.GUEST_POSITION
@@ -351,8 +352,14 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                         Log.e("Change 2", binding.txtChangeAmount.text.toString())
                     } else {
-
-                        val changeValue = (paidAmount - dis_charge_value) - remainingAmount
+                        var changeValue = 0.0
+                        if (prefProvider.getValue(Constants.OPTION_TYPE, "") == "SurCharge") {
+                            changeValue =
+                                (paidAmount - prefProvider.getValue(CASH_DISCOUNT_SURCHARGE, "")
+                                    .toDouble()) - remainingAmount
+                        } else {
+                            changeValue = paidAmount - remainingAmount
+                        }
                         if (Math.round(changeValue) > 0.0) {
                             changeAmtGlobal =
                                 MethodUtils.roundOffAmountDouble(changeValue).toDouble()
