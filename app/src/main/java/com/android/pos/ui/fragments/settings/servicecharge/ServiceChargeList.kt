@@ -14,7 +14,9 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.R
 import com.android.pos.data.entities.TbServiceCharge
+import com.android.pos.data.remote.Constants
 import com.android.pos.databinding.ServiceChargeFragmentBinding
+import com.android.pos.di.PrefProvider
 import com.android.pos.ui.adapter.ServiceChargeListAdapter
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.ProgressUtils
@@ -25,6 +27,7 @@ import com.android.pos.utils.statusUtils.Status
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.*
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class ServiceChargeList : Fragment(), ItemCallback {
@@ -37,6 +40,9 @@ class ServiceChargeList : Fragment(), ItemCallback {
     private lateinit var serviceChargeListadapter: ServiceChargeListAdapter
     private lateinit var serviceChargeObject: TbServiceCharge
 
+    @Inject
+    lateinit var prefProvider: PrefProvider
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -45,7 +51,7 @@ class ServiceChargeList : Fragment(), ItemCallback {
 
         binding = ServiceChargeFragmentBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = this
-
+        prefProvider = PrefProvider(requireContext())
         setUpRecyclerView()
         getTaxListObserver()
         setupSnackbar()
@@ -79,8 +85,23 @@ class ServiceChargeList : Fragment(), ItemCallback {
                         ProgressUtils.dismissProgressDialog()
                         binding.rvServiceCharge.visibility = View.VISIBLE
                         resource.data?.let { taxList ->
-                            Collections.reverse(taxList)
-                            setTaxData(taxList)
+                            if (!prefProvider.getValueboolean(
+                                    Constants.SERVICECHARGE_TAKEOUT_OPENORDER,
+                                    false
+                                )
+                            ) {
+                                taxList.forEach {
+                                    if (it.order_type == Constants.SERVICECHARGE_TAKEOUT_OPENORDER) {
+                                        it.isEnabled = false
+                                    }
+                                }
+                                Collections.reverse(taxList)
+                                setTaxData(taxList)
+                            }else{
+                                Collections.reverse(taxList)
+                                setTaxData(taxList)
+                            }
+
                         }
                     }
                     Status.ERROR -> {

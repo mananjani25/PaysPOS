@@ -81,7 +81,7 @@ class CheckoutDineInPaymentViewModel @Inject constructor(
     var isOrderUpdate: Boolean = false
     val returnedVal = posRepository.getManualCategoryId()
     var viewModelcartList: ArrayList<CartModel> = arrayListOf()
-    var serviceCharge = posRepository.serviceChargeList()
+
     private var mPosition: Int = 0
 
     private val _updateOrder = MutableLiveData<Event<Any?>>()
@@ -108,7 +108,6 @@ class CheckoutDineInPaymentViewModel @Inject constructor(
         this.cartModel = generateCombinedItems(cartList[0])
     }
 
-    val serviceCharges = posRepository.serviceChargeList()
     val getOrderTypes = posRepository.getOrderTypes()
 
     val activeLoyaltyProgramLiveData = posRepository.getActiveLoyaltyProgramFromDb()

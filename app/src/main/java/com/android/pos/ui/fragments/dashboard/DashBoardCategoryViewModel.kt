@@ -36,6 +36,8 @@ import com.android.pos.data.remote.Constants.DINE_IN_UPDATE
 import com.android.pos.data.remote.Constants.EMPLOYEE_ID
 import com.android.pos.data.remote.Constants.IS_PRINTER_QUEUE_ENABLE
 import com.android.pos.data.remote.Constants.ORDER_TYPE
+import com.android.pos.data.remote.Constants.SERVICECHARGE_DINEIN_ORDER
+import com.android.pos.data.remote.Constants.SERVICECHARGE_TAKEOUT_OPENORDER
 import com.android.pos.data.remote.Constants.SYSTEM_TIMEZONE
 import com.android.pos.data.remote.Constants.UPDATE
 import com.android.pos.data.remote.Constants.VENUE_LOGO
@@ -67,6 +69,7 @@ import java.net.HttpURLConnection
 import java.net.URL
 import java.util.*
 import javax.inject.Inject
+import kotlin.collections.ArrayList
 import kotlin.collections.set
 
 
@@ -109,7 +112,6 @@ class DashBoardCategoryViewModel @Inject constructor(
     var isOrderUpdate: Boolean = false
     val returnedVal = posRepository.getManualCategoryId()
     var viewModelcartList: ArrayList<CartModel> = arrayListOf()
-    var serviceCharge = posRepository.serviceChargeList()
     private var mPosition: Int = 0
     var tipTransactionAmount = 0.0
     private val _updateOrder = MutableLiveData<Event<Any?>>()
@@ -215,7 +217,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     }
 
-    var serviceChargesList: List<TbServiceCharge> = emptyList()
+    var serviceChargesList: ArrayList<TbServiceCharge> = arrayListOf()
 
 
     fun addCart(cartModel: CartModel) {
@@ -1433,7 +1435,7 @@ class DashBoardCategoryViewModel @Inject constructor(
         }
     }
 
-    fun setServiceCharges(mList: List<TbServiceCharge>?) {
+    fun setServiceCharges(mList: ArrayList<TbServiceCharge>?) {
 
         if (mList != null) {
             this.serviceChargesList = mList
@@ -2356,6 +2358,14 @@ class DashBoardCategoryViewModel @Inject constructor(
                                     it.data.businessWebsite.toString()
                                 )
 
+                                prefProvider.setValueboolean(
+                                    SERVICECHARGE_TAKEOUT_OPENORDER,
+                                    it.data.service_charge_enable
+                                )
+                                prefProvider.setValueboolean(
+                                    SERVICECHARGE_DINEIN_ORDER,
+                                    it.data.enable_dine_in_service_charge
+                                )
                                 posRepository.addCashDiscountsFromDb(it.data.cash_discounts)
                                 taxServiceChargeRepository.deleteTaxFromDb()
                                 taxServiceChargeRepository.addAllTaxDatabase(it.data.taxes)
@@ -2364,6 +2374,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 tipDiscountRepository.deleteDiscountsFromDb()
                                 tipDiscountRepository.addDiscount(it.data.discounts)
                                 taxServiceChargeRepository.deleteServiceChargesFromDb()
+                                serviceChargesList.clear()
                                 taxServiceChargeRepository.addServiceCharges(it.data.service_charges)
                                 posRepository.deleteTerminalsFromDb()
                                 posRepository.addTerminalsDatabase(it.data.terminals)

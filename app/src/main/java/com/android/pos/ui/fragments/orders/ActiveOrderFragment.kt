@@ -684,7 +684,10 @@ class ActiveOrderFragment(
                 it.serviceChargeId,
                 true,
                 order.locationId,
+                it.max_guest_count,
+                it.min_guest_count,
                 it.name,
+                it.order_type,
                 it.rate,
                 it.updatedAt,
                 isActive = false,
@@ -2011,8 +2014,12 @@ class ActiveOrderFragment(
             event.getContentIfNotHandled()?.let {
                 //currentPage = 1
                 DatePickerDialog(
-                    requireActivity(), android.R.style.Theme_Material_Light_Dialog,startDate, myCalendar
-                        .get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
+                    requireActivity(),
+                    android.R.style.Theme_Material_Light_Dialog,
+                    startDate,
+                    myCalendar
+                        .get(Calendar.YEAR),
+                    myCalendar.get(Calendar.MONTH),
                     myCalendar.get(Calendar.DAY_OF_MONTH)
 
                 ).show()

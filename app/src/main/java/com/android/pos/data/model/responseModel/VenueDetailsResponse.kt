@@ -77,7 +77,11 @@ data class VenueDetailsResponse(
         @SerializedName("order_types")
         val orderTypes: List<TbOrderType>,
         @SerializedName("magensa_settings")
-        val magensaSettings: List<MagensaSettings>
+        val magensaSettings: List<MagensaSettings>,
+        @SerializedName("service_charge_enable")
+        val service_charge_enable: Boolean,
+        @SerializedName("enable_dine_in_service_charge")
+        val enable_dine_in_service_charge: Boolean
 
     ) {
         @Entity(tableName = "TbCancelOrderReason")
@@ -127,14 +131,14 @@ data class VenueDetailsResponse(
             @SerializedName("url")
             val logoUrl: String,
             @SerializedName("thumb")
-            val thumb:Thumb,
+            val thumb: Thumb,
             @SerializedName("record")
             val record: Record
 
         ) {
             data class Thumb(
                 @SerializedName("url")
-                val thumbUrl:String
+                val thumbUrl: String
             )
 
             data class Record(

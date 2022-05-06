@@ -23,6 +23,9 @@ object Constants {
 
     const val IS_UPDATE_ITEM = "isUpdateItem"
 
+    const val SERVICECHARGE_TAKEOUT_OPENORDER = "TakeOutAndParkOrder"
+    const val SERVICECHARGE_DINEIN_ORDER = "DineIn"
+
     //SharedPref Keys
     const val AUTH_TOKEN = "authToken"
     const val TERMINAL_ID = "terminalId"
