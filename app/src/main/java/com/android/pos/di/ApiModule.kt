@@ -6,7 +6,6 @@ import com.android.pos.data.remote.ApiService
 import com.android.pos.data.remote.Constants.AUTH_TOKEN
 import com.android.pos.data.remote.Constants.BASE_URL_NEW
 import com.android.pos.data.remote.NetworkConnectionInterceptor
-import com.squareup.okhttp.HttpUrl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -33,12 +32,6 @@ object ApiModule {
     fun provideNetworkConnectionInterceptor(
         @ApplicationContext app: Context
     ) = NetworkConnectionInterceptor(app)
-
-
-    var host: String = ""
-        set(url) {
-            field = HttpUrl.parse(url)!!.host()
-        }
 
     @Provides
     fun getRetrofit(
