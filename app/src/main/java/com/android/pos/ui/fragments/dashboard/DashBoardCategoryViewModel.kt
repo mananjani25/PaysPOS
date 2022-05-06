@@ -542,15 +542,27 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                         for (i in list.indices) {
                             if (item != null) {
-                                if (list[i].itemId == item.itemId && checkVariation(
-                                        list[i],
-                                        item
-                                    ) && checkModifier(list[i], item)
-                                ) {
-                                    Log.d(TAG, "cartLogic: " + i)
-                                    index = i
-                                    break
+                                if (item.isManualSales) {
+
+
+                                    if (list[i].manualSaleId == item.manualSaleId) {
+                                        Log.d(TAG, "cartLogic: " + i)
+                                        index = i
+                                        break
+                                    }
+
+                                } else {
+                                    if (list[i].itemId == item.itemId && checkVariation(
+                                            list[i],
+                                            item
+                                        ) && checkModifier(list[i], item)
+                                    ) {
+                                        Log.d(TAG, "cartLogic: " + i)
+                                        index = i
+                                        break
+                                    }
                                 }
+
                             }
                         }
 
@@ -2375,22 +2387,6 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 posRepository.addLoyaltyProgramFromDb(it.data.loyaltyPrograms)
                                 posRepository.deleteSurcharge()
                                 posRepository.addCashDiscountsFromDb(it.data.cash_discounts)
-
-                                if (it.data.cash_discounts.isNotEmpty()) {
-                                    it.data.cash_discounts.forEach {
-                                        if (it.is_active) {
-                                            prefProvider.setValue(
-                                                CASH_DISCOUNT_SURCHARGE_AMOUNT_TYPE,
-                                                it.amount_type
-                                            )
-                                            prefProvider.setValue(
-                                                CASH_DISCOUNT_SURCHARGE_RATE,
-                                                it.rate_or_amount.toString()
-                                            )
-                                        }
-                                    }
-                                }
-
                                 posRepository.deleteTeamRoleFromDb()
                                 posRepository.addTeamRoleFromDb(it.data.teamRoles)
                                 posRepository.deleteAllEmployee()
@@ -2664,7 +2660,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                 subTotalPrice = model.subTotal
                 totalTax = model.tax
                 totalServiceCharge = model.serviceCharge
-                totalDiscount = model.totalDiscount
+                totalDiscount = cartModel.discountPrice
                 order_note = cartModel.note
                 // subTotalPrice = model.subTotal
                 /*   cartModel.dineInList?.forEach { dine ->

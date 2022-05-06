@@ -95,7 +95,7 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
             initControls()
             initObservers()
             loadTerminals()
-            viewModel.setCurrentDate(myCalendar)
+
 
             binding.txtHome.setOnClickListener {
                 findNavController().navigate(R.id.action_settings_to_dashboardCategory)
@@ -110,19 +110,21 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
             binding.txtEmail.setOnClickListener {
 
 
-                viewModel.getEmployeeEmail(viewModel.selectedTerminalId.toInt()).observe(viewLifecycleOwner) {
+                if (viewModel.selectedTerminalId.isNotEmpty())
+                    viewModel.getEmployeeEmail(viewModel.selectedTerminalId.toInt())
+                        .observe(viewLifecycleOwner) {
 
-                    if (it.status == Status.SUCCESS) {
-                        val bundle = Bundle()
-                        bundle.putBoolean("EOD", true)
-                        bundle.putInt("type", 2)
-                        bundle.putString("email", it.data?.email)
-                        findNavController().navigate(
-                            R.id.action_reportEODFragment_to_sendReceiptFragment,
-                            bundle
-                        )
-                    }
-                }
+                            if (it.status == Status.SUCCESS) {
+                                val bundle = Bundle()
+                                bundle.putBoolean("EOD", true)
+                                bundle.putInt("type", 2)
+                                bundle.putString("email", it.data?.email)
+                                findNavController().navigate(
+                                    R.id.action_reportEODFragment_to_sendReceiptFragment,
+                                    bundle
+                                )
+                            }
+                        }
 
 
                 //  viewModel.getReportSummary("")
@@ -145,7 +147,7 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
                         val bundle = Bundle()
                         bundle.putBoolean("isDashboard", true)
-                        bundle.putBoolean("isSwap",false)
+                        bundle.putBoolean("isSwap", false)
                         findNavController().navigate(
                             R.id.action_reportEODFragment_to_passcode,
                             bundle
@@ -156,7 +158,7 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
                     }
                 }
             }
-        }catch (e:Exception){
+        } catch (e: Exception) {
             e.printStackTrace()
         }
 
@@ -345,8 +347,12 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
             event.getContentIfNotHandled()?.let {
 
                 DatePickerDialog(
-                    requireActivity(),android.R.style.Theme_Material_Light_Dialog, startDate, myCalendar
-                        .get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
+                    requireActivity(),
+                    android.R.style.Theme_Material_Light_Dialog,
+                    startDate,
+                    myCalendar
+                        .get(Calendar.YEAR),
+                    myCalendar.get(Calendar.MONTH),
                     myCalendar.get(Calendar.DAY_OF_MONTH)
                 ).show()
             }
@@ -355,8 +361,12 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
             event.getContentIfNotHandled()?.let {
 
                 DatePickerDialog(
-                    requireActivity(),android.R.style.Theme_Material_Light_Dialog, endDate, myCalendar1
-                        .get(Calendar.YEAR), myCalendar1.get(Calendar.MONTH),
+                    requireActivity(),
+                    android.R.style.Theme_Material_Light_Dialog,
+                    endDate,
+                    myCalendar1
+                        .get(Calendar.YEAR),
+                    myCalendar1.get(Calendar.MONTH),
                     myCalendar1.get(Calendar.DAY_OF_MONTH)
 
                 ).show()
@@ -613,7 +623,14 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
                             val roleName = teamEmployeeListGlobal.map { it.name }
 
-                            setUpEmployeeSpinnerAdapter(roleName as ArrayList<String>)
+                            setUpEmployeeSpinnerAdapter(
+                                roleName as ArrayList<String>,
+                                defaultEmployeePos
+                            )
+
+
+
+                            viewModel.setCurrentDate(myCalendar)
                         }
                     }
                     Status.ERROR -> {
@@ -629,7 +646,10 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
         }
     }
 
-    private fun setUpEmployeeSpinnerAdapter(terminalList: ArrayList<String>) {
+    private fun setUpEmployeeSpinnerAdapter(
+        terminalList: ArrayList<String>,
+        defaultEmployeePos: Int
+    ) {
         val spinnerAdapter = ArrayAdapter(
             requireActivity(),
             R.layout.row_spinner,
@@ -639,6 +659,8 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
         spinnerAdapter.setDropDownViewResource(R.layout.row_spinner)
         binding.spTerminals.adapter = spinnerAdapter
 
+        binding.spTerminals.setSelection(defaultEmployeePos, false);
+        Log.e("defaultEmployeePos", defaultEmployeePos.toString())
         binding.spTerminals.setSelection(defaultEmployeePos)
 
     }

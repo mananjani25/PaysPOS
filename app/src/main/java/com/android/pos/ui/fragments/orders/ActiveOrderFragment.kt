@@ -326,7 +326,7 @@ class ActiveOrderFragment(
             "UPDATE" -> {
                 var itemDiscountTotal: Double = 0.0
                 order.orderItems.forEach {
-                    if (it.discountAmount != 0.0) {
+                    if (it.discountAmount != 0.0 && it.quantity > 1) {
                          itemDiscountTotal += MethodUtils.roundOffAmountDouble(it.discountAmount / it.quantity)
                         it.discountAmount =
                             MethodUtils.roundOffAmountDouble(it.discountAmount / it.quantity)

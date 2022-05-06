@@ -156,7 +156,7 @@ class RefundItemListAdapter(val viewModel: TransactionDetailsViewModel) :
             var cashDiscountDivide = 0.0
             if (paymentType == "Cash") {
                 if (cashdiscountType == "CashDiscount") {
-                  //  cashDiscountDivide = (totalItemPrice * (rate_or_amount.toDouble())) / 100
+                    cashDiscountDivide = (totalItemPrice * (rate_or_amount.toDouble())) / 100
                 }
             } else if (paymentType == "Card") {
                 if (cashdiscountType == "SurCharge") {
