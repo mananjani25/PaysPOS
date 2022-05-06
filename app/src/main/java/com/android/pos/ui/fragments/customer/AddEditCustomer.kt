@@ -24,7 +24,6 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.android.pos.data.entities.TbCustomer
 import com.android.pos.data.model.requestModel.CreateCustomerRequestModel
-import com.android.pos.data.model.requestModel.CreateEmployeeRequestModel
 import com.android.pos.databinding.FragmentAddEditCustomerBinding
 import com.android.pos.ui.adapter.AddressListAdapter
 import com.android.pos.utils.AlertUtils
@@ -35,7 +34,6 @@ import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.collections.ArrayList
 
 
 @AndroidEntryPoint
@@ -620,7 +618,6 @@ class AddEditCustomer : Fragment() {
                     )
                 )
             }
-            viewModel.submit()
 
             viewModel.submit(listAddress)
         }
