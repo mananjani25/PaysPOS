@@ -99,7 +99,7 @@ class AddCustomerViewModel @Inject constructor(
         this.customerID = id
     }
 
-    fun submit() {
+    fun submit(listAddress: ArrayList<CreateCustomerRequestModel.Customer.Addresses>) {
         if (phoneNo.value != null) {
             addCustomerDetails.value?.data?.phones_attributes?.add(
                 0,
@@ -114,7 +114,7 @@ class AddCustomerViewModel @Inject constructor(
         }
 
 
-        Log.e(TAG, "listAddress:  ${Gson().toJson(listAddress)}")
+        Log.e(TAG, "listAddress:  ${Gson().toJson(this.listAddress)}")
         addCustomerDetails.value?.data?.final_reward = 0
         addCustomerDetails.value?.data?.enroll_to_loyalty = enroll_to_loyalty.value
         addCustomerDetails.value?.data?.addresses_attributes?.addAll(listAddress)
