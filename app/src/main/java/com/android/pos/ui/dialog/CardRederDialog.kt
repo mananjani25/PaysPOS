@@ -52,6 +52,10 @@ class CardRederDialog : DialogFragment() {
             binding.imgDynaFlex.setImageResource(R.drawable.device_card_selected)
         }
 
+        binding.iimgBack.setOnClickListener {
+            dialog?.cancel()
+            dialog?.dismiss()
+        }
         binding.llDynamo.setOnClickListener {
             prefProvider.setValueInt(Constants.MAGTEK_HARDWARE, 0)
             findNavController().navigate(R.id.action_cardRederDialog_to_magtekFragment)
