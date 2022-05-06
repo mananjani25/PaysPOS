@@ -96,15 +96,15 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
                 CUSTOMER_MODEL
             )!!
 
-        if(customerModel.birth_date?.isNotEmpty() == true){
+        if (customerModel.birth_date?.isNotEmpty() == true) {
             val inputFormat = SimpleDateFormat("MM/dd/yyyy")
-            var date  = inputFormat.parse(customerModel.birth_date)
+            var date = inputFormat.parse(customerModel.birth_date)
             val outputFormat = SimpleDateFormat("MMM-dd-yyyy")
             val formattedDate = outputFormat.format(date)
             binding.txtBirthDate.setText(formattedDate)
         }
         binding.model = customerModel
-       // binding.executePendingBindings()
+        // binding.executePendingBindings()
 
         viewModel.customerId = customerModel.id.toString()
 
@@ -135,20 +135,19 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
                 "${AlertUtils.usNumberFormat(customerModel.phones[0].phone_number)}"
         }
         if (customerModel.addresses.isNotEmpty()) {
-            var address = ""
+            var address:StringBuffer = StringBuffer()
             var pos = 0
-            for (i in customerModel.addresses.indices) {
-                if (customerModel.addresses[i].full_address.isNotEmpty()) {
-                    pos = i + 1
-                    address =
-                        address + "Address" + pos.toString() + " : " + customerModel.addresses[i].full_address + "\n"
-                }
 
+            customerModel.addresses.forEach { addresstemp ->
+                address.append(addresstemp.type_of_address + " : " + addresstemp.full_address+"\n")
             }
             address.also {
                 binding.txtAddress.text = it
             }
         }
+
+
+
 
         binding.rvOrderHistory.adapter = orderHistoryAdapter
         orderHistoryAdapter.setListner(this)

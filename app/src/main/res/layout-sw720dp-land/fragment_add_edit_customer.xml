@@ -211,27 +211,266 @@
 
 
                 <RelativeLayout
+                    android:id="@+id/relative_billingaddress"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/_15sdp"
                     android:layout_marginTop="@dimen/_10sdp"
                     android:layout_marginEnd="@dimen/_15sdp">
 
-                    <TextView
-                        style="@style/CustomFontSemiBold"
+                    <androidx.appcompat.widget.LinearLayoutCompat
+                        android:id="@+id/heading_linear"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/tv_address"
-                        android:textColor="@color/txtColor"
-                        android:textSize="@dimen/_5mdpi" />
+                        android:orientation="vertical">
 
+                        <TextView
+                            style="@style/CustomFontSemiBold"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/billing_address"
+                            android:textColor="@color/txtColor"
+                            android:textSize="@dimen/_5mdpi" />
+
+                    </androidx.appcompat.widget.LinearLayoutCompat>
                     <ImageView
                         android:id="@+id/imgAddressAdd"
                         android:layout_width="@dimen/_12sdp"
                         android:layout_height="@dimen/_12sdp"
+                        android:visibility="gone"
                         android:layout_alignParentEnd="true"
                         android:src="@drawable/ic_add"
                         app:tint="@color/txt_color_blue" />
+
+                    <androidx.appcompat.widget.LinearLayoutCompat
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/heading_linear"
+                        android:layout_marginTop="@dimen/_3sdp"
+                        android:orientation="vertical">
+
+
+                        <Spinner
+                            android:id="@+id/edtAddress"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/_5sdp"
+                            android:background="@drawable/background_square_border_grey"
+                            android:padding="@dimen/_9sdp"
+                            android:theme="@style/SpinnerTheme" />
+
+                        <androidx.appcompat.widget.AppCompatAutoCompleteTextView
+                            android:id="@+id/edtStreet"
+                            style="@style/CustomFontMediumStyle"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/background_square_border_grey"
+                            android:hint="Street"
+                            android:imeOptions="actionNext"
+                            android:inputType="textVisiblePassword"
+                            android:padding="@dimen/_9sdp"
+                            android:textColor="@color/txtColor"
+                            android:textColorHint="@color/hintColor"
+                            android:textSize="@dimen/_7mdpi" />
+
+                        <EditText
+                            android:id="@+id/edtSuite"
+                            style="@style/CustomFontMediumStyle"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/background_square_border_grey"
+                            android:digits="@string/disable_emoji_string"
+                            android:hint="@string/apt_suite"
+                            android:inputType="textVisiblePassword"
+                            android:padding="@dimen/_9sdp"
+                            android:textColor="@color/txtColor"
+                            android:textColorHint="@color/hint_color"
+                            android:textSize="@dimen/_7mdpi" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:weightSum="3">
+
+
+                            <EditText
+                                android:id="@+id/edtCity"
+                                style="@style/CustomFontMediumStyle"
+                                android:layout_width="0sp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:background="@drawable/background_square_border_grey"
+                                android:digits="@string/disable_emoji_string"
+                                android:hint="@string/city"
+                                android:inputType="textVisiblePassword"
+                                android:padding="@dimen/_9sdp"
+                                android:textColor="@color/txtColor"
+                                android:textColorHint="@color/hint_color"
+                                android:textSize="@dimen/_7mdpi" />
+
+                            <EditText
+                                android:id="@+id/edtState"
+                                style="@style/CustomFontMediumStyle"
+                                android:layout_width="0sp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:background="@drawable/background_square_border_grey"
+                                android:digits="@string/disable_emoji_string"
+                                android:hint="@string/state"
+                                android:inputType="textVisiblePassword"
+                                android:padding="@dimen/_9sdp"
+                                android:textColor="@color/txtColor"
+                                android:textColorHint="@color/hint_color"
+                                android:textSize="@dimen/_7mdpi" />
+
+                            <EditText
+                                android:id="@+id/edtZip"
+                                style="@style/CustomFontMediumStyle"
+                                android:layout_width="0sp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:background="@drawable/background_square_border_grey"
+                                android:digits="@string/disable_emoji_string"
+                                android:hint="@string/zip"
+                                android:inputType="textVisiblePassword"
+                                android:padding="@dimen/_9sdp"
+                                android:textColor="@color/txtColor"
+                                android:textColorHint="@color/hint_color"
+                                android:textSize="@dimen/_7mdpi" />
+
+
+                        </LinearLayout>
+
+
+                    </androidx.appcompat.widget.LinearLayoutCompat>
+                </RelativeLayout>
+                <RelativeLayout
+                    android:id="@+id/relative_deliveryaddress"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/_15sdp"
+                    android:layout_marginTop="@dimen/_10sdp"
+                    android:layout_marginEnd="@dimen/_15sdp">
+
+                    <androidx.appcompat.widget.LinearLayoutCompat
+                        android:id="@+id/heading_linear_delivery"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <TextView
+                            style="@style/CustomFontSemiBold"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/shipping_address"
+                            android:textColor="@color/txtColor"
+                            android:textSize="@dimen/_5mdpi" />
+
+                    </androidx.appcompat.widget.LinearLayoutCompat>
+
+                    <androidx.appcompat.widget.LinearLayoutCompat
+                        android:layout_width="match_parent"
+                        android:layout_below="@+id/heading_linear_delivery"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/_3sdp"
+                        android:orientation="vertical">
+
+
+                        <Spinner
+                            android:id="@+id/edtAddress_del"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/_5sdp"
+                            android:background="@drawable/background_square_border_grey"
+                            android:padding="@dimen/_9sdp"
+                            android:theme="@style/SpinnerTheme" />
+
+                        <androidx.appcompat.widget.AppCompatAutoCompleteTextView
+                            android:id="@+id/edtStreet_del"
+                            style="@style/CustomFontMediumStyle"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/background_square_border_grey"
+                            android:hint="Street"
+                            android:imeOptions="actionNext"
+                            android:inputType="textVisiblePassword"
+                            android:padding="@dimen/_9sdp"
+                            android:textColor="@color/txtColor"
+                            android:textColorHint="@color/hintColor"
+                            android:textSize="@dimen/_7mdpi" />
+
+                        <EditText
+                            android:id="@+id/edtSuite_del"
+                            style="@style/CustomFontMediumStyle"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/background_square_border_grey"
+                            android:inputType="textVisiblePassword"
+                            android:padding="@dimen/_9sdp"
+                            android:textColor="@color/txtColor"
+                            android:textSize="@dimen/_7mdpi"
+                            android:textColorHint="@color/hint_color"
+                            android:hint="@string/apt_suite"
+                            android:digits="@string/disable_emoji_string"/>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:weightSum="3">
+
+
+                            <EditText
+                                android:id="@+id/edtCity_del"
+                                style="@style/CustomFontMediumStyle"
+                                android:layout_width="0sp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:background="@drawable/background_square_border_grey"
+                                android:inputType="textVisiblePassword"
+                                android:padding="@dimen/_9sdp"
+                                android:digits="@string/disable_emoji_string"
+                                android:textColor="@color/txtColor"
+                                android:textSize="@dimen/_7mdpi"
+                                android:hint="@string/city"
+                                android:textColorHint="@color/hint_color"/>
+
+                            <EditText
+                                android:id="@+id/edtState_del"
+                                style="@style/CustomFontMediumStyle"
+                                android:layout_width="0sp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:background="@drawable/background_square_border_grey"
+                                android:inputType="textVisiblePassword"
+                                android:padding="@dimen/_9sdp"
+                                android:digits="@string/disable_emoji_string"
+                                android:textColor="@color/txtColor"
+                                android:textSize="@dimen/_7mdpi"
+                                android:hint="@string/state"
+                                android:textColorHint="@color/hint_color"/>
+
+                            <EditText
+                                android:id="@+id/edtZip_del"
+                                style="@style/CustomFontMediumStyle"
+                                android:layout_width="0sp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:background="@drawable/background_square_border_grey"
+                                android:inputType="textVisiblePassword"
+                                android:padding="@dimen/_9sdp"
+                                android:digits="@string/disable_emoji_string"
+                                android:textColor="@color/txtColor"
+                                android:textSize="@dimen/_7mdpi"
+                                android:hint="@string/zip"
+                                android:textColorHint="@color/hint_color"/>
+
+
+                        </LinearLayout>
+
+
+                    </androidx.appcompat.widget.LinearLayoutCompat>
                 </RelativeLayout>
 
                 <androidx.recyclerview.widget.RecyclerView
@@ -239,6 +478,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
+                    android:visibility="gone"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     tools:listitem="@layout/view_customer_address" />
 

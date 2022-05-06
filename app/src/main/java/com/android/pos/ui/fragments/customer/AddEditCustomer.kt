@@ -1,9 +1,14 @@
 package com.android.pos.ui.fragments.customer
 
 import `in`.madapps.placesautocomplete.PlaceAPI
+import `in`.madapps.placesautocomplete.adapter.PlacesAutoCompleteAdapter
+import `in`.madapps.placesautocomplete.listener.OnPlacesDetailsListener
+import `in`.madapps.placesautocomplete.model.Place
+import `in`.madapps.placesautocomplete.model.PlaceDetails
 import android.R
 import android.annotation.SuppressLint
 import android.app.DatePickerDialog
+import android.location.Geocoder
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -19,6 +24,7 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.android.pos.data.entities.TbCustomer
 import com.android.pos.data.model.requestModel.CreateCustomerRequestModel
+import com.android.pos.data.model.requestModel.CreateEmployeeRequestModel
 import com.android.pos.databinding.FragmentAddEditCustomerBinding
 import com.android.pos.ui.adapter.AddressListAdapter
 import com.android.pos.utils.AlertUtils
@@ -29,6 +35,7 @@ import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.collections.ArrayList
 
 
 @AndroidEntryPoint
@@ -41,7 +48,6 @@ class AddEditCustomer : Fragment() {
     private lateinit var placesApi: PlaceAPI
     private var listAddress: ArrayList<CreateCustomerRequestModel.Customer.Addresses> =
         arrayListOf()
-
     private lateinit var modelAddress: CreateCustomerRequestModel.Customer.Addresses
     private lateinit var adapter: AddressListAdapter
     private var country = arrayOf("United States", "Canada")
@@ -134,21 +140,22 @@ class AddEditCustomer : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        modelAddress = CreateCustomerRequestModel.Customer.Addresses(
-            null,
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            "",
-            0.0,
-            0.0,
-        )
+//        modelAddress = CreateCustomerRequestModel.Customer.Addresses(
+//            null,
+//            "",
+//            "",
+//            "",
+//            "",
+//            "",
+//            "",
+//            "",
+//            0.0,
+//            0.0,
+//        )
 
-        setAddress()
+//        setAddress()
         onClick()
+        setPlaceApi()
         isEdit = requireArguments().getBoolean("isEdit", false)
         Log.e(TAG, "isEdit  $isEdit")
 
@@ -157,7 +164,9 @@ class AddEditCustomer : Fragment() {
         }
         binding.header.txtTitle.text = getString(com.android.pos.R.string.add_new_customer)
         binding.header.txtSave.text = getString(com.android.pos.R.string.save)
+        setCountryAddress()
         if (isEdit) {
+            listAddress = arrayListOf()
             binding.header.txtTitle.text = getString(com.android.pos.R.string.update_customer)
             binding.header.txtSave.text = getString(com.android.pos.R.string.update)
 
@@ -205,29 +214,51 @@ class AddEditCustomer : Fragment() {
             }
             viewModel.addCustomerDetails.value?.data?.email = editModel.email
 
-            if (editModel.addresses.isNotEmpty()) {
-                var list: ArrayList<CreateCustomerRequestModel.Customer.Addresses> = arrayListOf()
 
-                for (i in 0 until editModel.addresses.size) {
-                    list.add(
+
+
+            if (editModel.addresses.isNotEmpty()) {
+                editModel.addresses.forEach {
+                    listAddress.add(
                         CreateCustomerRequestModel.Customer.Addresses(
-                            editModel.addresses.get(i).id,
-                            editModel.addresses.get(i).address1,
-                            editModel.addresses.get(i).address2,
-                            editModel.addresses.get(i).city,
-                            editModel.addresses.get(i).state,
-                            editModel.addresses.get(i).country,
-                            editModel.addresses.get(i).postcode,
-                            editModel.addresses.get(i).type_of_address.toString(),
+                            it.id,
+                            it.address1,
+                            it.address2,
+                            it.city,
+                            it.state,
+                            it.country,
+                            it.postcode,
+                            it.type_of_address,
                             0.0,
                             0.0,
+                            "false"
                         )
                     )
-
+                }
+                viewModel.setAddressList(listAddress)
+                binding.edtStreet?.setText(editModel.addresses[0].address1)
+                binding.edtSuite?.setText(editModel.addresses[0].address2)
+                binding.edtCity?.setText(editModel.addresses[0].city)
+                binding.edtState?.setText(editModel.addresses[0].state)
+                binding.edtZip?.setText(editModel.addresses[0].postcode)
+                if (editModel.addresses[0].country == "United States") {
+                    binding.edtAddress?.setSelection(0)
+                } else {
+                    binding.edtAddress?.setSelection(1)
+                }
+                if (editModel.addresses[1] != null) {
+                    binding.edtStreetDel?.setText(editModel.addresses[1].address1)
+                    binding.edtSuiteDel?.setText(editModel.addresses[1].address2)
+                    binding.edtCityDel?.setText(editModel.addresses[1].city)
+                    binding.edtStateDel?.setText(editModel.addresses[1].state)
+                    binding.edtZipDel?.setText(editModel.addresses[1].postcode)
+                    if (editModel.addresses[1].country == "United States") {
+                        binding.edtAddressDel?.setSelection(0)
+                    } else {
+                        binding.edtAddressDel?.setSelection(1)
+                    }
                 }
 
-
-                adapter.setAddress(list)
             }
 
 
@@ -235,24 +266,11 @@ class AddEditCustomer : Fragment() {
             //binding.edtCompany.setText(editModel.company)
             if (editModel.birth_date != null) {
                 val inputFormat = SimpleDateFormat("MM/dd/yyyy")
-                var date  = inputFormat.parse(editModel.birth_date)
+                var date = inputFormat.parse(editModel.birth_date)
                 val outputFormat = SimpleDateFormat("MMM-dd-yyyy")
                 val formattedDate = outputFormat.format(date)
                 binding.edtBirthDay.setText(formattedDate)
             }
-
-        } else {
-
-            var list: ArrayList<CreateCustomerRequestModel.Customer.Addresses> = arrayListOf()
-            var model = CreateCustomerRequestModel.Customer.Addresses()
-            model.apply {
-                latitude = 0.0
-                longitude = 0.0
-            }
-            list.add(model)
-
-            adapter.setAddress(list)
-            viewModel.setAddressList(adapter.getList())
 
         }
 
@@ -268,55 +286,334 @@ class AddEditCustomer : Fragment() {
 
     }
 
-    @SuppressLint("NotifyDataSetChanged")
-    private fun onClick() {
-        binding.imgAddressAdd.setOnClickListener {
+    private fun decodeLocation(lat: Double, lng: Double, place: String) {
 
-            Log.e(TAG, "adapterGetAddress  ${Gson().toJson(adapter.getList())}")
-            if (adapter.getList().isEmpty()) {
-                modelAddress = CreateCustomerRequestModel.Customer.Addresses()
-                modelAddress.apply {
-                    latitude = 0.0
-                    longitude = 0.0
+    }
+
+    private fun setPlaceApi() {
+        placesApi =
+            PlaceAPI.Builder()
+                .apiKey(binding.root.context.getString(com.android.pos.R.string.api_key))
+                .build(binding.root.context)
+
+        binding.edtStreet?.setAdapter(PlacesAutoCompleteAdapter(binding.root.context, placesApi))
+        binding.edtStreet?.setOnItemClickListener { parent, view, position, id ->
+            val place = parent.getItemAtPosition(position) as Place
+
+            //binding.edtStreet.setText("${place.description}")
+            placesApi.fetchPlaceDetails(place.id, object : OnPlacesDetailsListener {
+                override fun onError(errorMessage: String) {
                 }
-                adapter.addData(
-                    modelAddress
-                )
 
-            } else if (adapter.getList()[adapter.getList().size - 1].address1.isNotEmpty() || adapter.getList()[adapter.getList().size - 1].city.isNotEmpty() || adapter.getList()
-                    .get(adapter.getList().size - 1)._destroy == "true"
+                override fun onPlaceDetailsFetched(placeDetails: PlaceDetails) {
+
+                    decodeLocation(placeDetails.lat, placeDetails.lng, placeDetails.name)
+
+                    val gcd = Geocoder(requireContext(), Locale.getDefault())
+                    /* val address: List<Address> =
+                         gcd.getFromLocation(placeDetails.lat, placeDetails.lng, 1)*/
+
+                    var street = ""
+                    var suite = ""
+                    var city = ""
+                    var state = ""
+                    var zip = ""
+                    placeDetails.address.forEach {
+                        it.type.forEach { type ->
+                            if (type.trim().lowercase() == "street_number".trim().lowercase()) {
+                                street += it.longName
+                            } else if (type.trim().lowercase() == "route".trim().lowercase()) {
+                                street += it.longName
+                            } else if (type.trim().lowercase() == "neighborhood".trim()
+                                    .lowercase()
+                            ) {
+                                suite = it.longName
+                            } else if (type.trim().lowercase() == "locality".trim()
+                                    .lowercase()
+                            ) {
+                                city = it.longName
+                            } else if (type.trim()
+                                    .lowercase() == "administrative_area_level_1".trim()
+                                    .lowercase()
+                            ) {
+                                state = it.longName
+                            } else if (type.trim().lowercase() == "postal_code".trim()
+                                    .lowercase()
+                            ) {
+                                zip = it.longName
+                            }
+
+                        }
+
+                    }
+
+
+                    if (placeDetails.address.isNotEmpty()) {
+                        try {
+                            binding.edtStreet?.setText(street)
+                            binding.edtSuite?.setText(suite)
+                            binding.edtCity?.setText(city)
+                            binding.edtState?.setText(state)
+                            binding.edtZip?.setText(zip)
+                        } catch (e: Exception) {
+                            Log.e(TAG, "exception in pplaces api")
+                        } finally {
+                            Log.e(TAG, "notify callback")
+                        }
+                    }
+
+                    Log.e(TAG, "placeDetails:  ${Gson().toJson(placeDetails.name)}")
+
+                }
+
+            })
+        }
+
+        binding.edtStreetDel?.setAdapter(PlacesAutoCompleteAdapter(binding.root.context, placesApi))
+        binding.edtStreetDel?.setOnItemClickListener { parent, view, position, id ->
+            val place = parent.getItemAtPosition(position) as Place
+
+            //binding.edtStreet.setText("${place.description}")
+            placesApi.fetchPlaceDetails(place.id, object : OnPlacesDetailsListener {
+                override fun onError(errorMessage: String) {
+                }
+
+                override fun onPlaceDetailsFetched(placeDetails: PlaceDetails) {
+
+                    decodeLocation(placeDetails.lat, placeDetails.lng, placeDetails.name)
+
+                    val gcd = Geocoder(requireContext(), Locale.getDefault())
+                    /* val address: List<Address> =
+                         gcd.getFromLocation(placeDetails.lat, placeDetails.lng, 1)*/
+
+                    var street = ""
+                    var suite = ""
+                    var city = ""
+                    var state = ""
+                    var zip = ""
+                    placeDetails.address.forEach {
+                        it.type.forEach { type ->
+                            if (type.trim().lowercase() == "street_number".trim().lowercase()) {
+                                street += it.longName
+                            } else if (type.trim().lowercase() == "route".trim().lowercase()) {
+                                street += it.longName
+                            } else if (type.trim().lowercase() == "neighborhood".trim()
+                                    .lowercase()
+                            ) {
+                                suite = it.longName
+                            } else if (type.trim().lowercase() == "locality".trim()
+                                    .lowercase()
+                            ) {
+                                city = it.longName
+                            } else if (type.trim()
+                                    .lowercase() == "administrative_area_level_1".trim()
+                                    .lowercase()
+                            ) {
+                                state = it.longName
+                            } else if (type.trim().lowercase() == "postal_code".trim()
+                                    .lowercase()
+                            ) {
+                                zip = it.longName
+                            }
+
+                        }
+
+                    }
+
+
+                    if (placeDetails.address.isNotEmpty()) {
+                        try {
+                            binding.edtStreetDel?.setText(street)
+                            binding.edtSuiteDel?.setText(suite)
+                            binding.edtCityDel?.setText(city)
+                            binding.edtStateDel?.setText(state)
+                            binding.edtZipDel?.setText(zip)
+                        } catch (e: Exception) {
+                            Log.e(TAG, "exception in pplaces api")
+                        } finally {
+                            Log.e(TAG, "notify callback")
+                        }
+                    }
+
+                    Log.e(TAG, "placeDetails:  ${Gson().toJson(placeDetails.name)}")
+
+                }
+
+            })
+        }
+
+    }
+
+    private fun setCountryAddress() {
+        val adapter =
+            ArrayAdapter(requireContext(), R.layout.simple_spinner_item, country)
+        adapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item)
+
+        binding.edtAddress?.adapter = adapter
+        binding.edtAddress?.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(
+                parent: AdapterView<*>?,
+                view: View?,
+                position: Int,
+                id: Long
             ) {
-                Log.d("yash", "onClick: " + adapter.getList()[adapter.getList().size - 1].address1)
-                modelAddress = CreateCustomerRequestModel.Customer.Addresses()
-                modelAddress.apply {
-                    latitude = 0.0
-                    longitude = 0.0
-                }
-                adapter.addData(
-                    modelAddress
-                )
+
+                if (Build.VERSION.SDK_INT < 23) {
+                    (parent?.getChildAt(0) as TextView).setTextAppearance(
+                        view?.context,
+                        com.android.pos.R.style.SpinnerTheme
+                    )
+                } else {
+                    (parent?.getChildAt(0) as TextView).setTextAppearance(com.android.pos.R.style.SpinnerTheme); }
+
+
+            }
+
+            override fun onNothingSelected(parent: AdapterView<*>?) {
+
             }
 
         }
+        val adapter1 =
+            ArrayAdapter(requireContext(), R.layout.simple_spinner_item, country)
+        adapter1.setDropDownViewResource(R.layout.simple_spinner_dropdown_item)
 
-        binding.header.txtSave.setOnClickListener {
-            if (!isEdit) {
-
-                if (adapter.getList().size == 1 && adapter.getList()
-                        .get(adapter.getList().size - 1).address1.isEmpty() && adapter.getList()
-                        .get(adapter.getList().size - 1).address2.isEmpty() && adapter.getList()
-                        .get(adapter.getList().size - 1).city.isEmpty() && adapter.getList()
-                        .get(adapter.getList().size - 1).postcode.isEmpty()
+        binding.edtAddressDel?.adapter = adapter
+        binding.edtAddressDel?.onItemSelectedListener =
+            object : AdapterView.OnItemSelectedListener {
+                override fun onItemSelected(
+                    parent: AdapterView<*>?,
+                    view: View?,
+                    position: Int,
+                    id: Long
                 ) {
 
-                    viewModel.setAddressList(arrayListOf())
-                } else {
-                    viewModel.setAddressList(adapter.getList())
+                    if (Build.VERSION.SDK_INT < 23) {
+                        (parent?.getChildAt(0) as TextView).setTextAppearance(
+                            view?.context,
+                            com.android.pos.R.style.SpinnerTheme
+                        )
+                    } else {
+                        (parent?.getChildAt(0) as TextView).setTextAppearance(com.android.pos.R.style.SpinnerTheme); }
+
+
                 }
-            } else {
-                viewModel.setAddressList(adapter.getList())
+
+                override fun onNothingSelected(parent: AdapterView<*>?) {
+
+                }
+
             }
-             viewModel.submit()
+    }
+
+    @SuppressLint("NotifyDataSetChanged")
+    private fun onClick() {
+//        binding.imgAddressAdd.setOnClickListener {
+//
+//            Log.e(TAG, "adapterGetAddress  ${Gson().toJson(adapter.getList())}")
+//            if (adapter.getList().isEmpty()) {
+//                modelAddress = CreateCustomerRequestModel.Customer.Addresses()
+//                modelAddress.apply {
+//                    latitude = 0.0
+//                    longitude = 0.0
+//                }
+//                adapter.addData(
+//                    modelAddress
+//                )
+//
+//            } else if (adapter.getList()[adapter.getList().size - 1].address1.isNotEmpty() || adapter.getList()[adapter.getList().size - 1].city.isNotEmpty() || adapter.getList()
+//                    .get(adapter.getList().size - 1)._destroy == "true"
+//            ) {
+//                Log.d("yash", "onClick: " + adapter.getList()[adapter.getList().size - 1].address1)
+//                modelAddress = CreateCustomerRequestModel.Customer.Addresses()
+//                modelAddress.apply {
+//                    latitude = 0.0
+//                    longitude = 0.0
+//                }
+//                adapter.addData(
+//                    modelAddress
+//                )
+//            }
+//
+//        }
+
+        binding.header.txtSave.setOnClickListener {
+            if (isEdit) {
+                var id1: Int? = null
+                var id2: Int? = null
+
+                if (viewModel.listAddress.size > 0) {
+                    id1 = viewModel.listAddress[0].id!!
+                    id2 = viewModel.listAddress[1].id!!
+                }
+                listAddress = arrayListOf()
+
+
+                listAddress.add(
+                    CreateCustomerRequestModel.Customer.Addresses(
+                        id1,
+                        binding.edtStreet?.text.toString(),
+                        binding.edtStreet?.text.toString(),
+                        binding.edtCity?.text.toString(),
+                        binding.edtState?.text.toString(),
+                        binding.edtAddress?.selectedItem.toString(),
+                        binding.edtZip?.text.toString(),
+                        "Billing",
+                        0.0,
+                        0.0,
+                        "false"
+                    )
+                )
+                listAddress.add(
+                    CreateCustomerRequestModel.Customer.Addresses(
+                        id2,
+                        binding.edtStreetDel?.text.toString(),
+                        binding.edtStreetDel?.text.toString(),
+                        binding.edtCityDel?.text.toString(),
+                        binding.edtStateDel?.text.toString(),
+                        binding.edtAddressDel?.selectedItem.toString(),
+                        binding.edtZipDel?.text.toString(),
+                        "Shipping",
+                        0.0,
+                        0.0,
+                        "false"
+                    )
+                )
+            } else {
+                listAddress = arrayListOf()
+                listAddress.add(
+                    CreateCustomerRequestModel.Customer.Addresses(
+                        null,
+                        binding.edtStreet?.text.toString(),
+                        binding.edtStreet?.text.toString(),
+                        binding.edtCity?.text.toString(),
+                        binding.edtState?.text.toString(),
+                        binding.edtAddress?.selectedItem.toString(),
+                        binding.edtZip?.text.toString(),
+                        "Billing",
+                        0.0,
+                        0.0,
+                        "false"
+                    )
+                )
+                listAddress.add(
+                    CreateCustomerRequestModel.Customer.Addresses(
+                        null,
+                        binding.edtStreetDel?.text.toString(),
+                        binding.edtStreetDel?.text.toString(),
+                        binding.edtCityDel?.text.toString(),
+                        binding.edtStateDel?.text.toString(),
+                        binding.edtAddressDel?.selectedItem.toString(),
+                        binding.edtZipDel?.text.toString(),
+                        "Shipping",
+                        0.0,
+                        0.0,
+                        "false"
+                    )
+                )
+            }
+
+            viewModel.submit(listAddress)
         }
     }
 
@@ -328,29 +625,36 @@ class AddEditCustomer : Fragment() {
         val mDay = c.get(Calendar.DAY_OF_MONTH)
 
         val datePicker: DatePickerDialog =
-            DatePickerDialog(requireContext(),android.R.style.Theme_Material_Light_Dialog, object : DatePickerDialog.OnDateSetListener {
-                override fun onDateSet(
-                    view: DatePicker?,
-                    year: Int,
-                    monthOfYear: Int,
-                    dayOfMonth: Int
-                ) {
-                    viewModel.addCustomerDetails.value?.data?.birth_day = dayOfMonth.toString()
-                    viewModel.addCustomerDetails.value?.data?.birth_month =
-                        (monthOfYear + 1).toString()
-                    viewModel.addCustomerDetails.value?.data?.birthday_year = year.toString()
+            DatePickerDialog(
+                requireContext(),
+                android.R.style.Theme_Material_Light_Dialog,
+                object : DatePickerDialog.OnDateSetListener {
+                    override fun onDateSet(
+                        view: DatePicker?,
+                        year: Int,
+                        monthOfYear: Int,
+                        dayOfMonth: Int
+                    ) {
+                        viewModel.addCustomerDetails.value?.data?.birth_day = dayOfMonth.toString()
+                        viewModel.addCustomerDetails.value?.data?.birth_month =
+                            (monthOfYear + 1).toString()
+                        viewModel.addCustomerDetails.value?.data?.birthday_year = year.toString()
 
 
-                    val calendar = Calendar.getInstance()
-                    calendar.set(year,monthOfYear,dayOfMonth)
-                    val outputFormat = SimpleDateFormat("MMM-dd-yyyy")
-                    var datestring = outputFormat.format(calendar.time)
+                        val calendar = Calendar.getInstance()
+                        calendar.set(year, monthOfYear, dayOfMonth)
+                        val outputFormat = SimpleDateFormat("MMM-dd-yyyy")
+                        var datestring = outputFormat.format(calendar.time)
 
-                    binding.edtBirthDay.text = datestring
+                        binding.edtBirthDay.text = datestring
 
-                }
+                    }
 
-            }, mYear, mMonth, mDay)
+                },
+                mYear,
+                mMonth,
+                mDay
+            )
         datePicker.datePicker.maxDate = System.currentTimeMillis()
         datePicker.show()
         Log.e(TAG, "DatePickerInside  ")
