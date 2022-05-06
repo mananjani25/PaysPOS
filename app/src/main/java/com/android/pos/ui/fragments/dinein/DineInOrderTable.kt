@@ -309,6 +309,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
             cartList = getCartModel(adapterList.toCollection(arrayListOf()))
             cartList?.note = order_note
+            Log.e(TAG, "getcartList  ${Gson().toJson(cartList)}")
             viewModelPayment.addCart(cartList!!)
 
             totalTax = 0.0
@@ -2524,6 +2525,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         var dineInItems: ArrayList<TbItem> = arrayListOf()
         var newDineInList: ArrayList<DineInModel> = arrayListOf()
         var dineinModel: DineInModel = DineInModel()
+        Log.e(TAG, "orderDiscountGEt:  ${list[0].orderDiscount}")
         Log.e(TAG, "dineExtractList  ${Gson().toJson(list)}")
         for (i in 0 until list.size) {
             if (list[i].isHeader == 1) {
@@ -5160,6 +5162,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         item: ArrayList<TbItem>
 
     ) {
+        PrinterClass.setPrinter(null)
         if (PrinterClass.getPrinter() == null) {
             var printer: Print? = Print(requireContext())
             if (printer != null) {
