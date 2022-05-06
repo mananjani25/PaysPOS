@@ -13,11 +13,9 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
-import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.AUTH_TOKEN
 import com.android.pos.data.remote.Constants.IS_CLOCKOUT
 import com.android.pos.databinding.FragmentLoginBinding
-import com.android.pos.di.ApiModule
 import com.android.pos.di.PrefProvider
 import com.android.pos.utils.MethodUtils.Companion.getDeviceId
 import com.android.pos.utils.ProgressUtils
@@ -147,11 +145,6 @@ class LoginFragment : Fragment() {
                     val bundle = Bundle().apply {
                         putBoolean("isLogin", true)
                     }
-                    ApiModule.host = prefProvider.getValue(
-                        Constants.BASE_URL_NEW,
-                        ApiModule.BASE_URL
-                    )
-
                     findNavController().navigate(R.id.action_login_to_passcode, bundle)
                 }
             }

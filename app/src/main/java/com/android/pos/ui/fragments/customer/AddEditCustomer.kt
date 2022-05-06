@@ -176,23 +176,31 @@ class AddEditCustomer : Fragment() {
                 editModel?.enroll_to_loyalty
 
 
-            binding.chkIsLoyalty.isChecked =
-                viewModel.addCustomerDetails.value?.data?.enroll_to_loyalty!!
+
+            viewModel.addCustomerDetails.value?.data?.enroll_to_loyalty?.let {
+                binding.chkIsLoyalty.isChecked = it
+            }
 
 
             /*Log.e(TAG, "Date  ${getDay(editModel?.birth_date!!)}")
             Log.e(TAG, "Month  ${getMonth(editModel?.birth_date!!)}")
             Log.e(TAG, "Year  ${getYear(editModel?.birth_date!!)}")*/
-            viewModel.addCustomerDetails.value?.data?.birth_day = editModel?.birth_date?.let {
-                getDay(
-                    it
-                )
-            }
-            if (editModel?.birth_date != null)
+            viewModel.addCustomerDetails.value?.data?.birth_day =
+                if (editModel?.birth_date?.isNotEmpty() == true) {
+                    editModel?.birth_date?.let {
+                        getDay(
+                            it
+                        )
+                    }
+                } else {
+                    ""
+
+                }
+            if (editModel?.birth_date != null && editModel?.birth_date?.isNotEmpty())
                 viewModel.addCustomerDetails.value?.data?.birthday_year =
                     getYear(editModel.birth_date)
 
-            if (editModel?.birth_date != null)
+            if (editModel?.birth_date != null && editModel?.birth_date?.isNotEmpty())
                 viewModel.addCustomerDetails.value?.data?.birth_month =
                     getMonth(editModel.birth_date)
 
@@ -233,9 +241,9 @@ class AddEditCustomer : Fragment() {
 
             viewModel.addCustomerDetails.value?.data?.company = editModel.company ?: ""
             //binding.edtCompany.setText(editModel.company)
-            if (editModel.birth_date != null) {
+            if (editModel.birth_date != null && editModel.birth_date?.isNotEmpty()) {
                 val inputFormat = SimpleDateFormat("MM/dd/yyyy")
-                var date  = inputFormat.parse(editModel.birth_date)
+                var date = inputFormat.parse(editModel.birth_date)
                 val outputFormat = SimpleDateFormat("MMM-dd-yyyy")
                 val formattedDate = outputFormat.format(date)
                 binding.edtBirthDay.setText(formattedDate)
@@ -316,7 +324,7 @@ class AddEditCustomer : Fragment() {
             } else {
                 viewModel.setAddressList(adapter.getList())
             }
-             viewModel.submit()
+            viewModel.submit()
         }
     }
 
@@ -328,29 +336,36 @@ class AddEditCustomer : Fragment() {
         val mDay = c.get(Calendar.DAY_OF_MONTH)
 
         val datePicker: DatePickerDialog =
-            DatePickerDialog(requireContext(),android.R.style.Theme_Material_Light_Dialog, object : DatePickerDialog.OnDateSetListener {
-                override fun onDateSet(
-                    view: DatePicker?,
-                    year: Int,
-                    monthOfYear: Int,
-                    dayOfMonth: Int
-                ) {
-                    viewModel.addCustomerDetails.value?.data?.birth_day = dayOfMonth.toString()
-                    viewModel.addCustomerDetails.value?.data?.birth_month =
-                        (monthOfYear + 1).toString()
-                    viewModel.addCustomerDetails.value?.data?.birthday_year = year.toString()
+            DatePickerDialog(
+                requireContext(),
+                android.R.style.Theme_Material_Light_Dialog,
+                object : DatePickerDialog.OnDateSetListener {
+                    override fun onDateSet(
+                        view: DatePicker?,
+                        year: Int,
+                        monthOfYear: Int,
+                        dayOfMonth: Int
+                    ) {
+                        viewModel.addCustomerDetails.value?.data?.birth_day = dayOfMonth.toString()
+                        viewModel.addCustomerDetails.value?.data?.birth_month =
+                            (monthOfYear + 1).toString()
+                        viewModel.addCustomerDetails.value?.data?.birthday_year = year.toString()
 
 
-                    val calendar = Calendar.getInstance()
-                    calendar.set(year,monthOfYear,dayOfMonth)
-                    val outputFormat = SimpleDateFormat("MMM-dd-yyyy")
-                    var datestring = outputFormat.format(calendar.time)
+                        val calendar = Calendar.getInstance()
+                        calendar.set(year, monthOfYear, dayOfMonth)
+                        val outputFormat = SimpleDateFormat("MMM-dd-yyyy")
+                        var datestring = outputFormat.format(calendar.time)
 
-                    binding.edtBirthDay.text = datestring
+                        binding.edtBirthDay.text = datestring
 
-                }
+                    }
 
-            }, mYear, mMonth, mDay)
+                },
+                mYear,
+                mMonth,
+                mDay
+            )
         datePicker.datePicker.maxDate = System.currentTimeMillis()
         datePicker.show()
         Log.e(TAG, "DatePickerInside  ")

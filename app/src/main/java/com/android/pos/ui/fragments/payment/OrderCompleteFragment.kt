@@ -189,7 +189,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             if (it != null) {
                 kitchenSettingModel = it
                 Log.e(TAG, "isFromCustomer:  ${isFromCustomer}")
-                if (!isFromCustomer) {
+
+                Log.e(TAG, "getREceiptModel  ${Gson().toJson(receiptModel)}")
+                if (!isFromCustomer && receiptModel?.order?.orderType?.lowercase() != "OpenOrder".lowercase()) {
                     getKitchenPrinters()
                 }
             }
@@ -3414,6 +3416,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                 if (it.printType.lowercase()
                                                         .equals(KITCHEN.lowercase()) && it.autoPrinting
                                                 ) {
+                                                    Log.e("OrderCom","PrinterStarted")
                                                     initKitchenPrinter(
                                                         kitchenPrinterList.get(i),
                                                         KITCHEN
@@ -4921,6 +4924,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 printer.setStatusChangeEventCallback(this)
                 printer.setBatteryStatusChangeEventCallback(this)
             }
+
 
             val enabled = Print.TRUE
 
