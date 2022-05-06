@@ -966,7 +966,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                     Log.e("totalDiscount", totalDiscount.toString())
 
                     totalPrice = (subTotalPrice + totalTax + totalServiceCharge)
-
+                    cashDiscountType = prefProvider.getValue(Constants.OPTION_TYPE, "")
 
                     //loyalty point and price calculation
                     amountToBePaid = totalPrice
@@ -987,6 +987,15 @@ class DashBoardCategoryViewModel @Inject constructor(
                         )
                     }
 
+                    if (MethodUtils.isEnableCashDiscount(context)) {
+                        cashdiscountAmount = MethodUtils.calculateCashDiscount(
+                            totalPrice,
+                            prefProvider,
+                            context
+                        )
+                    } else {
+                        cashdiscountAmount = 0.0
+                    }
                     Log.e("amountToBePaid", "" + amountToBePaid)
                 } else {
 
@@ -1012,7 +1021,6 @@ class DashBoardCategoryViewModel @Inject constructor(
         txtTotalAmount: AppCompatTextView,
         context: Context
     ) {
-
 
         var totalAmmount = 0.0
         nonCashAdj = 0.0
@@ -1203,6 +1211,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                     cartModel.items!!.forEach {
                         totalDiscount += it.discountPrice * it.itemQuantity
                     }
+
                     Log.e("OpenOrderCh", "cartDiscount  ${cartModel.discountPrice}")
                     Log.e("OpenOrderCh", "totalDiscounts  ${totalDiscount}")
 
@@ -2655,7 +2664,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                 subTotalPrice = model.subTotal
                 totalTax = model.tax
                 totalServiceCharge = model.serviceCharge
-                totalDiscount = cartModel.discountPrice
+                totalDiscount = model.totalDiscount
                 order_note = cartModel.note
                 // subTotalPrice = model.subTotal
                 /*   cartModel.dineInList?.forEach { dine ->

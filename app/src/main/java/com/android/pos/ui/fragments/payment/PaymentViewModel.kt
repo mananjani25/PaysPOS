@@ -1004,6 +1004,7 @@ open class PaymentViewModel @Inject constructor(
                 orderItemsAttribute.price = item.price
                 orderItemsAttribute.quantity = item.itemQuantity
                 orderItemsAttribute.terminalId = cartModel.terminalId
+                orderItemsAttribute.isFired = item.isFired
                 orderItemsAttribute.timestamp = System.currentTimeMillis().toString()
                 orderItemsAttribute.totalPrice =
                     MethodUtils.roundOffAmountDouble(item.price * item.itemQuantity)
@@ -1076,6 +1077,7 @@ open class PaymentViewModel @Inject constructor(
             orderItemsAttribute.orderItemTaxesAttributes = orderItemTaxesAttributes(item)
             orderItemsAttribute.orderItemModifiersAttributes =
                 orderItemModifierAttributes(item, cartModel.terminalId)
+            orderItemsAttribute.isFired = item.isFired
 
             orderItemsAttribute.orderItemVariationAttributes =
                 orderItemVariationAttributes(item)

@@ -510,6 +510,7 @@
     <string name="customer_details">Customer Details</string>
     <string name="delivery_address">Delivery Address</string>
     <string name="billing_address">Billing Address</string>
+    <string name="shipping_address">Shipping Address</string>
     <string name="search_existing_customer_details">Search existing customer details</string>
     <string name="pick_up">Pick Up</string>
     <string name="delivery">Delivery</string>
