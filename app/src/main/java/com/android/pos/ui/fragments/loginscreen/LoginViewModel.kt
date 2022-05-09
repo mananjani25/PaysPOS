@@ -21,6 +21,7 @@ import com.android.pos.data.remote.Constants.USERNAME
 import com.android.pos.data.remote.NetworkConnectionInterceptor
 import com.android.pos.data.repositories.UserRepository
 import com.android.pos.di.ApiModule
+import com.android.pos.di.ApiModule.BASE_URL
 import com.android.pos.di.PrefProvider
 import com.android.pos.utils.Event
 import com.android.pos.utils.statusUtils.Status
