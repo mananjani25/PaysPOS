@@ -7,10 +7,12 @@ import com.android.pos.data.entities.LoyaltyProgramsModel
 import com.android.pos.data.entities.TbCustomer
 import com.android.pos.data.entities.TeamRole
 import com.android.pos.data.remote.Constants
+import com.android.pos.data.remote.Constants.BASE_URL_NEW
 import com.android.pos.data.remote.Constants.ROLE_ADMIN
 import com.android.pos.data.remote.Constants.ROLE_EMPLOYEE
 import com.android.pos.data.remote.Constants.ROLE_MANAGER
 import com.android.pos.data.remote.Constants.ROLE_OWNER
+import com.android.pos.di.ApiModule.BASE_URL
 import com.google.gson.Gson
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
@@ -19,10 +21,10 @@ import javax.inject.Singleton
 @Singleton
 class PrefProvider @Inject constructor(@ApplicationContext context: Context) {
 
-    private var sharedPreferences: SharedPreferences? = null
-    private var mContext = context
+    internal var sharedPreferences: SharedPreferences? = null
+    internal var mContext = context
 
-    private fun openPref() {
+    fun openPref() {
         sharedPreferences = mContext.getSharedPreferences(
             mContext.resources.getString(R.string.app_name),
             Context.MODE_PRIVATE
@@ -162,6 +164,14 @@ class PrefProvider @Inject constructor(@ApplicationContext context: Context) {
 
     fun getEmployeeRole(): String {
         return getValue(Constants.EMPLOYEE_ROLE, "")
+    }
+
+    fun getBaseUrl(): String {
+        return getValue(BASE_URL_NEW, BASE_URL)
+    }
+
+    fun setBaseUrl(string: String): String {
+        return getValue(BASE_URL_NEW, string)
     }
 
     fun isManager(): Boolean {

@@ -16,6 +16,8 @@ import com.android.pos.R
 import com.android.pos.data.remote.Constants.AUTH_TOKEN
 import com.android.pos.data.remote.Constants.IS_CLOCKOUT
 import com.android.pos.databinding.FragmentLoginBinding
+import com.android.pos.di.ApiModule.BASE_URL
+import com.android.pos.di.HostSelectionInterceptor
 import com.android.pos.di.PrefProvider
 import com.android.pos.utils.MethodUtils.Companion.getDeviceId
 import com.android.pos.utils.ProgressUtils
@@ -37,9 +39,11 @@ class LoginFragment : Fragment() {
 
     var device_token: String = ""
 
-    @Inject
-    lateinit var prefProvider: PrefProvider
+    @set:Inject
+    internal var prefProvider: PrefProvider? = null
 
+    @set:Inject
+    var hostSelectionInterceptor: HostSelectionInterceptor? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -48,11 +52,11 @@ class LoginFragment : Fragment() {
     ): View? {
 
 
-        if (prefProvider.getValue(AUTH_TOKEN, "").toString().isNotEmpty()) {
-            if (!prefProvider.getValueboolean(IS_CLOCKOUT, false)) {
+        if (prefProvider?.getValue(AUTH_TOKEN, "").toString().isNotEmpty()) {
+            if (!prefProvider?.getValueboolean(IS_CLOCKOUT, false)!!) {
                 findNavController().navigate(R.id.action_login_to_passcode)
             } else {
-                if (prefProvider.getValueboolean("clockOutFromNoti", false)) {
+                if (prefProvider?.getValueboolean("clockOutFromNoti", false) == true) {
                     findNavController().navigate(R.id.action_login_to_passcode, arguments)
                 } else {
                     findNavController().navigate(R.id.action_login_to_dashboardCategoryBoldPOS)
@@ -85,7 +89,7 @@ class LoginFragment : Fragment() {
 
         binding.terminalId.text = getDeviceId(requireActivity())
 
-      //  prefProvider.setValue(Constants.UNIQUE_ID, binding.terminalId.text.toString().trim())
+        //  prefProvider.setValue(Constants.UNIQUE_ID, binding.terminalId.text.toString().trim())
 
         return binding.root
     }
@@ -100,7 +104,7 @@ class LoginFragment : Fragment() {
 
             // Get new FCM registration token
             device_token = task.result
-            prefProvider.setValue("device_token", device_token)
+            prefProvider?.setValue("device_token", device_token)
             Log.d("FirebaseMessaging Token", device_token)
         })
     }
@@ -119,6 +123,8 @@ class LoginFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         firebaseToken()
         binding.txtSignIn.setOnClickListener {
+            prefProvider?.setBaseUrl(BASE_URL)
+            hostSelectionInterceptor?.setHostBaseUrl()
             viewModel.submit(device_token)
         }
     }
@@ -145,6 +151,7 @@ class LoginFragment : Fragment() {
                     val bundle = Bundle().apply {
                         putBoolean("isLogin", true)
                     }
+                    hostSelectionInterceptor?.setHostBaseUrl()
                     findNavController().navigate(R.id.action_login_to_passcode, bundle)
                 }
             }
@@ -155,7 +162,6 @@ class LoginFragment : Fragment() {
     private fun setupSnackbar() {
         binding.root.liveSnackBar(this, viewModel.snackbarText, Snackbar.LENGTH_SHORT)
     }
-
 
 
 }
