@@ -646,14 +646,19 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
     override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
 
-        if (teamEmployeeListGlobal.size > 0 && position > 0 && position < teamEmployeeListGlobal.size) {
-            viewModel.selectedTerminalId = teamEmployeeListGlobal[position].id.toString()
-            Log.e("selectedEmpId", teamEmployeeListGlobal[position].id.toString())
-        } else {
-            viewModel.selectedTerminalId = ""
+        try {
+            if (teamEmployeeListGlobal.size > 0 && position > 0 && position < teamEmployeeListGlobal.size) {
+                viewModel.selectedTerminalId = teamEmployeeListGlobal[position].id.toString()
+                Log.e("selectedEmpId", teamEmployeeListGlobal[position].id.toString())
+            } else {
+                viewModel.selectedTerminalId = ""
+            }
+
+            viewModel.getReportSummary("")
+        }catch (e:Exception){
+            e.printStackTrace()
         }
 
-        viewModel.getReportSummary("")
 
     }
 
