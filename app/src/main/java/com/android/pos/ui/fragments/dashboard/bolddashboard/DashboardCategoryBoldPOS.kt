@@ -175,7 +175,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                         //discountPrice = item.discountPrice / item.itemQuantity
                         item.discountId = result.id
                         item.discountType = result.discountType
-                        item.isManualSales = false
+
                         viewModel.cartLogic(cartList, item, Constants.UPDATE, false)
 
                     }
@@ -184,7 +184,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                         item?.discountPrice = result.percentage
                         item?.discountId = 0
                         item?.discountType = result.discountType
-                        item?.isManualSales = false
+
 
                         viewModel.cartLogic(cartList, item, Constants.UPDATE, false)
                     }
@@ -192,7 +192,6 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                         item?.discountPrice = result.percentage
                         item?.discountId = 0
                         item?.discountType = result.discountType
-                        item?.isManualSales = false
 
                         viewModel.cartLogic(cartList, item, Constants.UPDATE, false)
 
@@ -274,10 +273,10 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                 totalPrice += items.price * items.itemQuantity
             }
 
-            (model.price * model.itemQuantity) + totalPrice
+            (model.price) + totalPrice
         } else {
 
-            model.price * model.itemQuantity
+            model.price
 
         }
     }
@@ -353,7 +352,9 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
 */
 
         if (prefProvider.getValueboolean(SPLIT_ENABLE, false)) {
-            findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_paymentBoldPosFragment)
+            if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
+                findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_paymentBoldPosFragment)
+            }
         } else {
             loadCartFragment(CartFragment(this, this))
             loadCategoryFragment(CategoryFragment(this, binding.layoutHeader.edtSearch))
@@ -957,6 +958,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
             event.getContentIfNotHandled()?.let { it ->
                 // AlertUtils.showCustomAlert(requireActivity(), it.message)
                 viewModel.deleteCart()
+                viewModel.updateActiveOrderFlagClear()
                 if (prefProvider.getValue(ORDER_TYPE, "").toString() != "") {
                     prefProvider.setValue(ORDER_TYPE, TAKEOUT)
                 }

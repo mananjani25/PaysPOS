@@ -505,7 +505,7 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
                         setFragmentResult("request_key_discount_details", result)
                     }
                     isOrderDiscount -> {
-                        setFragmentResult("request_key_discount_order", result)
+                            setFragmentResult("request_key_discount_order", result)
                     }
                     else -> {
 

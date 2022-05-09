@@ -68,11 +68,9 @@ class CartAdapter : RecyclerView.Adapter<CartAdapter.MyViewHolder>() {
                 binding.tvDiscountRate.visibility = View.VISIBLE
                 binding.tvRate.paintFlags = binding.tvRate.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
                 var dPrice = 0.0
-                if (!item.isManualSales) {
-                    dPrice = totalPrice(item) - (item.discountPrice * item.itemQuantity)
-                } else {
-                    dPrice = totalPrice(item) - item.discountPrice
-                }
+
+                dPrice = totalPrice(item) - (item.discountPrice * item.itemQuantity)
+
                 MethodUtils.setPriceTextView(binding.tvDiscountRate, dPrice)
             } else {
                 binding.tvRate.paintFlags = 0

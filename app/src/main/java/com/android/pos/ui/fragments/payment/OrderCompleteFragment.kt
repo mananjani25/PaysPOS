@@ -116,7 +116,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
     private var customerSettingModel = GetCustomerReceiptSettingsResponse.Data()
     private var kitchenSettingModel = GetKitchenReceiptSettingsResponse.Data()
     private var splitList: ArrayList<SplitDetailListModel> = arrayListOf()
-
+    private lateinit var printerDialog : PrinterDialog
     private var isGuestPaymentTotal = false
     private var cartList: CartModel? = null
     private var paidAmount: Double = 0.0
@@ -142,6 +142,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
     ): View? {
         binding = FragmentOrderCompletBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = this
+        printerDialog = PrinterDialog()
 
         if (requireArguments().getBoolean("isSpilt")) {
             observeSplitList()
@@ -191,7 +192,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 Log.e(TAG, "isFromCustomer:  ${isFromCustomer}")
 
                 Log.e(TAG, "getREceiptModel  ${Gson().toJson(receiptModel)}")
-                if (!isFromCustomer && receiptModel?.order?.orderType?.lowercase() != "OpenOrder".lowercase()) {
+                if (!isFromCustomer) {
                     getKitchenPrinters()
                 }
             }
@@ -1583,6 +1584,33 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     }
                 )
             )
+
+            if (tipAmount != 0.0) {
+
+                builder.addTextLineSpace(30)
+                builder.addFeedUnit(30)
+                builder.addTextLang(Builder.LANG_EN)
+                addCustomerTextSize(builder, customerSettingModel.fonts)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.COLOR_1
+                )
+
+                builder.addText(
+                    padLine(
+                        "Tips",
+                        "$" + tipAmount,
+                        if (customerSettingModel.fonts == Constants.LARGE) {
+                            24
+                        } else {
+                            48
+                        }
+                    )
+                )
+            }
+
             if (noCashAdjGlobal != 0.0 && payTypeGlb == "Cash") {
                 builder.addTextLineSpace(30)
                 builder.addFeedUnit(30)
@@ -2648,7 +2676,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             )
 
 
-            if (getDineInOrderDetails?.totalTips != 0.0) {
+            if (tipAmount != 0.0) {
 
                 builder.addTextLineSpace(30)
                 builder.addFeedUnit(30)
@@ -2664,11 +2692,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 builder.addText(
                     padLine(
                         "Tips",
-                        "$" + getDineInOrderDetails?.totalTips?.let {
-                            MethodUtils.roundOffAmountString(
-                                it
-                            )
-                        },
+                        "$" + tipAmount,
                         if (customerSettingModel.fonts == Constants.LARGE) {
                             24
                         } else {
@@ -3390,16 +3414,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
 
                         kitchenPrinterList = it.data
-
-                        /*if (!requireArguments().getBoolean(
-                                "isFromActiveOrder"
-                            )
-                        ) {*/
-
                         val remain = requireArguments().getDouble("remainingAmount")
                         Log.e(TAG, "remainAMount  ${remain}")
 
-                        if (!requireArguments().getBoolean("isSpilt")) {
+                        Log.e(TAG,"getSplit  ${requireArguments().getBoolean("isSpilt")}")
+                        if (!requireArguments().getBoolean("isSpilt") && receiptModel?.order?.orderType?.lowercase() != "OpenOrder".lowercase()) {
                             if (!requireArguments().getBoolean("isDineIn") && !requireArguments().getBoolean(
                                     "isFromActiveOrder"
                                 )
@@ -3416,7 +3435,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                 if (it.printType.lowercase()
                                                         .equals(KITCHEN.lowercase()) && it.autoPrinting
                                                 ) {
-                                                    Log.e("OrderCom","PrinterStarted")
+                                                    Log.e("OrderCom", "PrinterStarted")
                                                     initKitchenPrinter(
                                                         kitchenPrinterList.get(i),
                                                         KITCHEN
@@ -3433,43 +3452,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                             }
                         }
 
-                        /*else if (!requireArguments().getBoolean("isDineIn") && !requireArguments().getBoolean(
-                                "isFromActiveOrder"
-                            )
-                        ) {
-                            Log.e(
-                                TAG,
-                                "PlacedOrderorderType:  ${receiptModel?.order?.orderType}"
-                            )
 
-                            for (i in 0 until kitchenPrinterList.size) {
-                                kitchenPrinterList[i].orderTypes.forEach {
-                                    Log.e(TAG, "orderTypeName:  ${it.orderTypeName}")
-                                    Log.e(TAG, "orderType:  ${it.orderType}")
-
-
-                                    if (it.orderTypeId == receiptModel?.order?.orderTypeId) {
-
-
-                                        it.printerSettings.forEach {
-                                            if (it.printType.lowercase()
-                                                    .equals(KITCHEN.lowercase()) && it.autoPrinting
-                                            ) {
-                                                initKitchenPrinter(
-                                                    kitchenPrinterList.get(i),
-                                                    KITCHEN
-                                                )
-
-                                            }
-                                        }
-
-                                    }
-                                }
-                            }
-
-
-                        }
-*/
                         if (requireArguments().getBoolean("isDineIn")) {
                             Log.e(TAG, "IsDineIn True: ")
                             customerPrintWholeOrder()
@@ -3540,9 +3523,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                             if (it.printType.lowercase()
                                                     .equals(CUSTOMER.lowercase()) && it.autoPrinting
                                             ) {
-                                                requireActivity().runOnUiThread {
-                                                    ProgressUtils.showProgressDialog(requireActivity())
-                                                }
+
+                                                printerDialog.show(requireContext())
+
 
                                                 initPrinter(cus, CUSTOMER)
 
@@ -3619,7 +3602,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 printer?.setStatusChangeEventCallback(this)
 
             } catch (e: Exception) {
-                ProgressUtils.dismissProgressDialog()
+                printerDialog.dismiss()
                 Log.e(TAG, "PrinterException: " + e.message)
                 printer = null
                 return
@@ -3634,11 +3617,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 }
 
             } catch (e: Exception) {
-                ProgressUtils.dismissProgressDialog()
+                printerDialog.dismiss()
                 e.printStackTrace()
             }
         } else {
-            ProgressUtils.dismissProgressDialog()
+            printerDialog.dismiss()
             Log.e(TAG, "PrinterIsNotNull:")
         }
 
@@ -4266,7 +4249,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
 
             if (receiptModel?.order?.payments?.isNotEmpty() == true) {
-                if (receiptModel?.order?.payments?.get(receiptModel?.order?.payments!!.size - 1)?.isLoyaltyApplied == true && receiptModel?.order?.payments!![receiptModel?.order?.payments!!.size - 1].loyaltyUSedPoints != 0) {
+                if (receiptModel?.order?.payments?.get(0)?.isLoyaltyApplied == true && receiptModel?.order?.payments!![0].loyaltyUSedPoints != 0) {
                     if (receiptModel?.order?.loyaltyAmount != 0.0) {
                         builder.addTextLineSpace(30)
                         builder.addFeedUnit(30)
@@ -4315,7 +4298,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     builder.addText(
                         padLine(
                             "Used Loyalty Points",
-                            receiptModel?.order?.payments!![receiptModel?.order?.payments!!.size - 1].loyaltyUSedPoints.toString(),
+                            receiptModel?.order?.payments!![0].loyaltyUSedPoints.toString(),
                             if (customerSettingModel.fonts == LARGE) {
                                 24
                             } else {
@@ -4890,13 +4873,13 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     builder,
                     BLUETOOTH_TIMEOUT, status, battery
                 )
-                ProgressUtils.dismissProgressDialog()
+                printerDialog.dismiss()
 
                 PrinterClass.closePrinter()
                 // findNavController().navigate(R.id.action_orderCompleteFragment_to_dashboardCategoryNew)
                 //PrinterClass.getPrinter()?.sendData(builder, 0, status, battery)
             } catch (e: Exception) {
-                ProgressUtils.dismissProgressDialog()
+                printerDialog.dismiss()
                 PrinterClass.closePrinter()
                 e.printStackTrace()
                 Log.e(TAG, "PrinterError: " + e.localizedMessage)
@@ -4904,7 +4887,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
 
         } catch (e: Exception) {
-            ProgressUtils.dismissProgressDialog()
+            printerDialog.dismiss()
             e.printStackTrace()
         }
     }
@@ -4916,9 +4899,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
         PrinterClass.closePrinter()
         if (PrinterClass.getPrinter() == null) {
-            requireActivity().runOnUiThread {
-                ProgressUtils.showProgressDialog(requireActivity())
-            }
+            printerDialog.show(requireContext())
+
             var printer: Print? = Print(requireContext())
             if (printer != null) {
                 printer.setStatusChangeEventCallback(this)
@@ -4943,7 +4925,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 printer?.setStatusChangeEventCallback(this)
 
             } catch (e: Exception) {
-                ProgressUtils.dismissProgressDialog()
+                printerDialog.dismiss()
                 Log.e(TAG, "PrinterException: " + e.message)
                 printer = null
                 return
@@ -5321,12 +5303,12 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     builder,
                     PrinterClass.SEND_TIMEOUT, status, battery
                 )
-                ProgressUtils.dismissProgressDialog()
+                printerDialog.dismiss()
                 PrinterClass.closePrinter()
 
                 //PrinterClass.getPrinter()?.sendData(builder, 0, status, battery)
             } catch (e: Exception) {
-                ProgressUtils.dismissProgressDialog()
+                printerDialog.dismiss()
                 PrinterClass.closePrinter()
                 e.printStackTrace()
                 Log.e(TAG, "PrinterError: " + e.localizedMessage)
@@ -5334,7 +5316,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
 
         } catch (e: Exception) {
-            ProgressUtils.dismissProgressDialog()
+            printerDialog.dismiss()
             e.printStackTrace()
         }
 

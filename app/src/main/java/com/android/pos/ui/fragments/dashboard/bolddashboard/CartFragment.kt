@@ -23,6 +23,13 @@ import com.android.pos.data.remote.Constants.CUSTOMER_ID
 import com.android.pos.data.remote.Constants.DINE_IN
 import com.android.pos.data.remote.Constants.DINE_IN_LIST_EDIT
 import com.android.pos.data.remote.Constants.DINE_IN_UPDATE
+import com.android.pos.data.remote.Constants.IS_UPDATE_ORDER
+import com.android.pos.data.remote.Constants.IS_UPDATE_ORDER_FROM_ACTIVE_ORDER
+import com.android.pos.data.remote.Constants.IS_UPDATE_ORDER_ID
+import com.android.pos.data.remote.Constants.IS_UPDATE_ORDER_LOYALTY_APPLIED
+import com.android.pos.data.remote.Constants.IS_UPDATE_ORDER_OFFLINE_ID
+import com.android.pos.data.remote.Constants.IS_UPDATE_ORDER_PAYMENT_ID
+import com.android.pos.data.remote.Constants.IS_UPDATE_ORDER_PAY_OFFLINE_ID
 import com.android.pos.data.remote.Constants.MANUAL_SALE
 import com.android.pos.data.remote.Constants.OPEN_ORDER
 import com.android.pos.data.remote.Constants.OPTION_TYPE
@@ -161,6 +168,7 @@ class CartFragment(
                     } else {
                         //  prefProvider.setValue(ORDER_TYPE, TAKEOUT)
                         Log.e("ORDER_TYPE", "Updated check")
+                        updateActiveOrderFlag()
                     }
                     uiSave()
 
@@ -235,6 +243,10 @@ class CartFragment(
             } else {
                 //  prefProvider.setValue(ORDER_TYPE, TAKEOUT)
                 Log.e("ORDER_TYPE", "Updated check")
+
+                updateActiveOrderFlag()
+
+
             }
         } else {
             isOrderUpdate = false
@@ -242,6 +254,14 @@ class CartFragment(
                 if (isActiveOrder) {
                     viewModel.redeemLoyaltyInfo.needToApplyLoyalty =
                         arguments?.getBoolean("isLoyaltyApplied") ?: false
+                } else {
+
+                    if (prefProvider.getValueboolean(IS_UPDATE_ORDER_FROM_ACTIVE_ORDER, false)) {
+                        isActiveOrder = true
+                        viewModel.redeemLoyaltyInfo.needToApplyLoyalty =
+                            prefProvider.getValueboolean(IS_UPDATE_ORDER_LOYALTY_APPLIED, false)
+
+                    }
                 }
             }
             //   prefProvider.setValue(ORDER_TYPE, TAKEOUT)
@@ -250,6 +270,33 @@ class CartFragment(
 
         uiSave()
 
+    }
+
+    private fun updateActiveOrderFlag() {
+        if (prefProvider.getValueboolean(IS_UPDATE_ORDER, false)) {
+            isOrderUpdate = true
+            orderId = prefProvider.getValueInt(IS_UPDATE_ORDER_ID, -1)
+            paymentId = prefProvider.getValueInt(IS_UPDATE_ORDER_PAYMENT_ID, -1)
+            paymentOfflineId = prefProvider.getValue(IS_UPDATE_ORDER_PAY_OFFLINE_ID, "")
+            orderOfflineId = prefProvider.getValue(IS_UPDATE_ORDER_OFFLINE_ID, "")
+
+            viewModelPayment.updateOrder(
+                isOrderUpdate,
+                orderId,
+                paymentId,
+                paymentOfflineId,
+                orderOfflineId
+            )
+
+
+            viewModel.redeemLoyaltyInfo.needToApplyLoyalty =
+                prefProvider.getValueboolean(IS_UPDATE_ORDER_LOYALTY_APPLIED, false)
+
+            if (prefProvider.getValueboolean(IS_UPDATE_ORDER_FROM_ACTIVE_ORDER, false)) {
+                isActiveOrder = true
+            }
+
+        }
     }
 
     private fun uiSave() {
@@ -1115,6 +1162,7 @@ class CartFragment(
             positiveButton(getString(R.string.tv_delete)) {
                 // Do positive stuff here
 
+                updateActiveOrderFlagClear()
                 itemListner?.onCancelItemSelected()
                 if (prefProvider.getValue(ORDER_TYPE, "").toString() == Constants.DINE_IN) {
                     prefProvider.setValueInt(Constants.DINE_INGUEST_SELECTED, 0)
@@ -1159,39 +1207,7 @@ class CartFragment(
                     itemClickListner?.onDineInOrderCleared()
 
 
-                }
-
-                /*if (prefProvider.getValue(ORDER_TYPE, "").toString() == Constants.DINE_IN) {
-
-                    val dList = dineInCartAdapter.getList()
-                    if (dList.isNotEmpty()) {
-                        dList[0].floorPlanTable?.id?.let {
-
-                            if (dList[1]?.floorPlanTable?.status.toString() == Constants.MERGED) {
-                                viewModel.getTableStatus(it, Constants.MERGED)
-                            } else {
-                                viewModel.getTableStatus(
-                                    it, "Available"
-                                )
-                            }
-                        }
-                    }
-                    viewModel.deleteCart()
-                    isOrderUpdate = false
-
-                    if (prefProvider.getValue(ORDER_TYPE, "").toString() != "") {
-                        prefProvider.setValue(ORDER_TYPE, TAKEOUT)
-                    }
-                    val dineInList = ArrayList<DineInModel>()
-                    dineInCartAdapter.setList(dineInList)
-                    dineInCartAdapter.notifyDataSetChanged()
-                    binding.tvPayNow.text = "Pay"
-                    clearCustomer()
-
-                    prefProvider.setValueboolean(Constants.DINE_IN_UPDATE, false)
-
-                }*/
-                else {
+                } else {
                     clearCustomer()
                     viewModel.deleteCart()
                     cartlist.clear()
@@ -1207,6 +1223,14 @@ class CartFragment(
                 // Do negative stuff here
             }
         }
+
+    }
+
+    private fun updateActiveOrderFlagClear() {
+
+        isOrderUpdate = false
+        isActiveOrder = false
+        viewModel.updateActiveOrderFlagClear()
 
     }
 
