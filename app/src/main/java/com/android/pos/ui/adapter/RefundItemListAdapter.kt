@@ -155,11 +155,11 @@ class RefundItemListAdapter(val viewModel: TransactionDetailsViewModel) :
 
             var cashDiscountDivide = 0.0
             if (paymentType == "Cash") {
-                if (cashdiscountType == "CashDiscount") {
+                if (cashdiscountType == "CashDiscount" && rate_or_amount.isNotEmpty()) {
                     cashDiscountDivide = (totalItemPrice * (rate_or_amount.toDouble())) / 100
                 }
             } else if (paymentType == "Card") {
-                if (cashdiscountType == "SurCharge") {
+                if (cashdiscountType == "SurCharge" && rate_or_amount.isNotEmpty()) {
                     cashDiscountDivide = totalItemPrice * (rate_or_amount.toDouble()) / 100
                 }
             }

@@ -694,16 +694,16 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 paymentAmount =
                     String.format("%.2f", paymentAmount + cashDiscountSurcharge).toDouble()
             }
-            makePaymentCreditCard()
+          //  makePaymentCreditCard()
 
 
-//            magtekModule.stopListner(false)
-//
-//            if (device == 0) {
-//                magtekPaymentCall()
-//            } else {
-//                magtekProPaymentCall()
-//            }
+            magtekModule.stopListner(false)
+
+            if (device == 0) {
+                magtekPaymentCall()
+            } else {
+                magtekProPaymentCall()
+            }
         }
         binding.llManualCardEntry.setOnClickListener {
             binding.frameLayoutId.visible()
