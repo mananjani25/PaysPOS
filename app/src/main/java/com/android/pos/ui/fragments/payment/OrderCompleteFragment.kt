@@ -3417,6 +3417,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         val remain = requireArguments().getDouble("remainingAmount")
                         Log.e(TAG, "remainAMount  ${remain}")
 
+                        Log.e(TAG,"getSplit  ${requireArguments().getBoolean("isSpilt")}")
                         if (!requireArguments().getBoolean("isSpilt") && receiptModel?.order?.orderType?.lowercase() != "OpenOrder".lowercase()) {
                             if (!requireArguments().getBoolean("isDineIn") && !requireArguments().getBoolean(
                                     "isFromActiveOrder"
