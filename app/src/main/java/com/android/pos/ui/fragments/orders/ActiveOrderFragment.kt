@@ -520,8 +520,8 @@ class ActiveOrderFragment(
     private fun cartModel(order: OpenOrderResponse.Data.Order): CartModel {
         Log.e("futureDeliveryDate  ", Gson().toJson(order))
         return CartModel().apply {
-            terminalId = order.terminalId
-            employeeID = order.employeeId
+            terminalId = prefProvider.getValueInt(Constants.TERMINAL_ID, -1)
+            employeeID = prefProvider.getValueInt(Constants.EMPLOYEE_ID, -1)
             locationId = order.locationId
             orderTypeId = order.orderTypeId
             orderType = order.orderType
