@@ -581,6 +581,10 @@ class PosRepository @Inject constructor(
         appDatabase.cartDao().delete(employee_id)
     }
 
+    suspend fun deleteAllCart() {
+        appDatabase.cartDao().delete()
+    }
+
     suspend fun deleteManualSaleCart(employee_id: Int) {
         appDatabase.cartDao().deleteManualSale(employee_id)
     }

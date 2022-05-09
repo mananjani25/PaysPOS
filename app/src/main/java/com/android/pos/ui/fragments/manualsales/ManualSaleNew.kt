@@ -198,6 +198,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
             if (it != null) {
                 manualCategoryId = it.id
                 manualItemId = it.item_ids[0]
+                Log.e("manualItemId", manualItemId.toString())
             }
 
         }
@@ -860,16 +861,19 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
             Log.e("ordertypelist", Gson().toJson(viewModel.ordertypelist))
 
             viewModel.ordertypelist.forEach {
-                if (it.orderType == prefProvider.getValue(Constants.ORDER_TYPE, "TakeOut")
-                        .toString()
+                if (it.orderType.equals(
+                        prefProvider.getValue(Constants.ORDER_TYPE, "TakeOut"),
+                        ignoreCase = true
+                    )
                 ) {
-                    tabItemMOdel.orderItemId = it.id
-                    Log.e("orderTypeId", it.id.toString())
                     prefProvider.setValue(Constants.ORDER_TYPE, it.orderType)
+                    prefProvider.setValueInt(Constants.ORDER_TYPE_ID, it.id)
+
+
                 }
             }
 
-            Log.e("orderTypeId", tabItemMOdel.orderItemId.toString())
+            Log.e("orderTypeId", prefProvider.getValueInt(Constants.ORDER_TYPE_ID, -1).toString())
 
             viewModel.manualSalecartLogic(cartList, tabItemMOdel, ADD)
             binding.llKeypad.edtItemName.text?.clear()
@@ -1176,7 +1180,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                     if (result.discountType == requireContext().getString(R.string.disc_percentage)) {
 
                         model.discountPrice = calculateDiscountPercentage(
-                            model.price ,
+                            model.price,
                             result.percentage
                         )
                         model.discountId = result.id

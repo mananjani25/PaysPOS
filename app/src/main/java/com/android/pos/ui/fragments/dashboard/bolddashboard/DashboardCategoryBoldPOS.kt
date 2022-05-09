@@ -958,6 +958,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
             event.getContentIfNotHandled()?.let { it ->
                 // AlertUtils.showCustomAlert(requireActivity(), it.message)
                 viewModel.deleteCart()
+                viewModel.updateActiveOrderFlagClear()
                 if (prefProvider.getValue(ORDER_TYPE, "").toString() != "") {
                     prefProvider.setValue(ORDER_TYPE, TAKEOUT)
                 }

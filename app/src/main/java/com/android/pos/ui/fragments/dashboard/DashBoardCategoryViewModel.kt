@@ -2387,6 +2387,22 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 posRepository.addLoyaltyProgramFromDb(it.data.loyaltyPrograms)
                                 posRepository.deleteSurcharge()
                                 posRepository.addCashDiscountsFromDb(it.data.cash_discounts)
+
+                                if (it.data.cash_discounts.isNotEmpty()) {
+                                    it.data.cash_discounts.forEach {
+                                        if (it.is_active) {
+                                            prefProvider.setValue(
+                                                CASH_DISCOUNT_SURCHARGE_AMOUNT_TYPE,
+                                                it.amount_type
+                                            )
+                                            prefProvider.setValue(
+                                                CASH_DISCOUNT_SURCHARGE_RATE,
+                                                it.rate_or_amount.toString()
+                                            )
+                                        }
+                                    }
+                                }
+
                                 posRepository.deleteTeamRoleFromDb()
                                 posRepository.addTeamRoleFromDb(it.data.teamRoles)
                                 posRepository.deleteAllEmployee()
@@ -2660,7 +2676,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                 subTotalPrice = model.subTotal
                 totalTax = model.tax
                 totalServiceCharge = model.serviceCharge
-                totalDiscount = cartModel.discountPrice
+                totalDiscount = model.totalDiscount
                 order_note = cartModel.note
                 // subTotalPrice = model.subTotal
                 /*   cartModel.dineInList?.forEach { dine ->
@@ -2841,6 +2857,18 @@ class DashBoardCategoryViewModel @Inject constructor(
 
         }
 
+
+    }
+
+    fun updateActiveOrderFlagClear() {
+
+        prefProvider.setValueboolean(Constants.IS_UPDATE_ORDER, false)
+        prefProvider.setValueInt(Constants.IS_UPDATE_ORDER_ID, -1)
+        prefProvider.setValueInt(Constants.IS_UPDATE_ORDER_PAYMENT_ID, -1)
+        prefProvider.setValue(Constants.IS_UPDATE_ORDER_PAY_OFFLINE_ID, "")
+        prefProvider.setValue(Constants.IS_UPDATE_ORDER_OFFLINE_ID, "")
+        prefProvider.setValueboolean(Constants.IS_UPDATE_ORDER_FROM_ACTIVE_ORDER, false)
+        prefProvider.setValueboolean(Constants.IS_UPDATE_ORDER_LOYALTY_APPLIED, false)
 
     }
 

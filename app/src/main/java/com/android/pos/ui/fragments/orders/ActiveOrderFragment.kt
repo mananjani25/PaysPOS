@@ -327,7 +327,7 @@ class ActiveOrderFragment(
                 var itemDiscountTotal: Double = 0.0
                 order.orderItems.forEach {
                     if (it.discountAmount != 0.0 && it.quantity > 1) {
-                         itemDiscountTotal += MethodUtils.roundOffAmountDouble(it.discountAmount / it.quantity)
+                        itemDiscountTotal += MethodUtils.roundOffAmountDouble(it.discountAmount / it.quantity)
                         it.discountAmount =
                             MethodUtils.roundOffAmountDouble(it.discountAmount / it.quantity)
                     }
@@ -365,6 +365,33 @@ class ActiveOrderFragment(
                 bundle.putString("orderOfflineId", order.offlineId)
                 bundle.putBoolean("isFromActiveOrder", true)
                 bundle.putBoolean("isLoyaltyApplied", order.isLoyaltyApplied)
+
+                prefProvider.setValueboolean(Constants.IS_UPDATE_ORDER, true)
+                prefProvider.setValueboolean(
+                    Constants.IS_UPDATE_ORDER_LOYALTY_APPLIED,
+                    order.isLoyaltyApplied
+                )
+                prefProvider.setValueboolean(Constants.IS_UPDATE_ORDER_FROM_ACTIVE_ORDER, true)
+                prefProvider.setValueInt(Constants.IS_UPDATE_ORDER_ID, order.id)
+
+                if (!order.payments.isNullOrEmpty()) {
+                    prefProvider.setValueInt(
+                        Constants.IS_UPDATE_ORDER_PAYMENT_ID,
+                        order.payments[0].id
+                    )
+                    prefProvider.setValue(
+                        Constants.IS_UPDATE_ORDER_PAY_OFFLINE_ID,
+                        order.payments[0].offlineId
+                    )
+                } else {
+                    prefProvider.setValue(
+                        Constants.IS_UPDATE_ORDER_PAY_OFFLINE_ID,
+                        randomOfflineId()
+                    )
+                }
+                prefProvider.setValue(Constants.IS_UPDATE_ORDER_OFFLINE_ID, order.offlineId)
+
+
                 findNavController().navigate(
                     R.id.action_orders_to_dashboardCategoryBoldPOS, bundle
                 )
@@ -493,8 +520,8 @@ class ActiveOrderFragment(
     private fun cartModel(order: OpenOrderResponse.Data.Order): CartModel {
         Log.e("futureDeliveryDate  ", Gson().toJson(order))
         return CartModel().apply {
-            terminalId = order.terminalId
-            employeeID = order.employeeId
+            terminalId = prefProvider.getValueInt(Constants.TERMINAL_ID, -1)
+            employeeID = prefProvider.getValueInt(Constants.EMPLOYEE_ID, -1)
             locationId = order.locationId
             orderTypeId = order.orderTypeId
             orderType = order.orderType
@@ -2011,8 +2038,12 @@ class ActiveOrderFragment(
             event.getContentIfNotHandled()?.let {
                 //currentPage = 1
                 DatePickerDialog(
-                    requireActivity(), android.R.style.Theme_Material_Light_Dialog,startDate, myCalendar
-                        .get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
+                    requireActivity(),
+                    android.R.style.Theme_Material_Light_Dialog,
+                    startDate,
+                    myCalendar
+                        .get(Calendar.YEAR),
+                    myCalendar.get(Calendar.MONTH),
                     myCalendar.get(Calendar.DAY_OF_MONTH)
 
                 ).show()

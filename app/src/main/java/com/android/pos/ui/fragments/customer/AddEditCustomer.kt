@@ -587,36 +587,38 @@ class AddEditCustomer : Fragment() {
                 )
             } else {
                 listAddress = arrayListOf()
-                listAddress.add(
-                    CreateCustomerRequestModel.Customer.Addresses(
-                        null,
-                        binding.edtStreet?.text.toString(),
-                        binding.edtStreet?.text.toString(),
-                        binding.edtCity?.text.toString(),
-                        binding.edtState?.text.toString(),
-                        binding.edtAddress?.selectedItem.toString(),
-                        binding.edtZip?.text.toString(),
-                        "Billing",
-                        0.0,
-                        0.0,
-                        "false"
+                if (binding.edtStreet?.text.toString().isNotEmpty())
+                    listAddress.add(
+                        CreateCustomerRequestModel.Customer.Addresses(
+                            null,
+                            binding.edtStreet?.text.toString(),
+                            binding.edtStreet?.text.toString(),
+                            binding.edtCity?.text.toString(),
+                            binding.edtState?.text.toString(),
+                            binding.edtAddress?.selectedItem.toString(),
+                            binding.edtZip?.text.toString(),
+                            "Billing",
+                            0.0,
+                            0.0,
+                            "false"
+                        )
                     )
-                )
-                listAddress.add(
-                    CreateCustomerRequestModel.Customer.Addresses(
-                        null,
-                        binding.edtStreetDel?.text.toString(),
-                        binding.edtStreetDel?.text.toString(),
-                        binding.edtCityDel?.text.toString(),
-                        binding.edtStateDel?.text.toString(),
-                        binding.edtAddressDel?.selectedItem.toString(),
-                        binding.edtZipDel?.text.toString(),
-                        "Shipping",
-                        0.0,
-                        0.0,
-                        "false"
+                if (binding.edtStreetDel?.text.toString().isNotEmpty())
+                    listAddress.add(
+                        CreateCustomerRequestModel.Customer.Addresses(
+                            null,
+                            binding.edtStreetDel?.text.toString(),
+                            binding.edtStreetDel?.text.toString(),
+                            binding.edtCityDel?.text.toString(),
+                            binding.edtStateDel?.text.toString(),
+                            binding.edtAddressDel?.selectedItem.toString(),
+                            binding.edtZipDel?.text.toString(),
+                            "Shipping",
+                            0.0,
+                            0.0,
+                            "false"
+                        )
                     )
-                )
             }
 
             viewModel.submit(listAddress)
