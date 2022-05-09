@@ -1741,4 +1741,18 @@ open class PaymentViewModel @Inject constructor(
         magensaResponse = response
 
     }
+
+    fun updateActiveOrderFlagClear() {
+
+
+        prefProvider.setValueboolean(Constants.IS_UPDATE_ORDER, false)
+        prefProvider.setValueInt(Constants.IS_UPDATE_ORDER_ID, -1)
+        prefProvider.setValueInt(Constants.IS_UPDATE_ORDER_PAYMENT_ID, -1)
+        prefProvider.setValue(Constants.IS_UPDATE_ORDER_PAY_OFFLINE_ID, "")
+        prefProvider.setValue(Constants.IS_UPDATE_ORDER_OFFLINE_ID, "")
+        prefProvider.setValueboolean(Constants.IS_UPDATE_ORDER_FROM_ACTIVE_ORDER, false)
+        prefProvider.setValueboolean(Constants.IS_UPDATE_ORDER_LOYALTY_APPLIED, false)
+
+
+    }
 }

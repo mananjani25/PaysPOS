@@ -1642,6 +1642,8 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
 
                 prefProvider.setValueInt("ORDER_ID", it.data.order.id)
 
+                viewModel.updateActiveOrderFlagClear()
+
                 when {
                     paymentType == "Card" -> {
                         when {
