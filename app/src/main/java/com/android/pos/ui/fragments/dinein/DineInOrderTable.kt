@@ -309,7 +309,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
             cartList = getCartModel(adapterList.toCollection(arrayListOf()))
             cartList?.note = order_note
-            Log.e(TAG, "getcartList  ${Gson().toJson(cartList)}")
+            Log.e(TAG, "getcartList  ${Gson().toJson(cartList?.items)}")
             viewModelPayment.addCart(cartList!!)
 
             totalTax = 0.0
@@ -2529,7 +2529,12 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         Log.e(TAG, "dineExtractList  ${Gson().toJson(list)}")
         for (i in 0 until list.size) {
             if (list[i].isHeader == 1) {
-                list.get(i).item?.let { listItem.add(it) }
+                list.get(i).item?.let {
+                if (it.discountPrice != 0.0){
+                    it.discountPrice = MethodUtils.roundOffAmountDouble(it.discountPrice / it.itemQuantity)
+                }
+                    listItem.add(it)
+                }
             }
 
             if (list[i].isHeader == 0) {
