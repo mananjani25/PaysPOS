@@ -1044,6 +1044,8 @@ class DashBoardCategoryViewModel @Inject constructor(
         totalServiceCharge = 0.0
         var amountToBePaid = 0.0
         if (cartModel.orderType == DINE_IN) {
+            Log.e("TOCHE","discountPriceDineIn  ${cartModel.discountPrice}")
+            Log.e("TOCHE","discountPriceDineIn  ${totalDiscount}")
 
             cartModel.dineInList?.forEach { dine ->
 
