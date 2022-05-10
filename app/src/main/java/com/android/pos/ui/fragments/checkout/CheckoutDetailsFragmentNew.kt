@@ -694,7 +694,6 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 paymentAmount =
                     String.format("%.2f", paymentAmount + cashDiscountSurcharge).toDouble()
             }
-          //  makePaymentCreditCard()
 
 
             magtekModule.stopListner(false)
