@@ -40,6 +40,9 @@ import com.android.pos.data.remote.Constants.OPEN_ORDER
 import com.android.pos.data.remote.Constants.PAYMENT_ID
 import com.android.pos.data.remote.Constants.PRINT_DATA_DINE_IN
 import com.android.pos.data.remote.Constants.SAVE_SPLIT_BUNDLE
+import com.android.pos.data.remote.Constants.SPLIT_DINEIN_CHECKOUT
+import com.android.pos.data.remote.Constants.SPLIT_DINEIN_MODEL
+import com.android.pos.data.remote.Constants.SPLIT_IS_GUESTPAY
 import com.android.pos.data.remote.Constants.SUB_TOTAL
 import com.android.pos.data.remote.Constants.SUB_TOTAL_DINEIN
 import com.android.pos.data.remote.Constants.TAKEOUT
@@ -5381,6 +5384,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         prefProvider.setValue(Constants.TAX_CHARGE_DINEIN, "")
         prefProvider.setValue(Constants.SERVICE_CHARGE_DINEIN, "")
         prefProvider.setValueInt("orderId", -1)
+        prefProvider.setValue(SPLIT_DINEIN_MODEL,"")
+        prefProvider.setValue(SPLIT_IS_GUESTPAY,"")
+        prefProvider.setValue(SPLIT_DINEIN_CHECKOUT,"")
 
 
     }
@@ -5409,6 +5415,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         )
         prefProvider.setValue(Constants.TAX_CHARGE_ACTUAL, "0.0")
         prefProvider.setValue(Constants.TIPS_AMOUNT_ACTUAL, "0.0")
+        prefProvider.setValue(SPLIT_DINEIN_MODEL,"")
+        prefProvider.setValue(SPLIT_IS_GUESTPAY,"")
+        prefProvider.setValue(SPLIT_DINEIN_CHECKOUT,"")
     }
 
     private fun observeShowProgress() {
