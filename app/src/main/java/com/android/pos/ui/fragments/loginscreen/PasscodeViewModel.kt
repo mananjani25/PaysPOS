@@ -45,6 +45,7 @@ class PasscodeViewModel @Inject constructor(
     private val _data1 = MutableLiveData<Event<Boolean>>()
     val data1: LiveData<Event<Boolean>> = _data1
 
+    val timeDetails = posRepository.timeDetails()
 
     fun isDashboardData(isDashboard: Boolean) {
         this.isDashboard = isDashboard
