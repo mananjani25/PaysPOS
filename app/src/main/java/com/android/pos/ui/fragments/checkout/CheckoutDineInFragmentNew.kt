@@ -712,7 +712,8 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
         guestRequestModel?.paymentAttributes!!.cash_discount_or_surcharge =
             cashDiscountSurcharge
         guestRequestModel?.paymentAttributes!!.cash_discount_type = cashDiscountType
-
+        guestRequestModel?.paymentAttributes!!.terminalId = prefProvider.getValueInt(Constants.TERMINAL_ID, 0)
+        guestRequestModel?.paymentAttributes!!.employeeId = prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
         val guestPaymentAttributes = GuestPaymentAttributes()
         guestPaymentAttributes.amount = guestRequestModel?.paymentAttributes!!.amount
         guestPaymentAttributes.serviceChargeAmount =
@@ -732,6 +733,10 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
             guestRequestModel?.paymentAttributes!!.offlineId
         guestPaymentAttributes.order_id =
             guestRequestModel?.paymentAttributes!!.order_id
+        guestPaymentAttributes.terminalId =
+            guestRequestModel?.paymentAttributes!!.terminalId
+        guestPaymentAttributes.employeeId =
+            guestRequestModel?.paymentAttributes!!.employeeId
         guestPaymentAttributes.cash_discount_or_surcharge =
             guestRequestModel?.paymentAttributes!!.cash_discount_or_surcharge
         guestPaymentAttributes.cash_discount_type =

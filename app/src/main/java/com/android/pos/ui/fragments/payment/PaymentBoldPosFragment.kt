@@ -22,7 +22,10 @@ import com.android.pos.data.remote.Constants.DINE_IN
 import com.android.pos.data.remote.Constants.OPEN_ORDER
 import com.android.pos.data.remote.Constants.ORDER_TYPE
 import com.android.pos.data.remote.Constants.REDIRECT_FROM
+import com.android.pos.data.remote.Constants.SPLIT_DINEIN_CHECKOUT
+import com.android.pos.data.remote.Constants.SPLIT_DINEIN_MODEL
 import com.android.pos.data.remote.Constants.SPLIT_ENABLE
+import com.android.pos.data.remote.Constants.SPLIT_IS_GUESTPAY
 import com.android.pos.data.remote.Constants.TAKEOUT
 import com.android.pos.databinding.FragmentPaymentBoldPosBinding
 import com.android.pos.di.PrefProvider
@@ -48,7 +51,7 @@ class PaymentBoldPosFragment : Fragment() {
     private var guestRequestModel: GuestPaymentRequest? = null
 
     private val dineInPaymentViewModel by viewModels<CheckoutDineInPaymentViewModel>()
-    private var isFromActiveOrder:Boolean = false
+    private var isFromActiveOrder: Boolean = false
 
     @Inject
     lateinit var prefProvider: PrefProvider
@@ -83,72 +86,132 @@ class PaymentBoldPosFragment : Fragment() {
 
         ) {
 
-            val isGuest = arguments?.getBoolean("isGuestPay") ?: false
-            if (isGuest) {
-
-                val data =
-                    requireArguments().getParcelable<GuestDataModel>(Constants.DINE_IN_GUEST_PAYMENT_DATA)
-                Log.e("GuestData", "Data ${Gson().toJson(data)}")
-                dineinCartPaymentModel =
-                    requireArguments().getParcelable<DineinCartPaymentModel>("dineinPaymentModel")
-                var model = GuestPaymentCalculationModel(
-                    data?.subTotal?.toDouble() ?: 0.0,
-                    data?.totalAmount?.toDouble() ?: 0.0,
-                    data?.totalServiceCharge?.toDouble() ?: 0.0,
-                    data?.totalTax?.toDouble() ?: 0.0,
-                    data?.cashDiscount?.toDouble() ?: 0.0,
-                    data?.totalDiscount?.toDouble() ?: 0.0,
-                    requireArguments().getInt("id"),
-                    dineinCartPaymentModel
-
-
-                )
-                guestRequestModel = requireArguments().getParcelable("model")
-
-                loadCartFragment(CartFragment(null, null, true, model, true))
-            } else {
-                Log.e(TAG,"elsePAymentDion")
-
-                var model = GuestPaymentCalculationModel(
-                    requireArguments().getDouble("subTotalPrice"),
-                    requireArguments().getDouble("totalPrice"),
-                    requireArguments().getDouble("totalServiceCharge"),
-                    requireArguments().getDouble("totalTax"),
-                    0.0,
-                    requireArguments().getDouble("totalDiscount"),
+            if (arguments != null) {
+                val isGuest = arguments?.getBoolean("isGuestPay") ?: false
+                prefProvider.setValueboolean(SPLIT_IS_GUESTPAY, isGuest)
+                if (isGuest) {
+                    val data =
+                        requireArguments().getParcelable<GuestDataModel>(Constants.DINE_IN_GUEST_PAYMENT_DATA)
+                    Log.e("GuestData", "Data ${Gson().toJson(data)}")
+                    dineinCartPaymentModel =
+                        requireArguments().getParcelable<DineinCartPaymentModel>("dineinPaymentModel")
+                    var model = GuestPaymentCalculationModel(
+                        data?.subTotal?.toDouble() ?: 0.0,
+                        data?.totalAmount?.toDouble() ?: 0.0,
+                        data?.totalServiceCharge?.toDouble() ?: 0.0,
+                        data?.totalTax?.toDouble() ?: 0.0,
+                        data?.cashDiscount?.toDouble() ?: 0.0,
+                        data?.totalDiscount?.toDouble() ?: 0.0,
+                        requireArguments().getInt("id"),
+                        dineinCartPaymentModel
 
 
                     )
-                loadCartFragment(CartFragment(null, null, true, model, false))
+                    guestRequestModel = requireArguments().getParcelable("model")
+                    prefProvider.setValue(SPLIT_DINEIN_MODEL, Gson().toJson(model))
+                    loadCartFragment(CartFragment(null, null, true, model, true))
+                } else {
+                    Log.e(TAG, "elsePAymentDion")
+                    var model = GuestPaymentCalculationModel(
+                        requireArguments().getDouble("subTotalPrice"),
+                        requireArguments().getDouble("totalPrice"),
+                        requireArguments().getDouble("totalServiceCharge"),
+                        requireArguments().getDouble("totalTax"),
+                        0.0,
+                        requireArguments().getDouble("totalDiscount"),
+                    )
+                    prefProvider.setValue(SPLIT_DINEIN_MODEL, Gson().toJson(model))
+                    loadCartFragment(CartFragment(null, null, true, model, false))
+                }
+            } else {
+                if (prefProvider.getValueboolean(SPLIT_IS_GUESTPAY, false)) {
+                    var string_gson = prefProvider.getValue(SPLIT_DINEIN_MODEL, "")
+                    var temp_model =
+                        Gson().fromJson(string_gson, GuestPaymentCalculationModel::class.java)
+                    var model = GuestPaymentCalculationModel(
+                        temp_model.subTotal,
+                        temp_model.total,
+                        temp_model.serviceCharge,
+                        temp_model.tax,
+                        temp_model.cashDiscount,
+                        temp_model.totalDiscount,
+                        temp_model.guestId,
+                        temp_model.model
+                    )
+                    loadCartFragment(CartFragment(null, null, true, model, true))
+                } else {
+                    if (prefProvider.getValue(SPLIT_DINEIN_MODEL, "") != null) {
+                        var string_gson = prefProvider.getValue(SPLIT_DINEIN_MODEL, "")
+                        var temp_model =
+                            Gson().fromJson(string_gson, GuestPaymentCalculationModel::class.java)
+                        var model = GuestPaymentCalculationModel(
+                            temp_model.subTotal,
+                            temp_model.total,
+                            temp_model.serviceCharge,
+                            temp_model.tax,
+                            0.0,
+                            temp_model.totalDiscount,
+                        )
+                        loadCartFragment(CartFragment(null, null, true, model, false))
+                    }
 
+                }
             }
+
+
         } else {
             loadCartFragment(CartFragment(null, null))
         }
         if (prefProvider.getValue(ORDER_TYPE, "") == Constants.DINE_IN) {
-            var dineInOrderId = requireArguments().getInt("orderId")
-            var isGuest = requireArguments().getBoolean("isGuestPay") ?: false
-            var isLastPayment = requireArguments().getBoolean("isLastPayment") ?: false
-            var splitModel: DineInOrderPayment =
-                requireArguments().getParcelable("orderPayment") ?: DineInOrderPayment()
+            if (arguments != null) {
+                var dineInOrderId = requireArguments().getInt("orderId")
+                var isGuest = requireArguments().getBoolean("isGuestPay") ?: false
+                var isLastPayment = requireArguments().getBoolean("isLastPayment") ?: false
+                var splitModel: DineInOrderPayment =
+                    requireArguments().getParcelable("orderPayment") ?: DineInOrderPayment()
 
 
-            Handler(Looper.getMainLooper()).postDelayed({
-                val dineInModel = CheckOutDineInDataModel(
-                    requireArguments().getInt("id") ?: 0,
-                    isGuest,
-                    isLastPayment,
-                    guestRequestModel,
-                    dineInOrderId,
-                    splitModel,
-                    dineInAdapterList = requireArguments()?.getParcelableArrayList(Constants.DINE_IN_ADAPTER_LIST),
-                    dineInOrderDetails = requireArguments()?.getParcelable(Constants.PRINT_DATA_DINE_IN),
-                    guestPaymentModel = requireArguments()?.getParcelable(Constants.DINE_IN_GUEST_PAYMENT_DATA),
-                    guestPosition = requireArguments()?.getInt(Constants.GUEST_POSITION)
-                )
-                Log.e(TAG, "dineInModel:  ${Gson().toJson(dineInModel)}")
-                loadCategoryFragment(CheckoutDineInFragmentNew(dineInModel))
-            }, 100)
+                Handler(Looper.getMainLooper()).postDelayed({
+                    val dineInModel = CheckOutDineInDataModel(
+                        requireArguments().getInt("id") ?: 0,
+                        isGuest,
+                        isLastPayment,
+                        guestRequestModel,
+                        dineInOrderId,
+                        splitModel,
+                        dineInAdapterList = requireArguments()?.getParcelableArrayList(Constants.DINE_IN_ADAPTER_LIST),
+                        dineInOrderDetails = requireArguments()?.getParcelable(Constants.PRINT_DATA_DINE_IN),
+                        guestPaymentModel = requireArguments()?.getParcelable(Constants.DINE_IN_GUEST_PAYMENT_DATA),
+                        guestPosition = requireArguments()?.getInt(Constants.GUEST_POSITION)
+                    )
+                    Log.e(TAG, "dineInModel:  ${Gson().toJson(dineInModel)}")
+                    prefProvider.setValue(SPLIT_DINEIN_CHECKOUT, Gson().toJson(dineInModel))
+                    loadCategoryFragment(CheckoutDineInFragmentNew(dineInModel))
+                }, 100)
+            } else {
+                if (prefProvider.getValue(SPLIT_DINEIN_CHECKOUT, "") != null) {
+                    var string_gson = prefProvider.getValue(SPLIT_DINEIN_CHECKOUT, "")
+                    var temp_model =
+                        Gson().fromJson(string_gson, CheckOutDineInDataModel::class.java)
+                    Handler(Looper.getMainLooper()).postDelayed({
+                    val dineInModel = CheckOutDineInDataModel(
+                        temp_model.guestId,
+                        temp_model.isFromGuest,
+                        temp_model.isLastPayment,
+                        temp_model.guestPaymentReq,
+                        temp_model.orderId,
+                        temp_model.splitModel,
+                        dineInAdapterList = temp_model.dineInAdapterList,
+                        dineInOrderDetails = temp_model.dineInOrderDetails,
+                        guestPaymentModel = temp_model.guestPaymentModel,
+                        guestPosition = temp_model.guestPosition
+                    )
+                    Log.e(TAG, "dineInModel:  ${Gson().toJson(dineInModel)}")
+                        loadCategoryFragment(CheckoutDineInFragmentNew(dineInModel))
+                    }, 100)
+                }
+            }
+
         } else {
             Handler(Looper.getMainLooper()).postDelayed({
                 loadCategoryFragment(CheckoutDetailsFragmentNew(arguments?.getBoolean("isFromActiveOrder") == true))
@@ -160,21 +223,21 @@ class PaymentBoldPosFragment : Fragment() {
             if (prefProvider.getValueboolean(Constants.SPLIT_ENABLE, false)) {
                 AlertUtils.showCustomAlert(requireContext(), "Please complete all payment.")
             } else {
-                if(prefProvider.getValue(ORDER_TYPE, TAKEOUT)== OPEN_ORDER){
+                if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == OPEN_ORDER) {
                     val navController = findNavController()
-                    var bundle :Bundle = Bundle()
-                    bundle.putBoolean("update",true)
-                    bundle.putInt("orderId",orderId!!)
-                    bundle.putInt("paymentId",paymentId!!)
-                    bundle.putString("paymentOfflineId",paymentOfflineId)
-                    bundle.putString("orderOfflineId",orderOfflineId)
-                    var bundle1:Bundle = Bundle()
-                    bundle1.putBundle("updateBundle",bundle)
+                    var bundle: Bundle = Bundle()
+                    bundle.putBoolean("update", true)
+                    bundle.putInt("orderId", orderId!!)
+                    bundle.putInt("paymentId", paymentId!!)
+                    bundle.putString("paymentOfflineId", paymentOfflineId)
+                    bundle.putString("orderOfflineId", orderOfflineId)
+                    var bundle1: Bundle = Bundle()
+                    bundle1.putBundle("updateBundle", bundle)
                     navController.previousBackStackEntry?.savedStateHandle?.set(
                         "data", bundle1
                     )
                     navController.popBackStack()
-                }else{
+                } else {
                     findNavController().popBackStack()
                 }
 
@@ -211,7 +274,7 @@ class PaymentBoldPosFragment : Fragment() {
                 prefProvider.setValue(Constants.ORDER_TYPE, Constants.TAKEOUT)
             }
 
-            if (isFromActiveOrder){
+            if (isFromActiveOrder) {
                 removeCustomer()
                 viewModel.deleteCart()
                 prefProvider.setValue(Constants.ORDER_TYPE, Constants.TAKEOUT)

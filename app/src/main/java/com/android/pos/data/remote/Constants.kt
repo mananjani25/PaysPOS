@@ -574,4 +574,8 @@ object Constants {
     const val IS_UPDATE_ORDER_FROM_ACTIVE_ORDER = "is_update_order_from_active_order"
     const val IS_UPDATE_ORDER_LOYALTY_APPLIED = "is_update_order_loyalty_applied"
 
+    const val SPLIT_DINEIN_MODEL ="split_dinein_model"
+    const val SPLIT_IS_GUESTPAY ="split_is_guestpay"
+    const val SPLIT_DINEIN_CHECKOUT = "split_dinein_checkout"
+
 }
