@@ -352,7 +352,9 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
 */
 
         if (prefProvider.getValueboolean(SPLIT_ENABLE, false)) {
-            findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_paymentBoldPosFragment)
+            if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
+                findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_paymentBoldPosFragment)
+            }
         } else {
             loadCartFragment(CartFragment(this, this))
             loadCategoryFragment(CategoryFragment(this, binding.layoutHeader.edtSearch))
