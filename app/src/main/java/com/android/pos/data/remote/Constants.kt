@@ -565,4 +565,16 @@ object Constants {
 
     const val DYNANA_FLAX = "DYNAMO_FLAX"
 
+    const val CASH_DISCOUNT_SURCHARGE_AMOUNT_TYPE = "cashDiscountSurchargeAmountType"
+    const val CASH_DISCOUNT_SURCHARGE_RATE = "cashDiscountSurchargeRate"
+
+
+    const val IS_UPDATE_ORDER = "is_update_order"
+    const val IS_UPDATE_ORDER_ID = "is_update_order_id"
+    const val IS_UPDATE_ORDER_PAYMENT_ID = "is_update_order_payment_id"
+    const val IS_UPDATE_ORDER_PAY_OFFLINE_ID = "is_update_order_pay_offline_id"
+    const val IS_UPDATE_ORDER_OFFLINE_ID = "is_update_order_offline_id"
+    const val IS_UPDATE_ORDER_FROM_ACTIVE_ORDER = "is_update_order_from_active_order"
+    const val IS_UPDATE_ORDER_LOYALTY_APPLIED = "is_update_order_loyalty_applied"
+
 }

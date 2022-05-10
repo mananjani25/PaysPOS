@@ -6,7 +6,6 @@ import com.android.pos.data.remote.ApiService
 import com.android.pos.data.remote.Constants.AUTH_TOKEN
 import com.android.pos.data.remote.Constants.BASE_URL_NEW
 import com.android.pos.data.remote.NetworkConnectionInterceptor
-import com.squareup.okhttp.HttpUrl
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -35,28 +34,30 @@ object ApiModule {
     ) = NetworkConnectionInterceptor(app)
 
 
-    var host: String = ""
-        set(url) {
-            field = HttpUrl.parse(url)!!.host()
-        }
+    @Provides
+    @Singleton
+    fun provideHostSelectionInterceptor(preferenceHelper: PrefProvider): HostSelectionInterceptor {
+        return HostSelectionInterceptor(preferenceHelper)
+    }
 
     @Provides
     fun getRetrofit(
         networkConnectionInterceptor: NetworkConnectionInterceptor,
-        prefProvider: PrefProvider
+        prefProvider: PrefProvider,
+        hostSelectionInterceptor: HostSelectionInterceptor,
+
     ): ApiService =
         Retrofit.Builder()
-            .baseUrl(prefProvider.getValue(BASE_URL_NEW, BASE_URL).toString())
+            .baseUrl(prefProvider.getValue(BASE_URL_NEW, BASE_URL))
             .client(
                 OkHttpClient.Builder().connectTimeout(10000, TimeUnit.MILLISECONDS)
+                    .addInterceptor(hostSelectionInterceptor)
                     .addInterceptor { chain ->
                         chain.proceed(chain.request().newBuilder().also {
-
-
                             val authToken = prefProvider.getValue(AUTH_TOKEN, "")
                             println("authToken ::  $authToken")
                             println("BASE_URL :: ${prefProvider.getValue(BASE_URL_NEW, BASE_URL)}")
-                            if (authToken!!.isNotEmpty())
+                            if (authToken.isNotEmpty())
                                 it.addHeader("TOKEN", authToken)
 
                         }.build())

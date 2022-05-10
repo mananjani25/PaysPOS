@@ -163,8 +163,8 @@ class CheckoutDineInPaymentViewModel @Inject constructor(
 
     }
 
-    fun mAllWordsDineIn(empId:Int):LiveData<List<DineInCartModel>>{
-        return  posRepository.getCartDineInList(empId)
+    fun mAllWordsDineIn(empId: Int): LiveData<List<DineInCartModel>> {
+        return posRepository.getCartDineInList(empId)
 
     }
 
@@ -209,7 +209,7 @@ class CheckoutDineInPaymentViewModel @Inject constructor(
         return cartModel
     }
 
-    fun deleteDineInCart(){
+    fun deleteDineInCart() {
         viewModelScope.launch {
             posRepository.deleteDineInCart()
             destroyedList.clear()
@@ -868,11 +868,8 @@ class CheckoutDineInPaymentViewModel @Inject constructor(
 
                     dine.items.forEach { item ->
                         totalCount += item.itemQuantity
-                        if (!item.isManualSales) {
-                            subTotalPrice += (item.price * item.itemQuantity) - (item.discountPrice * item.itemQuantity)
-                        } else {
-                            subTotalPrice += (item.price * item.itemQuantity) - item.discountPrice
-                        }
+                        subTotalPrice += (item.price * item.itemQuantity) - (item.discountPrice * item.itemQuantity)
+
 
                         taxCalculation(item)
 
@@ -890,11 +887,8 @@ class CheckoutDineInPaymentViewModel @Inject constructor(
 
                 cartList[0].dineInList?.forEach {
                     it.items.forEach {
-                        if (!it.isManualSales) {
-                            totalDiscount += (it.discountPrice * it.itemQuantity)
-                        } else {
-                            totalDiscount += it.discountPrice
-                        }
+                        totalDiscount += (it.discountPrice * it.itemQuantity)
+
                     }
                 }
 
@@ -911,11 +905,8 @@ class CheckoutDineInPaymentViewModel @Inject constructor(
 
                     cartList[0].items?.forEach { item ->
                         totalCount += item.itemQuantity
-                        if (!item.isManualSales) {
-                            subTotalPrice += (item.price * item.itemQuantity) - (item.discountPrice * item.itemQuantity)
-                        } else {
-                            subTotalPrice += (item.price * item.itemQuantity) - item.discountPrice
-                        }
+
+                        subTotalPrice += (item.price * item.itemQuantity) - (item.discountPrice * item.itemQuantity)
 
                         taxCalculation(item)
 
@@ -933,11 +924,7 @@ class CheckoutDineInPaymentViewModel @Inject constructor(
                     totalDiscount += cartList[0].discountPrice
 
                     cartList[0].items!!.forEach {
-                        totalDiscount += if (!it.isManualSales) {
-                            (it.discountPrice * it.itemQuantity)
-                        } else {
-                            it.discountPrice
-                        }
+                        totalDiscount += (it.discountPrice * it.itemQuantity)
                     }
 
                     Log.e("totalDiscount", totalDiscount.toString())
@@ -1006,11 +993,9 @@ class CheckoutDineInPaymentViewModel @Inject constructor(
 
                 dine.items.forEach { item ->
                     totalCount += item.itemQuantity
-                    subTotalPrice += if (!item.isManualSales) {
+                    subTotalPrice +=
                         (item.price * item.itemQuantity) - (item.discountPrice * item.itemQuantity)
-                    } else {
-                        (item.price * item.itemQuantity) - item.discountPrice
-                    }
+
 
                     taxCalculation(item)
 
@@ -1027,11 +1012,8 @@ class CheckoutDineInPaymentViewModel @Inject constructor(
             totalDiscount += cartModel.discountPrice
             cartModel.dineInList?.forEach {
                 it.items.forEach {
-                    totalDiscount += if (!it.isManualSales) {
+                    totalDiscount +=
                         (it.discountPrice * it.itemQuantity)
-                    } else {
-                        it.discountPrice
-                    }
                 }
             }
 
@@ -1076,11 +1058,9 @@ class CheckoutDineInPaymentViewModel @Inject constructor(
 
                 cartModel.items?.forEach { item ->
                     totalCount += item.itemQuantity
-                    subTotalPrice += if (!item.isManualSales) {
+                    subTotalPrice +=
                         (item.price * item.itemQuantity) - (item.discountPrice * item.itemQuantity)
-                    } else {
-                        (item.price * item.itemQuantity) - item.discountPrice
-                    }
+
 
                     taxCalculation(item)
 
@@ -1097,11 +1077,8 @@ class CheckoutDineInPaymentViewModel @Inject constructor(
                 totalDiscount += cartModel.discountPrice
 
                 cartModel.items!!.forEach {
-                    totalDiscount += if (!it.isManualSales) {
+                    totalDiscount +=
                         (it.discountPrice * it.itemQuantity)
-                    } else {
-                        it.discountPrice
-                    }
                 }
 
                 var finalTotal = 0.0
@@ -2091,10 +2068,6 @@ class CheckoutDineInPaymentViewModel @Inject constructor(
         }
 
     }
-
-
-
-
 
 
     fun showErrorMessage(errorMessage: String) {

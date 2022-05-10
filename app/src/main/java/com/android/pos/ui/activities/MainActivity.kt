@@ -29,6 +29,8 @@ import com.android.pos.R
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.repositories.UserRepository
 import com.android.pos.databinding.ParentActivityBinding
+import com.android.pos.di.ApiModule.BASE_URL
+import com.android.pos.di.HostSelectionInterceptor
 import com.android.pos.di.PrefProvider
 import com.android.pos.di.RolePermission
 import com.android.pos.ui.fragments.settings.hardware.Hardware
@@ -56,8 +58,12 @@ class MainActivity : BaseScannerActivity() {
     var activityResultCallBack: ActivityResultCallBack? = null
     private val TAG = "MainActivity"
 
-    @Inject
-    lateinit var prefProvider: PrefProvider
+
+    @set:Inject
+    internal var prefProvider: PrefProvider? = null
+
+    @set:Inject
+    var hostSelectionInterceptor: HostSelectionInterceptor? = null
 
     @Inject
     lateinit var rolePermission: RolePermission
@@ -68,7 +74,7 @@ class MainActivity : BaseScannerActivity() {
     var broadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             var message = intent?.getStringExtra("message")
-            var isAuto = intent?.getBooleanExtra("isAuto",false)
+            var isAuto = intent?.getBooleanExtra("isAuto", false)
             if (isAuto == true) {
                 AlertUtils.showCustomAlertWithYesNoListener(
                     context,
@@ -89,17 +95,17 @@ class MainActivity : BaseScannerActivity() {
     }
 
     private fun clockoutFromSystem() {
-        prefProvider.setValueInt(Constants.EMPLOYEE_ID, 0)
-        prefProvider.setValue(Constants.EMPLOYEE_NAME, "")
-        prefProvider.setValue(
+        prefProvider?.setValueInt(Constants.EMPLOYEE_ID, 0)
+        prefProvider?.setValue(Constants.EMPLOYEE_NAME, "")
+        prefProvider?.setValue(
             Constants.EMPLOYEE_ROLE,
             ""
         )
-        prefProvider.setValueInt(
+        prefProvider?.setValueInt(
             Constants.EMPLOYEE_ROLE_ID,
             0
         )
-        prefProvider.setValue(Constants.PASSCODE, "")
+        prefProvider?.setValue(Constants.PASSCODE, "")
         var bundle: Bundle = Bundle()
         bundle.putBoolean("isSwap", true)
         bundle.putBoolean("isDashboard", false)
@@ -127,7 +133,6 @@ class MainActivity : BaseScannerActivity() {
         binding = DataBindingUtil.setContentView(this, R.layout.parent_activity)
         supportActionBar?.hide()
         binding.lifecycleOwner = this
-
 
 
         val drawerLayout: DrawerLayout = findViewById(R.id.drawer_layout)
@@ -252,7 +257,7 @@ class MainActivity : BaseScannerActivity() {
 
 
     private fun logout() {
-        prefProvider.setValue(Constants.AUTH_TOKEN, "")
+        prefProvider?.setValue(Constants.AUTH_TOKEN, "")
         navController?.navigate(R.id.action_global_login)
     }
 
@@ -284,7 +289,7 @@ class MainActivity : BaseScannerActivity() {
     }
 
     private fun clearPreferences() {
-        prefProvider.setClear()
+        prefProvider?.setClear()
     }
 
     private fun observeShowProgress() {
@@ -306,8 +311,12 @@ class MainActivity : BaseScannerActivity() {
                     clearPreferences()
                     disableDrawer()
                     logout()
+                    prefProvider?.setValue(Constants.BASE_URL_NEW, BASE_URL)
+                    hostSelectionInterceptor?.setHostBaseUrl()
 
                     viewModel.clearTable()
+
+
                 }
             }
         }

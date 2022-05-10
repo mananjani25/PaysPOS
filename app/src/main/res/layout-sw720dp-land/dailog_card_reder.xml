@@ -17,15 +17,29 @@
             android:paddingHorizontal="@dimen/_10sdp"
             android:paddingVertical="@dimen/_5sdp">
 
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:layout_width="match_parent"
+                android:orientation="horizontal"
+                android:layout_height="wrap_content">
             <TextView
                 style="@style/CustomFontBold"
-                android:layout_width="match_parent"
+                android:layout_width="0dp"
+                android:layout_weight="9"
                 android:layout_height="wrap_content"
                 android:gravity="center"
+                android:layout_marginLeft="@dimen/_20sdp"
                 android:paddingVertical="@dimen/_5sdp"
                 android:text="Choose Card Reader Device"
                 android:textColor="@color/btnColor"
-                android:textSize="@dimen/_7mdpi" />
+                android:textSize="@dimen/_8mdpi" />
+
+                <ImageView
+                    android:id="@+id/iimg_back"
+                    android:layout_width="@dimen/_12sdp"
+                    android:layout_gravity="center_vertical"
+                    android:src="@drawable/ic_cancel_white"
+                    android:layout_height="@dimen/_12sdp" />
+            </androidx.appcompat.widget.LinearLayoutCompat>
 
 
             <androidx.appcompat.widget.LinearLayoutCompat
@@ -46,10 +60,10 @@
                     style="@style/CustomFontBold"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="@dimen/_5sdp"
                     android:gravity="center"
-                    android:paddingVertical="@dimen/_5sdp"
                     android:text="eDynamo"
+                    android:layout_marginStart="@dimen/_5sdp"
+                    android:paddingVertical="@dimen/_5sdp"
                     android:textColor="@color/white"
                     android:textSize="@dimen/_7mdpi" />
 

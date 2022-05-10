@@ -1044,15 +1044,13 @@ open class PaymentViewModel @Inject constructor(
 
             orderItemsAttribute.category_id = item.categoryId
 
-            if (item.isManualSales) {
+
+            if (cartModel.reorder) {
                 orderItemsAttribute.discountAmount = (item.discountPrice)
             } else {
-                if (cartModel.reorder) {
-                    orderItemsAttribute.discountAmount = (item.discountPrice)
-                } else {
-                    orderItemsAttribute.discountAmount = (item.discountPrice * item.itemQuantity)
-                }
+                orderItemsAttribute.discountAmount = (item.discountPrice * item.itemQuantity)
             }
+
 
             orderItemsAttribute.discountType = item.discountType
             if (item.discountId != -1)
@@ -1271,11 +1269,9 @@ open class PaymentViewModel @Inject constructor(
                     var modifierPrice = 0.0
 
                     var price = 0.0
-                    price = if (!items.isManualSales) {
+                    price =
                         (items.price * items.itemQuantity) - (items.discountPrice * items.itemQuantity)
-                    } else {
-                        (items.price * items.itemQuantity) - (items.discountPrice)
-                    }
+
 
 
                     items.modifiers.forEach {
@@ -1743,6 +1739,20 @@ open class PaymentViewModel @Inject constructor(
     fun setMagensaResponse(response: String?) {
 
         magensaResponse = response
+
+    }
+
+    fun updateActiveOrderFlagClear() {
+
+
+        prefProvider.setValueboolean(Constants.IS_UPDATE_ORDER, false)
+        prefProvider.setValueInt(Constants.IS_UPDATE_ORDER_ID, -1)
+        prefProvider.setValueInt(Constants.IS_UPDATE_ORDER_PAYMENT_ID, -1)
+        prefProvider.setValue(Constants.IS_UPDATE_ORDER_PAY_OFFLINE_ID, "")
+        prefProvider.setValue(Constants.IS_UPDATE_ORDER_OFFLINE_ID, "")
+        prefProvider.setValueboolean(Constants.IS_UPDATE_ORDER_FROM_ACTIVE_ORDER, false)
+        prefProvider.setValueboolean(Constants.IS_UPDATE_ORDER_LOYALTY_APPLIED, false)
+
 
     }
 }

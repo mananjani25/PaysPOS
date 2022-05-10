@@ -1,6 +1,5 @@
 package com.android.pos.ui.fragments.loginscreen
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -14,19 +13,19 @@ import com.android.pos.data.remote.Constants.EMPLOYEE_ROLE_ID
 import com.android.pos.data.remote.Constants.IS_CLOCKOUT
 import com.android.pos.data.remote.Constants.PASSCODE
 import com.android.pos.data.remote.Constants.TERMINAL_ID
+import com.android.pos.data.repositories.PosRepository
 import com.android.pos.data.repositories.UserRepository
 import com.android.pos.di.PrefProvider
 import com.android.pos.utils.Event
-import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.statusUtils.Status
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class PasscodeViewModel @Inject constructor(
     private val userRepository: UserRepository,
+    private val posRepository: PosRepository,
     private val prefProvider: PrefProvider
 ) :
     ViewModel() {
@@ -51,6 +50,12 @@ class PasscodeViewModel @Inject constructor(
         this.isDashboard = isDashboard
     }
 
+
+    fun deleteCart() {
+        viewModelScope.launch {
+            posRepository.deleteAllCart()
+        }
+    }
 
     fun defaultTerminalCall(device_token: String, deviceId: String) {
         _showProgress.value = Event(true)
@@ -143,6 +148,44 @@ class PasscodeViewModel @Inject constructor(
                         resource.data.let {
                             if (it?.status == 200) {
                                 resource.data?.let {
+
+                                    if (prefProvider.getValueInt(
+                                            EMPLOYEE_ID,
+                                            -1
+                                        ) != it.data.employeeId
+                                    ) {
+
+
+                                        prefProvider.setValueboolean(
+                                            Constants.IS_UPDATE_ORDER,
+                                            false
+                                        )
+                                        prefProvider.setValueInt(Constants.IS_UPDATE_ORDER_ID, -1)
+                                        prefProvider.setValueInt(
+                                            Constants.IS_UPDATE_ORDER_PAYMENT_ID,
+                                            -1
+                                        )
+                                        prefProvider.setValue(
+                                            Constants.IS_UPDATE_ORDER_PAY_OFFLINE_ID,
+                                            ""
+                                        )
+                                        prefProvider.setValue(
+                                            Constants.IS_UPDATE_ORDER_OFFLINE_ID,
+                                            ""
+                                        )
+                                        prefProvider.setValueboolean(
+                                            Constants.IS_UPDATE_ORDER_FROM_ACTIVE_ORDER,
+                                            false
+                                        )
+                                        prefProvider.setValueboolean(
+                                            Constants.IS_UPDATE_ORDER_LOYALTY_APPLIED,
+                                            false
+                                        )
+
+                                        deleteCart()
+
+                                    }
+
                                     prefProvider.setValueboolean(IS_CLOCKOUT, true)
                                     prefProvider.setValueInt(EMPLOYEE_ID, it.data.employeeId)
                                     prefProvider.setValue(EMPLOYEE_NAME, it.data.employee_name)

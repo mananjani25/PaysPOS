@@ -43,11 +43,9 @@ class CartAdapter : RecyclerView.Adapter<CartAdapter.MyViewHolder>() {
                 dPrice = if (item.reorder) {
                     totalPrice(item) - item.discountPrice
                 } else {
-                    if (!item.isManualSales) {
-                        totalPrice(item) - (item.discountPrice * item.itemQuantity)
-                    } else {
-                        totalPrice(item) - item.discountPrice
-                    }
+
+                    totalPrice(item) - (item.discountPrice * item.itemQuantity)
+
                 }
 
                 MethodUtils.setPriceTextView(binding.tvDiscountRate, dPrice)

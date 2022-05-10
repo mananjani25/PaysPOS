@@ -24,7 +24,6 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.android.pos.data.entities.TbCustomer
 import com.android.pos.data.model.requestModel.CreateCustomerRequestModel
-import com.android.pos.data.model.requestModel.CreateEmployeeRequestModel
 import com.android.pos.databinding.FragmentAddEditCustomerBinding
 import com.android.pos.ui.adapter.AddressListAdapter
 import com.android.pos.utils.AlertUtils
@@ -35,7 +34,6 @@ import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.collections.ArrayList
 
 
 @AndroidEntryPoint
@@ -185,23 +183,31 @@ class AddEditCustomer : Fragment() {
                 editModel?.enroll_to_loyalty
 
 
-            binding.chkIsLoyalty.isChecked =
-                viewModel.addCustomerDetails.value?.data?.enroll_to_loyalty!!
+
+            viewModel.addCustomerDetails.value?.data?.enroll_to_loyalty?.let {
+                binding.chkIsLoyalty.isChecked = it
+            }
 
 
             /*Log.e(TAG, "Date  ${getDay(editModel?.birth_date!!)}")
             Log.e(TAG, "Month  ${getMonth(editModel?.birth_date!!)}")
             Log.e(TAG, "Year  ${getYear(editModel?.birth_date!!)}")*/
-            viewModel.addCustomerDetails.value?.data?.birth_day = editModel?.birth_date?.let {
-                getDay(
-                    it
-                )
-            }
-            if (editModel?.birth_date != null)
+            viewModel.addCustomerDetails.value?.data?.birth_day =
+                if (editModel?.birth_date?.isNotEmpty() == true) {
+                    editModel?.birth_date?.let {
+                        getDay(
+                            it
+                        )
+                    }
+                } else {
+                    ""
+
+                }
+            if (editModel?.birth_date != null && editModel?.birth_date?.isNotEmpty())
                 viewModel.addCustomerDetails.value?.data?.birthday_year =
                     getYear(editModel.birth_date)
 
-            if (editModel?.birth_date != null)
+            if (editModel?.birth_date != null && editModel?.birth_date?.isNotEmpty())
                 viewModel.addCustomerDetails.value?.data?.birth_month =
                     getMonth(editModel.birth_date)
 
@@ -264,7 +270,7 @@ class AddEditCustomer : Fragment() {
 
             viewModel.addCustomerDetails.value?.data?.company = editModel.company ?: ""
             //binding.edtCompany.setText(editModel.company)
-            if (editModel.birth_date != null) {
+            if (editModel.birth_date != null && editModel.birth_date?.isNotEmpty()) {
                 val inputFormat = SimpleDateFormat("MM/dd/yyyy")
                 var date = inputFormat.parse(editModel.birth_date)
                 val outputFormat = SimpleDateFormat("MMM-dd-yyyy")
@@ -581,36 +587,38 @@ class AddEditCustomer : Fragment() {
                 )
             } else {
                 listAddress = arrayListOf()
-                listAddress.add(
-                    CreateCustomerRequestModel.Customer.Addresses(
-                        null,
-                        binding.edtStreet?.text.toString(),
-                        binding.edtStreet?.text.toString(),
-                        binding.edtCity?.text.toString(),
-                        binding.edtState?.text.toString(),
-                        binding.edtAddress?.selectedItem.toString(),
-                        binding.edtZip?.text.toString(),
-                        "Billing",
-                        0.0,
-                        0.0,
-                        "false"
+                if (binding.edtStreet?.text.toString().isNotEmpty())
+                    listAddress.add(
+                        CreateCustomerRequestModel.Customer.Addresses(
+                            null,
+                            binding.edtStreet?.text.toString(),
+                            binding.edtStreet?.text.toString(),
+                            binding.edtCity?.text.toString(),
+                            binding.edtState?.text.toString(),
+                            binding.edtAddress?.selectedItem.toString(),
+                            binding.edtZip?.text.toString(),
+                            "Billing",
+                            0.0,
+                            0.0,
+                            "false"
+                        )
                     )
-                )
-                listAddress.add(
-                    CreateCustomerRequestModel.Customer.Addresses(
-                        null,
-                        binding.edtStreetDel?.text.toString(),
-                        binding.edtStreetDel?.text.toString(),
-                        binding.edtCityDel?.text.toString(),
-                        binding.edtStateDel?.text.toString(),
-                        binding.edtAddressDel?.selectedItem.toString(),
-                        binding.edtZipDel?.text.toString(),
-                        "Shipping",
-                        0.0,
-                        0.0,
-                        "false"
+                if (binding.edtStreetDel?.text.toString().isNotEmpty())
+                    listAddress.add(
+                        CreateCustomerRequestModel.Customer.Addresses(
+                            null,
+                            binding.edtStreetDel?.text.toString(),
+                            binding.edtStreetDel?.text.toString(),
+                            binding.edtCityDel?.text.toString(),
+                            binding.edtStateDel?.text.toString(),
+                            binding.edtAddressDel?.selectedItem.toString(),
+                            binding.edtZipDel?.text.toString(),
+                            "Shipping",
+                            0.0,
+                            0.0,
+                            "false"
+                        )
                     )
-                )
             }
 
             viewModel.submit(listAddress)
