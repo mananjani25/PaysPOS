@@ -4899,7 +4899,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
         PrinterClass.closePrinter()
         if (PrinterClass.getPrinter() == null) {
-            printerDialog.show(requireContext())
+            //  printerDialog.show(requireContext())
 
             var printer: Print? = Print(requireContext())
             if (printer != null) {
@@ -4925,7 +4925,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 printer?.setStatusChangeEventCallback(this)
 
             } catch (e: Exception) {
-                printerDialog.dismiss()
+                //  printerDialog.dismiss()
                 Log.e(TAG, "PrinterException: " + e.message)
                 printer = null
                 return
@@ -5303,12 +5303,13 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     builder,
                     PrinterClass.SEND_TIMEOUT, status, battery
                 )
-                printerDialog.dismiss()
+
+                //printerDialog.dismiss()
                 PrinterClass.closePrinter()
 
                 //PrinterClass.getPrinter()?.sendData(builder, 0, status, battery)
             } catch (e: Exception) {
-                printerDialog.dismiss()
+//                printerDialog.dismiss()
                 PrinterClass.closePrinter()
                 e.printStackTrace()
                 Log.e(TAG, "PrinterError: " + e.localizedMessage)
@@ -5316,7 +5317,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
 
         } catch (e: Exception) {
-            printerDialog.dismiss()
+            // printerDialog.dismiss()
             e.printStackTrace()
         }
 
@@ -5483,12 +5484,23 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
     fun progressDialog() {
         pd = ProgressDialog(requireActivity())
-        pd.setProgressStyle(ProgressDialog.BUTTON_NEUTRAL)
-        pd.setMessage("Please Wait..")
+        pd.setContentView(R.layout.layout_progress_dialog)
+        // pd.setProgressStyle(ProgressDialog.BUTTON_NEUTRAL)
+//        pd.setMessage("Please Wait..")
         pd.isIndeterminate = true
         pd.setCancelable(false)
         pd.show()
 
 
     }
+
+    override fun onPause() {
+        super.onPause()
+        if (pd != null && pd.isShowing) {
+            pd.dismiss()
+        }
+
+    }
+
+
 }
