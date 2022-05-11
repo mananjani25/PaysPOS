@@ -535,7 +535,8 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                             dineInDataModel.guestPaymentModel
                         )
                         dineInDataModel.guestPosition?.let { it1 ->
-                            bundle.putInt(Constants.GUEST_POSITION,
+                            bundle.putInt(
+                                Constants.GUEST_POSITION,
                                 it1
                             )
                         }
@@ -631,7 +632,8 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                             dineInDataModel.guestPaymentModel
                         )
                         dineInDataModel.guestPosition?.let { it1 ->
-                            bundle.putInt(Constants.GUEST_POSITION,
+                            bundle.putInt(
+                                Constants.GUEST_POSITION,
                                 it1
                             )
                         }
@@ -712,8 +714,10 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
         guestRequestModel?.paymentAttributes!!.cash_discount_or_surcharge =
             cashDiscountSurcharge
         guestRequestModel?.paymentAttributes!!.cash_discount_type = cashDiscountType
-        guestRequestModel?.paymentAttributes!!.terminalId = prefProvider.getValueInt(Constants.TERMINAL_ID, 0)
-        guestRequestModel?.paymentAttributes!!.employeeId = prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
+        guestRequestModel?.paymentAttributes!!.terminalId =
+            prefProvider.getValueInt(Constants.TERMINAL_ID, 0)
+        guestRequestModel?.paymentAttributes!!.employeeId =
+            prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
         val guestPaymentAttributes = GuestPaymentAttributes()
         guestPaymentAttributes.amount = guestRequestModel?.paymentAttributes!!.amount
         guestPaymentAttributes.serviceChargeAmount =
@@ -808,7 +812,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                 paymentAmount =
                     String.format("%.2f", paymentAmount + cashDiscountSurcharge).toDouble()
             }
-         //  makePaymentCreditCard()
+            //  makePaymentCreditCard()
             if (device == 0) {
                 magtekPaymentCall()
             } else {
@@ -972,10 +976,11 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
             WholetotalPrice = prefProvider.getValue(Constants.WHOLE_AMOUNT, "").toDouble()
         }
 
-        if (prefProvider.getValue(Constants.SUB_TOTAL, "").isEmpty() ||  prefProvider.getValue(
+        if (prefProvider.getValue(Constants.SUB_TOTAL, "").isEmpty() || prefProvider.getValue(
                 Constants.SUB_TOTAL,
                 ""
-            ) == "0.0") {
+            ) == "0.0"
+        ) {
             subTotalPrice = viewModel.subTotalPrice
             prefProvider.setValue(
                 Constants.SUB_TOTAL,
@@ -985,10 +990,11 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
             subTotalPrice = prefProvider.getValue(Constants.SUB_TOTAL, "").toDouble()
         }
 
-        if (prefProvider.getValue(Constants.TAX_CHARGE, "").isEmpty() ||  prefProvider.getValue(
+        if (prefProvider.getValue(Constants.TAX_CHARGE, "").isEmpty() || prefProvider.getValue(
                 Constants.TAX_CHARGE,
                 ""
-            ) == "0.0") {
+            ) == "0.0"
+        ) {
             totalTax = viewModel.totalTax
             prefProvider.setValue(Constants.TAX_CHARGE, String.format("%.2f", viewModel.totalTax))
         } else {
@@ -996,10 +1002,11 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
         }
 
 
-        if (prefProvider.getValue(Constants.SERVICE_CHARGE, "").isEmpty() ||  prefProvider.getValue(
+        if (prefProvider.getValue(Constants.SERVICE_CHARGE, "").isEmpty() || prefProvider.getValue(
                 Constants.SERVICE_CHARGE,
                 ""
-            ) == "0.0") {
+            ) == "0.0"
+        ) {
             totalServiceCharge = viewModel.totalServiceCharge
             prefProvider.setValue(
                 Constants.SERVICE_CHARGE,
@@ -1013,7 +1020,8 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
         if (prefProvider.getValue(Constants.TOTAL_DISCOUNT, "").isEmpty() || prefProvider.getValue(
                 Constants.TOTAL_DISCOUNT,
                 ""
-            ) == "0.0") {
+            ) == "0.0"
+        ) {
             totalDiscount = viewModel.totalDiscount
             prefProvider.setValue(
                 Constants.TOTAL_DISCOUNT,
@@ -1027,7 +1035,8 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
         if (prefProvider.getValue(Constants.TIP, "").isEmpty() || prefProvider.getValue(
                 Constants.TIP,
                 ""
-            ) == "0.0") {
+            ) == "0.0"
+        ) {
             tipAmount = viewModel.tip
             prefProvider.setValue(Constants.TIP, String.format("%.2f", viewModel.tip))
         } else {
@@ -1037,16 +1046,19 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
         if (prefProvider.getValue(Constants.TIP, "").isEmpty() || prefProvider.getValue(
                 Constants.TIP,
                 ""
-            ) == "0.0" ) {
+            ) == "0.0"
+        ) {
             tipAmount = viewModel.tip
             prefProvider.setValue(Constants.TIP, String.format("%.2f", viewModel.tip))
         } else {
             tipAmount = prefProvider.getValue(Constants.TIP, "").toDouble()
         }
-        if (prefProvider.getValue(Constants.CASH_DISCOUNT_SURCHARGE, "").isEmpty() ||  prefProvider.getValue(
+        if (prefProvider.getValue(Constants.CASH_DISCOUNT_SURCHARGE, "")
+                .isEmpty() || prefProvider.getValue(
                 Constants.CASH_DISCOUNT_SURCHARGE,
                 ""
-            ) == "0.0") {
+            ) == "0.0"
+        ) {
             cashDiscountSurcharge = viewModel.cashdiscountAmount
             prefProvider.setValue(
                 Constants.CASH_DISCOUNT_SURCHARGE,
@@ -1878,10 +1890,16 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                 }
 
                 var wholePrice =
-                    String.format(
-                        "%.2f",
-                        prefProvider.getValue(Constants.WHOLE_AMOUNT, "0.0").toDouble()
-                    ).toDouble()
+                    if (prefProvider.getValue(Constants.WHOLE_AMOUNT, "").isEmpty()) {
+                        0.0
+                    } else {
+                        String.format(
+                            "%.2f",
+                            prefProvider.getValue(Constants.WHOLE_AMOUNT, "0.0").toDouble()
+                        ).toDouble()
+                    }
+
+                Log.e(TAG,"wholePricewholePrice:  ${wholePrice}")
 
                 bundle.putDouble("WholetotalPrice", wholePrice)
                 var remainingValue = 0.0
@@ -2039,7 +2057,8 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                 bundle.putParcelable(PRINT_DATA_DINE_IN, dineInDataModel.dineInOrderDetails)
                 bundle.putParcelable(DINE_IN_GUEST_PAYMENT_DATA, dineInDataModel.guestPaymentModel)
                 dineInDataModel.guestPosition?.let { it1 ->
-                    bundle.putInt(Constants.GUEST_POSITION,
+                    bundle.putInt(
+                        Constants.GUEST_POSITION,
                         it1
                     )
                 }
@@ -2127,7 +2146,8 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                 bundle.putParcelable(PRINT_DATA_DINE_IN, dineInDataModel.dineInOrderDetails)
                 bundle.putParcelable(DINE_IN_GUEST_PAYMENT_DATA, dineInDataModel.guestPaymentModel)
                 dineInDataModel.guestPosition?.let { it1 ->
-                    bundle.putInt(Constants.GUEST_POSITION,
+                    bundle.putInt(
+                        Constants.GUEST_POSITION,
                         it1
                     )
                 }
