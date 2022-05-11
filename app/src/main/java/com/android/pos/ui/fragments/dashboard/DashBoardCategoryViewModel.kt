@@ -1044,8 +1044,8 @@ class DashBoardCategoryViewModel @Inject constructor(
         totalServiceCharge = 0.0
         var amountToBePaid = 0.0
         if (cartModel.orderType == DINE_IN) {
-            Log.e("TOCHE","discountPriceDineIn  ${cartModel.discountPrice}")
-            Log.e("TOCHE","discountPriceDineIn  ${totalDiscount}")
+            Log.e("TOCHE", "discountPriceDineIn  ${cartModel.discountPrice}")
+            Log.e("TOCHE", "discountPriceDineIn  ${totalDiscount}")
 
             cartModel.dineInList?.forEach { dine ->
 
@@ -2374,6 +2374,10 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 tipDiscountRepository.addTips(it.data.tip_settings)
                                 posRepository.deleteCustomerReceiptSettingsFromDb()
                                 posRepository.addCancelOrderReasonFromDb(it.data.cancelOrderReasons)
+                                posRepository.deleteCustomerPrinters()
+                                posRepository.deleteKitchenPrinters()
+                                posRepository.addKitchenPrinter(it.data.printers.kitchenPrinterList)
+                                posRepository.addCustomerPrinter(it.data.printers.customerPrinterList)
                                 it.data.customerReceipt?.let { it1 ->
                                     posRepository.addCustomerReceiptSettings(
                                         it1

@@ -56,6 +56,8 @@ data class VenueDetailsResponse(
         val cash_discounts: List<CashDiscountModel>,
         @SerializedName("terminals")
         val terminals: List<Terminal>,
+        @SerializedName("printers")
+        val printers:Printer,
         @SerializedName("tip_settings")
         val tip_settings: List<GetTipReponse.Data>,
         @SerializedName("time_zone")
@@ -79,7 +81,16 @@ data class VenueDetailsResponse(
         @SerializedName("magensa_settings")
         val magensaSettings: List<MagensaSettings>
 
-    ) {
+    )
+
+    {
+        data class Printer(
+            @SerializedName("customer_receipt_printers")
+            val customerPrinterList:List<PrinterResponse.Data.CustomerReceiptPrinters>,
+            @SerializedName("kitchen_receipt_printers")
+            val kitchenPrinterList:List<PrinterResponse.Data.KitchenReceiptPrinters>
+        )
+
         @Entity(tableName = "TbCancelOrderReason")
         data class CancelOrderReason(
             @SerializedName("created_at")
