@@ -1,12 +1,14 @@
 package com.android.pos.ui.fragments.payment
 
 
-import android.app.ProgressDialog
+import android.app.Dialog
 import android.content.Context
 import android.content.Context.WINDOW_SERVICE
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Color
 import android.graphics.Point
+import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -125,7 +127,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
     private var cartList: CartModel? = null
     private var paidAmount: Double = 0.0
     private var noCashAdjGlobal: Double = 0.0
-    private lateinit var pd: ProgressDialog
+    private lateinit var pd: Dialog
 
     @Inject
     lateinit var prefProvider: PrefProvider
@@ -163,6 +165,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             ?.observe(viewLifecycleOwner) { it ->
                 if (it.getString(Constants.KEY)?.lowercase() == "FROM_CUSTOMER".lowercase()) {
                     isFromCustomer = true
+                    if (pd != null && pd.isShowing) {
+                        pd.dismiss()
+                    }
                 }
 
             }
@@ -3458,6 +3463,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         }
 
 
+                        pd.dismiss()
                         if (requireArguments().getBoolean("isDineIn")) {
                             Log.e(TAG, "IsDineIn True: ")
                             customerPrintWholeOrder()
@@ -3466,7 +3472,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                             getCustomerPrinters(true)
                         }
 
-                        pd.dismiss()
+
 
                     }
 
@@ -3575,6 +3581,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         type: String
     ) {
 
+        pd.show()
         PrinterClass.closePrinter()
         if (PrinterClass.getPrinter() == null) {
 
@@ -4876,9 +4883,10 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     builder,
                     BLUETOOTH_TIMEOUT, status, battery
                 )
-                pd.dismiss()
+
 
                 PrinterClass.closePrinter()
+                pd.dismiss()
                 // findNavController().navigate(R.id.action_orderCompleteFragment_to_dashboardCategoryNew)
                 //PrinterClass.getPrinter()?.sendData(builder, 0, status, battery)
             } catch (e: Exception) {
@@ -5385,9 +5393,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         prefProvider.setValue(Constants.TAX_CHARGE_DINEIN, "")
         prefProvider.setValue(Constants.SERVICE_CHARGE_DINEIN, "")
         prefProvider.setValueInt("orderId", -1)
-        prefProvider.setValue(SPLIT_DINEIN_MODEL,"")
-        prefProvider.setValue(SPLIT_IS_GUESTPAY,"")
-        prefProvider.setValue(SPLIT_DINEIN_CHECKOUT,"")
+        prefProvider.setValue(SPLIT_DINEIN_MODEL, "")
+        prefProvider.setValue(SPLIT_IS_GUESTPAY, "")
+        prefProvider.setValue(SPLIT_DINEIN_CHECKOUT, "")
 
 
     }
@@ -5416,9 +5424,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         )
         prefProvider.setValue(Constants.TAX_CHARGE_ACTUAL, "0.0")
         prefProvider.setValue(Constants.TIPS_AMOUNT_ACTUAL, "0.0")
-        prefProvider.setValue(SPLIT_DINEIN_MODEL,"")
-        prefProvider.setValue(SPLIT_IS_GUESTPAY,"")
-        prefProvider.setValue(SPLIT_DINEIN_CHECKOUT,"")
+        prefProvider.setValue(SPLIT_DINEIN_MODEL, "")
+        prefProvider.setValue(SPLIT_IS_GUESTPAY, "")
+        prefProvider.setValue(SPLIT_DINEIN_CHECKOUT, "")
     }
 
     private fun observeShowProgress() {
@@ -5492,11 +5500,15 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
 
     fun progressDialog() {
-        pd = ProgressDialog(requireActivity())
-        pd.setContentView(R.layout.layout_progress_dialog)
+        pd = Dialog(requireActivity())
+        pd.setContentView(R.layout.view_loading)
         // pd.setProgressStyle(ProgressDialog.BUTTON_NEUTRAL)
 //        pd.setMessage("Please Wait..")
-        pd.isIndeterminate = true
+        pd.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        pd.window?.setBackgroundDrawable(
+            ColorDrawable(Color.TRANSPARENT)
+        )
+        pd.setCanceledOnTouchOutside(false)
         pd.setCancelable(false)
         pd.show()
 
