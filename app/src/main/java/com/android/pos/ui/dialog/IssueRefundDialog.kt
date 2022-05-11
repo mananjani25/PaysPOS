@@ -429,7 +429,7 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
             }
         }
 
-        if (paymentOrderDetailsResponse.data.payment_type == "Card") {
+        if (paymentOrderDetailsResponse.data.payment_type == "Card" && count == refundItemListAdapter.itemCount) {
             totalItemPrice += paymentOrderDetailsResponse.data.tips
         }
 
@@ -446,8 +446,15 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
                 subtotal_refunded = subtotal_divid
                 cash_discount_or_surcharge_refunded =
                     cashdiscountdiv
-                tipsRefunded =
-                    if (paymentOrderDetailsResponse.data.payment_type == "Cash") 0.0 else paymentOrderDetailsResponse.data.tips
+                tipsRefunded = if (paymentOrderDetailsResponse.data.payment_type == "Cash") {
+                    0.0
+                } else {
+                    if (paymentOrderDetailsResponse.data.payment_type == "Card" && count == refundItemListAdapter.itemCount) {
+                        paymentOrderDetailsResponse.data.tips
+                    } else
+                        0.0
+                }
+
             }
         }
     }
