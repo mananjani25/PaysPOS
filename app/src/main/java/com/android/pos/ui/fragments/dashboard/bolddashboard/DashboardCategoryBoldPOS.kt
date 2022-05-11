@@ -519,6 +519,9 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
     override fun onItemSelected(item: TbItem) {
 
         if (item.modifier_set_ids.isNotEmpty() || item.variationsAttributes.isNotEmpty()) {
+          /*  if (item.variationsAttributes.isNotEmpty()) {
+                item.variationsAttributes.get(0).isChecked = true
+            }*/
             val fragment = AddItemFragment.newInstance(item, this, cartList, false)
             loadCategoryFragment(fragment)
         } else {

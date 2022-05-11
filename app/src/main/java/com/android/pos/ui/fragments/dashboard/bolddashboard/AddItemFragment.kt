@@ -461,6 +461,15 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
                                         variationAdapter.updateVariation(variation)
 
                                     }
+                                    else{
+                                        variationList.get(0).id?.let { it1 ->
+                                            variationAdapter.selectItem(
+                                                it1
+                                            )
+                                        }
+                                        variationAdapter.updateVariation(variation)
+
+                                    }
                                 }
                                 if (intArray!!.isNotEmpty()) {
                                 } else binding.dividerLine.root.visibility = View.GONE
