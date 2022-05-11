@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">POS Android</string>
+    <string name="app_name">BOLD POS</string>
     <string name="PREF_BARCODE_SCANNER">BarcodeScannerPrefs</string>
     <string name="tv_pos">BOLD POS</string>
     <string name="tv_Info">Enterprise Cloud Point of Sale</string>

@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.os.Build
 import android.os.StrictMode
 import android.util.Base64
 import android.util.Log
@@ -2853,18 +2852,6 @@ class DashBoardCategoryViewModel @Inject constructor(
         isLoading.value = value
     }
 
-    fun clearAppData() {
-
-        viewModelScope.launch {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                MainApplication.getInstance()?.deleteSharedPreferences("POS Android")
-            }
-            //MainApplication.clearApplicationData()
-
-        }
-
-
-    }
 
     fun updateActiveOrderFlagClear() {
 
