@@ -1409,6 +1409,7 @@ class CartFragment(
                 prefProvider.setValue(Constants.TIP, "")
                 prefProvider.setValue(Constants.TAX_CHARGE, "")
                 prefProvider.setValue(Constants.SERVICE_CHARGE, "")
+                viewModel.setTipAmount(0.0)
                 if (isOrderUpdate) {
                     var bundle: Bundle = Bundle()
                     bundle.putInt("orderId", orderId!!)

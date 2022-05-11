@@ -330,8 +330,24 @@ class CashLogFragment : Fragment(), AdapterView.OnItemSelectedListener {
                             terminalListGlobal =
                                 terminalList as ArrayList<VenueDetailsResponse.Data.Terminal>
 
-                            val roleName = terminalListGlobal.map { it.name }
+                            val isPresent = terminalListGlobal.any { it.name == "All Terminals" }
 
+                            if (!isPresent) {
+                                //    terminalListGlobal.removeAt(0)
+                                terminalListGlobal.add(
+                                    0,
+                                    VenueDetailsResponse.Data.Terminal(
+                                        "",
+                                        -1,
+                                        -1,
+                                        false,
+                                        "All Terminals",
+                                        "",
+                                        ""
+                                    )
+                                )
+                            }
+                            val roleName = terminalListGlobal.map { it.name }
                             setUpTerminalSpinnerAdapter(roleName as ArrayList<String>)
 
                         }
@@ -366,11 +382,11 @@ class CashLogFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
         spinnerAdapter.setDropDownViewResource(R.layout.row_spinner)
         binding.spTerminals.adapter = spinnerAdapter
-        terminalListGlobal.forEachIndexed { index, item ->
-            if (item.id == prefProvider.getValueInt(Constants.TERMINAL_ID, 0)) {
-                binding.spTerminals.setSelection(index)
-            }
-        }
+//        terminalListGlobal.forEachIndexed { index, item ->
+//            if (item.id == prefProvider.getValueInt(Constants.TERMINAL_ID, 0)) {
+//                binding.spTerminals.setSelection(index)
+//            }
+//        }
     }
 
     override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {

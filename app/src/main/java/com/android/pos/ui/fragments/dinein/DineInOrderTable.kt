@@ -444,7 +444,15 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             bundle.putDouble(DINE_IN_DISCOUNT, viewModel.totalDiscountAmount)
             bundle.putDouble(DINE_IN_SERVICECHARGE, serviceCharge)
 
-
+            prefProvider.setValue("PaidAmount", "")
+            prefProvider.setValue(Constants.WHOLE_AMOUNT, "")
+            prefProvider.setValueInt("cardCount", 0)
+            prefProvider.setValue(Constants.SUB_TOTAL, "")
+            prefProvider.setValue(Constants.CASH_DISCOUNT_SURCHARGE, "")
+            prefProvider.setValue(Constants.TOTAL_DISCOUNT, "")
+            prefProvider.setValue(Constants.TIP, "")
+            prefProvider.setValue(Constants.TAX_CHARGE, "")
+            prefProvider.setValue(Constants.SERVICE_CHARGE, "")
             bundle.putBoolean(IS_GUEST_PAYMNET, false)
             bundle.putParcelableArrayList(
                 DINE_IN_ADAPTER_LIST, dineInTableAdapter.getList().toCollection(
@@ -979,8 +987,15 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         }
         var dineInOrderModel = DineInPaymentUpdateModel()
         dineInOrderModel.id = orderId
-
-
+        prefProvider.setValue("PaidAmount", "")
+        prefProvider.setValue(Constants.WHOLE_AMOUNT, "")
+        prefProvider.setValueInt("cardCount", 0)
+        prefProvider.setValue(Constants.SUB_TOTAL, "")
+        prefProvider.setValue(Constants.CASH_DISCOUNT_SURCHARGE, "")
+        prefProvider.setValue(Constants.TOTAL_DISCOUNT, "")
+        prefProvider.setValue(Constants.TIP, "")
+        prefProvider.setValue(Constants.TAX_CHARGE, "")
+        prefProvider.setValue(Constants.SERVICE_CHARGE, "")
         prefProvider.setValue(Constants.SUB_TOTAL_DINEIN, "")
         prefProvider.setValue(Constants.TOTAL_DISCOUNT_DINEIN, "")
         prefProvider.setValue(Constants.TIPS_AMOUNT_DINEIN, "")

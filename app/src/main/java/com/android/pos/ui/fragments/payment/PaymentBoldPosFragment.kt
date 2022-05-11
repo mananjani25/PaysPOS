@@ -79,6 +79,7 @@ class PaymentBoldPosFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        viewModel.setTipAmount(0.0)
         if (prefProvider.getValue(
                 ORDER_TYPE,
                 TAKEOUT
