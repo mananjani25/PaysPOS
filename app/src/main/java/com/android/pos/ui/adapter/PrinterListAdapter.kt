@@ -41,26 +41,33 @@ class PrinterListAdapter : RecyclerView.Adapter<PrinterListAdapter.MyViewHolder>
             }
 
             binding.imgPrinter.setOnClickListener {
-                if (list[layoutPosition].isActive) {
-                    listner.onPrinterSelected(list[layoutPosition])
+                if (list.isNotEmpty()) {
+                    if (list[layoutPosition].isActive) {
+                        listner.onPrinterSelected(list[layoutPosition])
+                    }
                 }
             }
 
             binding.imgDelete.setOnClickListener {
-                listner.onDeletePrinter(list[layoutPosition])
+                if (list.isNotEmpty()) {
+                    listner.onDeletePrinter(list[layoutPosition])
+                }
             }
 
             binding.swtOrderId.setOnCheckedChangeListener { buttonView, isChecked ->
-                if (list[layoutPosition].type != AVAILABLE) {
-                    listner.onUpdatePrinterStatus(list[layoutPosition], isChecked)
+                if (buttonView.isPressed) {
+                    if (list[layoutPosition].type != AVAILABLE) {
+                        buttonView.isChecked = isChecked
+                        listner.onUpdatePrinterStatus(list[layoutPosition], isChecked)
 
-                } else if (isChecked && !(list.get(layoutPosition).isActive)) {
-                    buttonView.isChecked = false
-                    listner.onPrinterActive(list.get(layoutPosition), layoutPosition)
-                    /*list.removeAt(layoutPosition)
+                    } else if (isChecked && !(list.get(layoutPosition).isActive)) {
+                        buttonView.isChecked = false
+                        listner.onPrinterActive(list.get(layoutPosition), layoutPosition)
+                        /*list.removeAt(layoutPosition)
                     notifyDataSetChanged()*/
-                }
+                    }
 
+                }
 
             }
 

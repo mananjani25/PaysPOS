@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.os.Build
 import android.os.StrictMode
 import android.util.Base64
 import android.util.Log
@@ -1044,8 +1043,8 @@ class DashBoardCategoryViewModel @Inject constructor(
         totalServiceCharge = 0.0
         var amountToBePaid = 0.0
         if (cartModel.orderType == DINE_IN) {
-            Log.e("TOCHE","discountPriceDineIn  ${cartModel.discountPrice}")
-            Log.e("TOCHE","discountPriceDineIn  ${totalDiscount}")
+            Log.e("TOCHE", "discountPriceDineIn  ${cartModel.discountPrice}")
+            Log.e("TOCHE", "discountPriceDineIn  ${totalDiscount}")
 
             cartModel.dineInList?.forEach { dine ->
 
@@ -2374,6 +2373,10 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 tipDiscountRepository.addTips(it.data.tip_settings)
                                 posRepository.deleteCustomerReceiptSettingsFromDb()
                                 posRepository.addCancelOrderReasonFromDb(it.data.cancelOrderReasons)
+                                posRepository.deleteCustomerPrinters()
+                                posRepository.deleteKitchenPrinters()
+                                posRepository.addKitchenPrinter(it.data.printers.kitchenPrinterList)
+                                posRepository.addCustomerPrinter(it.data.printers.customerPrinterList)
                                 it.data.customerReceipt?.let { it1 ->
                                     posRepository.addCustomerReceiptSettings(
                                         it1
@@ -2849,18 +2852,6 @@ class DashBoardCategoryViewModel @Inject constructor(
         isLoading.value = value
     }
 
-    fun clearAppData() {
-
-        viewModelScope.launch {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                MainApplication.getInstance()?.deleteSharedPreferences("POS Android")
-            }
-            //MainApplication.clearApplicationData()
-
-        }
-
-
-    }
 
     fun updateActiveOrderFlagClear() {
 

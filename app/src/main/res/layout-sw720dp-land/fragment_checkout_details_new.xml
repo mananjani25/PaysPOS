@@ -605,7 +605,6 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:layout_below="@+id/llCash"
-                                android:layout_marginHorizontal="@dimen/_3sdp"
                                 android:layout_marginTop="@dimen/_20sdp"
                                 android:background="@drawable/button_selected"
                                 android:gravity="center_horizontal"

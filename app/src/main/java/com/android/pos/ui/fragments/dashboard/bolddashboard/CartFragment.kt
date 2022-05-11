@@ -636,102 +636,107 @@ class CartFragment(
             }
 
         } else {
-            viewModel.mAllWords(
-                prefProvider.getValue(ORDER_TYPE, TAKEOUT),
-                prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
-            ).observe(requireActivity()) {
-                Log.e(TAG, "listSize  ${Gson().toJson(it)}")
-                Log.e(TAG, "listSizeOrderType: ${prefProvider.getValue(ORDER_TYPE, TAKEOUT)}")
+            if (view != null) {
+                viewModel.mAllWords(
+                    prefProvider.getValue(ORDER_TYPE, TAKEOUT),
+                    prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
+                ).observe(requireActivity()) {
+                    Log.e(TAG, "listSize  ${Gson().toJson(it)}")
+                    Log.e(TAG, "listSizeOrderType: ${prefProvider.getValue(ORDER_TYPE, TAKEOUT)}")
 
-                if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == Constants.DINE_IN) {
-                    binding.rvCartDineIn.visible()
-                    binding.rvCartList.gone()
-                    if (it.isNotEmpty()) {
-                        Log.e(TAG, "cartListDine:  ${Gson().toJson(it)}")
+                    if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == Constants.DINE_IN) {
+                        binding.rvCartDineIn.visible()
+                        binding.rvCartList.gone()
+                        if (it.isNotEmpty()) {
+                            Log.e(TAG, "cartListDine:  ${Gson().toJson(it)}")
 
-                        cartlist = it as ArrayList<CartModel>
-                        if (isFromPayment) {
-                            if (MethodUtils.isEnableCashDiscount(requireContext())) {
-                                binding.linearCashDiscount.visible()
-                                if (prefProvider.getValue(
-                                        OPTION_TYPE,
-                                        "CashDiscount"
-                                    ) == "CashDiscount"
-                                ) {
-                                    binding.labelCashSurcharge?.text = "Cash Discount"
+                            cartlist = it as ArrayList<CartModel>
+                            if (isFromPayment) {
+                                if (MethodUtils.isEnableCashDiscount(requireContext())) {
+                                    binding.linearCashDiscount.visible()
+                                    if (prefProvider.getValue(
+                                            OPTION_TYPE,
+                                            "CashDiscount"
+                                        ) == "CashDiscount"
+                                    ) {
+                                        binding.labelCashSurcharge?.text = "Cash Discount"
+                                    } else {
+                                        binding.labelCashSurcharge?.text = "SurCharge"
+                                    }
                                 } else {
-                                    binding.labelCashSurcharge?.text = "SurCharge"
+                                    binding.linearCashDiscount.gone()
                                 }
+                                binding.linearButtonView.gone()
+                                binding.relPreoceedToFire.gone()
                             } else {
-                                binding.linearCashDiscount.gone()
+                                binding.linearButtonView.gone()
+                                binding.relPreoceedToFire.visible()
                             }
-                            binding.linearButtonView.gone()
-                            binding.relPreoceedToFire.gone()
-                        } else {
-                            binding.linearButtonView.gone()
-                            binding.relPreoceedToFire.visible()
-                        }
-                        if (it[0].dineInList?.isNotEmpty() == true) {
-                            var dineInList = it[0].dineInList
+                            if (it[0].dineInList?.isNotEmpty() == true) {
+                                var dineInList = it[0].dineInList
 
-                            dineInCartAdapter.setList(
-                                dineInList?.toCollection(arrayListOf()) ?: arrayListOf()
-                            )
+                                dineInCartAdapter.setList(
+                                    dineInList?.toCollection(arrayListOf()) ?: arrayListOf()
+                                )
 
 
-                        }
-                        Log.e(TAG, "getPAyment:  ${isFromPayment}")
-                        Log.e(TAG, "isGuestPayment:  ${isGuestPayment}")
+                            }
+                            Log.e(TAG, "getPAyment:  ${isFromPayment}")
+                            Log.e(TAG, "isGuestPayment:  ${isGuestPayment}")
 
-                        if (isFromPaymentDinein) {
-                            Log.e(TAG, "guestCalModel:  ${Gson().toJson(guestCalModel)}")
-                            viewModel.itemCalculationForDineInPayment(
-                                it[0],
-                                binding.txtTotal,
-                                requireContext(),
-                                guestCalModel!!,
-                                isGuestPayment
-                            )
-                        } else {
-                            Log.e(TAG, "WithOutDineIn")
-                            viewModel.itemCalculationCartModel(
-                                it[0],
-                                binding.txtTotal,
-                                requireContext()
-                            )
-                        }
-                        /*  viewModel.itemCalculationCartModel(
+                            if (isFromPaymentDinein) {
+                                Log.e(TAG, "guestCalModel:  ${Gson().toJson(guestCalModel)}")
+                                viewModel.itemCalculationForDineInPayment(
+                                    it[0],
+                                    binding.txtTotal,
+                                    requireContext(),
+                                    guestCalModel!!,
+                                    isGuestPayment
+                                )
+                            } else {
+                                Log.e(TAG, "WithOutDineIn")
+                                viewModel.itemCalculationCartModel(
+                                    it[0],
+                                    binding.txtTotal,
+                                    requireContext()
+                                )
+                            }
+                            /*  viewModel.itemCalculationCartModel(
                               it[0],
                               binding.txtTotal,
                               requireContext()
                           )*/
-                        viewModel.setCartModel(it)
-                        if (prefProvider.getValueboolean(Constants.DINE_IN_UPDATE, false) == true) {
+                            viewModel.setCartModel(it)
+                            if (prefProvider.getValueboolean(
+                                    Constants.DINE_IN_UPDATE,
+                                    false
+                                ) == true
+                            ) {
 
-                            binding.txtDineInProceed.setText("Update and Proceed")
-                        } else {
-                            binding.txtDineInProceed.setText("Proceed To Fire")
-                        }
+                                binding.txtDineInProceed.setText("Update and Proceed")
+                            } else {
+                                binding.txtDineInProceed.setText("Proceed To Fire")
+                            }
 
-                        binding.txtSubTotal.text =
-                            MethodUtils.roundOffAmount(viewModel.subTotalPrice)
-                        binding.txtTax.text = MethodUtils.roundOffAmount(viewModel.totalTax)
-                        binding.txtServiceCharge.text =
-                            MethodUtils.roundOffAmount(viewModel.totalServiceCharge)
-                        binding.txtDiscount.text =
-                            "-" + MethodUtils.roundOffAmount(viewModel.totalDiscount)
-                        binding.txtNoncashAdj.text =
-                            MethodUtils.roundOffAmount(viewModel.cashdiscountAmount)
-                        if (viewModel.order_note.isNotEmpty()) {
-                            binding.liinearInfoLayout.layoutParams.height =
-                                resources.getDimension(R.dimen._50sdp).toInt()
-                            binding.relativeOrderNotes?.visibility = View.VISIBLE
-                            binding.txtOrderNote?.text = viewModel.order_note
-                        } else {
-                            binding.liinearInfoLayout.layoutParams.height =
-                                resources.getDimension(R.dimen._50sdp).toInt()
-                            binding.relativeOrderNotes?.visibility = View.GONE
-                        }
+                            binding.txtSubTotal.text =
+                                MethodUtils.roundOffAmount(viewModel.subTotalPrice)
+                            binding.txtTax.text = MethodUtils.roundOffAmount(viewModel.totalTax)
+                            binding.txtServiceCharge.text =
+                                MethodUtils.roundOffAmount(viewModel.totalServiceCharge)
+                            binding.txtDiscount.text =
+                                "-" + MethodUtils.roundOffAmount(viewModel.totalDiscount)
+                            binding.txtNoncashAdj.text =
+                                MethodUtils.roundOffAmount(viewModel.cashdiscountAmount)
+                            if (viewModel.order_note.isNotEmpty()) {
+                                binding.liinearInfoLayout.layoutParams.height =
+                                    resources.getDimension(R.dimen._50sdp).toInt()
+                                binding.relativeOrderNotes?.visibility = View.VISIBLE
+                                binding.txtOrderNote?.text = viewModel.order_note
+                            } else {
+                                binding.liinearInfoLayout.layoutParams.height =
+                                    resources.getDimension(R.dimen._50sdp).toInt()
+                                binding.relativeOrderNotes?.visibility = View.GONE
+                            }
 //                        var data: TbCustomer? = prefProvider.getCustomerData()
 //                        if (data != null) {
 //                            if (viewModel.loyaltyPointCondition(data)) {
@@ -785,32 +790,32 @@ class CartFragment(
 //                            binding.lblLoyaltyPoints.visibility = View.GONE
 //                        }
 
-                        binding.relativeLoylatyPoints.visibility = View.GONE
-                        binding.lblLoyaltyPoints.visibility = View.GONE
+                            binding.relativeLoylatyPoints.visibility = View.GONE
+                            binding.lblLoyaltyPoints.visibility = View.GONE
 
-                    } else {
-                        if (isFromPayment) {
-                            if (MethodUtils.isEnableCashDiscount(requireContext())) {
-                                binding.linearCashDiscount.visible()
-                                if (prefProvider.getValue(
-                                        OPTION_TYPE,
-                                        "CashDiscount"
-                                    ) == "CashDiscount"
-                                ) {
-                                    binding.labelCashSurcharge?.text = "Cash Discount"
-                                } else {
-                                    binding.labelCashSurcharge?.text = "SurCharge"
-                                }
-                            } else {
-                                binding.linearCashDiscount.gone()
-                            }
-                            binding.linearButtonView.gone()
-                            binding.relPreoceedToFire.gone()
                         } else {
-                            binding.linearButtonView.gone()
-                            binding.relPreoceedToFire.visible()
-                        }
-                        dineInCartAdapter.clearList()
+                            if (isFromPayment) {
+                                if (MethodUtils.isEnableCashDiscount(requireContext())) {
+                                    binding.linearCashDiscount.visible()
+                                    if (prefProvider.getValue(
+                                            OPTION_TYPE,
+                                            "CashDiscount"
+                                        ) == "CashDiscount"
+                                    ) {
+                                        binding.labelCashSurcharge?.text = "Cash Discount"
+                                    } else {
+                                        binding.labelCashSurcharge?.text = "SurCharge"
+                                    }
+                                } else {
+                                    binding.linearCashDiscount.gone()
+                                }
+                                binding.linearButtonView.gone()
+                                binding.relPreoceedToFire.gone()
+                            } else {
+                                binding.linearButtonView.gone()
+                                binding.relPreoceedToFire.visible()
+                            }
+                            dineInCartAdapter.clearList()
 //                        var data: TbCustomer? = prefProvider.getCustomerData()
 //                        if (data != null) {
 //                            if (viewModel.loyaltyPointCondition(data)) {
@@ -825,99 +830,122 @@ class CartFragment(
 //                                binding.lblLoyaltyPoints.visibility = View.GONE
 //                            }
 //                        }
-                        binding.relativeOrderNotes?.visibility = View.GONE
-                        binding.liinearInfoLayout.layoutParams.height =
-                            resources.getDimension(R.dimen._50sdp).toInt()
-                        binding.relativeLoylatyPoints.visibility = View.GONE
-                        binding.lblLoyaltyPoints.visibility = View.GONE
+                            binding.relativeOrderNotes?.visibility = View.GONE
+                            binding.liinearInfoLayout.layoutParams.height =
+                                resources.getDimension(R.dimen._50sdp).toInt()
+                            binding.relativeLoylatyPoints.visibility = View.GONE
+                            binding.lblLoyaltyPoints.visibility = View.GONE
 
 
-                    }
-
-
-                } else {
-                    binding.rvCartDineIn.gone()
-                    binding.rvCartList.visible()
-
-                    if (it.isNotEmpty()) {
-                        viewModel.destroyedList.clear()
-                        it[0].items?.filter { item -> item.isDestroy }?.let {
-                            viewModel.destroyedList.addAll(it)
                         }
-                        if (isFromPayment) {
-                            viewModel.selectedCustomer = prefProvider.getCustomerData()
-                            if (MethodUtils.isEnableCashDiscount(requireContext())) {
-                                binding.linearCashDiscount.visible()
-                                if (prefProvider.getValue(
-                                        OPTION_TYPE,
-                                        "CashDiscount"
-                                    ) == "CashDiscount"
-                                ) {
-                                    binding.labelCashSurcharge?.text = "Cash Discount"
-                                } else {
-                                    binding.labelCashSurcharge?.text = "SurCharge"
-                                }
-                            } else {
-                                binding.linearCashDiscount.gone()
+
+
+                    } else {
+                        binding.rvCartDineIn.gone()
+                        binding.rvCartList.visible()
+
+                        if (it.isNotEmpty()) {
+                            viewModel.destroyedList.clear()
+                            it[0].items?.filter { item -> item.isDestroy }?.let {
+                                viewModel.destroyedList.addAll(it)
                             }
-                            binding.linearButtonView.gone()
-                            binding.relPreoceedToFire.gone()
-                        } else {
-                            binding.linearButtonView.visible()
-                            binding.relPreoceedToFire.gone()
-                        }
-                        binding.rvCartList.removeAllViews()
-                        binding.rvCartList.removeAllViewsInLayout()
+                            if (isFromPayment) {
+                                viewModel.selectedCustomer = prefProvider.getCustomerData()
+                                if (MethodUtils.isEnableCashDiscount(requireContext())) {
+                                    binding.linearCashDiscount.visible()
+                                    if (prefProvider.getValue(
+                                            OPTION_TYPE,
+                                            "CashDiscount"
+                                        ) == "CashDiscount"
+                                    ) {
+                                        binding.labelCashSurcharge?.text = "Cash Discount"
+                                    } else {
+                                        binding.labelCashSurcharge?.text = "SurCharge"
+                                    }
+                                } else {
+                                    binding.linearCashDiscount.gone()
+                                }
+                                binding.linearButtonView.gone()
+                                binding.relPreoceedToFire.gone()
+                            } else {
+                                binding.linearButtonView.visible()
+                                binding.relPreoceedToFire.gone()
+                            }
+                            binding.rvCartList.removeAllViews()
+                            binding.rvCartList.removeAllViewsInLayout()
 
-                        var filterItems = arrayListOf<TbItem>()
-                        it[0].items?.filter {
-                            !it.isDestroy
-                        }.let {
+                            var filterItems = arrayListOf<TbItem>()
+                            it[0].items?.filter {
+                                !it.isDestroy
+                            }.let {
 
-                            filterItems.addAll(it!!.toCollection(arrayListOf()))
-                        }
+                                filterItems.addAll(it!!.toCollection(arrayListOf()))
+                            }
 
-                        cartAdapter.setList(filterItems)
-                        /*it[0].items?.toCollection(arrayListOf())
+                            cartAdapter.setList(filterItems)
+                            /*it[0].items?.toCollection(arrayListOf())
                             ?.let { it1 ->
                                 cartAdapter.setList(it1)
                             }*/
 
-                        cartlist = it as ArrayList<CartModel>
-                        viewModel.itemCalculationCartModel(
-                            it[0],
-                            binding.txtTotal,
-                            requireContext()
-                        )
-                        viewModel.setCartModel(it)
-                        if (viewModel.order_note.isNotEmpty()) {
-                            binding.relativeOrderNotes?.visibility = View.VISIBLE
-                            binding.txtOrderNote?.text = viewModel.order_note
-                        } else {
-                            binding.relativeOrderNotes?.visibility = View.GONE
-                        }
-                        binding.txtSubTotal.text =
-                            MethodUtils.roundOffAmount(viewModel.subTotalPrice)
-                        binding.txtTax.text = MethodUtils.roundOffAmount(viewModel.totalTax)
-                        binding.txtServiceCharge.text =
-                            MethodUtils.roundOffAmount(viewModel.totalServiceCharge)
-                        binding.tvPayNow.text = "Pay " + binding.txtTotal.text.toString()
-                        Log.e("totalDiscount", viewModel.totalDiscount.toString())
-                        binding.txtDiscount.text =
-                            "-" + MethodUtils.roundOffAmount(viewModel.totalDiscount)
-                        binding.txtNoncashAdj.text =
-                            MethodUtils.roundOffAmount(viewModel.cashdiscountAmount)
-                        var data: TbCustomer? = prefProvider.getCustomerData()
-                        if (data != null) {
-                            if (viewModel.loyaltyPointCondition(data)) {
-                                if (isFromPayment) {
-                                    if (viewModel.redeemLoyaltyInfo.needToApplyLoyalty) {
+                            cartlist = it as ArrayList<CartModel>
+                            viewModel.itemCalculationCartModel(
+                                it[0],
+                                binding.txtTotal,
+                                requireContext()
+                            )
+                            viewModel.setCartModel(it)
+                            if (viewModel.order_note.isNotEmpty()) {
+                                binding.relativeOrderNotes?.visibility = View.VISIBLE
+                                binding.txtOrderNote?.text = viewModel.order_note
+                            } else {
+                                binding.relativeOrderNotes?.visibility = View.GONE
+                            }
+                            binding.txtSubTotal.text =
+                                MethodUtils.roundOffAmount(viewModel.subTotalPrice)
+                            binding.txtTax.text = MethodUtils.roundOffAmount(viewModel.totalTax)
+                            binding.txtServiceCharge.text =
+                                MethodUtils.roundOffAmount(viewModel.totalServiceCharge)
+                            binding.tvPayNow.text = "Pay " + binding.txtTotal.text.toString()
+                            Log.e("totalDiscount", viewModel.totalDiscount.toString())
+                            binding.txtDiscount.text =
+                                "-" + MethodUtils.roundOffAmount(viewModel.totalDiscount)
+                            binding.txtNoncashAdj.text =
+                                MethodUtils.roundOffAmount(viewModel.cashdiscountAmount)
+                            var data: TbCustomer? = prefProvider.getCustomerData()
+                            if (data != null) {
+                                if (viewModel.loyaltyPointCondition(data)) {
+                                    if (isFromPayment) {
+                                        if (viewModel.redeemLoyaltyInfo.needToApplyLoyalty) {
+                                            binding.liinearInfoLayout.layoutParams.height =
+                                                resources.getDimension(R.dimen._70sdp).toInt()
+                                            binding.relativeLoylatyPoints.visibility = View.VISIBLE
+                                            binding.lblLoyaltyPoints.visibility = View.VISIBLE
+                                            binding.txtLabelLoyaltyAmounts.visibility = View.VISIBLE
+                                            binding.checkloylaty.visibility = View.GONE
+                                            binding.txtLoyaltyAmount.text =
+                                                "- $${
+                                                    String.format(
+                                                        "%.2f",
+                                                        viewModel.redeemLoyaltyInfo.usedLoyaltyAmount
+                                                    )
+                                                }"
+                                            binding.txtLoyaltyPoints.text =
+                                                "${viewModel.redeemLoyaltyInfo.usedLoyaltyPoints}"
+
+                                        } else {
+                                            binding.liinearInfoLayout.layoutParams.height =
+                                                resources.getDimension(R.dimen._50sdp).toInt()
+                                            binding.relativeLoylatyPoints.visibility = View.GONE
+                                            binding.lblLoyaltyPoints.visibility = View.GONE
+                                        }
+                                    } else {
                                         binding.liinearInfoLayout.layoutParams.height =
                                             resources.getDimension(R.dimen._70sdp).toInt()
                                         binding.relativeLoylatyPoints.visibility = View.VISIBLE
                                         binding.lblLoyaltyPoints.visibility = View.VISIBLE
-                                        binding.txtLabelLoyaltyAmounts.visibility = View.VISIBLE
-                                        binding.checkloylaty.visibility = View.GONE
+                                        Log.e(TAG, "InsideLoyalty")
+                                        Log.e(TAG, Gson().toJson(viewModel.redeemLoyaltyInfo))
                                         binding.txtLoyaltyAmount.text =
                                             "- $${
                                                 String.format(
@@ -927,94 +955,75 @@ class CartFragment(
                                             }"
                                         binding.txtLoyaltyPoints.text =
                                             "${viewModel.redeemLoyaltyInfo.usedLoyaltyPoints}"
-
-                                    } else {
-                                        binding.liinearInfoLayout.layoutParams.height =
-                                            resources.getDimension(R.dimen._50sdp).toInt()
-                                        binding.relativeLoylatyPoints.visibility = View.GONE
-                                        binding.lblLoyaltyPoints.visibility = View.GONE
+                                        binding.checkloylaty.isChecked =
+                                            viewModel.redeemLoyaltyInfo.needToApplyLoyalty
+                                        Log.d(
+                                            TAG,
+                                            "addObserver crash: " + viewModel.redeemLoyaltyInfo.needToApplyLoyalty
+                                        )
+                                        Log.d(
+                                            TAG,
+                                            "addObserver crash: " + viewModel.redeemLoyaltyInfo
+                                        )
                                     }
+                                }
+                            } else {
+                                if (viewModel.order_note.isNotEmpty()) {
+                                    binding.liinearInfoLayout.layoutParams.height =
+                                        resources.getDimension(R.dimen._60sdp).toInt()
                                 } else {
+                                    binding.liinearInfoLayout.layoutParams.height =
+                                        resources.getDimension(R.dimen._50sdp).toInt()
+                                }
+                                binding.relativeLoylatyPoints.visibility = View.GONE
+                                binding.lblLoyaltyPoints.visibility = View.GONE
+                            }
+
+
+                        } else {
+                            cartAdapter.clearList()
+                            binding.relativeOrderNotes?.visibility = View.GONE
+                            binding.txtTotal.text = MethodUtils.roundOffAmount(0.0)
+                            binding.txtSubTotal.text = MethodUtils.roundOffAmount(0.0)
+                            binding.txtTax.text = MethodUtils.roundOffAmount(0.0)
+                            binding.txtDiscount.text = "-" + MethodUtils.roundOffAmount(0.0)
+                            binding.txtNoncashAdj.text =
+                                MethodUtils.roundOffAmount(0.0)
+                            binding.txtServiceCharge.text =
+                                MethodUtils.roundOffAmount(0.0)
+                            binding.tvPayNow.text = "Pay " + MethodUtils.roundOffAmount(0.0)
+                            var data: TbCustomer? = prefProvider.getCustomerData()
+                            if (data != null) {
+                                if (viewModel.loyaltyPointCondition(data)) {
                                     binding.liinearInfoLayout.layoutParams.height =
                                         resources.getDimension(R.dimen._70sdp).toInt()
                                     binding.relativeLoylatyPoints.visibility = View.VISIBLE
                                     binding.lblLoyaltyPoints.visibility = View.VISIBLE
-                                    Log.e(TAG, "InsideLoyalty")
-                                    Log.e(TAG, Gson().toJson(viewModel.redeemLoyaltyInfo))
-                                    binding.txtLoyaltyAmount.text =
-                                        "- $${
-                                            String.format(
-                                                "%.2f",
-                                                viewModel.redeemLoyaltyInfo.usedLoyaltyAmount
-                                            )
-                                        }"
-                                    binding.txtLoyaltyPoints.text =
-                                        "${viewModel.redeemLoyaltyInfo.usedLoyaltyPoints}"
-                                    binding.checkloylaty.isChecked =
-                                        viewModel.redeemLoyaltyInfo.needToApplyLoyalty
-                                    Log.d(
-                                        TAG,
-                                        "addObserver crash: " + viewModel.redeemLoyaltyInfo.needToApplyLoyalty
-                                    )
-                                    Log.d(TAG, "addObserver crash: " + viewModel.redeemLoyaltyInfo)
+                                } else {
+                                    binding.liinearInfoLayout.layoutParams.height =
+                                        resources.getDimension(R.dimen._50sdp).toInt()
+                                    binding.relativeLoylatyPoints.visibility = View.GONE
+                                    binding.lblLoyaltyPoints.visibility = View.GONE
                                 }
-                            }
-                        } else {
-                            if (viewModel.order_note.isNotEmpty()) {
-                                binding.liinearInfoLayout.layoutParams.height =
-                                    resources.getDimension(R.dimen._60sdp).toInt()
-                            } else {
-                                binding.liinearInfoLayout.layoutParams.height =
-                                    resources.getDimension(R.dimen._50sdp).toInt()
-                            }
-                            binding.relativeLoylatyPoints.visibility = View.GONE
-                            binding.lblLoyaltyPoints.visibility = View.GONE
-                        }
-
-
-                    } else {
-                        cartAdapter.clearList()
-                        binding.relativeOrderNotes?.visibility = View.GONE
-                        binding.txtTotal.text = MethodUtils.roundOffAmount(0.0)
-                        binding.txtSubTotal.text = MethodUtils.roundOffAmount(0.0)
-                        binding.txtTax.text = MethodUtils.roundOffAmount(0.0)
-                        binding.txtDiscount.text = "-" + MethodUtils.roundOffAmount(0.0)
-                        binding.txtNoncashAdj.text =
-                            MethodUtils.roundOffAmount(0.0)
-                        binding.txtServiceCharge.text =
-                            MethodUtils.roundOffAmount(0.0)
-                        binding.tvPayNow.text = "Pay " + MethodUtils.roundOffAmount(0.0)
-                        var data: TbCustomer? = prefProvider.getCustomerData()
-                        if (data != null) {
-                            if (viewModel.loyaltyPointCondition(data)) {
-                                binding.liinearInfoLayout.layoutParams.height =
-                                    resources.getDimension(R.dimen._70sdp).toInt()
-                                binding.relativeLoylatyPoints.visibility = View.VISIBLE
-                                binding.lblLoyaltyPoints.visibility = View.VISIBLE
                             } else {
                                 binding.liinearInfoLayout.layoutParams.height =
                                     resources.getDimension(R.dimen._50sdp).toInt()
                                 binding.relativeLoylatyPoints.visibility = View.GONE
                                 binding.lblLoyaltyPoints.visibility = View.GONE
                             }
-                        } else {
-                            binding.liinearInfoLayout.layoutParams.height =
-                                resources.getDimension(R.dimen._50sdp).toInt()
-                            binding.relativeLoylatyPoints.visibility = View.GONE
-                            binding.lblLoyaltyPoints.visibility = View.GONE
-                        }
 
+
+                        }
 
                     }
 
-                }
+                    if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == DINE_IN) {
+                        binding.txtAddCustomer.gone()
+                    } else {
+                        binding.txtAddCustomer.visible()
+                    }
 
-                if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == DINE_IN) {
-                    binding.txtAddCustomer.gone()
-                } else {
-                    binding.txtAddCustomer.visible()
                 }
-
             }
 
         }

@@ -1,11 +1,14 @@
 package com.android.pos.ui.fragments.dinein
 
 import android.annotation.SuppressLint
+import android.app.Dialog
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Color
 import android.graphics.Point
 import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -118,6 +121,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
     private var kitchenPrinterList: List<PrinterResponse.Data.KitchenReceiptPrinters> = listOf()
     lateinit var cashDiscountModel: CashDiscountModel
     var optionType = ""
+    private lateinit var pd: Dialog
 
     @Inject
     lateinit var prefProvider: PrefProvider
@@ -135,6 +139,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             false
         )
         binding.lifecycleOwner = this
+        progressDialog()
 
         optionType = prefProvider.getValue(Constants.OPTION_TYPE, "")
         observeShowProgress()
@@ -153,6 +158,10 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         navigateDineInOrderNew()
         observeUnMergeTable()
         return binding.root
+    }
+
+    private fun setProgressDialog() {
+
     }
 
 
@@ -713,12 +722,16 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
         viewModel.showProgress.observe(viewLifecycleOwner, { event ->
             event.getContentIfNotHandled()?.let {
+                Log.e(TAG, "ShowProgress ${it}")
                 if (it) {
-                    requireActivity()?.runOnUiThread {
-                        ProgressUtils.showProgressDialog(requireActivity())
+                    if (pd != null && !pd.isShowing) {
+                        pd.show()
                     }
+
                 } else {
-                    ProgressUtils.dismissProgressDialog()
+                    if (pd != null && pd.isShowing) {
+                        pd.dismiss()
+                    }
                 }
             }
         })
@@ -1867,6 +1880,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
 
                 }
+
+
             }
 
 
@@ -2545,9 +2560,10 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         for (i in 0 until list.size) {
             if (list[i].isHeader == 1) {
                 list.get(i).item?.let {
-                if (it.discountPrice != 0.0){
-                    it.discountPrice = MethodUtils.roundOffAmountDouble(it.discountPrice / it.itemQuantity)
-                }
+                    if (it.discountPrice != 0.0) {
+                        it.discountPrice =
+                            MethodUtils.roundOffAmountDouble(it.discountPrice / it.itemQuantity)
+                    }
                     listItem.add(it)
                 }
             }
@@ -5811,6 +5827,36 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
 
     }
+
+    fun progressDialog() {
+
+        pd = Dialog(requireActivity())
+        pd.setContentView(R.layout.view_loading)
+        // pd.setProgressStyle(ProgressDialog.BUTTON_NEUTRAL)
+//        pd.setMessage("Please Wait..")
+        pd.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        pd.window?.setBackgroundDrawable(
+            ColorDrawable(Color.TRANSPARENT)
+        )
+        pd.setCanceledOnTouchOutside(false)
+        pd.setCancelable(false)
+        pd.window?.setLayout(
+            WindowManager.LayoutParams.WRAP_CONTENT,
+            WindowManager.LayoutParams.WRAP_CONTENT
+        )
+
+
+
+
+    }
+
+    override fun onPause() {
+        super.onPause()
+        if (pd != null && pd.isShowing) {
+            pd.dismiss()
+        }
+    }
+
 
 }
 
