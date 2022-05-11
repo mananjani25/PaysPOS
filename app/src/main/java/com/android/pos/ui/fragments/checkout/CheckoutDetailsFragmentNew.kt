@@ -1405,20 +1405,32 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         magtekModule.stopListner(true)
         isCardRev = true
 
-        ProgressUtils.dismissProgressDialog()
 
-        val jsonArray1 = magtekModule.m_scra?.let {
-            magtekRequestUtils.processCardSwipe(
-                (paymentAmount * 100).toInt(),
-                magtekModule.m_scra!!.ksn,
-                magtekModule.m_scra!!.magnePrint,
-                magtekModule.m_scra!!.magnePrintStatus,
-                it.track2
-            )
+
+        if (magtekModule.m_scra?.track2?.isEmpty() == true) {
+            magtekModule.stopListner(false)
+            isCardRev = false
+
+            AlertUtils.showCustomAlert(requireContext(), "Please swipe the card properly.")
+
+        } else {
+
+            ProgressUtils.dismissProgressDialog()
+
+            val jsonArray1 = magtekModule.m_scra?.let {
+                magtekRequestUtils.processCardSwipe(
+                    (paymentAmount * 100).toInt(),
+                    magtekModule.m_scra!!.ksn,
+                    magtekModule.m_scra!!.magnePrint,
+                    magtekModule.m_scra!!.magnePrintStatus,
+                    it.track2
+                )
+            }
+
+            if (!isInsert)
+                networkCall(jsonArray1, 1)
         }
 
-        if (!isInsert)
-            networkCall(jsonArray1, 1)
 
     }
 
@@ -1451,6 +1463,10 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                     Log.e("onResponse", Gson().toJson(response.body()))
                     if (response.body() != null && response.body()!![0].transactionOutput != null) {
 
+                        if (isDynamo())
+                            magtekModule.setLED(false)
+
+
                         if (response.body()!![0].transactionOutput?.isTransactionApproved == true) {
                             if (isDynamo())
                                 magtekModule.closeDevice()
@@ -1470,8 +1486,6 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                             magtekModule.stopListner(false)
                         }
 
-                        if (isDynamo())
-                            magtekModule.setLED(false)
 
                     } else {
                         if (response.body()!![0].mPPGv4WSFault != null)
@@ -1491,6 +1505,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             override fun onFailure(call: Call<PaymentResponse>, t: Throwable) {
 
                 ProgressUtils.dismissProgressDialog()
+
+                AlertUtils.showCustomAlert(requireContext(),t.message)
 
                 isInsert = false
                 isCardRev = false
