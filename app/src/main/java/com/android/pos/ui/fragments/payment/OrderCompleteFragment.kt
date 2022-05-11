@@ -1596,6 +1596,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 )
             )
 
+            Log.e(TAG,"getTipDine  ${tipAmount}")
             if (tipAmount != 0.0) {
 
                 builder.addTextLineSpace(30)
@@ -1612,7 +1613,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 builder.addText(
                     padLine(
                         "Tips",
-                        "$" + tipAmount,
+                        "$" + MethodUtils.roundOffAmountString(tipAmount),
                         if (customerSettingModel.fonts == Constants.LARGE) {
                             24
                         } else {
@@ -2703,7 +2704,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 builder.addText(
                     padLine(
                         "Tips",
-                        "$" + tipAmount,
+                        "$" + MethodUtils.roundOffAmountString(tipAmount),
                         if (customerSettingModel.fonts == Constants.LARGE) {
                             24
                         } else {
