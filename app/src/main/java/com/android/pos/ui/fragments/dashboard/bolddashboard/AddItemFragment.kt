@@ -236,11 +236,18 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
 
                     val modifiers = adapter.getSelectedModifiers()
 
-                    Log.e(TAG, "selectedmodifiers  ${Gson().toJson(modifiers)}")
-                    Log.e(TAG, "getQuantity  ${qty}")
-                    if (modifiers != null) {
+                    if (item.modifiers.isNotEmpty()) {
                         modifiers.forEach {
                             it.itemQuantity = qty
+
+                            item.modifiers.forEach { it1 ->
+
+                                if (it1.orderModifierId != null ) {
+                                  
+                                    it.orderModifierId = it1.orderModifierId
+
+                                }
+                            }
                         }
                         item.modifiers = modifiers
 
@@ -271,7 +278,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
                     val dineInList = cartList[0].dineInList
                     dineInList?.get(0)?.headerPosition = viewModel.dineInSelectedItemHeaderPos
                     dineInList?.get(0)?.selectedPosition = viewModel.dineInSelectedItemHeaderPos
-                    Log.e(TAG,"getItem  ${Gson().toJson(item)}")
+                    Log.e(TAG, "getItem  ${Gson().toJson(item)}")
                     viewModel.cartLogic(
                         cartList,
                         item,
@@ -279,7 +286,9 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
                         false,
                         dineInList ?: arrayListOf()
                     )
-                } else {
+                } else{
+
+
 
                     viewModel.cartLogic(cartList, item, Constants.UPDATE, false)
                 }
@@ -414,6 +423,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
 
     private fun getData() {
         item = requireArguments().getParcelable<TbItem>("item") ?: TbItem()
+        Log.e(TAG,"getIrem  ${Gson().toJson(item)}")
         cartList = requireArguments().getSerializable("cartList") as ArrayList<CartModel>
         setData()
     }

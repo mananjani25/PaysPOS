@@ -337,7 +337,7 @@ class ActiveOrderFragment(
 
                 order.totalDiscount = order.totalDiscount - itemDiscountTotal
 
-                Log.e(TAG, "OpenORderUpdateOrder:  ${Gson().toJson(order)}")
+                Log.e(TAG, "OpenORderUpdateOrder:  ${Gson().toJson(order.orderItems)}")
                 prefProvider.setValue(Constants.ORDER_TYPE, OPEN_ORDER)
 
                 if (order.customer != null) {
