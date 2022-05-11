@@ -90,6 +90,7 @@ import com.android.pos.data.remote.Constants.TAX_ACTIVE
 import com.android.pos.data.remote.Constants.TAX_UPDATE_DELETE
 import com.android.pos.data.remote.Constants.TEAM_ROLES
 import com.android.pos.data.remote.Constants.TEAM_ROLES_UPDATE_DELETE
+import com.android.pos.data.remote.Constants.TIME_DETAILS
 import com.android.pos.data.remote.Constants.TIPS
 import com.android.pos.data.remote.Constants.TIPS_ACTIVE
 import com.android.pos.data.remote.Constants.TIPS_UPDATE_DELETE
@@ -731,4 +732,7 @@ interface ApiService {
                              @Query("end_date") endDate: String?): OrderCountsResponse
     @GET(INVENTORY_COUNTS)
     suspend fun inventoryCounts(): InventoryCountsResponse
+
+    @GET(TIME_DETAILS)
+    suspend fun getTimeDetails(): TimeDetailsResponse
 }

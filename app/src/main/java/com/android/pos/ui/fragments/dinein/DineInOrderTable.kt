@@ -309,7 +309,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
             cartList = getCartModel(adapterList.toCollection(arrayListOf()))
             cartList?.note = order_note
-            Log.e(TAG, "getcartList  ${Gson().toJson(cartList)}")
+            Log.e(TAG, "getcartList  ${Gson().toJson(cartList?.items)}")
             viewModelPayment.addCart(cartList!!)
 
             totalTax = 0.0
@@ -444,7 +444,15 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             bundle.putDouble(DINE_IN_DISCOUNT, viewModel.totalDiscountAmount)
             bundle.putDouble(DINE_IN_SERVICECHARGE, serviceCharge)
 
-
+            prefProvider.setValue("PaidAmount", "")
+            prefProvider.setValue(Constants.WHOLE_AMOUNT, "")
+            prefProvider.setValueInt("cardCount", 0)
+            prefProvider.setValue(Constants.SUB_TOTAL, "")
+            prefProvider.setValue(Constants.CASH_DISCOUNT_SURCHARGE, "")
+            prefProvider.setValue(Constants.TOTAL_DISCOUNT, "")
+            prefProvider.setValue(Constants.TIP, "")
+            prefProvider.setValue(Constants.TAX_CHARGE, "")
+            prefProvider.setValue(Constants.SERVICE_CHARGE, "")
             bundle.putBoolean(IS_GUEST_PAYMNET, false)
             bundle.putParcelableArrayList(
                 DINE_IN_ADAPTER_LIST, dineInTableAdapter.getList().toCollection(
@@ -979,8 +987,15 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         }
         var dineInOrderModel = DineInPaymentUpdateModel()
         dineInOrderModel.id = orderId
-
-
+        prefProvider.setValue("PaidAmount", "")
+        prefProvider.setValue(Constants.WHOLE_AMOUNT, "")
+        prefProvider.setValueInt("cardCount", 0)
+        prefProvider.setValue(Constants.SUB_TOTAL, "")
+        prefProvider.setValue(Constants.CASH_DISCOUNT_SURCHARGE, "")
+        prefProvider.setValue(Constants.TOTAL_DISCOUNT, "")
+        prefProvider.setValue(Constants.TIP, "")
+        prefProvider.setValue(Constants.TAX_CHARGE, "")
+        prefProvider.setValue(Constants.SERVICE_CHARGE, "")
         prefProvider.setValue(Constants.SUB_TOTAL_DINEIN, "")
         prefProvider.setValue(Constants.TOTAL_DISCOUNT_DINEIN, "")
         prefProvider.setValue(Constants.TIPS_AMOUNT_DINEIN, "")
@@ -2529,7 +2544,12 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         Log.e(TAG, "dineExtractList  ${Gson().toJson(list)}")
         for (i in 0 until list.size) {
             if (list[i].isHeader == 1) {
-                list.get(i).item?.let { listItem.add(it) }
+                list.get(i).item?.let {
+                if (it.discountPrice != 0.0){
+                    it.discountPrice = MethodUtils.roundOffAmountDouble(it.discountPrice / it.itemQuantity)
+                }
+                    listItem.add(it)
+                }
             }
 
             if (list[i].isHeader == 0) {

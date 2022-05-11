@@ -3,12 +3,10 @@ package com.android.pos.ui.fragments.checkout
 import android.annotation.SuppressLint
 import android.bluetooth.BluetoothDevice
 import android.os.Bundle
-import android.text.InputType
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.EditText
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.activityViewModels
@@ -51,7 +49,6 @@ import retrofit2.Response
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
-import kotlin.math.log
 
 @AndroidEntryPoint
 class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragment(), magtekCallback,
@@ -368,6 +365,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 Log.e(TAG, "receiptData: ${Gson().toJson(it.data)}")
                 viewModel.redeemLoyaltyInfo = RedeemLoyaltyInfo()
                 prefProvider.setValueInt("ORDER_ID", it.data.order.id)
+                viewModel.updateActiveOrderFlagClear()
 
 
                 isInsert = false
