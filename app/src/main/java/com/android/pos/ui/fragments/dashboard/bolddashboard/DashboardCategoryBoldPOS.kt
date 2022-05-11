@@ -979,58 +979,60 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                     Log.e(TAG, "getKitchenPrinterList:  ${Gson().toJson(it.data)}")
                     Log.e(TAG, "isUpdateOrder  ${viewModelPayment.isUpdateOrder}")
 
-                    ProgressUtils.dismissProgressDialog()
-                    viewModel.downloadFinished(true)
+                    requireActivity().runOnUiThread {
+                        ProgressUtils.dismissProgressDialog()
+                        viewModel.downloadFinished(true)
 
-                    if (viewModelPayment.isUpdateOrder) {
-                        var model = prefProvider.getValue(OPEN_ORDER_ITEMS, "")
-                        Log.e(TAG, "getItemsModel  ${Gson().toJson(model)}")
-                        var printOrderItems:
-                                ArrayList<CreateOrderResponse.Data.Order.OrderItem> =
-                            arrayListOf()
+                        if (viewModelPayment.isUpdateOrder) {
+                            var model = prefProvider.getValue(OPEN_ORDER_ITEMS, "")
+                            Log.e(TAG, "getItemsModel  ${Gson().toJson(model)}")
+                            var printOrderItems:
+                                    ArrayList<CreateOrderResponse.Data.Order.OrderItem> =
+                                arrayListOf()
 
-                        val serializedObject: String = prefProvider.getValue(OPEN_ORDER_ITEMS, "")
-                        if (serializedObject.isNotEmpty()) {
-                            val gson = Gson()
-                            val type = object :
-                                TypeToken<List<CreateOrderResponse.Data.Order.OrderItem?>?>() {}.type
-                            var arrayItems: ArrayList<CreateOrderResponse.Data.Order.OrderItem> =
-                                gson.fromJson<Any>(
-                                    serializedObject,
-                                    type
-                                ) as ArrayList<CreateOrderResponse.Data.Order.OrderItem>
+                            val serializedObject: String =
+                                prefProvider.getValue(OPEN_ORDER_ITEMS, "")
+                            if (serializedObject.isNotEmpty()) {
+                                val gson = Gson()
+                                val type = object :
+                                    TypeToken<List<CreateOrderResponse.Data.Order.OrderItem?>?>() {}.type
+                                var arrayItems: ArrayList<CreateOrderResponse.Data.Order.OrderItem> =
+                                    gson.fromJson<Any>(
+                                        serializedObject,
+                                        type
+                                    ) as ArrayList<CreateOrderResponse.Data.Order.OrderItem>
 
-                            Log.e(TAG, "arrayItems:  ${Gson().toJson(arrayItems)}")
-                            var itemIds: ArrayList<Int> = arrayListOf()
-                            arrayItems.forEach {
-                                itemIds.add(it.id)
-                            }
+                                Log.e(TAG, "arrayItems:  ${Gson().toJson(arrayItems)}")
+                                var itemIds: ArrayList<Int> = arrayListOf()
+                                arrayItems.forEach {
+                                    itemIds.add(it.id)
+                                }
 
-                            createOrderResponse.data.order.orderItems.forEachIndexed { index, orderItem ->
+                                createOrderResponse.data.order.orderItems.forEachIndexed { index, orderItem ->
 
-                                if (itemIds.contains(orderItem.id)) {
-                                    if (arrayItems[index].quantity != orderItem.quantity) {
-                                        if (orderItem.quantity > arrayItems[index].quantity) {
-                                            orderItem.quantity =
-                                                orderItem.quantity - arrayItems[index].quantity
-                                            if (!printOrderItems.contains(orderItem)) {
-                                                printOrderItems.add(orderItem)
+                                    if (itemIds.contains(orderItem.id)) {
+                                        if (arrayItems[index].quantity != orderItem.quantity) {
+                                            if (orderItem.quantity > arrayItems[index].quantity) {
+                                                orderItem.quantity =
+                                                    orderItem.quantity - arrayItems[index].quantity
+                                                if (!printOrderItems.contains(orderItem)) {
+                                                    printOrderItems.add(orderItem)
+                                                }
                                             }
+
+                                        } else {
+
                                         }
 
                                     } else {
-
+                                        printOrderItems.add(orderItem)
                                     }
 
-                                } else {
-                                    printOrderItems.add(orderItem)
+
                                 }
 
 
-                            }
-
-
-                            /*arrayItems.forEach { it1 ->
+                                /*arrayItems.forEach { it1 ->
 
                                 createOrderResponse.data.order.orderItems.forEach {
 
@@ -1060,37 +1062,38 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
 
                             }*/
 
-                            Log.e(TAG, "printOrderitems  ${Gson().toJson(printOrderItems)}")
+                                Log.e(TAG, "printOrderitems  ${Gson().toJson(printOrderItems)}")
 
-                            createOrderResponse.data.order.orderItems = arrayListOf()
+                                createOrderResponse.data.order.orderItems = arrayListOf()
 
-                            createOrderResponse.data.order.orderItems = printOrderItems
-                        }
+                                createOrderResponse.data.order.orderItems = printOrderItems
+                            }
 
-                        prefProvider.setValue(OPEN_ORDER_ITEMS, "")
+                            prefProvider.setValue(OPEN_ORDER_ITEMS, "")
 
-                    }
-
-
-                    if (it.data?.isNotEmpty() == true && createOrderResponse.data.order.orderItems.isNotEmpty()) {
-
-
-                        for (i in 0 until it.data.size) {
-
-
-                            initKitchenPrinter(
-                                it.data.get(i),
-                                Constants.KITCHEN,
-                                createOrderResponse
-                            )
                         }
 
 
-                    } else {
-                        viewModel.downloadFinished(false)
-                        findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
-                    }
+                        if (it.data?.isNotEmpty() == true && createOrderResponse.data.order.orderItems.isNotEmpty()) {
 
+
+                            for (i in 0 until it.data.size) {
+
+
+                                initKitchenPrinter(
+                                    it.data.get(i),
+                                    Constants.KITCHEN,
+                                    createOrderResponse
+                                )
+                            }
+
+
+                        } else {
+                            viewModel.downloadFinished(false)
+                            findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
+                        }
+
+                    }
                 }
                 Status.LOADING -> {
                     ProgressUtils.showProgressDialog(requireActivity())

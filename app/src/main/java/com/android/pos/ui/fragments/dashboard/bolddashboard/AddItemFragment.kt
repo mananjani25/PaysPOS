@@ -271,6 +271,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
                     val dineInList = cartList[0].dineInList
                     dineInList?.get(0)?.headerPosition = viewModel.dineInSelectedItemHeaderPos
                     dineInList?.get(0)?.selectedPosition = viewModel.dineInSelectedItemHeaderPos
+                    Log.e(TAG,"getItem  ${Gson().toJson(item)}")
                     viewModel.cartLogic(
                         cartList,
                         item,
