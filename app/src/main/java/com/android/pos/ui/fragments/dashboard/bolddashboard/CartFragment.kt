@@ -1425,12 +1425,16 @@ class CartFragment(
                     bundle.putInt("paymentId", paymentId!!)
                     bundle.putString("paymentOfflineId", paymentOfflineId)
                     bundle.putString("orderOfflineId", orderOfflineId)
-                    findNavController().navigate(
-                        R.id.action_dashboardCategoryBoldPOS_to_paymentBoldPosFragment,
-                        bundle
-                    )
+                    if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
+                        findNavController().navigate(
+                            R.id.action_dashboardCategoryBoldPOS_to_paymentBoldPosFragment,
+                            bundle
+                        )
+                    }
                 } else {
-                    findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_paymentBoldPosFragment)
+                    if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
+                        findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_paymentBoldPosFragment)
+                    }
                 }
             } else {
                 AlertUtils.showCustomAlertWithListenerWithOK(
