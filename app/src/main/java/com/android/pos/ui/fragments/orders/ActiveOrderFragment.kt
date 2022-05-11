@@ -325,9 +325,14 @@ class ActiveOrderFragment(
         when (status) {
             "UPDATE" -> {
                 var itemDiscountTotal: Double = 0.0
+                var itemPassDis : Double = 0.0
                 order.orderItems.forEach {
+                    if (it.discountAmount != 0.0){
+                        itemDiscountTotal += MethodUtils.roundOffAmountDouble(it.discountAmount )
+                    }
                     if (it.discountAmount != 0.0 && it.quantity > 1) {
-                        itemDiscountTotal += MethodUtils.roundOffAmountDouble(it.discountAmount / it.quantity)
+
+                      //  itemDiscountTotal += MethodUtils.roundOffAmountDouble(it.discountAmount / it.quantity)
                         it.discountAmount =
                             MethodUtils.roundOffAmountDouble(it.discountAmount / it.quantity)
                     }
@@ -338,6 +343,7 @@ class ActiveOrderFragment(
                 order.totalDiscount = order.totalDiscount - itemDiscountTotal
 
                 Log.e(TAG, "OpenORderUpdateOrder:  ${Gson().toJson(order.orderItems)}")
+
                 prefProvider.setValue(Constants.ORDER_TYPE, OPEN_ORDER)
 
                 if (order.customer != null) {
@@ -536,7 +542,7 @@ class ActiveOrderFragment(
             items?.forEach {
                 itemDiscount += it.discountPrice
             }
-            discountPrice = (order.totalDiscount - itemDiscount)
+            discountPrice = order.totalDiscount
             deliveryType = order.deliveryType ?: ""
 
         }

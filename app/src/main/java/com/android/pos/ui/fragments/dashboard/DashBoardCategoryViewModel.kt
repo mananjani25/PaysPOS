@@ -1189,6 +1189,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                     Log.e("amountToBePaid", "" + totalPrice)
 
                 } else {
+                    Log.e(TAG,"openOrderUpdate ${cartModel.discountPrice}")
 
                     nonCashAdj = 0.0
                     totalPrice = 0.0
