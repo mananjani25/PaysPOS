@@ -430,7 +430,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
 
                     mainCartList[0].items = mergeItems
                     if (cartList!![0].discountPrice != 0.00)
-                        mainCartList[0].discountPrice = cartList!![0].discountPrice
+                        mainCartList[0].discountPrice += cartList!![0].discountPrice
 
                     if (cartList!![0].note.isNotEmpty())
                         mainCartList[0].note = cartList!![0].note
