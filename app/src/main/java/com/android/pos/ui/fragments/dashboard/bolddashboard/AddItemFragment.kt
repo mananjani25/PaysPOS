@@ -236,14 +236,15 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
 
                     val modifiers = adapter.getSelectedModifiers()
 
-                    if (item.modifiers.isNotEmpty()) {
+                    if (modifiers.isNotEmpty()) {
                         modifiers.forEach {
                             it.itemQuantity = qty
 
                             item.modifiers.forEach { it1 ->
-
+                                Log.e("OrderItem","orderModifierIdorderModifierId  ${it1.orderModifierId}")
                                 if (it1.orderModifierId != null ) {
-                                  
+
+                                    Log.e("OrderIem", "orderModifierId:  ${it1.orderModifierId}")
                                     it.orderModifierId = it1.orderModifierId
 
                                 }
