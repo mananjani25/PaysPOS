@@ -517,4 +517,8 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
     suspend fun inventoryCounts() =
         getResult { apiService.inventoryCounts() }
 
+
+    suspend fun timeDetails() =
+        getResult { apiService.getTimeDetails() }
+
 }

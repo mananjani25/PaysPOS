@@ -1,0 +1,16 @@
+package com.android.pos.data.model.responseModel
+
+
+import com.google.gson.annotations.SerializedName
+
+class TimeDetailsResponse(
+    @SerializedName("data")
+    val `data`: Data
+) : BaseResponse() {
+    data class Data(
+        @SerializedName("time")
+        val time: String,
+        @SerializedName("date")
+        val date: String
+    )
+}

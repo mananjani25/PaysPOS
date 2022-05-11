@@ -286,6 +286,9 @@ object Constants {
     const val INVENTORY_COUNTS = "items/inventories_count"
 
 
+    const val TIME_DETAILS = "time_details"
+
+
     fun createRequestModelForUpdatePritnerType(
         oldList: ArrayList<PrinterResponse.Data.OrderTypes>?,
         adapterList: ArrayList<PrinterResponse.Data.OrderTypes>,
