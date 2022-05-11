@@ -113,7 +113,7 @@ class PosRepository @Inject constructor(
     suspend fun syncVenueDetails() = apiHelperNew.syncVenueDetails()
 
 
-    suspend fun syncInventory() =  apiHelperNew.syncVenueData()
+    suspend fun syncInventory() = apiHelperNew.syncVenueData()
 
 
     fun venueDataLocal() = performGetOperationDatabase(
@@ -571,7 +571,6 @@ class PosRepository @Inject constructor(
     }
 
 
-
     suspend fun createEmptyCart(cartModel: CartModel) {
         appDatabase.cartDao().add(cartModel)
     }
@@ -824,9 +823,10 @@ class PosRepository @Inject constructor(
     suspend fun getOrderHistory(id: String) =
         apiHelperNew.getOrderHistory(id)
 
-    suspend fun clearTableManually(){
+    suspend fun clearTableManually() {
         appDatabase.clearAllTables()
     }
+
     suspend fun clearTable() {
 
         Log.e("clear Db Table", "-------")
@@ -888,5 +888,21 @@ class PosRepository @Inject constructor(
     fun timeDetails() =
         performGetOperationNew(networkCall = { apiHelperNew.timeDetails() })
 
+    suspend fun deleteCustomerPrinters() {
+        appDatabase.printerDao().deleteCustomerPrinters()
+    }
+
+    suspend fun deleteKitchenPrinters() {
+        appDatabase.printerDao().deleteKitchenPrinters()
+    }
+
+    suspend fun addKitchenPrinter(kitchenPrinterList: List<PrinterResponse.Data.KitchenReceiptPrinters>) {
+        appDatabase.printerDao().addKitchenPrinterList(kitchenPrinterList)
+    }
+
+    suspend fun addCustomerPrinter(customerPrinterList: List<PrinterResponse.Data.CustomerReceiptPrinters>) {
+        appDatabase.printerDao().addCustomerPrinterList(customerPrinterList)
+
+    }
 }
 
