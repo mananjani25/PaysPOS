@@ -2637,7 +2637,7 @@ class DashBoardCategoryViewModel @Inject constructor(
    */
 
                 var finalTotal = 0.0
-                finalTotal = (subTotalPrice + totalTax + totalServiceCharge)
+                finalTotal = model.total
                 cashDiscountType = prefProvider.getValue(Constants.OPTION_TYPE, "")
                 //loyalty point and price calculation
                 amountToBePaid = finalTotal
