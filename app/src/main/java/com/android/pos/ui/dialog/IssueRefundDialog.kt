@@ -373,7 +373,10 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
 
                 Log.e("subTotalPrice", totalItemPrice.toString())
 
-                Log.e("totalItemPerItem", "totalItemPrice = "+ totalItemPrice +"\n totalServiceCharge = "+totalServiceCharge +"\n totalTax = "+totalTax +"\n loyaltyAmount = "+loyaltyAmount)
+                Log.e(
+                    "totalItemPerItem",
+                    "totalItemPrice = " + totalItemPrice + "\n totalServiceCharge = " + totalServiceCharge + "\n totalTax = " + totalTax + "\n loyaltyAmount = " + loyaltyAmount
+                )
                 val totalItemPerItem =
                     totalItemPrice - applyDiscount + totalServiceCharge + totalTax + loyaltyAmount
 
@@ -402,9 +405,7 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
         }
 
 
-
-
-     //   totalItemPrice += totalTax + totalServiceCharge - applyDiscount - loyaltyAmount - (paymentOrderDetailsResponse.data.total_discount - applyDiscount)
+        //   totalItemPrice += totalTax + totalServiceCharge - applyDiscount - loyaltyAmount - (paymentOrderDetailsResponse.data.total_discount - applyDiscount)
 
         if (paymentOrderDetailsResponse.data.payment_type == "Cash") {
             if (paymentOrderDetailsResponse.data.cash_discount_type == "CashDiscount") {
@@ -414,6 +415,7 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
                     requireContext()
                 ))
                 totalItemPrice -= cashdiscountdiv
+
             }
         } else if (paymentOrderDetailsResponse.data.payment_type == "Card") {
             if (paymentOrderDetailsResponse.data.cash_discount_type == "SurCharge") {
@@ -423,7 +425,12 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
                     requireContext()
                 ))
                 totalItemPrice += cashdiscountdiv
+
             }
+        }
+
+        if (paymentOrderDetailsResponse.data.payment_type == "Card") {
+            totalItemPrice += paymentOrderDetailsResponse.data.tips
         }
 
         refundData = RefundRequestModel().apply {
