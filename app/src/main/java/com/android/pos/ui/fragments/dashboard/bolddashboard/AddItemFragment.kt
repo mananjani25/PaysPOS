@@ -270,6 +270,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
                 val variation = variationAdapter.getItem()
                 variationList.add(variation)
                 item.name = item.name.substringBefore(" (") + " (" + variation.name + ")"
+                item.price = variation.price ?: 0.0
                 item.variationsAttributes = variationList
 
             }
