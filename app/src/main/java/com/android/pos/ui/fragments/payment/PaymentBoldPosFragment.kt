@@ -66,7 +66,7 @@ class PaymentBoldPosFragment : Fragment() {
         binding.lifecycleOwner = this
         isFromActiveOrder = arguments?.getBoolean("isFromActiveOrder") ?: false
         orderId = arguments?.getInt("orderId")
-
+        viewModel.setSplitCount(1)
         Log.e("orderId :: ", orderId.toString())
         if (orderId != null) {
             paymentId = requireArguments().getInt("paymentId")
@@ -257,7 +257,7 @@ class PaymentBoldPosFragment : Fragment() {
         binding.layoutHeaderCheckout.tvAddTip.setOnClickListener {
             findNavController().navigate(
                 R.id.action_paymentBoldPosFragment_to_addTipDialog,
-                bundleOf("totalTip" to viewModel.tipTransactionAmount)
+                bundleOf("totalTip" to viewModel.tipTransactionAmount,"splitCount" to viewModel.isSelectCount)
             )
         }
         binding.layoutHeaderCheckout.tvAddDiscount.setOnClickListener {

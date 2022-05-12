@@ -201,7 +201,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
             tipAmount = bundle.getDouble("tipAmount")
             viewModel.setTipAmount(tipAmount)
             tipID = bundle.getInt("tipId")
-            isSelectedCount = 1
+//            isSelectedCount = 1
             tipAmountCalculation()
             loadPaymentLayout()
         }
@@ -211,7 +211,11 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
         ) { _: String, bundle: Bundle ->
 
             isSelectedCount = bundle.getInt("split")
-            binding.tvCustom.text = "Custom ($isSelectedCount Ways)"
+            if (isSelectedCount > 1) {
+                binding.tvCustom.text = "Custom ($isSelectedCount Ways)"
+            } else {
+                binding.tvCustom.text = "Custom"
+            }
             binding.tvwaysplit?.visible()
             binding.tvwaysplit?.text = "$isSelectedCount Way Split Amount"
             tipsetupGlobal(tipAmount, isSelectedCount)
@@ -243,8 +247,22 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
     private fun splitClick() {
 
         binding.linearNextSplit.setOnClickListener {
-            loadPaymentLayout()
-            tipAmountCalculation()
+            if(tipAmount!=0.0 && viewModel.tipTransactionAmount!=0.0){
+                AlertUtils.showCustomAlertWithListenerWithOK(
+                    requireContext(),
+                    "If you are going to do split payment then existing tip will be removed."
+                ) { _, _ ->
+                    tipAmount = 0.0
+                    viewModel.setTipAmount(0.0)
+                    viewModel.setSplitCount(isSelectedCount)
+                    loadPaymentLayout()
+                    tipAmountCalculation()
+                }
+            }else{
+                viewModel.setSplitCount(isSelectedCount)
+                loadPaymentLayout()
+                tipAmountCalculation()
+            }
         }
         binding.tvFullAmount.setOnClickListener {
             listtextview = arrayListOf()
@@ -1250,8 +1268,6 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
             loadPaymentLayout()
         }
         binding.linearTab2.setOnClickListener {
-            isSelectedCount = 1
-            tipsetupGlobal(tipAmount, isSelectedCount)
             loadSplitLayout()
             binding.tvFullAmount.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
             binding.tv2ways.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
@@ -1271,6 +1287,8 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
             isSelectedCount = 1
             tipsetupGlobal(tipAmount, isSelectedCount)
             binding.tvFullAMounttxt.visibility = View.VISIBLE
+            binding.tvwaysplit?.visibility = View.INVISIBLE
+
         }
     }
 
