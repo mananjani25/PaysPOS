@@ -7,6 +7,7 @@ import com.android.pos.data.model.requestModel.CreateTipRequestModel
 import com.android.pos.data.model.responseModel.GetTipReponse
 import com.android.pos.data.remote.ApiHelper
 import com.android.pos.utils.performGetOperation
+import com.android.pos.utils.performGetOperationDatabase
 import javax.inject.Inject
 
 class TipDiscountRepository @Inject constructor(
@@ -19,6 +20,10 @@ class TipDiscountRepository @Inject constructor(
         databaseQuery = { appDatabase.tipDao().allTips },
         networkCall = { apiHelperNew.getTipsList() },
         saveCallResult = { appDatabase.tipDao().addAllTips(it.data) })
+
+    fun getTipList1() = performGetOperationDatabase(
+        databaseQuery = { appDatabase.tipDao().allTips },
+    )
 
     suspend fun deleteTipsFromDb() {
         appDatabase.tipDao().delete()
@@ -77,6 +82,9 @@ class TipDiscountRepository @Inject constructor(
 
     suspend fun deleteDiscountDatabase(discountId: Int) =
         appDatabase.discountDao().deleteDiscountById(discountId)
+
+    suspend fun reOrderTip(id: Int, oldPos: Int, newPos: Int) =
+        apiHelperNew.reOrderTip(id, oldPos, newPos)
 
 
 }

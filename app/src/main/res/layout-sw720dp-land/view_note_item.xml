@@ -31,6 +31,16 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/imageCheck"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:padding="@dimen/_5sdp"
+                android:layout_marginStart="@dimen/_5sdp"
+                android:layout_marginEnd="@dimen/_5sdp"
+                app:srcCompat="@drawable/ic_baseline_menu" />
+
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/imgCheckBox"
@@ -52,7 +62,7 @@
                 android:padding="@dimen/_5sdp"
                 android:text="@{noteModel.name}"
                 android:textColor="@color/txtColor"
-                android:textSize="@dimen/setting_inner_text_size" />
+                android:textSize="@dimen/_5mdpi" />
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:layout_width="wrap_content"
@@ -60,9 +70,7 @@
                 android:layout_gravity="center"
                 android:layout_marginStart="@dimen/_5sdp"
                 android:layout_marginEnd="@dimen/_10sdp"
-                app:srcCompat="@drawable/ic_play"
-                android:visibility="gone"
-                />
+                app:srcCompat="@drawable/ic_play" />
 
             <include
                 android:id="@+id/layout_menu"
