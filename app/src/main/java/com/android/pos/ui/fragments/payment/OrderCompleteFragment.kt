@@ -59,6 +59,7 @@ import com.android.pos.ui.adapter.SplitListAdapter
 import com.android.pos.utils.*
 import com.android.pos.utils.extensions.gone
 import com.android.pos.utils.extensions.liveSnackBar
+import com.android.pos.utils.extensions.runOnUiThread
 import com.android.pos.utils.extensions.visible
 import com.android.pos.utils.printer.PrinterClass
 import com.android.pos.utils.printer.PrinterClass.BLUETOOTH_TIMEOUT
@@ -3536,8 +3537,10 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                             if (it.printType.lowercase()
                                                     .equals(CUSTOMER.lowercase()) && it.autoPrinting
                                             ) {
+                                                runOnUiThread{
 
-                                                initPrinter(cus, CUSTOMER)
+                                                    initPrinter(cus, CUSTOMER)
+                                                }
 
 
                                             }
