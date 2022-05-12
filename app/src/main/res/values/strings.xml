@@ -793,6 +793,8 @@
     <string name="printers">Printers</string>
     <string name="order_type_n_team_name">ORDER TYPE/TEAM NAME</string>
     <string name="time_sheet">Time Sheet</string>
+    <string name="business_website">Business Website</string>
+    <string name="business_address">Business Address</string>
 
 
 </resources>

@@ -21,6 +21,7 @@ import com.android.pos.data.remote.Constants.KEY
 import com.android.pos.data.remote.Constants.ORDER_RECEIPTS
 import com.android.pos.data.remote.Constants.PRINTER
 import com.android.pos.data.remote.Constants.SCAN_GUN
+import com.android.pos.data.remote.Constants.SETUP_BUSINESS_DETAILS
 import com.android.pos.data.remote.Constants.TEAM_MEMBER
 import com.android.pos.databinding.FragmentSettingsBinding
 
@@ -192,6 +193,15 @@ class Settings : Fragment() {
                         binding.txtReports.styleNormal()
                         setAdapter(6)
                     }
+                    SETUP_BUSINESS_DETAILS -> {
+                        binding.txtBusiness.styleBold()
+                        binding.txtHardware.styleNormal()
+                        binding.txtSecurity.styleNormal()
+                        binding.txtMarketing.styleNormal()
+                        binding.txtEmployee.styleNormal()
+                        binding.txtReports.styleNormal()
+                        setAdapter(7)
+                    }
 
 
                 }
@@ -295,7 +305,7 @@ class Settings : Fragment() {
             binding.rvBusiness.visibility = View.GONE
             val frag: Fragment = TeamMemberSettings()
             loadFragment(frag)
-            binding.commonToolbar.txtSubTitle.setText("Team Member")
+            binding.commonToolbar.txtSubTitle.text = "Team Member"
         }
         binding.txtReports.setOnClickListener {
             /*binding.txtBusiness.styleNormal()
@@ -313,7 +323,7 @@ class Settings : Fragment() {
 
 
     private fun setAdapter(selectedPos: Int) {
-        var list: ArrayList<BusinessSettingModel> = arrayListOf()
+        val list: ArrayList<BusinessSettingModel> = arrayListOf()
         list.add(BusinessSettingModel(0, "Taxes", false))
         list.add(BusinessSettingModel(0, "Tips", false))
         list.add(BusinessSettingModel(0, "Order Receipts", false))
@@ -321,20 +331,35 @@ class Settings : Fragment() {
         list.add(BusinessSettingModel(0, "Notes", false))
         list.add(BusinessSettingModel(0, "Service Charge", false))
         list.add(BusinessSettingModel(0, "Loyalty Points", false))
+        list.add(BusinessSettingModel(0, "Business Details", false))
         for (i in 0 until list.size) {
-            if (selectedPos == i) {
-                list[i].isSelected = true
-            } else {
-                list[i].isSelected = false
-            }
+            list[i].isSelected = selectedPos == i
 
         }
 
-        when (selectedPos) {
+        setupView(selectedPos)
+
+        binding.rvBusiness.visibility = View.VISIBLE
+        binding.rvBusiness.adapter = BusinessSettingAdapter(requireContext(), list, object :
+            BusinessSettingAdapter.BusinessListInterface {
+            override fun onClick(pos: Int) {
+                setupView(pos)
+
+            }
+
+        })
+
+
+    }
+
+    private fun setupView(pos: Int) {
+        when (pos) {
             0 -> {
                 binding.commonToolbar.txtSubTitle.text = "Taxes"
                 val taxFrag: Fragment = TaxesList()
                 loadFragment(taxFrag)
+
+
             }
             1 -> {
                 binding.commonToolbar.txtSubTitle.text = "Tips"
@@ -348,14 +373,15 @@ class Settings : Fragment() {
                 loadFragment(orderReceipts)
             }
             3 -> {
+
                 if (rolePermission.hasDiscountPermission(binding.root)) {
                     binding.commonToolbar.txtSubTitle.text = "Discount"
                     val discount: Fragment = DiscountList()
                     loadFragment(discount)
                 }
+
             }
             4 -> {
-
                 binding.commonToolbar.txtSubTitle.text = "Notes"
                 val notes: Fragment = Notes()
                 loadFragment(notes)
@@ -365,7 +391,6 @@ class Settings : Fragment() {
                 binding.commonToolbar.txtSubTitle.text = "Service Charge"
                 val service: Fragment = ServiceChargeList()
                 loadFragment(service)
-
             }
             6 -> {
                 binding.commonToolbar.txtSubTitle.text = "Loyalty Points"
@@ -373,70 +398,18 @@ class Settings : Fragment() {
                 loadFragment(service)
 
             }
-        }
 
-
-
-        binding.rvBusiness.visibility = View.VISIBLE
-        binding.rvBusiness.adapter = BusinessSettingAdapter(requireContext(), list, object :
-            BusinessSettingAdapter.BusinessListInterface {
-            override fun onClick(pos: Int) {
-                when (pos) {
-                    0 -> {
-                        binding.commonToolbar.txtSubTitle.setText("Taxes")
-                        val taxFrag: Fragment = TaxesList()
-                        loadFragment(taxFrag)
-
-
-                    }
-                    1 -> {
-                        binding.commonToolbar.txtSubTitle.setText("Tips")
-                        val tips: Fragment = TipsList()
-                        loadFragment(tips)
-
-                    }
-                    2 -> {
-                        binding.commonToolbar.txtSubTitle.setText("Order Receipts")
-                        val orderReceipts = OrderReceipt()
-                        loadFragment(orderReceipts)
-                    }
-                    3 -> {
-
-                        if (rolePermission.hasDiscountPermission(binding.root)) {
-                            binding.commonToolbar.txtSubTitle.setText("Discount")
-                            val discount: Fragment = DiscountList()
-                            loadFragment(discount)
-                        }
-
-                    }
-                    4 -> {
-                        binding.commonToolbar.txtSubTitle.setText("Notes")
-                        val notes: Fragment = Notes()
-                        loadFragment(notes)
-
-                    }
-                    5 -> {
-                        binding.commonToolbar.txtSubTitle.setText("Service Charge")
-                        val service: Fragment = ServiceChargeList()
-                        loadFragment(service)
-                    }
-                    6 -> {
-                        binding.commonToolbar.txtSubTitle.text = "Loyalty Points"
-                        val service: Fragment = LoyaltyPointFragment()
-                        loadFragment(service)
-
-                    }
-
-                }
+            7 -> {
+                binding.commonToolbar.txtSubTitle.text = "Business Details"
+                val service: Fragment = BusinessDetailsFragment()
+                loadFragment(service)
 
             }
 
-        })
-
-
+        }
     }
 
-    fun loadFragment(frag: Fragment) {
+    private fun loadFragment(frag: Fragment) {
         val fm: FragmentManager = requireActivity().supportFragmentManager
         fm.beginTransaction().replace(binding.frameLayout.id, frag).commit()
 
