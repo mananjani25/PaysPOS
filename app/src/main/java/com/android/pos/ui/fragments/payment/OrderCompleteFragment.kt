@@ -1596,7 +1596,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 )
             )
 
-            Log.e(TAG,"getTipDine  ${tipAmount}")
+            Log.e(TAG, "getTipDine  ${tipAmount}")
             if (tipAmount != 0.0) {
 
                 builder.addTextLineSpace(30)
@@ -3298,11 +3298,12 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 val bundle = Bundle()
                 Log.e(TAG, "guestorderID ${orderID}")
                 bundle.putInt("orderId", orderID)
-
-                findNavController().navigate(
-                    R.id.action_orderCompleteFragment_to_dineInOrderTable,
-                    bundle
-                )
+                if (findNavController().currentDestination?.id == R.id.orderCompleteFragment) {
+                    findNavController().navigate(
+                        R.id.action_orderCompleteFragment_to_dineInOrderTable,
+                        bundle
+                    )
+                }
                 removePrefrenceDinein()
             }
         }
@@ -3472,7 +3473,6 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         } else {
                             getCustomerPrinters(true)
                         }
-
 
 
                     }
