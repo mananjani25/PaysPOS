@@ -433,6 +433,9 @@ class DashBoardCategoryViewModel @Inject constructor(
                                     ) {
                                         model.isEdited = true
                                     }
+                                    model.modifiers.forEach {
+                                        it.itemQuantity = item?.itemQuantity ?: 1
+                                    }
 
                                     dineIn.get(selectedHeader).items[index] = model
                                     dineIn.get(selectedHeader).floorPlanTable =

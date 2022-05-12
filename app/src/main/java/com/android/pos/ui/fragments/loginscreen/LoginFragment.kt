@@ -151,7 +151,7 @@ class LoginFragment : Fragment() {
                     val bundle = Bundle().apply {
                         putBoolean("isLogin", true)
                     }
-                    hostSelectionInterceptor?.setHostBaseUrl()
+                   // hostSelectionInterceptor?.setHostBaseUrl()
                     findNavController().navigate(R.id.action_login_to_passcode, bundle)
                 }
             }
