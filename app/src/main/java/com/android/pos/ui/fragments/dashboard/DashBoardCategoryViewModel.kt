@@ -847,7 +847,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                     return (itemM.id == it.id).also { checkModifier = it }
                 }
             } else {
-                return true.also { checkModifier = it }
+                return false
             }
         }
         return checkModifier
