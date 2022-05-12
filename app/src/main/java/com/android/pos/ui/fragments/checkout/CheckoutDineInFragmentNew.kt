@@ -201,7 +201,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
             tipAmount = bundle.getDouble("tipAmount")
             viewModel.setTipAmount(tipAmount)
             tipID = bundle.getInt("tipId")
-            isSelectedCount = 1
+//            isSelectedCount = 1
             tipAmountCalculation()
             loadPaymentLayout()
         }
@@ -211,7 +211,11 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
         ) { _: String, bundle: Bundle ->
 
             isSelectedCount = bundle.getInt("split")
-            binding.tvCustom.text = "Custom ($isSelectedCount Ways)"
+            if (isSelectedCount > 1) {
+                binding.tvCustom.text = "Custom ($isSelectedCount Ways)"
+            } else {
+                binding.tvCustom.text = "Custom"
+            }
             binding.tvwaysplit?.visible()
             binding.tvwaysplit?.text = "$isSelectedCount Way Split Amount"
             tipsetupGlobal(tipAmount, isSelectedCount)
@@ -243,8 +247,22 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
     private fun splitClick() {
 
         binding.linearNextSplit.setOnClickListener {
-            loadPaymentLayout()
-            tipAmountCalculation()
+            if(tipAmount!=0.0 && viewModel.tipTransactionAmount!=0.0){
+                AlertUtils.showCustomAlertWithListenerWithOK(
+                    requireContext(),
+                    "If you are going to do split payment then existing tip will be removed."
+                ) { _, _ ->
+                    tipAmount = 0.0
+                    viewModel.setTipAmount(0.0)
+                    viewModel.setSplitCount(isSelectedCount)
+                    loadPaymentLayout()
+                    tipAmountCalculation()
+                }
+            }else{
+                viewModel.setSplitCount(isSelectedCount)
+                loadPaymentLayout()
+                tipAmountCalculation()
+            }
         }
         binding.tvFullAmount.setOnClickListener {
             listtextview = arrayListOf()
@@ -535,7 +553,8 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                             dineInDataModel.guestPaymentModel
                         )
                         dineInDataModel.guestPosition?.let { it1 ->
-                            bundle.putInt(Constants.GUEST_POSITION,
+                            bundle.putInt(
+                                Constants.GUEST_POSITION,
                                 it1
                             )
                         }
@@ -631,7 +650,8 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                             dineInDataModel.guestPaymentModel
                         )
                         dineInDataModel.guestPosition?.let { it1 ->
-                            bundle.putInt(Constants.GUEST_POSITION,
+                            bundle.putInt(
+                                Constants.GUEST_POSITION,
                                 it1
                             )
                         }
@@ -712,7 +732,10 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
         guestRequestModel?.paymentAttributes!!.cash_discount_or_surcharge =
             cashDiscountSurcharge
         guestRequestModel?.paymentAttributes!!.cash_discount_type = cashDiscountType
-
+        guestRequestModel?.paymentAttributes!!.terminalId =
+            prefProvider.getValueInt(Constants.TERMINAL_ID, 0)
+        guestRequestModel?.paymentAttributes!!.employeeId =
+            prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
         val guestPaymentAttributes = GuestPaymentAttributes()
         guestPaymentAttributes.amount = guestRequestModel?.paymentAttributes!!.amount
         guestPaymentAttributes.serviceChargeAmount =
@@ -732,6 +755,10 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
             guestRequestModel?.paymentAttributes!!.offlineId
         guestPaymentAttributes.order_id =
             guestRequestModel?.paymentAttributes!!.order_id
+        guestPaymentAttributes.terminalId =
+            guestRequestModel?.paymentAttributes!!.terminalId
+        guestPaymentAttributes.employeeId =
+            guestRequestModel?.paymentAttributes!!.employeeId
         guestPaymentAttributes.cash_discount_or_surcharge =
             guestRequestModel?.paymentAttributes!!.cash_discount_or_surcharge
         guestPaymentAttributes.cash_discount_type =
@@ -803,7 +830,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                 paymentAmount =
                     String.format("%.2f", paymentAmount + cashDiscountSurcharge).toDouble()
             }
-         //  makePaymentCreditCard()
+            //  makePaymentCreditCard()
             if (device == 0) {
                 magtekPaymentCall()
             } else {
@@ -967,10 +994,11 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
             WholetotalPrice = prefProvider.getValue(Constants.WHOLE_AMOUNT, "").toDouble()
         }
 
-        if (prefProvider.getValue(Constants.SUB_TOTAL, "").isEmpty() ||  prefProvider.getValue(
+        if (prefProvider.getValue(Constants.SUB_TOTAL, "").isEmpty() || prefProvider.getValue(
                 Constants.SUB_TOTAL,
                 ""
-            ) == "0.0") {
+            ) == "0.0"
+        ) {
             subTotalPrice = viewModel.subTotalPrice
             prefProvider.setValue(
                 Constants.SUB_TOTAL,
@@ -980,10 +1008,11 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
             subTotalPrice = prefProvider.getValue(Constants.SUB_TOTAL, "").toDouble()
         }
 
-        if (prefProvider.getValue(Constants.TAX_CHARGE, "").isEmpty() ||  prefProvider.getValue(
+        if (prefProvider.getValue(Constants.TAX_CHARGE, "").isEmpty() || prefProvider.getValue(
                 Constants.TAX_CHARGE,
                 ""
-            ) == "0.0") {
+            ) == "0.0"
+        ) {
             totalTax = viewModel.totalTax
             prefProvider.setValue(Constants.TAX_CHARGE, String.format("%.2f", viewModel.totalTax))
         } else {
@@ -991,10 +1020,11 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
         }
 
 
-        if (prefProvider.getValue(Constants.SERVICE_CHARGE, "").isEmpty() ||  prefProvider.getValue(
+        if (prefProvider.getValue(Constants.SERVICE_CHARGE, "").isEmpty() || prefProvider.getValue(
                 Constants.SERVICE_CHARGE,
                 ""
-            ) == "0.0") {
+            ) == "0.0"
+        ) {
             totalServiceCharge = viewModel.totalServiceCharge
             prefProvider.setValue(
                 Constants.SERVICE_CHARGE,
@@ -1008,7 +1038,8 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
         if (prefProvider.getValue(Constants.TOTAL_DISCOUNT, "").isEmpty() || prefProvider.getValue(
                 Constants.TOTAL_DISCOUNT,
                 ""
-            ) == "0.0") {
+            ) == "0.0"
+        ) {
             totalDiscount = viewModel.totalDiscount
             prefProvider.setValue(
                 Constants.TOTAL_DISCOUNT,
@@ -1022,7 +1053,8 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
         if (prefProvider.getValue(Constants.TIP, "").isEmpty() || prefProvider.getValue(
                 Constants.TIP,
                 ""
-            ) == "0.0") {
+            ) == "0.0"
+        ) {
             tipAmount = viewModel.tip
             prefProvider.setValue(Constants.TIP, String.format("%.2f", viewModel.tip))
         } else {
@@ -1032,16 +1064,19 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
         if (prefProvider.getValue(Constants.TIP, "").isEmpty() || prefProvider.getValue(
                 Constants.TIP,
                 ""
-            ) == "0.0" ) {
+            ) == "0.0"
+        ) {
             tipAmount = viewModel.tip
             prefProvider.setValue(Constants.TIP, String.format("%.2f", viewModel.tip))
         } else {
             tipAmount = prefProvider.getValue(Constants.TIP, "").toDouble()
         }
-        if (prefProvider.getValue(Constants.CASH_DISCOUNT_SURCHARGE, "").isEmpty() ||  prefProvider.getValue(
+        if (prefProvider.getValue(Constants.CASH_DISCOUNT_SURCHARGE, "")
+                .isEmpty() || prefProvider.getValue(
                 Constants.CASH_DISCOUNT_SURCHARGE,
                 ""
-            ) == "0.0") {
+            ) == "0.0"
+        ) {
             cashDiscountSurcharge = viewModel.cashdiscountAmount
             prefProvider.setValue(
                 Constants.CASH_DISCOUNT_SURCHARGE,
@@ -1233,8 +1268,6 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
             loadPaymentLayout()
         }
         binding.linearTab2.setOnClickListener {
-            isSelectedCount = 1
-            tipsetupGlobal(tipAmount, isSelectedCount)
             loadSplitLayout()
             binding.tvFullAmount.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
             binding.tv2ways.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
@@ -1254,6 +1287,8 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
             isSelectedCount = 1
             tipsetupGlobal(tipAmount, isSelectedCount)
             binding.tvFullAMounttxt.visibility = View.VISIBLE
+            binding.tvwaysplit?.visibility = View.INVISIBLE
+
         }
     }
 
@@ -1873,10 +1908,16 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                 }
 
                 var wholePrice =
-                    String.format(
-                        "%.2f",
-                        prefProvider.getValue(Constants.WHOLE_AMOUNT, "0.0").toDouble()
-                    ).toDouble()
+                    if (prefProvider.getValue(Constants.WHOLE_AMOUNT, "").isEmpty()) {
+                        0.0
+                    } else {
+                        String.format(
+                            "%.2f",
+                            prefProvider.getValue(Constants.WHOLE_AMOUNT, "0.0").toDouble()
+                        ).toDouble()
+                    }
+
+                Log.e(TAG,"wholePricewholePrice:  ${wholePrice}")
 
                 bundle.putDouble("WholetotalPrice", wholePrice)
                 var remainingValue = 0.0
@@ -2034,7 +2075,8 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                 bundle.putParcelable(PRINT_DATA_DINE_IN, dineInDataModel.dineInOrderDetails)
                 bundle.putParcelable(DINE_IN_GUEST_PAYMENT_DATA, dineInDataModel.guestPaymentModel)
                 dineInDataModel.guestPosition?.let { it1 ->
-                    bundle.putInt(Constants.GUEST_POSITION,
+                    bundle.putInt(
+                        Constants.GUEST_POSITION,
                         it1
                     )
                 }
@@ -2122,7 +2164,8 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                 bundle.putParcelable(PRINT_DATA_DINE_IN, dineInDataModel.dineInOrderDetails)
                 bundle.putParcelable(DINE_IN_GUEST_PAYMENT_DATA, dineInDataModel.guestPaymentModel)
                 dineInDataModel.guestPosition?.let { it1 ->
-                    bundle.putInt(Constants.GUEST_POSITION,
+                    bundle.putInt(
+                        Constants.GUEST_POSITION,
                         it1
                     )
                 }

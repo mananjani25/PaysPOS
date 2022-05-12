@@ -239,11 +239,22 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
 
                     val modifiers = adapter.getSelectedModifiers()
 
-                    Log.e(TAG, "selectedmodifiers  ${Gson().toJson(modifiers)}")
-                    Log.e(TAG, "getQuantity  ${qty}")
-                    if (modifiers != null) {
+                    if (modifiers.isNotEmpty()) {
                         modifiers.forEach {
                             it.itemQuantity = qty
+
+                            item.modifiers.forEach { it1 ->
+                                Log.e(
+                                    "OrderItem",
+                                    "orderModifierIdorderModifierId  ${it1.orderModifierId}"
+                                )
+                                if (it1.orderModifierId != null) {
+
+                                    Log.e("OrderIem", "orderModifierId:  ${it1.orderModifierId}")
+                                    it.orderModifierId = it1.orderModifierId
+
+                                }
+                            }
                         }
                         item.modifiers = modifiers
 
@@ -265,6 +276,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
                 val variation = variationAdapter.getItem()
                 variationList.add(variation)
                 item.name = item.name.substringBefore(" (") + " (" + variation.name + ")"
+                item.price = variation.price ?: 0.0
                 item.variationsAttributes = variationList
 
             }
@@ -274,6 +286,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
                     val dineInList = cartList[0].dineInList
                     dineInList?.get(0)?.headerPosition = viewModel.dineInSelectedItemHeaderPos
                     dineInList?.get(0)?.selectedPosition = viewModel.dineInSelectedItemHeaderPos
+                    Log.e(TAG, "getItem  ${Gson().toJson(item)}")
                     viewModel.cartLogic(
                         cartList,
                         item,
@@ -282,6 +295,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
                         dineInList ?: arrayListOf()
                     )
                 } else {
+
 
                     viewModel.cartLogic(cartList, item, Constants.UPDATE, false)
                 }
@@ -416,6 +430,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
 
     private fun getData() {
         item = requireArguments().getParcelable<TbItem>("item") ?: TbItem()
+        Log.e(TAG, "getIrem  ${Gson().toJson(item)}")
         cartList = requireArguments().getSerializable("cartList") as ArrayList<CartModel>
         setData()
     }
@@ -449,6 +464,14 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
 
                                     if (isUpdateItem) {
                                         variation.id?.let { it1 -> variationAdapter.selectItem(it1) }
+                                        variationAdapter.updateVariation(variation)
+
+                                    } else {
+                                        variationList.get(0).id?.let { it1 ->
+                                            variationAdapter.selectItem(
+                                                it1
+                                            )
+                                        }
                                         variationAdapter.updateVariation(variation)
 
                                     }

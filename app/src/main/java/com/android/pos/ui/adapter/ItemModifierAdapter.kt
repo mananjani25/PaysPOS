@@ -35,7 +35,7 @@ class ItemModifierAdapter(private val maxAllowed: Int, private val minRequired: 
 
                 list[bindingAdapterPosition].isChecked = !list[bindingAdapterPosition].isChecked
 
-                if ((minRequired == 0) || maxLogic(
+                if (maxLogic(
                         maxAllowed,
                         list
                     )

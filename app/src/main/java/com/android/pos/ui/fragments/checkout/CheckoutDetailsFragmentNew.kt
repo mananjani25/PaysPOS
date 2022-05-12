@@ -3,12 +3,10 @@ package com.android.pos.ui.fragments.checkout
 import android.annotation.SuppressLint
 import android.bluetooth.BluetoothDevice
 import android.os.Bundle
-import android.text.InputType
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.EditText
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.activityViewModels
@@ -36,6 +34,7 @@ import com.android.pos.utils.*
 import com.android.pos.utils.callback.DeleteOptionCallback
 import com.android.pos.utils.callback.magtekCallback
 import com.android.pos.utils.extensions.gone
+import com.android.pos.utils.extensions.invisible
 import com.android.pos.utils.extensions.runOnUiThread
 import com.android.pos.utils.extensions.visible
 import com.android.pos.utils.statusUtils.Status
@@ -51,7 +50,6 @@ import retrofit2.Response
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
-import kotlin.math.log
 
 @AndroidEntryPoint
 class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragment(), magtekCallback,
@@ -170,7 +168,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             tipAmount = bundle.getDouble("tipAmount")
             viewModel.setTipAmount(tipAmount)
             tipID = bundle.getInt("tipId")
-            isSelectedCount = 1
+//            isSelectedCount = 1
             tipAmountCalculation()
             loadPaymentLayout()
         }
@@ -185,6 +183,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             } else {
                 binding.tvCustom.text = "Custom"
             }
+            binding.tvwaysplit?.visible()
+            binding.tvwaysplit?.text = "$isSelectedCount Way Split Amount"
             tipsetupGlobal(tipAmount, isSelectedCount)
         }
         requireActivity().supportFragmentManager.setFragmentResultListener(
@@ -205,9 +205,23 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
     private fun splitClick() {
 
         binding.linearNextSplit.setOnClickListener {
-            loadPaymentLayout()
-            tipAmountCalculation()
-//            setupPaymentScreen(isSelectedCount)
+            if(tipAmount!=0.0 && viewModel.tipTransactionAmount!=0.0){
+                AlertUtils.showCustomAlertWithListenerWithOK(
+                    requireContext(),
+                    "If you are going to do split payment then existing tip will be removed."
+                ) { _, _ ->
+                    tipAmount = 0.0
+                    viewModel.setTipAmount(0.0)
+                    viewModel.setSplitCount(isSelectedCount)
+                    loadPaymentLayout()
+                    tipAmountCalculation()
+                }
+            }else{
+                viewModel.setSplitCount(isSelectedCount)
+                loadPaymentLayout()
+                tipAmountCalculation()
+            }
+
         }
         binding.tvFullAmount.setOnClickListener {
             binding.tvFullAmount.setBackgroundDrawable(resources.getDrawable(R.drawable.button_action_hover))
@@ -229,6 +243,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             isSelectedCount = 1
             tipsetupGlobal(tipAmount, isSelectedCount)
             binding.tvFullAMounttxt.visibility = View.VISIBLE
+            binding.tvwaysplit?.visibility = View.INVISIBLE
 
         }
 
@@ -252,6 +267,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             isSelectedCount = 2
             tipsetupGlobal(tipAmount, isSelectedCount)
             binding.tvFullAMounttxt.visibility = View.INVISIBLE
+            binding.tvwaysplit?.visible()
+            binding.tvwaysplit?.text = "$isSelectedCount Way Split Amount"
 
         }
         binding.tv3ways.setOnClickListener {
@@ -274,6 +291,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             isSelectedCount = 3
             tipsetupGlobal(tipAmount, isSelectedCount)
             binding.tvFullAMounttxt.visibility = View.INVISIBLE
+            binding.tvwaysplit?.visible()
+            binding.tvwaysplit?.text = "$isSelectedCount Way Split Amount"
         }
         binding.tv4ways.setOnClickListener {
             binding.tv4ways.setBackgroundDrawable(resources.getDrawable(R.drawable.button_action_hover))
@@ -295,6 +314,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             isSelectedCount = 4
             tipsetupGlobal(tipAmount, isSelectedCount)
             binding.tvFullAMounttxt.visibility = View.INVISIBLE
+            binding.tvwaysplit?.visible()
+            binding.tvwaysplit?.text = "$isSelectedCount Way Split Amount"
         }
         binding.tv5ways.setOnClickListener {
             binding.tv5ways.setBackgroundDrawable(resources.getDrawable(R.drawable.button_action_hover))
@@ -316,6 +337,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             isSelectedCount = 5
             tipsetupGlobal(tipAmount, isSelectedCount)
             binding.tvFullAMounttxt.visibility = View.INVISIBLE
+            binding.tvwaysplit?.visible()
+            binding.tvwaysplit?.text = "$isSelectedCount Way Split Amount"
         }
         binding.tv6ways.setOnClickListener {
             binding.tv6ways.setBackgroundDrawable(resources.getDrawable(R.drawable.button_action_hover))
@@ -337,6 +360,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             isSelectedCount = 6
             tipsetupGlobal(tipAmount, isSelectedCount)
             binding.tvFullAMounttxt.visibility = View.INVISIBLE
+            binding.tvwaysplit?.visible()
+            binding.tvwaysplit?.text = "$isSelectedCount Way Split Amount"
         }
         binding.tvCustom.setOnClickListener {
             binding.tvCustom.setBackgroundDrawable(resources.getDrawable(R.drawable.button_action_hover))
@@ -368,6 +393,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 Log.e(TAG, "receiptData: ${Gson().toJson(it.data)}")
                 viewModel.redeemLoyaltyInfo = RedeemLoyaltyInfo()
                 prefProvider.setValueInt("ORDER_ID", it.data.order.id)
+                viewModel.updateActiveOrderFlagClear()
 
 
                 isInsert = false
@@ -694,7 +720,6 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 paymentAmount =
                     String.format("%.2f", paymentAmount + cashDiscountSurcharge).toDouble()
             }
-          //  makePaymentCreditCard()
 
 
             magtekModule.stopListner(false)
@@ -1130,8 +1155,6 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             loadPaymentLayout()
         }
         binding.linearTab2.setOnClickListener {
-            isSelectedCount = 1
-            tipsetupGlobal(tipAmount, isSelectedCount)
             loadSplitLayout()
             binding.tvFullAmount.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
             binding.tv2ways.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
@@ -1151,6 +1174,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             isSelectedCount = 1
             tipsetupGlobal(tipAmount, isSelectedCount)
             binding.tvFullAMounttxt.visibility = View.VISIBLE
+            binding.tvwaysplit?.invisible()
         }
     }
 
@@ -1408,20 +1432,32 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         magtekModule.stopListner(true)
         isCardRev = true
 
-        ProgressUtils.dismissProgressDialog()
 
-        val jsonArray1 = magtekModule.m_scra?.let {
-            magtekRequestUtils.processCardSwipe(
-                (paymentAmount * 100).toInt(),
-                magtekModule.m_scra!!.ksn,
-                magtekModule.m_scra!!.magnePrint,
-                magtekModule.m_scra!!.magnePrintStatus,
-                it.track2
-            )
+
+        if (magtekModule.m_scra?.track2?.isEmpty() == true) {
+            magtekModule.stopListner(false)
+            isCardRev = false
+
+            AlertUtils.showCustomAlert(requireContext(), "Please swipe the card properly.")
+
+        } else {
+
+            ProgressUtils.dismissProgressDialog()
+
+            val jsonArray1 = magtekModule.m_scra?.let {
+                magtekRequestUtils.processCardSwipe(
+                    (paymentAmount * 100).toInt(),
+                    magtekModule.m_scra!!.ksn,
+                    magtekModule.m_scra!!.magnePrint,
+                    magtekModule.m_scra!!.magnePrintStatus,
+                    it.track2
+                )
+            }
+
+            if (!isInsert)
+                networkCall(jsonArray1, 1)
         }
 
-        if (!isInsert)
-            networkCall(jsonArray1, 1)
 
     }
 
@@ -1454,6 +1490,10 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                     Log.e("onResponse", Gson().toJson(response.body()))
                     if (response.body() != null && response.body()!![0].transactionOutput != null) {
 
+                        if (isDynamo())
+                            magtekModule.setLED(false)
+
+
                         if (response.body()!![0].transactionOutput?.isTransactionApproved == true) {
                             if (isDynamo())
                                 magtekModule.closeDevice()
@@ -1473,8 +1513,6 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                             magtekModule.stopListner(false)
                         }
 
-                        if (isDynamo())
-                            magtekModule.setLED(false)
 
                     } else {
                         if (response.body()!![0].mPPGv4WSFault != null)
@@ -1494,6 +1532,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             override fun onFailure(call: Call<PaymentResponse>, t: Throwable) {
 
                 ProgressUtils.dismissProgressDialog()
+
+                AlertUtils.showCustomAlert(requireContext(),t.message)
 
                 isInsert = false
                 isCardRev = false

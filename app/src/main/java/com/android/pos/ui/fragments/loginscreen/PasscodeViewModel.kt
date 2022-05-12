@@ -45,6 +45,7 @@ class PasscodeViewModel @Inject constructor(
     private val _data1 = MutableLiveData<Event<Boolean>>()
     val data1: LiveData<Event<Boolean>> = _data1
 
+    val timeDetails = posRepository.timeDetails()
 
     fun isDashboardData(isDashboard: Boolean) {
         this.isDashboard = isDashboard
@@ -181,6 +182,10 @@ class PasscodeViewModel @Inject constructor(
                                             Constants.IS_UPDATE_ORDER_LOYALTY_APPLIED,
                                             false
                                         )
+
+                                        prefProvider.setValue(Constants.CUSTOMER_NAME, "")
+                                        prefProvider.setValue(Constants.PREF_CUSTOMER, "")
+                                        prefProvider.setValueInt(Constants.CUSTOMER_ID, -1)
 
                                         deleteCart()
 

@@ -238,35 +238,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                         binding.txtTotalAmount, requireContext()
                     )
 
-                    binding.txtSubTotal.text = "$" + String.format(
-                        "%.2f",
-                        viewModel.subTotalPrice
-                    )
-                    binding.txtServiceCharge.text = "$" + String.format(
-                        "%.2f",
-                        viewModel.totalServiceCharge
-                    )
-                    binding.txtDiscount.text = "- $" + String.format(
-                        "%.2f",
-                        viewModel.totalDiscount
-                    )
-                    //txtTotalAmount.text = binding.txtTotalAmount.text.toString()
-                    binding.txtTotalTax.text = "$" + String.format(
-                        "%.2f",
-                        viewModel.totalTax
-                    )
-                    binding.txtTotal.text = "$" + String.format(
-                        "%.2f",
-                        viewModel.totalPrice
-                    )
-                    binding.tvDiscount.text = "-$" + String.format(
-                        "%.2f",
-                        viewModel.totalDiscount
-                    )
-                    binding.txtTotalAmount.text = "$" + String.format(
-                        "%.2f",
-                        viewModel.totalPrice
-                    )
+                    setTextValue()
                     if (viewModel.order_note.isNotEmpty()) {
                         binding.linearBottomInfo?.layoutParams?.height =
                             resources.getDimension(R.dimen._60sdp).toInt()
@@ -282,14 +254,53 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
 
                     cartAdapter.clearList()
 
+
+
+
                     viewModel.itemCalculation(
                         null,
                         binding.txtTotalAmount, requireContext()
                     )
+
+                    setTextValue()
+
                 }
 
 
             }
+    }
+
+    private fun setTextValue() {
+
+        binding.txtSubTotal.text = "$" + String.format(
+            "%.2f",
+            viewModel.subTotalPrice
+        )
+        binding.txtServiceCharge.text = "$" + String.format(
+            "%.2f",
+            viewModel.totalServiceCharge
+        )
+        binding.txtDiscount.text = "- $" + String.format(
+            "%.2f",
+            viewModel.totalDiscount
+        )
+        //txtTotalAmount.text = binding.txtTotalAmount.text.toString()
+        binding.txtTotalTax.text = "$" + String.format(
+            "%.2f",
+            viewModel.totalTax
+        )
+        binding.txtTotal.text = "$" + String.format(
+            "%.2f",
+            viewModel.totalPrice
+        )
+        binding.tvDiscount.text = "-$" + String.format(
+            "%.2f",
+            viewModel.totalDiscount
+        )
+        binding.txtTotalAmount.text = "$" + String.format(
+            "%.2f",
+            viewModel.totalPrice
+        )
     }
 
     private fun getServiceCharge() {
@@ -435,7 +446,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
 
                     mainCartList[0].items = mergeItems
                     if (cartList!![0].discountPrice != 0.00)
-                        mainCartList[0].discountPrice = cartList!![0].discountPrice
+                        mainCartList[0].discountPrice += cartList!![0].discountPrice
 
                     if (cartList!![0].note.isNotEmpty())
                         mainCartList[0].note = cartList!![0].note

@@ -4,7 +4,6 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.os.Build
 import android.os.StrictMode
 import android.util.Base64
 import android.util.Log
@@ -95,6 +94,7 @@ class DashBoardCategoryViewModel @Inject constructor(
     var totalCount = 0
     var subTotalPrice = 0.0
     var totalTax = 0.0
+    var isSelectCount = 1
     var nonCashAdj: Double = 0.0
     var totalServiceCharge = 0.0
     var cashdiscountAmount = 0.0
@@ -134,7 +134,9 @@ class DashBoardCategoryViewModel @Inject constructor(
     fun setOpenOrderUpdate(value: Boolean) {
         this.openOrderUpdate = value
     }
-
+    fun setSplitCount(selectcount: Int) {
+        this.isSelectCount = selectcount
+    }
     fun orderTypes(): LiveData<Resource<List<TbOrderType>>> {
         return posRepository.orderTypesDb()
     }
@@ -435,6 +437,9 @@ class DashBoardCategoryViewModel @Inject constructor(
                                         )
                                     ) {
                                         model.isEdited = true
+                                    }
+                                    model.modifiers.forEach {
+                                        it.itemQuantity = item?.itemQuantity ?: 1
                                     }
 
                                     dineIn.get(selectedHeader).items[index] = model
@@ -850,7 +855,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                     return (itemM.id == it.id).also { checkModifier = it }
                 }
             } else {
-                return true.also { checkModifier = it }
+                return false
             }
         }
         return checkModifier
@@ -1046,6 +1051,8 @@ class DashBoardCategoryViewModel @Inject constructor(
         totalServiceCharge = 0.0
         var amountToBePaid = 0.0
         if (cartModel.orderType == DINE_IN) {
+            Log.e("TOCHE", "discountPriceDineIn  ${cartModel.discountPrice}")
+            Log.e("TOCHE", "discountPriceDineIn  ${totalDiscount}")
 
             cartModel.dineInList?.forEach { dine ->
 
@@ -1190,6 +1197,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                     Log.e("amountToBePaid", "" + totalPrice)
 
                 } else {
+                    Log.e(TAG,"openOrderUpdate ${cartModel.discountPrice}")
 
                     nonCashAdj = 0.0
                     totalPrice = 0.0
@@ -2383,6 +2391,10 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 tipDiscountRepository.addTips(it.data.tip_settings)
                                 posRepository.deleteCustomerReceiptSettingsFromDb()
                                 posRepository.addCancelOrderReasonFromDb(it.data.cancelOrderReasons)
+                                posRepository.deleteCustomerPrinters()
+                                posRepository.deleteKitchenPrinters()
+                                posRepository.addKitchenPrinter(it.data.printers.kitchenPrinterList)
+                                posRepository.addCustomerPrinter(it.data.printers.customerPrinterList)
                                 it.data.customerReceipt?.let { it1 ->
                                     posRepository.addCustomerReceiptSettings(
                                         it1
@@ -2646,7 +2658,7 @@ class DashBoardCategoryViewModel @Inject constructor(
    */
 
                 var finalTotal = 0.0
-                finalTotal = (subTotalPrice + totalTax + totalServiceCharge)
+                finalTotal = model.total
                 cashDiscountType = prefProvider.getValue(Constants.OPTION_TYPE, "")
                 //loyalty point and price calculation
                 amountToBePaid = finalTotal
@@ -2858,18 +2870,6 @@ class DashBoardCategoryViewModel @Inject constructor(
         isLoading.value = value
     }
 
-    fun clearAppData() {
-
-        viewModelScope.launch {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                MainApplication.getInstance()?.deleteSharedPreferences("POS Android")
-            }
-            //MainApplication.clearApplicationData()
-
-        }
-
-
-    }
 
     fun updateActiveOrderFlagClear() {
 

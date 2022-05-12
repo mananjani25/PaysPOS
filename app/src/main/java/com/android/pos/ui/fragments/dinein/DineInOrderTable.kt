@@ -1,11 +1,14 @@
 package com.android.pos.ui.fragments.dinein
 
 import android.annotation.SuppressLint
+import android.app.Dialog
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Color
 import android.graphics.Point
 import android.graphics.drawable.BitmapDrawable
+import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
 import android.util.Log
@@ -118,6 +121,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
     private var kitchenPrinterList: List<PrinterResponse.Data.KitchenReceiptPrinters> = listOf()
     lateinit var cashDiscountModel: CashDiscountModel
     var optionType = ""
+    private lateinit var pd: Dialog
 
     @Inject
     lateinit var prefProvider: PrefProvider
@@ -135,6 +139,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             false
         )
         binding.lifecycleOwner = this
+        progressDialog()
 
         optionType = prefProvider.getValue(Constants.OPTION_TYPE, "")
         observeShowProgress()
@@ -153,6 +158,10 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         navigateDineInOrderNew()
         observeUnMergeTable()
         return binding.root
+    }
+
+    private fun setProgressDialog() {
+
     }
 
 
@@ -309,7 +318,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
             cartList = getCartModel(adapterList.toCollection(arrayListOf()))
             cartList?.note = order_note
-            Log.e(TAG, "getcartList  ${Gson().toJson(cartList)}")
+            Log.e(TAG, "getcartList  ${Gson().toJson(cartList?.items)}")
             viewModelPayment.addCart(cartList!!)
 
             totalTax = 0.0
@@ -444,7 +453,15 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             bundle.putDouble(DINE_IN_DISCOUNT, viewModel.totalDiscountAmount)
             bundle.putDouble(DINE_IN_SERVICECHARGE, serviceCharge)
 
-
+            prefProvider.setValue("PaidAmount", "")
+            prefProvider.setValue(Constants.WHOLE_AMOUNT, "")
+            prefProvider.setValueInt("cardCount", 0)
+            prefProvider.setValue(Constants.SUB_TOTAL, "")
+            prefProvider.setValue(Constants.CASH_DISCOUNT_SURCHARGE, "")
+            prefProvider.setValue(Constants.TOTAL_DISCOUNT, "")
+            prefProvider.setValue(Constants.TIP, "")
+            prefProvider.setValue(Constants.TAX_CHARGE, "")
+            prefProvider.setValue(Constants.SERVICE_CHARGE, "")
             bundle.putBoolean(IS_GUEST_PAYMNET, false)
             bundle.putParcelableArrayList(
                 DINE_IN_ADAPTER_LIST, dineInTableAdapter.getList().toCollection(
@@ -705,12 +722,16 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
         viewModel.showProgress.observe(viewLifecycleOwner, { event ->
             event.getContentIfNotHandled()?.let {
+                Log.e(TAG, "ShowProgress ${it}")
                 if (it) {
-                    requireActivity()?.runOnUiThread {
-                        ProgressUtils.showProgressDialog(requireActivity())
+                    if (pd != null && !pd.isShowing) {
+                        pd.show()
                     }
+
                 } else {
-                    ProgressUtils.dismissProgressDialog()
+                    if (pd != null && pd.isShowing) {
+                        pd.dismiss()
+                    }
                 }
             }
         })
@@ -979,8 +1000,15 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         }
         var dineInOrderModel = DineInPaymentUpdateModel()
         dineInOrderModel.id = orderId
-
-
+        prefProvider.setValue("PaidAmount", "")
+        prefProvider.setValue(Constants.WHOLE_AMOUNT, "")
+        prefProvider.setValueInt("cardCount", 0)
+        prefProvider.setValue(Constants.SUB_TOTAL, "")
+        prefProvider.setValue(Constants.CASH_DISCOUNT_SURCHARGE, "")
+        prefProvider.setValue(Constants.TOTAL_DISCOUNT, "")
+        prefProvider.setValue(Constants.TIP, "")
+        prefProvider.setValue(Constants.TAX_CHARGE, "")
+        prefProvider.setValue(Constants.SERVICE_CHARGE, "")
         prefProvider.setValue(Constants.SUB_TOTAL_DINEIN, "")
         prefProvider.setValue(Constants.TOTAL_DISCOUNT_DINEIN, "")
         prefProvider.setValue(Constants.TIPS_AMOUNT_DINEIN, "")
@@ -1852,6 +1880,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
 
                 }
+
+
             }
 
 
@@ -2529,7 +2559,13 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         Log.e(TAG, "dineExtractList  ${Gson().toJson(list)}")
         for (i in 0 until list.size) {
             if (list[i].isHeader == 1) {
-                list.get(i).item?.let { listItem.add(it) }
+                list.get(i).item?.let {
+                    if (it.discountPrice != 0.0) {
+                        it.discountPrice =
+                            MethodUtils.roundOffAmountDouble(it.discountPrice / it.itemQuantity)
+                    }
+                    listItem.add(it)
+                }
             }
 
             if (list[i].isHeader == 0) {
@@ -5791,6 +5827,36 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
 
     }
+
+    fun progressDialog() {
+
+        pd = Dialog(requireActivity())
+        pd.setContentView(R.layout.view_loading)
+        // pd.setProgressStyle(ProgressDialog.BUTTON_NEUTRAL)
+//        pd.setMessage("Please Wait..")
+        pd.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        pd.window?.setBackgroundDrawable(
+            ColorDrawable(Color.TRANSPARENT)
+        )
+        pd.setCanceledOnTouchOutside(false)
+        pd.setCancelable(false)
+        pd.window?.setLayout(
+            WindowManager.LayoutParams.WRAP_CONTENT,
+            WindowManager.LayoutParams.WRAP_CONTENT
+        )
+
+
+
+
+    }
+
+    override fun onPause() {
+        super.onPause()
+        if (pd != null && pd.isShowing) {
+            pd.dismiss()
+        }
+    }
+
 
 }
 

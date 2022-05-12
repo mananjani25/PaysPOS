@@ -129,7 +129,6 @@
                             android:id="@+id/current_time"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="@string/bold_pos"
                             android:textColor="@color/white"
                             android:textSize="@dimen/_20sdp"
                             android:textStyle="bold" />
@@ -142,12 +141,13 @@
                         android:layout_gravity="end"
                         android:layout_marginBottom="@dimen/_5sdp"
                         android:gravity="end"
-                        android:text="@string/blockchain_point_of_sale"
                         android:textColor="@color/white"
                         android:textSize="@dimen/_7sdp"
                         android:textStyle="normal" />
 
                 </androidx.appcompat.widget.LinearLayoutCompat>
+
+
             </androidx.appcompat.widget.LinearLayoutCompat>
 
             <LinearLayout

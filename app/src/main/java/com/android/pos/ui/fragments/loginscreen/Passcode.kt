@@ -68,6 +68,8 @@ class Passcode : Fragment() {
 
         binding.lifecycleOwner = this
         binding.passcodeViewModel = viewModel
+        setTimeandDate()
+
         isDashboard = arguments?.getBoolean("isDashboard")!!
         isSwap = arguments?.getBoolean("isSwap")!!
         isExit = arguments?.getBoolean("isExit")!!
@@ -84,8 +86,6 @@ class Passcode : Fragment() {
 
 
 
-
-        setTimeandDate()
         setupSnackbar()
         observeShowProgress()
         navigate()
@@ -94,7 +94,8 @@ class Passcode : Fragment() {
         isLogin = arguments?.getBoolean("isLogin") ?: false
 
         if (isLogin)
-            viewModel.defaultTerminalCall(prefProvider.getValue("device_token", ""),
+            viewModel.defaultTerminalCall(
+                prefProvider.getValue("device_token", ""),
                 MethodUtils.getDeviceId(requireActivity())
             )
 
@@ -104,14 +105,36 @@ class Passcode : Fragment() {
 
 
     private fun setTimeandDate() {
-        val sdf = SimpleDateFormat("hh:mm aa")
+        /*val sdf = SimpleDateFormat("hh:mm aa")
         val currentDate = sdf.format(Calendar.getInstance().time)
         binding.currentTime.text = currentDate
         val date = Date()
         val formatter = SimpleDateFormat("EEEE, dd MMMM");
         val strDate = formatter.format(date);
-        binding.currentDate.text = strDate
+        binding.currentDate.text = strDate*/
 
+
+/*
+        viewModel.data.observe(viewLifecycleOwner) { event ->
+            event.getContentIfNotHandled()?.let {
+*/
+/*
+                if (it) {
+                    //findNavController().navigate(R.id.action_login_to_passcode)
+                }
+*//*
+
+            }
+        }
+*/
+
+        viewModel.timeDetails.observe(requireActivity()) {
+            it.data?.let {
+                Log.e("TAG", "timeDetails ${it.data}")
+                binding.currentTime.text = it.data.time
+                binding.currentDate.text = it.data.date
+            }
+        }
     }
 
 
@@ -374,7 +397,7 @@ class Passcode : Fragment() {
         viewModel.data1.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
                 Log.e("action_passcode", it.toString())
-                    findNavController().navigate(R.id.action_passcode_to_login)
+                findNavController().navigate(R.id.action_passcode_to_login)
 
             }
         }
