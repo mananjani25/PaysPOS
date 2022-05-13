@@ -44,6 +44,7 @@ class AddTipsDialog : DialogFragment(), DialogTipsListAdapter.DiscountInterface 
     private lateinit var tipsListAdapter: DialogTipsListAdapter
     private var tipModel: GetTipReponse.Data? = null
     var selectedListPos: Int = -1
+    var splitCount = 1
 
     @Inject
     lateinit var prefProvider: PrefProvider
@@ -63,6 +64,12 @@ class AddTipsDialog : DialogFragment(), DialogTipsListAdapter.DiscountInterface 
                 requireArguments().getDouble("totalPrice")
             if (arguments?.getDouble("totalTip") != null) totalTip =
                 requireArguments().getDouble("totalTip")
+
+            if (arguments?.getInt("splitCount") != null) {
+                splitCount =
+                    requireArguments().getInt("splitCount")
+            }
+
             if (arguments?.getBoolean("isFromTransaction") != null) {
                 isFromTransaction = requireArguments().getBoolean("isFromTransaction", false)
             }
@@ -105,7 +112,7 @@ class AddTipsDialog : DialogFragment(), DialogTipsListAdapter.DiscountInterface 
                     prefProvider.getValue(
                         Constants.WHOLE_AMOUNT,
                         "0.0"
-                    ).toDouble(), rate
+                    ).toDouble()  / splitCount, rate
                 )
             }
 
@@ -124,7 +131,7 @@ class AddTipsDialog : DialogFragment(), DialogTipsListAdapter.DiscountInterface 
                     prefProvider.getValue(
                         Constants.WHOLE_AMOUNT,
                         "0.0"
-                    ).toDouble(), rate
+                    ).toDouble() / splitCount, rate
                 )
             }
             binding.edtAmount.setText(MethodUtils.roundOffAmountString(price))
@@ -145,7 +152,7 @@ class AddTipsDialog : DialogFragment(), DialogTipsListAdapter.DiscountInterface 
                     prefProvider.getValue(
                         Constants.WHOLE_AMOUNT,
                         "0.0"
-                    ).toDouble(), rate
+                    ).toDouble() / splitCount, rate
                 )
             }
             binding.edtAmount.setText(MethodUtils.roundOffAmountString(price))
@@ -306,10 +313,9 @@ class AddTipsDialog : DialogFragment(), DialogTipsListAdapter.DiscountInterface 
         if (isFromTransaction) {
             tipCalculation = (totalPrice * model.rate) / 100
         } else {
-            tipCalculation = (prefProvider.getValue(
-                Constants.WHOLE_AMOUNT,
-                "0.0"
-            ).toDouble() * model.rate) / 100
+            totalPrice =
+                prefProvider.getValue(Constants.WHOLE_AMOUNT, "0.0").toDouble() / splitCount
+            tipCalculation = (totalPrice * model.rate) / 100
         }
         binding.edtAmount.setText(MethodUtils.roundOffAmountString(tipCalculation))
         selectedListPos = pos

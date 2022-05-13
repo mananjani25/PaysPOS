@@ -11,6 +11,7 @@ import com.android.pos.ui.adapter.CartItemModifierAdapter
 import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.callback.MyCallback
 import com.android.pos.utils.extensions.strike
+import com.google.gson.Gson
 
 class CartAdapter : RecyclerView.Adapter<CartAdapter.MyViewHolder>() {
     var cartList = ArrayList<TbItem>()
@@ -67,6 +68,7 @@ class CartAdapter : RecyclerView.Adapter<CartAdapter.MyViewHolder>() {
                 binding.rvModifiers.visibility = View.VISIBLE
                 val adapter = CartItemModifierAdapter()
                 binding.rvModifiers.adapter = adapter
+                Log.e(TAG,"dineinMod  ${Gson().toJson(item.modifiers)}")
                 adapter.addAll(item.modifiers)
             } else {
                 binding.rvModifiers.visibility = View.GONE

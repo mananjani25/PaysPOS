@@ -19,7 +19,7 @@ import com.android.pos.databinding.FragmentLoginBinding
 import com.android.pos.di.ApiModule.BASE_URL
 import com.android.pos.di.HostSelectionInterceptor
 import com.android.pos.di.PrefProvider
-import com.android.pos.utils.MethodUtils.Companion.getDeviceId
+import com.android.pos.ui.activities.MainActivity
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.extensions.liveSnackBar
 import com.google.android.gms.tasks.OnCompleteListener
@@ -51,6 +51,7 @@ class LoginFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
 
+        Log.e("LoginFragment", "onCreateView")
 
         if (prefProvider?.getValue(AUTH_TOKEN, "").toString().isNotEmpty()) {
             if (!prefProvider?.getValueboolean(IS_CLOCKOUT, false)!!) {
@@ -87,12 +88,12 @@ class LoginFragment : Fragment() {
             copy()
         }
 
-        binding.terminalId.text = getDeviceId(requireActivity())
-
-        //  prefProvider.setValue(Constants.UNIQUE_ID, binding.terminalId.text.toString().trim())
+        prefProvider?.setUniqueId((requireActivity() as MainActivity).getDeviceId())
+        binding.terminalId.text = prefProvider?.getUniqueId()
 
         return binding.root
     }
+
 
     private fun firebaseToken() {
 
@@ -121,6 +122,7 @@ class LoginFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
         firebaseToken()
         binding.txtSignIn.setOnClickListener {
             prefProvider?.setBaseUrl(BASE_URL)
@@ -151,7 +153,7 @@ class LoginFragment : Fragment() {
                     val bundle = Bundle().apply {
                         putBoolean("isLogin", true)
                     }
-                    hostSelectionInterceptor?.setHostBaseUrl()
+                    // hostSelectionInterceptor?.setHostBaseUrl()
                     findNavController().navigate(R.id.action_login_to_passcode, bundle)
                 }
             }

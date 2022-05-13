@@ -241,8 +241,11 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
                             it.itemQuantity = qty
 
                             item.modifiers.forEach { it1 ->
-                                Log.e("OrderItem","orderModifierIdorderModifierId  ${it1.orderModifierId}")
-                                if (it1.orderModifierId != null ) {
+                                Log.e(
+                                    "OrderItem",
+                                    "orderModifierIdorderModifierId  ${it1.orderModifierId}"
+                                )
+                                if (it1.orderModifierId != null) {
 
                                     Log.e("OrderIem", "orderModifierId:  ${it1.orderModifierId}")
                                     it.orderModifierId = it1.orderModifierId
@@ -288,8 +291,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
                         false,
                         dineInList ?: arrayListOf()
                     )
-                } else{
-
+                } else {
 
 
                     viewModel.cartLogic(cartList, item, Constants.UPDATE, false)
@@ -425,7 +427,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
 
     private fun getData() {
         item = requireArguments().getParcelable<TbItem>("item") ?: TbItem()
-        Log.e(TAG,"getIrem  ${Gson().toJson(item)}")
+        Log.e(TAG, "getIrem  ${Gson().toJson(item)}")
         cartList = requireArguments().getSerializable("cartList") as ArrayList<CartModel>
         setData()
     }
@@ -461,8 +463,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
                                         variation.id?.let { it1 -> variationAdapter.selectItem(it1) }
                                         variationAdapter.updateVariation(variation)
 
-                                    }
-                                    else{
+                                    } else {
                                         variationList.get(0).id?.let { it1 ->
                                             variationAdapter.selectItem(
                                                 it1

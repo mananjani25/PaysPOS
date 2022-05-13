@@ -420,6 +420,25 @@ class ActiveOrderFragment(
                 dashboardViewModel.deleteCart()
                 prefProvider.setValue(Constants.ORDER_TYPE, OPEN_ORDER)
 
+                var itemDiscountTotal: Double = 0.0
+                var itemPassDis : Double = 0.0
+                order.orderItems.forEach {
+                    if (it.discountAmount != 0.0){
+                        itemDiscountTotal += MethodUtils.roundOffAmountDouble(it.discountAmount )
+                    }
+                    if (it.discountAmount != 0.0 && it.quantity > 1) {
+
+                        //  itemDiscountTotal += MethodUtils.roundOffAmountDouble(it.discountAmount / it.quantity)
+                        it.discountAmount =
+                            MethodUtils.roundOffAmountDouble(it.discountAmount / it.quantity)
+                    }
+                }
+                Log.e(TAG, "itemDiscountTotal:  ${itemDiscountTotal}")
+                Log.e(TAG, "totalOrderDiscount  ${order.totalDiscount}")
+
+                order.totalDiscount = order.totalDiscount - itemDiscountTotal
+
+
                 if (order.customer != null) {
                     prefProvider.setValue(
                         Constants.CUSTOMER_NAME,
@@ -446,7 +465,6 @@ class ActiveOrderFragment(
                         requireContext()
                     )
                 )
-                Log.e(TAG, "getTotalDiscount  ${order.totalDiscount}")
                 bundle.putDouble("subTotalPrice", order.subTotal)
                 bundle.putDouble("totalTax", order.totalTaxAmount)
                 bundle.putDouble("totalDiscount", order.totalDiscount)

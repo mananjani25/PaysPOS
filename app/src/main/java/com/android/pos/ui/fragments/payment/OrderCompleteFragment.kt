@@ -59,6 +59,7 @@ import com.android.pos.ui.adapter.SplitListAdapter
 import com.android.pos.utils.*
 import com.android.pos.utils.extensions.gone
 import com.android.pos.utils.extensions.liveSnackBar
+import com.android.pos.utils.extensions.runOnUiThread
 import com.android.pos.utils.extensions.visible
 import com.android.pos.utils.printer.PrinterClass
 import com.android.pos.utils.printer.PrinterClass.BLUETOOTH_TIMEOUT
@@ -1596,7 +1597,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 )
             )
 
-            Log.e(TAG,"getTipDine  ${tipAmount}")
+            Log.e(TAG, "getTipDine  ${tipAmount}")
             if (tipAmount != 0.0) {
 
                 builder.addTextLineSpace(30)
@@ -3298,11 +3299,12 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 val bundle = Bundle()
                 Log.e(TAG, "guestorderID ${orderID}")
                 bundle.putInt("orderId", orderID)
-
-                findNavController().navigate(
-                    R.id.action_orderCompleteFragment_to_dineInOrderTable,
-                    bundle
-                )
+                if (findNavController().currentDestination?.id == R.id.orderCompleteFragment) {
+                    findNavController().navigate(
+                        R.id.action_orderCompleteFragment_to_dineInOrderTable,
+                        bundle
+                    )
+                }
                 removePrefrenceDinein()
             }
         }
@@ -3474,7 +3476,6 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         }
 
 
-
                     }
 
                 }
@@ -3536,8 +3537,10 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                             if (it.printType.lowercase()
                                                     .equals(CUSTOMER.lowercase()) && it.autoPrinting
                                             ) {
+                                                runOnUiThread{
 
-                                                initPrinter(cus, CUSTOMER)
+                                                    initPrinter(cus, CUSTOMER)
+                                                }
 
 
                                             }

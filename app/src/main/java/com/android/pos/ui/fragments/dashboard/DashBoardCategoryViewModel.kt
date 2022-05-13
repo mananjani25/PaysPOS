@@ -91,6 +91,7 @@ class DashBoardCategoryViewModel @Inject constructor(
     var totalCount = 0
     var subTotalPrice = 0.0
     var totalTax = 0.0
+    var isSelectCount = 1
     var nonCashAdj: Double = 0.0
     var totalServiceCharge = 0.0
     var cashdiscountAmount = 0.0
@@ -131,7 +132,9 @@ class DashBoardCategoryViewModel @Inject constructor(
     fun setOpenOrderUpdate(value: Boolean) {
         this.openOrderUpdate = value
     }
-
+    fun setSplitCount(selectcount: Int) {
+        this.isSelectCount = selectcount
+    }
     fun orderTypes(): LiveData<Resource<List<TbOrderType>>> {
         return posRepository.orderTypesDb()
     }
@@ -432,6 +435,9 @@ class DashBoardCategoryViewModel @Inject constructor(
                                         )
                                     ) {
                                         model.isEdited = true
+                                    }
+                                    model.modifiers.forEach {
+                                        it.itemQuantity = item?.itemQuantity ?: 1
                                     }
 
                                     dineIn.get(selectedHeader).items[index] = model
@@ -847,7 +853,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                     return (itemM.id == it.id).also { checkModifier = it }
                 }
             } else {
-                return true.also { checkModifier = it }
+                return false
             }
         }
         return checkModifier
