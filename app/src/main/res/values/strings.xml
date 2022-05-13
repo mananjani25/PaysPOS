@@ -793,6 +793,8 @@
     <string name="printers">Printers</string>
     <string name="order_type_n_team_name">ORDER TYPE/TEAM NAME</string>
     <string name="time_sheet">Time Sheet</string>
+    <string name="enable_service_charge_for_take_out_amp_open_order"><![CDATA[Enable Service Charge for Take Out & Open Order]]></string>
+    <string name="enable_service_charge_for_dine_in">Enable Service Charge for Dine In</string>
 
 
 </resources>

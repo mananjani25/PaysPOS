@@ -675,8 +675,13 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                     Log.e(TAG, "getServiceCharge:  ${Gson().toJson(it.data)}")
                     serviceChargesList = ArrayList()
                     viewModel.serviceChargesList.clear()
-                    serviceChargesList = it.data as ArrayList<TbServiceCharge>
-                    viewModel.serviceChargesList = it.data ?: arrayListOf()
+                    it.data?.forEach { service->
+                        if (service.order_type == Constants.SERVICECHARGE_DINEIN_ORDER) {
+                            serviceChargesList?.add(service)
+                            viewModel.serviceChargesList.add(service)
+                        }
+                    }
+                    Log.d(TAG, "getServiceCharges: finall "+Gson().toJson(viewModel.serviceChargesList))
                 } else {
                     if (prefProvider.getValueboolean(Constants.SERVICECHARGE_TAKEOUT_OPENORDER, false)) {
                         Log.e(TAG, "getServiceCharge:  ${Gson().toJson(it.data)}")

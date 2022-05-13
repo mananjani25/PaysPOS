@@ -308,9 +308,18 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
             if (it.data != null)
                 if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == Constants.DINE_IN) {
                     serviceChargesList = arrayListOf()
+                    it.data.forEach { service ->
+                        if (service.order_type == Constants.SERVICECHARGE_DINEIN_ORDER) {
+                            serviceChargesList?.add(service)
+                        }
+                    }
                     serviceChargesList = it.data as ArrayList<TbServiceCharge>?
                 } else {
-                    if (prefProvider.getValueboolean(Constants.SERVICECHARGE_TAKEOUT_OPENORDER, false)) {
+                    if (prefProvider.getValueboolean(
+                            Constants.SERVICECHARGE_TAKEOUT_OPENORDER,
+                            false
+                        )
+                    ) {
                         Log.e(TAG, "getServiceCharge:  ${Gson().toJson(it.data)}")
                         serviceChargesList = arrayListOf()
                         it.data?.forEach { service ->

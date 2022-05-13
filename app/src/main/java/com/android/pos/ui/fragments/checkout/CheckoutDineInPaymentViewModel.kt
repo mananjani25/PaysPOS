@@ -1200,26 +1200,44 @@ class CheckoutDineInPaymentViewModel @Inject constructor(
         val serviceChargesList = cartList[0].serviceCharge
 
         if (serviceChargesList != null && serviceChargesList.isNotEmpty()) {
-            serviceChargesList.forEach {
-                if (it.isEnabled) {
-                    totalServiceCharge += (subTotalPrice * it.percentage) / 100
-
+            if (prefProvider.getValueboolean(Constants.SERVICECHARGE_TAKEOUT_OPENORDER, false)) {
+                serviceChargesList.forEach {
+                    if (it.order_type == Constants.SERVICECHARGE_TAKEOUT_OPENORDER) {
+                        totalServiceCharge += (subTotalPrice * it.percentage) / 100
+                    }
                 }
             }
 
         }
     }
 
+    fun isInRange(minn: Int, maxx: Int, value: Int): Boolean {
+        return (minn <= value && value <= maxx)
+    }
+
     private fun calculateDineInServiceCharge(cartModel: CartModel) {
+        var guestCount = cartModel.dineInList?.size?.minus(1)
         if (serviceChargesList.isNotEmpty() && serviceChargesList != null) {
             Log.e(TAG, "dashboardserviceChargesList:  ${Gson().toJson(serviceChargesList)}")
-
-            serviceChargesList.forEach {
-                if (it.isEnabled) {
-                    totalServiceCharge += (subTotalPrice * it.percentage) / 100
-
+            if (prefProvider.getValueboolean(Constants.SERVICECHARGE_DINEIN_ORDER, false)) {
+                serviceChargesList.forEach {
+                    if (it.order_type == Constants.SERVICECHARGE_DINEIN_ORDER) {
+                        if (isInRange(
+                                it.min_guest_count!!,
+                                it.max_guest_count!!,
+                                guestCount!!
+                            )
+                        ) {
+                            totalServiceCharge += (subTotalPrice * it.percentage) / 100
+                            Log.d(
+                                TAG,
+                                "calculateDineInServiceCharge: Checkout " + it.min_guest_count + "....." + it.max_guest_count + " in between " + guestCount
+                            )
+                        }
+                    }
                 }
             }
+
         }
 
     }
@@ -1228,13 +1246,13 @@ class CheckoutDineInPaymentViewModel @Inject constructor(
         val serviceChargesList = cartModel.serviceCharge
 
         if (serviceChargesList != null && serviceChargesList.isNotEmpty()) {
-            serviceChargesList.forEach {
-                if (it.isEnabled) {
-                    totalServiceCharge += (subTotalPrice * it.percentage) / 100
-
+            if (prefProvider.getValueboolean(Constants.SERVICECHARGE_TAKEOUT_OPENORDER, false)) {
+                serviceChargesList.forEach {
+                    if (it.order_type == Constants.SERVICECHARGE_TAKEOUT_OPENORDER) {
+                        totalServiceCharge += (subTotalPrice * it.percentage) / 100
+                    }
                 }
             }
-
         }
     }
 

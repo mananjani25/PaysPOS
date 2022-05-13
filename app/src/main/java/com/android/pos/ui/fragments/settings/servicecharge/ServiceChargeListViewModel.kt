@@ -6,16 +6,21 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.android.pos.data.entities.TbServiceCharge
 import com.android.pos.data.model.responseModel.CreateServiceChargeResponse
+import com.android.pos.data.model.responseModel.ServiceChargeUpdate
+import com.android.pos.data.remote.Constants
 import com.android.pos.data.repositories.TaxServiceChargeRepository
+import com.android.pos.di.PrefProvider
 import com.android.pos.utils.Event
 import com.android.pos.utils.statusUtils.Status
 import dagger.hilt.android.lifecycle.HiltViewModel
+import hilt_aggregated_deps._com_android_pos_ui_dialog_IssueRefundDialog_GeneratedInjector
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class ServiceChargeListViewModel @Inject constructor(
-    private val taxServiceChargeRepository: TaxServiceChargeRepository
+    private val taxServiceChargeRepository: TaxServiceChargeRepository,
+    private val prefProvider: PrefProvider,
 ) : ViewModel() {
 
     private val _snackbarText = MutableLiveData<Event<Any?>>()
@@ -23,6 +28,10 @@ class ServiceChargeListViewModel @Inject constructor(
 
     private val _data = MutableLiveData<Event<CreateServiceChargeResponse?>>()
     val data: LiveData<Event<CreateServiceChargeResponse?>> = _data
+
+
+    private val _dataUpdate = MutableLiveData<Event<ServiceChargeUpdate?>>()
+    val dataupdate: LiveData<Event<ServiceChargeUpdate?>> = _dataUpdate
 
     private val _showProgress = MutableLiveData<Event<Boolean>>()
     val showProgress: LiveData<Event<Boolean>> = _showProgress
@@ -140,6 +149,53 @@ class ServiceChargeListViewModel @Inject constructor(
         }
         viewModelScope.launch {
             taxServiceChargeRepository.addServiceCharges(serviceChargeList)
+        }
+    }
+
+
+    fun updateServiceCharge(
+        takeoutEnable: Boolean,
+        dineinEnable: Boolean,
+        locationId: Int
+    ) {
+        viewModelScope.launch {
+            _showProgress.value = Event(true)
+            viewModelScope.launch {
+                val resource =
+                    taxServiceChargeRepository.updateServiceChargeEnable(locationId, takeoutEnable)
+                when (resource.status) {
+                    Status.SUCCESS -> {
+                        _showProgress.value = Event(false)
+
+                        resource.data.let {
+                            if (it?.status == 200) {
+                                resource.data?.let { servicechargeupdate ->
+                                    prefProvider.setValueboolean(
+                                        Constants.SERVICECHARGE_TAKEOUT_OPENORDER,
+                                        takeoutEnable
+                                    )
+//                                    prefProvider.setValueboolean(Constants.SERVICECHARGE_DINEIN_ORDER,dineinEnable)
+                                    _dataUpdate.value = Event(servicechargeupdate)
+                                }
+                            } else {
+                                _snackbarText.value = Event(resource.message)
+                            }
+
+                        }
+
+
+                    }
+
+                    Status.ERROR -> {
+                        _snackbarText.value = Event(resource.message)
+                        _showProgress.value = Event(false)
+                    }
+
+                    Status.LOADING -> {
+                        _showProgress.value = Event(true)
+                    }
+                }
+            }
         }
     }
 }

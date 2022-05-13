@@ -715,8 +715,12 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
                     Log.e(TAG, "getServiceCharge:  ${Gson().toJson(it.data)}")
                     serviceChargesList = ArrayList()
                     viewModel.serviceChargesList.clear()
-                    serviceChargesList = it.data as ArrayList<TbServiceCharge>
-                    viewModel.serviceChargesList = it.data ?: arrayListOf()
+                    it.data?.forEach { service ->
+                        if (service.order_type == Constants.SERVICECHARGE_DINEIN_ORDER) {
+                            serviceChargesList?.add(service)
+                            viewModel.serviceChargesList.add(service)
+                        }
+                    }
                 } else {
                     if (prefProvider.getValueboolean(SERVICECHARGE_TAKEOUT_OPENORDER, false)) {
                         Log.e(TAG, "getServiceCharge:  ${Gson().toJson(it.data)}")

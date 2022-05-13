@@ -28,6 +28,7 @@ import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.*
 import javax.inject.Inject
+import kotlin.collections.ArrayList
 
 @AndroidEntryPoint
 class ServiceChargeList : Fragment(), ItemCallback {
@@ -85,23 +86,15 @@ class ServiceChargeList : Fragment(), ItemCallback {
                         ProgressUtils.dismissProgressDialog()
                         binding.rvServiceCharge.visibility = View.VISIBLE
                         resource.data?.let { taxList ->
-                            if (!prefProvider.getValueboolean(
-                                    Constants.SERVICECHARGE_TAKEOUT_OPENORDER,
-                                    false
-                                )
-                            ) {
-                                taxList.forEach {
-                                    if (it.order_type == Constants.SERVICECHARGE_TAKEOUT_OPENORDER) {
-                                        it.isEnabled = false
-                                    }
+                            var temp_servicelist: ArrayList<TbServiceCharge> = arrayListOf()
+                            taxList.forEach { it ->
+                                if (it.order_type == Constants.SERVICECHARGE_TAKEOUT_OPENORDER) {
+                                    it.isEnabled = prefProvider.getValueboolean(Constants.SERVICECHARGE_TAKEOUT_OPENORDER,false)
+                                    temp_servicelist.add(it)
                                 }
-                                Collections.reverse(taxList)
-                                setTaxData(taxList)
-                            }else{
-                                Collections.reverse(taxList)
-                                setTaxData(taxList)
                             }
-
+                            temp_servicelist.reverse()
+                            setTaxData(temp_servicelist)
                         }
                     }
                     Status.ERROR -> {
@@ -121,8 +114,8 @@ class ServiceChargeList : Fragment(), ItemCallback {
     private fun notifyAdapter() {
         viewModel.notifydata.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
-
-                viewModel.updateData(serviceChargeListadapter.serviceChargeList, it)
+//                viewModel.updateData(serviceChargeListadapter.serviceChargeList, it)
+                viewModel.updateServiceCharge(it.isEnabled,false,prefProvider.getValueInt(Constants.LOCATION_ID,0))
             }
         }
     }

@@ -125,6 +125,7 @@ object Constants {
     const val DELETE_ALL_QUEUE_PRINTER = "printer_queues/delete_all"
 
     const val UPDATE_PRINTER_STATUS = "printers/{id}/update_printer_status"
+    const val UPDATE_SERVICECHARGE = "locations/{id}/enable_service_charge"
     const val CREATE_QUEUE_PRINTER = "printer_queues"
 
 

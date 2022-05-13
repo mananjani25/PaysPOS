@@ -97,6 +97,7 @@ import com.android.pos.data.remote.Constants.TIPS_UPDATE_DELETE
 import com.android.pos.data.remote.Constants.TRANSACTION_LIST
 import com.android.pos.data.remote.Constants.UNMERGE_TABLE
 import com.android.pos.data.remote.Constants.UPDATE_PRINTER_STATUS
+import com.android.pos.data.remote.Constants.UPDATE_SERVICECHARGE
 import com.android.pos.data.remote.Constants.UPDATE_TIP
 import com.android.pos.data.remote.Constants.USERS_LOG_IN
 import okhttp3.MultipartBody
@@ -172,6 +173,12 @@ interface ApiService {
         @Query("terminal_id") terminal_id: Int,
         @Query("status") status: Boolean
     ): DeletePrinterResponseModel
+
+    @PUT(UPDATE_SERVICECHARGE)
+    suspend fun updateServiceChargeEnable(
+        @Path("id") Id: Int,
+        @Query("service_charge_enable") service_charge_enable: Boolean,
+    ): ServiceChargeUpdate
 
     @GET(SYNC_VENUE_DETAILS)
     suspend fun syncVenueDetails(): VenueDetailsResponse

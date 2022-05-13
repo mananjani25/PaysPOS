@@ -134,9 +134,11 @@ class DashBoardCategoryViewModel @Inject constructor(
     fun setOpenOrderUpdate(value: Boolean) {
         this.openOrderUpdate = value
     }
+
     fun setSplitCount(selectcount: Int) {
         this.isSelectCount = selectcount
     }
+
     fun orderTypes(): LiveData<Resource<List<TbOrderType>>> {
         return posRepository.orderTypesDb()
     }
@@ -1070,8 +1072,8 @@ class DashBoardCategoryViewModel @Inject constructor(
 
             }
             order_note = cartModel.note
-
-            serviceChargeCalculationModel(cartModel)
+            calculateDineInServiceCharge(cartModel)
+//            serviceChargeCalculationModel(cartModel)
             subTotalPrice -= cartModel.discountPrice
             var totalDis = cartModel.discountPrice
             var totalDineItemDis = 0.0
@@ -1197,7 +1199,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                     Log.e("amountToBePaid", "" + totalPrice)
 
                 } else {
-                    Log.e(TAG,"openOrderUpdate ${cartModel.discountPrice}")
+                    Log.e(TAG, "openOrderUpdate ${cartModel.discountPrice}")
 
                     nonCashAdj = 0.0
                     totalPrice = 0.0
@@ -1357,40 +1359,57 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     private fun serviceChargeCalculation(cartList: List<CartModel>) {
         val serviceChargesList = cartList[0].serviceCharge
-
         if (serviceChargesList != null && serviceChargesList.isNotEmpty()) {
-            serviceChargesList.forEach {
-                if (it.isEnabled) {
-                    totalServiceCharge += (subTotalPrice * it.percentage) / 100
-
+            if (prefProvider.getValueboolean(SERVICECHARGE_TAKEOUT_OPENORDER, false)) {
+                serviceChargesList.forEach {
+                    if (it.order_type == Constants.SERVICECHARGE_TAKEOUT_OPENORDER) {
+                        totalServiceCharge += (subTotalPrice * it.percentage) / 100
+                    }
                 }
             }
 
         }
     }
 
+    fun isInRange(minn: Int, maxx: Int, value: Int): Boolean {
+        return (minn <= value && value <= maxx)
+    }
+
     private fun calculateDineInServiceCharge(cartModel: CartModel) {
+        var guestCount = cartModel.dineInList?.size?.minus(1)
         if (serviceChargesList.isNotEmpty() && serviceChargesList != null) {
             Log.e(TAG, "dashboardserviceChargesList:  ${Gson().toJson(serviceChargesList)}")
-
-            serviceChargesList.forEach {
-                if (it.isEnabled) {
-                    totalServiceCharge += (subTotalPrice * it.percentage) / 100
-
+            if (prefProvider.getValueboolean(SERVICECHARGE_DINEIN_ORDER, false)) {
+                serviceChargesList.forEach {
+                    if (it.order_type == Constants.SERVICECHARGE_DINEIN_ORDER) {
+                        if (isInRange(
+                                it.min_guest_count!!,
+                                it.max_guest_count!!,
+                                guestCount!!
+                            )
+                        ) {
+                            Log.d(
+                                TAG,
+                                "calculateDineInServiceCharge: DashBoard " + it.min_guest_count + "....." + it.max_guest_count + " in between " + guestCount
+                            )
+                            totalServiceCharge += (subTotalPrice * it.percentage) / 100
+                        }
+                    }
                 }
             }
+
         }
 
     }
 
     private fun serviceChargeCalculationModel(cartModel: CartModel) {
         val serviceChargesList = cartModel.serviceCharge
-
         if (serviceChargesList != null && serviceChargesList.isNotEmpty()) {
-            serviceChargesList.forEach {
-                if (it.isEnabled) {
-                    totalServiceCharge += (subTotalPrice * it.percentage) / 100
-
+            if (prefProvider.getValueboolean(SERVICECHARGE_TAKEOUT_OPENORDER, false)) {
+                serviceChargesList.forEach {
+                    if (it.order_type == Constants.SERVICECHARGE_TAKEOUT_OPENORDER) {
+                        totalServiceCharge += (subTotalPrice * it.percentage) / 100
+                    }
                 }
             }
 
