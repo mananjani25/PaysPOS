@@ -331,7 +331,7 @@ class Settings : Fragment() {
         list.add(BusinessSettingModel(0, "Notes", false))
         list.add(BusinessSettingModel(0, "Service Charge", false))
         list.add(BusinessSettingModel(0, "Loyalty Points", false))
-        list.add(BusinessSettingModel(0, "Business Details", false))
+       // list.add(BusinessSettingModel(0, "Business Details", false))
         for (i in 0 until list.size) {
             list[i].isSelected = selectedPos == i
 
