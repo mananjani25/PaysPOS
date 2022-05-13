@@ -122,9 +122,9 @@
                     android:paddingStart="@dimen/_8sdp"
                     android:paddingEnd="@dimen/_8sdp"
                     android:text="@string/tv_home"
+                    android:textAllCaps="true"
                     android:textColor="@color/txt_color_blue"
                     android:textSize="@dimen/_6mdpi"
-                    android:textAllCaps="true"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
@@ -140,24 +140,42 @@
             android:layout_height="1dp"
             android:background="@color/view" />
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/btnStartService"
+                android:layout_width="wrap_content"
+                android:text="Start"
+                android:layout_height="wrap_content" />
+
+            <Button
+                android:text="Stop"
+                android:layout_marginStart="@dimen/_10sdp"
+                android:id="@+id/btnStopService"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
 
         <TextView
             android:id="@+id/txtTagLine"
             style="@style/CustomFontRegularStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginBottom="@dimen/_5sdp"
             android:paddingVertical="@dimen/_5sdp"
             android:text="@string/printer_queue_tag"
             android:textAlignment="center"
             android:textColor="@color/hint_color"
-            android:textSize="@dimen/_6mdpi"
-            android:layout_marginBottom="@dimen/_5sdp"
-            android:layout_gravity="center"/>
+            android:textSize="@dimen/_6mdpi" />
 
         <View
             android:layout_width="match_parent"
             android:layout_height="2dp"
-            android:background="@color/view"/>
+            android:background="@color/view" />
 
         <include
             android:id="@+id/includeHeader"
@@ -167,7 +185,7 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="2dp"
-            android:background="@color/view"/>
+            android:background="@color/view" />
 
 
         <androidx.recyclerview.widget.RecyclerView

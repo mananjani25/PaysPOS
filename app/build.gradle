@@ -175,4 +175,7 @@ dependencies {
     implementation 'com.googlecode.libphonenumber:libphonenumber:7.2.2'
     implementation 'com.github.poovamraj:PinEditTextField:1.2.6'
     implementation files('libs/mtusdk.aar')
+
+    //WorkManager for background task
+    implementation 'androidx.work:work-runtime:2.7.1'
 }

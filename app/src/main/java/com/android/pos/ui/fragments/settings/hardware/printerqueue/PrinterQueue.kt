@@ -1,6 +1,5 @@
 package com.android.pos.ui.fragments.settings.hardware.printerqueue
 
-import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -272,7 +271,7 @@ class PrinterQueue : Fragment(), StatusChangeEventListener, BatteryStatusChangeE
         if (printerQueuelist.size != 0) {
             for (i in 0 until printerQueuelist.size) {
 
-                configurePrinter(printerQueuelist.get(i), i)
+                // configurePrinter(printerQueuelist.get(i), i)
             }
         }
         /*printerQueuelist.forEachIndexed { index, printerQueueModel ->
@@ -343,10 +342,15 @@ class PrinterQueue : Fragment(), StatusChangeEventListener, BatteryStatusChangeE
                 viewHolder: RecyclerView.ViewHolder?,
                 underlayButtons: MutableList<UnderlayButton>?
             ) {
-                underlayButtons?.add(UnderlayButton("Delete", ContextCompat.getColor(context, R.color.swipe_text_color),ContextCompat.getColor(context, R.color.swipe_bg_delete)) {
-                    Log.e(TAG, "position  ${it}")
-                    adapter.getList().get(it).id?.let { it1 -> deletePrinterQueue(it1, it) }
-                })
+                underlayButtons?.add(
+                    UnderlayButton(
+                        "Delete",
+                        ContextCompat.getColor(context, R.color.swipe_text_color),
+                        ContextCompat.getColor(context, R.color.swipe_bg_delete)
+                    ) {
+                        Log.e(TAG, "position  ${it}")
+                        adapter.getList().get(it).id?.let { it1 -> deletePrinterQueue(it1, it) }
+                    })
             }
 
         }
