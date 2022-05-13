@@ -10,6 +10,9 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
+import androidx.work.Data
+import androidx.work.OneTimeWorkRequest
+import androidx.work.WorkManager
 import com.android.pos.R
 import com.android.pos.data.model.PrinterQueueModel
 import com.android.pos.data.model.responseModel.CreateOrderResponse
@@ -27,6 +30,7 @@ import com.android.pos.utils.*
 import com.android.pos.utils.extensions.alert
 import com.android.pos.utils.printer.PrinterClass
 import com.android.pos.utils.statusUtils.Status
+import com.android.pos.utils.workmanager.UploadWorker
 import com.epson.eposprint.BatteryStatusChangeEventListener
 import com.epson.eposprint.Builder
 import com.epson.eposprint.Print
@@ -297,6 +301,16 @@ class PrinterQueue : Fragment(), StatusChangeEventListener, BatteryStatusChangeE
     }
 
     private fun onClick() {
+        binding.btnStartService?.setOnClickListener {
+
+            val uploadWorkRequest =
+                OneTimeWorkRequest.Builder(UploadWorker::class.java)
+                    .setInputData(buildInputDataForFilter()).build()
+
+            val workManager = WorkManager.getInstance(requireContext().applicationContext)
+            workManager.enqueue(uploadWorkRequest)
+
+        }
         binding.imgSync.setOnClickListener {
             //var printerQueuelist = adapter.getList()
 
@@ -850,6 +864,13 @@ class PrinterQueue : Fragment(), StatusChangeEventListener, BatteryStatusChangeE
 
             }
         })
+    }
+
+    private fun buildInputDataForFilter(): Data {
+        val builder = Data.Builder()
+        builder.putString("itemName", "Pizza")
+
+        return builder.build()
     }
 
 }
