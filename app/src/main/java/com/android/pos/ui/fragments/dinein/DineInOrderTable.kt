@@ -1183,6 +1183,42 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             bundle.putBoolean("isLastPayment", false)
         }
 
+        var wholeEmpty = false
+        getOrderDetailsResponse?.guestAttributes?.forEach {
+            if (it.name.equals("Whole Table", true)) {
+                if (it.guestItemAttributes.isNotEmpty()) {
+                    wholeEmpty = true
+
+                }
+            }
+        }
+
+        var tempGuestWithItem = 0
+        var guestItemWithoutItem = 0
+        if (wholeEmpty) {
+            getOrderDetailsResponse?.guestAttributes?.forEach {
+                if (!it.name.equals(
+                        "Whole Table",
+                        true
+                    ) && !it.isPaid
+                ) {
+                    if (it.guestItemAttributes.isNotEmpty()) {
+                        tempGuestWithItem++
+                    } else {
+                        guestItemWithoutItem++
+                    }
+
+                }
+
+            }
+        }
+        if (guestItemWithoutItem > 0 && tempGuestWithItem == 1){
+            isLastPayment = true
+            bundle.putBoolean("isLastPayment", true)
+        }
+
+        Log.e("FinalLast","FinalLast ${isLastPayment}")
+
 
         val dineinCartPaymentModel: DineinCartPaymentModel? = null
 
@@ -5844,8 +5880,6 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             WindowManager.LayoutParams.WRAP_CONTENT,
             WindowManager.LayoutParams.WRAP_CONTENT
         )
-
-
 
 
     }
