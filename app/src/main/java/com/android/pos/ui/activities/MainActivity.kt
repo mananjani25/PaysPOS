@@ -1,6 +1,7 @@
 package com.android.pos.ui.activities
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Dialog
 import android.content.*
 import android.content.pm.PackageManager
@@ -8,6 +9,7 @@ import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
+import android.provider.Settings
 import android.util.Log
 import android.view.View
 import android.view.WindowManager
@@ -21,12 +23,14 @@ import androidx.core.view.GravityCompat
 import androidx.databinding.DataBindingUtil
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
 import com.android.pos.BuildConfig
 import com.android.pos.R
 import com.android.pos.data.remote.Constants
+import com.android.pos.data.remote.Constants.UNIQUE_ID
 import com.android.pos.data.repositories.UserRepository
 import com.android.pos.databinding.ParentActivityBinding
 import com.android.pos.di.ApiModule.BASE_URL
@@ -123,6 +127,7 @@ class MainActivity : BaseScannerActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN)
+
 
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
         registerReceiver(broadcastReceiver, IntentFilter(Constants.SEND_CLOCKOUT_NOTIFICATION))
@@ -244,6 +249,15 @@ class MainActivity : BaseScannerActivity() {
 
     }
 
+
+    @SuppressLint("HardwareIds")
+    fun getDeviceId(): String {
+        return Settings.Secure.getString(
+            contentResolver,
+            Settings.Secure.ANDROID_ID
+        )
+    }
+
     fun alertLogout() {
         alert("", "Are you sure you want to Logout?") {
             this.positiveButton("Logout") {
@@ -263,6 +277,8 @@ class MainActivity : BaseScannerActivity() {
 
     override fun onResume() {
         super.onResume()
+        prefProvider?.setValue(UNIQUE_ID, getDeviceId())
+
         navController?.addOnDestinationChangedListener(listner)
     }
 
@@ -311,10 +327,11 @@ class MainActivity : BaseScannerActivity() {
                     clearPreferences()
                     disableDrawer()
                     logout()
-                    prefProvider?.setValue(Constants.BASE_URL_NEW, BASE_URL)
-                    hostSelectionInterceptor?.setHostBaseUrl()
-
                     viewModel.clearTable()
+
+                    prefProvider?.setValue(Constants.BASE_URL_NEW, BASE_URL)
+                    prefProvider?.setValue(UNIQUE_ID, getDeviceId())
+                    hostSelectionInterceptor?.setHostBaseUrl()
 
 
                 }
