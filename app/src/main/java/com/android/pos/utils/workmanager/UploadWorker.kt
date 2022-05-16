@@ -42,8 +42,12 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
     private var kitchenSettingModel = GetKitchenReceiptSettingsResponse.Data()
     override fun doWork(): Result {
         val data = inputData.getString("itemName")
-                inputData.keyValueMap[""]
-        Log.e(TAG, "datadata  ${data}")
+        kitchenPrinterList =
+            inputData.keyValueMap["kitchenPrinterList"] as List<PrinterResponse.Data.KitchenReceiptPrinters>
+        kitchenSettingModel =
+            inputData.keyValueMap["kitchenSettingData"] as GetKitchenReceiptSettingsResponse.Data
+        Log.e(TAG, "kitchenPrinterList:  ${Gson().toJson(kitchenPrinterList)}")
+        Log.e(TAG, "kitchenSettingModel:  ${Gson().toJson(kitchenSettingModel)}")
 
 
 
