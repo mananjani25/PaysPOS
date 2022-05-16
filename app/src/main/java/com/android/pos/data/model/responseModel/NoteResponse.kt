@@ -33,7 +33,7 @@ data class NoteResponse(
         @SerializedName("name")
         var name: String,
         @SerializedName("sort")
-        val sort: Int,
+        var sort: Int,
         @SerializedName("updated_at")
         val updatedAt: String,
         var isChecked: Boolean = true

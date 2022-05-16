@@ -22,6 +22,7 @@ import com.android.pos.data.remote.NetworkConnectionInterceptor
 import com.android.pos.data.repositories.UserRepository
 import com.android.pos.di.ApiModule
 import com.android.pos.di.ApiModule.BASE_URL
+import com.android.pos.di.HostSelectionInterceptor
 import com.android.pos.di.PrefProvider
 import com.android.pos.utils.Event
 import com.android.pos.utils.statusUtils.Status
@@ -35,7 +36,7 @@ import javax.inject.Inject
 class LoginViewModel @Inject constructor(
     private val userRepository: UserRepository,
     private val prefProvider: PrefProvider,
-    private val networkConnectionInterceptor: NetworkConnectionInterceptor
+    private val hostSelectionInterceptor: HostSelectionInterceptor
 ) :
     ViewModel() {
 
@@ -76,16 +77,13 @@ class LoginViewModel @Inject constructor(
                         resource.data.let { logInResponse ->
                             if (logInResponse?.status == 200) {
 
-                                prefProvider.setClear()
-                                delay(1000)
-
-
-
                                 resource.data?.let {
-//                                    _data.value = Event(true)
 
                                     prefProvider.setValue(AUTH_TOKEN, it.data.authToken)
+
                                     prefProvider.setValue(BASE_URL_NEW, it.data.baseUrl + "/")
+                                    hostSelectionInterceptor.setHostBaseUrl()
+
                                     prefProvider.setValueInt(LOCATION_ID, it.data.locationId)
                                     prefProvider.setValue(EMAIL, it.data.email)
                                     it.data.userName?.let { it1 ->
@@ -94,13 +92,11 @@ class LoginViewModel @Inject constructor(
                                             it1
                                         )
                                     }
-                                    //networkConnectionInterceptor.setHostBaseUrl(it.data.baseUrl + "/")
 
                                 }
 
-                                _data.value = Event(true)
 
-//                                defaultTerminalCall(device_token)
+                                defaultTerminalCall(device_token)
 
                             } else {
                                 _snackbarText.value = Event(resource.message)
@@ -128,10 +124,8 @@ class LoginViewModel @Inject constructor(
 
     suspend fun defaultTerminalCall(device_token: String) {
         _showProgress.value = Event(true)
-        Log.e(TERMINAL_ID, prefProvider.getValue(Constants.UNIQUE_ID, ""))
-//        qwerty123
-//        d219617861d4ce4b
-        var unique_id = prefProvider.getValue(Constants.UNIQUE_ID, "")
+
+        val unique_id = prefProvider.getUniqueId()
         viewModelScope.launch {
             delay(3000)
 

@@ -12,6 +12,7 @@ import com.android.pos.data.remote.Constants.ROLE_ADMIN
 import com.android.pos.data.remote.Constants.ROLE_EMPLOYEE
 import com.android.pos.data.remote.Constants.ROLE_MANAGER
 import com.android.pos.data.remote.Constants.ROLE_OWNER
+import com.android.pos.data.remote.Constants.UNIQUE_ID
 import com.android.pos.di.ApiModule.BASE_URL
 import com.google.gson.Gson
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -164,6 +165,15 @@ class PrefProvider @Inject constructor(@ApplicationContext context: Context) {
 
     fun getEmployeeRole(): String {
         return getValue(Constants.EMPLOYEE_ROLE, "")
+
+    }
+
+    fun setUniqueId(deviceId: String) {
+        setValue(UNIQUE_ID, deviceId)
+    }
+
+    fun getUniqueId(): String {
+        return getValue(UNIQUE_ID, "")
     }
 
     fun getBaseUrl(): String {

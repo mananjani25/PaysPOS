@@ -33,6 +33,17 @@
             android:orientation="horizontal">
 
             <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/imageCheck"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:padding="@dimen/_5sdp"
+                android:layout_marginStart="@dimen/_5sdp"
+                android:layout_marginEnd="@dimen/_5sdp"
+                app:srcCompat="@drawable/ic_baseline_menu" />
+
+
+            <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/imgCheckBox"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

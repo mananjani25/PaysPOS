@@ -12,12 +12,12 @@ interface NotesDao {
     suspend fun addNotes(noteModel: NoteResponse.Data): Long
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun addAllNotes(noteList: List<NoteResponse.Data>)
+    suspend fun addAllNotes(noteList: List<NoteResponse.Data>)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun addAllNotesSuspend(noteList: List<NoteResponse.Data>)
 
-    @get:Query("select * from TbNotes")
+    @get:Query("select * from TbNotes ORDER BY TbNotes.sort DESC")
     val alllNotes: LiveData<List<NoteResponse.Data>>
 
     @Query("select * from TbNotes")
