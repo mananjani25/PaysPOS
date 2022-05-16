@@ -16,6 +16,9 @@ class CategoryTabAdapter1(
     val listner: TabListner
 ) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+    val TAG = "CategoryTabAdapter1"
+    var notSelected: Boolean = true
+
 
     inner class MyTabVerticalHolder(private val binding: ViewTabVerticalBinding) :
         RecyclerView.ViewHolder(binding.root) {
@@ -34,8 +37,15 @@ class CategoryTabAdapter1(
             binding.root.setOnClickListener {
                 listner.onTabSelected(layoutPosition)
                 for (i in 0 until list.size) {
+
                     list.get(i).isSelected = i == layoutPosition
+                    if (i == layoutPosition) {
+                        notSelected = false
+
+                    }
+
                 }
+
 
                 notifyDataSetChanged()
             }
@@ -94,9 +104,7 @@ class CategoryTabAdapter1(
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-
         if (getItemViewType(position) == 0) {
-
             (holder as MyTabVerticalHolder).bind(list[position])
         } else {
             (holder as MyViewHolder).bind(list[position])
