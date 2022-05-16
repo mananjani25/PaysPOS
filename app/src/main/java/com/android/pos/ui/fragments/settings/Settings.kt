@@ -1,6 +1,5 @@
 package com.android.pos.ui.fragments.settings
 
-import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -29,6 +28,7 @@ import com.android.pos.databinding.FragmentSettingsBinding
 import com.android.pos.di.RolePermission
 import com.android.pos.ui.activities.MainActivity
 import com.android.pos.ui.adapter.BusinessSettingAdapter
+import com.android.pos.ui.fragments.settings.business.BusinessDetailsFragment
 import com.android.pos.ui.fragments.settings.discount.DiscountList
 import com.android.pos.ui.fragments.settings.hardware.Hardware
 import com.android.pos.ui.fragments.settings.loyaltypoints.LoyaltyPointFragment
@@ -331,7 +331,7 @@ class Settings : Fragment() {
         list.add(BusinessSettingModel(0, "Notes", false))
         list.add(BusinessSettingModel(0, "Service Charge", false))
         list.add(BusinessSettingModel(0, "Loyalty Points", false))
-       // list.add(BusinessSettingModel(0, "Business Details", false))
+        list.add(BusinessSettingModel(0, "Business Details", false))
         for (i in 0 until list.size) {
             list[i].isSelected = selectedPos == i
 
