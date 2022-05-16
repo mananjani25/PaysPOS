@@ -78,8 +78,8 @@ class PrinterQueue : Fragment(), StatusChangeEventListener, BatteryStatusChangeE
 
         observeShowProgress()
         getKitchenReceiptSettings()
-        deleteQueueItemObserver()
-        deleteAllQueueObserver()
+        //deleteQueueItemObserver()
+        //deleteAllQueueObserver()
         getKitchenPrinters()
 
         return binding.root
@@ -89,7 +89,7 @@ class PrinterQueue : Fragment(), StatusChangeEventListener, BatteryStatusChangeE
         super.onViewCreated(view, savedInstanceState)
         setAdapter()
         onClick()
-        connectActionCable()
+        //  connectActionCable()
 
 
     }
@@ -98,7 +98,6 @@ class PrinterQueue : Fragment(), StatusChangeEventListener, BatteryStatusChangeE
     private fun connectActionCable() {
         // 1. Setup
         var requestURL = prefProvider.getValue(Constants.BASE_URL_NEW, "") + CREATE_QUEUE_PRINTER
-        Log.e(TAG, "requestURL:  ${requestURL}")
         val uri = URI("wss://possoft.io/cable")
         consumer = ActionCable.createConsumer(uri)
 
@@ -302,10 +301,19 @@ class PrinterQueue : Fragment(), StatusChangeEventListener, BatteryStatusChangeE
 
     private fun onClick() {
         binding.btnStartService?.setOnClickListener {
+            val map: MutableMap<String, Any> = HashMap()
+            map["kitchenPrinterList"] = kitchenPrinterList
+            map["kitchenSettingData"] = kitchenSettingModel
+
+
+            val data = Data.Builder()
+                .putAll(map)
+                .build()
+
 
             val uploadWorkRequest =
                 OneTimeWorkRequest.Builder(UploadWorker::class.java)
-                    .setInputData(buildInputDataForFilter()).build()
+                    .setInputData(data).build()
 
             val workManager = WorkManager.getInstance(requireContext().applicationContext)
             workManager.enqueue(uploadWorkRequest)
