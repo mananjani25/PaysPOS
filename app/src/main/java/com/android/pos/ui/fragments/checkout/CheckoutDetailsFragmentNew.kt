@@ -29,6 +29,7 @@ import com.android.pos.ui.fragments.magtek.MagtekRequestUtils
 import com.android.pos.ui.fragments.magtek.PaymentResponse
 import com.android.pos.ui.fragments.magtekPro.MTParser
 import com.android.pos.ui.fragments.magtekPro.SessionManager
+import com.android.pos.ui.fragments.payment.PaymentBoldPosFragment
 import com.android.pos.ui.fragments.payment.PaymentViewModel
 import com.android.pos.utils.*
 import com.android.pos.utils.callback.DeleteOptionCallback
@@ -205,23 +206,10 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
     private fun splitClick() {
 
         binding.linearNextSplit.setOnClickListener {
-            if(tipAmount!=0.0 && viewModel.tipTransactionAmount!=0.0){
-                AlertUtils.showCustomAlertWithListenerWithOK(
-                    requireContext(),
-                    "If you are going to do split payment then existing tip will be removed."
-                ) { _, _ ->
-                    tipAmount = 0.0
-                    viewModel.setTipAmount(0.0)
-                    viewModel.setSplitCount(isSelectedCount)
-                    loadPaymentLayout()
-                    tipAmountCalculation()
-                }
-            }else{
-                viewModel.setSplitCount(isSelectedCount)
-                loadPaymentLayout()
-                tipAmountCalculation()
-            }
-
+            PaymentBoldPosFragment.newInstance().addTipHideShow(false)
+            viewModel.setSplitCount(isSelectedCount)
+            loadPaymentLayout()
+            tipAmountCalculation()
         }
         binding.tvFullAmount.setOnClickListener {
             binding.tvFullAmount.setBackgroundDrawable(resources.getDrawable(R.drawable.button_action_hover))
@@ -1150,31 +1138,64 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
     private fun setupTabDesign() {
         binding.linearTab1.setOnClickListener {
+            PaymentBoldPosFragment.newInstance().addTipHideShow(false)
             isSelectedCount = 1
             tipsetupGlobal(tipAmount, isSelectedCount)
             loadPaymentLayout()
         }
         binding.linearTab2.setOnClickListener {
-            loadSplitLayout()
-            binding.tvFullAmount.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
-            binding.tv2ways.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
-            binding.tv3ways.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
-            binding.tv4ways.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
-            binding.tv5ways.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
-            binding.tv6ways.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
-            binding.tvCustom.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
-            binding.tvFullAmount.setTextColor(resources.getColor(R.color.txtColor))
-            binding.tv2ways.setTextColor(resources.getColor(R.color.txtColor))
-            binding.tv3ways.setTextColor(resources.getColor(R.color.txtColor))
-            binding.tv4ways.setTextColor(resources.getColor(R.color.txtColor))
-            binding.tv5ways.setTextColor(resources.getColor(R.color.txtColor))
-            binding.tv6ways.setTextColor(resources.getColor(R.color.txtColor))
-            binding.tvCustom.setTextColor(resources.getColor(R.color.txtColor))
-            binding.tvCustom.text = "Custom"
-            isSelectedCount = 1
-            tipsetupGlobal(tipAmount, isSelectedCount)
-            binding.tvFullAMounttxt.visibility = View.VISIBLE
-            binding.tvwaysplit?.invisible()
+            PaymentBoldPosFragment.newInstance().addTipHideShow(true)
+            if (tipAmount != 0.0 && viewModel.tipTransactionAmount != 0.0) {
+                AlertUtils.showCustomAlertWithListenerWithOK(
+                    requireContext(),
+                    "If you are going to do split payment then existing tip will be removed."
+                ) { _, _ ->
+                    tipAmount = 0.0
+                    viewModel.setTipAmount(0.0)
+                    loadSplitLayout()
+                    binding.tvFullAmount.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
+                    binding.tv2ways.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
+                    binding.tv3ways.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
+                    binding.tv4ways.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
+                    binding.tv5ways.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
+                    binding.tv6ways.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
+                    binding.tvCustom.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
+                    binding.tvFullAmount.setTextColor(resources.getColor(R.color.txtColor))
+                    binding.tv2ways.setTextColor(resources.getColor(R.color.txtColor))
+                    binding.tv3ways.setTextColor(resources.getColor(R.color.txtColor))
+                    binding.tv4ways.setTextColor(resources.getColor(R.color.txtColor))
+                    binding.tv5ways.setTextColor(resources.getColor(R.color.txtColor))
+                    binding.tv6ways.setTextColor(resources.getColor(R.color.txtColor))
+                    binding.tvCustom.setTextColor(resources.getColor(R.color.txtColor))
+                    binding.tvCustom.text = "Custom"
+                    isSelectedCount = 1
+                    tipsetupGlobal(tipAmount, isSelectedCount)
+                    binding.tvFullAMounttxt.visibility = View.VISIBLE
+                    binding.tvwaysplit?.invisible()
+                }
+            } else {
+                loadSplitLayout()
+                binding.tvFullAmount.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
+                binding.tv2ways.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
+                binding.tv3ways.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
+                binding.tv4ways.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
+                binding.tv5ways.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
+                binding.tv6ways.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
+                binding.tvCustom.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
+                binding.tvFullAmount.setTextColor(resources.getColor(R.color.txtColor))
+                binding.tv2ways.setTextColor(resources.getColor(R.color.txtColor))
+                binding.tv3ways.setTextColor(resources.getColor(R.color.txtColor))
+                binding.tv4ways.setTextColor(resources.getColor(R.color.txtColor))
+                binding.tv5ways.setTextColor(resources.getColor(R.color.txtColor))
+                binding.tv6ways.setTextColor(resources.getColor(R.color.txtColor))
+                binding.tvCustom.setTextColor(resources.getColor(R.color.txtColor))
+                binding.tvCustom.text = "Custom"
+                isSelectedCount = 1
+                tipsetupGlobal(tipAmount, isSelectedCount)
+                binding.tvFullAMounttxt.visibility = View.VISIBLE
+                binding.tvwaysplit?.invisible()
+            }
+
         }
     }
 
