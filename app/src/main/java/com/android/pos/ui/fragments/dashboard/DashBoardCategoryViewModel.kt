@@ -132,9 +132,11 @@ class DashBoardCategoryViewModel @Inject constructor(
     fun setOpenOrderUpdate(value: Boolean) {
         this.openOrderUpdate = value
     }
+
     fun setSplitCount(selectcount: Int) {
         this.isSelectCount = selectcount
     }
+
     fun orderTypes(): LiveData<Resource<List<TbOrderType>>> {
         return posRepository.orderTypesDb()
     }
@@ -1195,7 +1197,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                     Log.e("amountToBePaid", "" + totalPrice)
 
                 } else {
-                    Log.e(TAG,"openOrderUpdate ${cartModel.discountPrice}")
+                    Log.e(TAG, "openOrderUpdate ${cartModel.discountPrice}")
 
                     nonCashAdj = 0.0
                     totalPrice = 0.0
@@ -2423,6 +2425,22 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 posRepository.deleteOrderTypeFromDb()
                                 posRepository.addOrderType(it.data.orderTypes)
                                 posRepository.addAllCountryList(it.data.phoneCountrylist)
+                                posRepository.addTimeZones(it.data.time_zone_options)
+                                posRepository.addBusinessDetails(TbBusinessDetails().apply {
+                                    business_name = it.data.businessName
+                                    business_website = it.data.businessWebsite
+                                    phone_number = it.data.phoneNumber
+                                    phone_number_1_country = it.data.phone_number_1_country
+                                    phone_number_2_country = it.data.phone_number_2_country
+                                    phone_number_2 = it.data.phoneNumber2
+                                    time_zone = it.data.business_time_zone
+                                    customer_contact_email = it.data.customerContactEmail
+                                    businessAddress = it.data.business_address
+                                })
+
+
+
+
                                 _callCashDiscount.value = Event(true)
 
                                 prefProvider.setValue(Constants.MAGENSA_SETTINGS, "")

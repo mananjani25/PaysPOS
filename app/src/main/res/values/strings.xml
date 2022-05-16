@@ -438,7 +438,8 @@
     <string name="tv_add_new_role_name">Add Role Name</string>
     <string name="role_name">Role Name</string>
     <string name="tv_assign_member">Assign Team Members</string>
-    <string name="clear_items">Delete Order</string> //changed value by zeeshan as per Rohan's suggestion
+    <string name="clear_items">Delete Order</string>
+    //changed value by zeeshan as per Rohan's suggestion
     <!--<string name="delete_order">Delete Order</string>-->
     <string name="split_amount">Split Amount</string>
     <string name="connect_a_reader_to_swipe_insert_or_tap">Connect a reader to swipe, insert or tap</string>
@@ -794,7 +795,10 @@
     <string name="order_type_n_team_name">ORDER TYPE/TEAM NAME</string>
     <string name="time_sheet">Time Sheet</string>
     <string name="business_website">Business Website</string>
-    <string name="business_address">Business Address</string>
+    <string name="business_address">Business Address<font color='#E90C0C'>*</font></string>
+    <string name="business_name_">Business Name<font color='#E90C0C'>*</font></string>
+    <string name="business_phone_number">Business Phone Number<font color='#E90C0C'>*</font></string>
+    <string name="time_zone">Time Zone<font color='#E90C0C'>*</font></string>
 
 
 </resources>

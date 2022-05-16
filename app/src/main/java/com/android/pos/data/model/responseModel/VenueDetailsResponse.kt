@@ -21,7 +21,7 @@ data class VenueDetailsResponse(
         @SerializedName("business_name")
         val businessName: String,
         @SerializedName("business_website")
-        val businessWebsite: Any,
+        val businessWebsite: String,
         @SerializedName("cancel_order_reasons")
         val cancelOrderReasons: List<CancelOrderReason>,
         @SerializedName("customer_contact_email")
@@ -40,6 +40,14 @@ data class VenueDetailsResponse(
         val notes: List<NoteResponse.Data>,
         @SerializedName("phone_number")
         val phoneNumber: String,
+        @SerializedName("phone_number_1_country")
+        val phone_number_1_country: String,
+        @SerializedName("phone_number_2_country")
+        val phone_number_2_country: String,
+        @SerializedName("phone_number_2")
+        val phoneNumber2: String,
+        @SerializedName("business_time_zone")
+        val business_time_zone: String,
         @SerializedName("address")
         val address: String,
         @SerializedName("start_time_for_report_summary")
@@ -57,7 +65,9 @@ data class VenueDetailsResponse(
         @SerializedName("terminals")
         val terminals: List<Terminal>,
         @SerializedName("printers")
-        val printers:Printer,
+        val printers: Printer,
+        @SerializedName("business_address")
+        val business_address: BusinessAddress,
         @SerializedName("tip_settings")
         val tip_settings: List<GetTipReponse.Data>,
         @SerializedName("time_zone")
@@ -79,16 +89,16 @@ data class VenueDetailsResponse(
         @SerializedName("order_types")
         val orderTypes: List<TbOrderType>,
         @SerializedName("magensa_settings")
-        val magensaSettings: List<MagensaSettings>
+        val magensaSettings: List<MagensaSettings>,
+        @SerializedName("time_zone_options")
+        val time_zone_options: List<TbTimeZones>
 
-    )
-
-    {
+    ) {
         data class Printer(
             @SerializedName("customer_receipt_printers")
-            val customerPrinterList:List<PrinterResponse.Data.CustomerReceiptPrinters>,
+            val customerPrinterList: List<PrinterResponse.Data.CustomerReceiptPrinters>,
             @SerializedName("kitchen_receipt_printers")
-            val kitchenPrinterList:List<PrinterResponse.Data.KitchenReceiptPrinters>
+            val kitchenPrinterList: List<PrinterResponse.Data.KitchenReceiptPrinters>
         )
 
         @Entity(tableName = "TbCancelOrderReason")
@@ -138,14 +148,14 @@ data class VenueDetailsResponse(
             @SerializedName("url")
             val logoUrl: String,
             @SerializedName("thumb")
-            val thumb:Thumb,
+            val thumb: Thumb,
             @SerializedName("record")
             val record: Record
 
         ) {
             data class Thumb(
                 @SerializedName("url")
-                val thumbUrl:String
+                val thumbUrl: String
             )
 
             data class Record(
