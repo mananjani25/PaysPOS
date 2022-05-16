@@ -758,6 +758,13 @@ class PosRepository @Inject constructor(
         })
 
 
+    fun getOnlineOrders(
+        startDate: String,
+        endDate: String
+    ): LiveData<Resource<OnlineOrderResponseModel>> =
+        performGetOperationNew(networkCall = { apiHelperNew.getOnlineOrders(startDate, endDate) })
+
+
     suspend fun cashInOut(data: CashLogRequest) = apiHelperNew.cashInOut(data)
 
 

@@ -400,6 +400,7 @@ object Constants {
 
 
     const val OPEN_ORDERS = "orders/open_orders"
+    const val ONLINE_ORDERING= "online_ordering_orders/web_orders"
     const val CASH_EVENTS = "cash_events"
 
     const val UTC_SERVER_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"

@@ -451,6 +451,9 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                 findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
             }
         }
+        binding.layoutHeader.txtOnlineOrder?.setOnClickListener {
+            findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_onlineOrderFragment)
+        }
 
         binding.layoutHeader.linearSwitchUser.setOnClickListener {
             var bundle = Bundle()

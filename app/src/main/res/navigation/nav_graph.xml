@@ -113,6 +113,21 @@
             app:destination="@id/createItem"
             app:enterAnim="@anim/nav_default_enter_anim" />
     </fragment>
+
+    <fragment
+        android:id="@+id/onlineOrderFragment"
+        android:name="com.android.pos.ui.fragments.onlineorder.OnlineOrderFragment"
+        android:label="onlineOrder">
+        <action
+            android:id="@+id/action_onlineOrder_to_menuposbold"
+            app:destination="@id/menuFragment"
+            app:enterAnim="@anim/nav_default_enter_anim" />
+        <action
+            android:id="@+id/action_onlineOrder_to_dashboarCategorynew"
+            app:destination="@id/dashboardCategoryBoldPOS"
+            app:enterAnim="@anim/nav_default_enter_anim" />
+    </fragment>
+
     <fragment
         android:id="@+id/createItem"
         android:name="com.android.pos.ui.fragments.createitem.CreateItem"
@@ -1407,6 +1422,10 @@
         <action
             android:id="@+id/action_dashboardCategoryBoldPOS_to_addVariablePriceDialog"
             app:destination="@id/addVariablePriceDialog" />
+        <action
+            android:id="@+id/action_dashboardCategoryBoldPOS_to_onlineOrderFragment"
+            app:destination="@id/onlineOrderFragment"
+            app:enterAnim="@anim/nav_default_enter_anim" />
         <action
             android:id="@+id/action_dashboardCategoryBoldPOS_to_transactionFragment"
             app:destination="@id/transactionFragment"
