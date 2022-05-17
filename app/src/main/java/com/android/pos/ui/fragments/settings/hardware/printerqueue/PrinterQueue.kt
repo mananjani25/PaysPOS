@@ -1,5 +1,6 @@
 package com.android.pos.ui.fragments.settings.hardware.printerqueue
 
+import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -76,8 +77,8 @@ class PrinterQueue : Fragment(), StatusChangeEventListener, BatteryStatusChangeE
         adapter = PrinterQueueListAdapter()
 
 
-        observeShowProgress()
         getKitchenReceiptSettings()
+        observeShowProgress()
         //deleteQueueItemObserver()
         //deleteAllQueueObserver()
         getKitchenPrinters()
@@ -299,21 +300,26 @@ class PrinterQueue : Fragment(), StatusChangeEventListener, BatteryStatusChangeE
 
     }
 
+    @SuppressLint("RestrictedApi")
     private fun onClick() {
         binding.btnStartService?.setOnClickListener {
             val map: MutableMap<String, Any> = HashMap()
-            map["kitchenPrinterList"] = kitchenPrinterList
-            map["kitchenSettingData"] = kitchenSettingModel
+            map.put("kitchenPrinterList", kitchenPrinterList)
+            map.put("kitchenSettingData", kitchenSettingModel)
 
 
+/*
             val data = Data.Builder()
-                .putAll(map)
-                .build()
+                .put("kitchenPrinterList", kitchenPrinterList)
+                .put("kitchenSettingData", kitchenSettingModel)
+                .build()*/
+
+            var data = Data.Builder()
+            data.put("kitchenPrinterList", kitchenPrinterList.toCollection(arrayListOf()))
 
 
             val uploadWorkRequest =
-                OneTimeWorkRequest.Builder(UploadWorker::class.java)
-                    .setInputData(data).build()
+                OneTimeWorkRequest.Builder(UploadWorker::class.java).build()
 
             val workManager = WorkManager.getInstance(requireContext().applicationContext)
             workManager.enqueue(uploadWorkRequest)
@@ -826,6 +832,7 @@ class PrinterQueue : Fragment(), StatusChangeEventListener, BatteryStatusChangeE
 
             if (it != null) {
                 kitchenSettingModel = it
+                Log.e(TAG, "getKitchenData")
                 getKitchenPrinters()
             }
         })
