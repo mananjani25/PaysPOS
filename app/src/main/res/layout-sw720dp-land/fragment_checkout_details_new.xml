@@ -415,9 +415,11 @@
                                 android:layout_height="wrap_content"
                                 android:text="2 Way Split Amount"
                                 android:textAlignment="center"
-                                android:visibility="invisible"
+                                android:layout_gravity="center"
+                                android:gravity="center"
                                 android:textColor="@color/txtColor"
-                                android:textSize="@dimen/_7mdpi" />
+                                android:textSize="@dimen/_7mdpi"
+                                android:visibility="invisible" />
 
                             <androidx.appcompat.widget.LinearLayoutCompat
                                 android:id="@+id/llspllittvamount"
