@@ -1142,14 +1142,16 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             isSelectedCount = 1
             tipsetupGlobal(tipAmount, isSelectedCount)
             loadPaymentLayout()
+            tipAmountCalculation()
         }
         binding.linearTab2.setOnClickListener {
-            PaymentBoldPosFragment.newInstance().addTipHideShow(true)
+
             if (tipAmount != 0.0 && viewModel.tipTransactionAmount != 0.0) {
-                AlertUtils.showCustomAlertWithListenerWithOK(
+                AlertUtils.showCustomAlertWithListenerWithOKCancel(
                     requireContext(),
                     "If you are going to do split payment then existing tip will be removed."
                 ) { _, _ ->
+                    PaymentBoldPosFragment.newInstance().addTipHideShow(true)
                     tipAmount = 0.0
                     viewModel.setTipAmount(0.0)
                     loadSplitLayout()
