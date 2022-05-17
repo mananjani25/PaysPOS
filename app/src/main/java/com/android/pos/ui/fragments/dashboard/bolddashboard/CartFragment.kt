@@ -716,12 +716,12 @@ class CartFragment(
                                 binding.txtDineInProceed.setText("Update and Proceed")
 
                                 var getOldList = prefProvider.getValue(DINE_IN_UPDATE_LIST, "")
-                                Log.e(TAG,"getOldList  ${Gson().toJson(getOldList)}")
+                                Log.e(TAG, "getOldList  ${Gson().toJson(getOldList)}")
                                 if (getOldList.isEmpty()) {
                                     var listItemDine: ArrayList<GetOrderDetailsResponse.Data.OrderItem> =
                                         arrayListOf()
                                     var data = it[0].dineInList
-                                    Log.e(TAG,"getDataSizeDin ${data?.size}")
+                                    Log.e(TAG, "getDataSizeDin ${data?.size}")
                                     data?.forEach {
                                         it.items.forEach { item ->
                                             var modifiers: ArrayList<GetOrderDetailsResponse.Data.OrderItem.OrderItemModifier> =
@@ -1248,6 +1248,7 @@ class CartFragment(
                 itemListner?.onCancelItemSelected()
                 if (prefProvider.getValue(ORDER_TYPE, "").toString() == Constants.DINE_IN) {
                     prefProvider.setValueInt(Constants.DINE_INGUEST_SELECTED, 0)
+                    viewModel.removeItemDineInList.clear()
 
                     if (cartlist.size > 0) {
 
@@ -1273,7 +1274,7 @@ class CartFragment(
                     isOrderUpdate = false
                     dineInCartAdapter.clearList()
                     binding.rvCartDineIn.gone()
-                   // prefProvider.setValue(DINE_IN_UPDATE_LIST, "")
+                    // prefProvider.setValue(DINE_IN_UPDATE_LIST, "")
 //                    uiSave()
 
                     prefProvider.setValue(ORDER_TYPE, TAKEOUT)
@@ -1348,6 +1349,8 @@ class CartFragment(
 
         binding.relPreoceedToFire.setOnClickListener {
             if (viewModel.restrictedAmount(binding.txtTotal)) {
+                //cartlist[0] = viewModel.generateCombinedItems(viewModel.cartModel!!)
+                Log.e(TAG, "destroyedListdestroyedList  ${Gson().toJson(viewModel.destroyedList)}")
                 if (cartlist.isNotEmpty()) {
                     if (prefProvider.getValueboolean(DINE_IN_UPDATE, false)) {
                         var itemCount = 0
@@ -1371,6 +1374,8 @@ class CartFragment(
                             ) { _, _ ->
                             }
                         } else {
+                            //cartlist[0] = viewModel.addDineInRemovedItems(viewModel.cartModel!!)
+
                             val request = viewModel.updateOrder(cartlist[0])
 
                             prefProvider.setValueboolean(DINE_IN_UPDATE, false)
