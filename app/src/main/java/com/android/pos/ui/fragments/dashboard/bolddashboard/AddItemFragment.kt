@@ -18,7 +18,6 @@ import com.android.pos.data.remote.Constants.ORDER_TYPE
 import com.android.pos.data.remote.Constants.TAKEOUT
 import com.android.pos.data.remote.Constants.TERMINAL_ID
 import com.android.pos.databinding.FragmentAddItemBinding
-
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.adapter.ItemModifierSetAdapter
 import com.android.pos.ui.adapter.VariationDashboardListAdapter
@@ -149,11 +148,20 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
 
     private fun onClick() {
         binding.imgMinus.setOnClickListener {
+            /* if (prefProvider.getValueboolean(DINE_IN_UPDATE, false) == true && item.isFired) {
+                 if (qty > item.itemQuantity) {
+                     qty -= 1
+                 } else {
+                     qty = qty
+                 }
+             } */
+
             if (qty == 1) {
                 qty = 1
             } else {
                 qty -= 1
             }
+
 
             binding.txtQuantity.setText("" + qty)
 
@@ -599,7 +607,11 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
         if (isUpdateItem) {
             qty = item.itemQuantity
             binding.txtQuantity.text = "" + qty
-            binding.txtRemoveItem.visibility = View.VISIBLE
+            if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == DINE_IN && item.isFired) {
+                binding.txtRemoveItem.visibility = View.GONE
+            } else {
+                binding.txtRemoveItem.visibility = View.VISIBLE
+            }
             binding.txtDone.text = "Update"
 
 
