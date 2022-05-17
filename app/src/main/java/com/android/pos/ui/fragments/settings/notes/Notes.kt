@@ -97,7 +97,10 @@ class Notes : Fragment(), ItemCallback {
 
 
 
-                noteListadapter.onItemMove(viewHolder.bindingAdapterPosition, target.bindingAdapterPosition)
+                noteListadapter.onItemMove(
+                    viewHolder.bindingAdapterPosition,
+                    target.bindingAdapterPosition
+                )
 
                 return true
             }
@@ -194,13 +197,11 @@ class Notes : Fragment(), ItemCallback {
 
         viewModel.data1.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
-                if (!isreOrder)
-                    AlertUtils.showCustomAlert(requireActivity(), it.message)
+                AlertUtils.showCustomAlert(requireActivity(), it.message)
 
-                if (isreOrder) {
-                    isreOrder = false
-                    viewModel.reOrder(noteListadapter.getAll())
-                }
+
+                viewModel.reOrder(noteListadapter.getAll())
+
 
             }
         }
