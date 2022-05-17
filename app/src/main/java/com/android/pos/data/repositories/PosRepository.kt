@@ -218,6 +218,13 @@ class PosRepository @Inject constructor(
     fun getItemsList() =
         performGetOperationDatabase(databaseQuery = { appDatabase.itemDao().allItem!! })
 
+
+    fun getTimeZones() =
+        performGetOperationDatabase(databaseQuery = { appDatabase.timeZonesDao().allItem })
+
+    fun getBusinessData() =
+        performGetOperationDatabase(databaseQuery = { appDatabase.businessDetailsDao().allData })
+
     fun getItemsbyId(itemId: Int) =
         performGetOperationDatabase(databaseQuery = { appDatabase.itemDao().itemById(itemId)!! })
 
@@ -315,6 +322,15 @@ class PosRepository @Inject constructor(
     suspend fun addAllCountryList(countryList: List<TbCountryList>) {
         appDatabase.countryListDao().addAll(countryList)
     }
+
+    suspend fun addTimeZones(countryList: List<TbTimeZones>) {
+        appDatabase.timeZonesDao().addAll(countryList)
+    }
+
+    suspend fun addBusinessDetails(countryList: TbBusinessDetails) {
+        appDatabase.businessDetailsDao().add(countryList)
+    }
+
 
     fun getCurrentUserTeamRoleFromDb() = performGetOperationDatabase(databaseQuery = {
         appDatabase.teamRoleDao().roleById(id = prefProvider.getEmployeeRoleId())

@@ -42,6 +42,7 @@ class ItemOptionsListDialog : DialogFragment(), AdapterView.OnItemSelectedListen
 
     private lateinit var spinnerAdapter: ArrayAdapter<String>
     private var optionName = ArrayList<String>()
+
     private lateinit var binding: FragmentItemOptionsListBinding
     private var variationList = ArrayList<List<Option>>()
     private lateinit var selectedOptionSetNameAdapter: SelectedOptionSetNameAdapter
