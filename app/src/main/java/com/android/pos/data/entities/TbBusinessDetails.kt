@@ -16,29 +16,29 @@ class TbBusinessDetails {
     var id: Int = 0
 
     @SerializedName("business_name")
-    var business_name: String = ""
+    var business_name: String? = null
 
     @SerializedName("business_website")
-    var business_website: String = ""
+    var business_website: String? = null
 
     @SerializedName("phone_number")
-    var phone_number: String = ""
+    var phone_number: String? = null
 
     @SerializedName("phone_number_2_country")
-    var phone_number_2_country: String = ""
+    var phone_number_2_country: String? = null
 
     @SerializedName("phone_number_1_country")
-    var phone_number_1_country: String = ""
+    var phone_number_1_country: String? = null
 
     @SerializedName("phone_number_2")
-    var phone_number_2: String = ""
+    var phone_number_2: String? = null
 
 
     @SerializedName("time_zone")
-    var time_zone: String = ""
+    var time_zone: String? = null
 
     @SerializedName("customer_contact_email")
-    var customer_contact_email: String = ""
+    var customer_contact_email: String? = null
 
     @Embedded
     var businessAddress: BusinessAddress? = null
