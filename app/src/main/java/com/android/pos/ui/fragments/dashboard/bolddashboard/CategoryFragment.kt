@@ -41,7 +41,6 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
     private lateinit var itemAdapter: ItemAdapter
     private lateinit var searchList: ArrayList<CategorySearchData>
     private lateinit var searchAdapter: CategorySearchAdapter
-
     private val viewModel by activityViewModels<DashBoardCategoryViewModel>()
     private var itemList1: ArrayList<TbItem?> = arrayListOf()
     private var allItems: ArrayList<TbItem?> = arrayListOf()
@@ -155,6 +154,7 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
                             itemAdapter.addList(itemList1)
                             if (list.isNotEmpty()) {
                                 binding.rvCategoryParent.scrollToPosition(0)
+
                             }
 
                         }
@@ -234,8 +234,8 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
         }
         itemAdapter.list.clear()
         itemAdapter.list = itemList
-        for (i in itemList.indices){
-            if (itemList[i]?.itemId ==model.itemID){
+        for (i in itemList.indices) {
+            if (itemList[i]?.itemId == model.itemID) {
                 itemAdapter.setPos(i)
                 break
             }
@@ -289,6 +289,32 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
             LinearLayoutManager(requireContext(), RecyclerView.HORIZONTAL, false)
         val snapHelper = PagerSnapHelper()
         snapHelper.attachToRecyclerView(binding.rvCategoryParent)
+        binding.rvCategoryParent.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+
+                val bindingAdapterPos =
+                    (recyclerView.layoutManager as LinearLayoutManager).findFirstVisibleItemPosition()
+                Log.e(TAG, "bindingAdapterPosbindingAdapterPos  ${bindingAdapterPos}")
+
+                categoryParentAdapter.list.forEachIndexed { index1, it ->
+                    it.list.forEachIndexed { index, categoryTabModel ->
+                        if (index1 == categoryParentAdapter.selectedParentPos && index == categoryParentAdapter.selectedCategoryPos) {
+                            categoryTabModel.isSelected = true
+                        } else {
+                            categoryTabModel.isSelected = false
+                        }
+                    }
+                }
+                categoryParentAdapter.notifyDataSetChanged()
+
+                super.onScrollStateChanged(recyclerView, newState)
+            }
+
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+            }
+        })
+
 
         val tabList: ArrayList<CategoryTabModel> = arrayListOf()
         for (i in 0 until list.size) {
@@ -343,7 +369,13 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
 
     }
 
+    override fun onPositionChanged(position: Int) {
+        Log.e(TAG, "onPOSChanged ${position}")
+    }
+
     override fun onTabSelected(pos: Int) {
 
     }
+
+
 }

@@ -4,8 +4,11 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.android.pos.data.db.AppDatabase
+import com.android.pos.data.model.responseModel.BaseResponse
 import com.android.pos.data.model.responseModel.CreateTipResponse
 import com.android.pos.data.model.responseModel.GetTipReponse
+import com.android.pos.data.model.responseModel.NoteResponse
 import com.android.pos.data.repositories.PosRepository
 import com.android.pos.data.repositories.TipDiscountRepository
 import com.android.pos.utils.Event
@@ -16,7 +19,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class TipListViewModel @Inject constructor(
-    private val tipDiscountRepository: TipDiscountRepository
+    private val tipDiscountRepository: TipDiscountRepository,
+    private val appDatabase: AppDatabase
 ) : ViewModel() {
 
     private val _snackbarText = MutableLiveData<Event<Any?>>()
@@ -25,13 +29,17 @@ class TipListViewModel @Inject constructor(
     private val _data = MutableLiveData<Event<CreateTipResponse?>>()
     val data: LiveData<Event<CreateTipResponse?>> = _data
 
+    private val _data1 = MutableLiveData<Event<BaseResponse?>>()
+    val data1: LiveData<Event<BaseResponse?>> = _data1
+
+
     private val _showProgress = MutableLiveData<Event<Boolean>>()
     val showProgress: LiveData<Event<Boolean>> = _showProgress
 
     private val _notifydata = MutableLiveData<Event<Boolean?>>()
     val notifydata: LiveData<Event<Boolean?>> = _notifydata
 
-    val getTipList = tipDiscountRepository.getTipList()
+    val getTipList = tipDiscountRepository.getTipList1()
 
     fun isTipActive(tipDataItem: GetTipReponse.Data) {
 
@@ -110,6 +118,52 @@ class TipListViewModel @Inject constructor(
                 Status.LOADING -> {
                     _showProgress.value = Event(true)
                 }
+            }
+        }
+    }
+
+    fun reOrderItem(itemId: Int, oldPos: Int, newPos: Int) {
+        _showProgress.value = Event(true)
+
+        viewModelScope.launch {
+
+            val resource = tipDiscountRepository.reOrderTip(itemId, oldPos, newPos)
+            when (resource.status) {
+                Status.SUCCESS -> {
+
+                    _showProgress.value = Event(false)
+
+                    resource.data.let {
+                        if (it?.status == 200) {
+                            resource.data?.let { baseResponse ->
+                                _data1.value = Event(baseResponse)
+                            }
+                        } else {
+                            _snackbarText.value = Event(resource.message)
+                        }
+
+                    }
+
+
+                }
+
+                Status.ERROR -> {
+                    _snackbarText.value = Event(resource.message)
+                    _showProgress.value = Event(false)
+                }
+
+                Status.LOADING -> {
+                    _showProgress.value = Event(true)
+                }
+            }
+        }
+    }
+
+    fun reOrder(allItems: ArrayList<GetTipReponse.Data>) {
+
+        if (allItems.isNotEmpty()) {
+            viewModelScope.launch {
+                appDatabase.tipDao().addAllTips(allItems)
             }
         }
     }

@@ -1,0 +1,421 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="MissingDefaultResource">
+
+    <data>
+
+        <variable
+            name="viewModel"
+            type="com.android.pos.ui.fragments.customer.AddCustomerViewModel" />
+    </data>
+
+    <androidx.appcompat.widget.LinearLayoutCompat
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/bg_color"
+        android:orientation="vertical">
+
+        <include
+            android:id="@+id/header"
+            layout="@layout/view_header_toolbar" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:background="@color/view" />
+
+
+        <androidx.core.widget.NestedScrollView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/_80sdp"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:orientation="vertical"
+                android:padding="@dimen/_10sdp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/_15sdp"
+                    android:layout_marginEnd="@dimen/_15sdp"
+                    android:visibility="visible"
+                    android:weightSum="2">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="@dimen/_5sdp"
+                        android:orientation="vertical"
+                        tools:ignore="UselessParent">
+
+                        <TextView
+                            android:id="@+id/txtFirstName"
+                            style="@style/CustomFontSemiBold"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/first_name"
+                            android:textColor="@color/color65"
+                            android:textSize="@dimen/_5mdpi"
+                            android:visibility="gone" />
+
+                        <androidx.appcompat.widget.AppCompatEditText
+                            android:id="@+id/edtFName"
+                            style="@style/CustomFontMediumStyle"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/_5sdp"
+                            android:background="@drawable/background_square_border_grey"
+                            android:digits="@string/character_String"
+                            android:hint="Business Name"
+                            android:imeOptions="actionNext"
+                            android:inputType="textCapWords|textVisiblePassword"
+                            android:maxLength="30"
+                            android:padding="@dimen/_9sdp"
+                            android:text="@={viewModel.addCustomerDetails.data.first_name}"
+                            android:textColor="@color/txtColor"
+                            android:textColorHint="@color/hintColor"
+                            android:textSize="@dimen/_7mdpi" />
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <TextView
+                    style="@style/CustomFontSemiBold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/_15sdp"
+                    android:layout_marginTop="@dimen/_10sdp"
+                    android:text="Business Phone Number"
+                    android:textColor="@color/txtColor"
+                    android:textSize="@dimen/_5mdpi"
+                    android:visibility="visible" />
+
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/_15sdp"
+                    android:layout_marginTop="@dimen/_5sdp"
+                    android:layout_marginEnd="@dimen/_15sdp"
+                    android:background="@drawable/background_square_border_grey"
+                    android:orientation="vertical"
+                    android:visibility="visible">
+
+                    <Spinner
+                        android:id="@+id/spPhone"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@null"
+                        android:enabled="false"
+                        android:padding="@dimen/_9sdp"
+                        android:textColor="@color/txt_color_blue"
+                        android:textSize="@dimen/_5mdpi"
+                        android:theme="@style/SpinnerTheme" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="0.5dp"
+                        android:background="@color/view" />
+
+                    <com.santalu.maskedittext.MaskEditText
+                        android:id="@+id/edtPhoneNo"
+                        style="@style/CustomFontMediumStyle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@null"
+                        android:hint="(201) 555-0123"
+                        android:inputType="number"
+                        android:maxLength="20"
+                        android:padding="@dimen/_9sdp"
+                        android:text="@={viewModel.phoneNo}"
+                        android:textColor="@color/txtColor"
+                        android:textColorHint="@color/hint_color_"
+                        android:textSize="@dimen/_7mdpi"
+                        app:met_mask="(###) ###-####" />
+
+                </androidx.appcompat.widget.LinearLayoutCompat>
+
+
+                <TextView
+                    style="@style/CustomFontSemiBold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/_15sdp"
+                    android:layout_marginTop="@dimen/_10sdp"
+                    android:text="Business Phone Number 2"
+                    android:textColor="@color/txtColor"
+                    android:textSize="@dimen/_5mdpi"
+                    android:visibility="visible" />
+
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/_15sdp"
+                    android:layout_marginTop="@dimen/_5sdp"
+                    android:layout_marginEnd="@dimen/_15sdp"
+                    android:background="@drawable/background_square_border_grey"
+                    android:orientation="vertical"
+                    android:visibility="visible">
+
+                    <Spinner
+                        android:id="@+id/spPhone2"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@null"
+                        android:enabled="false"
+                        android:padding="@dimen/_9sdp"
+                        android:textColor="@color/txt_color_blue"
+                        android:textSize="@dimen/_5mdpi"
+                        android:theme="@style/SpinnerTheme" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="0.5dp"
+                        android:background="@color/view" />
+
+                    <com.santalu.maskedittext.MaskEditText
+                        android:id="@+id/edtPhoneNo2"
+                        style="@style/CustomFontMediumStyle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@null"
+                        android:hint="(201) 555-0123"
+                        android:inputType="number"
+                        android:maxLength="20"
+                        android:padding="@dimen/_9sdp"
+                        android:text="@={viewModel.phoneNo}"
+                        android:textColor="@color/txtColor"
+                        android:textColorHint="@color/hint_color_"
+                        android:textSize="@dimen/_7mdpi"
+                        app:met_mask="(###) ###-####" />
+
+                </androidx.appcompat.widget.LinearLayoutCompat>
+
+
+                <androidx.appcompat.widget.AppCompatEditText
+                    android:id="@+id/edtEmail"
+                    style="@style/CustomFontMediumStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/_15sdp"
+                    android:layout_marginTop="@dimen/_5sdp"
+                    android:layout_marginEnd="@dimen/_15sdp"
+                    android:background="@drawable/background_square_border_grey"
+                    android:digits="@string/disable_emoji_string"
+                    android:hint="@string/tv_email_address_"
+                    android:imeOptions="actionNext"
+                    android:inputType="textVisiblePassword"
+                    android:padding="@dimen/_9sdp"
+                    android:text="@={viewModel.addCustomerDetails.data.email}"
+                    android:textColor="@color/btnColor"
+                    android:textColorHint="@color/hintColor"
+                    android:textSize="@dimen/_7mdpi" />
+
+
+                <androidx.appcompat.widget.AppCompatEditText
+                    android:id="@+id/edtBusiness_website"
+                    style="@style/CustomFontMediumStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/_15sdp"
+                    android:layout_marginTop="@dimen/_5sdp"
+                    android:layout_marginEnd="@dimen/_15sdp"
+                    android:background="@drawable/background_square_border_grey"
+                    android:digits="@string/disable_emoji_string"
+                    android:hint="@string/business_website"
+                    android:imeOptions="actionNext"
+                    android:inputType="textVisiblePassword"
+                    android:padding="@dimen/_9sdp"
+                    android:text="@={viewModel.addCustomerDetails.data.email}"
+                    android:textColor="@color/btnColor"
+                    android:textColorHint="@color/hintColor"
+                    android:textSize="@dimen/_7mdpi" />
+
+
+                <TextView
+                    style="@style/CustomFontSemiBold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/_15sdp"
+                    android:layout_marginTop="@dimen/_10sdp"
+                    android:text="Time Zone"
+                    android:textColor="@color/txtColor"
+                    android:textSize="@dimen/_5mdpi"
+                    android:visibility="visible" />
+
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/_15sdp"
+                    android:layout_marginTop="@dimen/_5sdp"
+                    android:layout_marginEnd="@dimen/_15sdp"
+                    android:background="@drawable/background_square_border_grey"
+                    android:orientation="vertical"
+                    android:visibility="visible">
+
+                    <Spinner
+                        android:id="@+id/spTimeZone"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@null"
+                        android:enabled="false"
+                        android:padding="@dimen/_9sdp"
+                        android:textColor="@color/txt_color_blue"
+                        android:textSize="@dimen/_5mdpi"
+                        android:theme="@style/SpinnerTheme" />
+
+                </androidx.appcompat.widget.LinearLayoutCompat>
+
+
+                <RelativeLayout
+                    android:id="@+id/relative_billingaddress"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/_15sdp"
+                    android:layout_marginTop="@dimen/_10sdp"
+                    android:layout_marginEnd="@dimen/_15sdp"
+                    android:layout_marginBottom="@dimen/_20sdp">
+
+                    <androidx.appcompat.widget.LinearLayoutCompat
+                        android:id="@+id/heading_linear"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+
+                        <TextView
+                            style="@style/CustomFontSemiBold"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/business_address"
+                            android:textColor="@color/txtColor"
+                            android:textSize="@dimen/_5mdpi" />
+
+                    </androidx.appcompat.widget.LinearLayoutCompat>
+
+                    <ImageView
+                        android:id="@+id/imgAddressAdd"
+                        android:layout_width="@dimen/_12sdp"
+                        android:layout_height="@dimen/_12sdp"
+                        android:layout_alignParentEnd="true"
+                        android:src="@drawable/ic_add"
+                        android:visibility="gone"
+                        app:tint="@color/txt_color_blue"
+                        tools:ignore="ContentDescription" />
+
+                    <androidx.appcompat.widget.LinearLayoutCompat
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@+id/heading_linear"
+                        android:layout_marginTop="@dimen/_3sdp"
+                        android:orientation="vertical">
+
+
+                        <Spinner
+                            android:id="@+id/edtAddress"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="@dimen/_5sdp"
+                            android:background="@drawable/background_square_border_grey"
+                            android:padding="@dimen/_9sdp"
+                            android:theme="@style/SpinnerTheme" />
+
+                        <androidx.appcompat.widget.AppCompatAutoCompleteTextView
+                            android:id="@+id/edtStreet"
+                            style="@style/CustomFontMediumStyle"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/background_square_border_grey"
+                            android:hint="Street"
+                            android:imeOptions="actionNext"
+                            android:inputType="textVisiblePassword"
+                            android:padding="@dimen/_9sdp"
+                            android:textColor="@color/txtColor"
+                            android:textColorHint="@color/hintColor"
+                            android:textSize="@dimen/_7mdpi" />
+
+                        <EditText
+                            android:id="@+id/edtSuite"
+                            style="@style/CustomFontMediumStyle"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:background="@drawable/background_square_border_grey"
+                            android:digits="@string/disable_emoji_string"
+                            android:hint="@string/apt_suite"
+                            android:inputType="textVisiblePassword"
+                            android:padding="@dimen/_9sdp"
+                            android:textColor="@color/txtColor"
+                            android:textColorHint="@color/hint_color"
+                            android:textSize="@dimen/_7mdpi" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="horizontal"
+                            android:weightSum="3">
+
+
+                            <EditText
+                                android:id="@+id/edtCity"
+                                style="@style/CustomFontMediumStyle"
+                                android:layout_width="0sp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:background="@drawable/background_square_border_grey"
+                                android:digits="@string/disable_emoji_string"
+                                android:hint="@string/city"
+                                android:inputType="textVisiblePassword"
+                                android:padding="@dimen/_9sdp"
+                                android:textColor="@color/txtColor"
+                                android:textColorHint="@color/hint_color"
+                                android:textSize="@dimen/_7mdpi" />
+
+                            <EditText
+                                android:id="@+id/edtState"
+                                style="@style/CustomFontMediumStyle"
+                                android:layout_width="0sp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:background="@drawable/background_square_border_grey"
+                                android:digits="@string/disable_emoji_string"
+                                android:hint="@string/state"
+                                android:inputType="textVisiblePassword"
+                                android:padding="@dimen/_9sdp"
+                                android:textColor="@color/txtColor"
+                                android:textColorHint="@color/hint_color"
+                                android:textSize="@dimen/_7mdpi" />
+
+                            <EditText
+                                android:id="@+id/edtZip"
+                                style="@style/CustomFontMediumStyle"
+                                android:layout_width="0sp"
+                                android:layout_height="wrap_content"
+                                android:layout_weight="1"
+                                android:background="@drawable/background_square_border_grey"
+                                android:digits="@string/disable_emoji_string"
+                                android:hint="@string/zip"
+                                android:inputType="textVisiblePassword"
+                                android:padding="@dimen/_9sdp"
+                                android:textColor="@color/txtColor"
+                                android:textColorHint="@color/hint_color"
+                                android:textSize="@dimen/_7mdpi" />
+
+
+                        </LinearLayout>
+
+
+                    </androidx.appcompat.widget.LinearLayoutCompat>
+                </RelativeLayout>
+
+
+            </LinearLayout>
+        </androidx.core.widget.NestedScrollView>
+
+
+    </androidx.appcompat.widget.LinearLayoutCompat>
+</layout>

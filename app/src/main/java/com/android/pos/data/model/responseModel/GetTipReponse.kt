@@ -35,7 +35,7 @@ data class GetTipReponse(
         @SerializedName("rate")
         val rate: Double,
         @SerializedName("sort")
-        val sort: Int,
+        var sort: Int,
         @SerializedName("updated_at")
         val updatedAt: String,
         var isChecked: Boolean = true

@@ -85,83 +85,6 @@ class AllItems(val clickedPosition: Int) : Fragment(),ItemCallback {
 
     private fun setupHelper() {
 
-/*
-        object : SwipeHelper(activity, binding.rvAllItemList) {
-            override fun instantiateUnderlayButton(
-                viewHolder: RecyclerView.ViewHolder?,
-                underlayButtons: MutableList<UnderlayButton?>
-            ) {
-
-                underlayButtons.add(UnderlayButton(
-                    "Hide",
-                    0,
-                    Color.parseColor("#0AB833")
-                ) { pos ->
-
-                    alert(
-                        getString(R.string.app_name),
-                        getString(R.string.hide_item_message)
-                    ) {
-                        positiveButton(getString(R.string.deactivate)) {
-                            deleteAndHide = true
-                            deleteObj = adapter.getItem(pos)
-                            viewModel.deleteAndHide(deleteObj!!.itemId, deleteAndHide, false)
-                        }
-                        negativeButton(R.string.tv_cancel) {
-                            // Do negative stuff here
-                        }
-                    }
-
-
-                })
-
-                underlayButtons.add(UnderlayButton(
-                    "Edit",
-                    0,
-                    Color.parseColor("#2997cc")
-                ) { pos ->
-
-                    val itemObject = adapter.getItem(pos)
-                    val bundle = Bundle()
-                    bundle.putBoolean("isEdit", true)
-                    bundle.putParcelable("itemObject", itemObject)
-
-                    findNavController().navigate(R.id.action_inventory_to_createItem, bundle)
-
-
-                })
-
-
-                underlayButtons.add(UnderlayButton(
-                    "Delete",
-                    0,
-                    Color.parseColor("#FF3C30")
-                ) { pos ->
-
-                    activity?.let {
-                        AlertUtils.showCustomAlertWithListener(
-                            it, getString(R.string.delete_item_message)
-                        ) { _, _ ->
-
-                            deleteAndHide = false
-                            deletePos = pos
-                            deleteObj = adapter.getItem(pos)
-                            //delete API call
-                            viewModel.deleteAndHide(deleteObj!!.itemId, deleteAndHide, false)
-                            //Delete item in database
-//                            viewModel.dbDeleteAndHide(deleteObj!!.itemId, deleteAndHide)
-                        }
-                    }
-
-                })
-
-
-            }
-        }
-*/
-
-
-
         val touchHelper = ItemTouchHelper(object :
             ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP + ItemTouchHelper.DOWN, 0) {
 
@@ -265,7 +188,7 @@ class AllItems(val clickedPosition: Int) : Fragment(),ItemCallback {
 
     private fun deleteObserver() {
 
-        viewModel.data.observe(viewLifecycleOwner, { event ->
+        viewModel.data.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
                 if (!isreOrder)
                     AlertUtils.showCustomAlert(requireActivity(), it.message)
@@ -281,16 +204,15 @@ class AllItems(val clickedPosition: Int) : Fragment(),ItemCallback {
                 requireContext().sendBroadcast(intent)
 
 
-
                 // viewModel.dbDeleteAndHide(deleteObj!!.itemId, deleteAndHide)
             }
-        })
+        }
 
     }
 
     private fun observeShowProgress() {
 
-        viewModel.showProgress.observe(viewLifecycleOwner, { event ->
+        viewModel.showProgress.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
                 if (it) {
                     ProgressUtils.showProgressDialog(requireActivity())
@@ -298,7 +220,7 @@ class AllItems(val clickedPosition: Int) : Fragment(),ItemCallback {
                     ProgressUtils.dismissProgressDialog()
                 }
             }
-        })
+        }
 
     }
 

@@ -1186,7 +1186,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         var wholeEmpty = false
         getOrderDetailsResponse?.guestAttributes?.forEach {
             if (it.name.equals("Whole Table", true)) {
-                if (it.guestItemAttributes.isNotEmpty()) {
+                if (it.guestItemAttributes.isEmpty()) {
                     wholeEmpty = true
 
                 }
@@ -1195,6 +1195,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
         var tempGuestWithItem = 0
         var guestItemWithoutItem = 0
+        Log.e("MainTo", "wholeEmpty:  ${wholeEmpty}")
         if (wholeEmpty) {
             getOrderDetailsResponse?.guestAttributes?.forEach {
                 if (!it.name.equals(
@@ -1212,12 +1213,12 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
             }
         }
-        if (guestItemWithoutItem > 0 && tempGuestWithItem == 1){
+        if (wholeEmpty && tempGuestWithItem == 1) {
             isLastPayment = true
             bundle.putBoolean("isLastPayment", true)
         }
 
-        Log.e("FinalLast","FinalLast ${isLastPayment}")
+        Log.e("FinalLast", "FinalLast ${isLastPayment}")
 
 
         val dineinCartPaymentModel: DineinCartPaymentModel? = null

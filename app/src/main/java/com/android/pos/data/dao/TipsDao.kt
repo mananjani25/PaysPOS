@@ -14,7 +14,7 @@ interface TipsDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun addAllTips(tipList: List<GetTipReponse.Data>)
 
-    @get:Query("select * from TbTips")
+    @get:Query("select * from TbTips ORDER BY TbTips.sort DESC")
     val allTips: LiveData<List<GetTipReponse.Data>>
 
     @Query("select * from TbTips")

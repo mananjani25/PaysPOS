@@ -257,10 +257,10 @@ class PosRepository @Inject constructor(
         )
 
 
-    fun getNoteList() = performGetOperation(
+    fun getNoteList() = performGetOperationDatabase(
         databaseQuery = { appDatabase.notesDao().alllNotes },
-        networkCall = { apiHelperNew.getNoteList() },
-        saveCallResult = { appDatabase.notesDao().addAllNotes(it.data) })
+    )
+
 
     suspend fun deleteNotesFromDb() =
         appDatabase.notesDao().delete()
@@ -538,6 +538,12 @@ class PosRepository @Inject constructor(
     suspend fun reOrderItemCall(id: Int, oldPos: Int, newPos: Int) =
         apiHelperNew.reOrderItemCall(id, oldPos, newPos)
 
+    suspend fun reOrderNote(id: Int, oldPos: Int, newPos: Int) =
+        apiHelperNew.reOrderNote(id, oldPos, newPos)
+
+
+    suspend fun reOrderTip(id: Int, oldPos: Int, newPos: Int) =
+        apiHelperNew.reOrderTip(id, oldPos, newPos)
 
     fun getCartList(orderType: String, employee_Id: Int): LiveData<List<CartModel>> {
         return appDatabase.cartDao().allItem(orderType, employee_Id)
