@@ -138,6 +138,8 @@ object Constants {
 
     const val DISCOUNTS_ACTIVE = "discounts/{id}/active"
 
+    const val DINE_IN_UPDATE_LIST = "dine_in_update_list"
+
     const val NOTES = "dynamic_notes"
     const val NOTE_UPDATE_DELETE = "dynamic_notes/{id}"
     const val CUSTOMER_UPDATE = "customers/{id}"

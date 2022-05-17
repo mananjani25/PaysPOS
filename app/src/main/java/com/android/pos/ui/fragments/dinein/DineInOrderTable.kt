@@ -41,6 +41,7 @@ import com.android.pos.data.remote.Constants.DINE_IN_SERVICECHARGE
 import com.android.pos.data.remote.Constants.DINE_IN_SUBTOTAL
 import com.android.pos.data.remote.Constants.DINE_IN_TAX
 import com.android.pos.data.remote.Constants.DINE_IN_UPDATE
+import com.android.pos.data.remote.Constants.DINE_IN_UPDATE_LIST
 import com.android.pos.data.remote.Constants.EMPLOYEE_ID
 import com.android.pos.data.remote.Constants.GUEST_POSITION
 import com.android.pos.data.remote.Constants.IS_GUEST_PAYMNET
@@ -63,6 +64,7 @@ import com.epson.eposprint.Builder
 import com.epson.eposprint.Print
 import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import dagger.hilt.android.AndroidEntryPoint
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -530,6 +532,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
 
             }
+
+            //   prefProvider.setValue(Constants.DINE_IN_UPDATE_LIST, Gson().toJson(newList))
 
             val bundle = Bundle()
             bundle.putBoolean("is_dine_in_edit", true)
@@ -5824,6 +5828,66 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
         }
         Log.e(TAG, "listItem:  ${Gson().toJson(listItem)}")
+        val serializedObject: String =
+            prefProvider.getValue(Constants.DINE_IN_UPDATE_LIST, "")
+        Log.e(TAG, "serializedObjectData:  ${Gson().toJson(serializedObject)}")
+        if (serializedObject.isNotEmpty()) {
+            var printOrderItems:
+                    ArrayList<GetOrderDetailsResponse.Data.OrderItem> =
+                arrayListOf()
+
+            val gson = Gson()
+            val type = object :
+                TypeToken<List<GetOrderDetailsResponse.Data.OrderItem?>?>() {}.type
+            var arrayItems: ArrayList<GetOrderDetailsResponse.Data.OrderItem> =
+                gson.fromJson<Any>(
+                    serializedObject,
+                    type
+                ) as ArrayList<GetOrderDetailsResponse.Data.OrderItem>
+
+            Log.e(TAG, "arrayItems:  ${Gson().toJson(arrayItems)}")
+            var itemIds: ArrayList<Int> = arrayListOf()
+            arrayItems.forEach {
+                itemIds.add(it.id)
+            }
+
+            getOrderDetailsResponse?.orderItems?.forEachIndexed { index, orderItem ->
+                if (itemIds.contains(orderItem.id)) {
+                    Log.e("InsideLoop","Inside")
+                    if (arrayItems[index].quantity != orderItem.quantity) {
+                        if (orderItem.quantity > arrayItems[index].quantity) {
+                            orderItem.quantity =
+                                orderItem.quantity - arrayItems[index].quantity
+                            if (!printOrderItems.contains(orderItem)) {
+                                var tbItem: TbItem = TbItem()
+                                tbItem.name = orderItem.itemName
+                                tbItem.price = orderItem.price
+                                tbItem.itemQuantity = orderItem.quantity
+                                if (orderItem.orderItemModifiers.isNotEmpty()) {
+                                    var modifierList: ArrayList<Modifier> = arrayListOf()
+                                    orderItem.orderItemModifiers.forEach {
+                                        val modifiers = Modifier()
+                                        modifiers.price = it.price
+                                        modifiers.name = it.name
+                                        modifiers.itemQuantity = it.quantity
+                                        modifierList.add(modifiers)
+                                    }
+                                    tbItem.modifiers = modifierList
+                                }
+
+                                listItem.add(tbItem)
+                            }
+                        }
+
+                    } else {
+
+                    }
+
+                }
+            }
+
+            prefProvider.setValue(DINE_IN_UPDATE_LIST, "")
+        }
 
         if (listItem.isNotEmpty()) {
             var autoPrintEnable = false

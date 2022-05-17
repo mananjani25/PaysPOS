@@ -23,6 +23,7 @@ import com.android.pos.data.remote.Constants.CUSTOMER_ID
 import com.android.pos.data.remote.Constants.DINE_IN
 import com.android.pos.data.remote.Constants.DINE_IN_LIST_EDIT
 import com.android.pos.data.remote.Constants.DINE_IN_UPDATE
+import com.android.pos.data.remote.Constants.DINE_IN_UPDATE_LIST
 import com.android.pos.data.remote.Constants.IS_UPDATE_ORDER
 import com.android.pos.data.remote.Constants.IS_UPDATE_ORDER_FROM_ACTIVE_ORDER
 import com.android.pos.data.remote.Constants.IS_UPDATE_ORDER_ID
@@ -712,8 +713,80 @@ class CartFragment(
                                     false
                                 ) == true
                             ) {
-
                                 binding.txtDineInProceed.setText("Update and Proceed")
+
+                                var getOldList = prefProvider.getValue(DINE_IN_UPDATE_LIST, "")
+                                Log.e(TAG,"getOldList  ${Gson().toJson(getOldList)}")
+                                if (getOldList.isEmpty()) {
+                                    var listItemDine: ArrayList<GetOrderDetailsResponse.Data.OrderItem> =
+                                        arrayListOf()
+                                    var data = it[0].dineInList
+                                    Log.e(TAG,"getDataSizeDin ${data?.size}")
+                                    data?.forEach {
+                                        it.items.forEach { item ->
+                                            var modifiers: ArrayList<GetOrderDetailsResponse.Data.OrderItem.OrderItemModifier> =
+                                                arrayListOf()
+                                            if (item.modifiers.isNotEmpty()) {
+                                                item.modifiers.forEach {
+                                                    var modelMod =
+                                                        GetOrderDetailsResponse.Data.OrderItem.OrderItemModifier(
+                                                            categoryId = "",
+                                                            id = it.id ?: 0,
+                                                            isModifier = it.isChecked,
+                                                            itemId = "",
+                                                            modifierId = "",
+                                                            name = it.name,
+                                                            orderId = 0,
+                                                            orderItemId = 0,
+                                                            orderItemTaxes = arrayListOf(),
+                                                            price = it.price,
+                                                            quantity = it.itemQuantity,
+                                                            timestamp = ""
+                                                        )
+
+                                                    modifiers.add(modelMod)
+                                                }
+                                            }
+                                            listItemDine.add(
+                                                GetOrderDetailsResponse.Data.OrderItem(
+                                                    categoryId = item.categoryId,
+                                                    completedInKitchen = false,
+                                                    discountAmount = 0.0,
+                                                    discountId = 0,
+                                                    discountType = "",
+                                                    employeeId = 0,
+                                                    float = 0.0,
+                                                    id = item.orderItemId ?: 0,
+                                                    isPaid = item.isPaid,
+                                                    isFired = item.isFired,
+                                                    isPrinted = false,
+                                                    itemId = item.itemId,
+                                                    note = item.note,
+                                                    orderId = cartlist[0].orderId ?: 0,
+                                                    orderItemModifiers = modifiers,
+                                                    orderItemTaxes = arrayListOf(),
+                                                    price = item.price,
+                                                    quantity = item.itemQuantity,
+                                                    timestamp = item.timeStamp ?: "",
+                                                    totalPrice = item.price,
+                                                    itemName = item.name,
+                                                    refundedAmount = 0.0,
+                                                    refundedQuantity = 0,
+
+                                                    order_item_variation = null
+
+
+                                                )
+                                            )
+
+                                        }
+                                    }
+                                    prefProvider.setValue(
+                                        Constants.DINE_IN_UPDATE_LIST,
+                                        Gson().toJson(listItemDine)
+                                    )
+                                }
+
                             } else {
                                 binding.txtDineInProceed.setText("Proceed To Fire")
                             }
@@ -1200,7 +1273,7 @@ class CartFragment(
                     isOrderUpdate = false
                     dineInCartAdapter.clearList()
                     binding.rvCartDineIn.gone()
-
+                   // prefProvider.setValue(DINE_IN_UPDATE_LIST, "")
 //                    uiSave()
 
                     prefProvider.setValue(ORDER_TYPE, TAKEOUT)
@@ -1213,6 +1286,7 @@ class CartFragment(
                     binding.linearButtonView.visible()
                     binding.relPreoceedToFire.gone()
                     arguments?.clear()
+
                     itemClickListner?.onDineInOrderCleared()
 
 
@@ -1302,6 +1376,9 @@ class CartFragment(
                             prefProvider.setValueboolean(DINE_IN_UPDATE, false)
                             prefProvider.setValueboolean(DINE_IN_LIST_EDIT, false)
                             prefProvider.setValueboolean(DINE_IN_UPDATE, false)
+
+
+
                             cartlist[0].orderId?.let { viewModel.updateOrderCall(it, request) }
 
 
