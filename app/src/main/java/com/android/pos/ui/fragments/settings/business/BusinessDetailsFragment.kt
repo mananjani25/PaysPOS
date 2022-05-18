@@ -14,6 +14,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.android.pos.data.entities.TbBusinessDetails
 import com.android.pos.databinding.FragmentAddBusnessDetailsBinding
+import com.android.pos.di.PrefProvider
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.ProgressUtils
@@ -24,6 +25,7 @@ import com.google.android.libraries.places.api.net.FetchPlaceRequest
 import com.google.android.libraries.places.api.net.PlacesClient
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.*
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class BusinessDetailsFragment : Fragment() {
@@ -35,10 +37,11 @@ class BusinessDetailsFragment : Fragment() {
     var placesClient: PlacesClient? = null
     var adapter1: AutoCompleteAdapter? = null
 
-    private var optionName = ArrayList<String>()
-    private var optionName1 = ArrayList<String>()
+    private var timeZoneName = ArrayList<String>()
+    private var timeZoneValue = ArrayList<String>()
 
-    var floorplandefault: ArrayList<String> = arrayListOf()
+    @Inject
+    lateinit var prefProvider: PrefProvider
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -191,13 +194,22 @@ class BusinessDetailsFragment : Fragment() {
 
 
             val model = TbBusinessDetails()
-            model.id = 0
+            model.id = prefProvider.getLocationId()
             model.business_name = binding.edtBusinessName.text.toString()
             model.business_website = binding.edtWebSite.text.toString()
             model.phone_number = binding.edtPhoneNo.text.toString()
             model.phone_number_2 = binding.edtPhoneNo2.text.toString()
             model.time_zone = binding.edtBusinessName.text.toString()
             model.customer_contact_email = binding.edtEmail.text.toString()
+
+            model.businessAddress?.apply {
+                address1 = binding.edtStreet.text.toString().trim()
+                address2 = binding.edtSuite.text.toString().trim()
+                city = binding.edtCity.text.toString().trim()
+                state = binding.edtState.text.toString().trim()
+                country = binding.edtStreet.text.toString().trim()
+                postcode = binding.edtZip.text.toString().trim()
+            }
 
             viewModel.submit(model)
         }
@@ -216,14 +228,18 @@ class BusinessDetailsFragment : Fragment() {
                         resource.data.let {
                             it?.forEach {
                                 Log.e("key", it.name)
-                                optionName.add(it.name)
-                                optionName1.add(it.value)
+                                timeZoneName.add(it.name)
+                                timeZoneValue.add(it.value)
                             }
                         }
 
 
                         val adapter =
-                            ArrayAdapter(requireContext(), R.layout.simple_spinner_item, optionName)
+                            ArrayAdapter(
+                                requireContext(),
+                                R.layout.simple_spinner_item,
+                                timeZoneName
+                            )
                         adapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item)
                         binding.spTimeZone.adapter = adapter
 
@@ -276,7 +292,7 @@ class BusinessDetailsFragment : Fragment() {
                                 binding.spPhone2.setSelection(1)
                             }
 
-                            binding.spTimeZone.setSelection(optionName1.indexOf(it?.time_zone))
+                            binding.spTimeZone.setSelection(timeZoneValue.indexOf(it?.time_zone))
 
                             binding.edtZip.setText(it?.businessAddress?.postcode)
                             binding.edtState.setText(it?.businessAddress?.state)

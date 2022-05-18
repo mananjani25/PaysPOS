@@ -32,6 +32,7 @@ class CategoryAdapter(
             binding.root.setOnClickListener {
                 listner.onTabSelected(bindingAdapterPosition)
                 list.forEachIndexed { index, categoryTabModel ->
+
                     categoryTabModel.isSelected = index == bindingAdapterPosition
                 }
                 notifyDataSetChanged()
