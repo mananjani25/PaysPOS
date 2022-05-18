@@ -5,19 +5,16 @@ import android.graphics.Point
 import android.graphics.drawable.ColorDrawable
 import android.graphics.drawable.InsetDrawable
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
-import android.util.Log
+import android.text.InputFilter
+import android.text.Spanned
 import android.view.*
 import androidx.fragment.app.DialogFragment
+import androidx.fragment.app.setFragmentResult
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.databinding.AddOnlineTimeDiialogBinding
 import com.android.pos.di.PrefProvider
-import com.android.pos.utils.TAG
 import dagger.hilt.android.AndroidEntryPoint
-import java.text.DecimalFormat
-import java.text.NumberFormat
 import java.util.*
 import javax.inject.Inject
 
@@ -30,11 +27,14 @@ class AddOnlineTimeDialog : DialogFragment() {
     private var isFromDetails = false
     private var isFromTransaction = false
     lateinit var binding: AddOnlineTimeDiialogBinding
+    var doneOnce = false
+    var timeFilter: InputFilter? = null
 
     companion object {
         fun newInstance() = AddOnlineTimeDialog()
     }
 
+    var string_final: StringBuffer = StringBuffer()
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -123,6 +123,11 @@ class AddOnlineTimeDialog : DialogFragment() {
         }
 
         binding.txtSave.setOnClickListener {
+            var finalstring = binding.edtAmount.text.toString()
+//
+//            val result = Bundle().apply {
+//                setFragmentResult("request_key_time", result)
+
             findNavController().navigateUp()
         }
     }
@@ -147,21 +152,18 @@ class AddOnlineTimeDialog : DialogFragment() {
         if (binding.edtAmount?.text?.length!! > 0 && delete) {
             binding.edtAmount?.setText(removeLastCharacter(binding?.edtAmount!!.text.toString()))
         } else {
-            if(binding?.edtAmount!!.text?.length==2){
-                binding.edtAmount.append(":")
-                binding?.edtAmount!!.append(number)
-            }else{
-                binding?.edtAmount!!.append(number)
-            }
+            binding.edtAmount.append(number)
+//            if (binding.edtAmount.text?.length == 2) {
+//                binding.edtAmount.append(":")
+//                binding.edtAmount.append(number)
+//            } else {
+//                binding.edtAmount.append(number)
+//            }
         }
     }
 
     private fun removeLastCharacter(str: String): String {
-        if(str.length==4){
-            return str.substring(0, str.length - 2)
-        }else{
-            return str.substring(0, str.length - 1)
-        }
+        return str.substring(0, str.length - 1)
     }
 
 
