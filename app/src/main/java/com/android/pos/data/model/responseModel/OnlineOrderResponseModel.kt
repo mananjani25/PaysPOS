@@ -76,6 +76,8 @@ data class OnlineOrderResponseModel(
         val orderTypeId: Int,
         @SerializedName("payment_status")
         var paymentStatus: String,
+        @SerializedName("order_status")
+        var order_status: String,
         @SerializedName("payments")
         val payments: List<Payment>,
         @SerializedName("service_charge_enabled")

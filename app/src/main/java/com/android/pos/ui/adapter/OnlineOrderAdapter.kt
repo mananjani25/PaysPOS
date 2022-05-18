@@ -6,6 +6,8 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Filter
+import android.widget.Filterable
 import androidx.core.content.ContextCompat
 import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.RecyclerView
@@ -14,25 +16,30 @@ import com.android.pos.data.model.responseModel.OnlineOrderResponseModel
 import com.android.pos.data.model.responseModel.OpenOrderResponse
 import com.android.pos.databinding.ViewonlineorderlayoutBinding
 import com.android.pos.utils.AlertUtils
+import com.android.pos.utils.TAG
 import com.android.pos.utils.TimeFormatUtils
 import com.android.pos.utils.callback.OrderCallBack
 import com.android.pos.utils.extensions.gone
 import com.android.pos.utils.extensions.visible
 import com.google.gson.Gson
-import java.util.ArrayList
+import java.util.*
 
 
-class OnlineOrderAdapter(val context: Context) : RecyclerView.Adapter<OnlineOrderAdapter.MyViewHolder>() {
+class OnlineOrderAdapter(val context: Context) :
+    RecyclerView.Adapter<OnlineOrderAdapter.MyViewHolder>(),
+    Filterable {
     var orderList = ArrayList<OnlineOrderResponseModel.Data>()
     var filterList = ArrayList<OnlineOrderResponseModel.Data>()
     private var mCallback: OrderCallBack? = null
     fun setCallback(callback: OrderCallBack) {
         mCallback = callback
     }
+
     inner class MyViewHolder(private val binding: ViewonlineorderlayoutBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
         private var adapter: OnlineOrderItemsAdapter? = null
+
         @SuppressLint("SetTextI18n")
         fun bind(item: OnlineOrderResponseModel.Data) {
             binding.viewModel = item
@@ -58,7 +65,7 @@ class OnlineOrderAdapter(val context: Context) : RecyclerView.Adapter<OnlineOrde
                 binding.rvOpenOrder.visible()
                 adapter = OnlineOrderItemsAdapter()
                 binding.rvOpenOrder.adapter = adapter
-                Log.e("TAG","OpenOrderorderItems:  ${Gson().toJson(item.orderItems)}")
+                Log.e("TAG", "OpenOrderorderItems:  ${Gson().toJson(item.orderItems)}")
 
                 adapter!!.addAll(item.orderItems)
             } else {
@@ -109,10 +116,10 @@ class OnlineOrderAdapter(val context: Context) : RecyclerView.Adapter<OnlineOrde
 
         init {
             binding.acceptImg.setOnClickListener {
-                mCallback?.onItemClickListener(it,absoluteAdapterPosition,"accepted")
+                mCallback?.onItemClickListener(it, absoluteAdapterPosition, "accepted")
             }
             binding.declineImg.setOnClickListener {
-                mCallback?.onItemClickListener(it,absoluteAdapterPosition,"cancelled")
+                mCallback?.onItemClickListener(it, absoluteAdapterPosition, "cancelled")
             }
             binding.root.setOnClickListener {
 
@@ -132,7 +139,6 @@ class OnlineOrderAdapter(val context: Context) : RecyclerView.Adapter<OnlineOrde
             }
         }
     }
-
 
 
     fun add(orders: List<OnlineOrderResponseModel.Data>) {
@@ -155,4 +161,60 @@ class OnlineOrderAdapter(val context: Context) : RecyclerView.Adapter<OnlineOrde
         return filterList.size
     }
 
-}
+    override fun getFilter(): Filter {
+        return object : Filter() {
+            override fun performFiltering(charSequence: CharSequence): FilterResults {
+                val charString = charSequence.toString()
+                filterList = if (charString.isEmpty()) {
+                    orderList
+                } else {
+                    val fList = ArrayList<OnlineOrderResponseModel.Data>()
+
+                    for (it in orderList) {
+                        Log.d(TAG, "performFiltering: " + it.offlineId)
+                        if (it.offlineId.lowercase(Locale.getDefault())
+                                .contains(charString.lowercase(Locale.getDefault()))
+                        ) {
+                            fList.add(it)
+                        } else if (it.customer != null && it.customer.firstName.lowercase(Locale.getDefault())
+                                .contains(charString.lowercase(Locale.getDefault()))
+                        ) {
+                            fList.add(it)
+                        } else if (it.customer != null && it.customer.lastName.lowercase(Locale.getDefault())
+                                .contains(charString.lowercase(Locale.getDefault()))
+                        ) {
+                            fList.add(it)
+                        } else if (it.employee != null) {
+                            if (
+                                it.employee.firstName.lowercase(Locale.getDefault())
+                                    .contains(charString.lowercase(Locale.getDefault()))
+                            ) {
+                                fList.add(it)
+                            } else if (it.employee.lastName.lowercase(Locale.getDefault())
+                                    .contains(charString.lowercase(Locale.getDefault()))
+                            ) {
+                                fList.add(it)
+                            }
+                        }
+                    }
+
+                        fList
+                    }
+
+                    return FilterResults().apply { values = filterList }
+                }
+
+                override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
+
+
+                    if (results != null && results.count > 0) {
+                        filterList = results.values as ArrayList<OnlineOrderResponseModel.Data>
+                    }
+
+                    notifyDataSetChanged()
+
+                }
+            }
+        }
+
+    }

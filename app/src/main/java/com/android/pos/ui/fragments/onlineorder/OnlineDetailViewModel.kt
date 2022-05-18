@@ -3,9 +3,7 @@ package com.android.pos.ui.fragments.onlineorder
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import com.android.pos.data.model.responseModel.BaseResponse
-import com.android.pos.data.model.responseModel.OnlineOrderResponseModel
-import com.android.pos.data.model.responseModel.OpenOrderResponse
+import com.android.pos.data.model.responseModel.*
 import com.android.pos.data.repositories.PosRepository
 import com.android.pos.di.PrefProvider
 import com.android.pos.utils.Event
@@ -48,12 +46,23 @@ class OnlineDetailViewModel @Inject constructor(
             _endDateSelection.value = Event(Unit)
         }
     }
+    fun onLineorderCounts(): LiveData<Resource<OnlineOrderCountResponse>> =
+        posRepository.onlineOrderCounts()
+
 
     fun onlineOrders(
         startDate: String,
-        endDate: String
+        endDate: String,
+        order_status:String
     ): LiveData<Resource<OnlineOrderResponseModel>> =
-        posRepository.getOnlineOrders( startDate, endDate)
+        posRepository.getOnlineOrders(startDate, endDate,order_status)
+
+    fun acceptedAndDeclineOrder(
+        time: Int,
+        order_id: Int,
+        isaccepted: Boolean
+    ): LiveData<Resource<BaseResponse>> =
+        posRepository.acceptedAndDeclineOrders(time, order_id,isaccepted)
 
 
     fun setCurrentDate(myCalendar: Calendar, paramStartDate: String?, paramEndDate: String?) {

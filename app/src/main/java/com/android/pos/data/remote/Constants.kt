@@ -247,6 +247,7 @@ object Constants {
     const val ORDER_ASSIGN_CUSTOMER = "orders/{id}/assign_customer_into_order"
     const val ORDER_PAY_AMOUNT_WISE = "payments/pay_amount_wise"
     const val ORDER_COUNTS = "orders/open_orders_show_count"
+    const val ONLINE_ORDER_COUNTS = "online_ordering_orders/web_orders_count"
 
     const val ACTIVE_ORDER = "active_order"
     const val UPCOMING_ORDER = "upcoming_order"
@@ -401,6 +402,7 @@ object Constants {
 
     const val OPEN_ORDERS = "orders/open_orders"
     const val ONLINE_ORDERING= "online_ordering_orders/web_orders"
+    const val ACCEPTED_DECLINE_ONLINEORDER= "online_ordering_orders/{id}/accept_order"
     const val CASH_EVENTS = "cash_events"
 
     const val UTC_SERVER_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"

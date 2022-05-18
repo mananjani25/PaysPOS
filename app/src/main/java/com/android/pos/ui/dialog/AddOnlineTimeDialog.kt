@@ -14,6 +14,8 @@ import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.databinding.AddOnlineTimeDiialogBinding
 import com.android.pos.di.PrefProvider
+import com.android.pos.utils.AlertUtils
+
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.*
 import javax.inject.Inject
@@ -29,6 +31,7 @@ class AddOnlineTimeDialog : DialogFragment() {
     lateinit var binding: AddOnlineTimeDiialogBinding
     var doneOnce = false
     var timeFilter: InputFilter? = null
+    var order_id: Int? = null
 
     companion object {
         fun newInstance() = AddOnlineTimeDialog()
@@ -37,11 +40,13 @@ class AddOnlineTimeDialog : DialogFragment() {
     var string_final: StringBuffer = StringBuffer()
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-
+        if (arguments != null) {
+            if (arguments?.getInt("order_id") != null) order_id =
+                requireArguments().getInt("order_id")
+        }
         dialog?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN)
         val back = ColorDrawable(Color.WHITE)
-        val inset = InsetDrawable(back, 150, 100, 150, 100)
+        val inset = InsetDrawable(back, 150, 100, 150, 130)
         dialog?.window?.setBackgroundDrawable(inset);
 
         binding.txtTitle?.text = getString(R.string.add_time_online)
@@ -124,11 +129,18 @@ class AddOnlineTimeDialog : DialogFragment() {
 
         binding.txtSave.setOnClickListener {
             var finalstring = binding.edtAmount.text.toString()
-//
-//            val result = Bundle().apply {
-//                setFragmentResult("request_key_time", result)
+            if (finalstring.isEmpty()) {
+                AlertUtils.showCustomAlert(requireContext(), "Please enter Time")
+            } else {
+                val result = Bundle().apply {
+                    putInt("time", finalstring.toInt())
+                    order_id?.let { it1 -> putInt("order_id", it1) }
+                }
+                requireActivity().supportFragmentManager.setFragmentResult("request_key_time", result)
 
-            findNavController().navigateUp()
+                findNavController().navigateUp()
+            }
+
         }
     }
 
@@ -153,12 +165,13 @@ class AddOnlineTimeDialog : DialogFragment() {
             binding.edtAmount?.setText(removeLastCharacter(binding?.edtAmount!!.text.toString()))
         } else {
             binding.edtAmount.append(number)
-//            if (binding.edtAmount.text?.length == 2) {
-//                binding.edtAmount.append(":")
-//                binding.edtAmount.append(number)
-//            } else {
-//                binding.edtAmount.append(number)
-//            }
+            if (binding.edtAmount.text!!.length == 3) {
+                var value = binding.edtAmount.text.toString().toInt()
+                if (value > 120) {
+                    binding.edtAmount.text!!.clear()
+                    binding.edtAmount.append("120")
+                }
+            }
         }
     }
 

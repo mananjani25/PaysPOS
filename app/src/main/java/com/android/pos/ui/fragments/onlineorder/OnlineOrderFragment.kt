@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.FragmentManager
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.data.model.InventoryItemModel
@@ -15,6 +16,7 @@ import com.android.pos.databinding.FragmentOnlineOrderBinding
 import com.android.pos.di.RolePermission
 import com.android.pos.ui.adapter.InventoryAdapter
 import com.android.pos.utils.TAG
+import com.android.pos.utils.statusUtils.Status
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -28,6 +30,7 @@ class OnlineOrderFragment : Fragment() {
     var startDate: String? = null
     var endDate: String? = null
     private var mPos: Int = 0
+    private val viewModel by viewModels<OnlineDetailViewModel>()
     private var ongoingOrderCount: Int? = 0
     private var pendingOrdersCount: Int? = 0
     private var cancelledOrdersCount: Int? = 0
@@ -40,6 +43,7 @@ class OnlineOrderFragment : Fragment() {
         // Inflate the layout for this fragment
         binding = FragmentOnlineOrderBinding.inflate(inflater, container, false)
         configureToolbar()
+        getOrderCountsObserver()
         return binding.root
     }
 
@@ -61,6 +65,36 @@ class OnlineOrderFragment : Fragment() {
         binding.commonToolbar?.imgOptionMenu?.visibility = View.GONE
         binding.commonToolbar?.txtSubTitle?.text = "Pending Orders"
         binding.commonToolbar?.imgOptionMenuContainer?.visibility = View.GONE
+    }
+
+    private fun getOrderCountsObserver() {
+        try {
+            viewModel.onLineorderCounts().observe(viewLifecycleOwner) {
+                it?.let { resource ->
+                    when (resource.status) {
+                        Status.SUCCESS -> {
+
+                            pendingOrdersCount = it.data?.data?.online_pending_orders
+                            ongoingOrderCount = it.data?.data?.online_in_progress_orders
+                            completedOrdersCount = it.data?.data?.online_complete_orders
+                            cancelledOrdersCount = it.data?.data?.online_rejected_orders
+
+                            setAdapter(mPos)
+
+                        }
+                        Status.ERROR -> {
+                            setAdapter(mPos)
+                        }
+                        Status.LOADING -> {
+                            setAdapter(mPos)
+                        }
+                    }
+                }
+            }
+
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
     private fun changePosition(position: Int) {
@@ -110,30 +144,30 @@ class OnlineOrderFragment : Fragment() {
         val list: ArrayList<InventoryItemModel> = arrayListOf()
         when (pos) {
             0 -> {
-                list.add(InventoryItemModel(0, "Pending Orders ", 0, true))
-                list.add(InventoryItemModel(0, "Ongoing Orders ", 0))
-                list.add(InventoryItemModel(0, "Completed Orders", 0))
-                list.add(InventoryItemModel(0, "Cancelled Orders ", 0))
+                list.add(InventoryItemModel(0, "Pending Orders ", pendingOrdersCount, true))
+                list.add(InventoryItemModel(0, "InProgress Orders ", ongoingOrderCount))
+                list.add(InventoryItemModel(0, "Completed Orders", completedOrdersCount))
+                list.add(InventoryItemModel(0, "Rejected Orders ", cancelledOrdersCount))
             }
             1 -> {
-                list.add(InventoryItemModel(0, "Pending Orders ", 0))
-                list.add(InventoryItemModel(0, "Ongoing Orders ", 0, true))
-                list.add(InventoryItemModel(0, "Completed Orders", 0))
-                list.add(InventoryItemModel(0, "Cancelled Orders ", 0))
+                list.add(InventoryItemModel(0, "Pending Orders ", pendingOrdersCount))
+                list.add(InventoryItemModel(0, "InProgress Orders ", ongoingOrderCount, true))
+                list.add(InventoryItemModel(0, "Completed Orders", completedOrdersCount))
+                list.add(InventoryItemModel(0, "Rejected Orders ", cancelledOrdersCount))
 
             }
             2 -> {
-                list.add(InventoryItemModel(0, "Pending Orders ", 0))
-                list.add(InventoryItemModel(0, "Ongoing Orders ", 0))
-                list.add(InventoryItemModel(0, "Completed Orders", 0, true))
-                list.add(InventoryItemModel(0, "Cancelled Orders ", 0))
+                list.add(InventoryItemModel(0, "Pending Orders ", pendingOrdersCount))
+                list.add(InventoryItemModel(0, "InProgress Orders ", ongoingOrderCount))
+                list.add(InventoryItemModel(0, "Completed Orders", completedOrdersCount, true))
+                list.add(InventoryItemModel(0, "Rejected Orders ", cancelledOrdersCount))
 
             }
             3 -> {
-                list.add(InventoryItemModel(0, "Pending Orders ", 0))
-                list.add(InventoryItemModel(0, "Ongoing Orders ", 0))
-                list.add(InventoryItemModel(0, "Completed Orders", 0))
-                list.add(InventoryItemModel(0, "Cancelled Orders ", 0, true))
+                list.add(InventoryItemModel(0, "Pending Orders ", pendingOrdersCount))
+                list.add(InventoryItemModel(0, "InProgress Orders ", ongoingOrderCount))
+                list.add(InventoryItemModel(0, "Completed Orders", completedOrdersCount))
+                list.add(InventoryItemModel(0, "Rejected Orders ", cancelledOrdersCount, true))
 
             }
         }

@@ -31,6 +31,7 @@ import com.android.pos.ui.adapter.OpenOrderAdapter
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.callback.OrderCallBack
+import com.android.pos.utils.extensions.alert
 import com.android.pos.utils.extensions.showAlert
 import com.android.pos.utils.statusUtils.Status
 import dagger.hilt.android.AndroidEntryPoint
@@ -60,6 +61,7 @@ class OnlineDetailFragment(
     val myCalendar1 = Calendar.getInstance()
     val myCalendar2 = Calendar.getInstance()
     val myCalendar3 = Calendar.getInstance()
+    var order_status = "Pending"
 
     @Inject
     lateinit var prefProvider: PrefProvider
@@ -70,30 +72,74 @@ class OnlineDetailFragment(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupAdapter()
-        getOnlineOrders()
         observeShowProgress()
         when (param1) {
             "0" -> {
+                order_status = "Pending"
                 binding.txtOrderWillAppear?.text = "Pending order will appear here."
             }
             "1" -> {
-                binding.txtOrderWillAppear?.text = "Ongoing order will appear here."
+                order_status = "InProgress"
+                binding.txtOrderWillAppear?.text = "InProgress order will appear here."
             }
             "2" -> {
+                order_status = "Completed"
                 binding.txtOrderWillAppear?.text = "Completed order will appear here."
             }
             "3" -> {
-                binding.txtOrderWillAppear?.text = "Cancelled order will appear here."
+                order_status = "Rejected"
+                binding.txtOrderWillAppear?.text = "Rejected order will appear here."
             }
 
         }
         searchFilter()
+        getOnlineOrders()
+
+        requireActivity().supportFragmentManager.setFragmentResultListener(
+            "request_key_time",
+            viewLifecycleOwner
+        ) { requestKey: String, bundle: Bundle ->
+            var time = bundle.getInt("time")
+            var order_id = bundle.getInt("order_id")
+            acceptedAndDeclineOrder(time, order_id, true)
+
+
+        }
+    }
+
+    private fun acceptedAndDeclineOrder(time: Int, orderId: Int, is_accepted: Boolean) {
+        viewModel.acceptedAndDeclineOrder(
+            time,
+            orderId,
+            is_accepted
+        ).observe(viewLifecycleOwner) { it ->
+
+            it?.let { resource ->
+                when (resource.status) {
+                    Status.SUCCESS -> {
+                        ProgressUtils.dismissProgressDialog()
+                        resource.data?.let {
+                            getOnlineOrders()
+                        }
+                    }
+                    Status.ERROR -> {
+                        ProgressUtils.dismissProgressDialog()
+                        binding.root.showAlert(resource.message)
+
+                    }
+                    Status.LOADING -> {
+                        ProgressUtils.showProgressDialog(requireActivity())
+                    }
+                }
+            }
+        }
     }
 
     private fun getOnlineOrders() {
         viewModel.onlineOrders(
             viewModel.startDate.value.toString(),
-            viewModel.endDate.value.toString()
+            viewModel.endDate.value.toString(),
+            order_status
         ).observe(viewLifecycleOwner) { it ->
 
             it?.let { resource ->
@@ -334,7 +380,7 @@ class OnlineDetailFragment(
     }
 
     private fun startDatePickerObserver() {
-        viewModel.startDateSelection.observe(requireActivity(), { event ->
+        viewModel.startDateSelection.observe(requireActivity()) { event ->
             event.getContentIfNotHandled()?.let {
                 //currentPage = 1
                 DatePickerDialog(
@@ -349,7 +395,7 @@ class OnlineDetailFragment(
                 ).show()
             }
 
-        })
+        }
     }
 
     private fun endDatePickerObserver() {
@@ -397,7 +443,7 @@ class OnlineDetailFragment(
 
             override fun afterTextChanged(s: Editable) {
 
-//                adapter.filter.filter(s.toString().trim())
+                adapter.filter.filter(s.toString().trim())
 
             }
         })
@@ -405,13 +451,23 @@ class OnlineDetailFragment(
 
     override fun onItemClickListener(view: View?, pos: Int, status: String) {
         if (status == "accepted") {
-            if(findNavController().currentDestination?.id==R.id.onlineOrderFragment){
+            if (findNavController().currentDestination?.id == R.id.onlineOrderFragment) {
                 findNavController().navigate(
-                    R.id.action_onlineOrder_to_addOnlneTime
+                    R.id.action_onlineOrder_to_addOnlneTime,
+                    bundleOf(
+                        "order_id" to adapter.filterList[pos].id
+                    )
                 )
             }
         } else {
-            Toast.makeText(requireContext(), "Declined", +2000).show()
+            alert("", "Are you sure you want to Reject The Order?") {
+                this.positiveButton("YES") {
+                    acceptedAndDeclineOrder(0, adapter.filterList[0].id, false)
+                }
+                this.negativeButton("NO") {
+                }
+
+            }
         }
     }
 }
