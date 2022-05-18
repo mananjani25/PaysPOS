@@ -1014,18 +1014,19 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                                 createOrderResponse.data.order.orderItems.forEachIndexed { index, orderItem ->
 
                                     if (itemIds.contains(orderItem.id)) {
-                                        if (arrayItems[index].quantity != orderItem.quantity) {
-                                            if (orderItem.quantity > arrayItems[index].quantity) {
-                                                orderItem.quantity =
-                                                    orderItem.quantity - arrayItems[index].quantity
-                                                if (!printOrderItems.contains(orderItem)) {
-                                                    printOrderItems.add(orderItem)
+                                        if (index < arrayItems.size) {
+                                            if (arrayItems[index].quantity != orderItem.quantity) {
+                                                if (orderItem.quantity > arrayItems[index].quantity) {
+                                                    orderItem.quantity =
+                                                        orderItem.quantity - arrayItems[index].quantity
+                                                    if (!printOrderItems.contains(orderItem)) {
+                                                        printOrderItems.add(orderItem)
+                                                    }
                                                 }
+                                            } else {
                                             }
-
-                                        } else {
-
                                         }
+
 
                                     } else {
                                         printOrderItems.add(orderItem)
