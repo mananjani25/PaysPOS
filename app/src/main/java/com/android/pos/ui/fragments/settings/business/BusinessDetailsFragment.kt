@@ -12,17 +12,21 @@ import android.widget.ArrayAdapter
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import com.android.pos.data.entities.BusinessAddress
 import com.android.pos.data.entities.TbBusinessDetails
+import com.android.pos.data.model.requestModel.BusinessModel
 import com.android.pos.databinding.FragmentAddBusnessDetailsBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.ProgressUtils
+import com.android.pos.utils.extensions.liveSnackBar
 import com.android.pos.utils.statusUtils.Status
 import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.api.model.Place
 import com.google.android.libraries.places.api.net.FetchPlaceRequest
 import com.google.android.libraries.places.api.net.PlacesClient
+import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.*
 import javax.inject.Inject
@@ -30,6 +34,8 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class BusinessDetailsFragment : Fragment() {
 
+    private var businessAddress: BusinessAddress? = null
+    private var addressID: Int? = null
     private lateinit var binding: FragmentAddBusnessDetailsBinding
     private var country = arrayOf("United States", "Canada")
     private val viewModel by viewModels<BusniessDetailsViewModel>()
@@ -62,6 +68,7 @@ class BusinessDetailsFragment : Fragment() {
 
         placesClient = Places.createClient(requireContext())
 
+        observeShowProgress()
         initAutoCompleteTextView()
 
         setupDetails()
@@ -198,23 +205,66 @@ class BusinessDetailsFragment : Fragment() {
             model.business_name = binding.edtBusinessName.text.toString()
             model.business_website = binding.edtWebSite.text.toString()
             model.phone_number = binding.edtPhoneNo.text.toString()
+            model.phone_number_1_country = binding.spPhone.selectedItem.toString()
+            model.phone_number_2_country = binding.spPhone2.selectedItem.toString()
             model.phone_number_2 = binding.edtPhoneNo2.text.toString()
-            model.time_zone = binding.edtBusinessName.text.toString()
+            model.time_zone = timeZoneValue[binding.spTimeZone.selectedItemPosition]
             model.customer_contact_email = binding.edtEmail.text.toString()
 
-            model.businessAddress?.apply {
-                address1 = binding.edtStreet.text.toString().trim()
-                address2 = binding.edtSuite.text.toString().trim()
-                city = binding.edtCity.text.toString().trim()
-                state = binding.edtState.text.toString().trim()
-                country = binding.edtStreet.text.toString().trim()
-                postcode = binding.edtZip.text.toString().trim()
+            val address = businessAddress?.addressableType?.let { it1 ->
+                BusinessAddress(
+                    bid = addressID!!,
+                    address1 = binding.edtStreet.text.toString().trim(),
+                    address2 = binding.edtSuite.text.toString().trim(),
+                    city = binding.edtCity.text.toString().trim(),
+                    state = binding.edtState.text.toString().trim(),
+                    country = binding.edtAddress.selectedItem.toString(),
+                    postcode = binding.edtZip.text.toString().trim(),
+                    addressableType = it1,
+                    addressableId = businessAddress!!.addressableId,
+                    createdAt = businessAddress!!.createdAt,
+                    updatedAt = businessAddress!!.updatedAt,
+                    latitude = businessAddress!!.latitude,
+                    longitude = businessAddress!!.longitude,
+                    typeOfAddress = businessAddress!!.typeOfAddress
+
+                )
             }
 
+            model.businessAddress = listOf(address) as List<BusinessAddress>
+
+            MethodUtils.hideKeyboard(requireActivity())
             viewModel.submit(model)
         }
 
     }
+
+    private fun observeShowProgress() {
+
+        viewModel.showProgress.observe(viewLifecycleOwner) { event ->
+            event.getContentIfNotHandled()?.let {
+                if (it) {
+                    ProgressUtils.showProgressDialog(requireActivity())
+                } else {
+                    ProgressUtils.dismissProgressDialog()
+                }
+            }
+        }
+
+
+        viewModel.data.observe(viewLifecycleOwner) { event ->
+
+            event.getContentIfNotHandled()?.let {
+                AlertUtils.showCustomAlert(requireActivity(), it.message)
+            }
+
+        }
+
+
+        binding.root.liveSnackBar(this, viewModel.snackbarText, Snackbar.LENGTH_SHORT)
+
+    }
+
 
     private fun timeZonesObserver() {
 
@@ -294,11 +344,14 @@ class BusinessDetailsFragment : Fragment() {
 
                             binding.spTimeZone.setSelection(timeZoneValue.indexOf(it?.time_zone))
 
-                            binding.edtZip.setText(it?.businessAddress?.postcode)
-                            binding.edtState.setText(it?.businessAddress?.state)
-                            binding.edtCity.setText(it?.businessAddress?.city)
-                            binding.edtSuite.setText(it?.businessAddress?.address2)
-                            binding.edtStreet.setText(it?.businessAddress?.address1)
+                            binding.edtZip.setText(it?.businessAddress?.get(0)?.postcode ?: "")
+                            binding.edtState.setText(it?.businessAddress?.get(0)?.state)
+                            binding.edtCity.setText(it?.businessAddress?.get(0)?.city)
+                            binding.edtSuite.setText(it?.businessAddress?.get(0)?.address2)
+                            binding.edtStreet.setText(it?.businessAddress?.get(0)?.address1)
+
+                            addressID = it?.businessAddress?.get(0)?.bid
+                            businessAddress = it?.businessAddress?.get(0)
                         }
 
 

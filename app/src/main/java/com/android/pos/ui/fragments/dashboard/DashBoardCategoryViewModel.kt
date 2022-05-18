@@ -2427,6 +2427,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 posRepository.addAllCountryList(it.data.phoneCountrylist)
                                 posRepository.addTimeZones(it.data.time_zone_options)
                                 posRepository.addBusinessDetails(TbBusinessDetails().apply {
+                                    id = prefProvider.getLocationId()
                                     business_name = it.data.businessName
                                     business_website = it.data.businessWebsite
                                     phone_number = it.data.phoneNumber
@@ -2435,7 +2436,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                     phone_number_2 = it.data.phoneNumber2
                                     time_zone = it.data.business_time_zone
                                     customer_contact_email = it.data.customerContactEmail
-                                    businessAddress = it.data.business_address
+                                    businessAddress = listOf(it.data.business_address)
                                 })
 
 

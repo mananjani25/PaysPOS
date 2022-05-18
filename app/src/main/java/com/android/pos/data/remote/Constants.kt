@@ -254,6 +254,9 @@ object Constants {
     const val CANCELED_ORDER = "canceled_order"
 
 
+    const val BUSINESS_UPDATE = "locations/{id}/update_business_detail"
+
+
     const val UPDATE_TIP = "orders/{id}/update_tip"
     const val FIRE_ITEM_TO_KITCHEN = "orders/{id}/update_fire_status_of_items"
     const val PAY_BY_GUEST = "payments/pay_by_guest"
@@ -405,7 +408,7 @@ object Constants {
     const val UTC_SERVER_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
 
 
-    fun getReceiptFormatDateFromUTCServer(context:Context,mdate: String): String {
+    fun getReceiptFormatDateFromUTCServer(context: Context, mdate: String): String {
 
         /* val df = SimpleDateFormat(UTC_SERVER_FORMAT, Locale.ENGLISH)
          df.setTimeZone(TimeZone.getTimeZone("UTC"))
@@ -581,8 +584,8 @@ object Constants {
     const val IS_UPDATE_ORDER_FROM_ACTIVE_ORDER = "is_update_order_from_active_order"
     const val IS_UPDATE_ORDER_LOYALTY_APPLIED = "is_update_order_loyalty_applied"
 
-    const val SPLIT_DINEIN_MODEL ="split_dinein_model"
-    const val SPLIT_IS_GUESTPAY ="split_is_guestpay"
+    const val SPLIT_DINEIN_MODEL = "split_dinein_model"
+    const val SPLIT_IS_GUESTPAY = "split_is_guestpay"
     const val SPLIT_DINEIN_CHECKOUT = "split_dinein_checkout"
 
 }
