@@ -61,6 +61,9 @@ import javax.inject.Inject
 class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : Fragment(),
     magtekCallback,
     DeleteOptionCallback, IDeviceListCallback {
+    private var cardCVV: String = ""
+    private var cardExpDate: String = ""
+    private var cardNumber: String = ""
     private var isLastPayment: Boolean = false
     private var isManualCard: Boolean = false
     private lateinit var binding: FragmentCheckoutDetailsNewBinding
@@ -249,10 +252,10 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
 
         binding.linearNextSplit.setOnClickListener {
             PaymentBoldPosFragment.newInstance().addTipHideShow(false)
-                viewModel.setSplitCount(isSelectedCount)
-                loadPaymentLayout()
-                tipAmountCalculation()
-            }
+            viewModel.setSplitCount(isSelectedCount)
+            loadPaymentLayout()
+            tipAmountCalculation()
+        }
 
         binding.tvFullAmount.setOnClickListener {
             listtextview = arrayListOf()
@@ -726,6 +729,15 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
             prefProvider.getValueInt(Constants.TERMINAL_ID, 0)
         guestRequestModel?.paymentAttributes!!.employeeId =
             prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
+
+
+        if (paymentType == "Card") {
+            guestRequestModel?.paymentAttributes!!.cardName =
+                CardValidator.getCardType(cardNumber.trim())?.name.toString().uppercase()
+            guestRequestModel?.paymentAttributes!!.cardNumber =
+                if (cardNumber.isNotEmpty()) cardNumber.takeLast(4) else ""
+            guestRequestModel?.paymentAttributes!!.cardType = "Credit"
+        }
         val guestPaymentAttributes = GuestPaymentAttributes()
         guestPaymentAttributes.amount = guestRequestModel?.paymentAttributes!!.amount
         guestPaymentAttributes.serviceChargeAmount =
@@ -753,6 +765,13 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
             guestRequestModel?.paymentAttributes!!.cash_discount_or_surcharge
         guestPaymentAttributes.cash_discount_type =
             guestRequestModel?.paymentAttributes!!.cash_discount_type
+
+        if (paymentType == "Card") {
+            guestPaymentAttributes.cardName = guestRequestModel?.paymentAttributes!!.cardName
+            guestPaymentAttributes.cardNumber = guestRequestModel?.paymentAttributes!!.cardNumber
+            guestPaymentAttributes.cardType = guestRequestModel?.paymentAttributes!!.cardType
+        }
+
         guestRequestModel?.paymentAttributes!!.paymentAttributes =
             listOf(guestPaymentAttributes)
     }
@@ -894,6 +913,8 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
 
         binding.txtCharge.setOnClickListener {
 
+            paymentType = "Card"
+
             MethodUtils.hideKeyboard(requireActivity())
 
             subTotalPrice = String.format("%.2f", subTotalPrice / isSelectedCount).toDouble()
@@ -911,9 +932,9 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                     String.format("%.2f", paymentAmount + cashDiscountSurcharge).toDouble()
             }
 
-            val cardNumber = binding.edtCardNumber.rawText.toString().trim()
-            val cardExpDate = binding.edtMMYY.rawText.toString().trim()
-            val cardCVV = binding.edtCVV.text.toString().trim()
+            cardNumber = binding.edtCardNumber.rawText.toString().trim()
+            cardExpDate = binding.edtMMYY.rawText.toString().trim()
+            cardCVV = binding.edtCVV.text.toString().trim()
 
             when {
                 !CardValidator.validateCardNumber(cardNumber) -> {
@@ -955,6 +976,8 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
             expDate,
             cardCVV
         )
+
+
 
         networkCall(jsonArray1, 3)
 
@@ -1289,7 +1312,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                     binding.tvFullAMounttxt.visibility = View.VISIBLE
                     binding.tvwaysplit?.visibility = View.INVISIBLE
                 }
-            }else{
+            } else {
                 loadSplitLayout()
                 binding.tvFullAmount.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
                 binding.tv2ways.setBackgroundDrawable(resources.getDrawable(R.drawable.background_square_border_grey))
@@ -1682,6 +1705,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                                 dineinOrderVieweModel.totalPayAmount(paymentAmount)
                                 guestAttributeCalculation()
                                 guestRequestModel?.paymentAttributes?.let { logPrintGuest(it) }
+
                                 dineinOrderVieweModel?.payByGuest(
                                     dineInDataModel?.guestId ?: 0,
                                     dineInDataModel?.guestPaymentReq!!,
@@ -1941,7 +1965,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                         ).toDouble()
                     }
 
-                Log.e(TAG,"wholePricewholePrice:  ${wholePrice}")
+                Log.e(TAG, "wholePricewholePrice:  ${wholePrice}")
 
                 bundle.putDouble("WholetotalPrice", wholePrice)
                 var remainingValue = 0.0

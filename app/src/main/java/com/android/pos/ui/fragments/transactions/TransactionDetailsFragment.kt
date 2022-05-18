@@ -188,7 +188,7 @@ class TransactionDetailsFragment : Fragment() {
 
                 paymentDetailsResponse = it
 
-                if (paymentDetailsResponse.data.order.order_split_type == "OrderAmountTab") {
+                if (paymentDetailsResponse.data.order.order_split_type == "OrderAmountTab" || paymentDetailsResponse.data.order.order_split_type == "OrderGuestTab") {
                     isSplitPayment = true
                 }
 
