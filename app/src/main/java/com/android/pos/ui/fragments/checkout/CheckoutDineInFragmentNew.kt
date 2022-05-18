@@ -695,7 +695,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
             if (custom_paymentAmount != 0.0) {
                 dineinOrderVieweModel.totalPayAmount(custom_paymentAmount)
             }
-            guestAttributeCalculation()
+            guestAttributeCalculation(-1, "")
             guestRequestModel?.paymentAttributes?.let { logPrintGuest(it) }
             dineinOrderVieweModel?.payByGuest(
                 dineInDataModel?.guestId ?: 0, dineInDataModel?.guestPaymentReq!!,
@@ -708,7 +708,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
         }
     }
 
-    private fun guestAttributeCalculation() {
+    private fun guestAttributeCalculation(i: Int, toJson: String) {
         guestRequestModel?.paymentAttributes!!.amount =
             paymentAmount
         guestRequestModel?.paymentAttributes!!.serviceChargeAmount =
@@ -731,12 +731,56 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
             prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
 
 
-        if (paymentType == "Card") {
+        if (i == 3 && paymentType == "Card") {
             guestRequestModel?.paymentAttributes!!.cardName =
                 CardValidator.getCardType(cardNumber.trim())?.name.toString().uppercase()
             guestRequestModel?.paymentAttributes!!.cardNumber =
                 if (cardNumber.isNotEmpty()) cardNumber.takeLast(4) else ""
             guestRequestModel?.paymentAttributes!!.cardType = "Credit"
+        } else if (paymentType == "Card" && toJson.isNotEmpty()) {
+
+            if (toJson.isNotEmpty()) {
+                val model = Gson().fromJson(
+                    toJson,
+                    PaymentResponse.PaymentResponseItem::class.java
+                )
+                Log.e("magensaResponse", Gson().toJson(model))
+
+
+                if (model.dataOutput != null) {
+                    Log.e("dataOutput", Gson().toJson(model))
+                    val cardNumber = model.dataOutput.PANLast4
+                    var cardN = ""
+                    model.dataOutput.additionalOutputData?.forEach {
+                        Log.e("additionalOutputData", it.key)
+                        if (it.key == "CardType") {
+                            cardN = it.value
+                        }
+                    }
+                    guestRequestModel?.paymentAttributes!!.cardName = cardN
+                    guestRequestModel?.paymentAttributes!!.cardNumber = cardNumber
+
+                }
+
+                if (model.cardSwipeOutput != null) {
+                    Log.e("cardSwipeOutput", Gson().toJson(model))
+                    val cardNumber = model.cardSwipeOutput.pANLast4
+                    var cardN = ""
+                    model.cardSwipeOutput.additionalOutputData?.forEach {
+                        if (it.key == "CardType") {
+                            cardN = it.value
+                        }
+                    }
+
+                    guestRequestModel?.paymentAttributes!!.cardName = cardN
+                    guestRequestModel?.paymentAttributes!!.cardNumber = cardNumber
+                }
+
+
+
+
+                guestRequestModel?.paymentAttributes!!.cardType = "Credit"
+            }
         }
         val guestPaymentAttributes = GuestPaymentAttributes()
         guestPaymentAttributes.amount = guestRequestModel?.paymentAttributes!!.amount
@@ -914,6 +958,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
         binding.txtCharge.setOnClickListener {
 
             paymentType = "Card"
+
 
             MethodUtils.hideKeyboard(requireActivity())
 
@@ -1702,7 +1747,8 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                             paymentviewModel.setMagensaResponse(Gson().toJson(response.body()!![0]))
                             if (isGuestPay) {
                                 dineinOrderVieweModel.totalPayAmount(paymentAmount)
-                                guestAttributeCalculation()
+
+                                guestAttributeCalculation(i, Gson().toJson(response.body()!![0]))
                                 guestRequestModel?.paymentAttributes?.let { logPrintGuest(it) }
 
                                 dineinOrderVieweModel?.payByGuest(
