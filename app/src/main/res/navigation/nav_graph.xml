@@ -126,6 +126,9 @@
             android:id="@+id/action_onlineOrder_to_dashboarCategorynew"
             app:destination="@id/dashboardCategoryBoldPOS"
             app:enterAnim="@anim/nav_default_enter_anim" />
+        <action
+            android:id="@+id/action_onlineOrder_to_addOnlneTime"
+            app:destination="@id/addOnlineTimeDialog" />
     </fragment>
 
     <fragment
@@ -1093,6 +1096,10 @@
         android:name="com.android.pos.ui.dialog.AddTipsDialog"
         android:label="AddTipsDialog" />
     <dialog
+        android:id="@+id/addOnlineTimeDialog"
+        android:name="com.android.pos.ui.dialog.AddOnlineTimeDialog"
+        android:label="AddOnlineTimeDialog" />
+    <dialog
         android:id="@+id/issueRefundFragment"
         android:name="com.android.pos.ui.dialog.IssueRefundDialog"
         android:label="IssueRefundFragment">
@@ -1158,6 +1165,7 @@
             app:popUpTo="@id/dashboardCategoryBoldPOS"
             app:popUpToInclusive="true" />
     </fragment>
+
     <dialog
         android:id="@+id/orderTypeDialog"
         android:name="com.android.pos.ui.dialog.OrderTypeDialog">

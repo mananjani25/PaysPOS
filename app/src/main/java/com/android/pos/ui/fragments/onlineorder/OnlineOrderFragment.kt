@@ -17,6 +17,7 @@ import com.android.pos.ui.adapter.InventoryAdapter
 import com.android.pos.utils.TAG
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
+
 @AndroidEntryPoint
 class OnlineOrderFragment : Fragment() {
 
@@ -24,9 +25,10 @@ class OnlineOrderFragment : Fragment() {
 
     @Inject
     lateinit var rolePermission: RolePermission
-    var startDate:String?=null
-    var endDate:String?=null
+    var startDate: String? = null
+    var endDate: String? = null
     private var mPos: Int = 0
+    private var ongoingOrderCount: Int? = 0
     private var pendingOrdersCount: Int? = 0
     private var cancelledOrdersCount: Int? = 0
     private var completedOrdersCount: Int? = 0
@@ -36,7 +38,7 @@ class OnlineOrderFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         // Inflate the layout for this fragment
-        binding = FragmentOnlineOrderBinding.inflate(inflater,  container, false)
+        binding = FragmentOnlineOrderBinding.inflate(inflater, container, false)
         configureToolbar()
         return binding.root
     }
@@ -46,6 +48,7 @@ class OnlineOrderFragment : Fragment() {
         changePosition(0)
         setAdapter(mPos)
     }
+
     private fun configureToolbar() {
         binding.commonToolbar?.imgDrawer?.setOnClickListener {
             findNavController().navigate(R.id.action_onlineOrder_to_menuposbold)
@@ -56,27 +59,34 @@ class OnlineOrderFragment : Fragment() {
 
         binding.commonToolbar?.txtTitle?.text = "Online Orders"
         binding.commonToolbar?.imgOptionMenu?.visibility = View.GONE
-        binding.commonToolbar?.txtSubTitle?.text = "Ongoing Orders"
+        binding.commonToolbar?.txtSubTitle?.text = "Pending Orders"
         binding.commonToolbar?.imgOptionMenuContainer?.visibility = View.GONE
     }
+
     private fun changePosition(position: Int) {
         mPos = position
         when (position) {
             0 -> {
-                val activeOrders = OnlineDetailFragment("0",startDate,endDate)
+                val activeOrders = OnlineDetailFragment("0", startDate, endDate)
+                loadFragment(activeOrders)
+                binding.commonToolbar.txtSetItem.visibility = View.GONE
+                binding.commonToolbar.txtSubTitle.text = "Pending Orders"
+            }
+            1 -> {
+                val activeOrders = OnlineDetailFragment("1", startDate, endDate)
                 loadFragment(activeOrders)
                 binding.commonToolbar.txtSetItem.visibility = View.GONE
                 binding.commonToolbar.txtSubTitle.text = "Ongoing Orders"
             }
-            1 -> {
-                val modifier: Fragment = OnlineDetailFragment("1",startDate,endDate)
+            2 -> {
+                val modifier: Fragment = OnlineDetailFragment("2", startDate, endDate)
                 loadFragment(modifier)
                 binding.commonToolbar.txtSetItem.visibility = View.GONE
                 binding.commonToolbar.txtSubTitle.text = "Completed Orders"
             }
 
-            2 -> {
-                val cancelled = OnlineDetailFragment("2",startDate,endDate)
+            3 -> {
+                val cancelled = OnlineDetailFragment("3", startDate, endDate)
                 loadFragment(cancelled)
                 binding.commonToolbar.txtSetItem.visibility = View.GONE
                 binding.commonToolbar.txtSubTitle.text = "Cancelled Orders"
@@ -92,6 +102,7 @@ class OnlineOrderFragment : Fragment() {
         fm.beginTransaction().replace(binding.frameLayout.id, frag).commit()
 
     }
+
     private fun setAdapter(pos: Int) {
 
         mPos = pos
@@ -99,20 +110,30 @@ class OnlineOrderFragment : Fragment() {
         val list: ArrayList<InventoryItemModel> = arrayListOf()
         when (pos) {
             0 -> {
-                list.add(InventoryItemModel(0, "Ongoing Orders ",0, true))
-                list.add(InventoryItemModel(0, "Completed Orders",completedOrdersCount))
-                list.add(InventoryItemModel(0, "Cancelled Orders ",cancelledOrdersCount))
+                list.add(InventoryItemModel(0, "Pending Orders ", 0, true))
+                list.add(InventoryItemModel(0, "Ongoing Orders ", 0))
+                list.add(InventoryItemModel(0, "Completed Orders", 0))
+                list.add(InventoryItemModel(0, "Cancelled Orders ", 0))
             }
             1 -> {
-                list.add(InventoryItemModel(0, "Ongoing Orders ",0))
-                list.add(InventoryItemModel(0, "Completed Orders",completedOrdersCount ,true))
-                list.add(InventoryItemModel(0, "Cancelled Orders ",cancelledOrdersCount))
+                list.add(InventoryItemModel(0, "Pending Orders ", 0))
+                list.add(InventoryItemModel(0, "Ongoing Orders ", 0, true))
+                list.add(InventoryItemModel(0, "Completed Orders", 0))
+                list.add(InventoryItemModel(0, "Cancelled Orders ", 0))
 
             }
             2 -> {
-                list.add(InventoryItemModel(0, "Ongoing Orders ",0))
-                list.add(InventoryItemModel(0, "Completed Orders",completedOrdersCount))
-                list.add(InventoryItemModel(0, "Cancelled Orders ",cancelledOrdersCount, true))
+                list.add(InventoryItemModel(0, "Pending Orders ", 0))
+                list.add(InventoryItemModel(0, "Ongoing Orders ", 0))
+                list.add(InventoryItemModel(0, "Completed Orders", 0, true))
+                list.add(InventoryItemModel(0, "Cancelled Orders ", 0))
+
+            }
+            3 -> {
+                list.add(InventoryItemModel(0, "Pending Orders ", 0))
+                list.add(InventoryItemModel(0, "Ongoing Orders ", 0))
+                list.add(InventoryItemModel(0, "Completed Orders", 0))
+                list.add(InventoryItemModel(0, "Cancelled Orders ", 0, true))
 
             }
         }

@@ -12,10 +12,15 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
+import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.android.pos.R
+import com.android.pos.data.entities.Employee
+import com.android.pos.data.model.responseModel.OnlineOrderResponseModel
 import com.android.pos.data.remote.Constants
 import com.android.pos.databinding.FragmentOnlineOrderBinding
 import com.android.pos.databinding.OnlineDetailFragmentBinding
@@ -69,14 +74,18 @@ class OnlineDetailFragment(
         observeShowProgress()
         when (param1) {
             "0" -> {
-                binding.txtOrderWillAppear?.text = "Active order will appear here."
+                binding.txtOrderWillAppear?.text = "Pending order will appear here."
             }
             "1" -> {
-                binding.txtOrderWillAppear?.text = "Completed order will appear here."
+                binding.txtOrderWillAppear?.text = "Ongoing order will appear here."
             }
             "2" -> {
+                binding.txtOrderWillAppear?.text = "Completed order will appear here."
+            }
+            "3" -> {
                 binding.txtOrderWillAppear?.text = "Cancelled order will appear here."
             }
+
         }
         searchFilter()
     }
@@ -138,6 +147,7 @@ class OnlineDetailFragment(
         super.onCreate(savedInstanceState)
         viewModel.setCurrentDate(myCalendar, startDateTime, endDateTime)
     }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -361,7 +371,6 @@ class OnlineDetailFragment(
     }
 
 
-
     private fun setupAdapter() {
 
         binding.rvOpenOrder?.addItemDecoration(
@@ -395,6 +404,14 @@ class OnlineDetailFragment(
     }
 
     override fun onItemClickListener(view: View?, pos: Int, status: String) {
-
+        if (status == "accepted") {
+            if(findNavController().currentDestination?.id==R.id.onlineOrderFragment){
+                findNavController().navigate(
+                    R.id.action_onlineOrder_to_addOnlneTime
+                )
+            }
+        } else {
+            Toast.makeText(requireContext(), "Declined", +2000).show()
+        }
     }
 }

@@ -181,7 +181,7 @@
             android:orientation="horizontal"
             android:paddingVertical="@dimen/_10sdp"
             android:paddingStart="@dimen/_18sdp"
-            android:weightSum="5">
+            android:weightSum="6">
 
             <androidx.appcompat.widget.AppCompatTextView
                 style="@style/CustomFontMediumStyle"
@@ -200,7 +200,6 @@
                 android:layout_weight="1"
                 android:text="@string/tv_date_time"
                 android:textAllCaps="true"
-
                 android:textColor="@color/white"
                 android:textSize="@dimen/text_size_medium" />
 
@@ -216,7 +215,15 @@
 
                 android:textSize="@dimen/text_size_medium" />
 
-
+            <androidx.appcompat.widget.AppCompatTextView
+                style="@style/CustomFontMediumStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/payment_status"
+                android:textAllCaps="true"
+                android:textColor="@color/white"
+                android:textSize="@dimen/text_size_medium" />
             <androidx.appcompat.widget.AppCompatTextView
                 style="@style/CustomFontMediumStyle"
                 android:layout_width="0dp"
@@ -273,7 +280,6 @@
                 android:layout_height="match_parent"
                 android:layout_marginTop="@dimen/_3sdp"
                 android:gravity="center"
-                android:text="Incoming order will appear here."
                 android:textColor="@color/txtColorGray"
                 android:textSize="@dimen/_6sdp"
                 android:visibility="visible" />

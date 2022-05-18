@@ -414,6 +414,7 @@
     <string name="add_note">Add Note</string>
     <string name="remove_item">Remove Item</string>
     <string name="add_discount">Add Discount</string>
+    <string name="add_time_online">Add Time</string>
     <string name="remove_discount">Remove Discount</string>
     <string name="pay">Pay</string>
     <string name="pay_total">Pay Total</string>

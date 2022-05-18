@@ -313,7 +313,6 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:gravity="center"
-                android:text="Incoming order will appear here."
                 android:textColor="@color/txtColorGray"
                 android:textSize="@dimen/_6sdp"
                 android:layout_marginTop="@dimen/_3sdp"

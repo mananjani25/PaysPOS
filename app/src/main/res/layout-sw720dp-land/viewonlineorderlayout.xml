@@ -24,7 +24,7 @@
             android:orientation="horizontal"
             android:paddingVertical="@dimen/_7sdp"
             android:paddingStart="@dimen/_18sdp"
-            android:weightSum="5">
+            android:weightSum="6">
 
             <androidx.appcompat.widget.LinearLayoutCompat
                 android:layout_width="0dp"
@@ -38,12 +38,20 @@
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/tvOrderID"
                     style="@style/CustomFontMediumStyle"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@{viewModel.offlineId}"
                     android:textColor="@color/txtColor"
                     android:textSize="@dimen/_5mdpi"
                     tools:text="offlineId" />
+                <ImageView
+                    android:id="@+id/imgIndicator"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:srcCompat="@drawable/ic_arrow_down"
+                    app:tint="@color/drawable_ic_color"
+                    android:layout_marginLeft="@dimen/_5sdp"
+                    />
             </androidx.appcompat.widget.LinearLayoutCompat>
 
 
@@ -90,6 +98,18 @@
                 tools:text="Amount" />
 
             <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tv_paymentstatus"
+                style="@style/CustomFontMediumStyle"
+                android:layout_width="0dp"
+                android:layout_gravity="center"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="left"
+                android:textColor="@color/btnColor"
+                android:textSize="@dimen/_6mdpi"
+                tools:text="@{viewModel.paymentStatus}" />
+
+            <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/txtCustomerName"
                 style="@style/CustomFontMediumStyle"
                 android:layout_width="0dp"
@@ -112,23 +132,40 @@
 
                 <androidx.appcompat.widget.AppCompatImageView
                     android:id="@+id/accept_img"
-                    android:layout_width="@dimen/_15sdp"
-                    android:layout_height="@dimen/_15sdp"
-                    android:src="@drawable/check"
+                    android:layout_width="@dimen/_20sdp"
+                    android:padding="@dimen/_4sdp"
+                    android:layout_height="@dimen/_20sdp"
+                    android:src="@drawable/check_mark"
                     android:layout_marginRight="@dimen/_5sdp"
                     android:tint="@color/colorGreen" />
 
                 <androidx.appcompat.widget.AppCompatImageView
                     android:id="@+id/decline_img"
-                    android:layout_width="@dimen/_15sdp"
-                    android:layout_height="@dimen/_15sdp"
-                    android:src="@drawable/ic_cancel_white"
+                    android:padding="@dimen/_5sdp"
+                    android:layout_width="@dimen/_20sdp"
+                    android:layout_height="@dimen/_20sdp"
+                    android:src="@drawable/close_thin"
                     android:tint="@color/colorRed" />
 
             </LinearLayout>
 
 
         </LinearLayout>
+        <LinearLayout
+            android:id="@+id/llShowLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="visible">
 
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvOpenOrder"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                tools:itemCount="2"
+                tools:listitem="@layout/view_open_order_items" />
+        </LinearLayout>
     </LinearLayout>
 </layout>
