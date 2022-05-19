@@ -74,11 +74,14 @@ class DineInGuestFragment : Fragment(), GuestListAdapter.GuestListner {
                 )
                 prefProvider.setValueInt(DINE_IN_TABLE_ID, dineInFloorTableModel.id)
                 prefProvider.setValueboolean(Constants.DINE_IN_STATUS, true)
-                findNavController().navigate(
-                    R.id.action_dineInGuestFragment_to_dashboardCategoryNew,
-                    bundle
-                )
+                if (findNavController().currentDestination?.id == R.id.dineInGuestFragment) {
+                    findNavController().navigate(
+                        R.id.action_dineInGuestFragment_to_dashboardCategoryNew,
+                        bundle
+                    )
+                }
             }
+
         }
     }
 
