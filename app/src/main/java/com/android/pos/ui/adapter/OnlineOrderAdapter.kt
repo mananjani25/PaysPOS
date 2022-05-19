@@ -58,6 +58,29 @@ class OnlineOrderAdapter(val context: Context) :
                     )
 
             }
+            if (item.order_status == "Pending") {
+                binding.orderStatusLinear?.visible()
+                binding.orderInprogressButton?.gone()
+                binding.orderCompletedButton?.gone()
+                binding.orderCancelledButton?.gone()
+            } else if (item.order_status == "InProgress") {
+                binding.orderStatusLinear?.gone()
+                binding.orderInprogressButton?.visible()
+                binding.orderCompletedButton?.gone()
+                binding.orderCancelledButton?.gone()
+            } else if (item.order_status == "Completed") {
+                binding.orderStatusLinear?.gone()
+                binding.orderInprogressButton?.gone()
+                binding.orderCompletedButton?.visible()
+                binding.orderCancelledButton?.gone()
+            } else {
+                binding.orderStatusLinear?.gone()
+                binding.orderInprogressButton?.gone()
+                binding.orderCompletedButton?.gone()
+                binding.orderCancelledButton?.visible()
+            }
+
+
 
             binding.txtCustomerName.text =
                 (item.customer?.firstName ?: "") + " " + (item.customer?.lastName ?: "")
@@ -72,7 +95,6 @@ class OnlineOrderAdapter(val context: Context) :
                 binding.rvOpenOrder.gone()
             }
             if (!item.isCheck) {
-
                 binding.llMainLayout.setBackgroundColor(binding.root.resources.getColor(R.color.bg_color))
                 binding.tvDate.setTextColor(binding.root.resources.getColor(R.color.txtColor))
                 binding.tvTotalAmount.setTextColor(binding.root.resources.getColor(R.color.txtColor))
@@ -83,7 +105,7 @@ class OnlineOrderAdapter(val context: Context) :
                 binding.imgIndicator.setImageDrawable(
                     ResourcesCompat.getDrawable(
                         binding.root.resources,
-                        R.drawable.ic_down_solid_arrow,
+                        R.drawable.background_sales_button,
                         binding.root.resources.newTheme()
                     )
                 )
@@ -120,6 +142,9 @@ class OnlineOrderAdapter(val context: Context) :
             }
             binding.declineImg.setOnClickListener {
                 mCallback?.onItemClickListener(it, absoluteAdapterPosition, "cancelled")
+            }
+            binding.completedImg?.setOnClickListener {
+                mCallback?.onItemClickListener(it, absoluteAdapterPosition, "Completed")
             }
             binding.root.setOnClickListener {
 
@@ -198,23 +223,23 @@ class OnlineOrderAdapter(val context: Context) :
                         }
                     }
 
-                        fList
-                    }
-
-                    return FilterResults().apply { values = filterList }
+                    fList
                 }
 
-                override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
+                return FilterResults().apply { values = filterList }
+            }
+
+            override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
 
 
-                    if (results != null && results.count > 0) {
-                        filterList = results.values as ArrayList<OnlineOrderResponseModel.Data>
-                    }
-
-                    notifyDataSetChanged()
-
+                if (results != null && results.count > 0) {
+                    filterList = results.values as ArrayList<OnlineOrderResponseModel.Data>
                 }
+
+                notifyDataSetChanged()
+
             }
         }
-
     }
+
+}

@@ -576,6 +576,9 @@
     <string name="tv_print_receipt">Print Customer Receipt</string>
     <string name="tv_print_kitchen_receipt">Print Kitchen Receipt</string>
     <string name="tv_pay_now">Pay Now</string>
+    <string name="tv_complete">Complete</string>
+    <string name="tv_cancelled">Rejected</string>
+    <string name="tv_completed">Completed</string>
     <string name="tv_customer_name">Customer Name</string>
     <string name="tv_delivery_status">Delivery Status</string>
     <string name="payment_status">Payment Status</string>

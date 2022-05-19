@@ -46,8 +46,8 @@ class OnlineDetailViewModel @Inject constructor(
             _endDateSelection.value = Event(Unit)
         }
     }
-    fun onLineorderCounts(): LiveData<Resource<OnlineOrderCountResponse>> =
-        posRepository.onlineOrderCounts()
+    fun onLineorderCounts(startDate: String?, endDate: String?): LiveData<Resource<OnlineOrderCountResponse>> =
+        posRepository.onlineOrderCounts(startDate,endDate)
 
 
     fun onlineOrders(
@@ -63,6 +63,13 @@ class OnlineDetailViewModel @Inject constructor(
         isaccepted: Boolean
     ): LiveData<Resource<BaseResponse>> =
         posRepository.acceptedAndDeclineOrders(time, order_id,isaccepted)
+
+
+    fun updateOnlineOrder(
+        order_id: Int,
+        order_status: String
+    ): LiveData<Resource<BaseResponse>> =
+        posRepository.updateOnlineOrders( order_id,order_status)
 
 
     fun setCurrentDate(myCalendar: Calendar, paramStartDate: String?, paramEndDate: String?) {

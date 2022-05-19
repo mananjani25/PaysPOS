@@ -135,6 +135,33 @@ class OnlineDetailFragment(
         }
     }
 
+    private fun updateOrder(orderId: Int, order_status: String) {
+        viewModel.updateOnlineOrder(
+            orderId,
+            order_status
+        ).observe(viewLifecycleOwner) { it ->
+
+            it?.let { resource ->
+                when (resource.status) {
+                    Status.SUCCESS -> {
+                        ProgressUtils.dismissProgressDialog()
+                        resource.data?.let {
+                            getOnlineOrders()
+                        }
+                    }
+                    Status.ERROR -> {
+                        ProgressUtils.dismissProgressDialog()
+                        binding.root.showAlert(resource.message)
+
+                    }
+                    Status.LOADING -> {
+                        ProgressUtils.showProgressDialog(requireActivity())
+                    }
+                }
+            }
+        }
+    }
+
     private fun getOnlineOrders() {
         viewModel.onlineOrders(
             viewModel.startDate.value.toString(),
@@ -155,12 +182,21 @@ class OnlineDetailFragment(
 
                                 adapter.add(data)
                                 Log.e("DATA", data.size.toString())
+
                             } else {
                                 binding.llNoData.visibility = View.VISIBLE
                                 binding.txtNodata.text = it.message
                                 binding.rvOpenOrder.visibility = View.GONE
 
                             }
+                            val intent = Intent()
+                            intent.action = "onlineOrder"
+                            intent.putExtra("isCount", true)
+                            intent.putExtra("param1", param1)
+                            intent.putExtra("count", it.data.size)
+                            intent.putExtra("start_date", viewModel.startDate.value.toString())
+                            intent.putExtra("end_date", viewModel.endDate.value.toString())
+                            requireContext().sendBroadcast(intent)
                         }
                     }
                     Status.ERROR -> {
@@ -458,6 +494,15 @@ class OnlineDetailFragment(
                         "order_id" to adapter.filterList[pos].id
                     )
                 )
+            }
+        } else if (status == "Completed") {
+            alert("", "Are you sure you want to Complete The Order?") {
+                this.positiveButton("YES") {
+                    updateOrder(adapter.filterList[0].id, status)
+                }
+                this.negativeButton("NO") {
+                }
+
             }
         } else {
             alert("", "Are you sure you want to Reject The Order?") {

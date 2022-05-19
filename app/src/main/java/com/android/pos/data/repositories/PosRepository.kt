@@ -800,6 +800,19 @@ class PosRepository @Inject constructor(
             )
         })
 
+    fun updateOnlineOrders(
+        order_id: Int,
+        order_status: String
+    ): LiveData<Resource<BaseResponse>> =
+        performGetOperationNew(networkCall = {
+            apiHelperNew.updateOnlineOrder(
+                order_id,
+                order_status
+            )
+        })
+    
+    
+
 
     suspend fun cashInOut(data: CashLogRequest) = apiHelperNew.cashInOut(data)
 
@@ -908,8 +921,8 @@ class PosRepository @Inject constructor(
     fun orderCounts(startDate: String?, endDate: String?) =
         performGetOperationNew(networkCall = { apiHelperNew.orderCounts(startDate, endDate) })
 
-    fun onlineOrderCounts() =
-        performGetOperationNew(networkCall = { apiHelperNew.onlineOrderCounts() })
+    fun onlineOrderCounts(startDate: String?, endDate: String?) =
+        performGetOperationNew(networkCall = { apiHelperNew.onlineOrderCounts(startDate,endDate) })
 
     fun inventoryCounts() =
         performGetOperationNew(networkCall = { apiHelperNew.inventoryCounts() })

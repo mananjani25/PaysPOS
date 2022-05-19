@@ -101,6 +101,7 @@ import com.android.pos.data.remote.Constants.TIPS_ACTIVE
 import com.android.pos.data.remote.Constants.TIPS_UPDATE_DELETE
 import com.android.pos.data.remote.Constants.TRANSACTION_LIST
 import com.android.pos.data.remote.Constants.UNMERGE_TABLE
+import com.android.pos.data.remote.Constants.UPDATE_ONLINE_ORDER
 import com.android.pos.data.remote.Constants.UPDATE_PRINTER_STATUS
 import com.android.pos.data.remote.Constants.UPDATE_TIP
 import com.android.pos.data.remote.Constants.USERS_LOG_IN
@@ -649,6 +650,13 @@ interface ApiService {
         @Query("preparation_time") preparation_time: Int
     ): BaseResponse
 
+
+    @PUT(UPDATE_ONLINE_ORDER)
+    suspend fun updateOnlineOrders(
+        @Path("id") id: Int,
+        @Query("order_status") order_status: String
+    ): BaseResponse
+
     @GET(OPEN_ORDERS)
     suspend fun getUpcomingOpenOrders(
         @Query("upcoming_orders") upcoming_orders: Boolean?,
@@ -769,7 +777,10 @@ interface ApiService {
     ): OrderCountsResponse
 
     @GET(ONLINE_ORDER_COUNTS)
-    suspend fun onlineOrderCounts(): OnlineOrderCountResponse
+    suspend fun onlineOrderCounts(
+        @Query("start_date") startDate: String?,
+        @Query("end_date") endDate: String?
+    ): OnlineOrderCountResponse
 
     @GET(INVENTORY_COUNTS)
     suspend fun inventoryCounts(): InventoryCountsResponse

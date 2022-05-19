@@ -1,5 +1,9 @@
 package com.android.pos.ui.fragments.onlineorder
 
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.os.Bundle
 import android.util.Log
 import androidx.fragment.app.Fragment
@@ -42,9 +46,57 @@ class OnlineOrderFragment : Fragment() {
     ): View {
         // Inflate the layout for this fragment
         binding = FragmentOnlineOrderBinding.inflate(inflater, container, false)
+        requireContext().registerReceiver(broadcastReceiver, IntentFilter("onlineOrder"));
         configureToolbar()
-        getOrderCountsObserver()
+        getOrderCountsObserver(startDate, endDate)
         return binding.root
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        requireContext().unregisterReceiver(broadcastReceiver)
+    }
+
+    var broadcastReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+
+            val isCount = intent?.getBooleanExtra("isCount", false)
+            startDate = intent?.getStringExtra("start_date")
+            endDate = intent?.getStringExtra("end_date")
+
+            getOrderCountsObserver(startDate, endDate)
+
+            if (isCount == true) {
+
+                val count = intent.getIntExtra("count", 0)
+                val orderType = intent.getStringExtra("param1")
+
+                when (orderType) {
+                    "0" -> {
+                        pendingOrdersCount = count
+                        setAdapter(0)
+                    }
+                    "1" -> {
+                        ongoingOrderCount = count
+                        setAdapter(1)
+                    }
+                    "2" -> {
+                        completedOrdersCount = count
+                        setAdapter(2)
+                    }
+                    "3" -> {
+                        cancelledOrdersCount = count
+                        setAdapter(3)
+                    }
+                }
+
+                Log.e("broadcastReceiver", count.toString())
+            } else {
+                val position = intent?.getIntExtra("position", 0)
+                changePosition(position!!)
+                setAdapter(position)
+            }
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -67,9 +119,9 @@ class OnlineOrderFragment : Fragment() {
         binding.commonToolbar?.imgOptionMenuContainer?.visibility = View.GONE
     }
 
-    private fun getOrderCountsObserver() {
+    private fun getOrderCountsObserver(startDate: String?, endDate: String?) {
         try {
-            viewModel.onLineorderCounts().observe(viewLifecycleOwner) {
+            viewModel.onLineorderCounts(startDate, endDate).observe(viewLifecycleOwner) {
                 it?.let { resource ->
                     when (resource.status) {
                         Status.SUCCESS -> {

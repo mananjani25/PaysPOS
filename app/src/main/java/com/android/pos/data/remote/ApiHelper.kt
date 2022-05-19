@@ -444,6 +444,11 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
         isaccepted: Boolean
     ) =
         getResult { apiService.setAcceptedAndDeclineOrders(order_id, isaccepted, time) }
+    suspend fun updateOnlineOrder(
+        order_id: Int,
+        order_status: String
+    ) =
+        getResult { apiService.updateOnlineOrders(order_id, order_status) }
 
     suspend fun getUpcomingOpenOrders() =
         getResult { apiService.getUpcomingOpenOrders(true) }
@@ -534,8 +539,8 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
     suspend fun inventoryCounts() =
         getResult { apiService.inventoryCounts() }
 
-    suspend fun onlineOrderCounts() =
-        getResult { apiService.onlineOrderCounts() }
+    suspend fun onlineOrderCounts(startDate: String?, endDate: String?) =
+        getResult { apiService.onlineOrderCounts(startDate,endDate) }
 
 
     suspend fun timeDetails() =
