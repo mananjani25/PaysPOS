@@ -273,13 +273,13 @@ data class GetOrderDetailsResponse(
             @SerializedName("order_id")
             val orderId: Int,
             @SerializedName("order_item_modifiers")
-            val orderItemModifiers: List<OrderItemModifier>,
+            var orderItemModifiers: List<OrderItemModifier>,
             @SerializedName("order_item_taxes")
             val orderItemTaxes: List<OrderItemTaxe>,
             @SerializedName("price")
             val price: Double,
             @SerializedName("quantity")
-            val quantity: Int,
+            var quantity: Int,
             @SerializedName("timestamp")
             val timestamp: String,
             @SerializedName("total_price")
