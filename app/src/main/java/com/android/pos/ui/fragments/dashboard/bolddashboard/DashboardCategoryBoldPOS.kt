@@ -36,6 +36,8 @@ import com.android.pos.ui.fragments.payment.PaymentViewModel
 import com.android.pos.utils.*
 import com.android.pos.utils.callback.ItemClickListner
 import com.android.pos.utils.callback.ItemListner
+import com.android.pos.utils.extensions.gone
+import com.android.pos.utils.extensions.visible
 import com.android.pos.utils.printer.PrinterClass
 import com.android.pos.utils.statusUtils.Resource
 import com.android.pos.utils.statusUtils.Status
@@ -50,7 +52,7 @@ import javax.inject.Inject
 class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
     private var dineInList: List<DineInModel>? = null
     private var cartList: ArrayList<CartModel> = arrayListOf()
-    private lateinit var binding: FragmentDashboardCategoryBoldPosBinding
+
     private val viewModel by activityViewModels<DashBoardCategoryViewModel>()
     private val viewModelPayment by activityViewModels<PaymentViewModel>()
     private var serviceChargesList: List<TbServiceCharge>? = null
@@ -80,6 +82,23 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
     @Inject
     lateinit var prefProvider: PrefProvider
 
+    companion object {
+        private lateinit var binding: FragmentDashboardCategoryBoldPosBinding
+        fun newInstance() = DashboardCategoryBoldPOS()
+    }
+
+    fun onlineOrderBadgeDisplay(count: Int) {
+        if (count != null) {
+            if (count > 0) {
+                binding.layoutHeader.txtBadgeCount?.visible()
+                binding.layoutHeader.txtBadgeCount?.text = count.toString()
+            } else {
+                binding.layoutHeader.txtBadgeCount?.gone()
+            }
+        } else {
+            binding.layoutHeader.txtBadgeCount?.gone()
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -522,9 +541,9 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
     override fun onItemSelected(item: TbItem) {
 
         if (item.modifier_set_ids.isNotEmpty() || item.variationsAttributes.isNotEmpty()) {
-          /*  if (item.variationsAttributes.isNotEmpty()) {
-                item.variationsAttributes.get(0).isChecked = true
-            }*/
+            /*  if (item.variationsAttributes.isNotEmpty()) {
+                  item.variationsAttributes.get(0).isChecked = true
+              }*/
             val fragment = AddItemFragment.newInstance(item, this, cartList, false)
             loadCategoryFragment(fragment)
         } else {

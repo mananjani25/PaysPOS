@@ -1,15 +1,18 @@
 package com.android.pos.ui.firebase
 
+import android.app.Notification
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.media.RingtoneManager
+import android.net.Uri
 import android.os.Build
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import com.android.pos.R
+import com.android.pos.data.remote.Constants.ONLINE_ORDER_GET_NOTIFICATION
 import com.android.pos.data.remote.Constants.SEND_CLOCKOUT_NOTIFICATION
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.activities.MainActivity
@@ -45,9 +48,27 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
                 intent.action = SEND_CLOCKOUT_NOTIFICATION
                 prefProvider.setValueboolean("clockOutFromNoti", true)
                 sendBroadcast(intent)
+            }else{
+                var intent = Intent()
+                intent.putExtra("message", remoteMessage.data["message"].toString())
+                intent.putExtra("count", remoteMessage.data["count"].toString())
+                intent.action = ONLINE_ORDER_GET_NOTIFICATION
+                sendBroadcast(intent)
+                setSoundForOnlineOrder()
             }
             Log.d(TAG, "Message data payload: ${remoteMessage.data}")
         }
+
+    }
+
+    private fun setSoundForOnlineOrder() {
+        val channelId = getString(R.string.default_notification_channel_id)
+        val notificationBuilder = NotificationCompat.Builder(this, channelId)
+        val notification: Notification = notificationBuilder.build()
+        notification.sound = Uri.parse(
+            ("android.resource://"
+                    + this.packageName) + "/" + R.raw.bell
+        )
 
     }
 
