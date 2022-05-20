@@ -60,9 +60,10 @@ class OnlineDetailViewModel @Inject constructor(
     fun acceptedAndDeclineOrder(
         time: Int,
         order_id: Int,
-        isaccepted: Boolean
+        isaccepted: Boolean,
+        employee_id:Int
     ): LiveData<Resource<BaseResponse>> =
-        posRepository.acceptedAndDeclineOrders(time, order_id,isaccepted)
+        posRepository.acceptedAndDeclineOrders(time, order_id,isaccepted,employee_id)
 
 
     fun updateOnlineOrder(

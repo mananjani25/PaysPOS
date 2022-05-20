@@ -441,9 +441,10 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
     suspend fun setAcceptedAndDeclineorder(
         time: Int,
         order_id: Int,
-        isaccepted: Boolean
+        isaccepted: Boolean,
+        employee_id:Int
     ) =
-        getResult { apiService.setAcceptedAndDeclineOrders(order_id, isaccepted, time) }
+        getResult { apiService.setAcceptedAndDeclineOrders(order_id, isaccepted, time,employee_id) }
     suspend fun updateOnlineOrder(
         order_id: Int,
         order_status: String

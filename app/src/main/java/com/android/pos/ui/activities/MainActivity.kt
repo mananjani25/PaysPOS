@@ -99,8 +99,9 @@ class MainActivity : BaseScannerActivity() {
     }
     var broadcastReceiveronlineOrder = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
-            var count = intent?.getIntExtra("count",0)
-            DashboardCategoryBoldPOS.newInstance().onlineOrderBadgeDisplay(count!!)
+            var count = intent?.getStringExtra("count")
+            count?.toInt()
+                ?.let { DashboardCategoryBoldPOS.newInstance().onlineOrderBadgeDisplay(it) }
         }
     }
 

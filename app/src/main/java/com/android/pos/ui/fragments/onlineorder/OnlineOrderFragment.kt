@@ -16,6 +16,7 @@ import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.data.model.InventoryItemModel
 import com.android.pos.databinding.FragmentOnlineOrderBinding
+import com.android.pos.di.PrefProvider
 
 import com.android.pos.di.RolePermission
 import com.android.pos.ui.adapter.InventoryAdapter
@@ -39,6 +40,9 @@ class OnlineOrderFragment : Fragment() {
     private var pendingOrdersCount: Int? = 0
     private var cancelledOrdersCount: Int? = 0
     private var completedOrdersCount: Int? = 0
+
+    @set:Inject
+    internal var prefProvider: PrefProvider? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

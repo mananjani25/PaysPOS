@@ -108,10 +108,12 @@ class OnlineDetailFragment(
     }
 
     private fun acceptedAndDeclineOrder(time: Int, orderId: Int, is_accepted: Boolean) {
+        var employee_id = prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
         viewModel.acceptedAndDeclineOrder(
             time,
             orderId,
-            is_accepted
+            is_accepted,
+            employee_id
         ).observe(viewLifecycleOwner) { it ->
 
             it?.let { resource ->

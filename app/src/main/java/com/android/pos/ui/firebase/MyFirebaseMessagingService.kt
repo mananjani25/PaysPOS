@@ -48,13 +48,14 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
                 intent.action = SEND_CLOCKOUT_NOTIFICATION
                 prefProvider.setValueboolean("clockOutFromNoti", true)
                 sendBroadcast(intent)
-            }else{
+            } else if (type == "onlineorder") {
+
                 var intent = Intent()
                 intent.putExtra("message", remoteMessage.data["message"].toString())
-                intent.putExtra("count", remoteMessage.data["count"].toString())
+                intent.putExtra("count", remoteMessage.data["count"])
                 intent.action = ONLINE_ORDER_GET_NOTIFICATION
                 sendBroadcast(intent)
-                setSoundForOnlineOrder()
+//                setSoundForOnlineOrder()
             }
             Log.d(TAG, "Message data payload: ${remoteMessage.data}")
         }
@@ -64,11 +65,26 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
     private fun setSoundForOnlineOrder() {
         val channelId = getString(R.string.default_notification_channel_id)
         val notificationBuilder = NotificationCompat.Builder(this, channelId)
-        val notification: Notification = notificationBuilder.build()
-        notification.sound = Uri.parse(
-            ("android.resource://"
-                    + this.packageName) + "/" + R.raw.bell
+        notificationBuilder.setSound(
+            Uri.parse(
+                ("android.resource://"
+                        + this.packageName) + "/" + R.raw.bell
+            )
         )
+        val notificationManager =
+            getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+
+        // Since android Oreo notification channel is needed.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channel = NotificationChannel(
+                channelId,
+                "Channel human readable title",
+                NotificationManager.IMPORTANCE_DEFAULT
+            )
+            notificationManager.createNotificationChannel(channel)
+        }
+
+        notificationManager.notify(0 /* ID of notification */, notificationBuilder.build())
 
     }
 
