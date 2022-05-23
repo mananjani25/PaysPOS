@@ -20,6 +20,7 @@ import com.epson.eposprint.Print
 import com.google.gson.Gson
 import com.google.gson.JsonElement
 import com.google.gson.JsonObject
+import com.google.gson.reflect.TypeToken
 import com.hosopy.actioncable.ActionCable
 import com.hosopy.actioncable.Channel
 import com.hosopy.actioncable.Consumer
@@ -41,19 +42,25 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
     private var kitchenPrinterList: List<PrinterResponse.Data.KitchenReceiptPrinters> = listOf()
     private var kitchenSettingModel = GetKitchenReceiptSettingsResponse.Data()
     override fun doWork(): Result {
-        val data = inputData.getString("itemName")
-        kitchenPrinterList =
-            inputData.keyValueMap["kitchenPrinterList"] as List<PrinterResponse.Data.KitchenReceiptPrinters>
-        kitchenSettingModel =
-            inputData.keyValueMap["kitchenSettingData"] as GetKitchenReceiptSettingsResponse.Data
+
+        var serializeObjKitchenPrinters = inputData.getString("kitchenPrinterList")
+        if (serializeObjKitchenPrinters?.isNotEmpty() == true) {
+                val gson = Gson()
+            val type = object : TypeToken<List<PrinterResponse.Data.KitchenReceiptPrinters>?>() {}.type
+            var arrayKitList : ArrayList<PrinterResponse.Data.KitchenReceiptPrinters> =
+                gson.fromJson<Any>(serializeObjKitchenPrinters,type) as ArrayList<PrinterResponse.Data.KitchenReceiptPrinters>
+            Log.e(TAG,"arrayKitList  ${Gson().toJson(arrayKitList)}")
+        }
+
         Log.e(TAG, "kitchenPrinterList:  ${Gson().toJson(kitchenPrinterList)}")
         Log.e(TAG, "kitchenSettingModel:  ${Gson().toJson(kitchenSettingModel)}")
 
 
 
 
+
         return try {
-            if (data.isNullOrEmpty()) {
+            if (serializeObjKitchenPrinters.isNullOrEmpty()) {
                 throw IllegalArgumentException("Invalid input uri")
             } else {
 

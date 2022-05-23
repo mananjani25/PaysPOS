@@ -303,23 +303,14 @@ class PrinterQueue : Fragment(), StatusChangeEventListener, BatteryStatusChangeE
     @SuppressLint("RestrictedApi")
     private fun onClick() {
         binding.btnStartService?.setOnClickListener {
-            val map: MutableMap<String, Any> = HashMap()
-            map.put("kitchenPrinterList", kitchenPrinterList)
-            map.put("kitchenSettingData", kitchenSettingModel)
-
-
-/*
             val data = Data.Builder()
-                .put("kitchenPrinterList", kitchenPrinterList)
-                .put("kitchenSettingData", kitchenSettingModel)
-                .build()*/
-
-            var data = Data.Builder()
-            data.put("kitchenPrinterList", kitchenPrinterList.toCollection(arrayListOf()))
+                .putString("kitchenPrinterList", Gson().toJson(kitchenPrinterList))
+                .put("kitchenSettingData", Gson().toJson(kitchenSettingModel))
+                .build()
 
 
             val uploadWorkRequest =
-                OneTimeWorkRequest.Builder(UploadWorker::class.java).build()
+                OneTimeWorkRequest.Builder(UploadWorker::class.java).setInputData(data).build()
 
             val workManager = WorkManager.getInstance(requireContext().applicationContext)
             workManager.enqueue(uploadWorkRequest)

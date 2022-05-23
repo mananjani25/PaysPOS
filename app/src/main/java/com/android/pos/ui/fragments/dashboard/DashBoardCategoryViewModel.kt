@@ -1909,9 +1909,9 @@ class DashBoardCategoryViewModel @Inject constructor(
             }
         }
 
-        Log.e("removeItemDine","removeItemDineInList  ${removeItemDineInList.size}")
+        Log.e("removeItemDine", "removeItemDineInList  ${removeItemDineInList.size}")
         if (removeItemDineInList.isNotEmpty()) {
-          orderItemsAttributeList =  addDestroyedItemsinDinein(orderItemsAttributeList)
+            orderItemsAttributeList = addDestroyedItemsinDinein(orderItemsAttributeList)
         }
 
 
@@ -2255,14 +2255,14 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     }
 
-    private fun addDestroyedItemsinDinein(cartModel: ArrayList<OrderItemsAttribute>): ArrayList<OrderItemsAttribute>  {
+    private fun addDestroyedItemsinDinein(cartModel: ArrayList<OrderItemsAttribute>): ArrayList<OrderItemsAttribute> {
 
         if (removeItemDineInList.isNotEmpty()) {
             removeItemDineInList.forEach {
                 val orderItemsAttribute = OrderItemsAttribute()
                 orderItemsAttribute.category_id = it.categoryId
                 if (it.orderItemId != null)
-                orderItemsAttribute.id = it.orderItemId
+                    orderItemsAttribute.id = it.orderItemId
                 orderItemsAttribute.isDestroy = it.isDestroy
                 orderItemsAttribute.isEdited = it.isEdited
                 orderItemsAttribute.isFired = it.isFired
