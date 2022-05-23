@@ -151,6 +151,7 @@
 
 
                             <androidx.appcompat.widget.AppCompatEditText
+                                android:id="@+id/edit_loyaltyAmount"
                                 style="@style/CustomFontSemiBold"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
@@ -161,7 +162,6 @@
                                 android:paddingTop="@dimen/_5sdp"
                                 android:paddingBottom="@dimen/_5sdp"
                                 android:text="@{String.format(@string/format,viewModel.loyaltyAmount)}"
-
                                 android:textColor="@color/txtColor"
                                 android:textColorHint="@color/hintColor"
                                 android:textSize="@dimen/_7mdpi"
@@ -201,6 +201,7 @@
                         android:visibility="gone" />
 
                     <androidx.appcompat.widget.AppCompatEditText
+                        android:id="@+id/edit_loyaltyTarget"
                         style="@style/CustomFontSemiBold"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -213,7 +214,7 @@
                         android:text="@={``+viewModel.loyaltyTarget}"
                         android:textColor="@color/txtColor"
                         android:textColorHint="@color/hintColor"
-                        android:textSize="@dimen/text_size_medium" />
+                        android:textSize="@dimen/_7sdp" />
 
                     <androidx.appcompat.widget.AppCompatTextView
                         style="@style/CustomFontRegularStyle"

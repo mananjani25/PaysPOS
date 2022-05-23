@@ -46,9 +46,17 @@ class LoyaltyPointViewModel @Inject constructor(
     var loyaltyId: Int? = null
     var loyaltyName: String? = null
     var loyaltyTarget: Int? = 0
-    var loyaltyAmount: Double = 0.0
+    var loyaltyAmount: Double? = 0.0
     var loyaltyPointType: String = ""
     var isEdit: Boolean = false
+
+    fun setLoyaltyTarget(loyaltyTraget: Int) {
+        this.loyaltyTarget = loyaltyTraget
+    }
+
+    fun setLoyaltyAmount(loyaltyAm: Double) {
+        this.loyaltyAmount = loyaltyAm
+    }
 
     fun isLoyaltyPointActive(serChargeItem: LoyaltyProgramsModel) {
 

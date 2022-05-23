@@ -16,26 +16,33 @@ class ItemAdapter(
     var list: ArrayList<TbItem?>,
 
     val listener: CategoryItemAdapter1.CategoryItemList,
-    var lastChecked:TextView?=null
+    var lastChecked: TextView? = null
 ) : RecyclerView.Adapter<ItemAdapter.MyViewHolder>() {
     private var mpos: Int = -2
 
     inner class MyViewHolder(private val binding: ViewCategoryItemBoldBinding) :
         RecyclerView.ViewHolder(binding.root) {
-        val checkedTextView=binding.txtCategoryName
+        val checkedTextView = binding.txtCategoryName
+        var itename_price: StringBuffer = StringBuffer()
         fun bind(model: TbItem?) {
-            binding.txtCategoryName.text = "" + model?.name+"\n\n"+model?.price?.let { MethodUtils.roundOffAmount(it) }
+            if (model?.name?.length!! > 30) {
+                itename_price.append(model?.name.substring(0, 30) + "...\n" + model?.price?.let { MethodUtils.roundOffAmount(it) })
+                binding.txtCategoryName.text = itename_price
+            }else{
+                binding.txtCategoryName.text =
+                    "" + model?.name + "\n\n" + model?.price?.let { MethodUtils.roundOffAmount(it) }
+            }
+
             binding.txtPrice.gone()
             if (mpos == absoluteAdapterPosition) {
 
-                if (lastChecked!=null){
-                    lastChecked?.isSelected=false
+                if (lastChecked != null) {
+                    lastChecked?.isSelected = false
                 }
-                lastChecked=checkedTextView
-                binding.txtCategoryName.isSelected=true
-            }
-            else{
-                binding.txtCategoryName.isSelected=false
+                lastChecked = checkedTextView
+                binding.txtCategoryName.isSelected = true
+            } else {
+                binding.txtCategoryName.isSelected = false
 
             }
 
@@ -43,10 +50,10 @@ class ItemAdapter(
 
         init {
             binding.txtCategoryName.setOnClickListener {
-                if (lastChecked!=null){
-                    lastChecked?.isSelected=false
+                if (lastChecked != null) {
+                    lastChecked?.isSelected = false
                 }
-                lastChecked=checkedTextView
+                lastChecked = checkedTextView
                 list[bindingAdapterPosition]?.let { listener.onClick(it) }
             }
         }
@@ -82,7 +89,7 @@ class ItemAdapter(
     }
 
     fun setPos(selectedId: Int) {
-        mpos =selectedId
+        mpos = selectedId
     }
 
 }

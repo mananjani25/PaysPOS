@@ -34,14 +34,15 @@ class ReasonForCancelOrderDialog : DialogFragment() {
     private lateinit var binding: DialogCancelOrderReasonBinding
     private lateinit var refundData: RefundRequestModel
     private val viewModel by viewModels<ActiveOrderViewModel>()
-    var cancelOrderReasonsList=ArrayList<VenueDetailsResponse.Data.CancelOrderReason>()
+    var cancelOrderReasonsList = ArrayList<VenueDetailsResponse.Data.CancelOrderReason>()
     private lateinit var cancelOrderReasonAdapter: CancelOrderReasonAdapter
     private var itemPos: Int = 0
+
     @Inject
     lateinit var prefProvider: PrefProvider
-    var orderId:Int?=null
-    var startDate:String=""
-    var endDate:String=""
+    var orderId: Int? = null
+    var startDate: String = ""
+    var endDate: String = ""
 
     companion object {
         fun newInstance() = ReasonForCancelOrderDialog()
@@ -52,16 +53,17 @@ class ReasonForCancelOrderDialog : DialogFragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        binding = DataBindingUtil.inflate(inflater, R.layout.dialog_cancel_order_reason, container, false)
+        binding =
+            DataBindingUtil.inflate(inflater, R.layout.dialog_cancel_order_reason, container, false)
 
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
 
         dialog?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
-        orderId=arguments?.getInt("orderId")
-        startDate= arguments?.getString("startDate").toString()
-        endDate=arguments?.getString("endDate").toString()
+        orderId = arguments?.getInt("orderId")
+        startDate = arguments?.getString("startDate").toString()
+        endDate = arguments?.getString("endDate").toString()
 
 /*
         binding.tvTagRefundAmount.text = requireActivity()?.getString(R.string.tv_refund) + " " +
@@ -79,8 +81,8 @@ class ReasonForCancelOrderDialog : DialogFragment() {
 
         binding.txtDone.setOnClickListener {
 
-            val reason=binding.etReason.text.toString().trim()
-            if (reason.isNotEmpty()){
+            val reason = binding.etReason.text.toString().trim()
+            if (reason.isNotEmpty()) {
 
                 alert(
                     getString(R.string.app_name),
@@ -94,6 +96,12 @@ class ReasonForCancelOrderDialog : DialogFragment() {
                     }
                 }
 
+            } else {
+                AlertUtils.showCustomAlertWithListenerWithOK(
+                    requireContext(),
+                    "Please enter Reason"
+                ) { _, _ ->
+                }
             }
 
         }
@@ -191,7 +199,7 @@ class ReasonForCancelOrderDialog : DialogFragment() {
                                     pos: Int,
                                     model: VenueDetailsResponse.Data.CancelOrderReason
                                 ) {
-                                    itemPos=model.id
+                                    itemPos = model.id
                                     binding.etReason.setText(model.reason)
 
                                     /*binding.layoutTool.txtSubTitle.setText(model.first_name + " " + model.last_name)
@@ -220,7 +228,6 @@ class ReasonForCancelOrderDialog : DialogFragment() {
 
 
     }
-
 
 
 }
