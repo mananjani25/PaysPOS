@@ -9,7 +9,6 @@ import com.android.pos.data.model.responseModel.CreateOrderResponse
 import com.android.pos.data.model.responseModel.GetKitchenReceiptSettingsResponse
 import com.android.pos.data.model.responseModel.PrinterResponse
 import com.android.pos.data.remote.Constants
-import com.android.pos.di.PrefProvider
 import com.android.pos.utils.addBuilderText
 import com.android.pos.utils.addHorizontalKitchenLine
 import com.android.pos.utils.addOrdersForKitchen
@@ -27,53 +26,45 @@ import com.hosopy.actioncable.Consumer
 import com.hosopy.actioncable.Subscription
 import org.jetbrains.annotations.NotNull
 import java.net.URI
-import javax.inject.Inject
 
 
 class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters) :
     Worker(context, params) {
     private val TAG = UploadWorker::class.java.name
 
-    @Inject
-    lateinit var prefProvider: PrefProvider
+
     private var subscription: Subscription? = null
     private var consumer: Consumer? = null
+    private var locationId: Int = 0
+    private var baseUrl = ""
     private var printerQueuelist: ArrayList<PrinterQueueModel> = arrayListOf()
     private var kitchenPrinterList: List<PrinterResponse.Data.KitchenReceiptPrinters> = listOf()
     private var kitchenSettingModel = GetKitchenReceiptSettingsResponse.Data()
+    private var mContext:Context= context
     override fun doWork(): Result {
 
+        locationId = inputData.getInt("location_id", 0)
+        baseUrl = inputData.getString("base_url").toString()
         var serializeObjKitchenPrinters = inputData.getString("kitchenPrinterList")
+        Log.e(TAG, "serializeObjKitchenPrinters  ${Gson().toJson(serializeObjKitchenPrinters)}")
         if (serializeObjKitchenPrinters?.isNotEmpty() == true) {
-                val gson = Gson()
-            val type = object : TypeToken<List<PrinterResponse.Data.KitchenReceiptPrinters>?>() {}.type
-            var arrayKitList : ArrayList<PrinterResponse.Data.KitchenReceiptPrinters> =
-                gson.fromJson<Any>(serializeObjKitchenPrinters,type) as ArrayList<PrinterResponse.Data.KitchenReceiptPrinters>
-            Log.e(TAG,"arrayKitList  ${Gson().toJson(arrayKitList)}")
+            val gson = Gson()
+            val type =
+                object : TypeToken<List<PrinterResponse.Data.KitchenReceiptPrinters>?>() {}.type
+            kitchenPrinterList =
+                gson.fromJson<Any>(
+                    serializeObjKitchenPrinters,
+                    type
+                ) as ArrayList<PrinterResponse.Data.KitchenReceiptPrinters>
+            Log.e(TAG, "arrayKitList  ${Gson().toJson(kitchenPrinterList)}")
+
         }
-
-        Log.e(TAG, "kitchenPrinterList:  ${Gson().toJson(kitchenPrinterList)}")
-        Log.e(TAG, "kitchenSettingModel:  ${Gson().toJson(kitchenSettingModel)}")
-
+        connectActionCable()
+        //  connectPrinter(context = applicationContext, data)
 
 
+        return Result.success()
 
-
-        return try {
-            if (serializeObjKitchenPrinters.isNullOrEmpty()) {
-                throw IllegalArgumentException("Invalid input uri")
-            } else {
-
-
-                //connectActionCable()
-                //  connectPrinter(context = applicationContext, data)
-            }
-
-
-            Result.success()
-        } catch (throwable: Throwable) {
-            Result.failure()
-        }
     }
 
     fun connectPrinter(context: Context, data: String) {
@@ -120,7 +111,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
     private fun connectActionCable() {
         // 1. Setup
         var requestURL =
-            prefProvider.getValue(Constants.BASE_URL_NEW, "") + Constants.CREATE_QUEUE_PRINTER
+           baseUrl + Constants.CREATE_QUEUE_PRINTER
         Log.e(TAG, "requestURL:  ${requestURL}")
         val uri = URI("wss://possoft.io/cable")
         consumer = ActionCable.createConsumer(uri)
@@ -134,11 +125,15 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
             subscription?.onConnected {
                 Log.e(TAG, "onActionConnected")
                 val params = JsonObject()
-                params.addProperty("id", prefProvider.getValueInt(Constants.LOCATION_ID, 0))
+                params.addProperty("id", locationId)
                 params.addProperty("url", requestURL)
                 subscription?.perform("received", params)
             }?.onRejected {
                 Log.e(TAG, "onActiononRejected")
+                subscription = consumer?.subscriptions?.create(appearanceChannel)
+                val params = JsonObject()
+                params.addProperty("id",locationId)
+                subscription?.perform("received", params)
             }?.onReceived {
                 Log.e(TAG, "onActiononReceived  " + Gson().toJson(it))
                 if (it != null) {
@@ -147,17 +142,29 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                         getQueueDataResponse(it.asJsonObject.get("printer_queue"))
 
 
+                    } else {
+                        Log.e(TAG, "NoPrinterQueueData")
+                        /* val dailyWorkRequest = OneTimeWorkRequest.Builder(UploadWorker::class.java)
+                             .setInitialDelay(5, TimeUnit.SECONDS)
+                             .addTag("empty_data")
+                             .build()
+                         WorkManager.getInstance(applicationContext)
+                             .enqueue(dailyWorkRequest)*/
                     }
 
                 }
 
             }?.onDisconnected {
                 Log.e(TAG, "onActiononDisconnected")
+                subscription = consumer?.subscriptions?.create(appearanceChannel)
+                val params = JsonObject()
+                params.addProperty("id", locationId)
+                subscription?.perform("received", params)
             }?.onFailed {
                 Log.e(TAG, "onActiononFailed")
                 subscription = consumer?.subscriptions?.create(appearanceChannel)
                 val params = JsonObject()
-                params.addProperty("id", prefProvider.getValueInt(Constants.LOCATION_ID, 0))
+                params.addProperty("id", locationId)
                 subscription?.perform("received", params)
 
             }
@@ -288,7 +295,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
     ) {
 
 
-        var printer: Print? = Print(applicationContext)
+        var printer: Print? = Print(mContext)
         /*  if (printer != null) {
               printer.setStatusChangeEventCallback(this)
               printer.setBatteryStatusChangeEventCallback(this)
@@ -344,7 +351,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                 customerReceiptPrinters.name
             }
 
-            builder = Builder(pname, PrinterClass.language, applicationContext)
+            builder = Builder(pname, PrinterClass.language, mContext)
 
             if (kitchenSettingModel.showOrderType) {
 
@@ -630,6 +637,10 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                 PrinterClass.closePrinter()
 
                 printerQueueModel.id?.let {
+                    val params = JsonObject()
+                    params.addProperty("printer_queue_id", it)
+                    subscription?.perform("delete_order", params)
+
                     /* viewModel.deleteQueuePrinter(
                          it,
                          printerQueueModel.position
@@ -644,7 +655,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                 PrinterClass.closePrinter()
                 e.printStackTrace()
                 val params = JsonObject()
-                params.addProperty("id", prefProvider.getValueInt(Constants.LOCATION_ID, 0))
+                params.addProperty("id", locationId)
                 subscription?.perform("received", params)
 
             }

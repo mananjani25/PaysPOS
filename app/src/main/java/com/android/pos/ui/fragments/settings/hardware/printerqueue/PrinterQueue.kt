@@ -12,7 +12,8 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import androidx.work.Data
-import androidx.work.OneTimeWorkRequest
+import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.PeriodicWorkRequest
 import androidx.work.WorkManager
 import com.android.pos.R
 import com.android.pos.data.model.PrinterQueueModel
@@ -45,6 +46,7 @@ import com.hosopy.actioncable.Consumer
 import com.hosopy.actioncable.Subscription
 import dagger.hilt.android.AndroidEntryPoint
 import java.net.URI
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 
@@ -303,17 +305,42 @@ class PrinterQueue : Fragment(), StatusChangeEventListener, BatteryStatusChangeE
     @SuppressLint("RestrictedApi")
     private fun onClick() {
         binding.btnStartService?.setOnClickListener {
+            Log.e(TAG, "kitchenPrinterSize:  ${kitchenPrinterList.size}")
             val data = Data.Builder()
                 .putString("kitchenPrinterList", Gson().toJson(kitchenPrinterList))
                 .put("kitchenSettingData", Gson().toJson(kitchenSettingModel))
+                .put("location_id", prefProvider.getValueInt(LOCATION_ID, 0))
+                .put("base_url", prefProvider.getValue(Constants.BASE_URL_NEW, ""))
                 .build()
 
 
-            val uploadWorkRequest =
-                OneTimeWorkRequest.Builder(UploadWorker::class.java).setInputData(data).build()
+            /*val uploadWorkRequest =
+                OneTimeWorkRequest.Builder(UploadWorker::class.java).setInputData(data).build()*/
 
-            val workManager = WorkManager.getInstance(requireContext().applicationContext)
-            workManager.enqueue(uploadWorkRequest)
+
+            val uploadWorkRequest =
+                PeriodicWorkRequest.Builder(UploadWorker::class.java, 5, TimeUnit.SECONDS)
+                    .setInputData(data)
+                    .build()
+
+
+            val workManager = WorkManager.getInstance(requireActivity().applicationContext)
+            try {
+
+
+                workManager.enqueueUniquePeriodicWork(
+                    "demo",
+                    ExistingPeriodicWorkPolicy.REPLACE,
+                    uploadWorkRequest
+                )
+            } catch (e: java.lang.Exception) {
+                Log.e(TAG, "printerQueueLog  ${e.message.toString()}")
+                e.printStackTrace()
+            }
+            // workManager.enqueueUniquePeriodicWork(System.currentTimeMillis().toString(),ExistingPeriodicWorkPolicy.KEEP,uploadWorkRequest)
+
+
+            //workManager.enqueue(uploadWorkRequest)
 
         }
         binding.imgSync.setOnClickListener {
