@@ -98,7 +98,7 @@ class MethodUtils {
                 .toString() + String.format("%.2f", price)
         }
 
-        fun roundOffAmountDouble(price: Double): Double {
+        fun roundOffAmountDouble(price: Double?): Double {
             return String.format("%.2f", price).toDouble()
         }
 
