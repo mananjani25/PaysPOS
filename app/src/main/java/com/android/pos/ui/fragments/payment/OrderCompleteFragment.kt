@@ -3537,7 +3537,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                             if (it.printType.lowercase()
                                                     .equals(CUSTOMER.lowercase()) && it.autoPrinting
                                             ) {
-                                                runOnUiThread{
+                                                runOnUiThread {
 
                                                     initPrinter(cus, CUSTOMER)
                                                 }
@@ -4398,11 +4398,24 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 Builder.COLOR_1
             )
 
+            Log.e("CheckAjj", "paidAmount  ${paidAmount}")
+            Log.e("CheckAjj", "totalAmount  ${receiptModel?.order?.totalAmount}")
+            Log.e("CheckAjj", "tipAmount  ${tipAmount}")
+            var newPaidAmount = paidAmount
+            if (MethodUtils.roundOffAmountDouble(paidAmount + tipAmount) == MethodUtils.roundOffAmountDouble(receiptModel?.order?.totalAmount?.toDouble() ?: 0.0) ) {
+                newPaidAmount = paidAmount + tipAmount
+            }
+
+            if (isSpilt){
+                newPaidAmount = paidAmount + tipAmount
+            }
+            Log.e("ToCheck", "PaidAmount ${newPaidAmount}")
+
             builder.addText(
                 padLine(
                     "Paid Amount",
                     "$" + MethodUtils.roundOffAmountString(
-                        paidAmount + tipAmount
+                        newPaidAmount
                     ),
                     if (customerSettingModel.fonts == LARGE) {
                         24
