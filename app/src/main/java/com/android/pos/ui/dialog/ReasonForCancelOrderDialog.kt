@@ -37,6 +37,7 @@ class ReasonForCancelOrderDialog : DialogFragment() {
     var cancelOrderReasonsList = ArrayList<VenueDetailsResponse.Data.CancelOrderReason>()
     private lateinit var cancelOrderReasonAdapter: CancelOrderReasonAdapter
     private var itemPos: Int = 0
+    var reason_id = 0
 
     @Inject
     lateinit var prefProvider: PrefProvider
@@ -89,7 +90,7 @@ class ReasonForCancelOrderDialog : DialogFragment() {
                     getString(R.string.cancel_order_message)
                 ) {
                     positiveButton(getString(R.string.yes)) {
-                        orderId?.let { it1 -> viewModel.cancelOrder(it1) }
+                        viewModel.cancelOrder(orderId!!, reason, reason_id)
                     }
                     negativeButton(R.string.no) {
                         // Do negative stuff here
@@ -97,11 +98,18 @@ class ReasonForCancelOrderDialog : DialogFragment() {
                 }
 
             } else {
-                AlertUtils.showCustomAlertWithListenerWithOK(
-                    requireContext(),
-                    "Please enter Reason"
-                ) { _, _ ->
+                alert(
+                    getString(R.string.app_name),
+                    getString(R.string.cancel_order_message)
+                ) {
+                    positiveButton(getString(R.string.yes)) {
+                        viewModel.cancelOrder(orderId!!, "", null)
+                    }
+                    negativeButton(R.string.no) {
+                        // Do negative stuff here
+                    }
                 }
+
             }
 
         }
@@ -199,6 +207,7 @@ class ReasonForCancelOrderDialog : DialogFragment() {
                                     pos: Int,
                                     model: VenueDetailsResponse.Data.CancelOrderReason
                                 ) {
+                                    reason_id = model.id
                                     itemPos = model.id
                                     binding.etReason.setText(model.reason)
 
