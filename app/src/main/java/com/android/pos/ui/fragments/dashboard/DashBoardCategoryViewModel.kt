@@ -184,6 +184,7 @@ class DashBoardCategoryViewModel @Inject constructor(
     private val _queueStart = MutableLiveData<Event<CreateOrderResponse?>>()
     val QueueStart: LiveData<Event<CreateOrderResponse?>> = _queueStart
 
+    var onClickAddCustomer = false
     val _Basedata = MutableLiveData<Event<CreateOrderResponse.Data?>>()
 
     var barcodeFoundDbItemLiveData: LiveData<Resource<TbItem>>? = null
@@ -216,6 +217,9 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     }
 
+    fun setIsFromAddCustomer(isclickOnAddcustomer:Boolean){
+        this.onClickAddCustomer = isclickOnAddcustomer
+    }
     fun manualSaleItems(orderType: String, employee_Id: Int): LiveData<List<CartModel>> {
 
         return posRepository.getManualSaleItems(orderType, employee_Id)
