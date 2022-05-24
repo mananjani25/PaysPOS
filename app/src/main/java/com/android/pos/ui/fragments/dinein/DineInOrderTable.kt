@@ -5851,21 +5851,22 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 itemIds.add(it.id)
             }
 
-            getOrderDetailsResponse?.orderItems?.forEachIndexed { index, orderItem ->
-                if (itemIds.contains(orderItem.id)) {
+            arrayItems.forEachIndexed { index, orderItem ->
+                if (itemIds.contains(getOrderDetailsResponse?.orderItems?.get(index)?.id)) {
                     Log.e("InsideLoop","Inside")
-                    if (arrayItems[index].quantity != orderItem.quantity) {
-                        if (orderItem.quantity > arrayItems[index].quantity) {
-                            orderItem.quantity =
-                                orderItem.quantity - arrayItems[index].quantity
-                            if (!printOrderItems.contains(orderItem)) {
+                    if (getOrderDetailsResponse?.orderItems?.get(index)?.quantity != orderItem.quantity) {
+                        if (getOrderDetailsResponse?.orderItems?.get(index)?.quantity!! > arrayItems[index].quantity) {
+                            getOrderDetailsResponse?.orderItems?.get(index)?.quantity =
+                                getOrderDetailsResponse?.orderItems?.get(index)?.quantity!! - arrayItems[index].quantity
+                            if (!printOrderItems.contains(getOrderDetailsResponse?.orderItems?.get(index))) {
+                                printOrderItems.add(getOrderDetailsResponse?.orderItems?.get(index)!!)
                                 var tbItem: TbItem = TbItem()
-                                tbItem.name = orderItem.itemName
-                                tbItem.price = orderItem.price
-                                tbItem.itemQuantity = orderItem.quantity
-                                if (orderItem.orderItemModifiers.isNotEmpty()) {
+                                tbItem.name = getOrderDetailsResponse?.orderItems?.get(index)?.itemName ?: ""
+                                tbItem.price = getOrderDetailsResponse?.orderItems?.get(index)?.price ?: 0.0
+                                tbItem.itemQuantity = getOrderDetailsResponse?.orderItems?.get(index)?.quantity ?: 0
+                                if (getOrderDetailsResponse?.orderItems?.get(index)?.orderItemModifiers?.isNotEmpty() == true) {
                                     var modifierList: ArrayList<Modifier> = arrayListOf()
-                                    orderItem.orderItemModifiers.forEach {
+                                    getOrderDetailsResponse?.orderItems?.get(index)?.orderItemModifiers?.forEach {
                                         val modifiers = Modifier()
                                         modifiers.price = it.price
                                         modifiers.name = it.name

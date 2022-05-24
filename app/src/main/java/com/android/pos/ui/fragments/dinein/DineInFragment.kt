@@ -584,6 +584,17 @@ class DineInFragment : Fragment() {
                         R.id.action_dineInFragment_to_dineInOrderTable,
                         bundle
                     )
+                } else {
+                    val status =
+                        "This table is locked by " + dineInFloorTableModel.lock_by_name + "."
+
+                    AlertUtils.showCustomAlertWithListenerWithOK(
+                        requireContext(),
+                        status
+                    ) { _, _ ->
+
+
+                    }
                 }
 
             }
