@@ -312,7 +312,10 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                 val result = bundle.getParcelable<TbCustomer>("data")
                 if (result != null) {
                     Log.e(TAG, "assignResult:  ${Gson().toJson(result)}")
-                    val dineInList = cartList.get(0).dineInList
+                    if (cartList.isEmpty()){
+                        cartList = bundle.getParcelableArrayList<CartModel>("cartList") as ArrayList<CartModel>
+                    }
+                    val dineInList = cartList[0].dineInList
                     Log.e(TAG, "getdineInListSize:  ${dineInList?.size}")
 
                     if (dineInList?.isNotEmpty() == true) {

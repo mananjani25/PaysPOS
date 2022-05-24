@@ -3240,6 +3240,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
         }
 
+        guestDiscount += MethodUtils.roundOffAmountDouble(globalOrderDiscount / (getOrderDetailsResponse?.guestAttributes?.size?.minus(1) ?: 1))
+
         serviceChargeList.forEach {
             if (it.isEnabled) {
                 guestServiceCharge += (guestSubTotal * it.percentage) / 100
@@ -3630,7 +3632,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
             addHorizontalLine(builder)
 
-
+            Log.e(TAG, "listWTitemsItemsGet  ${Gson().toJson(listWTitems)}")
             for (i in 0 until listWTitems.size) {
                 builder.addFeedLine(1)
                 builder.addTextLineSpace(30)
@@ -3645,10 +3647,16 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     Builder.FALSE,
                     Builder.COLOR_1
                 )
+                var guestCount: Int =
+                    (getOrderDetailsResponse?.guestAttributes?.size?.minus(1)) ?: 1
+                if (guestCount < 1) {
+                    guestCount = 1
+                }
+
 
                 addWholeTbItemToGuest(
                     builder, listWTitems.get(i), customerSettingModel.fonts,
-                    customerSettingModel.showModifiers, totalGuestCount, serviceChargeList
+                    customerSettingModel.showModifiers, guestCount, serviceChargeList
                 )
             }
 
@@ -5853,17 +5861,25 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
             arrayItems.forEachIndexed { index, orderItem ->
                 if (itemIds.contains(getOrderDetailsResponse?.orderItems?.get(index)?.id)) {
-                    Log.e("InsideLoop","Inside")
+                    Log.e("InsideLoop", "Inside")
                     if (getOrderDetailsResponse?.orderItems?.get(index)?.quantity != orderItem.quantity) {
                         if (getOrderDetailsResponse?.orderItems?.get(index)?.quantity!! > arrayItems[index].quantity) {
                             getOrderDetailsResponse?.orderItems?.get(index)?.quantity =
                                 getOrderDetailsResponse?.orderItems?.get(index)?.quantity!! - arrayItems[index].quantity
-                            if (!printOrderItems.contains(getOrderDetailsResponse?.orderItems?.get(index))) {
+                            if (!printOrderItems.contains(
+                                    getOrderDetailsResponse?.orderItems?.get(
+                                        index
+                                    )
+                                )
+                            ) {
                                 printOrderItems.add(getOrderDetailsResponse?.orderItems?.get(index)!!)
                                 var tbItem: TbItem = TbItem()
-                                tbItem.name = getOrderDetailsResponse?.orderItems?.get(index)?.itemName ?: ""
-                                tbItem.price = getOrderDetailsResponse?.orderItems?.get(index)?.price ?: 0.0
-                                tbItem.itemQuantity = getOrderDetailsResponse?.orderItems?.get(index)?.quantity ?: 0
+                                tbItem.name =
+                                    getOrderDetailsResponse?.orderItems?.get(index)?.itemName ?: ""
+                                tbItem.price =
+                                    getOrderDetailsResponse?.orderItems?.get(index)?.price ?: 0.0
+                                tbItem.itemQuantity =
+                                    getOrderDetailsResponse?.orderItems?.get(index)?.quantity ?: 0
                                 if (getOrderDetailsResponse?.orderItems?.get(index)?.orderItemModifiers?.isNotEmpty() == true) {
                                     var modifierList: ArrayList<Modifier> = arrayListOf()
                                     getOrderDetailsResponse?.orderItems?.get(index)?.orderItemModifiers?.forEach {
