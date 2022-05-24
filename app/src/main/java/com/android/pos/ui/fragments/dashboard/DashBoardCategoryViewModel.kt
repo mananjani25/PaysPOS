@@ -1236,7 +1236,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                     cartModel.items?.forEach { item ->
                         if (!item.isDestroy) {
                             totalCount += item.itemQuantity
-
+                            totalDiscount += item.discountPrice
                             subTotalPrice += (item.price * item.itemQuantity) - (item.discountPrice * item.itemQuantity)
 
 
@@ -1255,10 +1255,6 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                     totalDiscount += cartModel.discountPrice
                     order_note = cartModel.note
-                    cartModel.items!!.forEach {
-                        totalDiscount += it.discountPrice * it.itemQuantity
-                    }
-
                     Log.e("OpenOrderCh", "cartDiscount  ${cartModel.discountPrice}")
                     Log.e("OpenOrderCh", "totalDiscounts  ${totalDiscount}")
 
