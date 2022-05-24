@@ -50,6 +50,9 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
     suspend fun syncVenueDetails() =
         getResult { apiService.syncVenueDetails() }
 
+    suspend fun getOnlineOrderCountNoti() =
+        getResult { apiService.getCountOnlineOrdering() }
+
     suspend fun employeesList(locationId: Int) =
         getResult { apiService.employeesList(locationId) }
 

@@ -62,6 +62,8 @@ import com.android.pos.data.remote.Constants.NOTES_ACTIVE
 import com.android.pos.data.remote.Constants.NOTE_UPDATE_DELETE
 import com.android.pos.data.remote.Constants.ONLINE_ORDERING
 import com.android.pos.data.remote.Constants.ONLINE_ORDER_COUNTS
+import com.android.pos.data.remote.Constants.ONLINE_ORDER_GET_NOTIFICATION
+import com.android.pos.data.remote.Constants.ONLINE_ORDER_NOTIFICATION_COUNT
 import com.android.pos.data.remote.Constants.OPEN_ORDERS
 import com.android.pos.data.remote.Constants.OPTION_SETS
 import com.android.pos.data.remote.Constants.OPTION_UPDATE_DELETE
@@ -181,6 +183,9 @@ interface ApiService {
 
     @GET(SYNC_VENUE_DETAILS)
     suspend fun syncVenueDetails(): VenueDetailsResponse
+
+    @GET(ONLINE_ORDER_NOTIFICATION_COUNT)
+    suspend fun getCountOnlineOrdering(): OnlineOrderNotificationCount
 
     @GET(ORDER_TYPES)
     suspend fun orderTypes(): OrderTypeResponse

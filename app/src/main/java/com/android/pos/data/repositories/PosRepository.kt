@@ -112,6 +112,7 @@ class PosRepository @Inject constructor(
 
     suspend fun syncVenueDetails() = apiHelperNew.syncVenueDetails()
 
+    suspend fun getOnlineOrderNotificationCount() = apiHelperNew.getOnlineOrderCountNoti()
 
     suspend fun syncInventory() = apiHelperNew.syncVenueData()
 
@@ -791,7 +792,7 @@ class PosRepository @Inject constructor(
         time: Int,
         order_id: Int,
         isaccepted: Boolean,
-        employee_id:Int
+        employee_id: Int
     ): LiveData<Resource<BaseResponse>> =
         performGetOperationNew(networkCall = {
             apiHelperNew.setAcceptedAndDeclineorder(
@@ -812,8 +813,6 @@ class PosRepository @Inject constructor(
                 order_status
             )
         })
-    
-    
 
 
     suspend fun cashInOut(data: CashLogRequest) = apiHelperNew.cashInOut(data)
@@ -924,7 +923,7 @@ class PosRepository @Inject constructor(
         performGetOperationNew(networkCall = { apiHelperNew.orderCounts(startDate, endDate) })
 
     fun onlineOrderCounts(startDate: String?, endDate: String?) =
-        performGetOperationNew(networkCall = { apiHelperNew.onlineOrderCounts(startDate,endDate) })
+        performGetOperationNew(networkCall = { apiHelperNew.onlineOrderCounts(startDate, endDate) })
 
     fun inventoryCounts() =
         performGetOperationNew(networkCall = { apiHelperNew.inventoryCounts() })

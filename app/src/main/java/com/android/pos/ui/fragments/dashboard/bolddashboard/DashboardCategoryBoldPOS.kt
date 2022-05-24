@@ -129,9 +129,21 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
 
         checkDineInEditOrder()
         printerProgress()
-
+        getwebOrderingCountObserver()
+        viewModel.getOnlineOrderCount()
         binding.lifecycleOwner = this
         return binding.root
+    }
+
+    private fun getwebOrderingCountObserver() {
+        viewModel.onlineOrderCount.observe(viewLifecycleOwner) { event ->
+            event.getContentIfNotHandled()?.let {
+                if (it != null) {
+                    Log.d(TAG, "getwebOrderingCount: " + it.count)
+                    onlineOrderBadgeDisplay(it.count)
+                }
+            }
+        }
     }
 
     private fun getLoyaltyPrograms() {
