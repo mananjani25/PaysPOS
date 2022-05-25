@@ -305,12 +305,13 @@ class PaymentBoldPosFragment : Fragment() {
                 dineInPaymentViewModel.deleteCart()
                 prefProvider.setValue(Constants.ORDER_TYPE, Constants.TAKEOUT)
             }
+            if(!viewModel.onClickAddCustomer){
+                if (isFromActiveOrder) {
+                    removeCustomer()
+                    viewModel.deleteCart()
+                    prefProvider.setValue(Constants.ORDER_TYPE, Constants.TAKEOUT)
 
-            if (isFromActiveOrder) {
-                removeCustomer()
-                viewModel.deleteCart()
-                prefProvider.setValue(Constants.ORDER_TYPE, Constants.TAKEOUT)
-
+                }
             }
         }
 

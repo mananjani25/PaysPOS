@@ -51,6 +51,7 @@
                 android:padding="@dimen/_5sdp"
                 android:src="@{noteModel.isActive ? @drawable/ic_check_box: @drawable/ic_check_box_unchecked}" />
 
+
             <androidx.appcompat.widget.AppCompatTextView
                 style="@style/CustomFontSemiBold"
                 android:layout_width="0dp"
@@ -62,7 +63,7 @@
                 android:padding="@dimen/_5sdp"
                 android:text="@{noteModel.name}"
                 android:textColor="@color/txtColor"
-                android:textSize="@dimen/_5mdpi" />
+                android:textSize="@dimen/setting_inner_text_size" />
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:layout_width="wrap_content"

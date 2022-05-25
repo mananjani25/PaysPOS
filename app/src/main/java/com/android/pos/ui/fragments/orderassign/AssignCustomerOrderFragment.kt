@@ -14,6 +14,7 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.android.pos.R
+import com.android.pos.data.entities.CartModel
 import com.android.pos.data.entities.TbCustomer
 import com.android.pos.data.remote.Constants
 import com.android.pos.databinding.FragmentAssignCustomerOrderBinding
@@ -51,6 +52,7 @@ class AssignCustomerOrderFragment : Fragment(), ItemCallback {
     private var isLastPage = false
     private var firstDetailLoad = false
     private var selectedDate: String? = null
+    private var cartList:ArrayList<CartModel> = arrayListOf()
     val data = LinkedHashMap<String, String>()
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -74,6 +76,7 @@ class AssignCustomerOrderFragment : Fragment(), ItemCallback {
         isFromCompletePayment = arguments?.getBoolean("fromPayment") ?: false
         dineInPosition = arguments?.getInt("position")
         selectedDate = arguments?.getString("SELECTED_DATE")
+        cartList = (arguments?.getParcelableArrayList<CartModel>("cartList") ?: emptyList<CartModel>()) as ArrayList<CartModel>
         return binding.root
     }
 
@@ -220,6 +223,7 @@ class AssignCustomerOrderFragment : Fragment(), ItemCallback {
             putString("SELECTED_DATE", selectedDate)
             putBoolean("isEdit", true)
             putBundle("updateBundle",arguments)
+            putParcelableArrayList("cartList",cartList)
             putString(Constants.KEY, "FROM_CUSTOMER")
 
             isFromDineIn?.let { putBoolean("DINE_IN", it) }

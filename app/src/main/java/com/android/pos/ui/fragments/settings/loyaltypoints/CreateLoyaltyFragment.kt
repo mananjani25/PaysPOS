@@ -121,6 +121,8 @@ class CreateLoyaltyFragment : Fragment() {
             backPressManage()
         }
         binding.header.txtSave.setOnClickListener {
+            viewModel.setLoyaltyAmount(binding.editLoyaltyAmount?.text.toString().toDouble())
+            viewModel.setLoyaltyTarget(binding.editLoyaltyTarget?.text.toString().toInt())
             viewModel.submit()
         }
     }

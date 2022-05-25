@@ -21,27 +21,33 @@
             android:orientation="horizontal"
             android:padding="@dimen/_5sdp">
 
-            <TextView
-                android:id="@+id/txtItem"
-                style="@style/CustomFontSemiBold"
-                android:layout_width="wrap_content"
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_alignParentStart="true"
-                android:layout_centerVertical="true"
-                android:text="Sandwich"
-                android:textColor="@color/txtColor"
-                android:textSize="@dimen/_7mdpi" />
+                android:layout_marginRight="@dimen/_10sdp"
+                android:layout_toLeftOf="@id/linear_quanty"
+                android:orientation="vertical">
 
-            <TextView
-                android:id="@+id/txtPrice"
-                style="@style/CustomFontMediumStyle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/txtItem"
-                android:layout_marginTop="@dimen/_8sdp"
-                android:text="@string/_0_00"
-                android:textColor="@color/txtColor"
-                android:textSize="@dimen/_6mdpi" />
+                <TextView
+                    android:id="@+id/txtItem"
+                    style="@style/CustomFontSemiBold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="sandwich"
+                    android:textColor="@color/txtColor"
+                    android:textSize="@dimen/_7mdpi" />
+
+                <TextView
+                    android:id="@+id/txtPrice"
+                    style="@style/CustomFontMediumStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/_5sdp"
+                    android:text="@string/_0_00"
+                    android:textColor="@color/txtColor"
+                    android:textSize="@dimen/_6mdpi" />
+
+            </androidx.appcompat.widget.LinearLayoutCompat>
 
             <TextView
                 android:id="@+id/txtDone"
@@ -77,6 +83,7 @@
                 android:textSize="@dimen/_7mdpi" />
 
             <LinearLayout
+                android:id="@+id/linear_quanty"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginEnd="@dimen/_5sdp"
