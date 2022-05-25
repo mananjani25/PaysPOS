@@ -581,10 +581,21 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
                         var remainingValue = 0.0
                         remainingValue = if (cashDiscountType == "SurCharge") {
-                            wholePrice - (paymentAmount - cashDiscountSurcharge)
+                            Log.d(
+                                TAG,
+                                "observeData: " + wholePrice + " " + String.format(
+                                    "%.2f",
+                                    paymentAmount - cashDiscountSurcharge
+                                ).toDouble()
+                            )
+                            wholePrice - String.format(
+                                "%.2f",
+                                paymentAmount - cashDiscountSurcharge
+                            ).toDouble()
                         } else {
                             wholePrice - paymentAmount
                         }
+
                         if (remainingValue <= 0.0) {
                             remainingValue = 0.0
                         }
@@ -1556,7 +1567,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
                 ProgressUtils.dismissProgressDialog()
 
-                AlertUtils.showCustomAlert(requireContext(),t.message)
+                AlertUtils.showCustomAlert(requireContext(), t.message)
 
                 isInsert = false
                 isCardRev = false

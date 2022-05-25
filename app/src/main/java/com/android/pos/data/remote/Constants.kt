@@ -12,6 +12,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 object Constants {
+    val IS_ORDER_LAST_PAYMENT= "is_order_last_payment"
     const val ARG_PARAM1 = "param1"
     const val ARG_PARAM2 = "param2"
     const val ARG_PARAM3 = "param2"

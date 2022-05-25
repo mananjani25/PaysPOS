@@ -24,7 +24,9 @@ import com.android.pos.data.model.responseModel.GuestPaymentAttributes
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.DINE_IN_ADAPTER_LIST
 import com.android.pos.data.remote.Constants.DINE_IN_GUEST_PAYMENT_DATA
+import com.android.pos.data.remote.Constants.IS_ORDER_LAST_PAYMENT
 import com.android.pos.data.remote.Constants.PRINT_DATA_DINE_IN
+import com.android.pos.data.remote.Constants.SPLIT_ENABLE
 import com.android.pos.databinding.FragmentCheckoutDetailsNewBinding
 import com.android.pos.di.ApiModule1
 import com.android.pos.di.MagtekModule
@@ -696,12 +698,19 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                 dineinOrderVieweModel.totalPayAmount(custom_paymentAmount)
             }
             guestAttributeCalculation()
-            guestRequestModel?.paymentAttributes?.let { logPrintGuest(it) }
-            dineinOrderVieweModel?.payByGuest(
-                dineInDataModel?.guestId ?: 0, dineInDataModel?.guestPaymentReq!!,
-                dineInDataModel?.isLastPayment!!, dineInDataModel?.splitModel!!
-            )
 
+            guestRequestModel?.paymentAttributes?.let { logPrintGuest(it) }
+            if(dineInDataModel.isLastPayment){
+                dineinOrderVieweModel.payByGuest(
+                    dineInDataModel.guestId ?: 0, dineInDataModel.guestPaymentReq!!,
+                    dineInDataModel.isLastPayment == isSelectedCount <= 1, dineInDataModel.splitModel!!
+                )
+            }else{
+                dineinOrderVieweModel.payByGuest(
+                    dineInDataModel.guestId ?: 0, dineInDataModel.guestPaymentReq!!,
+                    false, dineInDataModel.splitModel!!
+                )
+            }
 
         } else {
             makeCashPayment()
@@ -1705,14 +1714,19 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                                 dineinOrderVieweModel.totalPayAmount(paymentAmount)
                                 guestAttributeCalculation()
                                 guestRequestModel?.paymentAttributes?.let { logPrintGuest(it) }
-
-                                dineinOrderVieweModel?.payByGuest(
-                                    dineInDataModel?.guestId ?: 0,
-                                    dineInDataModel?.guestPaymentReq!!,
-                                    dineInDataModel?.isLastPayment!!,
-                                    dineInDataModel?.splitModel!!
-                                )
-
+                                if(dineInDataModel.isLastPayment){
+                                    dineinOrderVieweModel.payByGuest(
+                                        dineInDataModel.guestId ?: 0,
+                                        dineInDataModel.guestPaymentReq!!,
+                                        dineInDataModel.isLastPayment == isSelectedCount <= 1,
+                                        dineInDataModel.splitModel
+                                    )
+                                }else{
+                                    dineinOrderVieweModel.payByGuest(
+                                        dineInDataModel.guestId ?: 0, dineInDataModel.guestPaymentReq!!,
+                                        false, dineInDataModel.splitModel!!
+                                    )
+                                }
                             } else {
                                 makePaymentCreditCard()
                             }
@@ -2154,11 +2168,11 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                 bundle.putDouble("WholetotalPrice", wholePrice)
                 var remainingValue = 0.0
                 remainingValue = if (cashDiscountType == "SurCharge") {
-                    (wholePrice + cashDiscountSurcharge) - paymentAmount
+                    String.format("%.2f", wholePrice + cashDiscountSurcharge)
+                        .toDouble() - paymentAmount
                 } else {
                     wholePrice - paymentAmount
                 }
-
                 bundle.putDouble(
                     "remainingAmount",
                     remainingValue

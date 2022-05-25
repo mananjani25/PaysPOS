@@ -1401,6 +1401,7 @@ class CartFragment(
 
         binding.txtAddCustomer.setOnClickListener {
             if (isFromPayment) {
+                viewModel.setIsFromAddCustomer(true)
                 findNavController().navigate(R.id.action_paymentBoldPosFragment_to_assignCustomerOrderFragment)
             } else {
                 if (isOrderUpdate) {
