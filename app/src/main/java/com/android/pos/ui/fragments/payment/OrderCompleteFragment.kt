@@ -568,11 +568,13 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     binding.txtChangeAmount.text =
                         MethodUtils.roundOffAmount(if ((remainingAmount - tipAmount) > 0) remainingAmount - tipAmount else 0.00) + " Change"
                 } else {
-                    if (remainingAmount < 0) {
-                        changeAmtGlobal = MethodUtils.roundOffAmountDouble(remainingAmount)
+                    if (remainingAmount < 0 || remainingAmount==0.0) {
+                        changeAmtGlobal = MethodUtils.roundOffAmountDouble(remainingAmount - tipAmount)
+                        binding.txtChangeAmount.gone()
+                    }else{
                         binding.txtChangeAmount.visible()
                         binding.txtChangeAmount.text =
-                            MethodUtils.roundOffAmount(if (remainingAmount > 0) remainingAmount else 0.00) + " Change"
+                            MethodUtils.roundOffAmount(if ((remainingAmount - tipAmount) > 0) remainingAmount - tipAmount else 0.00) + " Change"
                     }
                 }
 

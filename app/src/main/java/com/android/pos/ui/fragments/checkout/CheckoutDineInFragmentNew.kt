@@ -2203,7 +2203,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                 Log.e("TipAmount 4:: ", tipAmount.toString())
 
                 val bundle = Bundle()
-                bundle.putBoolean("isDineIn", false)
+                bundle.putBoolean("isDineIn", true)
 
                 if (remainingAmount == 0.0) {
                     bundle.putDouble("PaidAmount", paymentAmount)
@@ -2221,6 +2221,10 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                 } else {
                     wholePrice - paymentAmount
                 }
+                if (remainingValue <= 0.0) {
+                    remainingValue = 0.0
+                }
+
                 bundle.putDouble(
                     "remainingAmount",
                     remainingValue
@@ -2266,6 +2270,9 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
 
                 bundle.putDouble("noCashAdj", cashDiscountSurcharge)
                 bundle.putBoolean("isFromActiveOrder", false)
+                bundle.putBoolean("isGuestPaymentTotal", isLastPayment)
+                bundle.putBoolean("isGuest", isGuestPay)
+                bundle.putBoolean("isLastPayment", isLastPayment)
                 bundle.putParcelableArrayList(
                     DINE_IN_ADAPTER_LIST, dineInDataModel.dineInAdapterList?.toCollection(
                         arrayListOf()
