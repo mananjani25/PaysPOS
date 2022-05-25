@@ -41,6 +41,7 @@ class CustomerReceiptSettings : Fragment() {
                 false
             )
         binding.lifecycleOwner = this
+        observeShowProgress()
 
         binding.ivBack.setOnClickListener {
             val navController = findNavController()
@@ -53,7 +54,7 @@ class CustomerReceiptSettings : Fragment() {
 
 
         getCustomerSettings()
-        observeShowProgress()
+
         updateDate()
 
 
