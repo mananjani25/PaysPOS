@@ -648,11 +648,18 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
             binding.edtAmount.setText(removeLastCharacter(binding.edtAmount.text.toString()))
 
         } else {
-            binding.edtAmount.append(number)
+            if(number.isNotEmpty()){
+                binding.edtAmount.append(number)
+            }else{
+                binding.edtAmount.addTextChangedListener(this)
+            }
         }
     }
 
     private fun removeLastCharacter(str: String): String {
+        if(str.length==1){
+            binding.edtAmount.addTextChangedListener(this)
+        }
         return str.substring(0, str.length - 1)
     }
 
@@ -663,7 +670,7 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
     var current = ""
     override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
 
-        if (s.toString() != current) {
+        if (s.toString().isNotEmpty()) {
             binding.edtAmount.removeTextChangedListener(this)
 
 

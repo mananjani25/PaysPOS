@@ -193,16 +193,16 @@
                                         />
 
                                     <androidx.appcompat.widget.AppCompatEditText
+                                        android:id="@+id/edt_discount"
                                         style="@style/CustomFontSemiBold"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:background="@null"
-                                        android:hint="0%"
+                                        android:hint="0.0"
                                         android:imeOptions="actionDone"
                                         android:inputType="numberDecimal"
                                         android:paddingTop="@dimen/_7sdp"
                                         android:paddingBottom="@dimen/_7sdp"
-                                        android:text="@={``+viewModel.createDiscountDetails.percentage}"
                                         android:textColor="@color/txtColor"
                                         android:textColorHint="@color/hintColor"
                                         android:textSize="@dimen/text_size_medium" />
