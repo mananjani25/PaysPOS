@@ -7,13 +7,10 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.core.os.bundleOf
 import androidx.fragment.app.*
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
-import com.android.pos.data.entities.CartModel
-import com.android.pos.data.entities.TbItem
 import com.android.pos.data.model.CheckOutDineInDataModel
 import com.android.pos.data.model.DineinCartPaymentModel
 import com.android.pos.data.model.GuestDataModel
@@ -36,11 +33,9 @@ import com.android.pos.ui.fragments.checkout.CheckoutDetailsFragmentNew
 import com.android.pos.ui.fragments.checkout.CheckoutDineInFragmentNew
 import com.android.pos.ui.fragments.checkout.CheckoutDineInPaymentViewModel
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
-import com.android.pos.ui.fragments.dashboard.bolddashboard.AddItemFragment
 import com.android.pos.ui.fragments.dashboard.bolddashboard.CartFragment
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.TAG
-import com.android.pos.utils.callback.ItemListner
 import com.android.pos.utils.extensions.gone
 import com.android.pos.utils.extensions.visible
 import com.google.gson.Gson
@@ -283,13 +278,15 @@ class PaymentBoldPosFragment : Fragment() {
 
     private fun listeners() {
         binding.layoutHeaderCheckout.tvAddTip.setOnClickListener {
-            findNavController().navigate(
-                R.id.action_paymentBoldPosFragment_to_addTipDialog,
-                bundleOf(
-                    "totalTip" to viewModel.tipTransactionAmount,
-                    "splitCount" to viewModel.isSelectCount
+            if (findNavController().currentDestination?.id == R.id.paymentBoldPosFragment) {
+                findNavController().navigate(
+                    R.id.action_paymentBoldPosFragment_to_addTipDialog,
+                    bundleOf(
+                        "totalTip" to viewModel.tipTransactionAmount,
+                        "splitCount" to viewModel.isSelectCount
+                    )
                 )
-            )
+            }
         }
         binding.layoutHeaderCheckout.tvAddDiscount.setOnClickListener {
             findNavController().navigate(R.id.action_paymentBoldPosFragment_to_addDiscountDialogFragment)

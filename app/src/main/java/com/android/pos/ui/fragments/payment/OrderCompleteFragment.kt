@@ -40,6 +40,7 @@ import com.android.pos.data.remote.Constants.GUEST_POSITION
 import com.android.pos.data.remote.Constants.KITCHEN
 import com.android.pos.data.remote.Constants.LARGE
 import com.android.pos.data.remote.Constants.OPEN_ORDER
+import com.android.pos.data.remote.Constants.OPTION_TYPE
 import com.android.pos.data.remote.Constants.PAYMENT_ID
 import com.android.pos.data.remote.Constants.PRINT_DATA_DINE_IN
 import com.android.pos.data.remote.Constants.SAVE_SPLIT_BUNDLE
@@ -1729,7 +1730,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             builder.addText(
                 padLine(
                     "Total Price",
-                    "$" + MethodUtils.roundOffAmountString(checkOutDineInModel.totalAmount),
+                    "$" + MethodUtils.roundOffAmountString(checkOutDineInModel.totalAmount + tipAmount),
                     if (customerSettingModel.fonts == Constants.LARGE) {
                         24
                     } else {
@@ -2717,7 +2718,12 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
 
 
-            if (noCashAdjGlobal != 0.0 && payTypeGlb == "Cash") {
+
+            if (noCashAdjGlobal != 0.0 && payTypeGlb == "Cash" && prefProvider.getValue(
+                    OPTION_TYPE,
+                    ""
+                ).lowercase() == "CashDiscount".lowercase()
+            ) {
                 builder.addTextLineSpace(30)
                 builder.addFeedUnit(30)
                 builder.addTextFont(Builder.FONT_E)
@@ -2823,7 +2829,10 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             builder.addFeedUnit(30)
 
 
-
+            Log.e(
+                TAG,
+                "getDineInOrderDetailsgetDineInOrderDetails  ${Gson().toJson(getDineInOrderDetails)}"
+            )
             builder.addTextLineSpace(30)
             builder.addFeedUnit(30)
 
@@ -2839,16 +2848,15 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             )
             var totalAmt =
                 MethodUtils.roundOffAmountDouble(
-                    (getDineInOrderDetails?.subTotal
-                        ?: 0.0) + (getDineInOrderDetails?.totalServiceCharges
-                        ?: 0.0) + (getDineInOrderDetails?.totalTaxAmount ?: 0.0)
+                    (getDineInOrderDetails?.totalAmount)
                 )
 
-            if (payTypeGlb.lowercase() == "Card".lowercase()) {
+            if (payTypeGlb.lowercase() == "Card".lowercase() && prefProvider.getValue(OPTION_TYPE,"").lowercase() == "SurCharge".lowercase()) {
                 totalAmt += receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.cash_discount_or_surcharge!!
             }
 
-            if (payTypeGlb == "Cash") {
+            if (payTypeGlb == "Cash" && prefProvider.getValue(OPTION_TYPE,
+                    "").lowercase() == "CashDiscount".lowercase()) {
 
                 totalAmt = MethodUtils.roundOffAmountDouble(totalAmt - noCashAdjGlobal)
             }
@@ -2923,6 +2931,34 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     }
                 )
             )
+
+            if (isSpilt) {
+                builder.addTextLineSpace(30)
+                builder.addFeedUnit(30)
+
+                builder.addTextFont(Builder.FONT_E)
+                // builder.addTextAlign(Builder.ALIGN_LEFT)
+                builder.addTextLang(Builder.LANG_EN)
+                addCustomerTextSize(builder, customerSettingModel.fonts)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.TRUE,
+                    Builder.COLOR_1
+                )
+
+                builder.addText(
+                    padLine(
+                        "Remaining Amount",
+                        "$" + MethodUtils.roundOffAmountString(remainingAmount),
+                        if (customerSettingModel.fonts == LARGE) {
+                            24
+                        } else {
+                            48
+                        }
+                    )
+                )
+            }
 
 
 
@@ -4402,11 +4438,14 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             Log.e("CheckAjj", "totalAmount  ${receiptModel?.order?.totalAmount}")
             Log.e("CheckAjj", "tipAmount  ${tipAmount}")
             var newPaidAmount = paidAmount
-            if (MethodUtils.roundOffAmountDouble(paidAmount + tipAmount) == MethodUtils.roundOffAmountDouble(receiptModel?.order?.totalAmount?.toDouble() ?: 0.0) ) {
+            if (MethodUtils.roundOffAmountDouble(paidAmount + tipAmount) == MethodUtils.roundOffAmountDouble(
+                    receiptModel?.order?.totalAmount?.toDouble() ?: 0.0
+                )
+            ) {
                 newPaidAmount = paidAmount + tipAmount
             }
 
-            if (isSpilt){
+            if (isSpilt) {
                 newPaidAmount = paidAmount + tipAmount
             }
             Log.e("ToCheck", "PaidAmount ${newPaidAmount}")
