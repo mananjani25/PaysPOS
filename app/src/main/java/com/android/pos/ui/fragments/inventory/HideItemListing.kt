@@ -24,15 +24,17 @@ import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.callback.ItemCallback
 import com.android.pos.utils.extensions.alert
+import com.android.pos.utils.extensions.gone
+import com.android.pos.utils.extensions.visible
 import com.android.pos.utils.statusUtils.Status
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class HideItemListing(val clickedPosition: Int) : Fragment(),ItemCallback {
+class HideItemListing(val clickedPosition: Int) : Fragment(), ItemCallback {
 
     private var isreOrder: Boolean = false
     private var deleteAndHide: Boolean = false
-    var listSize:Int?=0
+    var listSize: Int? = 0
 
     private var deletePos: Int = -1
     private var deleteObj: TbItem? = null
@@ -164,9 +166,21 @@ class HideItemListing(val clickedPosition: Int) : Fragment(),ItemCallback {
             it?.let { resource ->
                 when (resource.status) {
                     Status.SUCCESS -> {
-                        binding.rvAllItemList.visibility = View.VISIBLE
+
                         binding.progressCircular.visibility = View.GONE
                         listSize = it.data?.size
+                        if (listSize == 0) {
+                            binding.txtNodata?.visible()
+                            binding.rvAllItemList.visibility = View.GONE
+                            if (it.message != null && it.message.isNotEmpty()) {
+                                binding.txtNodata?.text = it.message
+                            } else {
+                                binding.txtNodata?.text = "No data available"
+                            }
+                        } else {
+                            binding.rvAllItemList.visibility = View.VISIBLE
+                            binding.txtNodata?.gone()
+                        }
                         it.data?.let { it1 ->
                             adapter.add(it1)
                             binding.edtSearch.hint = "Search (" + it1.size + ") Items"
