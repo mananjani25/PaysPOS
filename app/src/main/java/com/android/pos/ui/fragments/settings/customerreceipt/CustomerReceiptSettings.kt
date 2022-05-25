@@ -1,10 +1,14 @@
 package com.android.pos.ui.fragments.settings.customerreceipt
 
+import android.app.Dialog
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.WindowManager
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -18,7 +22,6 @@ import com.android.pos.data.remote.Constants.SMALL
 import com.android.pos.databinding.FragmentCustomerReceiptSettingsBinding
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.Event
-import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.statusUtils.Status
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -28,6 +31,7 @@ class CustomerReceiptSettings : Fragment() {
     private val TAG = "CustomerReceiptSettings"
     private val viewModel by viewModels<CustomerReceiptViewModel>()
     private lateinit var binding: FragmentCustomerReceiptSettingsBinding
+    private lateinit var pd: Dialog
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -41,6 +45,7 @@ class CustomerReceiptSettings : Fragment() {
                 false
             )
         binding.lifecycleOwner = this
+        progressDialog()
         observeShowProgress()
 
         binding.ivBack.setOnClickListener {
@@ -531,9 +536,13 @@ class CustomerReceiptSettings : Fragment() {
         viewModel.showProgress.observe(viewLifecycleOwner, { event ->
             event.getContentIfNotHandled()?.let {
                 if (it) {
-                    ProgressUtils.showProgressDialog(requireActivity())
+                    if (pd != null && !pd.isShowing) {
+                        pd.show()
+                    }
                 } else {
-                    ProgressUtils.dismissProgressDialog()
+                    if (pd != null && pd.isShowing) {
+                        pd.dismiss()
+                    }
                 }
             }
         })
@@ -872,6 +881,26 @@ class CustomerReceiptSettings : Fragment() {
 
             }
         }
+
+    }
+
+    fun progressDialog() {
+
+        pd = Dialog(requireActivity())
+        pd.setContentView(R.layout.view_loading)
+        // pd.setProgressStyle(ProgressDialog.BUTTON_NEUTRAL)
+//        pd.setMessage("Please Wait..")
+        pd.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        pd.window?.setBackgroundDrawable(
+            ColorDrawable(Color.TRANSPARENT)
+        )
+        pd.setCanceledOnTouchOutside(false)
+        pd.setCancelable(false)
+        pd.window?.setLayout(
+            WindowManager.LayoutParams.WRAP_CONTENT,
+            WindowManager.LayoutParams.WRAP_CONTENT
+        )
+
 
     }
 }
