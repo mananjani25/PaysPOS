@@ -1540,6 +1540,7 @@ open class PaymentViewModel @Inject constructor(
                     }
                     cardName = cardN
 
+
                 }
 
                 if (model.cardSwipeOutput != null) {
@@ -1558,6 +1559,7 @@ open class PaymentViewModel @Inject constructor(
 
 
 
+                transactionId = model.transactionOutput?.transactionID.toString()
                 cardType = 0
             }
 //            cardName = ""

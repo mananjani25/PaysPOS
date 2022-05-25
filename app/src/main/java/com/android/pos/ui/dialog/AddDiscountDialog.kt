@@ -98,12 +98,12 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
         }
         if (defaultModel.modifiers.isNotEmpty()) {
             for (i in defaultModel.modifiers.indices) {
-                modifierPrice += (defaultModel.modifiers[i].price * defaultModel.modifiers[i].itemQuantity)
+                modifierPrice += (defaultModel.modifiers[i].price)
             }
         }
 
 
-        itemPrice = (defaultModel.price * defaultModel.itemQuantity) + modifierPrice
+        itemPrice = (defaultModel.price) + modifierPrice
         if (isOrderDiscount) {
             itemPrice -= orderDiscount
         } else {

@@ -217,9 +217,10 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     }
 
-    fun setIsFromAddCustomer(isclickOnAddcustomer:Boolean){
+    fun setIsFromAddCustomer(isclickOnAddcustomer: Boolean) {
         this.onClickAddCustomer = isclickOnAddcustomer
     }
+
     fun manualSaleItems(orderType: String, employee_Id: Int): LiveData<List<CartModel>> {
 
         return posRepository.getManualSaleItems(orderType, employee_Id)
@@ -1909,9 +1910,9 @@ class DashBoardCategoryViewModel @Inject constructor(
             }
         }
 
-        Log.e("removeItemDine","removeItemDineInList  ${removeItemDineInList.size}")
+        Log.e("removeItemDine", "removeItemDineInList  ${removeItemDineInList.size}")
         if (removeItemDineInList.isNotEmpty()) {
-          orderItemsAttributeList =  addDestroyedItemsinDinein(orderItemsAttributeList)
+            orderItemsAttributeList = addDestroyedItemsinDinein(orderItemsAttributeList)
         }
 
 
@@ -2255,14 +2256,14 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     }
 
-    private fun addDestroyedItemsinDinein(cartModel: ArrayList<OrderItemsAttribute>): ArrayList<OrderItemsAttribute>  {
+    private fun addDestroyedItemsinDinein(cartModel: ArrayList<OrderItemsAttribute>): ArrayList<OrderItemsAttribute> {
 
         if (removeItemDineInList.isNotEmpty()) {
             removeItemDineInList.forEach {
                 val orderItemsAttribute = OrderItemsAttribute()
                 orderItemsAttribute.category_id = it.categoryId
                 if (it.orderItemId != null)
-                orderItemsAttribute.id = it.orderItemId
+                    orderItemsAttribute.id = it.orderItemId
                 orderItemsAttribute.isDestroy = it.isDestroy
                 orderItemsAttribute.isEdited = it.isEdited
                 orderItemsAttribute.isFired = it.isFired
@@ -2556,6 +2557,15 @@ class DashBoardCategoryViewModel @Inject constructor(
                                         Gson().toJson(it.data.magensaSettings[0])
                                     )
                                 } else prefProvider.setValue(Constants.MAGENSA_SETTINGS, "")
+
+                                if (it.data.shift_report_configuration != null) {
+                                    prefProvider.setValue(
+                                        Constants.SHIFT_REPORT_SETTINGS,
+                                        Gson().toJson(it.data.shift_report_configuration)
+                                    )
+                                } else prefProvider.setValue(Constants.SHIFT_REPORT_SETTINGS, "")
+
+
 
                                 MainApplication.getInstance()
                                     ?.let { it1 ->

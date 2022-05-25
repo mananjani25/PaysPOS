@@ -333,7 +333,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:visibility="gone">
+                android:visibility="visible">
 
 
                 <androidx.appcompat.widget.AppCompatTextView
@@ -349,7 +349,7 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:padding="@dimen/_5sdp"
-                    android:visibility="gone">
+                    android:visibility="visible">
 
                     <androidx.appcompat.widget.AppCompatTextView
                         style="@style/CustomFontBold"
@@ -419,7 +419,7 @@
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rvSalesDetails"
                     style="@style/ReportRecyclerViewstyle"
-                    android:visibility="gone"
+                    android:visibility="visible"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     tools:itemCount="2"
                     tools:listitem="@layout/view_sales_details_data" />

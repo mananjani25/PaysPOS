@@ -788,6 +788,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
 
 
                 guestRequestModel?.paymentAttributes!!.cardType = "Credit"
+                guestRequestModel?.paymentAttributes!!.transactionId = model.transactionOutput?.transactionID.toString()
             }
         }
         val guestPaymentAttributes = GuestPaymentAttributes()
@@ -822,6 +823,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
             guestPaymentAttributes.cardName = guestRequestModel?.paymentAttributes!!.cardName
             guestPaymentAttributes.cardNumber = guestRequestModel?.paymentAttributes!!.cardNumber
             guestPaymentAttributes.cardType = guestRequestModel?.paymentAttributes!!.cardType
+            guestPaymentAttributes.transactionId = guestRequestModel?.paymentAttributes!!.transactionId
         }
 
         guestRequestModel?.paymentAttributes!!.paymentAttributes =
