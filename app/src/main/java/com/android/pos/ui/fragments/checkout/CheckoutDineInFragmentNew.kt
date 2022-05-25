@@ -580,7 +580,8 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                         bundle.putDouble("WholetotalPrice", wholePrice)
                         var remainingValue = 0.0
                         remainingValue = if (cashDiscountType == "SurCharge") {
-                            wholePrice - (paymentAmount - cashDiscountSurcharge)
+                            String.format("%.2f", wholePrice + cashDiscountSurcharge)
+                                .toDouble() - paymentAmount
                         } else {
                             wholePrice - paymentAmount
                         }
