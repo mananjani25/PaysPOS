@@ -1598,7 +1598,6 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 )
             )
 
-            Log.e(TAG, "getTipDine  ${tipAmount}")
             if (tipAmount != 0.0) {
 
                 builder.addTextLineSpace(30)
@@ -4254,7 +4253,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     builder.addText(
                         padLine(
                             "SurCharge",
-                            "$" + MethodUtils.roundOffAmountString(receiptModel?.order?.totalCashDiscountFee!!),
+                            "$" + MethodUtils.roundOffAmountString(receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size?.minus(1) ?: 0)?.cash_discount_or_surcharge ?: 0.0),
                             if (customerSettingModel.fonts == LARGE) {
                                 24
                             } else {
@@ -4288,9 +4287,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         padLine(
                             "Cash Discount",
                             if (receiptModel?.order?.totalCashDiscountFee == 0.0) {
-                                "$" + MethodUtils.roundOffAmountString(receiptModel?.order?.totalCashDiscountFee!!)
+                                "$" + MethodUtils.roundOffAmountString(receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size?.minus(1) ?: 0)?.cash_discount_or_surcharge ?: 0.0)
                             } else {
-                                "-$" + MethodUtils.roundOffAmountString(receiptModel?.order?.totalCashDiscountFee!!)
+                                "-$" + MethodUtils.roundOffAmountString(receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size?.minus(1) ?: 0)?.cash_discount_or_surcharge ?: 0.0)
                             },
                             if (customerSettingModel.fonts == LARGE) {
                                 24
@@ -4393,19 +4392,15 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                 if (paymentType == "Cash") {
 
+                    var finalAmt : Double = (receiptModel?.order?.subTotal ?: 0.0).plus(receiptModel?.order?.totalTaxAmount ?: 0.0).plus( receiptModel?.order?.totalServiceCharges ?: 0.0).plus( receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size?.minus(1) ?: 0)?.tips ?: 0.0)
                     //PLZCHECK
                     if (receiptModel?.order?.cash_discount_type?.lowercase() == "CashDiscount".lowercase()) {
                         builder.addText(
                             padLine(
                                 "Total Price",
-                                "$" + MethodUtils.roundOffAmountString(
-                                    receiptModel?.order?.totalAmount?.toDouble()
-                                        ?: 0.0 - (receiptModel?.order?.payments?.get(
-                                            receiptModel?.order?.payments?.size?.minus(1) ?: 0
-                                        )?.cash_discount_or_surcharge ?: 0.0)  + (receiptModel?.order?.payments?.get(
-                                            receiptModel?.order?.payments?.size?.minus(1) ?: 0
-                                        )?.tips ?: 0.0) ?: 0.0
-                                ),
+                                "$"+MethodUtils.roundOffAmountString(finalAmt - (receiptModel?.order?.payments?.get(
+                                    receiptModel?.order?.payments?.size?.minus(1) ?: 0
+                                )?.cash_discount_or_surcharge ?: 0.0)) ,
                                 if (customerSettingModel.fonts == LARGE) {
                                     24
                                 } else {
@@ -4417,12 +4412,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         builder.addText(
                             padLine(
                                 "Total Price",
-                                "$" + MethodUtils.roundOffAmountString(
-                                    receiptModel?.order?.totalAmount?.toDouble()
-                                        ?: 0.0 + (receiptModel?.order?.payments?.get(
-                                            receiptModel?.order?.payments?.size?.minus(1) ?: 0
-                                        )?.tips ?: 0.0) ?: 0.0
-                                ),
+                                "$" + MethodUtils.roundOffAmountString(finalAmt),
                                 if (customerSettingModel.fonts == LARGE) {
                                     24
                                 } else {
@@ -4434,26 +4424,19 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     }
 
                 } else {
+                    var finalAmt : Double = (receiptModel?.order?.subTotal ?: 0.0).plus(receiptModel?.order?.totalTaxAmount ?: 0.0).plus( receiptModel?.order?.totalServiceCharges ?: 0.0).plus( receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size?.minus(1) ?: 0)?.tips ?: 0.0)
 
                     if (receiptModel?.order?.cash_discount_type?.lowercase() == "SurCharge".lowercase()) {
+
+
 
                         builder.addText(
                             padLine(
                                 "Total Price",
-                                "$" + MethodUtils.roundOffAmountString(
-                                    (receiptModel?.order?.totalAmount?.toDouble()
-                                        ?.plus(
-                                            receiptModel?.order?.payments?.get(
-                                                receiptModel?.order?.payments?.size?.minus(
-                                                    1
-                                                ) ?: 0
-                                            )?.tips ?: 0.0
-                                        ) ?: 0.0).plus(receiptModel?.order?.payments?.get(
-                                        receiptModel?.order?.payments?.size?.minus(
-                                            1
-                                        ) ?: 0
-                                    )?.cash_discount_or_surcharge ?: 0.0)
-                                ),
+                                "$" + MethodUtils.roundOffAmountString(finalAmt.plus((receiptModel?.order?.payments?.get(
+                                    receiptModel?.order?.payments?.size?.minus(1) ?: 0
+                                )?.cash_discount_or_surcharge ?: 0.0)))
+                                ,
                                 if (customerSettingModel.fonts == LARGE) {
                                     24
                                 } else {
@@ -4467,16 +4450,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         builder.addText(
                             padLine(
                                 "Total Price",
-                                "$" + MethodUtils.roundOffAmountString(
-                                    receiptModel?.order?.totalAmount?.toDouble()
-                                        ?.plus(
-                                            receiptModel?.order?.payments?.get(
-                                                receiptModel?.order?.payments?.size?.minus(
-                                                    1
-                                                ) ?: 0
-                                            )?.tips ?: 0.0
-                                        ) ?: 0.0
-                                ),
+                                "$" + MethodUtils.roundOffAmountString(finalAmt),
                                 if (customerSettingModel.fonts == LARGE) {
                                     24
                                 } else {
