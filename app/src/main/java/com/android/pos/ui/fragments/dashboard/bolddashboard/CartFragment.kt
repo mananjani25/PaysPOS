@@ -1185,7 +1185,7 @@ class CartFragment(
 
         } else {
 
-            val bundle = bundleOf("DINE_IN" to true, "position" to position)
+            val bundle = bundleOf("DINE_IN" to true, "position" to position, "cartList" to cartlist)
             findNavController().navigate(
                 R.id.action_dashboardCategoryBoldPOS_to_assignCustomerOrderFragment, bundle
             )
