@@ -76,6 +76,9 @@ class CreateTip : Fragment() {
             }
             viewModel.submit(rate_double)
         }
+
+
+
         binding.edtTip.addTextChangedListener(object :TextWatcher{
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
 
