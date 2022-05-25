@@ -63,15 +63,11 @@ class CreateDiscountViewModel @Inject constructor(
         discountTypeViewModel = discountData.discountType
     }
 
-    fun submit() {
+    fun submit(percentage_double:Double) {
         val value = createDiscountDetails.value
         if (TextUtils.isEmpty(value?.name?.trim())) {
             _snackbarText.value = Event(R.string.discount_name_validate)
-        } else if (TextUtils.isEmpty(
-                value?.percentage?.toString()?.trim()
-            )
-            || value?.percentage == 0.0
-        ) {
+        } else if (percentage_double == 0.0) {
             _snackbarText.value = Event(R.string.discount_rate_validate)
         } else {
             _showProgress.value = Event(true)
@@ -80,7 +76,7 @@ class CreateDiscountViewModel @Inject constructor(
                 discountData = CreateDiscountRequestModel().apply {
                     discount = CreateDiscountRequestModel.Discount().apply {
                         name = value!!.name
-                        percentage = value.percentage
+                        percentage = percentage_double
                         discountType = discountTypeViewModel    /*[Percentage Amount]*/
                         locationId = prefProvider.getValueInt(LOCATION_ID, -1)
                     }
@@ -89,7 +85,7 @@ class CreateDiscountViewModel @Inject constructor(
                 discountData = CreateDiscountRequestModel().apply {
                     discount = CreateDiscountRequestModel.Discount().apply {
                         name = value!!.name
-                        percentage = value.percentage
+                        percentage = percentage_double
                         discountType = discountTypeViewModel    /*[Percentage Amount]*/
                         locationId = prefProvider.getValueInt(LOCATION_ID, -1)
                     }

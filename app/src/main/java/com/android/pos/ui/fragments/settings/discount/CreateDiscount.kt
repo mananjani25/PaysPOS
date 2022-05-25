@@ -13,6 +13,7 @@ import com.android.pos.data.entities.TbDiscount
 import com.android.pos.data.remote.Constants
 import com.android.pos.databinding.FragmentCreateDiscountBinding
 import com.android.pos.utils.AlertUtils
+import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.extensions.liveSnackBar
 import com.google.android.material.snackbar.Snackbar
@@ -51,6 +52,7 @@ class CreateDiscount : Fragment() {
             discountData = arguments?.getParcelable("discountObject")!!
 
             viewModel.setDiscountData(discountData)
+            binding.edtDiscount?.setText(String.format("%.2f", discountData.percentage))
 
             if (discountData.discountType == getString(R.string.disc_percentage)) {
                 binding.swtDiscountType.isChecked = true
@@ -96,7 +98,12 @@ class CreateDiscount : Fragment() {
         }
 
         binding.header.txtSave.setOnClickListener {
-            viewModel.submit()
+            var percentage = binding.edtDiscount?.text.toString()
+            var percentage_double = 0.0
+            if (percentage.isNotEmpty()) {
+                percentage_double = MethodUtils.roundOffAmountDouble(percentage.toDouble())
+            }
+            viewModel.submit(percentage_double)
         }
     }
 

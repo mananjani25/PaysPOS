@@ -50,6 +50,13 @@ class MethodUtils {
                 Settings.Secure.ANDROID_ID
             )
         }
+        fun hideSoftKeyboard(activity: Activity) {
+            if (activity.getCurrentFocus() == null){
+                return
+            }
+            val inputMethodManager = activity.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            inputMethodManager.hideSoftInputFromWindow(activity.currentFocus!!.windowToken, 0)
+        }
 
         @SuppressLint("SetTextI18n")
         fun setPriceEditText(appCompatEditText: AppCompatEditText, price: Double) {

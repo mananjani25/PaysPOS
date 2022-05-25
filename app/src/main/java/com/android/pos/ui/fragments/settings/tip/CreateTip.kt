@@ -52,7 +52,7 @@ class CreateTip : Fragment() {
             tipData = arguments?.getParcelable("tipObject")!!
 
             viewModel.setTipData(tipData)
-            binding.edtTip.setText(tipData.rate.toString())
+            binding.edtTip.setText(String.format("%.2f",tipData.rate))
             viewModel.isEditData(isEdit, tipData.id)
         }
 
