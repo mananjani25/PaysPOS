@@ -1967,7 +1967,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 builder.addText(
                     padLine(
                         "Transaction ID",
-                        getDineInOrderDetails?.payments?.get(0)?.transactionId,
+                        ""+ getDineInOrderDetails?.payments?.size?.minus(1)?.let {
+                            getDineInOrderDetails?.payments?.get(
+                                it
+                            )?.id
+                        },
                         if (customerSettingModel.fonts == Constants.LARGE) {
                             24
                         } else {
@@ -3141,7 +3145,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 builder.addText(
                     padLine(
                         "Transaction ID",
-                        getDineInOrderDetails?.payments?.get(0)?.transactionId,
+                        ""+getDineInOrderDetails?.payments?.size?.minus(1)
+                            ?.let { getDineInOrderDetails?.payments?.get(it)?.id },
                         if (customerSettingModel.fonts == Constants.LARGE) {
                             24
                         } else {
@@ -4537,17 +4542,17 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 Builder.COLOR_1
             )
 
-            var newPaidAmount = paidAmount
-            if (MethodUtils.roundOffAmountDouble(paidAmount + tipAmount) == MethodUtils.roundOffAmountDouble(
-                    receiptModel?.order?.totalAmount?.toDouble() ?: 0.0
-                )
-            ) {
-                newPaidAmount = paidAmount + tipAmount
-            }
+            var newPaidAmount = paidAmount + tipAmount
+            /* if (MethodUtils.roundOffAmountDouble(paidAmount + tipAmount) == MethodUtils.roundOffAmountDouble(
+                     receiptModel?.order?.totalAmount?.toDouble() ?: 0.0
+                 )
+             ) {
+                 newPaidAmount = paidAmount + tipAmount
+             }
 
-            if (isSpilt) {
-                newPaidAmount = paidAmount + tipAmount
-            }
+             if (isSpilt) {
+                 newPaidAmount = paidAmount + tipAmount
+             }*/
             Log.e("ToCheck", "PaidAmount ${newPaidAmount}")
 
             builder.addText(
@@ -4732,7 +4737,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             builder.addText(
                 padLine(
                     "Transaction ID",
-                    receiptModel?.order?.payments?.get(0)?.transactionId,
+                    "" + receiptModel?.order?.payments?.size?.minus(1)
+                        ?.let { receiptModel?.order?.payments?.get(it)?.id },
                     if (customerSettingModel.fonts == LARGE) {
                         24
                     } else {
