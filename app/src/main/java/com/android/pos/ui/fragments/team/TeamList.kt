@@ -247,12 +247,23 @@ class TeamList : Fragment(), CustomCallback, OperationCallback {
 
         if (data != null) {
             binding.layoutTool.txtEdit.visibility = View.VISIBLE
-            if (data.firstName != null && data.lastName != null) {
-                binding.layoutTool.txtSubTitle.text =
-                    data.firstName + " " + data.lastName.toString()
+            if (data.lastName != null && data.lastName.isNotEmpty() && !data.lastName.equals(
+                    "null",
+                    ignoreCase = true
+                )
+            ) { var final_string =
+                data.firstName.toString().substring(0, 1)
+                    .toUpperCase() + data.firstName.toString()
+                    .substring(1, data.firstName.toString().length) + " " +
+                        data.lastName.toString().substring(0, 1)
+                            .toUpperCase() + data.lastName.toString()
+                    .substring(1, data.lastName.toString().length)
+                binding.layoutTool.txtSubTitle.setText(final_string)
             } else {
-                binding.layoutTool.txtSubTitle.text = data.firstName
-
+                var final_string =
+                    data.firstName.toString().substring(0,1).toUpperCase() + data.firstName.toString()
+                        .substring(1, data.firstName.toString().length)
+                binding.layoutTool.txtSubTitle.setText(final_string)
             }
 
             empObject = data
