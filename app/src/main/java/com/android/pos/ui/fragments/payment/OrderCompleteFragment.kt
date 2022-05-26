@@ -568,10 +568,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     binding.txtChangeAmount.text =
                         MethodUtils.roundOffAmount(if ((remainingAmount - tipAmount) > 0) remainingAmount - tipAmount else 0.00) + " Change"
                 } else {
-                    if (remainingAmount < 0 || remainingAmount==0.0) {
-                        changeAmtGlobal = MethodUtils.roundOffAmountDouble(remainingAmount - tipAmount)
+                    if (remainingAmount < 0 || remainingAmount == 0.0) {
+                        changeAmtGlobal =
+                            MethodUtils.roundOffAmountDouble(remainingAmount - tipAmount)
                         binding.txtChangeAmount.gone()
-                    }else{
+                    } else {
                         binding.txtChangeAmount.visible()
                         binding.txtChangeAmount.text =
                             MethodUtils.roundOffAmount(if ((remainingAmount - tipAmount) > 0) remainingAmount - tipAmount else 0.00) + " Change"
@@ -1738,22 +1739,29 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 Builder.COLOR_1
             )
 
-            var totalAmt =
-                MethodUtils.roundOffAmountDouble(
-                    (checkOutDineInModel?.subTotal!!) + checkOutDineInModel?.totalTax + checkOutDineInModel?.totalServiceCharge!! - orderDiscount
-                )
+            var totalAmt = checkOutDineInModel.totalAmount + tipAmount
 
-            if (payTypeGlb == "Cash") {
+            if (payTypeGlb.lowercase() == "Cash".lowercase() && prefProvider.getValue(
+                    OPTION_TYPE,
+                    ""
+                ).lowercase() == "CashDiscount".lowercase()
+            ) {
 
                 totalAmt = MethodUtils.roundOffAmountDouble(totalAmt - noCashAdjGlobal)
+            } else if (payTypeGlb.lowercase() == "Card".lowercase() && prefProvider.getValue(
+                    OPTION_TYPE, ""
+                ).lowercase() == "SurCharge".lowercase()
+            ) {
+                totalAmt = MethodUtils.roundOffAmountDouble(totalAmt + noCashAdjGlobal)
             }
+
 
 
 
             builder.addText(
                 padLine(
                     "Total Price",
-                    "$" + MethodUtils.roundOffAmountString(checkOutDineInModel.totalAmount + tipAmount),
+                    "$" + MethodUtils.roundOffAmountString(totalAmt),
                     if (customerSettingModel.fonts == Constants.LARGE) {
                         24
                     } else {
