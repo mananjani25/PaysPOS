@@ -159,7 +159,7 @@
                                 android:background="@null"
                                 android:digits="@string/disable_emoji_string"
                                 android:hint="0.00"
-                                android:imeOptions="actionNext"
+                                android:imeOptions="actionDone"
                                 android:inputType="textVisiblePassword"
                                 android:paddingVertical="@dimen/_9sdp"
                                 android:paddingLeft="@dimen/_9sdp"

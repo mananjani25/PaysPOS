@@ -74,9 +74,16 @@ class CreateServiceCharge : Fragment() {
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
 
         binding.header.txtSave.setOnClickListener {
-            var subPer = binding.edtPercentageServiceCharge?.text.toString().split(" ")[0]
-            viewModel.createServiceChargeDetails.value?.percentage = subPer.toDouble()
-            viewModel.submit()
+            if (binding.edtPercentageServiceCharge?.text.toString().trim().isNotEmpty()) {
+                var subPer = binding.edtPercentageServiceCharge?.text.toString().split(" ")[0]
+                viewModel.createServiceChargeDetails.value?.percentage = subPer.toDouble()
+                viewModel.submit()
+            } else {
+                AlertUtils.showCustomAlert(
+                    requireContext(),
+                    requireContext().resources.getString(R.string.sercharge_rate_validate)
+                )
+            }
         }
         try {
             val inputManager =
