@@ -72,11 +72,16 @@ class AssignCustomerOrderFragment : Fragment(), ItemCallback {
         setupUI()
 
         loadCustomerLocalList(currentpage)
-        isFromDineIn = arguments?.getBoolean("DINE_IN", false)
-        isFromCompletePayment = arguments?.getBoolean("fromPayment") ?: false
-        dineInPosition = arguments?.getInt("position")
-        selectedDate = arguments?.getString("SELECTED_DATE")
-        cartList = (arguments?.getParcelableArrayList<CartModel>("cartList") ?: emptyList<CartModel>()) as ArrayList<CartModel>
+        if(arguments!=null){
+            isFromDineIn = arguments?.getBoolean("DINE_IN", false)
+            isFromCompletePayment = arguments?.getBoolean("fromPayment") ?: false
+            dineInPosition = arguments?.getInt("position")
+            selectedDate = arguments?.getString("SELECTED_DATE")
+            if (arguments?.getParcelableArrayList<CartModel>("cartList")!=null){
+                cartList = (arguments?.getParcelableArrayList<CartModel>("cartList") ?: emptyList<CartModel>()) as ArrayList<CartModel>
+            }
+        }
+
         return binding.root
     }
 
