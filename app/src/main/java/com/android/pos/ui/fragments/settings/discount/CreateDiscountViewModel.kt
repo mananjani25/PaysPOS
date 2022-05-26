@@ -40,7 +40,7 @@ class CreateDiscountViewModel @Inject constructor(
     val showProgress: LiveData<Event<Boolean>> = _showProgress
 
     private var discountId: Int = -1
-    private var discountTypeViewModel: String = "Percentage"
+     var discountTypeViewModel: String = "Percentage"
     private var isEdit: Boolean = false
 
     private lateinit var discountData: CreateDiscountRequestModel

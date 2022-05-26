@@ -199,6 +199,7 @@
                                         android:layout_height="wrap_content"
                                         android:background="@null"
                                         android:hint="0.0"
+                                        android:maxLength="6"
                                         android:imeOptions="actionDone"
                                         android:inputType="numberDecimal"
                                         android:paddingTop="@dimen/_7sdp"
