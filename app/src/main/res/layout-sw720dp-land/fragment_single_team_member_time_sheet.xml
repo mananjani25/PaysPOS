@@ -154,6 +154,7 @@
                 android:layout_weight="1"
                 android:gravity="center"
                 android:text="@string/tv_action"
+                android:visibility="gone"
                 android:textColor="@color/txtColor"
                 android:textSize="@dimen/_6mdpi"
                 app:textAllCaps="true" />
