@@ -361,9 +361,11 @@ class AddEditCustomer : Fragment() {
                             binding.edtCity?.setText(city)
                             binding.edtState?.setText(state)
                             binding.edtZip?.setText(zip)
+                            binding.edtStreet?.dismissDropDown()
                         } catch (e: Exception) {
                             Log.e(TAG, "exception in pplaces api")
                         } finally {
+                            binding.edtStreet?.dismissDropDown()
                             Log.e(TAG, "notify callback")
                         }
                     }
@@ -434,9 +436,11 @@ class AddEditCustomer : Fragment() {
                             binding.edtCityDel?.setText(city)
                             binding.edtStateDel?.setText(state)
                             binding.edtZipDel?.setText(zip)
+                            binding.edtStreetDel?.dismissDropDown()
                         } catch (e: Exception) {
                             Log.e(TAG, "exception in pplaces api")
                         } finally {
+                            binding.edtStreetDel?.dismissDropDown()
                             Log.e(TAG, "notify callback")
                         }
                     }
@@ -446,6 +450,7 @@ class AddEditCustomer : Fragment() {
                 }
 
             })
+
         }
 
     }
