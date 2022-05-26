@@ -736,7 +736,7 @@
     <string name="send_receipt">Send Receipt</string>
     <string name="please_choos_a_role">Please choose a Role</string>
     <string name="please_enter_passcode">Please enter passcode</string>
-    <string name="character_String">qwertzuiopasdfghjklyxcvbnm,QWERTZUIOPASDFGHJKLYXCVBNM</string>
+    <string name="character_String">qwertzuiopasdfghjklyxcvbnmQWERTZUIOPASDFGHJKLYXCVBNM</string>
     <string name="rename">Rename</string>
     <string name="last_name_teammember">Last Name<font color='#E90C0C'>*</font></string>
     <string name="email_address_teammember">Email Address<font color='#E90C0C'>*</font></string>
