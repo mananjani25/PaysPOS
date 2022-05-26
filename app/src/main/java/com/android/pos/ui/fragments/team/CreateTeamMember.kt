@@ -161,8 +161,7 @@ class CreateTeamMember : Fragment() {
                 binding.edtFirstName.text.toString().trim()
             viewModel.createTaxDetails.value?.lastName = binding.edtLastName.text.toString().trim()
             viewModel.createTaxDetails.value?.email = binding.edtEmail.text.toString().trim()
-            viewModel.createTaxDetails.value?.phoneNumber =
-                binding.edtMobileNumber.text.toString().trim()
+            viewModel.createTaxDetails.value?.phoneNumber = binding.edtMobileNumber.text.toString().trim()
             viewModel.createTaxDetails.value?.passcode = binding.edtPasscode.text.toString().trim()
 
             var hours = 0.0
