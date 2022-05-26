@@ -67,7 +67,7 @@
                     android:background="@drawable/border_with_field"
                     android:hint="@string/tv_add_role_name"
                     android:imeOptions="actionNext"
-                    android:inputType="textCapWords"
+                    android:inputType="textNoSuggestions"
                     android:padding="@dimen/_5sdp"
                     android:text="@={viewModel.createUserPermission.name}"
                     android:textColor="@color/txtColor"
