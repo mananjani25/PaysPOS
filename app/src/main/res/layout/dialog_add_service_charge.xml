@@ -53,16 +53,16 @@
 
 
                     <View
-                        android:visibility="gone"
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
-                        android:background="@color/view" />
+                        android:background="@color/view"
+                        android:visibility="gone" />
 
                     <androidx.appcompat.widget.LinearLayoutCompat
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:visibility="gone"
-                        android:orientation="horizontal">
+                        android:orientation="horizontal"
+                        android:visibility="gone">
 
                         <TextView
                             android:layout_width="0dp"
@@ -93,8 +93,8 @@
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
-                        android:visibility="gone"
-                        android:background="@color/view" />
+                        android:background="@color/view"
+                        android:visibility="gone" />
 
 
                     <androidx.appcompat.widget.LinearLayoutCompat
@@ -106,9 +106,9 @@
                         <androidx.appcompat.widget.LinearLayoutCompat
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:orientation="horizontal"
+                            android:background="@drawable/background_square_border_grey"
 
-                            android:background="@drawable/background_square_border_grey">
+                            android:orientation="horizontal">
 
                             <androidx.appcompat.widget.AppCompatTextView
                                 style="@style/CustomFontSemiBold"
@@ -120,9 +120,10 @@
                                 android:text="@string/service_charge_name"
                                 android:textColor="@color/txtColor"
                                 android:textSize="@dimen/text_size_medium"
-                                android:visibility="gone"/>
+                                android:visibility="gone" />
 
                             <androidx.appcompat.widget.AppCompatEditText
+                                android:id="@+id/edtPercentageServiceCharge"
                                 style="@style/CustomFontSemiBold"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
@@ -144,9 +145,9 @@
                         <androidx.appcompat.widget.LinearLayoutCompat
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:orientation="horizontal"
                             android:layout_marginTop="@dimen/_15sdp"
-                            android:background="@drawable/background_square_border_grey">
+                            android:background="@drawable/background_square_border_grey"
+                            android:orientation="horizontal">
 
 
                             <androidx.appcompat.widget.AppCompatEditText
@@ -163,20 +164,16 @@
                                 android:text="@={``+viewModel.createServiceChargeDetails.percentage}"
                                 android:textColor="@color/txtColor"
                                 android:textColorHint="@color/hintColor"
-                                android:textSize="@dimen/_7mdpi"
-                                />
+                                android:textSize="@dimen/_7mdpi" />
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:text=" %"
-                                android:textSize="@dimen/_7mdpi"
-                                />
+                                android:textSize="@dimen/_7mdpi" />
 
 
                         </androidx.appcompat.widget.LinearLayoutCompat>
-
-
 
 
                     </androidx.appcompat.widget.LinearLayoutCompat>
@@ -188,7 +185,6 @@
 
 
     </androidx.appcompat.widget.LinearLayoutCompat>
-
 
 
 </layout>

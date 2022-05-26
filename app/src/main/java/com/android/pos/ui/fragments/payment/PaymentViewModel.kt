@@ -333,45 +333,53 @@ open class PaymentViewModel @Inject constructor(
 
         val order = createOrderResponse.data.order
 
-        val cashLogRequest = CashLogRequest(
-            MethodUtils.roundOffAmountDouble(totalPayAmounts) - (order.payments[order.payments.size - 1].amount + order.payments[order.payments.size - 1].tips),
-            order.employeeId,
-            event,
-            order.id,
-            order.payments[order.payments.size - 1].id,
-            "Change returned after order's payment",
-            order.terminalId,
-            null,
-            null
-        )
+        val amount =
+            MethodUtils.roundOffAmountDouble(totalPayAmounts) - (order.payments[order.payments.size - 1].amount + order.payments[order.payments.size - 1].tips)
 
-        val resource = posRepository.cashInOut(cashLogRequest)
+        if (amount > 0 && (amount != 0.01 || amount != 0.1)) {
 
-        when (resource.status) {
-            Status.SUCCESS -> {
-                _showProgress.value = Event(false)
-                resource.data.let { response ->
-                    if (response?.status == 200) {
+            val cashLogRequest = CashLogRequest(
+                amount,
+                order.employeeId,
+                event,
+                order.id,
+                order.payments[order.payments.size - 1].id,
+                "Change returned after order's payment",
+                order.terminalId,
+                null,
+                null
+            )
 
-                        resource.data?.let {
-                            _data.value = Event(createOrderResponse)
+            val resource = posRepository.cashInOut(cashLogRequest)
+
+            when (resource.status) {
+                Status.SUCCESS -> {
+                    _showProgress.value = Event(false)
+                    resource.data.let { response ->
+                        if (response?.status == 200) {
+
+                            resource.data?.let {
+                                _data.value = Event(createOrderResponse)
+                            }
+
+                        } else {
+                            _snackbarText.value = Event(resource.message)
                         }
-
-                    } else {
-                        _snackbarText.value = Event(resource.message)
                     }
+
                 }
 
-            }
+                Status.ERROR -> {
+                    _snackbarText.value = Event(resource.message)
+                    _showProgress.value = Event(false)
+                }
 
-            Status.ERROR -> {
-                _snackbarText.value = Event(resource.message)
-                _showProgress.value = Event(false)
+                Status.LOADING -> {
+                    _showProgress.value = Event(true)
+                }
             }
-
-            Status.LOADING -> {
-                _showProgress.value = Event(true)
-            }
+        } else {
+            _data.value = Event(createOrderResponse)
         }
     }
 
@@ -1532,6 +1540,7 @@ open class PaymentViewModel @Inject constructor(
                     }
                     cardName = cardN
 
+
                 }
 
                 if (model.cardSwipeOutput != null) {
@@ -1550,6 +1559,7 @@ open class PaymentViewModel @Inject constructor(
 
 
 
+                transactionId = model.transactionOutput?.transactionID.toString()
                 cardType = 0
             }
 //            cardName = ""

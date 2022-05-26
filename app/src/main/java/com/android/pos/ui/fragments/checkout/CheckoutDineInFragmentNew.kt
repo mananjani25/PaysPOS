@@ -24,7 +24,9 @@ import com.android.pos.data.model.responseModel.GuestPaymentAttributes
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.DINE_IN_ADAPTER_LIST
 import com.android.pos.data.remote.Constants.DINE_IN_GUEST_PAYMENT_DATA
+import com.android.pos.data.remote.Constants.IS_ORDER_LAST_PAYMENT
 import com.android.pos.data.remote.Constants.PRINT_DATA_DINE_IN
+import com.android.pos.data.remote.Constants.SPLIT_ENABLE
 import com.android.pos.databinding.FragmentCheckoutDetailsNewBinding
 import com.android.pos.di.ApiModule1
 import com.android.pos.di.MagtekModule
@@ -578,7 +580,8 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                         bundle.putDouble("WholetotalPrice", wholePrice)
                         var remainingValue = 0.0
                         remainingValue = if (cashDiscountType == "SurCharge") {
-                            wholePrice - (paymentAmount - cashDiscountSurcharge)
+                            String.format("%.2f", wholePrice + cashDiscountSurcharge)
+                                .toDouble() - paymentAmount
                         } else {
                             wholePrice - paymentAmount
                         }
@@ -695,20 +698,27 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
             if (custom_paymentAmount != 0.0) {
                 dineinOrderVieweModel.totalPayAmount(custom_paymentAmount)
             }
-            guestAttributeCalculation()
+            paymentType = "Cash"
+            guestAttributeCalculation(-1, "")
             guestRequestModel?.paymentAttributes?.let { logPrintGuest(it) }
-            dineinOrderVieweModel?.payByGuest(
-                dineInDataModel?.guestId ?: 0, dineInDataModel?.guestPaymentReq!!,
-                dineInDataModel?.isLastPayment!!, dineInDataModel?.splitModel!!
-            )
-
+            if(dineInDataModel.isLastPayment){
+                dineinOrderVieweModel.payByGuest(
+                    dineInDataModel.guestId ?: 0, dineInDataModel.guestPaymentReq!!,
+                    dineInDataModel.isLastPayment == isSelectedCount <= 1, dineInDataModel.splitModel!!
+                )
+            }else{
+                dineinOrderVieweModel.payByGuest(
+                    dineInDataModel.guestId ?: 0, dineInDataModel.guestPaymentReq!!,
+                    false, dineInDataModel.splitModel!!
+                )
+            }
 
         } else {
             makeCashPayment()
         }
     }
 
-    private fun guestAttributeCalculation() {
+    private fun guestAttributeCalculation(i: Int, toJson: String) {
         guestRequestModel?.paymentAttributes!!.amount =
             paymentAmount
         guestRequestModel?.paymentAttributes!!.serviceChargeAmount =
@@ -731,12 +741,57 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
             prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
 
 
-        if (paymentType == "Card") {
+        if (i == 3 && paymentType == "Card") {
             guestRequestModel?.paymentAttributes!!.cardName =
                 CardValidator.getCardType(cardNumber.trim())?.name.toString().uppercase()
             guestRequestModel?.paymentAttributes!!.cardNumber =
                 if (cardNumber.isNotEmpty()) cardNumber.takeLast(4) else ""
             guestRequestModel?.paymentAttributes!!.cardType = "Credit"
+        } else if (paymentType == "Card" && toJson.isNotEmpty()) {
+
+            if (toJson.isNotEmpty()) {
+                val model = Gson().fromJson(
+                    toJson,
+                    PaymentResponse.PaymentResponseItem::class.java
+                )
+                Log.e("magensaResponse", Gson().toJson(model))
+
+
+                if (model.dataOutput != null) {
+                    Log.e("dataOutput", Gson().toJson(model))
+                    val cardNumber = model.dataOutput.PANLast4
+                    var cardN = ""
+                    model.dataOutput.additionalOutputData?.forEach {
+                        Log.e("additionalOutputData", it.key)
+                        if (it.key == "CardType") {
+                            cardN = it.value
+                        }
+                    }
+                    guestRequestModel?.paymentAttributes!!.cardName = cardN
+                    guestRequestModel?.paymentAttributes!!.cardNumber = cardNumber
+
+                }
+
+                if (model.cardSwipeOutput != null) {
+                    Log.e("cardSwipeOutput", Gson().toJson(model))
+                    val cardNumber = model.cardSwipeOutput.pANLast4
+                    var cardN = ""
+                    model.cardSwipeOutput.additionalOutputData?.forEach {
+                        if (it.key == "CardType") {
+                            cardN = it.value
+                        }
+                    }
+
+                    guestRequestModel?.paymentAttributes!!.cardName = cardN
+                    guestRequestModel?.paymentAttributes!!.cardNumber = cardNumber
+                }
+
+
+
+
+                guestRequestModel?.paymentAttributes!!.cardType = "Credit"
+                guestRequestModel?.paymentAttributes!!.transactionId = model.transactionOutput?.transactionID.toString()
+            }
         }
         val guestPaymentAttributes = GuestPaymentAttributes()
         guestPaymentAttributes.amount = guestRequestModel?.paymentAttributes!!.amount
@@ -770,6 +825,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
             guestPaymentAttributes.cardName = guestRequestModel?.paymentAttributes!!.cardName
             guestPaymentAttributes.cardNumber = guestRequestModel?.paymentAttributes!!.cardNumber
             guestPaymentAttributes.cardType = guestRequestModel?.paymentAttributes!!.cardType
+            guestPaymentAttributes.transactionId = guestRequestModel?.paymentAttributes!!.transactionId
         }
 
         guestRequestModel?.paymentAttributes!!.paymentAttributes =
@@ -914,6 +970,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
         binding.txtCharge.setOnClickListener {
 
             paymentType = "Card"
+
 
             MethodUtils.hideKeyboard(requireActivity())
 
@@ -1702,17 +1759,24 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                                 magtekModule.closeDevice()
                             paymentviewModel.setMagensaResponse(Gson().toJson(response.body()!![0]))
                             if (isGuestPay) {
+                                paymentType = "Card"
                                 dineinOrderVieweModel.totalPayAmount(paymentAmount)
-                                guestAttributeCalculation()
+
+                                guestAttributeCalculation(i, Gson().toJson(response.body()!![0]))
                                 guestRequestModel?.paymentAttributes?.let { logPrintGuest(it) }
-
-                                dineinOrderVieweModel?.payByGuest(
-                                    dineInDataModel?.guestId ?: 0,
-                                    dineInDataModel?.guestPaymentReq!!,
-                                    dineInDataModel?.isLastPayment!!,
-                                    dineInDataModel?.splitModel!!
-                                )
-
+                                if(dineInDataModel.isLastPayment){
+                                    dineinOrderVieweModel.payByGuest(
+                                        dineInDataModel.guestId ?: 0,
+                                        dineInDataModel.guestPaymentReq!!,
+                                        dineInDataModel.isLastPayment == isSelectedCount <= 1,
+                                        dineInDataModel.splitModel
+                                    )
+                                }else{
+                                    dineinOrderVieweModel.payByGuest(
+                                        dineInDataModel.guestId ?: 0, dineInDataModel.guestPaymentReq!!,
+                                        false, dineInDataModel.splitModel!!
+                                    )
+                                }
                             } else {
                                 makePaymentCreditCard()
                             }
@@ -2141,7 +2205,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                 Log.e("TipAmount 4:: ", tipAmount.toString())
 
                 val bundle = Bundle()
-                bundle.putBoolean("isDineIn", false)
+                bundle.putBoolean("isDineIn", true)
 
                 if (remainingAmount == 0.0) {
                     bundle.putDouble("PaidAmount", paymentAmount)
@@ -2154,9 +2218,13 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                 bundle.putDouble("WholetotalPrice", wholePrice)
                 var remainingValue = 0.0
                 remainingValue = if (cashDiscountType == "SurCharge") {
-                    (wholePrice + cashDiscountSurcharge) - paymentAmount
+                    String.format("%.2f", wholePrice + cashDiscountSurcharge)
+                        .toDouble() - paymentAmount
                 } else {
                     wholePrice - paymentAmount
+                }
+                if (remainingValue <= 0.0) {
+                    remainingValue = 0.0
                 }
 
                 bundle.putDouble(
@@ -2204,6 +2272,9 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
 
                 bundle.putDouble("noCashAdj", cashDiscountSurcharge)
                 bundle.putBoolean("isFromActiveOrder", false)
+                bundle.putBoolean("isGuestPaymentTotal", isLastPayment)
+                bundle.putBoolean("isGuest", isGuestPay)
+                bundle.putBoolean("isLastPayment", isLastPayment)
                 bundle.putParcelableArrayList(
                     DINE_IN_ADAPTER_LIST, dineInDataModel.dineInAdapterList?.toCollection(
                         arrayListOf()

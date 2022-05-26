@@ -109,7 +109,7 @@
 
             <LinearLayout
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="@dimen/_20sdp"
                 android:background="@drawable/background_square_border_grey"
                 android:onClick="@{() -> viewModel.datePicker(true)}"
                 android:orientation="horizontal"
@@ -150,7 +150,7 @@
 
             <LinearLayout
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="@dimen/_20sdp"
                 android:background="@drawable/background_square_border_grey"
                 android:onClick="@{() -> viewModel.datePicker(false)}"
                 android:orientation="horizontal"
@@ -178,7 +178,7 @@
 
             <RelativeLayout
                 android:layout_width="@dimen/_80sdp"
-                android:layout_height="wrap_content"
+                android:layout_height="@dimen/_20sdp"
                 android:layout_marginStart="@dimen/_5sdp"
                 android:padding="5dp"
                 android:background="@drawable/background_square_border_grey"
@@ -187,7 +187,7 @@
                 <Spinner
                     android:id="@+id/spTerminals"
                     android:layout_width="@dimen/_80sdp"
-                    android:layout_height="@dimen/_14sdp"
+                    android:layout_height="@dimen/_20sdp"
                     android:layout_gravity="center"
                     android:background="@null"
                     android:imeOptions="actionNext"

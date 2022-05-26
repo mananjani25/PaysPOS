@@ -184,6 +184,7 @@ class DashBoardCategoryViewModel @Inject constructor(
     private val _queueStart = MutableLiveData<Event<CreateOrderResponse?>>()
     val QueueStart: LiveData<Event<CreateOrderResponse?>> = _queueStart
 
+    var onClickAddCustomer = false
     val _Basedata = MutableLiveData<Event<CreateOrderResponse.Data?>>()
 
     var barcodeFoundDbItemLiveData: LiveData<Resource<TbItem>>? = null
@@ -214,6 +215,10 @@ class DashBoardCategoryViewModel @Inject constructor(
 
         return posRepository.getCartList(orderType, employee_Id)
 
+    }
+
+    fun setIsFromAddCustomer(isclickOnAddcustomer: Boolean) {
+        this.onClickAddCustomer = isclickOnAddcustomer
     }
 
     fun manualSaleItems(orderType: String, employee_Id: Int): LiveData<List<CartModel>> {
@@ -297,10 +302,10 @@ class DashBoardCategoryViewModel @Inject constructor(
         dineInList: List<DineInModel>
     ) {
 
-        val cartModel = cartList!!.get(0)
-        cartModel.dineInList = dineInList
-        cartModel.orderType = DINE_IN
-        cartModel.let {
+        val cartModel = cartList?.get(0)
+        cartModel?.dineInList = dineInList
+        cartModel?.orderType = DINE_IN
+        cartModel?.let {
             addCart(it)
 
 
@@ -1236,7 +1241,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                     cartModel.items?.forEach { item ->
                         if (!item.isDestroy) {
                             totalCount += item.itemQuantity
-
+                            totalDiscount += item.discountPrice
                             subTotalPrice += (item.price * item.itemQuantity) - (item.discountPrice * item.itemQuantity)
 
 
@@ -1255,10 +1260,6 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                     totalDiscount += cartModel.discountPrice
                     order_note = cartModel.note
-                    cartModel.items!!.forEach {
-                        totalDiscount += it.discountPrice * it.itemQuantity
-                    }
-
                     Log.e("OpenOrderCh", "cartDiscount  ${cartModel.discountPrice}")
                     Log.e("OpenOrderCh", "totalDiscounts  ${totalDiscount}")
 
@@ -2556,6 +2557,15 @@ class DashBoardCategoryViewModel @Inject constructor(
                                         Gson().toJson(it.data.magensaSettings[0])
                                     )
                                 } else prefProvider.setValue(Constants.MAGENSA_SETTINGS, "")
+
+                                if (it.data.shift_report_configuration != null) {
+                                    prefProvider.setValue(
+                                        Constants.SHIFT_REPORT_SETTINGS,
+                                        Gson().toJson(it.data.shift_report_configuration)
+                                    )
+                                } else prefProvider.setValue(Constants.SHIFT_REPORT_SETTINGS, "")
+
+
 
                                 MainApplication.getInstance()
                                     ?.let { it1 ->

@@ -98,11 +98,11 @@ class ActiveOrderViewModel @Inject constructor(
     }
 
 
-    fun cancelOrder(orderId: Int) {
+    fun cancelOrder(orderId: Int, reason: String, reason_id: Int?) {
         _showProgress.value = Event(true)
 
         val request = OrderCancelRequest.OrderData(
-            "Cancelled", "", null, prefProvider.getValueInt(
+            "Cancelled", reason, reason_id, prefProvider.getValueInt(
                 Constants.EMPLOYEE_ID, 0
             )
         )

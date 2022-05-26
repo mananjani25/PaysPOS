@@ -193,16 +193,16 @@
                                         />
 
                                     <androidx.appcompat.widget.AppCompatEditText
+                                        android:id="@+id/edt_discount"
                                         style="@style/CustomFontSemiBold"
                                         android:layout_width="wrap_content"
                                         android:layout_height="wrap_content"
                                         android:background="@null"
-                                        android:hint="0%"
+                                        android:hint="0.0"
                                         android:imeOptions="actionDone"
                                         android:inputType="numberDecimal"
                                         android:paddingTop="@dimen/_7sdp"
                                         android:paddingBottom="@dimen/_7sdp"
-                                        android:text="@={``+viewModel.createDiscountDetails.percentage}"
                                         android:textColor="@color/txtColor"
                                         android:textColorHint="@color/hintColor"
                                         android:textSize="@dimen/text_size_medium" />
@@ -218,41 +218,32 @@
                                         android:visibility="gone" />
                                 </LinearLayout>
 
-                                <androidx.appcompat.widget.SwitchCompat
+                                <com.google.android.material.switchmaterial.SwitchMaterial
                                     android:id="@+id/swtDiscountType"
+                                    style="@style/AppTheme"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:layout_alignParentEnd="true"
                                     android:layout_gravity="center"
-                                    android:checked="true"
                                     android:scaleX="1.5"
                                     android:scaleY="1.5"
-                                    android:onCheckedChanged="@{(button, bool)-> createDiscountFragment.discountType(bool)}"
-                                    android:padding="@dimen/_5sdp"
-                                    android:text="%"
-
+                                    app:switchPadding="@dimen/_5sdp"
+                                    android:textSize="@dimen/_5sdp"
+                                    android:text="Percentage"
+                                    android:layout_marginRight="@dimen/_17sdp"
+                                    android:gravity="center_vertical"
                                     android:textColor="@color/txtColor"
-                                    android:textSize="@dimen/_5mdpi"
-                                    app:theme="@style/AppTheme"
-                                    app:thumbTint="@color/btnColor"
-                                    app:trackTint="@color/txtColor" />
-
-                                <androidx.appcompat.widget.SwitchCompat
-                                    android:id="@+id/swtDollarType"
-                                    android:layout_width="wrap_content"
-                                    android:layout_height="wrap_content"
-                                    android:layout_alignParentEnd="true"
-                                    android:layout_gravity="center"
+                                    android:onCheckedChanged="@{(button, bool)-> createDiscountFragment.discountType(bool)}"
+                                    android:showText="true"
                                     android:checked="true"
-                                    android:onCheckedChanged="@{(button, bool)-> createDiscountFragment.discountType(bool)}"
-                                    android:padding="@dimen/_5sdp"
-                                    android:text="@string/dollar_amount"
-                                    android:textColor="@color/txtColor"
-                                    android:textSize="@dimen/_5mdpi"
-                                    android:visibility="gone"
-                                    app:theme="@style/AppTheme"
-                                    app:thumbTint="@color/btnColor"
-                                    app:trackTint="@color/txtColor" />
+                                    android:thumb="@drawable/custom_thumb_printer_active_switch"
+                                    android:visibility="visible"
+                                    app:srcCompat="@drawable/ic_arrow_forward"
+                                    app:thumbTint="@color/switch_thumb_selector"
+                                    app:track="@drawable/custom_switch_track_printer"
+                                    app:trackTint="@color/switch_track_tint"
+                                    tools:ignore="UseSwitchCompatOrMaterialXml" />
+
+
 
                             </androidx.appcompat.widget.LinearLayoutCompat>
 
@@ -316,18 +307,29 @@
                             android:textColor="@color/txtColor"
                             android:textSize="@dimen/_5mdpi" />
 
-                        <androidx.appcompat.widget.SwitchCompat
+                        <com.google.android.material.switchmaterial.SwitchMaterial
+
+                            style="@style/AppTheme"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_alignParentEnd="true"
                             android:layout_gravity="center"
-                            android:checked="true"
-                            android:scaleY="1.5"
                             android:scaleX="1.5"
-                            android:padding="@dimen/_5sdp"
+                            android:scaleY="1.5"
+                            app:switchPadding="@dimen/_5sdp"
+                            android:textSize="@dimen/_5sdp"
+                            android:layout_marginRight="@dimen/_9sdp"
+                            android:gravity="center_vertical"
+                            android:textColor="@color/txtColor"
+                            android:showText="true"
+                            android:checked="true"
+                            android:thumb="@drawable/custom_thumb_printer_active_switch"
+                            android:visibility="visible"
                             app:srcCompat="@drawable/ic_arrow_forward"
-                            app:thumbTint="@color/btnColor"
-                            app:trackTint="@color/colorE2" />
+                            app:thumbTint="@color/switch_thumb_selector"
+                            app:track="@drawable/custom_switch_track_printer"
+                            app:trackTint="@color/switch_track_tint"
+                            tools:ignore="UseSwitchCompatOrMaterialXml" />
+
                     </androidx.appcompat.widget.LinearLayoutCompat>
 
                     <View

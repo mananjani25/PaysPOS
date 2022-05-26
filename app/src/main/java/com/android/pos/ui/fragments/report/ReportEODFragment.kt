@@ -18,13 +18,14 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
 import com.android.pos.R
 import com.android.pos.data.entities.Employee
+import com.android.pos.data.model.ShiftRportConfiguration
+import com.android.pos.data.model.responseModel.VenueDetailsResponse
+import com.android.pos.data.remote.Constants
 import com.android.pos.databinding.FragmentReportEodBinding
+import com.android.pos.di.PrefProvider
 import com.android.pos.ui.adapter.*
 import com.android.pos.ui.fragments.loginscreen.ClockInOwnerViewModel
-import com.android.pos.utils.AlertUtils
-import com.android.pos.utils.EventObserver
-import com.android.pos.utils.MethodUtils
-import com.android.pos.utils.ProgressUtils
+import com.android.pos.utils.*
 import com.android.pos.utils.extensions.*
 import com.android.pos.utils.statusUtils.Status
 import com.google.android.material.snackbar.Snackbar
@@ -32,11 +33,13 @@ import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 import java.text.SimpleDateFormat
 import java.util.*
+import javax.inject.Inject
 import kotlin.math.abs
 
 @AndroidEntryPoint
 class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
+    private var shiftReportsSettingModel: ShiftRportConfiguration? = null
     private var defaultEmployeePos: Int = 0
     private lateinit var binding: FragmentReportEodBinding
     private val viewModel by viewModels<ReportEODViewModel>()
@@ -63,7 +66,10 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
     private val paymentDetailsAdapter by lazy { PaymentDetailsAdapter(hideRefund = false) }
     private val otherDetailsAdapter by lazy { SalesReportAdapter() }
     private val serviceChargeDetailsAdapter by lazy { ServiceChargeDetailsAdapter() }
+    private val employeeGuestDetailsAdapter by lazy { EmployeeGuestDetailsAdapter() }
+    private val creditTipAuditAdapter by lazy { CreditTipAuditAdapter() }
     private val tipDetailsAdapter by lazy { PaymentDetailsAdapter(hideRefund = false) }
+    private val saleCategorySummaryAdapter by lazy { SalesCategorySummaryAdapter() }
 
 
     private val salesOrderDetailsAdapter by lazy { SalesOrderDetailsAdapter() }
@@ -77,6 +83,10 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
     val myCalendar2 = Calendar.getInstance()
     val myCalendar3 = Calendar.getInstance()
+
+    @set:Inject
+    internal var prefProvider: PrefProvider? = null
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -162,6 +172,17 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
             e.printStackTrace()
         }
 
+        loadSettings()
+
+    }
+
+    private fun loadSettings() {
+
+        val shiftReportsSettings = prefProvider?.getValue(Constants.SHIFT_REPORT_SETTINGS, "")
+
+        if (shiftReportsSettings != null)
+            shiftReportsSettingModel =
+                Gson().fromJson(shiftReportsSettings, ShiftRportConfiguration::class.java)
     }
 
     private fun initControls() {
@@ -334,6 +355,9 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
         binding.rvCashLog.adapter = cashLogAdapter
         binding.rvCreditCardBreakDown.adapter = creditCardBreakdownAdapter
         binding.rvSalesDetails.adapter = salesOrderDetailsAdapter
+        binding.rvCreditAuditTip.adapter = creditTipAuditAdapter
+        binding.rvemployeeGuestDetails.adapter = employeeGuestDetailsAdapter
+        binding.rvSaleCategorySummary?.adapter = saleCategorySummaryAdapter
     }
 
     private fun initObservers() {
@@ -343,7 +367,7 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
 
 
-        viewModel.startDateSelection.observe(requireActivity(), { event ->
+        viewModel.startDateSelection.observe(requireActivity()) { event ->
             event.getContentIfNotHandled()?.let {
 
                 DatePickerDialog(
@@ -356,8 +380,8 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
                     myCalendar.get(Calendar.DAY_OF_MONTH)
                 ).show()
             }
-        })
-        viewModel.endDateSelection.observe(requireActivity(), { event ->
+        }
+        viewModel.endDateSelection.observe(requireActivity()) { event ->
             event.getContentIfNotHandled()?.let {
 
                 DatePickerDialog(
@@ -371,8 +395,8 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
                 ).show()
             }
-        })
-        viewModel.showProgress.observe(viewLifecycleOwner, { event ->
+        }
+        viewModel.showProgress.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
                 if (it) {
                     ProgressUtils.showProgressDialog(requireActivity())
@@ -380,9 +404,9 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
                     ProgressUtils.dismissProgressDialog()
                 }
             }
-        })
+        }
         viewModel.data.observe(viewLifecycleOwner, EventObserver { data ->
-            data?.let {
+            data.let {
 
                 //salesSummary
                 showHide(
@@ -476,6 +500,35 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
 
                 showHide(
+                    rvMedia = binding.rvemployeeGuestDetails,
+                    textView = binding.txtemployeeGuestDetails,
+                    headerView = null,
+                    visible = it.employeeGuestDetails.isNotEmpty()
+                )
+                if (it.employeeGuestDetails.isNotEmpty())
+                    employeeGuestDetailsAdapter.add(it.employeeGuestDetails[0])
+
+
+                showHide(
+                    rvMedia = binding.rvCreditAuditTip,
+                    textView = binding.txtCreditAuditTip,
+                    headerView = null,
+                    visible = it.creditTipAudit.isNotEmpty()
+                )
+                creditTipAuditAdapter.add(it.creditTipAudit)
+
+                showHide(
+                    rvMedia = binding.rvSaleCategorySummary,
+                    textView = binding.txtSaleCategorySummary,
+                    headerView = null,
+                    visible = it.salesPerCategorySummary.isNotEmpty()
+                )
+                saleCategorySummaryAdapter.add(it.salesPerCategorySummary)
+                saleCategorySummaryAdapter.notifyDataSetChanged()
+
+
+
+                showHide(
                     rvMedia = binding.rvTipsDetails,
                     textView = binding.txtTipsDetails,
                     headerView = binding.ilTipsDetails,
@@ -547,6 +600,153 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
 
                 binding.linReports.visible()
+
+                shiftReportsSettingModel?.orderSalesDetails?.let { it1 ->
+                    showHide(
+                        binding.rvSalesDetails, binding.txtSalesDetails, null,
+                        it1
+                    )
+                }
+
+                if (shiftReportsSettingModel?.orderSalesDetails == false) {
+                    binding.llHeader.gone()
+                    binding.llTotal.gone()
+                }
+
+                shiftReportsSettingModel?.salesSummary?.let { it1 ->
+                    showHide(
+                        binding.rvSalesSummary, binding.txtSalesSummary, null,
+                        it1
+                    )
+                }
+
+                shiftReportsSettingModel?.salesAndTaxSummary?.let { it1 ->
+                    showHide(
+                        binding.rvSalesTaxSummary, binding.txtSalesTaxSummary, null,
+                        it1
+                    )
+                }
+
+                if (shiftReportsSettingModel?.salesAndTaxSummary == false) {
+                    binding.headerSalesTaxSummary.gone()
+                }
+
+
+                shiftReportsSettingModel?.paymentDetails?.let { it1 ->
+                    showHide(
+                        binding.rvPaymentDetails,
+                        binding.txtPaymentDetails,
+                        binding.ilPaymentDetails,
+                        it1
+                    )
+                }
+
+                shiftReportsSettingModel?.tipsDetails?.let { it1 ->
+                    showHide(
+                        binding.rvTipsDetails, binding.txtTipsDetails, binding.ilTipsDetails,
+                        it1
+                    )
+                }
+                shiftReportsSettingModel?.taxDetails?.let { it1 ->
+                    showHide(
+                        binding.rvTaxDetails, binding.txtTaxDetails, null,
+                        it1
+                    )
+                }
+                shiftReportsSettingModel?.refundOrVoids?.let { it1 ->
+                    showHide(
+                        binding.rvRefundAndVoid, binding.txtCashEventSummary, null,
+                        it1
+                    )
+                }
+
+                if (shiftReportsSettingModel?.refundOrVoids == false) {
+                    binding.headerRefundsVoids.gone()
+                }
+
+                shiftReportsSettingModel?.refundDetails?.let { it1 ->
+                    showHide(
+                        binding.rvRefundDetails, binding.txtRefundDetails, null,
+                        it1
+                    )
+                }
+
+                shiftReportsSettingModel?.discountDetails?.let { it1 ->
+                    showHide(
+                        binding.rvDiscountDetails, binding.txtDiscountDetails, null,
+                        it1
+                    )
+                }
+                shiftReportsSettingModel?.totalCreditPayments?.let { it1 ->
+                    showHide(
+                        binding.rvPendingPayments, binding.txtPendingPayments, null,
+                        it1
+                    )
+                }
+
+                shiftReportsSettingModel?.totalCashPayments?.let { it1 ->
+                    showHide(
+                        binding.rvCashPayments, binding.txtCashPayments, null,
+                        it1
+                    )
+                }
+                shiftReportsSettingModel?.totalPayments?.let { it1 ->
+                    showHide(
+                        binding.rvTotalPayments, binding.txtTotalPayments, null,
+                        it1
+                    )
+                }
+                shiftReportsSettingModel?.creditCardBreakdown?.let { it1 ->
+                    showHide(
+                        binding.rvCreditCardBreakDown, binding.txtCreditCardBreakDown, null,
+                        it1
+                    )
+                }
+
+                if (shiftReportsSettingModel?.creditCardBreakdown == false) {
+                    binding.ilCreditCardBreakDown.gone()
+                }
+
+                shiftReportsSettingModel?.serviceChargeDetails?.let { it1 ->
+                    showHide(
+                        binding.rvServiceChargeDetails, binding.txtServiceChargeDetails, null,
+                        it1
+                    )
+                }
+                shiftReportsSettingModel?.cashLogDetails?.let { it1 ->
+                    showHide(
+                        binding.rvCashLog, binding.txtCashLog, null,
+                        it1
+                    )
+                }
+                shiftReportsSettingModel?.otherDetails?.let { it1 ->
+                    showHide(
+                        binding.rvOtherDetails, binding.txtOtherDetails, null,
+                        it1
+                    )
+                }
+
+                shiftReportsSettingModel?.creditTipAudit?.let { it1 ->
+                    showHide(
+                        binding.rvCreditAuditTip, binding.txtCreditAuditTip, null,
+                        it1
+                    )
+                }
+                shiftReportsSettingModel?.cashCreditPerSalesCategorySummary?.let { it1 ->
+                    showHide(
+                        binding.rvSaleCategorySummary, binding.txtSaleCategorySummary, null,
+                        it1
+                    )
+                }
+
+                shiftReportsSettingModel?.employeeGuestReport?.let { it1 ->
+                    showHide(
+                        binding.rvemployeeGuestDetails, binding.txtemployeeGuestDetails, null,
+                        it1
+                    )
+                }
+
+
             }
         })
     }
@@ -623,6 +823,7 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
                             val roleName = teamEmployeeListGlobal.map { it.name }
 
+
                             setUpEmployeeSpinnerAdapter(
                                 roleName as ArrayList<String>,
                                 defaultEmployeePos
@@ -677,7 +878,7 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
             }
 
             viewModel.getReportSummary("")
-        }catch (e:Exception){
+        } catch (e: Exception) {
             e.printStackTrace()
         }
 

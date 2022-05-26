@@ -1,10 +1,14 @@
 package com.android.pos.ui.fragments.settings.loyaltypoints
 
 import android.os.Bundle
+import android.text.Editable
+import android.text.InputFilter
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
+import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -43,6 +47,7 @@ class CreateLoyaltyFragment : Fragment() {
         return binding.root
     }
 
+
     private fun initListeners() {
         binding.swtFixedValue.setOnCheckedChangeListener { buttonView, isChecked ->
             if (isChecked) {
@@ -72,12 +77,13 @@ class CreateLoyaltyFragment : Fragment() {
 
             viewModel.setLoyaltyData(loyaltyProgramsModel)
 
-            if (loyaltyProgramsModel?.rewardType == getString(R.string.percentage_symbol)){
-                binding.cbPercentageValue.isChecked = loyaltyProgramsModel?.rewardType == getString(R.string.percentage_symbol)
+            if (loyaltyProgramsModel?.rewardType == getString(R.string.percentage_symbol)) {
+                binding.cbPercentageValue.isChecked =
+                    loyaltyProgramsModel?.rewardType == getString(R.string.percentage_symbol)
                 discountType(true)
-            }
-            else{
-                binding.swtFixedValue.isChecked = loyaltyProgramsModel?.rewardType == getString(R.string.dollar_symbol)
+            } else {
+                binding.swtFixedValue.isChecked =
+                    loyaltyProgramsModel?.rewardType == getString(R.string.dollar_symbol)
                 discountType(false)
 
             }
@@ -113,7 +119,30 @@ class CreateLoyaltyFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         onCLick()
+        binding.editLoyaltyAmount?.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
 
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                try {
+                    var amount = s.toString()
+                    if(viewModel.loyaltyPointType == getString(R.string.percentage_symbol)){
+                        if (amount.toInt() > 100) {
+                            binding.editLoyaltyAmount!!.setText("100")
+                        }
+                    }
+
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+
+            }
+
+        })
     }
 
     private fun onCLick() {
@@ -121,6 +150,8 @@ class CreateLoyaltyFragment : Fragment() {
             backPressManage()
         }
         binding.header.txtSave.setOnClickListener {
+            viewModel.setLoyaltyAmount(binding.editLoyaltyAmount?.text.toString().toDouble())
+            viewModel.setLoyaltyTarget(binding.editLoyaltyTarget?.text.toString().toInt())
             viewModel.submit()
         }
     }
@@ -136,15 +167,25 @@ class CreateLoyaltyFragment : Fragment() {
 
     fun discountType(isChecked: Boolean) {
         if (isChecked) {
-            binding.cbPercentageValue.text = getString(R.string.percentage_value)
+            binding.cbPercentageValue?.text = getString(R.string.percentage_value)
             viewModel.loyaltyPointType = getString(R.string.percentage_symbol)
+            binding.editLoyaltyAmount?.setText("")
             binding.tvSymbolPer.visibility = View.VISIBLE
+            val maxLength = 3
+            val FilterArray: Array<InputFilter?> = arrayOfNulls<InputFilter>(1)
+            FilterArray[0] = InputFilter.LengthFilter(maxLength)
+            binding.editLoyaltyAmount?.filters = FilterArray
             binding.tvSymbolDollar.visibility = View.GONE
         } else {
             binding.swtFixedValue.text = getString(R.string.fixed_value)
             viewModel.loyaltyPointType = getString(R.string.dollar_symbol)
+            binding.editLoyaltyAmount?.setText("")
             binding.tvSymbolDollar.visibility = View.VISIBLE
             binding.tvSymbolPer.visibility = View.GONE
+            val maxLength = 10
+            val FilterArray: Array<InputFilter?> = arrayOfNulls<InputFilter>(1)
+            FilterArray[0] = InputFilter.LengthFilter(maxLength)
+            binding.editLoyaltyAmount?.filters = FilterArray
         }
     }
 

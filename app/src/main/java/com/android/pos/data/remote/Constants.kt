@@ -12,6 +12,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 object Constants {
+    val IS_ORDER_LAST_PAYMENT= "is_order_last_payment"
     const val ARG_PARAM1 = "param1"
     const val ARG_PARAM2 = "param2"
     const val ARG_PARAM3 = "param2"
@@ -547,6 +548,8 @@ object Constants {
 
     const val MAGENSA_SETTINGS = "magensaSettings"
     const val MAGENSA_SETTINGS1 = "magensaSettings1"
+
+    const val SHIFT_REPORT_SETTINGS = "shift_report_setting"
 
     const val ELAVON_GATEWAY = "Elavon"
     const val FIRST_DATA_GATEWAY = "Rapid Connect" //(First Data Nashville/Omaha/North)

@@ -167,8 +167,6 @@ class TeamsAdapter : SectioningAdapter(), Filterable {
         val person = s.people?.get(itemIndex) as Employee
 
 
-
-
         //ivh.txtId.text = person.id.toString()
 
         ivh.personNumberTextView.text = person.phoneNumber?.let { AlertUtils.usNumberFormat(it) }
@@ -178,11 +176,20 @@ class TeamsAdapter : SectioningAdapter(), Filterable {
                 ignoreCase = true
             )
         ) {
-            ivh.personNameTextView.text = person.firstName + " " + person.lastName
+            var final_string =
+                person.firstName.toString().substring(0,1).toUpperCase() + person.firstName.toString()
+                    .substring(1, person.firstName.toString().length) + " " +
+                        person.lastName.toString().substring(0,1)
+                            .toUpperCase() + person.lastName.toString()
+                    .substring(1, person.lastName.toString().length)
+            ivh.personNameTextView.text = final_string
             ivh.tvInitialName.text =
                 person.firstName?.first().toString() + person.lastName.first().toString()
         } else {
-            ivh.personNameTextView.text = person.firstName
+            var final_string =
+                person.firstName.toString().substring(0,1).toUpperCase() + person.firstName.toString()
+                    .substring(1, person.firstName.toString().length)
+            ivh.personNameTextView.text = final_string
             ivh.tvInitialName.text =
                 person.firstName?.subSequence(0, 2)
         }
@@ -192,17 +199,18 @@ class TeamsAdapter : SectioningAdapter(), Filterable {
         ivh.itemView.tag = "normal"
 
 
-        val lastindex= s.people!!.size-1
+        val lastindex = s.people!!.size - 1
 
-        if (lastindex==itemIndex)
-            ivh.view.visibility=View.GONE
+        if (lastindex == itemIndex)
+            ivh.view.visibility = View.GONE
         else
-            ivh.view.visibility=View.VISIBLE
+            ivh.view.visibility = View.VISIBLE
 
 
         if (isSelectedPos == person.id) {
             ivh.layout.setBackgroundColor(ivh.itemView.context.getColorCompat(R.color.btnColor))
-            ivh.tvInitialName.background = ivh.itemView.context.getDrawable(R.drawable.bg_circle_orange)
+            ivh.tvInitialName.background =
+                ivh.itemView.context.getDrawable(R.drawable.bg_circle_orange)
             ivh.tvInitialName.setTextColor(ivh.itemView.context.getColorCompat(R.color.btnColor))
             ivh.personNameTextView.setTextColor(ivh.itemView.context.getColorCompat(R.color.white))
             ivh.personNumberTextView.setTextColor(ivh.itemView.context.getColorCompat(R.color.txtColor))
@@ -210,7 +218,8 @@ class TeamsAdapter : SectioningAdapter(), Filterable {
             ivh.layout.setBackgroundColor(ivh.itemView.context.getColorCompat(R.color.bg_color))
             ivh.personNameTextView.setTextColor(ivh.itemView.context.getColorCompat(R.color.txtColor))
             ivh.personNumberTextView.setTextColor(ivh.itemView.context.getColorCompat(R.color.txtColorGray))
-            ivh.tvInitialName.background = ivh.itemView.context.getDrawable(R.drawable.bg_circle_gray)
+            ivh.tvInitialName.background =
+                ivh.itemView.context.getDrawable(R.drawable.bg_circle_gray)
             ivh.tvInitialName.setTextColor(ivh.itemView.context.getColorCompat(R.color.txtColor))
         }
 
@@ -226,7 +235,7 @@ class TeamsAdapter : SectioningAdapter(), Filterable {
 
         }
         ivh.menuOption.setOnClickListener {
-            mCallback.onOptionClickListener(it,ivh)
+            mCallback.onOptionClickListener(it, ivh)
         }
 
     }

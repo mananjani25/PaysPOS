@@ -106,7 +106,7 @@ class ItemDialog : DialogFragment(), View.OnClickListener {
 
     private fun setAdapter() {
 
-        adapter = ItemListAdapter(true)
+        adapter = ItemListAdapter(true,where)
         binding.rvItemList.adapter = adapter
         binding.edtSearch.addTextChangedListener(object : TextWatcher {
             override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {

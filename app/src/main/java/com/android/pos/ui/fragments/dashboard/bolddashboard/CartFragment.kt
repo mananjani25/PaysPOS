@@ -1185,7 +1185,7 @@ class CartFragment(
 
         } else {
 
-            val bundle = bundleOf("DINE_IN" to true, "position" to position)
+            val bundle = bundleOf("DINE_IN" to true, "position" to position, "cartList" to cartlist)
             findNavController().navigate(
                 R.id.action_dashboardCategoryBoldPOS_to_assignCustomerOrderFragment, bundle
             )
@@ -1401,6 +1401,7 @@ class CartFragment(
 
         binding.txtAddCustomer.setOnClickListener {
             if (isFromPayment) {
+                viewModel.setIsFromAddCustomer(true)
                 findNavController().navigate(R.id.action_paymentBoldPosFragment_to_assignCustomerOrderFragment)
             } else {
                 if (isOrderUpdate) {
