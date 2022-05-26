@@ -66,7 +66,10 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
     private val paymentDetailsAdapter by lazy { PaymentDetailsAdapter(hideRefund = false) }
     private val otherDetailsAdapter by lazy { SalesReportAdapter() }
     private val serviceChargeDetailsAdapter by lazy { ServiceChargeDetailsAdapter() }
+    private val employeeGuestDetailsAdapter by lazy { EmployeeGuestDetailsAdapter() }
+    private val creditTipAuditAdapter by lazy { CreditTipAuditAdapter() }
     private val tipDetailsAdapter by lazy { PaymentDetailsAdapter(hideRefund = false) }
+    private val saleCategorySummaryAdapter by lazy { SalesCategorySummaryAdapter() }
 
 
     private val salesOrderDetailsAdapter by lazy { SalesOrderDetailsAdapter() }
@@ -352,6 +355,9 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
         binding.rvCashLog.adapter = cashLogAdapter
         binding.rvCreditCardBreakDown.adapter = creditCardBreakdownAdapter
         binding.rvSalesDetails.adapter = salesOrderDetailsAdapter
+        binding.rvCreditAuditTip.adapter = creditTipAuditAdapter
+        binding.rvemployeeGuestDetails.adapter = employeeGuestDetailsAdapter
+        binding.rvSaleCategorySummary?.adapter = saleCategorySummaryAdapter
     }
 
     private fun initObservers() {
@@ -491,6 +497,35 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
                     visible = it.serviceChargeDetails.isNotEmpty()
                 )
                 serviceChargeDetailsAdapter.add(it.serviceChargeDetails)
+
+
+                showHide(
+                    rvMedia = binding.rvemployeeGuestDetails,
+                    textView = binding.txtemployeeGuestDetails,
+                    headerView = null,
+                    visible = it.employeeGuestDetails.isNotEmpty()
+                )
+                if (it.employeeGuestDetails.isNotEmpty())
+                    employeeGuestDetailsAdapter.add(it.employeeGuestDetails[0])
+
+
+                showHide(
+                    rvMedia = binding.rvCreditAuditTip,
+                    textView = binding.txtCreditAuditTip,
+                    headerView = null,
+                    visible = it.creditTipAudit.isNotEmpty()
+                )
+                creditTipAuditAdapter.add(it.creditTipAudit)
+
+                showHide(
+                    rvMedia = binding.rvSaleCategorySummary,
+                    textView = binding.txtSaleCategorySummary,
+                    headerView = null,
+                    visible = it.salesPerCategorySummary.isNotEmpty()
+                )
+                saleCategorySummaryAdapter.add(it.salesPerCategorySummary)
+                saleCategorySummaryAdapter.notifyDataSetChanged()
+
 
 
                 showHide(
@@ -691,6 +726,26 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
                     )
                 }
 
+                shiftReportsSettingModel?.creditTipAudit?.let { it1 ->
+                    showHide(
+                        binding.rvCreditAuditTip, binding.txtCreditAuditTip, null,
+                        it1
+                    )
+                }
+                shiftReportsSettingModel?.cashCreditPerSalesCategorySummary?.let { it1 ->
+                    showHide(
+                        binding.rvSaleCategorySummary, binding.txtSaleCategorySummary, null,
+                        it1
+                    )
+                }
+
+                shiftReportsSettingModel?.employeeGuestReport?.let { it1 ->
+                    showHide(
+                        binding.rvemployeeGuestDetails, binding.txtemployeeGuestDetails, null,
+                        it1
+                    )
+                }
+
 
             }
         })
@@ -767,6 +822,7 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
                             }
 
                             val roleName = teamEmployeeListGlobal.map { it.name }
+
 
                             setUpEmployeeSpinnerAdapter(
                                 roleName as ArrayList<String>,
