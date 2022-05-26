@@ -252,7 +252,7 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
             TimePickerDialog(
                 requireActivity(),
                 android.R.style.Theme_Material_Light_Dialog,
-                startTime,
+                endTime,
                 myCalendar2.get(Calendar.HOUR),
                 myCalendar2.get(Calendar.MINUTE),
                 false
