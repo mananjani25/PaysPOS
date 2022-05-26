@@ -698,6 +698,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
             if (custom_paymentAmount != 0.0) {
                 dineinOrderVieweModel.totalPayAmount(custom_paymentAmount)
             }
+            paymentType = "Cash"
             guestAttributeCalculation(-1, "")
             guestRequestModel?.paymentAttributes?.let { logPrintGuest(it) }
             if(dineInDataModel.isLastPayment){
@@ -1758,6 +1759,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                                 magtekModule.closeDevice()
                             paymentviewModel.setMagensaResponse(Gson().toJson(response.body()!![0]))
                             if (isGuestPay) {
+                                paymentType = "Card"
                                 dineinOrderVieweModel.totalPayAmount(paymentAmount)
 
                                 guestAttributeCalculation(i, Gson().toJson(response.body()!![0]))
