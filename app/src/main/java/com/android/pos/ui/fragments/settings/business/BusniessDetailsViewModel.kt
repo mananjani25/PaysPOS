@@ -52,13 +52,13 @@ class BusniessDetailsViewModel @Inject constructor(
 
 
         when {
-            TextUtils.isEmpty(model.business_name.trim()) -> {
+            TextUtils.isEmpty(model.business_name?.trim()) -> {
                 _snackbarText.value = Event("Please enter business name")
             }
-            TextUtils.isEmpty(model.phone_number.trim()) -> {
+            TextUtils.isEmpty(model.phone_number?.trim()) -> {
                 _snackbarText.value = Event("Please enter business phone number")
             }
-            TextUtils.isEmpty(model.customer_contact_email.trim()) -> {
+            TextUtils.isEmpty(model.customer_contact_email?.trim()) -> {
                 _snackbarText.value = Event("Please enter business email address")
             }
             TextUtils.isEmpty(model.businessAddress[0].address1.trim()) -> {
