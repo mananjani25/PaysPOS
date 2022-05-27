@@ -1,6 +1,7 @@
 package com.android.pos.ui.adapter
 
 import android.annotation.SuppressLint
+import android.os.Build
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -72,6 +73,11 @@ class TransactionAdapter(val viewModel: TransactionViewModel) :
                     filterList[position].createdAt, context
                 )
 */
+            if (model.paymentType == "Card") {
+                itemBinding.tvPaymentType.setTextColor(itemBinding.root.resources.getColor(R.color.btnColor))
+            } else {
+                itemBinding.tvPaymentType.setTextColor(itemBinding.root.resources.getColor(R.color.txtColor))
+            }
 
             itemBinding.txtCustomerName.text = (model.customer?.firstName
                 ?: "") + " " + (model.customer?.lastName ?: "")

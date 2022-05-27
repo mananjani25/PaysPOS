@@ -34,19 +34,17 @@
                 android:layout_gravity="center"
                 android:orientation="horizontal">
 
+
                 <androidx.appcompat.widget.AppCompatImageView
                     android:id="@+id/imgBack"
-                    android:layout_width="wrap_content"
+                    android:layout_width="@dimen/_8sdp"
                     android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
                     android:layout_gravity="center"
-                    android:padding="@dimen/_5sdp"
-                    android:layout_marginStart="@dimen/_5sdp"
+                    android:layout_marginLeft="@dimen/_10sdp"
                     app:srcCompat="@mipmap/ic_left_arrow"
                     android:tint="@color/drawable_ic_color"
-                    android:paddingVertical="@dimen/_5sdp"
-
                     />
-
                 <TextView
                     android:id="@+id/txtSubTitle"
                     style="@style/CustomFontBold"
@@ -67,13 +65,12 @@
                     android:id="@+id/txtHome"
                     style="@style/CustomFontSemiBold"
                     android:layout_width="wrap_content"
-                    android:layout_height="match_parent"
+                    android:layout_height="@dimen/_23sdp"
                     android:gravity="center"
                     android:text="Home"
                     android:textAllCaps="true"
                     android:textColor="@color/white"
                     android:textSize="@dimen/_7mdpi"
-
                     android:background="@drawable/button_action_hover"
                     android:paddingHorizontal="@dimen/padding_home_button"/>
 
