@@ -79,15 +79,6 @@
                     android:gravity="center"
                     android:padding="@dimen/_5sdp">
 
-                    <TextView
-                        android:id="@+id/txtCurrency"
-                        style="@style/CustomFontSemiBold"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="$"
-                        android:textColor="@color/txtColor"
-                        android:textSize="@dimen/_6mdpi" />
-
                     <androidx.appcompat.widget.AppCompatEditText
                         android:id="@+id/edtAmount"
                         style="@style/CustomFontSemiBold"
@@ -95,7 +86,8 @@
                         android:layout_height="wrap_content"
                         android:background="@null"
                         android:enabled="false"
-                        android:hint="0.00"
+                        android:hint="$0.00"
+                        android:maxLength="10"
                         android:digits="0123456789"
                         android:textColor="@color/txtColor"
                         android:textColorHint="@color/hintColor"
