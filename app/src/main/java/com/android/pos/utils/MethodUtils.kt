@@ -2,10 +2,7 @@ package com.android.pos.utils
 
 import android.annotation.SuppressLint
 import android.app.Activity
-import android.app.ActivityManager
 import android.content.Context
-import android.content.Context.ACTIVITY_SERVICE
-import android.os.Build
 import android.os.SystemClock
 import android.provider.Settings
 import android.text.TextUtils
@@ -49,6 +46,13 @@ class MethodUtils {
                 requireActivity.contentResolver,
                 Settings.Secure.ANDROID_ID
             )
+        }
+        fun hideSoftKeyboard(activity: Activity) {
+            if (activity.getCurrentFocus() == null){
+                return
+            }
+            val inputMethodManager = activity.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            inputMethodManager.hideSoftInputFromWindow(activity.currentFocus!!.windowToken, 0)
         }
 
         @SuppressLint("SetTextI18n")
@@ -98,7 +102,7 @@ class MethodUtils {
                 .toString() + String.format("%.2f", price)
         }
 
-        fun roundOffAmountDouble(price: Double): Double {
+        fun roundOffAmountDouble(price: Double?): Double {
             return String.format("%.2f", price).toDouble()
         }
 
@@ -118,6 +122,10 @@ class MethodUtils {
                 }
             } catch (e: Exception) {
             }
+        }
+
+        fun showKeyboard(activity: Activity){
+
         }
 
         fun getTime(hour: Int, minute: Int): String {

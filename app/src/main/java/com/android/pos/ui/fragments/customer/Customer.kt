@@ -335,19 +335,74 @@ class Customer : Fragment(),ItemCallback {
                     if (customerAdapter.getList().lastIndex == deletedPos) {
                         val model = deletedPos?.minus(1)
                             ?.let { it1 -> customerAdapter.getList().get(it1) } as TbCustomer
-                        binding.layoutTool.txtSubTitle.setText(model?.first_name + " " + model?.last_name)
+
+                        if (model.last_name != null && model.last_name.isNotEmpty() && !model.last_name.equals(
+                                "null",
+                                ignoreCase = true
+                            )
+                        ) { var final_string =
+                            model.first_name.toString().substring(0, 1)
+                                .toUpperCase() + model.first_name.toString()
+                                .substring(1, model.first_name.toString().length) + " " +
+                                    model.last_name.toString().substring(0, 1)
+                                        .toUpperCase() + model.last_name.toString()
+                                .substring(1, model.last_name.toString().length)
+                            binding.layoutTool.txtSubTitle.setText(final_string)
+                        } else {
+                            var final_string =
+                                model.first_name.toString().substring(0,1).toUpperCase() + model.first_name.toString()
+                                    .substring(1, model.first_name.toString().length)
+                            binding.layoutTool.txtSubTitle.setText(final_string)
+                        }
+
                         loadFragment(model)
                     } else {
                         val model = deletedPos?.plus(1)
                             ?.let { it1 -> customerAdapter.getList().get(it1) } as TbCustomer
-                        binding.layoutTool.txtSubTitle.setText(model?.first_name + " " + model?.last_name)
+                        if (model.last_name != null && model.last_name.isNotEmpty() && !model.last_name.equals(
+                                "null",
+                                ignoreCase = true
+                            )
+                        ) { var final_string =
+                            model.first_name.toString().substring(0, 1)
+                                .toUpperCase() + model.first_name.toString()
+                                .substring(1, model.first_name.toString().length) + " " +
+                                    model.last_name.toString().substring(0, 1)
+                                        .toUpperCase() + model.last_name.toString()
+                                .substring(1, model.last_name.toString().length)
+                            binding.layoutTool.txtSubTitle.setText(final_string)
+                        } else {
+                            var final_string =
+                                model.first_name.toString().substring(0,1).toUpperCase() + model.first_name.toString()
+                                    .substring(1, model.first_name.toString().length)
+                            binding.layoutTool.txtSubTitle.setText(final_string)
+                        }
+
                         loadFragment(model)
                     }
 
                 } else {
                     val model = deletedPos?.minus(1)
                         ?.let { it1 -> customerAdapter.getList().get(it1) } as TbCustomer
-                    binding.layoutTool.txtSubTitle.setText(model?.first_name + " " + model?.last_name)
+                    if (model.last_name != null && model.last_name.isNotEmpty() && !model.last_name.equals(
+                            "null",
+                            ignoreCase = true
+                        )
+                    ) { var final_string =
+                        model.first_name.toString().substring(0, 1)
+                            .toUpperCase() + model.first_name.toString()
+                            .substring(1, model.first_name.toString().length) + " " +
+                                model.last_name.toString().substring(0, 1)
+                                    .toUpperCase() + model.last_name.toString()
+                            .substring(1, model.last_name.toString().length)
+                        binding.layoutTool.txtSubTitle.setText(final_string)
+                    } else {
+                        var final_string =
+                            model.first_name.toString().substring(0,1).toUpperCase() + model.first_name.toString()
+                                .substring(1, model.first_name.toString().length)
+                        binding.layoutTool.txtSubTitle.setText(final_string)
+                    }
+
                     loadFragment(model)
                 }
 
@@ -375,7 +430,26 @@ class Customer : Fragment(),ItemCallback {
                 model: TbCustomer
             ) {
 
-                binding.layoutTool.txtSubTitle.setText(model.first_name + " " + model.last_name)
+                if (model.last_name != null && model.last_name.isNotEmpty() && !model.last_name.equals(
+                        "null",
+                        ignoreCase = true
+                    )
+                ) { var final_string =
+                    model.first_name.toString().substring(0, 1)
+                        .toUpperCase() + model.first_name.toString()
+                        .substring(1, model.first_name.toString().length) + " " +
+                            model.last_name.toString().substring(0, 1)
+                                .toUpperCase() + model.last_name.toString()
+                        .substring(1, model.last_name.toString().length)
+                    binding.layoutTool.txtSubTitle.setText(final_string)
+                } else {
+                    var final_string =
+                        model.first_name.toString().substring(0,1).toUpperCase() + model.first_name.toString()
+                            .substring(1, model.first_name.toString().length)
+                    binding.layoutTool.txtSubTitle.setText(final_string)
+                }
+
+
                 loadFragment(model)
             }
 

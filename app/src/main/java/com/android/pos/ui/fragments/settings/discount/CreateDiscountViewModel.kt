@@ -8,10 +8,8 @@ import androidx.lifecycle.viewModelScope
 import com.android.pos.R
 import com.android.pos.data.entities.TbDiscount
 import com.android.pos.data.model.requestModel.CreateDiscountRequestModel
-import com.android.pos.data.model.requestModel.CreateTaxRequestModel
-import com.android.pos.data.model.responseModel.*
+import com.android.pos.data.model.responseModel.CreateDiscountResponse
 import com.android.pos.data.remote.Constants.LOCATION_ID
-import com.android.pos.data.repositories.PosRepository
 import com.android.pos.data.repositories.TipDiscountRepository
 import com.android.pos.di.PrefProvider
 import com.android.pos.utils.Event
@@ -40,7 +38,7 @@ class CreateDiscountViewModel @Inject constructor(
     val showProgress: LiveData<Event<Boolean>> = _showProgress
 
     private var discountId: Int = -1
-    private var discountTypeViewModel: String = "Percentage"
+     var discountTypeViewModel: String = "Percentage"
     private var isEdit: Boolean = false
 
     private lateinit var discountData: CreateDiscountRequestModel
@@ -63,15 +61,11 @@ class CreateDiscountViewModel @Inject constructor(
         discountTypeViewModel = discountData.discountType
     }
 
-    fun submit() {
+    fun submit(percentage_double:Double) {
         val value = createDiscountDetails.value
         if (TextUtils.isEmpty(value?.name?.trim())) {
             _snackbarText.value = Event(R.string.discount_name_validate)
-        } else if (TextUtils.isEmpty(
-                value?.percentage?.toString()?.trim()
-            )
-            || value?.percentage == 0.0
-        ) {
+        } else if (percentage_double == 0.0) {
             _snackbarText.value = Event(R.string.discount_rate_validate)
         } else {
             _showProgress.value = Event(true)
@@ -80,7 +74,7 @@ class CreateDiscountViewModel @Inject constructor(
                 discountData = CreateDiscountRequestModel().apply {
                     discount = CreateDiscountRequestModel.Discount().apply {
                         name = value!!.name
-                        percentage = value.percentage
+                        percentage = percentage_double
                         discountType = discountTypeViewModel    /*[Percentage Amount]*/
                         locationId = prefProvider.getValueInt(LOCATION_ID, -1)
                     }
@@ -89,7 +83,7 @@ class CreateDiscountViewModel @Inject constructor(
                 discountData = CreateDiscountRequestModel().apply {
                     discount = CreateDiscountRequestModel.Discount().apply {
                         name = value!!.name
-                        percentage = value.percentage
+                        percentage = percentage_double
                         discountType = discountTypeViewModel    /*[Percentage Amount]*/
                         locationId = prefProvider.getValueInt(LOCATION_ID, -1)
                     }

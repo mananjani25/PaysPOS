@@ -232,7 +232,7 @@ class AllItems(val clickedPosition: Int) : Fragment(),ItemCallback {
                 LinearLayoutManager.VERTICAL
             )
         )
-        adapter = ItemListAdapter(false)
+        adapter = ItemListAdapter(false, "")
         binding.rvAllItemList.adapter = adapter
         adapter.setCallback(this)
     }

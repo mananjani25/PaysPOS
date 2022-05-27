@@ -581,10 +581,21 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
                         var remainingValue = 0.0
                         remainingValue = if (cashDiscountType == "SurCharge") {
-                            wholePrice - (paymentAmount - cashDiscountSurcharge)
+                            Log.d(
+                                TAG,
+                                "observeData: " + wholePrice + " " + String.format(
+                                    "%.2f",
+                                    paymentAmount - cashDiscountSurcharge
+                                ).toDouble()
+                            )
+                            wholePrice - String.format(
+                                "%.2f",
+                                paymentAmount - cashDiscountSurcharge
+                            ).toDouble()
                         } else {
                             wholePrice - paymentAmount
                         }
+
                         if (remainingValue <= 0.0) {
                             remainingValue = 0.0
                         }
@@ -1142,14 +1153,16 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             isSelectedCount = 1
             tipsetupGlobal(tipAmount, isSelectedCount)
             loadPaymentLayout()
+            tipAmountCalculation()
         }
         binding.linearTab2.setOnClickListener {
-            PaymentBoldPosFragment.newInstance().addTipHideShow(true)
+
             if (tipAmount != 0.0 && viewModel.tipTransactionAmount != 0.0) {
-                AlertUtils.showCustomAlertWithListenerWithOK(
+                AlertUtils.showCustomAlertWithListenerWithOKCancel(
                     requireContext(),
                     "If you are going to do split payment then existing tip will be removed."
                 ) { _, _ ->
+                    PaymentBoldPosFragment.newInstance().addTipHideShow(true)
                     tipAmount = 0.0
                     viewModel.setTipAmount(0.0)
                     loadSplitLayout()
@@ -1554,7 +1567,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
                 ProgressUtils.dismissProgressDialog()
 
-                AlertUtils.showCustomAlert(requireContext(),t.message)
+                AlertUtils.showCustomAlert(requireContext(), t.message)
 
                 isInsert = false
                 isCardRev = false

@@ -1,6 +1,8 @@
 package com.android.pos.ui.fragments.settings.servicecharge
 
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -48,7 +50,7 @@ class CreateServiceCharge : Fragment() {
             binding.header.txtSave.text = getString(R.string.update)
             binding.header.txtTitle.text = getString(R.string.update_service_charge)
             serviceChargeData = arguments?.getParcelable("serviceChargeObject")!!
-
+            binding.editPercentage?.setText(String.format("%.2f",serviceChargeData.percentage))
             viewModel.setDiscountData(serviceChargeData)
 
             binding.swtEnableCharge.isChecked = serviceChargeData.isEnabled
@@ -68,8 +70,30 @@ class CreateServiceCharge : Fragment() {
             }
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
 
+        binding.editPercentage?.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+                if(s.toString().isNotEmpty()){
+                    if(s.toString().toDouble()>100){
+                        binding.editPercentage?.setText("100")
+                        binding.editPercentage.setSelection(binding.editPercentage.length())
+                    }
+                }
+            }
+
+        })
         binding.header.txtSave.setOnClickListener {
-            var subPer = binding.editPercentage?.text.toString().split(" ")[0]
+            var subPer ="0.0"
+            if(binding.editPercentage.text?.isNotEmpty() == true){
+                subPer = binding.editPercentage?.text.toString().split(" ")[0]
+            }
             viewModel.createServiceChargeDetails.value?.percentage = subPer.toDouble()
             viewModel.submit()
         }

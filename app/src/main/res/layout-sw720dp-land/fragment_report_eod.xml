@@ -125,8 +125,8 @@
             android:layout_gravity="center"
             android:layout_marginBottom="@dimen/_5sdp"
             android:gravity="start"
-            android:paddingVertical="@dimen/_2sdp"
-            android:orientation="horizontal">
+            android:orientation="horizontal"
+            android:paddingVertical="@dimen/_2sdp">
 
             <androidx.appcompat.widget.AppCompatTextView
                 style="@style/CustomFontSemiBold"
@@ -141,14 +141,13 @@
 
             <LinearLayout
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="@dimen/_20sdp"
                 android:background="@drawable/background_square_border_grey"
                 android:onClick="@{() -> viewModel.datePicker(true)}"
                 android:orientation="horizontal"
-                android:paddingStart="@dimen/_5sdp"
                 android:paddingVertical="@dimen/_5sdp"
-                android:paddingEnd="@dimen/_10sdp"
-                >
+                android:paddingStart="@dimen/_5sdp"
+                android:paddingEnd="@dimen/_10sdp">
 
                 <ImageView
                     android:layout_width="wrap_content"
@@ -184,14 +183,13 @@
 
             <LinearLayout
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="@dimen/_20sdp"
                 android:background="@drawable/background_square_border_grey"
                 android:onClick="@{() -> viewModel.datePicker(false)}"
                 android:orientation="horizontal"
-                android:paddingStart="@dimen/_5sdp"
-                android:paddingEnd="@dimen/_10sdp"
                 android:paddingVertical="@dimen/_5sdp"
-                >
+                android:paddingStart="@dimen/_5sdp"
+                android:paddingEnd="@dimen/_10sdp">
 
                 <ImageView
                     android:layout_width="wrap_content"
@@ -215,7 +213,7 @@
 
             <RelativeLayout
                 android:layout_width="@dimen/_80sdp"
-                android:layout_height="wrap_content"
+                android:layout_height="@dimen/_20sdp"
 
                 android:layout_marginStart="@dimen/_5sdp"
                 android:background="@drawable/background_square_border_grey"
@@ -224,7 +222,7 @@
                 <Spinner
                     android:id="@+id/spTerminals"
                     android:layout_width="@dimen/_80sdp"
-                    android:layout_height="@dimen/_17sdp"
+                    android:layout_height="@dimen/_20sdp"
                     android:layout_gravity="center"
                     android:background="@null"
                     android:imeOptions="actionNext"
@@ -738,6 +736,83 @@
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rvServiceChargeDetails"
+                    style="@style/ReportRecyclerViewstyle"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    tools:itemCount="2"
+                    tools:listitem="@layout/view_sales_report" />
+
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/txtCreditAuditTip"
+                    style="@style/ReportTitleStyle"
+                    android:text="Credit Tip Audit" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:padding="@dimen/_5sdp">
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/txtPaymentId"
+                        style="@style/ReportItemText"
+                        android:gravity="start"
+                        android:text="Payment Id" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/txtLast4"
+                        style="@style/ReportItemText"
+                        android:gravity="start"
+                        android:text="Last4" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/txtSubtotal"
+                        style="@style/ReportItemText"
+                        android:gravity="end"
+                        android:text="Subtotal" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/txtTip"
+                        style="@style/ReportItemText"
+                        android:gravity="end"
+                        android:text="Tip" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/txtTotal"
+                        style="@style/ReportItemText"
+                        android:gravity="end"
+                        android:text="Total" />
+
+                </LinearLayout>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvCreditAuditTip"
+                    style="@style/ReportRecyclerViewstyle"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    tools:itemCount="2"
+                    tools:listitem="@layout/view_sales_report" />
+
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/txtemployee_guest_details"
+                    style="@style/ReportTitleStyle"
+                    android:text="Employee Guest Details" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvemployee_guest_details"
+                    style="@style/ReportRecyclerViewstyle"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    tools:itemCount="2"
+                    tools:listitem="@layout/view_sales_report" />
+
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/txtSaleCategorySummary"
+                    style="@style/ReportTitleStyle"
+                    android:text="Sales Per Category Summary" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvSaleCategorySummary"
                     style="@style/ReportRecyclerViewstyle"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     tools:itemCount="2"

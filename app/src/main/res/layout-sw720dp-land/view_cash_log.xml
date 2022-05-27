@@ -29,8 +29,8 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:gravity="center"
-                android:layout_marginStart="@dimen/_5sdp"
+                android:gravity="left"
+                android:paddingLeft="@dimen/_30sdp"
                 android:text="@string/tv_order_type"
                 android:textColor="@color/btnColor"
                 android:textSize="@dimen/text_size_medium" />
@@ -40,7 +40,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:gravity="center_horizontal"
+                android:gravity="left"
                 android:layout_gravity="center_horizontal"
                 >
 
@@ -50,7 +50,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:textColor="@color/txtColor"
-                    android:gravity="center"
+                    android:gravity="left"
                     android:textSize="@dimen/text_size_medium"
                     app:layout_constraintLeft_toLeftOf="parent"
                     app:layout_constraintRight_toRightOf="parent"
@@ -63,7 +63,7 @@
                     android:layout_height="wrap_content"
                     android:textColor="@color/hint_color"
                     android:textSize="@dimen/text_size_medium"
-                    android:gravity="center"
+                    android:gravity="left"
                     app:layout_constraintRight_toRightOf="@+id/txtDateTime"
                     app:layout_constraintLeft_toLeftOf="@+id/txtDateTime"
                     app:layout_constraintTop_toBottomOf="@+id/txtDateTime"/>
@@ -79,7 +79,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/_5sdp"
                 android:layout_weight="1"
-                android:gravity="center"
+                android:gravity="left"
                 android:text="@{@string/symbole +``+String.format(@string/format,viewModel.amount)}"
                 android:textColor="@color/txtColor"
                 android:textSize="@dimen/text_size_medium"
@@ -90,14 +90,14 @@
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:layout_weight="1"
-                android:gravity="center">
+                android:gravity="left">
 
                 <androidx.appcompat.widget.AppCompatTextView
                     style="@style/CustomFontSemiBold"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:gravity="center"
+                    android:layout_gravity="left"
+                    android:gravity="left"
                     android:text="@{viewModel.orderTypeName}"
                     android:textColor="@color/txtColor"
                     android:textSize="@dimen/text_size_medium"
@@ -112,8 +112,8 @@
                     android:textColor="@color/hint_color"
                     android:textSize="@dimen/text_size_medium"
                     tools:text="@string/employee_name"
-                    android:layout_gravity="center"
-                    android:gravity="center"
+                    android:layout_gravity="left"
+                    android:gravity="left"
                     />
 
             </LinearLayout>
@@ -126,7 +126,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/_5sdp"
                 android:layout_weight="1"
-                android:gravity="center"
+                android:gravity="left"
                 android:textColor="@color/txtColor"
                 android:textAllCaps="false"
                 android:textSize="@dimen/text_size_medium"
@@ -139,7 +139,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:gravity="center"
+                android:gravity="left"
                 android:visibility="gone"
                 android:text="@{viewModel.employeeName}"
                 android:textColor="@color/txtColor"
@@ -152,7 +152,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:gravity="center"
+                android:gravity="left"
                 android:text="@{viewModel.terminalName}"
                 android:textColor="@color/txtColor"
                 android:textSize="@dimen/text_size_medium"
@@ -165,7 +165,8 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1.5"
-                android:gravity="center"
+                android:gravity="left"
+                android:paddingLeft="@dimen/_30sdp"
                 android:text=""
                 android:textColor="@color/txtColor"
                 android:textSize="@dimen/text_size_medium"

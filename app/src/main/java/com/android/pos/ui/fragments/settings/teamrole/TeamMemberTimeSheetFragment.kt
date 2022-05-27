@@ -11,6 +11,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
+import androidx.core.view.MenuHost
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -23,6 +24,7 @@ import com.android.pos.data.remote.Constants
 import com.android.pos.databinding.FragmentTeamMemberTimeSheetBinding
 import com.android.pos.ui.adapter.TeamMemberTimeSheetAdapter
 import com.android.pos.utils.AlertUtils
+import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.extensions.liveSnackBar
 import com.android.pos.utils.extensions.showAlert
@@ -401,17 +403,18 @@ class TeamMemberTimeSheetFragment : Fragment(), AdapterView.OnItemSelectedListen
 
     private fun navigate() {
 
-        viewModel.employeeIdViewModel.observe(viewLifecycleOwner, { event ->
+        viewModel.employeeIdViewModel.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let { employeeModel ->
                 val bundle = Bundle().apply {
                     putParcelable("employeeModel", employeeModel)
                 }
+                activity?.let { MethodUtils.hideSoftKeyboard(it) }
                 findNavController().navigate(
                     R.id.action_teamMemberTimeSheetFragment_to_singleTeamMemberTimeSheetFragment,
                     bundle
                 )
             }
-        })
+        }
 
     }
 }

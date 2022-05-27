@@ -75,8 +75,8 @@ class CashLogFragment : Fragment(), AdapterView.OnItemSelectedListener {
         setupAdapter()
         setupCalender()
         observeShowProgress()
-        navigate()
         loadTerminals()
+
 
         binding.txtHome.setOnClickListener {
             findNavController().navigate(R.id.action_cashLogFragment_to_dashboardCategoryNew)
@@ -258,8 +258,12 @@ class CashLogFragment : Fragment(), AdapterView.OnItemSelectedListener {
             event.getContentIfNotHandled()?.let {
 
                 DatePickerDialog(
-                    requireActivity(),android.R.style.Theme_Material_Light_Dialog, startDate, myCalendar
-                        .get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
+                    requireActivity(),
+                    android.R.style.Theme_Material_Light_Dialog,
+                    startDate,
+                    myCalendar
+                        .get(Calendar.YEAR),
+                    myCalendar.get(Calendar.MONTH),
                     myCalendar.get(Calendar.DAY_OF_MONTH)
 
                 ).show()
@@ -273,8 +277,12 @@ class CashLogFragment : Fragment(), AdapterView.OnItemSelectedListener {
             event.getContentIfNotHandled()?.let {
 
                 DatePickerDialog(
-                    requireActivity(),android.R.style.Theme_Material_Light_Dialog, endDate, myCalendar1
-                        .get(Calendar.YEAR), myCalendar1.get(Calendar.MONTH),
+                    requireActivity(),
+                    android.R.style.Theme_Material_Light_Dialog,
+                    endDate,
+                    myCalendar1
+                        .get(Calendar.YEAR),
+                    myCalendar1.get(Calendar.MONTH),
                     myCalendar1.get(Calendar.DAY_OF_MONTH)
 
                 ).show()
@@ -350,6 +358,7 @@ class CashLogFragment : Fragment(), AdapterView.OnItemSelectedListener {
                             val roleName = terminalListGlobal.map { it.name }
                             setUpTerminalSpinnerAdapter(roleName as ArrayList<String>)
 
+                            navigate()
                         }
                     }
                     Status.ERROR -> {
@@ -382,11 +391,16 @@ class CashLogFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
         spinnerAdapter.setDropDownViewResource(R.layout.row_spinner)
         binding.spTerminals.adapter = spinnerAdapter
-//        terminalListGlobal.forEachIndexed { index, item ->
-//            if (item.id == prefProvider.getValueInt(Constants.TERMINAL_ID, 0)) {
-//                binding.spTerminals.setSelection(index)
-//            }
-//        }
+
+
+
+        terminalListGlobal.forEachIndexed { index, item ->
+            if (item.id == prefProvider.getValueInt(Constants.TERMINAL_ID, 0)) {
+                Log.e("TerminalId", prefProvider.getValueInt(Constants.TERMINAL_ID, 0).toString())
+                Log.e("TerminalId name",item.name)
+                binding.spTerminals.setSelection(index)
+            }
+        }
     }
 
     override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {

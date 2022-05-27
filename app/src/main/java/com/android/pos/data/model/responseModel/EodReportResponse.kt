@@ -13,7 +13,7 @@ data class EodReportResponse(
     val status: Int,
     @SerializedName("type")
     val type: String
-)  {
+) {
     data class Data(
         @SerializedName("cash_log_details")
         val cashLogDetails: List<KeyValue>,
@@ -54,7 +54,12 @@ data class EodReportResponse(
         @SerializedName("total_payments")
         val totalPayments: List<KeyValue>,
         @SerializedName("wastage_details")
-        val wastageDetails: ArrayList<ArrayList<KeyValue>>
+        val wastageDetails: ArrayList<ArrayList<KeyValue>>,
+        @SerializedName("employee_guest_details")
+        val employeeGuestDetails: ArrayList<ArrayList<KeyValue>>,
+        @SerializedName("sales_per_category_summary")
+        val salesPerCategorySummary: ArrayList<ArrayList<KeyValue>>
+
     ) {
 
         data class CreditCardBreakdown(
@@ -96,14 +101,16 @@ data class EodReportResponse(
 
                 }
 
-            private fun showFormattedValueMinus() = if (value == 0.0 || value == 0.00) "$0.00" else  "-$" + String.format(
-                "%.2f", value
-            )
+            private fun showFormattedValueMinus() =
+                if (value == 0.0 || value == 0.00) "$0.00" else "-$" + String.format(
+                    "%.2f", value
+                )
 
 
-            private fun showFormattedValueMinusTip() = if (tips == 0.0 || tips == 0.00) "$0.00" else "-$" + String.format(
-                "%.2f", tips
-            )
+            private fun showFormattedValueMinusTip() =
+                if (tips == 0.0 || tips == 0.00) "$0.00" else "-$" + String.format(
+                    "%.2f", tips
+                )
 
             fun showFormattedValue() = "$" + String.format(
                 "%.2f", value ?: 0.0
