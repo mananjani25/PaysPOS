@@ -98,11 +98,9 @@ class CreateTeamViewModel @Inject constructor(
                 .matches()
         ) {
             _snackbarText.value = Event(R.string.valid_email_validate)
-        } /*else if (value?.phoneNumber?.length == 0) {
-            _snackbarText.value = Event(R.string.phone_no_validate)
-        }*/ /*else if (value?.phoneNumber?.length!! < 14) {
+        } else if (value?.phoneNumber?.length != 0 && value?.phoneNumber?.length!! < 14) {
             _snackbarText.value = Event(R.string.valid_phone_no_validate)
-        }*/ else if (roleId == -1 || roleId == 0) {
+        } else if (roleId == -1 || roleId == 0) {
             _snackbarText.value = Event(R.string.please_choos_a_role)
         } else if (TextUtils.isEmpty(value?.passcode?.trim())) {
             _snackbarText.value = Event(R.string.please_enter_passcode)

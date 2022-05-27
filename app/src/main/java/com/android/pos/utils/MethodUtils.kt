@@ -2,10 +2,7 @@ package com.android.pos.utils
 
 import android.annotation.SuppressLint
 import android.app.Activity
-import android.app.ActivityManager
 import android.content.Context
-import android.content.Context.ACTIVITY_SERVICE
-import android.os.Build
 import android.os.SystemClock
 import android.provider.Settings
 import android.text.TextUtils
@@ -125,6 +122,10 @@ class MethodUtils {
                 }
             } catch (e: Exception) {
             }
+        }
+
+        fun showKeyboard(activity: Activity){
+
         }
 
         fun getTime(hour: Int, minute: Int): String {

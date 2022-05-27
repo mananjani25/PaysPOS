@@ -2,7 +2,6 @@ package com.android.pos.ui.fragments.settings.discount
 
 import android.os.Bundle
 import android.text.Editable
-import android.text.InputFilter
 import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
@@ -31,6 +30,7 @@ class CreateDiscount : Fragment() {
 
     var isEdit: Boolean = false
     private lateinit var discountData: TbDiscount
+    private val TAG = "CreateDiscount"
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -76,31 +76,8 @@ class CreateDiscount : Fragment() {
 
         setupSnackbar()
         observeShowProgress()
+        addTextChangeListner()
         navigate()
-        binding.edtDiscount.addTextChangedListener(object :TextWatcher{
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-
-            }
-
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-
-            }
-
-            override fun afterTextChanged(s: Editable?) {
-                try {
-                    var amount = s.toString()
-                    if(viewModel.discountTypeViewModel == getString(R.string.disc_percentage)){
-                        if (amount.toInt() > 100) {
-                            binding.edtDiscount!!.setText("100")
-                        }
-                    }
-
-                } catch (e: Exception) {
-                    e.printStackTrace()
-                }
-            }
-
-        })
 
         val callback: OnBackPressedCallback =
             object : OnBackPressedCallback(true /* enabled by default */) {
@@ -111,6 +88,33 @@ class CreateDiscount : Fragment() {
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
 
         return binding.root
+    }
+
+    private fun addTextChangeListner() {
+        binding.edtDiscount.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+
+            }
+
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+
+                if (binding.edtDiscount.text?.toString()
+                        ?.isNotEmpty() == true && viewModel.discountTypeViewModel.equals(
+                        "Percentage",
+                        true
+                    ) && binding.edtDiscount.text.toString().toDouble() > 100.00
+                ) {
+                    binding.edtDiscount.setText("100")
+                    binding.edtDiscount.setSelection(binding.edtDiscount.length())
+
+                }
+            }
+
+            override fun afterTextChanged(p0: Editable?) {
+
+            }
+
+        })
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -145,25 +149,23 @@ class CreateDiscount : Fragment() {
 
     fun discountType(isChecked: Boolean) {
         if (isChecked) {
+
             binding.swtDiscountType.text = "Percentage"
             viewModel.discountType(getString(R.string.disc_percentage))
             binding.tvSymbolPer.visibility = View.VISIBLE
             binding.tvSymbolDollar.visibility = View.GONE
-            binding.edtDiscount?.setText("")
-            val maxLength = 4
-            val FilterArray: Array<InputFilter?> = arrayOfNulls<InputFilter>(1)
-            FilterArray[0] = InputFilter.LengthFilter(maxLength)
-            binding.edtDiscount?.filters = FilterArray
+
+            if (binding.edtDiscount.text.toString()
+                    .isNotEmpty() && binding.edtDiscount.text.toString().toDouble() > 100
+            ) {
+                binding.edtDiscount.setText("100")
+                binding.edtDiscount.setSelection(binding.edtDiscount.length())
+            }
         } else {
             binding.swtDiscountType.text = "Dollar"
             viewModel.discountType(getString(R.string.disc_amount))
             binding.tvSymbolDollar.visibility = View.VISIBLE
             binding.tvSymbolPer.visibility = View.GONE
-            binding.edtDiscount?.setText("")
-            val maxLength = 6
-            val FilterArray: Array<InputFilter?> = arrayOfNulls<InputFilter>(1)
-            FilterArray[0] = InputFilter.LengthFilter(maxLength)
-            binding.edtDiscount?.filters = FilterArray
         }
     }
 

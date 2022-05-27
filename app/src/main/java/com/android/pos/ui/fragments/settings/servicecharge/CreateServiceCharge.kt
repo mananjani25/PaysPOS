@@ -1,11 +1,13 @@
 package com.android.pos.ui.fragments.settings.servicecharge
 
+import android.content.Context
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.inputmethod.InputMethodManager
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -21,6 +23,7 @@ import com.android.pos.utils.extensions.liveSnackBar
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 
+
 @AndroidEntryPoint
 class CreateServiceCharge : Fragment() {
     private lateinit var binding: DialogAddServiceChargeBinding
@@ -29,12 +32,13 @@ class CreateServiceCharge : Fragment() {
 
     var isEdit: Boolean = false
     private lateinit var serviceChargeData: TbServiceCharge
+    private val TAG = "CreateServiceCharge"
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = DialogAddServiceChargeBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = this
 
@@ -57,11 +61,10 @@ class CreateServiceCharge : Fragment() {
 
             viewModel.isEditData(isEdit, serviceChargeData.id)
         }
-
         setupSnackbar()
         observeShowProgress()
         navigate()
-
+        addTextChangeListner()
         val callback: OnBackPressedCallback =
             object : OnBackPressedCallback(true /* enabled by default */) {
                 override fun handleOnBackPressed() {
@@ -89,12 +92,54 @@ class CreateServiceCharge : Fragment() {
 
         })
         binding.header.txtSave.setOnClickListener {
-            var subPer = binding.editPercentage?.text.toString().split(" ")[0]
-            viewModel.createServiceChargeDetails.value?.percentage = subPer.toDouble()
-            viewModel.submit()
+            if (binding.edtPercentageServiceCharge?.text.toString().trim().isNotEmpty()) {
+                var subPer = binding.edtPercentageServiceCharge?.text.toString().split(" ")[0]
+                viewModel.createServiceChargeDetails.value?.percentage = subPer.toDouble()
+                viewModel.submit()
+            } else {
+                AlertUtils.showCustomAlert(
+                    requireContext(),
+                    requireContext().resources.getString(R.string.sercharge_rate_validate)
+                )
+            }
+        }
+        try {
+            val inputManager =
+                requireActivity().getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            requireActivity().currentFocus?.let {
+                inputManager.showSoftInput(
+                    binding.edtPercentageServiceCharge,
+                    InputMethodManager.SHOW_IMPLICIT
+                )
+            }
+        } catch (e: Exception) {
         }
 
         return binding.root
+    }
+
+    private fun addTextChangeListner() {
+        binding.edtPercentageServiceCharge?.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+
+            }
+
+            override fun onTextChanged(p0: CharSequence, p1: Int, p2: Int, p3: Int) {
+                if (binding.edtPercentageServiceCharge.text.toString()
+                        .isNotEmpty() && binding.edtPercentageServiceCharge.text.toString()
+                        .toDouble() > 100
+                ) {
+                    binding.edtPercentageServiceCharge.setText("100.00")
+                    binding.edtPercentageServiceCharge.setSelection(binding.edtPercentageServiceCharge.length())
+                }
+
+            }
+
+            override fun afterTextChanged(p0: Editable?) {
+
+            }
+
+        })
     }
 
 

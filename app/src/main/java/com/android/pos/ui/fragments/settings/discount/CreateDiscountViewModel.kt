@@ -8,10 +8,8 @@ import androidx.lifecycle.viewModelScope
 import com.android.pos.R
 import com.android.pos.data.entities.TbDiscount
 import com.android.pos.data.model.requestModel.CreateDiscountRequestModel
-import com.android.pos.data.model.requestModel.CreateTaxRequestModel
-import com.android.pos.data.model.responseModel.*
+import com.android.pos.data.model.responseModel.CreateDiscountResponse
 import com.android.pos.data.remote.Constants.LOCATION_ID
-import com.android.pos.data.repositories.PosRepository
 import com.android.pos.data.repositories.TipDiscountRepository
 import com.android.pos.di.PrefProvider
 import com.android.pos.utils.Event

@@ -19,13 +19,15 @@ import androidx.viewbinding.ViewBinding
 import com.android.pos.R
 import com.android.pos.data.entities.Employee
 import com.android.pos.data.model.ShiftRportConfiguration
-import com.android.pos.data.model.responseModel.VenueDetailsResponse
 import com.android.pos.data.remote.Constants
 import com.android.pos.databinding.FragmentReportEodBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.adapter.*
 import com.android.pos.ui.fragments.loginscreen.ClockInOwnerViewModel
-import com.android.pos.utils.*
+import com.android.pos.utils.AlertUtils
+import com.android.pos.utils.EventObserver
+import com.android.pos.utils.MethodUtils
+import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.extensions.*
 import com.android.pos.utils.statusUtils.Status
 import com.google.android.material.snackbar.Snackbar
@@ -66,7 +68,10 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
     private val paymentDetailsAdapter by lazy { PaymentDetailsAdapter(hideRefund = false) }
     private val otherDetailsAdapter by lazy { SalesReportAdapter() }
     private val serviceChargeDetailsAdapter by lazy { ServiceChargeDetailsAdapter() }
+    private val employeeGuestDetailsAdapter by lazy { EmployeeGuestDetailsAdapter() }
+    private val creditTipAuditAdapter by lazy { CreditTipAuditAdapter() }
     private val tipDetailsAdapter by lazy { PaymentDetailsAdapter(hideRefund = false) }
+    private val saleCategorySummaryAdapter by lazy { SalesCategorySummaryAdapter() }
 
 
     private val salesOrderDetailsAdapter by lazy { SalesOrderDetailsAdapter() }
@@ -211,6 +216,7 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
             val timecalender = Calendar.getInstance()
             timecalender.set(Calendar.HOUR_OF_DAY, hour)
             timecalender.set(Calendar.MINUTE, minute)
+
             viewModel.endDate.value = timeCalculateForStartEndTime(hour, minute, "isend")
             if (differnceTrue(viewModel.endDate.value!!, viewModel.startDate.value) <= 30) {
                 viewModel.getReportSummary("")
@@ -246,7 +252,7 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
             TimePickerDialog(
                 requireActivity(),
                 android.R.style.Theme_Material_Light_Dialog,
-                startTime,
+                endTime,
                 myCalendar2.get(Calendar.HOUR),
                 myCalendar2.get(Calendar.MINUTE),
                 false
@@ -329,6 +335,7 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
         } else {
             startDatestring = sdf.format(myCalendar1.time)
         }
+        Log.e("CheckDate","startingDate   $startDatestring $timestring")
         return "$startDatestring $timestring"
     }
 
@@ -352,6 +359,9 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
         binding.rvCashLog.adapter = cashLogAdapter
         binding.rvCreditCardBreakDown.adapter = creditCardBreakdownAdapter
         binding.rvSalesDetails.adapter = salesOrderDetailsAdapter
+        binding.rvCreditAuditTip.adapter = creditTipAuditAdapter
+        binding.rvemployeeGuestDetails.adapter = employeeGuestDetailsAdapter
+        binding.rvSaleCategorySummary?.adapter = saleCategorySummaryAdapter
     }
 
     private fun initObservers() {
@@ -491,6 +501,35 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
                     visible = it.serviceChargeDetails.isNotEmpty()
                 )
                 serviceChargeDetailsAdapter.add(it.serviceChargeDetails)
+
+
+                showHide(
+                    rvMedia = binding.rvemployeeGuestDetails,
+                    textView = binding.txtemployeeGuestDetails,
+                    headerView = null,
+                    visible = it.employeeGuestDetails.isNotEmpty()
+                )
+                if (it.employeeGuestDetails.isNotEmpty())
+                    employeeGuestDetailsAdapter.add(it.employeeGuestDetails[0])
+
+
+                showHide(
+                    rvMedia = binding.rvCreditAuditTip,
+                    textView = binding.txtCreditAuditTip,
+                    headerView = null,
+                    visible = it.creditTipAudit.isNotEmpty()
+                )
+                creditTipAuditAdapter.add(it.creditTipAudit)
+
+                showHide(
+                    rvMedia = binding.rvSaleCategorySummary,
+                    textView = binding.txtSaleCategorySummary,
+                    headerView = null,
+                    visible = it.salesPerCategorySummary.isNotEmpty()
+                )
+                saleCategorySummaryAdapter.add(it.salesPerCategorySummary)
+                saleCategorySummaryAdapter.notifyDataSetChanged()
+
 
 
                 showHide(
@@ -691,6 +730,26 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
                     )
                 }
 
+                shiftReportsSettingModel?.creditTipAudit?.let { it1 ->
+                    showHide(
+                        binding.rvCreditAuditTip, binding.txtCreditAuditTip, null,
+                        it1
+                    )
+                }
+                shiftReportsSettingModel?.cashCreditPerSalesCategorySummary?.let { it1 ->
+                    showHide(
+                        binding.rvSaleCategorySummary, binding.txtSaleCategorySummary, null,
+                        it1
+                    )
+                }
+
+                shiftReportsSettingModel?.employeeGuestReport?.let { it1 ->
+                    showHide(
+                        binding.rvemployeeGuestDetails, binding.txtemployeeGuestDetails, null,
+                        it1
+                    )
+                }
+
 
             }
         })
@@ -767,6 +826,7 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
                             }
 
                             val roleName = teamEmployeeListGlobal.map { it.name }
+
 
                             setUpEmployeeSpinnerAdapter(
                                 roleName as ArrayList<String>,
