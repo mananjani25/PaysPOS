@@ -47,6 +47,7 @@ import com.android.pos.data.typeconvert.*
     TCPrinterCategories::class,
     TCDineInList::class,
     TCLoyaltyPrograms::class,
+    TCBusiness::class
 )
 
 

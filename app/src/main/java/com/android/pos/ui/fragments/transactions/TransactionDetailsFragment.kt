@@ -188,7 +188,7 @@ class TransactionDetailsFragment : Fragment() {
 
                 paymentDetailsResponse = it
 
-                if (paymentDetailsResponse.data.order.order_split_type == "OrderAmountTab") {
+                if (paymentDetailsResponse.data.order.order_split_type == "OrderAmountTab" || paymentDetailsResponse.data.order.order_split_type == "OrderGuestTab") {
                     isSplitPayment = true
                 }
 
@@ -994,6 +994,7 @@ class TransactionDetailsFragment : Fragment() {
 
 
             if (paymentDetailsResponse.data?.cash_discount_or_surcharge != null) {
+
                 builder.addTextLineSpace(30)
                 builder.addFeedUnit(30)
                 builder.addTextFont(Builder.FONT_E)
@@ -1007,27 +1008,47 @@ class TransactionDetailsFragment : Fragment() {
                     Builder.COLOR_1
                 )
 
-                builder.addText(
-                    padLine(
-                        "Cash Discount",
-                        if (paymentDetailsResponse.data.cash_discount_or_surcharge != 0.0) {
-                            "-$" + MethodUtils.roundOffAmountString(paymentDetailsResponse.data?.cash_discount_or_surcharge)
-                        } else {
-                            "$" + MethodUtils.roundOffAmountString(paymentDetailsResponse.data.order?.cash_discount_or_surcharge)
-                        },
-                        if (customerSettingModel.fonts == Constants.LARGE) {
-                            24
-                        } else {
-                            48
-                        }
+                if (paymentDetailsResponse?.data?.payment_type.lowercase() == "Card".lowercase()) {
+                    builder.addText(
+                        padLine(
+                            "SurCharge",
+                            if (paymentDetailsResponse.data.cash_discount_or_surcharge != 0.0) {
+                                "$" + MethodUtils.roundOffAmountString(paymentDetailsResponse.data?.cash_discount_or_surcharge)
+                            } else {
+                                "$" + MethodUtils.roundOffAmountString(paymentDetailsResponse.data.order?.cash_discount_or_surcharge)
+                            },
+                            if (customerSettingModel.fonts == Constants.LARGE) {
+                                24
+                            } else {
+                                48
+                            }
+                        )
                     )
-                )
+
+                } else {
+
+                    builder.addText(
+                        padLine(
+                            "Cash Discount",
+                            if (paymentDetailsResponse.data.cash_discount_or_surcharge != 0.0) {
+                                "-$" + MethodUtils.roundOffAmountString(paymentDetailsResponse.data?.cash_discount_or_surcharge)
+                            } else {
+                                "$" + MethodUtils.roundOffAmountString(paymentDetailsResponse.data.order?.cash_discount_or_surcharge)
+                            },
+                            if (customerSettingModel.fonts == Constants.LARGE) {
+                                24
+                            } else {
+                                48
+                            }
+                        )
+                    )
+                }
             }
 
 
-            if (paymentDetailsResponse?.data?.is_loyalty_applied == true){
+            if (paymentDetailsResponse?.data?.is_loyalty_applied == true) {
 
-                if (paymentDetailsResponse?.data?.loyalty_amount != 0.0){
+                if (paymentDetailsResponse?.data?.loyalty_amount != 0.0) {
                     builder.addTextLineSpace(30)
                     builder.addFeedUnit(30)
                     builder.addTextFont(Builder.FONT_E)
@@ -1046,7 +1067,8 @@ class TransactionDetailsFragment : Fragment() {
                             "Used Loyalty Amount",
                             "-$" + paymentDetailsResponse.data?.loyalty_amount?.let {
                                 MethodUtils.roundOffAmountString(
-                                    it.toDouble())
+                                    it.toDouble()
+                                )
                             },
                             if (customerSettingModel.fonts == Constants.LARGE) {
                                 24
@@ -1057,7 +1079,7 @@ class TransactionDetailsFragment : Fragment() {
                     )
                 }
 
-                if (paymentDetailsResponse?.data?.used_reward_points != 0){
+                if (paymentDetailsResponse?.data?.used_reward_points != 0) {
                     builder.addTextLineSpace(30)
                     builder.addFeedUnit(30)
                     builder.addTextFont(Builder.FONT_E)
@@ -1235,10 +1257,11 @@ class TransactionDetailsFragment : Fragment() {
                 }
             }
 
-
+            builder.addFeedLine(1)
 
             builder.addTextLineSpace(30)
             builder.addFeedUnit(30)
+
             builder.addTextFont(Builder.FONT_E)
             // builder.addTextAlign(Builder.ALIGN_LEFT)
             builder.addTextLang(Builder.LANG_EN)
@@ -1250,10 +1273,12 @@ class TransactionDetailsFragment : Fragment() {
                 Builder.COLOR_1
             )
 
+
+
             builder.addText(
                 padLine(
-                    "Transaction Type",
-                    "Cash",
+                    "Transaction ID",
+                    ""+paymentDetailsResponse.data.id,
                     if (customerSettingModel.fonts == Constants.LARGE) {
                         24
                     } else {
@@ -1261,6 +1286,112 @@ class TransactionDetailsFragment : Fragment() {
                     }
                 )
             )
+
+
+
+            if (paymentDetailsResponse.data.payment_type.lowercase() == "Card".lowercase()) {
+                builder.addTextLineSpace(30)
+                builder.addFeedUnit(30)
+                builder.addTextFont(Builder.FONT_E)
+                // builder.addTextAlign(Builder.ALIGN_LEFT)
+                builder.addTextLang(Builder.LANG_EN)
+                addCustomerTextSize(builder, customerSettingModel.fonts)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.TRUE,
+                    Builder.COLOR_1
+                )
+
+                builder.addText(
+                    padLine(
+                        "",
+                        paymentDetailsResponse.data.card_name,
+                        if (customerSettingModel.fonts == Constants.LARGE) {
+                            24
+                        } else {
+                            48
+                        }
+                    )
+                )
+
+                builder.addTextLineSpace(30)
+                builder.addFeedUnit(30)
+                builder.addTextFont(Builder.FONT_E)
+                // builder.addTextAlign(Builder.ALIGN_LEFT)
+                builder.addTextLang(Builder.LANG_EN)
+                addCustomerTextSize(builder, customerSettingModel.fonts)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.TRUE,
+                    Builder.COLOR_1
+                )
+
+                builder.addText(
+                    padLine(
+                        "",
+                        paymentDetailsResponse.data.card_type,
+                        if (customerSettingModel.fonts == Constants.LARGE) {
+                            24
+                        } else {
+                            48
+                        }
+                    )
+                )
+                builder.addTextLineSpace(30)
+                builder.addFeedUnit(30)
+                builder.addTextFont(Builder.FONT_E)
+                // builder.addTextAlign(Builder.ALIGN_LEFT)
+                builder.addTextLang(Builder.LANG_EN)
+                addCustomerTextSize(builder, customerSettingModel.fonts)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.TRUE,
+                    Builder.COLOR_1
+                )
+
+                builder.addText(
+                    padLine(
+                        "",
+                        paymentDetailsResponse.data.card_number,
+                        if (customerSettingModel.fonts == Constants.LARGE) {
+                            24
+                        } else {
+                            48
+                        }
+                    )
+                )
+
+            } else {
+
+
+                builder.addTextLineSpace(30)
+                builder.addFeedUnit(30)
+                builder.addTextFont(Builder.FONT_E)
+                // builder.addTextAlign(Builder.ALIGN_LEFT)
+                builder.addTextLang(Builder.LANG_EN)
+                addCustomerTextSize(builder, customerSettingModel.fonts)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.TRUE,
+                    Builder.COLOR_1
+                )
+
+                builder.addText(
+                    padLine(
+                        "Transaction Type",
+                        "Cash",
+                        if (customerSettingModel.fonts == Constants.LARGE) {
+                            24
+                        } else {
+                            48
+                        }
+                    )
+                )
+            }
             if (customerSettingModel.showCustomerAddress or customerSettingModel.showCustomerPhone or customerSettingModel.showCustomerName) {
 
 

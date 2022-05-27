@@ -11,7 +11,7 @@ import kotlinx.parcelize.Parcelize
 class TbBusinessDetails {
 
 
-    @PrimaryKey(autoGenerate = true)
+    @PrimaryKey
     @SerializedName("id")
     var id: Int = 0
 
@@ -40,7 +40,8 @@ class TbBusinessDetails {
     @SerializedName("customer_contact_email")
     var customer_contact_email: String? = null
 
-    @Embedded
-    var businessAddress: BusinessAddress? = null
+
+    @SerializedName("address_attributes")
+    var businessAddress : List<BusinessAddress> = emptyList()
 }
 

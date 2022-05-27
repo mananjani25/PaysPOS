@@ -10,6 +10,7 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.data.model.requestModel.RefundRequestModel
+import com.android.pos.data.model.responseModel.PrinterResponse
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.REFUND1
 import com.android.pos.databinding.DialogRefundReasonBinding
@@ -21,6 +22,10 @@ import com.android.pos.ui.fragments.transactions.TransactionDetailsViewModel
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.extensions.liveSnackBar
+import com.android.pos.utils.printer.PrinterClass
+import com.android.pos.utils.statusUtils.Status
+import com.epson.eposprint.Builder
+import com.epson.eposprint.Print
 import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
 import com.google.gson.JsonArray
@@ -35,6 +40,7 @@ import javax.inject.Inject
 class ReasonForRefundDialog : DialogFragment() {
 
 
+    private var customerList: List<PrinterResponse.Data.CustomerReceiptPrinters> = arrayListOf()
     private var paymentType: String = ""
     private var magensa_response_data: String = ""
     private var refundAmount: Double = 0.0
@@ -64,6 +70,7 @@ class ReasonForRefundDialog : DialogFragment() {
         binding.lifecycleOwner = this
         binding.viewModel = viewModel
 
+        getCustomerPrinters()
         dialog?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
         refundData = arguments?.getParcelable("refundData")!!
@@ -297,6 +304,31 @@ class ReasonForRefundDialog : DialogFragment() {
 
     }
 
+    private fun getCustomerPrinters() {
+        viewModel.getCustomerPrinterList().observe(viewLifecycleOwner) {
+            when (it.status) {
+                Status.SUCCESS -> {
+                    ProgressUtils.dismissProgressDialog()
+                    if (it.data != null) {
+                        customerList = it.data
+
+
+                    }
+                }
+                Status.ERROR -> {
+
+                    ProgressUtils.dismissProgressDialog()
+
+                }
+                Status.LOADING -> {
+                    ProgressUtils.showProgressDialog(requireActivity())
+
+                }
+
+            }
+        }
+    }
+
     private fun navigate() {
 
         viewModel.dataRefundDone.observe(viewLifecycleOwner) { event ->
@@ -307,6 +339,81 @@ class ReasonForRefundDialog : DialogFragment() {
                     ) { _, _ ->
                         //  prefProvider.setValueboolean(IS_REFUND, true)
 
+                        customerList.forEach {
+                            PrinterClass.closePrinter()
+                            if (PrinterClass.getPrinter() == null) {
+
+                                var printer: Print? = Print(requireContext())
+                                val enabled = Print.FALSE
+                                try {
+                                    var interval: Int = 1000
+                                    if (it.printer_type == Constants.BLUETOOTH) {
+                                        interval = PrinterClass.BLUETOOTH_TIMEOUT
+                                    }
+                                    printer?.openPrinter(
+
+                                        if (it.printer_type == Constants.BLUETOOTH) {
+                                            Print.DEVTYPE_BLUETOOTH
+                                        } else {
+                                            Print.DEVTYPE_TCP
+                                        },
+                                        it.ipAddress,
+                                        enabled,
+                                        1000
+                                    )
+                                    // printer?.setStatusChangeEventCallback(this)
+
+                                } catch (e: Exception) {
+
+                                    //Log.e(TAG, "PrinterException: " + e.message)
+                                    printer = null
+                                    e.printStackTrace()
+                                }
+
+                                try {
+
+                                    if (printer != null) {
+                                        PrinterClass.setPrinter(printer)
+
+                                        var builder: Builder? = null
+                                        try {
+                                            builder =
+                                                Builder(
+                                                    if (it.name.substring(0, 6)
+                                                            .toString()
+                                                            .lowercase() == "TM-m30".lowercase()
+                                                    ) {
+                                                        "TM-m30"
+                                                    } else {
+                                                        it.name
+                                                    }, PrinterClass.language, requireActivity()
+                                                )
+
+                                            val status = IntArray(1)
+                                            val battery = IntArray(1)
+                                            builder.addPulse(
+                                                com.epson.epos2.printer.Printer.DRAWER_HIGH,
+                                                com.epson.epos2.printer.Printer.PULSE_100
+                                            )
+
+                                            PrinterClass.getPrinter()?.sendData(
+                                                builder,
+                                                PrinterClass.BLUETOOTH_TIMEOUT, status, battery
+                                            )
+                                            PrinterClass.closePrinter()
+
+                                        } catch (e: java.lang.Exception) {
+                                            e.printStackTrace()
+                                        }
+                                    }
+
+                                } catch (e: Exception) {
+
+                                    e.printStackTrace()
+                                }
+
+                            }
+                        }
                         val bundle = Bundle().apply {
                             putInt("orderId", refundData.paymentRefund?.orderId!!)
                             putInt("paymentId", refundData.paymentRefund?.paymentId!!)

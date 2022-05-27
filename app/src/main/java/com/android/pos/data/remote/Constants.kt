@@ -12,6 +12,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 object Constants {
+    val IS_ORDER_LAST_PAYMENT= "is_order_last_payment"
     const val ARG_PARAM1 = "param1"
     const val ARG_PARAM2 = "param2"
     const val ARG_PARAM3 = "param2"
@@ -138,6 +139,8 @@ object Constants {
 
     const val DISCOUNTS_ACTIVE = "discounts/{id}/active"
 
+    const val DINE_IN_UPDATE_LIST = "dine_in_update_list"
+
     const val NOTES = "dynamic_notes"
     const val NOTE_UPDATE_DELETE = "dynamic_notes/{id}"
     const val CUSTOMER_UPDATE = "customers/{id}"
@@ -254,6 +257,9 @@ object Constants {
     const val UPCOMING_ORDER = "upcoming_order"
     const val COMPLETED_ORDER = "completed_order"
     const val CANCELED_ORDER = "canceled_order"
+
+
+    const val BUSINESS_UPDATE = "locations/{id}/update_business_detail"
 
 
     const val UPDATE_TIP = "orders/{id}/update_tip"
@@ -410,7 +416,7 @@ object Constants {
     const val UTC_SERVER_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
 
 
-    fun getReceiptFormatDateFromUTCServer(context:Context,mdate: String): String {
+    fun getReceiptFormatDateFromUTCServer(context: Context, mdate: String): String {
 
         /* val df = SimpleDateFormat(UTC_SERVER_FORMAT, Locale.ENGLISH)
          df.setTimeZone(TimeZone.getTimeZone("UTC"))
@@ -552,6 +558,8 @@ object Constants {
     const val MAGENSA_SETTINGS = "magensaSettings"
     const val MAGENSA_SETTINGS1 = "magensaSettings1"
 
+    const val SHIFT_REPORT_SETTINGS = "shift_report_setting"
+
     const val ELAVON_GATEWAY = "Elavon"
     const val FIRST_DATA_GATEWAY = "Rapid Connect" //(First Data Nashville/Omaha/North)
     const val CHASE_GATEWAY = "Chase" // (Orbital)
@@ -587,8 +595,8 @@ object Constants {
     const val IS_UPDATE_ORDER_FROM_ACTIVE_ORDER = "is_update_order_from_active_order"
     const val IS_UPDATE_ORDER_LOYALTY_APPLIED = "is_update_order_loyalty_applied"
 
-    const val SPLIT_DINEIN_MODEL ="split_dinein_model"
-    const val SPLIT_IS_GUESTPAY ="split_is_guestpay"
+    const val SPLIT_DINEIN_MODEL = "split_dinein_model"
+    const val SPLIT_IS_GUESTPAY = "split_is_guestpay"
     const val SPLIT_DINEIN_CHECKOUT = "split_dinein_checkout"
 
 }

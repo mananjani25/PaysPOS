@@ -1,6 +1,7 @@
 package com.android.pos.data.remote
 
 import android.util.Log
+import com.android.pos.data.entities.TbBusinessDetails
 import com.android.pos.data.entities.VariationsAttribute
 import com.android.pos.data.model.requestModel.*
 import com.android.pos.utils.FileUtils.getContentType
@@ -187,6 +188,9 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
 
     suspend fun updateCustomer(id: Int, data: CreateCustomerRequestModel) =
         getResult { apiService.updateCustomer(id, data) }
+
+    suspend fun updateBusiness(id: Int, data: TbBusinessDetails) =
+        getResult { apiService.updateBusiness(id, data) }
 
     suspend fun updateEmployee(taxId: Int, data: CreateEmployeeRequestModel) =
         getResult { apiService.updateEmployee(taxId, data) }

@@ -343,7 +343,10 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                 val result = bundle.getParcelable<TbCustomer>("data")
                 if (result != null) {
                     Log.e(TAG, "assignResult:  ${Gson().toJson(result)}")
-                    val dineInList = cartList.get(0).dineInList
+                    if (cartList.isEmpty()){
+                        cartList = bundle.getParcelableArrayList<CartModel>("cartList") as ArrayList<CartModel>
+                    }
+                    val dineInList = cartList[0].dineInList
                     Log.e(TAG, "getdineInListSize:  ${dineInList?.size}")
 
                     if (dineInList?.isNotEmpty() == true) {
@@ -1050,18 +1053,19 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                                 createOrderResponse.data.order.orderItems.forEachIndexed { index, orderItem ->
 
                                     if (itemIds.contains(orderItem.id)) {
-                                        if (arrayItems[index].quantity != orderItem.quantity) {
-                                            if (orderItem.quantity > arrayItems[index].quantity) {
-                                                orderItem.quantity =
-                                                    orderItem.quantity - arrayItems[index].quantity
-                                                if (!printOrderItems.contains(orderItem)) {
-                                                    printOrderItems.add(orderItem)
+                                        if (index < arrayItems.size) {
+                                            if (arrayItems[index].quantity != orderItem.quantity) {
+                                                if (orderItem.quantity > arrayItems[index].quantity) {
+                                                    orderItem.quantity =
+                                                        orderItem.quantity - arrayItems[index].quantity
+                                                    if (!printOrderItems.contains(orderItem)) {
+                                                        printOrderItems.add(orderItem)
+                                                    }
                                                 }
+                                            } else {
                                             }
-
-                                        } else {
-
                                         }
+
 
                                     } else {
                                         printOrderItems.add(orderItem)

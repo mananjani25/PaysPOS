@@ -1,6 +1,7 @@
 package com.android.pos.data.remote
 
 
+import com.android.pos.data.entities.TbBusinessDetails
 import com.android.pos.data.entities.VariationsAttribute
 import com.android.pos.data.model.CustomerListResponse
 import com.android.pos.data.model.CustomerSearchList
@@ -14,6 +15,7 @@ import com.android.pos.data.model.responseModel.item.ItemsResponse
 import com.android.pos.data.model.responseModel.orderhistory.OrderHistoryResponse
 import com.android.pos.data.model.responseModel.report.ReportSummaryResponse
 import com.android.pos.data.remote.Constants.ACCEPTED_DECLINE_ONLINEORDER
+import com.android.pos.data.remote.Constants.BUSINESS_UPDATE
 import com.android.pos.data.remote.Constants.CASH_EVENTS
 import com.android.pos.data.remote.Constants.CATEGORY
 import com.android.pos.data.remote.Constants.CATEGORY_UPDATE_DELETE
@@ -434,6 +436,13 @@ interface ApiService {
         @Body createCustomerRequestModel: CreateCustomerRequestModel
     ): CreateCustomerReponse
 
+
+    @PUT(BUSINESS_UPDATE)
+    suspend fun updateBusiness(
+        @Path("id") id: Int,
+        @Body createCustomerRequestModel: TbBusinessDetails
+    ): BusinessResponse
+
     @DELETE(CATEGORY_UPDATE_DELETE)
     suspend fun deleteCategoryCall(
         @Path("id") noteId: Int,
@@ -627,8 +636,8 @@ interface ApiService {
         @Query("finalrewards") finalrewards: Int,
     ): CustomerAssignedResponse
 
-    /* @GET(OPEN_ORDERS)
-     suspend fun getOpenOrders(@Query("payment_status") payment_status: LinkedHashMap<String, String>): OpenOrderResponse*/
+   /* @GET(OPEN_ORDERS)
+    suspend fun getOpenOrders(@Query("payment_status") payment_status: LinkedHashMap<String, String>): OpenOrderResponse*/
 
     /*@GET(OPEN_ORDERS)
     suspend fun getOpenOrders(@Query("payment_status") payment_status: String): OpenOrderResponse*/

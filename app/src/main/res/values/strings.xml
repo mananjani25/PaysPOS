@@ -347,7 +347,7 @@
     <string name="first_name_validate">Please enter First Name</string>
     <string name="last_name_validate">Please enter Last Name</string>
     <string name="phone_no_validate">Please enter Mobile Number</string>
-    <string name="valid_phone_no_validate">Please enter valid Mobile Number</string>
+    <string name="valid_phone_no_validate">Please enter valid mobile number</string>
 
     <string name="modifier_empty_validation">Please enter Modifier Name</string>
     <string name="amount_empty_validation">Please enter Item Price</string>
@@ -742,7 +742,7 @@
     <string name="send_receipt">Send Receipt</string>
     <string name="please_choos_a_role">Please choose a Role</string>
     <string name="please_enter_passcode">Please enter passcode</string>
-    <string name="character_String">qwertzuiopasdfghjklyxcvbnm,QWERTZUIOPASDFGHJKLYXCVBNM</string>
+    <string name="character_String">qwertzuiopasdfghjklyxcvbnmQWERTZUIOPASDFGHJKLYXCVBNM</string>
     <string name="rename">Rename</string>
     <string name="last_name_teammember">Last Name<font color='#E90C0C'>*</font></string>
     <string name="email_address_teammember">Email Address<font color='#E90C0C'>*</font></string>
