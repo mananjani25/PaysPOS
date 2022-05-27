@@ -169,9 +169,9 @@ class CreateLoyaltyFragment : Fragment() {
         if (isChecked) {
             binding.cbPercentageValue?.text = getString(R.string.percentage_value)
             viewModel.loyaltyPointType = getString(R.string.percentage_symbol)
-            binding.editLoyaltyAmount?.setText("")
             binding.tvSymbolPer.visibility = View.VISIBLE
-            val maxLength = 3
+            binding.editLoyaltyAmount?.setText("")
+            val maxLength = 4
             val FilterArray: Array<InputFilter?> = arrayOfNulls<InputFilter>(1)
             FilterArray[0] = InputFilter.LengthFilter(maxLength)
             binding.editLoyaltyAmount?.filters = FilterArray
@@ -179,10 +179,10 @@ class CreateLoyaltyFragment : Fragment() {
         } else {
             binding.swtFixedValue.text = getString(R.string.fixed_value)
             viewModel.loyaltyPointType = getString(R.string.dollar_symbol)
-            binding.editLoyaltyAmount?.setText("")
             binding.tvSymbolDollar.visibility = View.VISIBLE
             binding.tvSymbolPer.visibility = View.GONE
-            val maxLength = 10
+            binding.editLoyaltyAmount?.setText("")
+            val maxLength = 7
             val FilterArray: Array<InputFilter?> = arrayOfNulls<InputFilter>(1)
             FilterArray[0] = InputFilter.LengthFilter(maxLength)
             binding.editLoyaltyAmount?.filters = FilterArray

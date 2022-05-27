@@ -2,6 +2,8 @@ package com.android.pos.ui.fragments.settings.discount
 
 import android.os.Bundle
 import android.text.Editable
+import android.text.InputFilter
+
 import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
@@ -64,7 +66,7 @@ class CreateDiscount : Fragment() {
                 binding.tvSymbolDollar.visibility = View.GONE
             } else {
                 binding.swtDiscountType.isChecked = false
-                binding.swtDiscountType.text = getString(R.string.disc_amount)
+                binding.swtDiscountType.text = getString(R.string.dollar_amount)
                 binding.tvSymbolDollar.visibility = View.VISIBLE
                 binding.tvSymbolPer.visibility = View.GONE
             }
@@ -78,6 +80,30 @@ class CreateDiscount : Fragment() {
         observeShowProgress()
         addTextChangeListner()
         navigate()
+        binding.edtDiscount.addTextChangedListener(object :TextWatcher{
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+                try {
+                    var amount = s.toString()
+                    if(viewModel.discountTypeViewModel == getString(R.string.disc_percentage)){
+                        if (amount.toInt() > 100) {
+                            binding.edtDiscount!!.setText("100")
+                        }
+                    }
+
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
+            }
+
+        })
 
         val callback: OnBackPressedCallback =
             object : OnBackPressedCallback(true /* enabled by default */) {
@@ -154,6 +180,11 @@ class CreateDiscount : Fragment() {
             viewModel.discountType(getString(R.string.disc_percentage))
             binding.tvSymbolPer.visibility = View.VISIBLE
             binding.tvSymbolDollar.visibility = View.GONE
+            binding.edtDiscount?.setText("")
+            val maxLength = 4
+            val FilterArray: Array<InputFilter?> = arrayOfNulls<InputFilter>(1)
+            FilterArray[0] = InputFilter.LengthFilter(maxLength)
+            binding.edtDiscount?.filters = FilterArray
 
             if (binding.edtDiscount.text.toString()
                     .isNotEmpty() && binding.edtDiscount.text.toString().toDouble() > 100
@@ -161,11 +192,17 @@ class CreateDiscount : Fragment() {
                 binding.edtDiscount.setText("100")
                 binding.edtDiscount.setSelection(binding.edtDiscount.length())
             }
+
         } else {
             binding.swtDiscountType.text = "Dollar"
             viewModel.discountType(getString(R.string.disc_amount))
             binding.tvSymbolDollar.visibility = View.VISIBLE
             binding.tvSymbolPer.visibility = View.GONE
+            binding.edtDiscount?.setText("")
+            val maxLength = 6
+            val FilterArray: Array<InputFilter?> = arrayOfNulls<InputFilter>(1)
+            FilterArray[0] = InputFilter.LengthFilter(maxLength)
+            binding.edtDiscount?.filters = FilterArray
         }
     }
 
