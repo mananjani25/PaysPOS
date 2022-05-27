@@ -60,7 +60,6 @@ import com.android.pos.ui.adapter.SplitListAdapter
 import com.android.pos.utils.*
 import com.android.pos.utils.extensions.gone
 import com.android.pos.utils.extensions.liveSnackBar
-import com.android.pos.utils.extensions.runOnUiThread
 import com.android.pos.utils.extensions.visible
 import com.android.pos.utils.printer.PrinterClass
 import com.android.pos.utils.printer.PrinterClass.BLUETOOTH_TIMEOUT
@@ -1967,7 +1966,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 builder.addText(
                     padLine(
                         "Transaction ID",
-                        ""+ getDineInOrderDetails?.payments?.size?.minus(1)?.let {
+                        "" + getDineInOrderDetails?.payments?.size?.minus(1)?.let {
                             getDineInOrderDetails?.payments?.get(
                                 it
                             )?.id
@@ -3145,7 +3144,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 builder.addText(
                     padLine(
                         "Transaction ID",
-                        ""+getDineInOrderDetails?.payments?.size?.minus(1)
+                        "" + getDineInOrderDetails?.payments?.size?.minus(1)
                             ?.let { getDineInOrderDetails?.payments?.get(it)?.id },
                         if (customerSettingModel.fonts == Constants.LARGE) {
                             24
@@ -3508,34 +3507,42 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                         kitchenPrinterList = it.data
                         val remain = requireArguments().getDouble("remainingAmount")
-                        Log.e(TAG, "remainAMount  ${remain}")
+                        if (requireArguments().getBoolean("isDineIn")) {
+                            Log.e(TAG, "IsDineIn True: ")
+                            customerPrintWholeOrder()
 
-                        Log.e(TAG, "getSplit  ${requireArguments().getBoolean("isSpilt")}")
+                        } else {
+                            getCustomerPrinters(true)
+                        }
+
+
                         if (!requireArguments().getBoolean("isSpilt") && receiptModel?.order?.orderType?.lowercase() != "OpenOrder".lowercase()) {
                             if (!requireArguments().getBoolean("isDineIn") && !requireArguments().getBoolean(
                                     "isFromActiveOrder"
                                 )
                             ) {
-                                for (i in 0 until kitchenPrinterList.size) {
-                                    kitchenPrinterList[i].orderTypes.forEach {
+                                if (kitchenPrinterList.isNotEmpty()) {
+                                    for (i in 0 until kitchenPrinterList.size) {
+                                        kitchenPrinterList[i].orderTypes.forEach {
 
-                                        if (it.orderTypeId == receiptModel?.order?.orderTypeId
+                                            if (it.orderTypeId == receiptModel?.order?.orderTypeId
 
-                                        ) {
+                                            ) {
 
-                                            it.printerSettings.forEach {
-                                                if (it.printType.lowercase()
-                                                        .equals(KITCHEN.lowercase()) && it.autoPrinting
-                                                ) {
-                                                    Log.e("OrderCom", "PrinterStarted")
-                                                    initKitchenPrinter(
-                                                        kitchenPrinterList.get(i),
-                                                        KITCHEN
-                                                    )
+                                                it.printerSettings.forEach {
+                                                    if (it.printType.lowercase()
+                                                            .equals(KITCHEN.lowercase()) && it.autoPrinting
+                                                    ) {
+                                                        Log.e("OrderCom", "PrinterStarted")
+                                                        initKitchenPrinter(
+                                                            kitchenPrinterList.get(i),
+                                                            KITCHEN
+                                                        )
 
+                                                    }
                                                 }
-                                            }
 
+                                            }
                                         }
                                     }
                                 }
@@ -3546,13 +3553,6 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
 
                         pd.dismiss()
-                        if (requireArguments().getBoolean("isDineIn")) {
-                            Log.e(TAG, "IsDineIn True: ")
-                            customerPrintWholeOrder()
-
-                        } else {
-                            getCustomerPrinters(true)
-                        }
 
 
                     }
@@ -3616,10 +3616,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                             if (it.printType.lowercase()
                                                     .equals(CUSTOMER.lowercase()) && it.autoPrinting
                                             ) {
-                                                runOnUiThread {
 
-                                                    initPrinter(cus, CUSTOMER)
-                                                }
+
+                                                initPrinter(cus, CUSTOMER)
 
 
                                             }
