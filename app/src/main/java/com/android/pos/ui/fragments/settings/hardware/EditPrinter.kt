@@ -65,7 +65,8 @@ class EditPrinter : Fragment() {
     }
 
     private fun setUpHeader() {
-        binding.header.txtTitle.text=getString(R.string.edit_printers)
+        binding.header.txtTitle.text = getString(R.string.edit_printers)
+        binding.header.txtSave.text = "Save"
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -91,10 +92,10 @@ class EditPrinter : Fragment() {
     private fun setSpinnnerAdapter() {
         binding.spnPrinterCat.adapter = arrayAdapter
         list.forEachIndexed { index, s ->
-            Log.e(TAG,"gotIndexNAme ${s.lowercase()}")
-            Log.e(TAG,"gotIndexNAmeType ${printerModel?.type?.lowercase()}")
+            Log.e(TAG, "gotIndexNAme ${s.lowercase()}")
+            Log.e(TAG, "gotIndexNAmeType ${printerModel?.type?.lowercase()}")
             if (s.lowercase() == printerModel?.type?.lowercase()) {
-                Log.e(TAG,"gotindex:  $index")
+                Log.e(TAG, "gotindex:  $index")
                 binding.spnPrinterCat.setSelection(index)
             }
         }
@@ -259,14 +260,21 @@ class EditPrinter : Fragment() {
             findNavController().popBackStack()
         }
         binding.header.txtSave.setOnClickListener {
-            Log.e(TAG,"gettype:  ${type}")
-            Log.e(TAG,"getPrinertype:  ${printerModel?.type}")
+            Log.e(TAG, "gettype:  ${type}")
+            Log.e(TAG, "getPrinertype:  ${printerModel?.type}")
 
             if (type != printerModel?.type) {
                 var tempList = adapter.getList()
 
 
-                Log.e(TAG,"getDefaultModel ${Gson().toJson(printerModel?.printerModel?.toCollection(arrayListOf()))}")
+                Log.e(
+                    TAG,
+                    "getDefaultModel ${
+                        Gson().toJson(
+                            printerModel?.printerModel?.toCollection(arrayListOf())
+                        )
+                    }"
+                )
                 val model = createRequestModelForUpdatePritnerType(
                     printerModel?.printerModel?.toCollection(arrayListOf()),
                     tempList,
@@ -280,7 +288,6 @@ class EditPrinter : Fragment() {
                 viewModel.updatePrinter(
                     printerModel?.id!!, model
                 )
-
 
 
             } else {
