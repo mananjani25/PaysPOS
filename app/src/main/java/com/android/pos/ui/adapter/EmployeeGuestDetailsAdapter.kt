@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.data.model.responseModel.report.KeyValue
 import com.android.pos.databinding.ViewEmployeeGuestDetailsBinding
 import com.android.pos.databinding.ViewSalesReportBinding
+import com.android.pos.utils.MethodUtils
 
 class EmployeeGuestDetailsAdapter :
     RecyclerView.Adapter<EmployeeGuestDetailsAdapter.MyViewHolder>() {
@@ -19,7 +20,17 @@ class EmployeeGuestDetailsAdapter :
         @SuppressLint("SetTextI18n")
         fun bind(keyValue: KeyValue) {
             binding.txtPaymentId.text = keyValue.key
-            binding.txtLast4.text = keyValue.value
+            if (keyValue.key.equals("Average Spent Per Guest",ignoreCase = true)){
+                if (keyValue.value?.isNotEmpty() == true) {
+                    binding.txtLast4.text = keyValue.value.toDouble()
+                        .let { MethodUtils.roundOffAmount(it) }
+                }else{
+                    binding.txtLast4.text = MethodUtils.roundOffAmount(0.00)
+                }
+            }else{
+                binding.txtLast4.text = keyValue.value
+            }
+
             binding.executePendingBindings()
         }
     }

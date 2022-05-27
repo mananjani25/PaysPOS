@@ -152,27 +152,22 @@
 
 
                             <androidx.appcompat.widget.AppCompatEditText
-                                android:id="@+id/edtPercentageServiceCharge"
+                                android:id="@+id/edit_percentage"
                                 style="@style/CustomFontSemiBold"
-                                android:layout_width="wrap_content"
+                                android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:background="@null"
-                                android:digits="@string/disable_emoji_string"
-                                android:hint="0.00"
+                                android:digits="0123456789."
+                                android:hint="0.00%"
                                 android:imeOptions="actionNext"
+                                android:maxLength="6"
                                 android:inputType="textVisiblePassword"
                                 android:paddingVertical="@dimen/_9sdp"
                                 android:paddingLeft="@dimen/_9sdp"
-                                android:text="@{String.format(@string/format,viewModel.createServiceChargeDetails.percentage)}"
                                 android:textColor="@color/txtColor"
                                 android:textColorHint="@color/hintColor"
                                 android:textSize="@dimen/_7mdpi"
                                 />
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text=" %"
-                                android:textSize="@dimen/_7mdpi" />
 
 
 

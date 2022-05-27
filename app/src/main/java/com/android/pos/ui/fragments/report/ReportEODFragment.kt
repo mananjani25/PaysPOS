@@ -19,13 +19,15 @@ import androidx.viewbinding.ViewBinding
 import com.android.pos.R
 import com.android.pos.data.entities.Employee
 import com.android.pos.data.model.ShiftRportConfiguration
-import com.android.pos.data.model.responseModel.VenueDetailsResponse
 import com.android.pos.data.remote.Constants
 import com.android.pos.databinding.FragmentReportEodBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.adapter.*
 import com.android.pos.ui.fragments.loginscreen.ClockInOwnerViewModel
-import com.android.pos.utils.*
+import com.android.pos.utils.AlertUtils
+import com.android.pos.utils.EventObserver
+import com.android.pos.utils.MethodUtils
+import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.extensions.*
 import com.android.pos.utils.statusUtils.Status
 import com.google.android.material.snackbar.Snackbar
@@ -214,6 +216,7 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
             val timecalender = Calendar.getInstance()
             timecalender.set(Calendar.HOUR_OF_DAY, hour)
             timecalender.set(Calendar.MINUTE, minute)
+
             viewModel.endDate.value = timeCalculateForStartEndTime(hour, minute, "isend")
             if (differnceTrue(viewModel.endDate.value!!, viewModel.startDate.value) <= 30) {
                 viewModel.getReportSummary("")
@@ -249,7 +252,7 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
             TimePickerDialog(
                 requireActivity(),
                 android.R.style.Theme_Material_Light_Dialog,
-                startTime,
+                endTime,
                 myCalendar2.get(Calendar.HOUR),
                 myCalendar2.get(Calendar.MINUTE),
                 false
@@ -332,6 +335,7 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
         } else {
             startDatestring = sdf.format(myCalendar1.time)
         }
+        Log.e("CheckDate","startingDate   $startDatestring $timestring")
         return "$startDatestring $timestring"
     }
 

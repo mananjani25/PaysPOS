@@ -135,10 +135,12 @@ class DineInFragment : Fragment() {
             findNavController().popBackStack()
         }
         binding.layoutHeader.imgDrawer.setOnClickListener {
-            findNavController().navigate(
-                R.id.action_dineInFragment_to_menuFragment
+            if (findNavController()?.currentDestination?.id == R.id.dineInFragment) {
+                findNavController().navigate(
+                    R.id.action_dineInFragment_to_menuFragment
 
-            )
+                )
+            }
 
         }
 
