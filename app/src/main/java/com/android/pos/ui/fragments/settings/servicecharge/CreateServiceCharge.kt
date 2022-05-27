@@ -83,6 +83,7 @@ class CreateServiceCharge : Fragment() {
                 if(s.toString().isNotEmpty()){
                     if(s.toString().toDouble()>100){
                         binding.editPercentage?.setText("100")
+                        binding.editPercentage.setSelection(binding.editPercentage.length())
                     }
                 }
             }
