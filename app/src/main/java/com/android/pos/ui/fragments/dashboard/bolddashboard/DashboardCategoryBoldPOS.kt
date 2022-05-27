@@ -483,7 +483,9 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
             }
         }
         binding.layoutHeader.txtOnlineOrder?.setOnClickListener {
-            findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_onlineOrderFragment)
+            if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
+                findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_onlineOrderFragment)
+            }
         }
 
         binding.layoutHeader.linearSwitchUser.setOnClickListener {
