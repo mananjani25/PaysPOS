@@ -95,6 +95,7 @@ class CreateDiscount : Fragment() {
                     if(viewModel.discountTypeViewModel == getString(R.string.disc_percentage)){
                         if (amount.toInt() > 100) {
                             binding.edtDiscount!!.setText("100")
+                            binding.edtDiscount.setSelection(binding.edtDiscount.length())
                         }
                     }
 
