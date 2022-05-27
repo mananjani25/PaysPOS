@@ -182,7 +182,7 @@ class CreateLoyaltyFragment : Fragment() {
             binding.tvSymbolDollar.visibility = View.VISIBLE
             binding.tvSymbolPer.visibility = View.GONE
             binding.editLoyaltyAmount?.setText("")
-            val maxLength = 10
+            val maxLength = 7
             val FilterArray: Array<InputFilter?> = arrayOfNulls<InputFilter>(1)
             FilterArray[0] = InputFilter.LengthFilter(maxLength)
             binding.editLoyaltyAmount?.filters = FilterArray

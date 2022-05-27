@@ -24,6 +24,8 @@
             android:id="@+id/header"
             layout="@layout/view_header_toolbar" />
 
+
+
         <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -123,7 +125,6 @@
                                 android:visibility="gone"/>
 
                             <androidx.appcompat.widget.AppCompatEditText
-                                android:id="@+id/edtPercentageServiceCharge"
                                 style="@style/CustomFontSemiBold"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
@@ -168,12 +169,6 @@
                                 android:textSize="@dimen/_7mdpi"
                                 />
 
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text=" %"
-                                android:textSize="@dimen/_7mdpi"
-                                />
 
 
                         </androidx.appcompat.widget.LinearLayoutCompat>
@@ -190,7 +185,5 @@
 
 
     </androidx.appcompat.widget.LinearLayoutCompat>
-
-
 
 </layout>
