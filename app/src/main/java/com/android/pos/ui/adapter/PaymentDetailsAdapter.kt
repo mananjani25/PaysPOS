@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.android.pos.R
 import com.android.pos.data.model.responseModel.report.KeyValue
 import com.android.pos.databinding.ViewPaymentDetailsBinding
 import com.android.pos.utils.extensions.gone
@@ -19,14 +20,22 @@ class PaymentDetailsAdapter(val hideRefund: Boolean) :
 
         @SuppressLint("SetTextI18n")
         fun bind(keyValueList: ArrayList<KeyValue>) {
+
             if (keyValueList.size == 1) {
                 val obj = keyValueList[0]
                 binding.txtTitle.text = obj.key
                 binding.txtPrice.text = obj.showData()
+                if (obj.key.toString().toLowerCase().contains("Refund".toLowerCase())) {
+                    binding.txtPrice.setTextColor(binding.root.resources.getColor(R.color.colorRed))
+                }
             } else if (keyValueList.size == 2) {
                 val obj = keyValueList[0]
                 binding.txtTitle.text = obj.key
                 binding.txtPrice.text = obj.showData()
+                if (obj.key.toString().toLowerCase().contains("Refund".toLowerCase())) {
+                    binding.txtPrice.setTextColor(binding.root.resources.getColor(R.color.colorRed))
+                }
+
 
                 if (hideRefund) {
                     binding.txtRefund.gone()

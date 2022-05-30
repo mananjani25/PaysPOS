@@ -19,6 +19,7 @@
             android:id="@+id/txtRefund"
             style="@style/ReportItemText"
             android:gravity="end"
+            android:textColor="@color/colorRed"
             tools:text="Refund" />
 
         <androidx.appcompat.widget.AppCompatTextView
