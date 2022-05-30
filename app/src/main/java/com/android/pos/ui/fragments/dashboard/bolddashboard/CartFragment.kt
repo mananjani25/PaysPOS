@@ -5,6 +5,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.RelativeLayout
 import androidx.appcompat.widget.PopupMenu
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
@@ -200,7 +201,11 @@ class CartFragment(
     private fun setUpData() {
         if (isFromPayment) {
             binding.linearButtonView.visibility = View.GONE
-            binding.imgOrderMenu.visibility = View.INVISIBLE
+            binding.imgOrderMenu.visibility = View.GONE
+            val params: RelativeLayout.LayoutParams =
+                binding.txtAddCustomer.layoutParams as RelativeLayout.LayoutParams
+            params.addRule(RelativeLayout.ALIGN_PARENT_END)
+            binding.txtAddCustomer.layoutParams = params
             binding.imgOrderMenu.isEnabled = false
             binding.imgOrderMenu.isClickable = false
         }
