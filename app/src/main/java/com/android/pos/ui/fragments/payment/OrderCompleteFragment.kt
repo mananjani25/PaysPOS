@@ -4541,17 +4541,15 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 Builder.COLOR_1
             )
 
-            var newPaidAmount = paidAmount + tipAmount
-            /* if (MethodUtils.roundOffAmountDouble(paidAmount + tipAmount) == MethodUtils.roundOffAmountDouble(
-                     receiptModel?.order?.totalAmount?.toDouble() ?: 0.0
-                 )
+            var newPaidAmount = paidAmount
+             if (MethodUtils.roundOffAmountDouble(paidAmount + tipAmount) == MethodUtils.roundOffAmountDouble((receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size?.minus(1) ?: 0)?.amount ?: 0.0).plus((receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size?.minus(1) ?: 0)?.tips ?: 0.0))   ?: 0.0)
              ) {
                  newPaidAmount = paidAmount + tipAmount
              }
 
              if (isSpilt) {
                  newPaidAmount = paidAmount + tipAmount
-             }*/
+             }
             Log.e("ToCheck", "PaidAmount ${newPaidAmount}")
 
             builder.addText(
