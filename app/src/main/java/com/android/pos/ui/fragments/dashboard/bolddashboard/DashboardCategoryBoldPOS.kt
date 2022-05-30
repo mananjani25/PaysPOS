@@ -17,6 +17,8 @@ import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.data.entities.*
 import com.android.pos.data.model.DineInModel
+import com.android.pos.data.model.requestModel.CreateQueuePrinterRequestModel
+import com.android.pos.data.model.requestModel.OrderAttributeRequestModel
 import com.android.pos.data.model.responseModel.*
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.DINE_IN
@@ -103,7 +105,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
         addObserver()
         getServiceCharges()
         resultListener()
-
+        observeQueueCreate()
         dineInUpdateOrder()
         navigateDineInOrder()
         getLoyaltyPrograms()
@@ -1518,4 +1520,47 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
         }
     }
 
+    private fun observeQueueCreate() {
+        viewModelPayment.queueStartSaveOrder.observe(viewLifecycleOwner) { event ->
+            event.getContentIfNotHandled()?.let {
+                createQueuePrinter(it)
+            }
+        }
+    }
+    private fun createQueuePrinter(createOrder: CreateOrderResponse) {
+        val listPrinter: List<Int> = listOf()
+        if (cartList.isNotEmpty()) {
+            val orderRequest = cartList?.let {
+
+                viewModelPayment.createOrderRequest(
+                    it[0],
+                    viewModel.subTotalPrice,
+                    viewModel.totalPrice,
+                    viewModel.totalServiceCharge,
+                    viewModel.totalTax,
+                    prefProvider.getValue(Constants.ORDER_TYPE, "").toString(),
+                    "",
+                    "",
+                    false,
+                    viewModel.totalDiscount,
+                    0.0,
+                    0,
+                    null,
+                    0.0,
+                    false,
+                    "Cash", cashDiscountType
+                )
+            }
+            val createRequest = CreateQueuePrinterRequestModel(
+                location_id = prefProvider.getValueInt(Constants.LOCATION_ID, 0),
+                order_type = prefProvider.getValue(ORDER_TYPE, ""),
+                printer_id = listPrinter,
+                order_item_attributes = orderRequest?.order?.orderItemsAttributes ?: listOf(),
+                order_data = orderRequest?.order ?: OrderAttributeRequestModel(),
+                terminal_id = prefProvider.getValueInt(Constants.TERMINAL_ID, 0)
+
+            )
+            viewModelPayment.createQueuePrinter(createRequest, createOrder)
+        }
+    }
 }

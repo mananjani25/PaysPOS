@@ -137,7 +137,7 @@ open class PaymentViewModel @Inject constructor(
                                 }
 
                                 Log.e(TAG, "isOnlySave:  ${onlySave}")
-
+                                _queueStartSaveOrder.value = Event(createOrderResponse)
                                 if (onlySave) {
                                     _queueStart.value = Event(createOrderResponse)
 

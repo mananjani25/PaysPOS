@@ -40,7 +40,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
     private var printerQueuelist: ArrayList<PrinterQueueModel> = arrayListOf()
     private var kitchenPrinterList: List<PrinterResponse.Data.KitchenReceiptPrinters> = listOf()
     private var kitchenSettingModel = GetKitchenReceiptSettingsResponse.Data()
-    private var mContext:Context= context
+    private var mContext: Context = context
     override fun doWork(): Result {
 
         locationId = inputData.getInt("location_id", 0)
@@ -111,9 +111,9 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
     private fun connectActionCable() {
         // 1. Setup
         var requestURL =
-           baseUrl + Constants.CREATE_QUEUE_PRINTER
+            baseUrl + Constants.CREATE_QUEUE_PRINTER
         Log.e(TAG, "requestURL:  ${requestURL}")
-        val uri = URI("wss://possoft.io/cable")
+        val uri = URI("wss://boldpos.site/cable")
         consumer = ActionCable.createConsumer(uri)
 
         // 2. Create subscription
@@ -132,7 +132,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                 Log.e(TAG, "onActiononRejected")
                 subscription = consumer?.subscriptions?.create(appearanceChannel)
                 val params = JsonObject()
-                params.addProperty("id",locationId)
+                params.addProperty("id", locationId)
                 subscription?.perform("received", params)
             }?.onReceived {
                 Log.e(TAG, "onActiononReceived  " + Gson().toJson(it))
@@ -294,6 +294,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
         index: Int
     ) {
 
+        PrinterClass.setPrinter(null)
 
         var printer: Print? = Print(mContext)
         /*  if (printer != null) {
@@ -302,7 +303,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
               printer.setStatusChangeEventCallback(this)
           }*/
 
-        val enabled = Print.TRUE
+        val enabled = Print.FALSE
 
         try {
             printer?.openPrinter(
@@ -638,7 +639,9 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
 
                 printerQueueModel.id?.let {
                     val params = JsonObject()
-                    params.addProperty("printer_queue_id", it)
+                    var deleteUrl = baseUrl + Constants.CREATE_QUEUE_PRINTER + "/" + it
+                    Log.e(TAG, "DeleteUrl ${deleteUrl}")
+                    params.addProperty("url", deleteUrl)
                     subscription?.perform("delete_order", params)
 
                     /* viewModel.deleteQueuePrinter(
