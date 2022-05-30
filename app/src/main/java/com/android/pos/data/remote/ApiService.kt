@@ -661,8 +661,9 @@ interface ApiService {
     suspend fun setAcceptedAndDeclineOrders(
         @Path("id") id: Int,
         @Query("is_accepted") is_accepted: Boolean,
-        @Query("preparation_tim") preparation_time: Int,
-        @Query("employee_id") employee_id: Int
+        @Query("preparation_time") preparation_time: Int,
+        @Query("employee_id") employee_id: Int,
+        @Query("terminal_id") terminalid: Int
     ): BaseResponse
 
 

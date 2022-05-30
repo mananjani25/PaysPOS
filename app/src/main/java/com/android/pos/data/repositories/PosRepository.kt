@@ -795,14 +795,16 @@ class PosRepository @Inject constructor(
         time: Int,
         order_id: Int,
         isaccepted: Boolean,
-        employee_id: Int
+        employee_id: Int,
+        terminalid:Int
     ): LiveData<Resource<BaseResponse>> =
         performGetOperationNew(networkCall = {
             apiHelperNew.setAcceptedAndDeclineorder(
                 time,
                 order_id,
                 isaccepted,
-                employee_id
+                employee_id,
+                terminalid
             )
         })
 
