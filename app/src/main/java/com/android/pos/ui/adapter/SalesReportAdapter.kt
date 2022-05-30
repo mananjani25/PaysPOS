@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.android.pos.R
 import com.android.pos.data.model.responseModel.report.KeyValue
 import com.android.pos.databinding.ViewSalesReportBinding
 
@@ -19,6 +20,9 @@ class SalesReportAdapter :
         fun bind(keyValue: KeyValue) {
             binding.keyValue = keyValue
             binding.executePendingBindings()
+            if (keyValue.key.toString().toLowerCase().contains("Refund".toLowerCase())) {
+                binding.txtValue.setTextColor(binding.root.resources.getColor(R.color.colorRed))
+            }
         }
     }
 

@@ -44,6 +44,11 @@ data class KeyValue(
             key?.trim().equals("Refund Tax by Cash") -> {
                 showFormattedValueMinus()
             }
+
+            key?.trim().equals("Tips Refunded") -> {
+                showFormattedValueMinus()
+            }
+
             key?.trim().equals("Refunds") -> {
                 showFormattedValueMinus()
             }

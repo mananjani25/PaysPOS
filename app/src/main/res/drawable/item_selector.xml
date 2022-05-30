@@ -3,7 +3,7 @@
 
     <item android:drawable="@color/btnColorDark" android:state_pressed="true" />
     <item android:drawable="@color/btnColorDark" android:state_focused="true" />
-    <item android:drawable="@color/btnColorDark" android:state_selected="true" />
+
     <item android:drawable="@color/drawerItemSelected" />
 
 </selector>

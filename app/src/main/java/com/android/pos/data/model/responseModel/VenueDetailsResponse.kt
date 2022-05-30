@@ -26,7 +26,7 @@ data class VenueDetailsResponse(
         @SerializedName("cancel_order_reasons")
         val cancelOrderReasons: List<CancelOrderReason>,
         @SerializedName("customer_contact_email")
-        val customerContactEmail: String,
+        val customerContactEmail: String?,
         @SerializedName("daily_report_sending_time")
         val dailyReportSendingTime: String,
         @SerializedName("dynamic_payment_records")
@@ -42,13 +42,13 @@ data class VenueDetailsResponse(
         @SerializedName("phone_number")
         val phoneNumber: String,
         @SerializedName("phone_number_1_country")
-        val phone_number_1_country: String,
+        val phone_number_1_country: String?,
         @SerializedName("phone_number_2_country")
-        val phone_number_2_country: String,
+        val phone_number_2_country: String?,
         @SerializedName("phone_number_2")
-        val phoneNumber2: String,
+        val phoneNumber2: String?,
         @SerializedName("business_time_zone")
-        val business_time_zone: String,
+        val business_time_zone: String?,
         @SerializedName("address")
         val address: String,
         @SerializedName("start_time_for_report_summary")
