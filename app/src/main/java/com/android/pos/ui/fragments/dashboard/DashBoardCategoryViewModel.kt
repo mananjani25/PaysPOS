@@ -2553,11 +2553,11 @@ class DashBoardCategoryViewModel @Inject constructor(
                                     business_name = it.data.businessName
                                     business_website = it.data.businessWebsite
                                     phone_number = it.data.phoneNumber
-                                    phone_number_1_country = it.data.phone_number_1_country
-                                    phone_number_2_country = it.data.phone_number_2_country
-                                    phone_number_2 = it.data.phoneNumber2
-                                    time_zone = it.data.business_time_zone
-                                    customer_contact_email = it.data.customerContactEmail
+                                    phone_number_1_country = it.data.phone_number_1_country.toString()
+                                    phone_number_2_country = it.data.phone_number_2_country.toString()
+                                    phone_number_2 = it.data.phoneNumber2.toString()
+                                    time_zone = it.data.business_time_zone.toString()
+                                    customer_contact_email = it.data.customerContactEmail.toString()
                                     businessAddress = listOf(it.data.business_address)
                                 })
 
