@@ -43,6 +43,7 @@
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/txtRefunds"
             style="@style/ReportItemText"
+            android:textColor="@color/colorRed"
             android:text="@{emp.showRefunds()}"
             tools:text="Refunds" />
 

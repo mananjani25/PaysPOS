@@ -177,12 +177,12 @@
 
             <ImageView
                 android:id="@+id/ivLock"
-                android:layout_width="@dimen/_10sdp"
-                android:layout_height="@dimen/_12sdp"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 android:layout_gravity="center"
-                android:layout_marginEnd="@dimen/_5sdp"
+
                 android:background="?attr/selectableItemBackground"
-                android:padding="@dimen/_2sdp"
+                android:paddingHorizontal="@dimen/_8sdp"
                 android:src="@drawable/ic_lock"
                 app:tint="@color/txtColor" />
 

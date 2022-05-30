@@ -26,6 +26,7 @@ import com.android.pos.databinding.DailogAddDiscountBinding
 import com.android.pos.databinding.DailogAddVariablePriceBinding
 import com.android.pos.ui.adapter.DialogDiscountListAdapter
 import com.android.pos.ui.fragments.settings.discount.DiscountListViewModel
+import com.android.pos.utils.AmountTextWatcher
 import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.extensions.setNavigationResult
 import com.google.gson.Gson
@@ -34,7 +35,7 @@ import java.text.NumberFormat
 import java.util.*
 
 @AndroidEntryPoint
-class AddVariablePriceDialog : DialogFragment(), TextWatcher {
+class AddVariablePriceDialog : DialogFragment() {
 
     private lateinit var binding: DailogAddVariablePriceBinding
     private var variationAttribute: VariationsAttribute? = null
@@ -60,10 +61,7 @@ class AddVariablePriceDialog : DialogFragment(), TextWatcher {
         } else {
             binding.edtAmount.setText("")
         }
-
-
-        binding.edtAmount.addTextChangedListener(this)
-
+        binding.edtAmount.addTextChangedListener(AmountTextWatcher(binding.edtAmount, false))
         binding.txtSave.setOnClickListener {
             if (TextUtils.isEmpty(binding.edtAmount.text.toString())) {
                 //   variationAttribute?.price = null
@@ -101,19 +99,16 @@ class AddVariablePriceDialog : DialogFragment(), TextWatcher {
         binding.llKeypad.txt10.setOnClickListener {
             val price = binding.llKeypad.txt10.text.toString().trim()
                 .substring(0, binding.llKeypad.txt10.text.toString().length - 1).toDouble()
-            binding.edtAmount.removeTextChangedListener(this)
             binding.edtAmount.setText(MethodUtils.roundOffAmountString(price))
         }
         binding.llKeypad.txt20.setOnClickListener {
             val price = binding.llKeypad.txt20.text.toString().trim()
                 .substring(0, binding.llKeypad.txt20.text.toString().length - 1).toDouble()
-            binding.edtAmount.removeTextChangedListener(this)
             binding.edtAmount.setText(MethodUtils.roundOffAmountString(price))
         }
         binding.llKeypad.txt30.setOnClickListener {
             val price = binding.llKeypad.txt30.text.toString().trim()
                 .substring(0, binding.llKeypad.txt30.text.toString().length - 1).toDouble()
-            binding.edtAmount.removeTextChangedListener(this)
             binding.edtAmount.setText(MethodUtils.roundOffAmountString(price))
         }
     }
@@ -208,45 +203,6 @@ class AddVariablePriceDialog : DialogFragment(), TextWatcher {
 
     private fun removeLastCharacter(str: String): String {
         return str.substring(0, str.length - 1)
-    }
-
-    override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-
-    }
-
-    var current = ""
-    override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-
-        if (s.toString() != current) {
-            binding.edtAmount.removeTextChangedListener(this)
-
-
-            val cleanString: String = s!!.replace("""[$,.%]""".toRegex(), "")
-
-
-            val parsed = cleanString.toDouble()
-
-            val formatted = NumberFormat.getCurrencyInstance(Locale.US).format((parsed / 100))
-
-
-            current = formatted
-
-            binding.edtAmount.setText(formatted.replace("""[$,%]""".toRegex(), ""))
-            binding.edtAmount.setSelection(formatted.replace("""[$,%]""".toRegex(), "").length)
-
-            /*if (variationAttribute?.price != null) {
-                binding.edtAmount.setText(MethodUtils.roundOffAmountString(variationAttribute?.price!!))
-
-            } else {
-                binding.edtAmount.setText("0.00")
-            }*/
-
-            binding.edtAmount.addTextChangedListener(this)
-        }
-    }
-
-    override fun afterTextChanged(s: Editable?) {
-
     }
 
 }
