@@ -149,7 +149,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
     //created By Zeeshaan
     private fun setUpToolbar() {
         binding.layoutHeader.txtKeypad.setTextColor(requireContext().resources.getColor(R.color.btnColor))
-        binding.layoutHeader.txtHome.visibility = View.VISIBLE
+        binding.layoutHeader.linearHomeHeader?.visibility = View.VISIBLE
         binding.layoutHeader.txtTransaction.setOnClickListener {
             if (rolePermission.hasTransactionPermission(binding.root)) {
                 findNavController().navigate(R.id.action_manualSalesNew_to_transactionFragment)
