@@ -4,6 +4,7 @@ package com.android.pos.data.model.responseModel
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.android.pos.data.entities.*
+import com.android.pos.data.model.ShiftRportConfiguration
 import com.google.gson.annotations.SerializedName
 
 data class VenueDetailsResponse(
@@ -81,7 +82,8 @@ data class VenueDetailsResponse(
         @SerializedName("magensa_settings")
         val magensaSettings: List<MagensaSettings>,
         @SerializedName("shift_report_configuration")
-        val shift_report_configuration: EODShiftReport?
+        val shift_report_configuration: ShiftRportConfiguration
+
 
     ) {
         data class Printer(
