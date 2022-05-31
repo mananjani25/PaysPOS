@@ -93,7 +93,7 @@ class ReasonForRefundDialog : DialogFragment() {
 
         binding.txtDone.setOnClickListener {
             if (refundAmount != 0.0 || refundAmount > 0.0) {
-                if (paymentType == "Card") {
+                if (paymentType == "Card 1") {
 
                     val model = Gson().fromJson(
                         magensa_response_data,

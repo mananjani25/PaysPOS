@@ -34,6 +34,7 @@ open class PaymentViewModel @Inject constructor(
     private val prefProvider: PrefProvider
 ) : ViewModel() {
 
+    private var cardNumberLast4: String = ""
     private val TAG = "PaymentViewModel"
     var isUpdateOrder: Boolean = false
     private var onlySave: Boolean = false
@@ -1557,6 +1558,17 @@ open class PaymentViewModel @Inject constructor(
                 }
 
 
+                if (model.transactionOutput?.transactionOutputDetails?.isNotEmpty() == true) {
+                    var CardType = ""
+                    model.transactionOutput.transactionOutputDetails.forEach {
+                        if (it.key == "CardType") {
+                            CardType = it.value
+                        }
+                    }
+
+                    cardName = CardType
+                    cardNumber = if (cardNumberLast4.isNotEmpty() )cardNumberLast4.takeLast(4) else ""
+                }
 
 
                 transactionId = model.transactionOutput?.transactionID.toString()
@@ -1746,9 +1758,10 @@ open class PaymentViewModel @Inject constructor(
 
     }
 
-    fun setMagensaResponse(response: String?) {
+    fun setMagensaResponse(response: String?, cardNumber1: String) {
 
         magensaResponse = response
+        cardNumberLast4 = cardNumber1
 
     }
 
