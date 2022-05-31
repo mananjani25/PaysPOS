@@ -14,6 +14,7 @@ import com.android.pos.data.entities.*
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.DELETE
 import com.android.pos.data.remote.Constants.DINE_IN
+import com.android.pos.data.remote.Constants.DINE_IN_UPDATE
 import com.android.pos.data.remote.Constants.DINE_IN_SERVICECHARGE
 import com.android.pos.data.remote.Constants.ORDER_TYPE
 import com.android.pos.data.remote.Constants.SERVICECHARGE_DINEIN_ORDER
@@ -21,7 +22,6 @@ import com.android.pos.data.remote.Constants.SERVICECHARGE_TAKEOUT_OPENORDER
 import com.android.pos.data.remote.Constants.TAKEOUT
 import com.android.pos.data.remote.Constants.TERMINAL_ID
 import com.android.pos.databinding.FragmentAddItemBinding
-
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.adapter.ItemModifierSetAdapter
 import com.android.pos.ui.adapter.VariationDashboardListAdapter
@@ -152,11 +152,20 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
 
     private fun onClick() {
         binding.imgMinus.setOnClickListener {
+            /* if (prefProvider.getValueboolean(DINE_IN_UPDATE, false) == true && item.isFired) {
+                 if (qty > item.itemQuantity) {
+                     qty -= 1
+                 } else {
+                     qty = qty
+                 }
+             } */
+
             if (qty == 1) {
                 qty = 1
             } else {
                 qty -= 1
             }
+
 
             binding.txtQuantity.setText("" + qty)
 
@@ -382,7 +391,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
             makeItemEdited(item)
 
             if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == DINE_IN) {
-
+                    Log.e(TAG,"isEditedisEdited  ${item.isEdited}")
                 cartList[0].dineInList?.let { it1 ->
                     viewModel.cartLogic(
                         cartList, item, DELETE, false,
@@ -602,7 +611,11 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
         if (isUpdateItem) {
             qty = item.itemQuantity
             binding.txtQuantity.text = "" + qty
-            binding.txtRemoveItem.visibility = View.VISIBLE
+            if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == DINE_IN && item.isFired) {
+                binding.txtRemoveItem.visibility = View.GONE
+            } else {
+                binding.txtRemoveItem.visibility = View.VISIBLE
+            }
             binding.txtDone.text = "Update"
 
 
@@ -845,6 +858,8 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
         Log.e(TAG, "isOrderUpdateOpen:  ${Gson().toJson(viewModel.openOrderUpdate)}")
         if (viewModel.openOrderUpdate == true) {
             //for open order and edit cart
+            item.isEdited = true
+        } else if (isUpdateItem && prefProvider.getValueboolean(DINE_IN_UPDATE, false) && item.orderItemId != null && item.orderItemId != 0) {
             item.isEdited = true
         }
     }

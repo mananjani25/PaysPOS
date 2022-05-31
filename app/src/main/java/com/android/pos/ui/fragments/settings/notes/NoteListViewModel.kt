@@ -4,6 +4,8 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.android.pos.data.db.AppDatabase
+import com.android.pos.data.entities.TbItem
 import com.android.pos.data.model.responseModel.BaseResponse
 import com.android.pos.data.model.responseModel.CreateNoteResponse
 import com.android.pos.data.model.responseModel.NoteResponse
@@ -13,10 +15,12 @@ import com.android.pos.utils.statusUtils.Status
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.collections.ArrayList
 
 @HiltViewModel
 class NoteListViewModel @Inject constructor(
-    private val posRepository: PosRepository
+    private val posRepository: PosRepository,
+    private val appDatabase: AppDatabase
 ) : ViewModel() {
 
     private val _snackbarText = MutableLiveData<Event<Any?>>()
@@ -24,6 +28,9 @@ class NoteListViewModel @Inject constructor(
 
     private val _data = MutableLiveData<Event<CreateNoteResponse?>>()
     val data: LiveData<Event<CreateNoteResponse?>> = _data
+
+    private val _data1 = MutableLiveData<Event<BaseResponse?>>()
+    val data1: LiveData<Event<BaseResponse?>> = _data1
 
     private val _showProgress = MutableLiveData<Event<Boolean>>()
     val showProgress: LiveData<Event<Boolean>> = _showProgress
@@ -115,6 +122,52 @@ class NoteListViewModel @Inject constructor(
                 Status.LOADING -> {
                     _showProgress.value = Event(true)
                 }
+            }
+        }
+    }
+
+    fun reOrderItem(itemId: Int, oldPos: Int, newPos: Int) {
+        _showProgress.value = Event(true)
+
+        viewModelScope.launch {
+
+            val resource = posRepository.reOrderNote(itemId, oldPos, newPos)
+            when (resource.status) {
+                Status.SUCCESS -> {
+
+                    _showProgress.value = Event(false)
+
+                    resource.data.let {
+                        if (it?.status == 200) {
+                            resource.data?.let { baseResponse ->
+                                _data1.value = Event(baseResponse)
+                            }
+                        } else {
+                            _snackbarText.value = Event(resource.message)
+                        }
+
+                    }
+
+
+                }
+
+                Status.ERROR -> {
+                    _snackbarText.value = Event(resource.message)
+                    _showProgress.value = Event(false)
+                }
+
+                Status.LOADING -> {
+                    _showProgress.value = Event(true)
+                }
+            }
+        }
+    }
+
+    fun reOrder(allItems: ArrayList<NoteResponse.Data>) {
+
+        if (allItems.isNotEmpty()) {
+            viewModelScope.launch {
+                appDatabase.notesDao().addAllNotes(allItems)
             }
         }
     }

@@ -40,7 +40,7 @@ class CreateNoteViewModel @Inject constructor(
     val showProgress: LiveData<Event<Boolean>> = _showProgress
 
     private var taxId: Int = -1
-
+    private var isActive :Boolean  =false
     private var isEdit: Boolean = false
 
     private lateinit var noteData: CreateNoteRequest

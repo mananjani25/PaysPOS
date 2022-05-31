@@ -19,8 +19,6 @@
         <include
             android:id="@+id/layout_header"
             layout="@layout/layout_header_bold_pos"
-            app:layout_constraintEnd_toStartOf="@+id/linearMenu"
-            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"/>
 
         <include

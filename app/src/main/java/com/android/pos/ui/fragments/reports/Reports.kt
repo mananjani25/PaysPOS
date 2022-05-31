@@ -9,9 +9,8 @@ import androidx.fragment.app.FragmentManager
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.databinding.FragmentReportsBinding
-import com.android.pos.ui.activities.MainActivity
-import com.android.pos.ui.fragments.report.ReportSummaryFragment
 import com.android.pos.di.RolePermission
+import com.android.pos.ui.fragments.report.ReportSummaryFragment
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -37,8 +36,8 @@ class Reports : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         configureToolbar()
 
-        selectedPosition(0)
-        val frag: Fragment = CurrentDrawer()
+        selectedPosition(1)
+        val frag: Fragment = ReportSummaryFragment()
         loadFragment(frag)
 
         onClick()
@@ -47,11 +46,11 @@ class Reports : Fragment() {
 
 
     private fun onClick() {
-        binding.txtCurrentDrawer.setOnClickListener {
+     /*   binding.txtCurrentDrawer.setOnClickListener {
             selectedPosition(0)
             val frag: Fragment = CurrentDrawer()
             loadFragment(frag)
-        }
+        }*/
         binding.txtSales.setOnClickListener {
             if (rolePermission.hasReportSummaryPermission(binding.root)) {
                 selectedPosition(1)
@@ -84,7 +83,7 @@ class Reports : Fragment() {
     fun selectedPosition(position: Int) {
         when (position) {
             0 -> {
-                binding.commonToolbar.txtSubTitle.setText("Current Drawer")
+              /*  binding.commonToolbar.txtSubTitle.setText("Current Drawer")
                 binding.txtCurrentDrawer.setTextColor(requireContext().resources.getColor(R.color.white))
                 binding.txtCurrentDrawer.background=requireContext().resources.getDrawable(R.drawable.button_action_hover)
 
@@ -92,14 +91,14 @@ class Reports : Fragment() {
                 binding.txtSales.setBackgroundColor(requireContext().resources.getColor(R.color.bg_color))
 
                 binding.txtShiftReport.setTextColor(requireContext().resources.getColor(R.color.txtColor))
-                binding.txtShiftReport.setBackgroundColor(requireContext().resources.getColor(R.color.bg_color))
+                binding.txtShiftReport.setBackgroundColor(requireContext().resources.getColor(R.color.bg_color))*/
             }
             1 -> {
 
                 binding.commonToolbar.txtSubTitle.setText("Sales Report")
-                binding.txtCurrentDrawer.setTextColor(requireContext().resources.getColor(R.color.txtColor))
+              /*  binding.txtCurrentDrawer.setTextColor(requireContext().resources.getColor(R.color.txtColor))
                 binding.txtCurrentDrawer.setBackgroundColor(requireContext().resources.getColor(R.color.bg_color))
-
+*/
                 binding.txtSales.setTextColor(requireContext().resources.getColor(R.color.white))
                 binding.txtSales.background=requireContext().resources.getDrawable(R.drawable.button_action_hover)
 
@@ -110,8 +109,8 @@ class Reports : Fragment() {
             2 -> {
 
                 binding.commonToolbar.txtSubTitle.setText("Shift Report")
-                binding.txtCurrentDrawer.setTextColor(requireContext().resources.getColor(R.color.txtColor))
-                binding.txtCurrentDrawer.setBackgroundColor(requireContext().resources.getColor(R.color.bg_color))
+               /* binding.txtCurrentDrawer.setTextColor(requireContext().resources.getColor(R.color.txtColor))
+                binding.txtCurrentDrawer.setBackgroundColor(requireContext().resources.getColor(R.color.bg_color))*/
 
                 binding.txtSales.setTextColor(requireContext().resources.getColor(R.color.txtColor))
                 binding.txtSales.setBackgroundColor(requireContext().resources.getColor(R.color.bg_color))

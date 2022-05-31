@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.android.pos.R
 import com.android.pos.data.model.responseModel.report.KeyValueWithString
 import com.android.pos.databinding.ViewEmployeeReportNestedBinding
 
@@ -19,6 +20,9 @@ class EmployeeReportNestedAdapter :
         fun bind(keyValue: KeyValueWithString) {
             binding.keyValue = keyValue
             binding.executePendingBindings()
+            if (keyValue.key.toString().toLowerCase().contains("Refund".toLowerCase())) {
+                binding.txtValue.setTextColor(binding.root.resources.getColor(R.color.colorRed))
+            }
         }
     }
 

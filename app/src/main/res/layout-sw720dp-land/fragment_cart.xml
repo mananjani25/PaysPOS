@@ -163,7 +163,7 @@
                 <LinearLayout
                     android:id="@+id/liinear_info_layout"
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/_40sdp"
+                    android:layout_height="@dimen/_50sdp"
                     android:orientation="horizontal"
                     android:weightSum="2">
 
@@ -277,6 +277,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="@dimen/_1sdp"
+                            android:layout_marginBottom="@dimen/_1sdp"
                             android:orientation="horizontal"
                             android:padding="@dimen/_1sdp">
 

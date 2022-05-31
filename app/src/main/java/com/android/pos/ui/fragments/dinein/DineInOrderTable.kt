@@ -41,6 +41,7 @@ import com.android.pos.data.remote.Constants.DINE_IN_SERVICECHARGE
 import com.android.pos.data.remote.Constants.DINE_IN_SUBTOTAL
 import com.android.pos.data.remote.Constants.DINE_IN_TAX
 import com.android.pos.data.remote.Constants.DINE_IN_UPDATE
+import com.android.pos.data.remote.Constants.DINE_IN_UPDATE_LIST
 import com.android.pos.data.remote.Constants.EMPLOYEE_ID
 import com.android.pos.data.remote.Constants.GUEST_POSITION
 import com.android.pos.data.remote.Constants.IS_GUEST_PAYMNET
@@ -64,6 +65,7 @@ import com.epson.eposprint.Builder
 import com.epson.eposprint.Print
 import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
 import dagger.hilt.android.AndroidEntryPoint
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -72,6 +74,7 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
+    private var wholeTableDiscount: Double = 0.0
     private var cashDiscountGlobal: Double = 0.0
     private var customerList: List<PrinterResponse.Data.CustomerReceiptPrinters> = listOf()
     private var toFinalAmt: Double = 0.0
@@ -330,22 +333,26 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         binding.btnPayNew.setOnClickListener {
             //new Calculation for total Discount
             var dividedOrderDiscount = 0.0
+
             if (paidGuestAmount > 0 && globalOrderDiscount > 0.0) {
+                Log.e("globalOrderDiscount", "globalOrderDiscount  ${globalOrderDiscount}")
                 var eachGuestDiscount =
                     MethodUtils.roundOffAmountDouble(globalOrderDiscount / (getOrderDetailsResponse?.guestAttributes?.size!! - 1))
 
-
                 dividedOrderDiscount = globalOrderDiscount - (eachGuestDiscount * paidGuestAmount)
 
+
+                var wholeDisDivide =
+                    MethodUtils.roundOffAmountDouble(wholeTableDiscount / (getOrderDetailsResponse?.guestAttributes?.size!! - 1))
+                dividedOrderDiscount -= wholeDisDivide
+                Log.e("dividedOrderDiscount", "dividedOrderDiscount  ${dividedOrderDiscount}")
+                Log.e("WRqwrfarf", "wholeDisDivide  ${wholeDisDivide}")
             }
-            Log.e("DicountDine", "dividedOrderDiscount  ${dividedOrderDiscount}")
-            Log.e("DicountDine", "paidGuestAmount  ${paidGuestAmount}")
-            Log.e(
-                "DicountDine",
-                "totalGuestCount  ${(getOrderDetailsResponse?.guestAttributes?.size!! - 1)}"
-            )
+
+            Log.e("WholeTableDis", "wholeDis  ${wholeTableDiscount}")
 
 
+            Log.e("totalDiscount", "totalDiscount  ${totalDiscount}")
             if (totalDiscount > dividedOrderDiscount) {
                 totalDiscount -= dividedOrderDiscount
             }
@@ -356,7 +363,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
             cartList = getCartModel(adapterList.toCollection(arrayListOf()))
             cartList?.note = order_note
-            Log.e(TAG, "getcartList  ${Gson().toJson(cartList?.items)}")
+            Log.e(TAG, "getcartList  ${Gson().toJson(cartList)}")
             viewModelPayment.addCart(cartList!!)
 
             totalTax = 0.0
@@ -458,8 +465,9 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 },
                 DineInPaymentUpdateModel()
             )
+            Log.e(TAG, "getPassmodel  ${Gson().toJson(model)}")
             val bundle = Bundle()
-//            viewModelPayment.totalPrice = MethodUtils.roundOffAmountDouble(toFinalAmt)
+//            viewModelPayment.totalPrice = MethodUtils.roundOffAmobtnPayuntDouble(toFinalAmt)
 //            viewModelPayment.subTotalPrice = MethodUtils.roundOffAmountDouble(subTotalDInin)
 //            viewModelPayment.totalTax = MethodUtils.roundOffAmountDouble(finalTaxAmt)
 //            viewModelPayment.cashdiscountAmount =
@@ -477,6 +485,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 "divideCashDiscount",
                 MethodUtils.roundOffAmountDouble(divideCashDiscount)
             )
+            Log.e("DineCheck", "totalDiscount  ${totalDiscount}")
             bundle.putParcelable("floorPlan", floorPlanModel)
             bundle.putDouble("totalServiceCharge", MethodUtils.roundOffAmountDouble(serviceCharge))
             bundle.putDouble("totalDiscount", MethodUtils.roundOffAmountDouble(totalDiscount))
@@ -511,7 +520,6 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             bundle.putInt("orderId", orderId ?: -1)
             bundle.putInt(GUEST_POSITION, 0)
             prefProvider.setValue(Constants.ORDER_TYPE, Constants.DINE_IN)
-            //   orderId?.let { it1 -> prefProvider.setValueInt("ORDER_ID", it1) }
 
             findNavController().navigate(R.id.action_dineInOrderTable_to_checkoutDineIN, bundle)
 
@@ -568,6 +576,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
 
             }
+
+            //   prefProvider.setValue(Constants.DINE_IN_UPDATE_LIST, Gson().toJson(newList))
 
             val bundle = Bundle()
             bundle.putBoolean("is_dine_in_edit", true)
@@ -941,12 +951,19 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         totalGuest: Double,
         taxGuest: Double,
         serviceChargeGuest: Double,
-        divideDiscount: Double,
+        divideDiscount2: Double,
         dividedGuestAmt: Double,
         listItemWT: ArrayList<TbItem>
     ) {
 
         //New Drag and Drop
+
+        var divideDiscount = divideDiscount2
+        Log.e("WholeTabDis", "Fasf  ${wholeTableDiscount}")
+        var dividedWtDis: Double = MethodUtils.roundOffAmountDouble(wholeTableDiscount / (getOrderDetailsResponse?.guestAttributes?.size?.minus(1)!!))
+
+        divideDiscount += dividedWtDis
+        Log.e("saff","afadivideDiscount ${divideDiscount}")
 
         Log.e("TODAYBOLD", "subTotalB  ${subTotalGuest + dividedGuestAmt}")
         Log.e("TODAYBOLD", "totalGuest ${totalGuest}")
@@ -1101,7 +1118,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         Log.e("AAjeChange", "listItemWT:  ${Gson().toJson(listItemWT)}")
         listItemWT.forEach {
             val obj = it
-            wholeNewSubtotal += (obj.price * obj.itemQuantity).toDouble()
+            wholeNewSubtotal += (obj.price * obj.itemQuantity)
 
             if (obj.modifiers.isNotEmpty()) {
                 obj.modifiers.forEach {
@@ -1171,6 +1188,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         Log.e("AajeChange", "WTTaxes  ${WTTaxes}")
         Log.e("AajeChange", "serviceCharge  ${serviceCharge}")
         Log.e("AajeChange", "totalGuestCount  ${totalGuestCount}")
+
         wholeNewSubtotal = MethodUtils.roundOffAmountDouble(wholeNewSubtotal / totalGuestCount)
         WTTaxes = MethodUtils.roundOffAmountDouble(WTTaxes / totalGuestCount)
         serviceCharge = MethodUtils.roundOffAmountDouble(serviceCharge / totalGuestCount)
@@ -1237,7 +1255,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         var wholeEmpty = false
         getOrderDetailsResponse?.guestAttributes?.forEach {
             if (it.name.equals("Whole Table", true)) {
-                if (it.guestItemAttributes.isNotEmpty()) {
+                if (it.guestItemAttributes.isEmpty()) {
                     wholeEmpty = true
 
                 }
@@ -1246,6 +1264,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
         var tempGuestWithItem = 0
         var guestItemWithoutItem = 0
+        Log.e("MainTo", "wholeEmpty:  ${wholeEmpty}")
         if (wholeEmpty) {
             getOrderDetailsResponse?.guestAttributes?.forEach {
                 if (!it.name.equals(
@@ -1263,7 +1282,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
             }
         }
-        if (guestItemWithoutItem > 0 && tempGuestWithItem == 1) {
+        if (wholeEmpty && tempGuestWithItem == 1) {
             isLastPayment = true
             bundle.putBoolean("isLastPayment", true)
         }
@@ -1468,6 +1487,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         viewModel.Basedata.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let { baseResponse ->
                 if (baseResponse != null) {
+                    wholeTableDiscount = 0.0
                     order_note = baseResponse.note
                     globalOrderDiscount = 0.0
                     //Manan's Code
@@ -1727,6 +1747,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                                             .lowercase() == "Whole Table".trim().lowercase()
                                     ) {
 
+                                        wholeTableDiscount += oi.discountAmount
 
                                         if (!oi.isPaid) {
 
@@ -2783,8 +2804,6 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             }
 
         }
-        Log.e(TAG, "originalItem  ${Gson().toJson(listItem)}")
-        Log.e(TAG, "newDineInList:  ${Gson().toJson(newDineInList)}")
         model.orderType = "DineIn"
         model.dineInList = newDineInList
         model.items = listItem
@@ -3404,6 +3423,12 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
         }
 
+        guestDiscount += MethodUtils.roundOffAmountDouble(
+            globalOrderDiscount / (getOrderDetailsResponse?.guestAttributes?.size?.minus(
+                1
+            ) ?: 1)
+        )
+
         if (prefProvider.getValueboolean(SERVICECHARGE_DINEIN_ORDER, false)) {
 
             serviceChargeList.forEach {
@@ -3806,7 +3831,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
             addHorizontalLine(builder)
 
-
+            Log.e(TAG, "listWTitemsItemsGet  ${Gson().toJson(listWTitems)}")
             for (i in 0 until listWTitems.size) {
                 builder.addFeedLine(1)
                 builder.addTextLineSpace(30)
@@ -3821,10 +3846,16 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     Builder.FALSE,
                     Builder.COLOR_1
                 )
+                var guestCount: Int =
+                    (getOrderDetailsResponse?.guestAttributes?.size?.minus(1)) ?: 1
+                if (guestCount < 1) {
+                    guestCount = 1
+                }
+
 
                 addWholeTbItemToGuest(
                     builder, listWTitems.get(i), customerSettingModel.fonts,
-                    customerSettingModel.showModifiers, totalGuestCount, serviceChargeList,prefProvider
+                    customerSettingModel.showModifiers, guestCount, serviceChargeList
                 )
             }
 
@@ -6004,6 +6035,75 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
         }
         Log.e(TAG, "listItem:  ${Gson().toJson(listItem)}")
+        val serializedObject: String =
+            prefProvider.getValue(Constants.DINE_IN_UPDATE_LIST, "")
+        Log.e(TAG, "serializedObjectData:  ${Gson().toJson(serializedObject)}")
+        if (serializedObject.isNotEmpty()) {
+            var printOrderItems:
+                    ArrayList<GetOrderDetailsResponse.Data.OrderItem> =
+                arrayListOf()
+
+            val gson = Gson()
+            val type = object :
+                TypeToken<List<GetOrderDetailsResponse.Data.OrderItem?>?>() {}.type
+            var arrayItems: ArrayList<GetOrderDetailsResponse.Data.OrderItem> =
+                gson.fromJson<Any>(
+                    serializedObject,
+                    type
+                ) as ArrayList<GetOrderDetailsResponse.Data.OrderItem>
+
+            Log.e(TAG, "arrayItems:  ${Gson().toJson(arrayItems)}")
+            var itemIds: ArrayList<Int> = arrayListOf()
+            arrayItems.forEach {
+                itemIds.add(it.id)
+            }
+
+            arrayItems.forEachIndexed { index, orderItem ->
+                if (itemIds.contains(getOrderDetailsResponse?.orderItems?.get(index)?.id)) {
+                    Log.e("InsideLoop", "Inside")
+                    if (getOrderDetailsResponse?.orderItems?.get(index)?.quantity != orderItem.quantity) {
+                        if (getOrderDetailsResponse?.orderItems?.get(index)?.quantity!! > arrayItems[index].quantity) {
+                            getOrderDetailsResponse?.orderItems?.get(index)?.quantity =
+                                getOrderDetailsResponse?.orderItems?.get(index)?.quantity!! - arrayItems[index].quantity
+                            if (!printOrderItems.contains(
+                                    getOrderDetailsResponse?.orderItems?.get(
+                                        index
+                                    )
+                                )
+                            ) {
+                                printOrderItems.add(getOrderDetailsResponse?.orderItems?.get(index)!!)
+                                var tbItem: TbItem = TbItem()
+                                tbItem.name =
+                                    getOrderDetailsResponse?.orderItems?.get(index)?.itemName ?: ""
+                                tbItem.price =
+                                    getOrderDetailsResponse?.orderItems?.get(index)?.price ?: 0.0
+                                tbItem.itemQuantity =
+                                    getOrderDetailsResponse?.orderItems?.get(index)?.quantity ?: 0
+                                if (getOrderDetailsResponse?.orderItems?.get(index)?.orderItemModifiers?.isNotEmpty() == true) {
+                                    var modifierList: ArrayList<Modifier> = arrayListOf()
+                                    getOrderDetailsResponse?.orderItems?.get(index)?.orderItemModifiers?.forEach {
+                                        val modifiers = Modifier()
+                                        modifiers.price = it.price
+                                        modifiers.name = it.name
+                                        modifiers.itemQuantity = it.quantity
+                                        modifierList.add(modifiers)
+                                    }
+                                    tbItem.modifiers = modifierList
+                                }
+
+                                listItem.add(tbItem)
+                            }
+                        }
+
+                    } else {
+
+                    }
+
+                }
+            }
+
+            prefProvider.setValue(DINE_IN_UPDATE_LIST, "")
+        }
 
         if (listItem.isNotEmpty()) {
             var autoPrintEnable = false

@@ -1,7 +1,6 @@
 package com.android.pos.ui.adapter
 
 import android.content.Context
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
@@ -22,12 +21,6 @@ class CategoryItemAdapter1(
             binding.viewModel = item
             binding.executePendingBindings()
             binding.root.setOnClickListener {
-
-                Log.e(
-                    "CategoryItemAdapter1",
-                    list[bindingAdapterPosition]?.discountPrice.toString()
-                )
-
                 list[bindingAdapterPosition]?.let { it1 -> listner.onClick(item = it1) }
             }
         }

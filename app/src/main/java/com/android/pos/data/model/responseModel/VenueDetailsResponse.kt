@@ -4,6 +4,7 @@ package com.android.pos.data.model.responseModel
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.android.pos.data.entities.*
+import com.android.pos.data.model.ShiftRportConfiguration
 import com.google.gson.annotations.SerializedName
 
 data class VenueDetailsResponse(
@@ -57,7 +58,7 @@ data class VenueDetailsResponse(
         @SerializedName("terminals")
         val terminals: List<Terminal>,
         @SerializedName("printers")
-        val printers:Printer,
+        val printers: Printer,
         @SerializedName("tip_settings")
         val tip_settings: List<GetTipReponse.Data>,
         @SerializedName("time_zone")
@@ -84,15 +85,16 @@ data class VenueDetailsResponse(
         val service_charge_enable: Boolean,
         @SerializedName("enable_dine_in_service_charge")
         val enable_dine_in_service_charge: Boolean
+        val magensaSettings: List<MagensaSettings>,
+        @SerializedName("shift_report_configuration")
+        val shift_report_configuration: ShiftRportConfiguration?
 
-    )
-
-    {
+    ) {
         data class Printer(
             @SerializedName("customer_receipt_printers")
-            val customerPrinterList:List<PrinterResponse.Data.CustomerReceiptPrinters>,
+            val customerPrinterList: List<PrinterResponse.Data.CustomerReceiptPrinters>,
             @SerializedName("kitchen_receipt_printers")
-            val kitchenPrinterList:List<PrinterResponse.Data.KitchenReceiptPrinters>
+            val kitchenPrinterList: List<PrinterResponse.Data.KitchenReceiptPrinters>
         )
 
         @Entity(tableName = "TbCancelOrderReason")

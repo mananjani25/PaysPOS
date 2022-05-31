@@ -77,7 +77,9 @@ import com.android.pos.data.remote.Constants.REFUND_PAYMENT
 import com.android.pos.data.remote.Constants.REORDER_CATEGORY
 import com.android.pos.data.remote.Constants.REORDER_ITEM
 import com.android.pos.data.remote.Constants.REORDER_MODIFIER
+import com.android.pos.data.remote.Constants.REORDER_NOTE
 import com.android.pos.data.remote.Constants.REORDER_OPTION_SET
+import com.android.pos.data.remote.Constants.REORDER_TIP
 import com.android.pos.data.remote.Constants.REPORT_EOD_SUMMARY
 import com.android.pos.data.remote.Constants.REPORT_SUMMARY
 import com.android.pos.data.remote.Constants.SERVICE_CHARGE
@@ -489,6 +491,20 @@ interface ApiService {
 
     @PUT(REORDER_ITEM)
     suspend fun reOrderItem(
+        @Path("id") id: Int,
+        @Query("old_position") old_position: Int,
+        @Query("new_position") new_position: Int,
+    ): BaseResponse
+
+    @PUT(REORDER_NOTE)
+    suspend fun reOrderNote(
+        @Path("id") id: Int,
+        @Query("old_position") old_position: Int,
+        @Query("new_position") new_position: Int,
+    ): BaseResponse
+
+    @PUT(REORDER_TIP)
+    suspend fun reOrderTip(
         @Path("id") id: Int,
         @Query("old_position") old_position: Int,
         @Query("new_position") new_position: Int,

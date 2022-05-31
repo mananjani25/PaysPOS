@@ -52,7 +52,7 @@ class CreateTip : Fragment() {
             tipData = arguments?.getParcelable("tipObject")!!
 
             viewModel.setTipData(tipData)
-            binding.edtTip.setText(tipData.rate.toString())
+            binding.edtTip.setText(String.format("%.2f",tipData.rate))
             viewModel.isEditData(isEdit, tipData.id)
         }
 
@@ -76,6 +76,9 @@ class CreateTip : Fragment() {
             }
             viewModel.submit(rate_double)
         }
+
+
+
         binding.edtTip.addTextChangedListener(object :TextWatcher{
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
 

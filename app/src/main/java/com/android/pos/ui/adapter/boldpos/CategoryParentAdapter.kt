@@ -1,6 +1,7 @@
 package com.android.pos.ui.adapter.boldpos
 
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
@@ -14,10 +15,14 @@ class CategoryParentAdapter(
     val listner: CategoryParentListner
 ) : RecyclerView.Adapter<CategoryParentAdapter.MyViewHolder>() {
     private val TAG = "CategoryParentAdapter"
+    private var pos = 0
+    var selectedParentPos: Int = 0
+    var selectedCategoryPos: Int = 0
 
     inner class MyViewHolder(private val binding: ViewParentCategoryBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(model: CategoryParentModel) {
+            Log.e("CartegoryParent", "bindingAdapterPosition  $bindingAdapterPosition")
 
             binding.rvCategory.adapter =
                 CategoryAdapter(
@@ -25,6 +30,9 @@ class CategoryParentAdapter(
                     model.list,
                     object : CategoryTabAdapter1.TabListner {
                         override fun onTabSelected(pos: Int) {
+                            selectedParentPos = bindingAdapterPosition
+                            selectedCategoryPos = pos
+
                             listner.onCategorySelected(bindingAdapterPosition, pos)
                         }
 
@@ -65,6 +73,7 @@ class CategoryParentAdapter(
 
     override fun onBindViewHolder(holder: CategoryParentAdapter.MyViewHolder, position: Int) {
         holder.bind(list.get(position))
+
     }
 
     override fun getItemCount(): Int {
@@ -79,6 +88,7 @@ class CategoryParentAdapter(
 
     interface CategoryParentListner {
         fun onCategorySelected(parentPosition: Int, childPosition: Int)
+        fun onPositionChanged(position: Int)
     }
 
 }

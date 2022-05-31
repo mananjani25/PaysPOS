@@ -1,13 +1,11 @@
 package com.android.pos.ui.fragments.settings.notes
 
-import android.graphics.Color
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.PopupMenu
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -20,7 +18,6 @@ import com.android.pos.databinding.FragmentNotesBinding
 import com.android.pos.ui.adapter.NotesListAdapter
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.ProgressUtils
-import com.android.pos.utils.SwipeHelper
 import com.android.pos.utils.callback.ItemCallback
 import com.android.pos.utils.extensions.alert
 import com.android.pos.utils.extensions.liveSnackBar
@@ -31,7 +28,8 @@ import dagger.hilt.android.AndroidEntryPoint
 import java.util.*
 
 @AndroidEntryPoint
-class Notes : Fragment() ,ItemCallback{
+class Notes : Fragment(), ItemCallback {
+    private var isreOrder: Boolean = false
     private lateinit var binding: FragmentNotesBinding
 
     private lateinit var noteListadapter: NotesListAdapter
@@ -73,88 +71,84 @@ class Notes : Fragment() ,ItemCallback{
         binding.rvNoteLise.adapter = noteListadapter
         noteListadapter.setCallback(this)
 
+        val touchHelper = ItemTouchHelper(object :
+            ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP + ItemTouchHelper.DOWN, 0) {
 
-/*
-        val touchHelper =
-            ItemTouchHelper(object : ItemTouchHelper.SimpleCallback(ItemTouchHelper.UP + ItemTouchHelper.DOWN, 0) {
+            override fun onMove(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder,
+                target: RecyclerView.ViewHolder
+            ): Boolean {
+
+                val oldPos = viewHolder.bindingAdapterPosition
+                val newPos = target.bindingAdapterPosition
+                Log.e(
+                    "reorder after", "" + ":::" + ":::" +
+                            viewHolder.bindingAdapterPosition.toString() + " :::  " + target.bindingAdapterPosition.toString()
+                )
+                if (dragFrom == -1) {
+                    dragFrom = oldPos
+                }
+                dragTo = newPos
+
+                val a = noteListadapter.getItem(dragFrom).sort
+                val b = noteListadapter.getItem(dragTo).sort
+                Log.e("onItemMove", "$a:: $b")
 
 
-                override fun onMove(
-                    recyclerView: RecyclerView,
-                    viewHolder: RecyclerView.ViewHolder,
-                    target: RecyclerView.ViewHolder
-                ): Boolean {
-                    val oldPos = viewHolder.bindingAdapterPosition
-                    val newPos = target.bindingAdapterPosition
-                    Log.e(TAG,"posGOTPoldPos ${oldPos}")
-                    Log.e(TAG,"posGOTPnewPos ${newPos}")
 
-                    if (dragFrom == -1) {
-                        dragFrom = oldPos
-                    }
-                    dragTo = target.layoutPosition
+                noteListadapter.onItemMove(
+                    viewHolder.bindingAdapterPosition,
+                    target.bindingAdapterPosition
+                )
 
-                    noteListadapter.onItemMove(
-                        viewHolder.bindingAdapterPosition,
-                        target.bindingAdapterPosition
+                return true
+            }
+
+            override fun isLongPressDragEnabled(): Boolean {
+                return true
+            }
+
+            override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
+
+            }
+
+            override fun clearView(
+                recyclerView: RecyclerView,
+                viewHolder: RecyclerView.ViewHolder
+            ) {
+
+                if (dragFrom != -1 && dragTo != -1 && dragFrom != dragTo) {
+
+                    Log.e("clearView", "$dragFrom :: $dragTo")
+                    reallyMoved(
+                        noteListadapter.getItem(dragFrom).sort,
+                        noteListadapter.getItem(dragTo).sort,
+                        noteListadapter.getItem(viewHolder.bindingAdapterPosition).id
                     )
-
-                    return true
                 }
 
-                override fun isLongPressDragEnabled(): Boolean {
-                    return true
-                }
+                dragFrom = -1
+                dragTo = -1
+            }
+        })
 
-                override fun onSwiped(viewHolder: RecyclerView.ViewHolder, direction: Int) {
-
-                }
-
-                override fun clearView(
-                    recyclerView: RecyclerView,
-                    viewHolder: RecyclerView.ViewHolder
-                ) {
-
-                    if (dragFrom != -1 && dragTo != -1 && dragFrom != dragTo) {
-
-                        reallyMoved(
-                            adapter.getItem(dragFrom).sort,
-                            adapter.getItem(dragTo).sort,
-                            adapter.getItem(viewHolder.layoutPosition).id
-                        )
-                        */
-/* reallyMoved(
-                             dragFrom,
-                             dragTo,
-                             adapter.getItem(dragTo).id
-                         )*//*
-
-
-                    }
-
-                    dragFrom = -1
-                    dragTo = -1
-                }
-
-            })
-*/
+        touchHelper.attachToRecyclerView(binding.rvNoteLise)
 
 
     }
 
     private fun reallyMoved(oldPos: Int, newPos: Int, categoryIdOld: Int?) {
         if (categoryIdOld != null) {
-
-          /*  isreOrder = true
-            Log.e(TAG, "positionnewPos  ${newPos}")
-            Log.e(TAG, "positionoldPos  ${oldPos}")
-            viewModel.reOrderCategory(categoryIdOld, newPos, oldPos)*/
+            isreOrder = true
+            Log.e("reallyMoved", "$oldPos :: $newPos")
+            viewModel.reOrderItem(categoryIdOld, oldPos, newPos)
         }
 
     }
 
     private fun getTaxListObserver() {
-        viewModel.getTaxList.observe(viewLifecycleOwner, {
+        viewModel.getTaxList.observe(viewLifecycleOwner) {
 
 
             it?.let { resource ->
@@ -178,20 +172,20 @@ class Notes : Fragment() ,ItemCallback{
                     }
                 }
             }
-        })
+        }
     }
 
     private fun notifyAdapter() {
-        viewModel.notifydata.observe(viewLifecycleOwner, { event ->
+        viewModel.notifydata.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
                 noteListadapter.notifyDataSetChanged()
             }
-        })
+        }
     }
 
     private fun observeShowProgress() {
 
-        viewModel.showProgress.observe(viewLifecycleOwner, { event ->
+        viewModel.showProgress.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
                 if (it) {
                     ProgressUtils.showProgressDialog(requireActivity())
@@ -199,7 +193,18 @@ class Notes : Fragment() ,ItemCallback{
                     ProgressUtils.dismissProgressDialog()
                 }
             }
-        })
+        }
+
+        viewModel.data1.observe(viewLifecycleOwner) { event ->
+            event.getContentIfNotHandled()?.let {
+                AlertUtils.showCustomAlert(requireActivity(), it.message)
+
+
+                viewModel.reOrder(noteListadapter.getAll())
+
+
+            }
+        }
 
     }
 
@@ -213,15 +218,11 @@ class Notes : Fragment() ,ItemCallback{
 
     private fun deleteTax() {
 
-        viewModel.data.observe(viewLifecycleOwner, { event ->
+        viewModel.data.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
                 AlertUtils.showCustomAlert(requireActivity(), it.message)
-                /*noteListUpdateDelete.remove(noteObject)
-                noteListadapter.addNotes(noteListUpdateDelete)
-                noteListadapter.notifyItemRemoved(position)
-                noteListadapter.notifyItemRangeChanged(position, noteListUpdateDelete.size)*/
             }
-        })
+        }
 
     }
 

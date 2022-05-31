@@ -36,6 +36,8 @@ import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.android.pos.ui.fragments.dashboard.bolddashboard.CartFragment
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.TAG
+import com.android.pos.utils.extensions.gone
+import com.android.pos.utils.extensions.visible
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -53,9 +55,20 @@ class PaymentBoldPosFragment : Fragment() {
     private val dineInPaymentViewModel by viewModels<CheckoutDineInPaymentViewModel>()
     private var isFromActiveOrder: Boolean = false
 
+
+    companion object {
+        public lateinit var binding: FragmentPaymentBoldPosBinding
+        fun newInstance(): PaymentBoldPosFragment {
+            val frag = PaymentBoldPosFragment()
+            return frag
+
+        }
+
+    }
+
     @Inject
     lateinit var prefProvider: PrefProvider
-    private lateinit var binding: FragmentPaymentBoldPosBinding
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -75,6 +88,16 @@ class PaymentBoldPosFragment : Fragment() {
         }
 
         return binding.root
+    }
+
+
+    public fun addTipHideShow(isBoolean: Boolean) {
+        if (isBoolean) {
+            binding.layoutHeaderCheckout.tvAddTip.gone()
+        } else {
+            binding.layoutHeaderCheckout.tvAddTip.visible()
+
+        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -195,19 +218,19 @@ class PaymentBoldPosFragment : Fragment() {
                     var temp_model =
                         Gson().fromJson(string_gson, CheckOutDineInDataModel::class.java)
                     Handler(Looper.getMainLooper()).postDelayed({
-                    val dineInModel = CheckOutDineInDataModel(
-                        temp_model.guestId,
-                        temp_model.isFromGuest,
-                        temp_model.isLastPayment,
-                        temp_model.guestPaymentReq,
-                        temp_model.orderId,
-                        temp_model.splitModel,
-                        dineInAdapterList = temp_model.dineInAdapterList,
-                        dineInOrderDetails = temp_model.dineInOrderDetails,
-                        guestPaymentModel = temp_model.guestPaymentModel,
-                        guestPosition = temp_model.guestPosition
-                    )
-                    Log.e(TAG, "dineInModel:  ${Gson().toJson(dineInModel)}")
+                        val dineInModel = CheckOutDineInDataModel(
+                            temp_model.guestId,
+                            temp_model.isFromGuest,
+                            temp_model.isLastPayment,
+                            temp_model.guestPaymentReq,
+                            temp_model.orderId,
+                            temp_model.splitModel,
+                            dineInAdapterList = temp_model.dineInAdapterList,
+                            dineInOrderDetails = temp_model.dineInOrderDetails,
+                            guestPaymentModel = temp_model.guestPaymentModel,
+                            guestPosition = temp_model.guestPosition
+                        )
+                        Log.e(TAG, "dineInModel:  ${Gson().toJson(dineInModel)}")
                         loadCategoryFragment(CheckoutDineInFragmentNew(dineInModel))
                     }, 100)
                 }
@@ -255,10 +278,15 @@ class PaymentBoldPosFragment : Fragment() {
 
     private fun listeners() {
         binding.layoutHeaderCheckout.tvAddTip.setOnClickListener {
-            findNavController().navigate(
-                R.id.action_paymentBoldPosFragment_to_addTipDialog,
-                bundleOf("totalTip" to viewModel.tipTransactionAmount,"splitCount" to viewModel.isSelectCount)
-            )
+            if (findNavController().currentDestination?.id == R.id.paymentBoldPosFragment) {
+                findNavController().navigate(
+                    R.id.action_paymentBoldPosFragment_to_addTipDialog,
+                    bundleOf(
+                        "totalTip" to viewModel.tipTransactionAmount,
+                        "splitCount" to viewModel.isSelectCount
+                    )
+                )
+            }
         }
         binding.layoutHeaderCheckout.tvAddDiscount.setOnClickListener {
             findNavController().navigate(R.id.action_paymentBoldPosFragment_to_addDiscountDialogFragment)
@@ -274,12 +302,13 @@ class PaymentBoldPosFragment : Fragment() {
                 dineInPaymentViewModel.deleteCart()
                 prefProvider.setValue(Constants.ORDER_TYPE, Constants.TAKEOUT)
             }
+            if(!viewModel.onClickAddCustomer){
+                if (isFromActiveOrder) {
+                    removeCustomer()
+                    viewModel.deleteCart()
+                    prefProvider.setValue(Constants.ORDER_TYPE, Constants.TAKEOUT)
 
-            if (isFromActiveOrder) {
-                removeCustomer()
-                viewModel.deleteCart()
-                prefProvider.setValue(Constants.ORDER_TYPE, Constants.TAKEOUT)
-
+                }
             }
         }
 

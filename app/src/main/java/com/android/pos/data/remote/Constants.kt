@@ -12,6 +12,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 object Constants {
+    val IS_ORDER_LAST_PAYMENT= "is_order_last_payment"
     const val ARG_PARAM1 = "param1"
     const val ARG_PARAM2 = "param2"
     const val ARG_PARAM3 = "param2"
@@ -142,6 +143,8 @@ object Constants {
 
     const val DISCOUNTS_ACTIVE = "discounts/{id}/active"
 
+    const val DINE_IN_UPDATE_LIST = "dine_in_update_list"
+
     const val NOTES = "dynamic_notes"
     const val NOTE_UPDATE_DELETE = "dynamic_notes/{id}"
     const val CUSTOMER_UPDATE = "customers/{id}"
@@ -159,6 +162,9 @@ object Constants {
     const val HIDE_ITEM = "items/{id}/active"
     const val ITEMS = "items"
     const val REORDER_ITEM = "items/{id}/reorder"
+
+    const val REORDER_NOTE = "dynamic_notes/{id}/reorder"
+    const val REORDER_TIP = "tip_settings/{id}/reorder"
 
     const val TEAM_ROLES = "team_roles"
     const val TIME_TRACKER_ENABLED = "time_Trackerenable"
@@ -187,6 +193,7 @@ object Constants {
     const val CREATEMODIFIER = "create_modifier"
     const val CREATEDISCOUNT = "create_discount"
     const val CREATELOYALTY = "create_loyalty"
+    const val SETUP_BUSINESS_DETAILS = "setup_business_details"
     const val CREATEOPTION = "create_option"
     const val CREATEITEM = "create_item"
     const val PRINTER = "printer"
@@ -545,6 +552,8 @@ object Constants {
 
     const val MAGENSA_SETTINGS = "magensaSettings"
     const val MAGENSA_SETTINGS1 = "magensaSettings1"
+
+    const val SHIFT_REPORT_SETTINGS = "shift_report_setting"
 
     const val ELAVON_GATEWAY = "Elavon"
     const val FIRST_DATA_GATEWAY = "Rapid Connect" //(First Data Nashville/Omaha/North)

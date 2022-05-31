@@ -31,6 +31,16 @@
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
+            <androidx.appcompat.widget.AppCompatImageView
+                android:id="@+id/imageCheck"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:padding="@dimen/_5sdp"
+                android:layout_marginStart="@dimen/_5sdp"
+                android:layout_marginEnd="@dimen/_5sdp"
+                app:srcCompat="@drawable/ic_baseline_menu" />
+
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/imgCheckBox"
@@ -40,6 +50,7 @@
                 android:onClick="@{() -> viewModel.isNoteActive(noteModel)}"
                 android:padding="@dimen/_5sdp"
                 android:src="@{noteModel.isActive ? @drawable/ic_check_box: @drawable/ic_check_box_unchecked}" />
+
 
             <androidx.appcompat.widget.AppCompatTextView
                 style="@style/CustomFontSemiBold"
@@ -60,9 +71,8 @@
                 android:layout_gravity="center"
                 android:layout_marginStart="@dimen/_5sdp"
                 android:layout_marginEnd="@dimen/_10sdp"
-                app:srcCompat="@drawable/ic_play"
                 android:visibility="gone"
-                />
+                app:srcCompat="@drawable/ic_play" />
 
             <include
                 android:id="@+id/layout_menu"
