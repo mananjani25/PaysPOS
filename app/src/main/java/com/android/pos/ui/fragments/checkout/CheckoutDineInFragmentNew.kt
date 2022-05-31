@@ -1757,7 +1757,10 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                         if (response.body()!![0].transactionOutput?.isTransactionApproved == true) {
                             if (isDynamo())
                                 magtekModule.closeDevice()
-                            paymentviewModel.setMagensaResponse(Gson().toJson(response.body()!![0]))
+                            paymentviewModel.setMagensaResponse(
+                                Gson().toJson(response.body()!![0]),
+                                if (i == 3) cardNumber else ""
+                            )
                             if (isGuestPay) {
                                 paymentType = "Card"
                                 dineinOrderVieweModel.totalPayAmount(paymentAmount)
