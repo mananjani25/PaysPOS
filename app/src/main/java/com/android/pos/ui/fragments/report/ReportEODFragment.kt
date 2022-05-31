@@ -905,13 +905,15 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
                 serviceChargeDetailsAdapter.add(it.serviceChargeDetails)
 
 
-                showHide(
-                    rvMedia = binding.rvemployeeGuestDetails,
-                    textView = binding.txtemployeeGuestDetails,
-                    headerView = null,
-                    visible = it.employeeGuestDetails.isNotEmpty()
-                )
-                if (it.employeeGuestDetails.isNotEmpty())
+                it.employeeGuestDetails?.let { it1 ->
+                    showHide(
+                        rvMedia = binding.rvemployeeGuestDetails,
+                        textView = binding.txtemployeeGuestDetails,
+                        headerView = null,
+                        visible = it1.isNotEmpty()
+                    )
+                }
+                if (it.employeeGuestDetails?.isNotEmpty() == true)
                     employeeGuestDetailsAdapter.add(it.employeeGuestDetails[0])
 
 
@@ -923,14 +925,18 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
                 )
                 creditTipAuditAdapter.add(it.creditTipAudit)
 
-                showHide(
-                    rvMedia = binding.rvSaleCategorySummary,
-                    textView = binding.txtSaleCategorySummary,
-                    headerView = null,
-                    visible = it.salesPerCategorySummary.isNotEmpty()
-                )
-                saleCategorySummaryAdapter.add(it.salesPerCategorySummary)
-                saleCategorySummaryAdapter.notifyDataSetChanged()
+                it.salesPerCategorySummary?.let { it1 ->
+                    showHide(
+                        rvMedia = binding.rvSaleCategorySummary,
+                        textView = binding.txtSaleCategorySummary,
+                        headerView = null,
+                        visible = it1.isNotEmpty()
+                    )
+                }
+                if (it.salesPerCategorySummary != null) {
+                    saleCategorySummaryAdapter.add(it.salesPerCategorySummary)
+                    saleCategorySummaryAdapter.notifyDataSetChanged()
+                }
 
 
 

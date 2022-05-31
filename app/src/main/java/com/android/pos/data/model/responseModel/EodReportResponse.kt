@@ -56,9 +56,9 @@ data class EodReportResponse(
         @SerializedName("wastage_details")
         val wastageDetails: ArrayList<ArrayList<KeyValue>>,
         @SerializedName("employee_guest_details")
-        val employeeGuestDetails: ArrayList<ArrayList<KeyValue>>,
+        val employeeGuestDetails: ArrayList<ArrayList<KeyValue>>?,
         @SerializedName("sales_per_category_summary")
-        val salesPerCategorySummary: ArrayList<ArrayList<KeyValue>>
+        val salesPerCategorySummary: ArrayList<ArrayList<KeyValue>>?
 
     ) {
 
