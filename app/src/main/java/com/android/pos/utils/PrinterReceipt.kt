@@ -16,6 +16,7 @@ import com.android.pos.data.model.responseModel.GetOrderDetailsResponse
 import com.android.pos.data.model.responseModel.GetTipReponse
 import com.android.pos.data.model.responseModel.OpenOrderResponse
 import com.android.pos.data.remote.Constants
+import com.android.pos.di.PrefProvider
 import com.epson.eposprint.Builder
 
 val TAG = "PrinterReceipt"
@@ -299,8 +300,8 @@ fun addTipsList(
 fun addOrdersForKitchenDineIn(
     builder: Builder,
     list: ArrayList<TbItem>,
-    fontSizeH:Int=1,
-    fontSizeW:Int=1
+    fontSizeH: Int = 1,
+    fontSizeW: Int = 1
 ): Builder {
 
 
@@ -372,8 +373,8 @@ fun addOrdersForKitchenDineIn(
 fun addOrdersForKitchen(
     builder: Builder,
     list: List<CreateOrderResponse.Data.Order.OrderItem>,
-    fontSizeH:Int = 1,
-    fontSizeW:Int = 1
+    fontSizeH: Int = 1,
+    fontSizeW: Int = 1
 ): Builder {
     for (i in 0 until list.size) {
         val obj = list.get(i)
@@ -542,7 +543,8 @@ fun addWholeTbItemToGuest(
     font: String,
     showModifiers: Boolean,
     guestCount: Int,
-    serviceChargeList: ArrayList<TbServiceCharge>
+    serviceChargeList: ArrayList<TbServiceCharge>,
+    prefProvider: PrefProvider
 ): Builder {
 
     val obj = list
@@ -604,9 +606,13 @@ fun addWholeTbItemToGuest(
     }
 
     if (serviceChargeList?.isNotEmpty() == true) {
-        serviceChargeList?.forEach {
-            if (it.isEnabled) {
-                serviceCharge += (subTotal * it.percentage) / 100
+        if (prefProvider.getValueboolean(Constants.SERVICECHARGE_DINEIN_ORDER, false)) {
+            serviceChargeList?.forEach {
+                if (it.order_type == Constants.SERVICECHARGE_DINEIN_ORDER) {
+                    if (isInRange(it.min_guest_count!!, it.max_guest_count!!, guestCount)) {
+                        serviceCharge += (subTotal * it.percentage) / 100
+                    }
+                }
             }
         }
 
@@ -667,6 +673,10 @@ fun addWholeTbItemToGuest(
     }*/
 
     return builder
+}
+
+fun isInRange(minn: Int, maxx: Int, value: Int): Boolean {
+    return (minn <= value && value <= maxx)
 }
 
 fun addOrderItemForDineIn(

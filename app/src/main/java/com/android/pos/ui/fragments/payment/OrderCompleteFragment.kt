@@ -44,6 +44,7 @@ import com.android.pos.data.remote.Constants.OPTION_TYPE
 import com.android.pos.data.remote.Constants.PAYMENT_ID
 import com.android.pos.data.remote.Constants.PRINT_DATA_DINE_IN
 import com.android.pos.data.remote.Constants.SAVE_SPLIT_BUNDLE
+import com.android.pos.data.remote.Constants.SERVICECHARGE_DINEIN_ORDER
 import com.android.pos.data.remote.Constants.SPLIT_DINEIN_CHECKOUT
 import com.android.pos.data.remote.Constants.SPLIT_DINEIN_MODEL
 import com.android.pos.data.remote.Constants.SPLIT_IS_GUESTPAY
@@ -1040,11 +1041,16 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         finaldisLocal = orderDiscount + guestDiscount
 
 
-        dineInList.get(0).serviceChargeList?.forEach {
-            if (it.isEnabled) {
-                guestServiceCharge += (guestSubTotal * it.percentage) / 100
+        if (prefProvider.getValueboolean(SERVICECHARGE_DINEIN_ORDER, false)) {
+            dineInList.get(0).serviceChargeList?.forEach {
+                if (it.order_type == SERVICECHARGE_DINEIN_ORDER) {
+                    if (isInRange(it.min_guest_count!!, it.max_guest_count!!, guestCount)) {
+                        guestServiceCharge += (guestSubTotal * it.percentage) / 100
+                    }
+                }
             }
         }
+
 
         var builder: Builder? = null
         try {
@@ -1442,7 +1448,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     customerSettingModel.fonts,
                     customerSettingModel.showModifiers,
                     dineInList.get(0).totalGuestCount,
-                    dineInList.get(0).serviceChargeList ?: arrayListOf()
+                    dineInList.get(0).serviceChargeList ?: arrayListOf(),
+                    prefProvider
                 )
             }
             builder.addFeedLine(1)
@@ -2153,6 +2160,10 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             e.printStackTrace()
         }
 
+    }
+
+    fun isInRange(minn: Int, maxx: Int, value: Int): Boolean {
+        return (minn <= value && value <= maxx)
     }
 
     private fun generateDineInPrint(
@@ -4541,17 +4552,15 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 Builder.COLOR_1
             )
 
-            var newPaidAmount = paidAmount + tipAmount
-            /* if (MethodUtils.roundOffAmountDouble(paidAmount + tipAmount) == MethodUtils.roundOffAmountDouble(
-                     receiptModel?.order?.totalAmount?.toDouble() ?: 0.0
-                 )
+            var newPaidAmount = paidAmount
+             if (MethodUtils.roundOffAmountDouble(paidAmount + tipAmount) == MethodUtils.roundOffAmountDouble((receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size?.minus(1) ?: 0)?.amount ?: 0.0).plus((receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size?.minus(1) ?: 0)?.tips ?: 0.0))   ?: 0.0)
              ) {
                  newPaidAmount = paidAmount + tipAmount
              }
 
              if (isSpilt) {
                  newPaidAmount = paidAmount + tipAmount
-             }*/
+             }
             Log.e("ToCheck", "PaidAmount ${newPaidAmount}")
 
             builder.addText(

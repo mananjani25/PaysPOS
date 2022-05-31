@@ -15,6 +15,7 @@ import com.android.pos.R
 import com.android.pos.data.entities.TbServiceCharge
 import com.android.pos.data.model.GetPaymentOrderDetailsResponse
 import com.android.pos.data.model.requestModel.RefundRequestModel
+import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.CASH_DISCOUNT_SURCHARGE_AMOUNT_TYPE
 import com.android.pos.data.remote.Constants.CASH_DISCOUNT_SURCHARGE_RATE
 import com.android.pos.databinding.DialogIssueRefundBinding
@@ -358,7 +359,7 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
 
 
                 serviceChargesList?.forEach {
-                    if (it.isEnabled) {
+                    if (it.order_type == Constants.SERVICECHARGE_TAKEOUT_OPENORDER) {
                         totalServiceCharge += (totalItemPrice * it.percentage) / 100
                     }
                 }

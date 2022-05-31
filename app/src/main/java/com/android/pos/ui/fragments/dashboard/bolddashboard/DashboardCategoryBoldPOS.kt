@@ -53,7 +53,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
     private lateinit var binding: FragmentDashboardCategoryBoldPosBinding
     private val viewModel by activityViewModels<DashBoardCategoryViewModel>()
     private val viewModelPayment by activityViewModels<PaymentViewModel>()
-    private var serviceChargesList: List<TbServiceCharge>? = null
+    private var serviceChargesList: ArrayList<TbServiceCharge>? = null
     private var serviceChargesObserve: Observer<Resource<List<TbServiceCharge>>>? = null
     private var orderTypeObserver: Observer<Resource<List<TbOrderType>>>? = null
     private var dineInFloorTableModel: GetFloorPlanResponse.Data.FloorPlanTable? = null
@@ -673,10 +673,33 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
     private fun getServiceCharges() {
 
         serviceChargesObserve = Observer {
-
             if (it.status == Status.SUCCESS) {
-                serviceChargesList = it.data
-                viewModel.serviceChargesList = it.data ?: arrayListOf()
+                if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == DINE_IN) {
+                    Log.e(TAG, "getServiceCharge:  ${Gson().toJson(it.data)}")
+                    serviceChargesList = ArrayList()
+                    viewModel.serviceChargesList.clear()
+                    it.data?.forEach { service->
+                        if (service.order_type == Constants.SERVICECHARGE_DINEIN_ORDER) {
+                            serviceChargesList?.add(service)
+                            viewModel.serviceChargesList.add(service)
+                        }
+                    }
+                    Log.d(TAG, "getServiceCharges: finall "+Gson().toJson(viewModel.serviceChargesList))
+                } else {
+                    if (prefProvider.getValueboolean(Constants.SERVICECHARGE_TAKEOUT_OPENORDER, false)) {
+                        Log.e(TAG, "getServiceCharge:  ${Gson().toJson(it.data)}")
+                        serviceChargesList = ArrayList()
+                        viewModel.serviceChargesList.clear()
+                        it.data?.forEach { service ->
+                            if (service.order_type == Constants.SERVICECHARGE_TAKEOUT_OPENORDER) {
+                                serviceChargesList?.add(service)
+                                viewModel.serviceChargesList.add(service)
+                            }
+                        }
+                        Log.d(TAG, "getServiceCharges: finall "+Gson().toJson(viewModel.serviceChargesList))
+
+                    }
+                }
             }
 
         }

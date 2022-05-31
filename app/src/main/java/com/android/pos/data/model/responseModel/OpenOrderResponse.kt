@@ -241,7 +241,13 @@ data class OpenOrderResponse(
                 @SerializedName("service_charge_id")
                 val serviceChargeId: Int,
                 @SerializedName("updated_at")
-                val updatedAt: String
+                val updatedAt: String,
+                @SerializedName("min_guest_count")
+                val min_guest_count: Int? = null,
+                @SerializedName("max_guest_count")
+                val max_guest_count: Int? = null,
+                @SerializedName("order_type")
+                val order_type: String,
             )
 
             data class Payment(
@@ -348,7 +354,7 @@ data class OpenOrderResponse(
                     val street: String,
                     @SerializedName("type_of_address")
                     val typeOfAddress: String
-                ):Parcelable{}
+                ) : Parcelable {}
 
                 @Parcelize
                 data class Phone(
@@ -356,7 +362,7 @@ data class OpenOrderResponse(
                     val id: Int,
                     @SerializedName("phone_number")
                     val phoneNumber: String
-                ):Parcelable{}
+                ) : Parcelable {}
             }
 
             data class Employee(

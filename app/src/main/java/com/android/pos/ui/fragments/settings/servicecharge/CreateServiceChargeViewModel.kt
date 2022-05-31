@@ -9,6 +9,7 @@ import com.android.pos.R
 import com.android.pos.data.entities.TbServiceCharge
 import com.android.pos.data.model.requestModel.CreateServiceChargeRequestModel
 import com.android.pos.data.model.responseModel.*
+import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.LOCATION_ID
 import com.android.pos.data.repositories.PosRepository
 import com.android.pos.data.repositories.TaxServiceChargeRepository
@@ -124,7 +125,10 @@ class CreateServiceChargeViewModel @Inject constructor(
                                         name = createServiceChargeResponse.data.name,
                                         percentage = createServiceChargeResponse.data.percentage,
                                         updatedAt = createServiceChargeResponse.data.updatedAt,
-                                        isActive = createServiceChargeResponse.data.isActive
+                                        isActive = createServiceChargeResponse.data.isActive,
+                                        min_guest_count = 0,
+                                        max_guest_count = 0,
+                                        order_type = Constants.SERVICECHARGE_TAKEOUT_OPENORDER
                                     )
 
                                     taxServiceChargeRepository.createServiceChargeDatabase(

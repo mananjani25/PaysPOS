@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.R
 import com.android.pos.data.entities.TbServiceCharge
 import com.android.pos.data.model.responseModel.GetOrderDetailsResponse
+import com.android.pos.data.remote.Constants
 import com.android.pos.databinding.ViewRefundItemBinding
 import com.android.pos.ui.fragments.transactions.TransactionDetailsViewModel
 import com.android.pos.utils.MethodUtils
@@ -136,7 +137,7 @@ class RefundItemListAdapter(val viewModel: TransactionDetailsViewModel) :
 
             var totalServiceCharge = 0.0
             serviceChargeList.forEach {
-                if (it.isEnabled) {
+                if (it.order_type == Constants.SERVICECHARGE_TAKEOUT_OPENORDER) {
                     totalServiceCharge += (totalItemPrice * it.percentage) / 100
                 }
             }

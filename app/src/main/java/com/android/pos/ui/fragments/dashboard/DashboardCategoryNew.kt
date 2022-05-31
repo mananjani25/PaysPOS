@@ -137,7 +137,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
     private var assignCustomer: TbCustomer? = null
     var cashDiscount: Double = 0.0
     var amountToBepaid = 0.0
-    private var serviceChargesList: List<TbServiceCharge>? = null
+    private var serviceChargesList: ArrayList<TbServiceCharge>? = null
     private var singleItem: TbItem? = null
     private var cartList: ArrayList<CartModel> = arrayListOf()
     private lateinit var binding: FragmentDashboardCategoryNewBinding
@@ -606,7 +606,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         serviceChargesObserve = Observer {
 
             if (it.status == Status.SUCCESS) {
-                serviceChargesList = it.data
+                serviceChargesList = it.data as ArrayList<TbServiceCharge>?
                 getCartList()
             }
 

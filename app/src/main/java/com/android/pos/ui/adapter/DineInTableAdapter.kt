@@ -12,6 +12,7 @@ import com.android.pos.R
 import com.android.pos.data.entities.TbItem
 import com.android.pos.data.entities.TbServiceCharge
 import com.android.pos.data.model.DineInModel
+import com.android.pos.data.remote.Constants
 import com.android.pos.databinding.ViewDineInHeaderBinding
 import com.android.pos.databinding.ViewDineInTableItemsBinding
 import com.android.pos.utils.MethodUtils
@@ -56,7 +57,9 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
 
     }
-
+    fun isInRange(minn: Int, maxx: Int, value: Int): Boolean {
+        return (minn <= value && value <= maxx)
+    }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
 
@@ -224,10 +227,21 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
             if (serviceChargeList?.isNotEmpty() == true) {
                 serviceChargeList?.forEach {
-                    if (it.isEnabled) {
-                        totalServiceCharge += (guestSubTotal * it.percentage) / 100
-
+                    if (it.order_type == Constants.SERVICECHARGE_DINEIN_ORDER) {
+                        if (isInRange(
+                                it.min_guest_count!!,
+                                it.max_guest_count!!,
+                                list.get(0).totalGuestCount
+                            )
+                        ) {
+                            totalServiceCharge += (guestSubTotal * it.percentage) / 100
+                            Log.d(
+                                TAG,
+                                "calculateDineInServiceCharge: Dinein " + it.min_guest_count + "....." + it.max_guest_count + " in between " + list.get(0).totalGuestCount
+                            )
+                        }
                     }
+
                 }
 
 
@@ -425,6 +439,10 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             }
 
 
+        }
+
+        fun isInRange(minn: Int, maxx: Int, value: Int): Boolean {
+            return (minn <= value && value <= maxx)
         }
     }
 

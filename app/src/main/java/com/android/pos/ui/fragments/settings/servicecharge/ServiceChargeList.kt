@@ -14,7 +14,9 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.R
 import com.android.pos.data.entities.TbServiceCharge
+import com.android.pos.data.remote.Constants
 import com.android.pos.databinding.ServiceChargeFragmentBinding
+import com.android.pos.di.PrefProvider
 import com.android.pos.ui.adapter.ServiceChargeListAdapter
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.ProgressUtils
@@ -25,6 +27,8 @@ import com.android.pos.utils.statusUtils.Status
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.*
+import javax.inject.Inject
+import kotlin.collections.ArrayList
 
 @AndroidEntryPoint
 class ServiceChargeList : Fragment(), ItemCallback {
@@ -37,6 +41,9 @@ class ServiceChargeList : Fragment(), ItemCallback {
     private lateinit var serviceChargeListadapter: ServiceChargeListAdapter
     private lateinit var serviceChargeObject: TbServiceCharge
 
+    @Inject
+    lateinit var prefProvider: PrefProvider
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -45,7 +52,7 @@ class ServiceChargeList : Fragment(), ItemCallback {
 
         binding = ServiceChargeFragmentBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = this
-
+        prefProvider = PrefProvider(requireContext())
         setUpRecyclerView()
         getTaxListObserver()
         setupSnackbar()
@@ -79,8 +86,15 @@ class ServiceChargeList : Fragment(), ItemCallback {
                         ProgressUtils.dismissProgressDialog()
                         binding.rvServiceCharge.visibility = View.VISIBLE
                         resource.data?.let { taxList ->
-                            Collections.reverse(taxList)
-                            setTaxData(taxList)
+                            var temp_servicelist: ArrayList<TbServiceCharge> = arrayListOf()
+                            taxList.forEach { it ->
+                                if (it.order_type == Constants.SERVICECHARGE_TAKEOUT_OPENORDER) {
+                                    it.isEnabled = prefProvider.getValueboolean(Constants.SERVICECHARGE_TAKEOUT_OPENORDER,false)
+                                    temp_servicelist.add(it)
+                                }
+                            }
+                            temp_servicelist.reverse()
+                            setTaxData(temp_servicelist)
                         }
                     }
                     Status.ERROR -> {
@@ -100,8 +114,8 @@ class ServiceChargeList : Fragment(), ItemCallback {
     private fun notifyAdapter() {
         viewModel.notifydata.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
-
-                viewModel.updateData(serviceChargeListadapter.serviceChargeList, it)
+//                viewModel.updateData(serviceChargeListadapter.serviceChargeList, it)
+                viewModel.updateServiceCharge(it.isEnabled,false,prefProvider.getValueInt(Constants.LOCATION_ID,0))
             }
         }
     }

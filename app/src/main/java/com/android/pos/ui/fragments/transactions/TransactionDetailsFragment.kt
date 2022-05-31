@@ -105,7 +105,30 @@ class TransactionDetailsFragment : Fragment() {
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
 
         viewModel.serviceCharges.observe(requireActivity()) {
-            serviceChargesList = it.data as ArrayList<TbServiceCharge>?
+            if (prefProvider.getValue(
+                    Constants.ORDER_TYPE,
+                    Constants.TAKEOUT
+                ) == Constants.DINE_IN
+            ) {
+                serviceChargesList = arrayListOf()
+                serviceChargesList = it.data as ArrayList<TbServiceCharge>?
+            } else {
+                if (prefProvider.getValueboolean(
+                        Constants.SERVICECHARGE_TAKEOUT_OPENORDER,
+                        false
+                    )
+                ) {
+                    serviceChargesList = arrayListOf()
+                    Log.e(TAG, "getServiceCharge:  ${Gson().toJson(it.data)}")
+                    it.data?.forEach { service ->
+                        if (service.order_type == Constants.SERVICECHARGE_TAKEOUT_OPENORDER) {
+                            serviceChargesList?.add(service)
+                        }
+                    }
+
+                }
+            }
+
 
         }
         return binding.root

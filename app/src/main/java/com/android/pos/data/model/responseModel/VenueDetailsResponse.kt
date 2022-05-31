@@ -91,6 +91,11 @@ data class VenueDetailsResponse(
         val orderTypes: List<TbOrderType>,
         @SerializedName("magensa_settings")
         val magensaSettings: List<MagensaSettings>,
+        @SerializedName("service_charge_enable")
+        val service_charge_enable: Boolean,
+        @SerializedName("enable_dine_in_service_charge")
+        val enable_dine_in_service_charge: Boolean
+        val magensaSettings: List<MagensaSettings>,
         @SerializedName("shift_report_configuration")
         val shift_report_configuration: ShiftRportConfiguration?,
         @SerializedName("time_zone_options")

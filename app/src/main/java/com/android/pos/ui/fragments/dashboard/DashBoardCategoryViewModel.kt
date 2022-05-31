@@ -37,6 +37,8 @@ import com.android.pos.data.remote.Constants.DINE_IN_UPDATE
 import com.android.pos.data.remote.Constants.EMPLOYEE_ID
 import com.android.pos.data.remote.Constants.IS_PRINTER_QUEUE_ENABLE
 import com.android.pos.data.remote.Constants.ORDER_TYPE
+import com.android.pos.data.remote.Constants.SERVICECHARGE_DINEIN_ORDER
+import com.android.pos.data.remote.Constants.SERVICECHARGE_TAKEOUT_OPENORDER
 import com.android.pos.data.remote.Constants.SYSTEM_TIMEZONE
 import com.android.pos.data.remote.Constants.UPDATE
 import com.android.pos.data.remote.Constants.VENUE_LOGO
@@ -68,6 +70,7 @@ import java.net.HttpURLConnection
 import java.net.URL
 import java.util.*
 import javax.inject.Inject
+import kotlin.collections.ArrayList
 import kotlin.collections.set
 
 
@@ -112,7 +115,6 @@ class DashBoardCategoryViewModel @Inject constructor(
     var isOrderUpdate: Boolean = false
     val returnedVal = posRepository.getManualCategoryId()
     var viewModelcartList: ArrayList<CartModel> = arrayListOf()
-    var serviceCharge = posRepository.serviceChargeList()
     private var mPosition: Int = 0
     var tipTransactionAmount = 0.0
     private val _updateOrder = MutableLiveData<Event<Any?>>()
@@ -227,7 +229,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     }
 
-    var serviceChargesList: List<TbServiceCharge> = emptyList()
+    var serviceChargesList: ArrayList<TbServiceCharge> = arrayListOf()
 
 
     fun addCart(cartModel: CartModel) {
@@ -1100,8 +1102,8 @@ class DashBoardCategoryViewModel @Inject constructor(
 
             }
             order_note = cartModel.note
-
-            serviceChargeCalculationModel(cartModel)
+            calculateDineInServiceCharge(cartModel)
+//            serviceChargeCalculationModel(cartModel)
             subTotalPrice -= cartModel.discountPrice
             var totalDis = cartModel.discountPrice
             var totalDineItemDis = 0.0
@@ -1383,40 +1385,57 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     private fun serviceChargeCalculation(cartList: List<CartModel>) {
         val serviceChargesList = cartList[0].serviceCharge
-
         if (serviceChargesList != null && serviceChargesList.isNotEmpty()) {
-            serviceChargesList.forEach {
-                if (it.isEnabled) {
-                    totalServiceCharge += (subTotalPrice * it.percentage) / 100
-
+            if (prefProvider.getValueboolean(SERVICECHARGE_TAKEOUT_OPENORDER, false)) {
+                serviceChargesList.forEach {
+                    if (it.order_type == Constants.SERVICECHARGE_TAKEOUT_OPENORDER) {
+                        totalServiceCharge += (subTotalPrice * it.percentage) / 100
+                    }
                 }
             }
 
         }
     }
 
+    fun isInRange(minn: Int, maxx: Int, value: Int): Boolean {
+        return (minn <= value && value <= maxx)
+    }
+
     private fun calculateDineInServiceCharge(cartModel: CartModel) {
+        var guestCount = cartModel.dineInList?.size?.minus(1)
         if (serviceChargesList.isNotEmpty() && serviceChargesList != null) {
             Log.e(TAG, "dashboardserviceChargesList:  ${Gson().toJson(serviceChargesList)}")
-
-            serviceChargesList.forEach {
-                if (it.isEnabled) {
-                    totalServiceCharge += (subTotalPrice * it.percentage) / 100
-
+            if (prefProvider.getValueboolean(SERVICECHARGE_DINEIN_ORDER, false)) {
+                serviceChargesList.forEach {
+                    if (it.order_type == Constants.SERVICECHARGE_DINEIN_ORDER) {
+                        if (isInRange(
+                                it.min_guest_count!!,
+                                it.max_guest_count!!,
+                                guestCount!!
+                            )
+                        ) {
+                            Log.d(
+                                TAG,
+                                "calculateDineInServiceCharge: DashBoard " + it.min_guest_count + "....." + it.max_guest_count + " in between " + guestCount
+                            )
+                            totalServiceCharge += (subTotalPrice * it.percentage) / 100
+                        }
+                    }
                 }
             }
+
         }
 
     }
 
     private fun serviceChargeCalculationModel(cartModel: CartModel) {
         val serviceChargesList = cartModel.serviceCharge
-
         if (serviceChargesList != null && serviceChargesList.isNotEmpty()) {
-            serviceChargesList.forEach {
-                if (it.isEnabled) {
-                    totalServiceCharge += (subTotalPrice * it.percentage) / 100
-
+            if (prefProvider.getValueboolean(SERVICECHARGE_TAKEOUT_OPENORDER, false)) {
+                serviceChargesList.forEach {
+                    if (it.order_type == Constants.SERVICECHARGE_TAKEOUT_OPENORDER) {
+                        totalServiceCharge += (subTotalPrice * it.percentage) / 100
+                    }
                 }
             }
 
@@ -1470,7 +1489,7 @@ class DashBoardCategoryViewModel @Inject constructor(
         }
     }
 
-    fun setServiceCharges(mList: List<TbServiceCharge>?) {
+    fun setServiceCharges(mList: ArrayList<TbServiceCharge>?) {
 
         if (mList != null) {
             this.serviceChargesList = mList
@@ -2489,6 +2508,14 @@ class DashBoardCategoryViewModel @Inject constructor(
                                     it.data.businessWebsite.toString()
                                 )
 
+                                prefProvider.setValueboolean(
+                                    SERVICECHARGE_TAKEOUT_OPENORDER,
+                                    it.data.service_charge_enable
+                                )
+                                prefProvider.setValueboolean(
+                                    SERVICECHARGE_DINEIN_ORDER,
+                                    it.data.enable_dine_in_service_charge
+                                )
                                 posRepository.addCashDiscountsFromDb(it.data.cash_discounts)
                                 taxServiceChargeRepository.deleteTaxFromDb()
                                 taxServiceChargeRepository.addAllTaxDatabase(it.data.taxes)
@@ -2497,6 +2524,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 tipDiscountRepository.deleteDiscountsFromDb()
                                 tipDiscountRepository.addDiscount(it.data.discounts)
                                 taxServiceChargeRepository.deleteServiceChargesFromDb()
+                                serviceChargesList.clear()
                                 taxServiceChargeRepository.addServiceCharges(it.data.service_charges)
                                 posRepository.deleteTerminalsFromDb()
                                 posRepository.addTerminalsDatabase(it.data.terminals)
