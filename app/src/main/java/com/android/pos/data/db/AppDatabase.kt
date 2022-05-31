@@ -23,7 +23,7 @@ import com.android.pos.data.typeconvert.*
         ItemModifierSets::class, OptionSet::class, PrinterResponse.Data.CustomerReceiptPrinters::class,
         PrinterResponse.Data.KitchenReceiptPrinters::class, GetKitchenReceiptSettingsResponse.Data::class,
         GetCustomerReceiptSettingsResponse.Data::class, LoyaltyProgramsModel::class, SplitDetailListModel::class,
-        CashDiscountModel::class, TbCountryList::class, TbCardReader::class, VenueDetailsResponse.Data.CancelOrderReason::class, DineInCartModel::class],
+        CashDiscountModel::class, TbCountryList::class, TbCardReader::class, VenueDetailsResponse.Data.CancelOrderReason::class, DineInCartModel::class,EODShiftReport::class],
     version = 2
 )
 @TypeConverters(
@@ -78,6 +78,7 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun countryListDao(): CountryListDao
     abstract fun cardReaderDao(): cardReaderDao
     abstract fun cancelOrderReasonDao(): CancelOrderReasonsDao
+    abstract fun eodReportSettings():EODReportDao
 
     companion object {
         @Volatile

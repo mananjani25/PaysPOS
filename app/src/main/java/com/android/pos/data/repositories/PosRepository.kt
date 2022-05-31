@@ -265,6 +265,9 @@ class PosRepository @Inject constructor(
     suspend fun deleteNotesFromDb() =
         appDatabase.notesDao().delete()
 
+    suspend fun deleteEODReportSettings() =
+        appDatabase.eodReportSettings().deleteEODReportSettings()
+
     suspend fun addAllNotesDatabase(data: List<NoteResponse.Data>) =
         appDatabase.notesDao().addAllNotesSuspend(data)
 
@@ -322,6 +325,10 @@ class PosRepository @Inject constructor(
 
     suspend fun addCashDiscountsFromDb(data: List<CashDiscountModel>) {
         appDatabase.cashDiscountDao().addAll(data)
+    }
+
+    suspend fun addEODReportSettings(data: EODShiftReport) {
+        appDatabase.eodReportSettings().addEODReportSettings(data)
     }
 
     suspend fun deleteCustomerReceiptSettingsFromDb() {
