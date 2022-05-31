@@ -8,6 +8,7 @@ import com.android.pos.data.db.AppDatabase
 import com.android.pos.data.db.IDataManager
 import com.android.pos.data.entities.*
 import com.android.pos.data.entities.ModifierSet
+import com.android.pos.data.model.ShiftRportConfiguration
 import com.android.pos.data.model.SplitDetailListModel
 import com.android.pos.data.model.requestModel.*
 import com.android.pos.data.model.responseModel.*
@@ -343,7 +344,7 @@ class PosRepository @Inject constructor(
         appDatabase.cashDiscountDao().addAll(data)
     }
 
-    suspend fun addEODReportSettings(data: EODShiftReport) {
+    suspend fun addEODReportSettings(data: ShiftRportConfiguration) {
         appDatabase.eodReportSettings().addEODReportSettings(data)
     }
 

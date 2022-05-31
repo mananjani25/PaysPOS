@@ -4,6 +4,7 @@ package com.android.pos.data.model.responseModel
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.android.pos.data.entities.*
+import com.android.pos.data.model.ShiftRportConfiguration
 import com.google.gson.annotations.SerializedName
 
 data class VenueDetailsResponse(

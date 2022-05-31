@@ -1,10 +1,9 @@
 package com.android.pos.data.model.responseModel
 
-import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
 
-@Entity(tableName = "EodShiftReport")
+
 data class EODShiftReport(
     @PrimaryKey
     @SerializedName("id")
