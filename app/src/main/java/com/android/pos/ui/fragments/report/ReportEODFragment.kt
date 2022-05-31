@@ -861,12 +861,15 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
             terminalList
         )
 
-        spinnerAdapter.setDropDownViewResource(R.layout.row_spinner)
-        binding.spTerminals.adapter = spinnerAdapter
+        try {
+            spinnerAdapter.setDropDownViewResource(R.layout.row_spinner)
+            binding.spTerminals.adapter = spinnerAdapter
 
-        binding.spTerminals.setSelection(defaultEmployeePos, false);
-        Log.e("defaultEmployeePos", defaultEmployeePos.toString())
-        binding.spTerminals.setSelection(defaultEmployeePos)
+            binding.spTerminals.setSelection(defaultEmployeePos, false);
+            Log.e("defaultEmployeePos", defaultEmployeePos.toString())
+            binding.spTerminals.setSelection(defaultEmployeePos)
+        } catch (e: Exception) {
+        }
 
     }
 
