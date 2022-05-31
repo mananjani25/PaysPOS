@@ -234,6 +234,10 @@ fun addHorizontalLine(builder: Builder): Builder {
     return builder
 }
 
+fun orderSalesDetails(builder: Builder): Builder {
+    return builder
+}
+
 fun addHorizontalKitchenLine(builder: Builder): Builder {
 
 
@@ -299,8 +303,8 @@ fun addTipsList(
 fun addOrdersForKitchenDineIn(
     builder: Builder,
     list: ArrayList<TbItem>,
-    fontSizeH:Int=1,
-    fontSizeW:Int=1
+    fontSizeH: Int = 1,
+    fontSizeW: Int = 1
 ): Builder {
 
 
@@ -372,8 +376,8 @@ fun addOrdersForKitchenDineIn(
 fun addOrdersForKitchen(
     builder: Builder,
     list: List<CreateOrderResponse.Data.Order.OrderItem>,
-    fontSizeH:Int = 1,
-    fontSizeW:Int = 1
+    fontSizeH: Int = 1,
+    fontSizeW: Int = 1
 ): Builder {
     for (i in 0 until list.size) {
         val obj = list.get(i)

@@ -2,6 +2,8 @@ package com.android.pos.ui.fragments.report
 
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -19,19 +21,23 @@ import androidx.viewbinding.ViewBinding
 import com.android.pos.R
 import com.android.pos.data.entities.Employee
 import com.android.pos.data.model.ShiftRportConfiguration
+import com.android.pos.data.model.responseModel.EodReportResponse
+import com.android.pos.data.model.responseModel.PrinterResponse
 import com.android.pos.data.model.responseModel.report.KeyValue
 import com.android.pos.data.remote.Constants
+import com.android.pos.data.remote.Constants.MEDIUM
+import com.android.pos.data.remote.Constants.SMALL
 import com.android.pos.databinding.FragmentReportEodBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.adapter.*
 import com.android.pos.ui.adapter.boldpos.SalesPerCategorySummary
 import com.android.pos.ui.fragments.loginscreen.ClockInOwnerViewModel
-import com.android.pos.utils.AlertUtils
-import com.android.pos.utils.EventObserver
-import com.android.pos.utils.MethodUtils
-import com.android.pos.utils.ProgressUtils
+import com.android.pos.utils.*
 import com.android.pos.utils.extensions.*
+import com.android.pos.utils.printer.PrinterClass
 import com.android.pos.utils.statusUtils.Status
+import com.epson.eposprint.Builder
+import com.epson.eposprint.Print
 import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
@@ -44,14 +50,17 @@ import kotlin.math.abs
 @AndroidEntryPoint
 class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
+    private var eodReportData: EodReportResponse.Data? = null
     private var shiftReportsSettingModel: ShiftRportConfiguration? = null
     private var defaultEmployeePos: Int = 0
     private lateinit var binding: FragmentReportEodBinding
     private val viewModel by viewModels<ReportEODViewModel>()
     private val viewModelClockOut by viewModels<ClockInOwnerViewModel>()
+    private val TAG = "ReportEODFragment"
 
     private lateinit var startDate: DatePickerDialog.OnDateSetListener
     private lateinit var endDate: DatePickerDialog.OnDateSetListener
+    private var customerList: List<PrinterResponse.Data.CustomerReceiptPrinters> = listOf()
 
 
     private lateinit var startTime: TimePickerDialog.OnTimeSetListener
@@ -110,7 +119,12 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
             initControls()
             initObservers()
             loadTerminals()
+            customerPrinters()
 
+            binding.imgPrintEODReport?.setOnClickListener {
+                generateEODReport()
+
+            }
 
             binding.txtHome.setOnClickListener {
                 findNavController().navigate(R.id.action_settings_to_dashboardCategory)
@@ -179,6 +193,391 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
         loadSettings()
 
+    }
+
+    private fun generateEODReport() {
+        customerList.forEach {
+            initPrinter(it)
+
+        }
+    }
+
+    private fun initPrinter(customerReceiptPrinters: PrinterResponse.Data.CustomerReceiptPrinters) {
+        PrinterClass.closePrinter()
+        if (PrinterClass.getPrinter() == null) {
+            var printer: Print? = Print(requireContext())
+            val enable = Print.FALSE
+
+            try {
+                printer?.openPrinter(
+                    if (customerReceiptPrinters.printer_type == Constants.BLUETOOTH) {
+                        Print.DEVTYPE_BLUETOOTH
+                    } else {
+                        Print.DEVTYPE_TCP
+                    },
+                    customerReceiptPrinters.ipAddress,
+                    enable,
+                    1000
+                )
+
+
+            } catch (e: Exception) {
+                Log.e(TAG, "PrinterException: " + e.message)
+                printer = null
+                return
+            }
+            try {
+                if (printer != null) {
+                    PrinterClass.setPrinter(printer)
+                    createReportFormatEOD(customerReceiptPrinters)
+                }
+
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+        }
+
+    }
+
+    private fun createReportFormatEOD(customerReceiptPrinters: PrinterResponse.Data.CustomerReceiptPrinters) {
+        var builder: Builder? = null
+        try {
+
+            builder =
+                Builder(
+                    if (customerReceiptPrinters.name.substring(0, 6).toString()
+                            .lowercase() == "TM-m30".lowercase()
+                    ) {
+                        "TM-m30"
+                    } else {
+                        customerReceiptPrinters.name
+                    }, PrinterClass.language, requireActivity()
+                )
+
+            if (prefProvider?.getValue(
+                    Constants.VENUE_LOGO,
+                    ""
+                )?.isNotEmpty() == true
+            ) {
+                builder.addFeedLine(1)
+                builder.addTextAlign(Builder.ALIGN_CENTER)
+
+                /* var bitmap = getBitmapFromURL(prefProvider.getValue(VENUE_LOGO, ""))*/
+
+                val decodedString: ByteArray = android.util.Base64.decode(
+                    prefProvider?.getValue(Constants.VENUE_LOGO, ""),
+                    android.util.Base64.DEFAULT
+                )
+                val bitmap: Bitmap =
+                    BitmapFactory.decodeByteArray(decodedString, 0, decodedString.size)
+
+                val newBitmap = Bitmap.createScaledBitmap(bitmap!!, 210, 210, true)
+                builder.addImage(
+                    newBitmap, 0, 0,
+                    newBitmap.width, newBitmap.height, Builder.COLOR_1, Builder.MODE_MONO,
+                    Builder.HALFTONE_DITHER, 1.0
+                )
+            }
+
+
+            builder.addFeedLine(1)
+            builder.addTextStyle(
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.TRUE,
+                Builder.COLOR_1
+            )
+            builder.addTextAlign(Builder.ALIGN_CENTER)
+            builder.addTextSize(2, 2)
+
+            addBuilderText(
+                builder,
+                prefProvider?.getValue(Constants.BUSINESS_NAME, "").toString()
+            )
+            builder.addFeedLine(1)
+            builder.addTextFont(Builder.FONT_E)
+            builder.addTextAlign(Builder.ALIGN_CENTER)
+            builder.addTextLang(Builder.LANG_EN)
+            addCustomerTextSize(builder, SMALL)
+
+            builder.addTextStyle(
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.COLOR_1
+            )
+
+            addBuilderText(
+                builder,
+                prefProvider?.getValue(Constants.BUSINESS_ADDRESS, "")
+                    .toString()
+            )
+
+            builder.addFeedLine(1)
+
+            builder.addTextFont(Builder.FONT_E)
+            builder.addTextAlign(Builder.ALIGN_CENTER)
+            builder.addTextLang(Builder.LANG_EN)
+            addCustomerTextSize(builder, SMALL)
+            builder.addTextStyle(
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.COLOR_1
+            )
+            addBuilderText(
+                builder,
+                prefProvider?.getValue(Constants.BUSINESS_PHONE_NO, "").toString()
+            )
+
+            builder.addFeedLine(2)
+
+            builder.addTextFont(Builder.FONT_E)
+            builder.addTextAlign(Builder.ALIGN_CENTER)
+            builder.addTextLang(Builder.LANG_EN)
+            addCustomerTextSize(builder, MEDIUM)
+            builder.addTextStyle(
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.TRUE,
+                Builder.COLOR_1
+            )
+            builder.addText("Employee End of Day Report")
+
+            builder.addFeedLine(1)
+            builder.addTextStyle(
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.COLOR_1
+            )
+            addCustomerTextSize(builder, SMALL)
+            addHorizontalLine(builder)
+
+            builder.addFeedLine(1)
+
+            builder.addTextFont(Builder.FONT_E)
+            builder.addTextAlign(Builder.ALIGN_CENTER)
+            builder.addTextLang(Builder.LANG_EN)
+            addCustomerTextSize(builder, SMALL)
+            builder.addTextStyle(
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.COLOR_1
+            )
+            builder.addText("Employee : " + binding.spTerminals.selectedItem.toString())
+
+            builder.addFeedLine(1)
+
+            addHorizontalLine(builder)
+
+            if (eodReportData?.salesSummary?.isNotEmpty() == true) {
+                builder.addFeedLine(2)
+                builder.addTextSize(2, 2)
+
+                builder.addTextFont(Builder.FONT_E)
+                builder.addTextAlign(Builder.ALIGN_CENTER)
+                builder.addTextLang(Builder.LANG_EN)
+                addCustomerTextSize(builder, MEDIUM)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.TRUE,
+                    Builder.COLOR_1
+                )
+                builder.addText("ORDER SALES DETAILS")
+                builder.addFeedLine(2)
+
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.COLOR_1
+                )
+                addCustomerTextSize(builder, SMALL)
+                addHorizontalLine(builder)
+
+                builder.addTextFont(Builder.FONT_E)
+                builder.addTextAlign(Builder.ALIGN_CENTER)
+                builder.addTextLang(Builder.LANG_EN)
+                addCustomerTextSize(builder, SMALL)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.COLOR_1
+                )
+                builder.addFeedLine(1)
+
+                eodReportData?.salesSummary?.forEach {
+
+                    builder.addTextLineSpace(30)
+                    builder.addFeedUnit(30)
+                    builder.addTextFont(Builder.FONT_E)
+                    // builder.addTextAlign(Builder.ALIGN_LEFT)
+                    builder.addTextLang(Builder.LANG_EN)
+                    addCustomerTextSize(builder, SMALL)
+                    builder.addTextStyle(
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.COLOR_1
+                    )
+                    builder.addText(
+                        padLine(
+                            it.key,
+                            MethodUtils.roundOffAmount(it.value.toString().toDouble()),
+                            48
+                        )
+                    )
+                }
+
+            }
+
+            if (eodReportData?.salesAndTaxesSummary?.isNotEmpty() == true) {
+                builder.addFeedLine(3)
+                builder.addTextSize(2, 2)
+
+                builder.addTextFont(Builder.FONT_E)
+                builder.addTextAlign(Builder.ALIGN_CENTER)
+                builder.addTextLang(Builder.LANG_EN)
+                addCustomerTextSize(builder, MEDIUM)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.TRUE,
+                    Builder.COLOR_1
+                )
+                builder.addText("SALES AND TAXES SUMMARY")
+
+                builder.addFeedLine(2)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.COLOR_1
+                )
+                addCustomerTextSize(builder, SMALL)
+                addHorizontalLine(builder)
+
+
+                builder.addTextLineSpace(30)
+                builder.addFeedUnit(30)
+                builder.addTextFont(Builder.FONT_E)
+                // builder.addTextAlign(Builder.ALIGN_LEFT)
+                builder.addTextLang(Builder.LANG_EN)
+                addCustomerTextSize(builder, SMALL)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.TRUE,
+                    Builder.COLOR_1
+                )
+                builder.addText(padLine("Category(Quantity)","Amount",48))
+                builder.addFeedLine(1)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.COLOR_1
+                )
+                addCustomerTextSize(builder, SMALL)
+                addHorizontalLine(builder)
+
+
+                eodReportData?.salesAndTaxesSummary?.forEach {
+                    builder.addTextLineSpace(30)
+                    builder.addFeedUnit(30)
+                    builder.addTextFont(Builder.FONT_E)
+                    // builder.addTextAlign(Builder.ALIGN_LEFT)
+                    builder.addTextLang(Builder.LANG_EN)
+                    addCustomerTextSize(builder, SMALL)
+                    builder.addTextStyle(
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.COLOR_1
+                    )
+                    builder.addText(
+                        padLine(
+                            it.key,
+                            MethodUtils.roundOffAmount(it.value.toString().toDouble()),
+                            48
+                        )
+                    )
+                }
+
+            }
+
+
+
+
+
+
+            builder.addFeedLine(1)
+            builder.addCut(Builder.CUT_FEED)
+
+            val status = IntArray(1)
+            val battery = IntArray(1)
+
+            try {
+
+
+                PrinterClass.getPrinter()?.sendData(
+                    builder,
+                    if (customerReceiptPrinters.name.substring(0, 6).toString()
+                            .lowercase() == "TM-m30".lowercase() || customerReceiptPrinters.name.substring(
+                            0,
+                            6
+                        ).toString().lowercase() == "TM-m10".lowercase()
+                    ) {
+                        PrinterClass.BLUETOOTH_TIMEOUT
+                    } else {
+                        PrinterClass.BLUETOOTH_TIMEOUT
+
+                    }, status, battery
+                )
+
+                PrinterClass.closePrinter()
+
+                //findNavController().navigate(R.id.action_orderCompleteFragment_to_dashboardCategoryNew)
+                //PrinterClass.getPrinter()?.sendData(builder, 0, status, battery)
+            } catch (e: Exception) {
+                PrinterClass.closePrinter()
+                e.printStackTrace()
+                Log.e(TAG, "PrinterError: " + e.localizedMessage)
+            }
+
+        } catch (e: java.lang.Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    private fun customerPrinters() {
+        viewModel.getCustomerPrinterList().observe(viewLifecycleOwner, {
+            when (it.status) {
+                Status.SUCCESS -> {
+                    ProgressUtils.dismissProgressDialog()
+                    if (it.data != null) {
+                        customerList = it.data
+
+
+                    }
+
+                }
+                Status.ERROR -> {
+                    ProgressUtils.dismissProgressDialog()
+                }
+
+                Status.LOADING -> {
+                    ProgressUtils.showProgressDialog(requireActivity())
+                }
+
+            }
+
+        }
+        )
     }
 
     private fun loadSettings() {
@@ -414,6 +813,9 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
         }
         viewModel.data.observe(viewLifecycleOwner, EventObserver { data ->
             data.let {
+
+                eodReportData = it
+
 
                 //salesSummary
                 showHide(
