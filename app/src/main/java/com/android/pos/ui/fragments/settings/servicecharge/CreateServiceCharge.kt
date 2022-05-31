@@ -17,7 +17,9 @@ import com.android.pos.data.remote.Constants.KEY
 import com.android.pos.databinding.DialogAddServiceChargeBinding
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.ProgressUtils
+import com.android.pos.utils.extensions.gone
 import com.android.pos.utils.extensions.liveSnackBar
+import com.android.pos.utils.extensions.visible
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -29,7 +31,7 @@ class CreateServiceCharge : Fragment() {
 
     var isEdit: Boolean = false
     private lateinit var serviceChargeData: TbServiceCharge
-
+    var isfrom = "takeout"
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -40,9 +42,14 @@ class CreateServiceCharge : Fragment() {
 
         binding.viewModel = viewModel
         binding.createServiceChargeFragment = this
-
+        isfrom = arguments?.getString("isFrom", "takeout").toString()
         isEdit = arguments?.getBoolean("isEdit")!!
 
+        if (isfrom == "dinein") {
+            binding.linearGuest?.visible()
+        } else {
+            binding.linearGuest?.gone()
+        }
         binding.header.txtSave.text = getString(R.string.save)
         binding.header.txtTitle.text = getString(R.string.add_service_charge)
 
@@ -50,12 +57,12 @@ class CreateServiceCharge : Fragment() {
             binding.header.txtSave.text = getString(R.string.update)
             binding.header.txtTitle.text = getString(R.string.update_service_charge)
             serviceChargeData = arguments?.getParcelable("serviceChargeObject")!!
-            binding.editPercentage?.setText(String.format("%.2f",serviceChargeData.percentage))
+            binding.editPercentage?.setText(String.format("%.2f", serviceChargeData.percentage))
             viewModel.setDiscountData(serviceChargeData)
 
             binding.swtEnableCharge.isChecked = serviceChargeData.isEnabled
 
-            viewModel.isEditData(isEdit, serviceChargeData.id)
+            viewModel.isEditData(isEdit, serviceChargeData.id,isfrom)
         }
 
         setupSnackbar()
@@ -80,8 +87,8 @@ class CreateServiceCharge : Fragment() {
             }
 
             override fun afterTextChanged(s: Editable?) {
-                if(s.toString().isNotEmpty()){
-                    if(s.toString().toDouble()>100){
+                if (s.toString().isNotEmpty()) {
+                    if (s.toString().toDouble() > 100) {
                         binding.editPercentage?.setText("100")
                         binding.editPercentage.setSelection(binding.editPercentage.length())
                     }
@@ -90,11 +97,21 @@ class CreateServiceCharge : Fragment() {
 
         })
         binding.header.txtSave.setOnClickListener {
-            var subPer ="0.0"
-            if(binding.editPercentage.text?.isNotEmpty() == true){
+            var subPer = "0.0"
+            if (binding.editPercentage.text?.isNotEmpty() == true) {
                 subPer = binding.editPercentage?.text.toString().split(" ")[0]
             }
             viewModel.createServiceChargeDetails.value?.percentage = subPer.toDouble()
+            if (isfrom == "dinein") {
+                viewModel.createServiceChargeDetails.value?.min_guest_count =
+                    binding.editMinguest?.text.toString().toInt()
+                viewModel.createServiceChargeDetails.value?.max_guest_count =
+                    binding.editMaxguest?.text.toString().toInt()
+                viewModel.createServiceChargeDetails.value?.order_type = "DineIn"
+            } else {
+                viewModel.createServiceChargeDetails.value?.order_type = "TakeOutAndParkOrder"
+            }
+
             viewModel.submit()
         }
 

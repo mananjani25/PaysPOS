@@ -8,19 +8,19 @@ import com.android.pos.data.entities.TbServiceCharge
 import com.android.pos.databinding.ViewServiceChargeItemBinding
 import com.android.pos.ui.fragments.settings.servicecharge.ServiceChargeListViewModel
 
-class ServiceChargeListAdapter(val viewModel: ServiceChargeListViewModel) :
-    RecyclerView.Adapter<ServiceChargeListAdapter.MyViewHolder>() {
+
+class ServiceChargeDineinListAdapter(val viewModel: ServiceChargeListViewModel) :
+    RecyclerView.Adapter<ServiceChargeDineinListAdapter.MyViewHolder>() {
 
     var serviceChargeList = ArrayList<TbServiceCharge>()
     private var mCallback: ItemCallback? = null
     fun setCallback(callback: ItemCallback) {
         mCallback = callback
     }
-
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
-    ): ServiceChargeListAdapter.MyViewHolder {
+    ): ServiceChargeDineinListAdapter.MyViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         val binding = ViewServiceChargeItemBinding.inflate(inflater, parent, false)
 
@@ -28,12 +28,12 @@ class ServiceChargeListAdapter(val viewModel: ServiceChargeListViewModel) :
 
     }
 
-    override fun onBindViewHolder(holder: ServiceChargeListAdapter.MyViewHolder, position: Int) {
+    override fun onBindViewHolder(holder: ServiceChargeDineinListAdapter.MyViewHolder, position: Int) {
         val itemBinding = holder.discountItemBinding
         itemBinding.serviceChargeModel = serviceChargeList[position]
         itemBinding.viewModel = viewModel
         itemBinding.layoutMenu.imgOrderMenu.setOnClickListener {
-            mCallback?.onItemClickListener(it, position, serviceChargeList[position].order_type)
+            mCallback?.onItemClickDineinListener(it, position,serviceChargeList[position].order_type)
         }
         itemBinding.executePendingBindings()
     }
@@ -56,10 +56,16 @@ class ServiceChargeListAdapter(val viewModel: ServiceChargeListViewModel) :
     inner class MyViewHolder(val discountItemBinding: ViewServiceChargeItemBinding) :
         RecyclerView.ViewHolder(discountItemBinding.root) {
 
-    }
+        init {
 
+
+        }
+    }
 
     interface ItemCallback {
-        fun onItemClickListener(view: View?, pos: Int, order_type: String)
+        fun onItemClickDineinListener(view: View?, pos: Int, order_type: String)
     }
+
+
+
 }

@@ -87,6 +87,7 @@ import com.android.pos.data.remote.Constants.REPORT_SUMMARY
 import com.android.pos.data.remote.Constants.SERVICE_CHARGE
 import com.android.pos.data.remote.Constants.SERVICE_CHARGE_ACTIVE
 import com.android.pos.data.remote.Constants.SERVICE_CHARGE_UPDATE_DELETE
+import com.android.pos.data.remote.Constants.SERVICE_CHARGE_WHOLE
 import com.android.pos.data.remote.Constants.SYNC_VENUE_DATA
 import com.android.pos.data.remote.Constants.SYNC_VENUE_DETAILS
 import com.android.pos.data.remote.Constants.TAXES
@@ -179,9 +180,15 @@ interface ApiService {
     ): DeletePrinterResponseModel
 
     @PUT(UPDATE_SERVICECHARGE)
-    suspend fun updateServiceChargeEnable(
+    suspend fun updateServiceChargeTakeoutEnable(
         @Path("id") Id: Int,
         @Query("service_charge_enable") service_charge_enable: Boolean,
+    ): ServiceChargeUpdate
+
+    @PUT(UPDATE_SERVICECHARGE)
+    suspend fun updateServiceChargeDineinEnable(
+        @Path("id") Id: Int,
+        @Query("enable_dine_in_service_charge") service_charge_enable: Boolean,
     ): ServiceChargeUpdate
 
     @GET(SYNC_VENUE_DETAILS)
@@ -275,6 +282,9 @@ interface ApiService {
 
     @GET(SERVICE_CHARGE)
     suspend fun getServiceChargeList(): GetServiceChargeResponse
+
+    @GET(SERVICE_CHARGE_WHOLE)
+    suspend fun getServiceChargeWholeList(): ServiceChargeListResponse
 
     @GET(LOYALTY_POINT)
     suspend fun loyaltyPointList(): LoyaltyPointResponse

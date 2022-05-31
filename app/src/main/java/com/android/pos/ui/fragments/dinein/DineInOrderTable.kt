@@ -3855,7 +3855,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
                 addWholeTbItemToGuest(
                     builder, listWTitems.get(i), customerSettingModel.fonts,
-                    customerSettingModel.showModifiers, guestCount, serviceChargeList
+                    customerSettingModel.showModifiers, guestCount, serviceChargeList,
+                    prefProvider
                 )
             }
 

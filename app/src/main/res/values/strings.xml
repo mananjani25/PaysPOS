@@ -80,6 +80,9 @@
 
     <string name="tip_name_validate">Please enter Tip Name</string>
     <string name="tip_rate_validate">Please enter valid Tip Rate</string>
+    
+    <string name="minguest_valiidation">Please enter Minimum Guest Number</string>
+    <string name="maxguest_valiidation">Please enter Maximum Guest Number</string>
 
     <string name="discount_name_validate">Please enter Discount Name</string>
     <string name="discount_rate_validate">Please enter valid Discount Rate</string>
@@ -174,6 +177,7 @@
     <string name="search_modifiers">Search Modifiers</string>
     <string name="create_modifier_set">Create Modifier Set</string>
     <string name="tv_home">Home</string>
+    <string name="tv_add_new">Add New</string>
     <string name="tv_price">Price</string>
     <string name="tv_quantity">Quantity</string>
     <string name="tv_total">Total</string>
@@ -802,6 +806,8 @@
     <string name="business_name_">Business Name<font color='#E90C0C'>*</font></string>
     <string name="business_phone_number">Business Phone Number<font color='#E90C0C'>*</font></string>
     <string name="time_zone">Time Zone<font color='#E90C0C'>*</font></string>
+    <string name="min_guest">Min Guest<font color='#E90C0C'>*</font></string>
+    <string name="max_guest">Max Guest<font color='#E90C0C'>*</font></string>
 
 
 </resources>

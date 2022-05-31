@@ -20,23 +20,6 @@
             android:layout_marginBottom="@dimen/_5sdp"
             android:orientation="vertical">
 
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/txtAddServiceCharge"
-                style="@style/CustomFontBold"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginTop="@dimen/_30sdp"
-                android:layout_marginBottom="@dimen/_10sdp"
-                android:background="@drawable/button_action_hover"
-                android:gravity="center"
-                android:visibility="gone"
-                android:paddingVertical="@dimen/_7sdp"
-                android:paddingHorizontal="@dimen/_5sdp"
-                android:text="@string/add_service_charge_plus"
-                android:textColor="@color/white"
-                android:textSize="@dimen/_7mdpi"
-                app:textAllCaps="false" />
 
 
             <androidx.appcompat.widget.AppCompatTextView
@@ -52,13 +35,112 @@
                 app:textAllCaps="false" />
 
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/rvServiceCharge"
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:id="@+id/linear_takeout_OpenOrder"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                tools:itemCount="5"
-                tools:listitem="@layout/view_note_item" />
+                android:orientation="vertical"
+                android:layout_height="wrap_content">
+
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+
+                    <androidx.appcompat.widget.AppCompatImageView
+                        android:id="@+id/imgCheckBox"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:padding="@dimen/_5sdp"
+                        android:src="@drawable/ic_check_box_unchecked" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        style="@style/CustomFontSemiBold"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginStart="@dimen/_5sdp"
+                        android:gravity="start"
+                        android:padding="@dimen/_5sdp"
+                        android:text="@string/enable_service_charge_for_take_out_amp_open_order"
+                        android:textColor="@color/txtColor"
+                        android:textSize="@dimen/setting_inner_text_size" />
+                </androidx.appcompat.widget.LinearLayoutCompat>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvServiceCharge_takeoutopenorder"
+                    android:layout_width="match_parent"
+                    android:layout_marginTop="@dimen/_10sdp"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="@dimen/_10sdp"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    tools:itemCount="1"
+                    tools:listitem="@layout/view_note_item" />
+
+            </androidx.appcompat.widget.LinearLayoutCompat>
+
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:id="@+id/linear_dinein"
+                android:layout_width="match_parent"
+                android:layout_marginTop="@dimen/_10sdp"
+                android:orientation="vertical"
+                android:layout_height="wrap_content">
+
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
+
+
+                    <androidx.appcompat.widget.AppCompatImageView
+                        android:id="@+id/imgCheckBox_dinein"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:padding="@dimen/_5sdp"
+                        android:src="@drawable/ic_check_box_unchecked" />
+
+                    <androidx.appcompat.widget.AppCompatTextView
+                        style="@style/CustomFontSemiBold"
+                        android:layout_width="0dp"
+                        android:layout_weight="7"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginStart="@dimen/_5sdp"
+                        android:gravity="start"
+                        android:padding="@dimen/_5sdp"
+                        android:text="@string/enable_service_charge_for_dine_in"
+                        android:textColor="@color/txtColor"
+                        android:textSize="@dimen/setting_inner_text_size" />
+
+                    <TextView
+                        android:id="@+id/txt_addnew"
+                        android:layout_width="wrap_content"
+                        android:layout_height="@dimen/_20sdp"
+                        android:layout_gravity="center"
+                        android:fontFamily="@font/sf_pro_display_semibold"
+                        android:text="@string/tv_add_new"
+                        android:gravity="center"
+                        android:textColor="@color/white"
+                        android:background="@drawable/button_action_hover"
+                        android:paddingHorizontal="@dimen/padding_home_button"
+                        android:textSize="@dimen/_7mdpi"
+                        />
+
+                </androidx.appcompat.widget.LinearLayoutCompat>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvServiceCharge_dineiin"
+                    android:layout_width="match_parent"
+                    android:layout_marginTop="@dimen/_10sdp"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="@dimen/_10sdp"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    tools:itemCount="5"
+                    tools:listitem="@layout/view_note_item" />
+
+            </androidx.appcompat.widget.LinearLayoutCompat>
 
 
         </androidx.appcompat.widget.LinearLayoutCompat>

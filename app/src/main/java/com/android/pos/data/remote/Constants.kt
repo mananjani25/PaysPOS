@@ -151,6 +151,7 @@ object Constants {
     const val NOTES_ACTIVE = "dynamic_notes/{id}/active"
 
     const val SERVICE_CHARGE = "service_charges"
+    const val SERVICE_CHARGE_WHOLE = "service_charges/show_all_service_charges"
     const val SERVICE_CHARGE_UPDATE_DELETE = "service_charges/{id}"
     const val SERVICE_CHARGE_ACTIVE = "service_charges/{id}/active"
 

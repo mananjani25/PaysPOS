@@ -171,10 +171,58 @@
 
 
 
+
+
                         </androidx.appcompat.widget.LinearLayoutCompat>
 
 
+                        <androidx.appcompat.widget.LinearLayoutCompat
+                            android:id="@+id/linear_guest"
+                            android:layout_width="match_parent"
+                            android:orientation="horizontal"
+                            android:visibility="gone"
+                            android:layout_marginTop="@dimen/_15sdp"
+                            android:layout_height="wrap_content">
+                            <androidx.appcompat.widget.AppCompatEditText
+                                android:id="@+id/edit_minguest"
+                                style="@style/CustomFontSemiBold"
+                                android:layout_width="0dp"
+                                android:layout_weight="5"
+                                android:layout_height="wrap_content"
+                                android:background="@drawable/background_square_border_grey"
+                                android:digits="0123456789"
+                                android:hint="@string/min_guest"
+                                android:imeOptions="actionNext"
+                                android:maxLength="3"
+                                android:layout_marginRight="@dimen/_5sdp"
+                                android:inputType="textVisiblePassword"
+                                android:paddingVertical="@dimen/_9sdp"
+                                android:paddingLeft="@dimen/_9sdp"
+                                android:textColor="@color/txtColor"
+                                android:textColorHint="@color/hintColor"
+                                android:textSize="@dimen/_7mdpi"
+                                />
+                            <androidx.appcompat.widget.AppCompatEditText
+                                android:id="@+id/edit_maxguest"
+                                style="@style/CustomFontSemiBold"
+                                android:layout_width="0dp"
+                                android:layout_weight="5"
+                                android:layout_height="wrap_content"
+                                android:background="@drawable/background_square_border_grey"
+                                android:digits="0123456789"
+                                android:hint="@string/max_guest"
+                                android:imeOptions="actionNext"
+                                android:maxLength="3"
+                                android:layout_marginLeft="@dimen/_5sdp"
+                                android:inputType="textVisiblePassword"
+                                android:paddingVertical="@dimen/_9sdp"
+                                android:paddingLeft="@dimen/_9sdp"
+                                android:textColor="@color/txtColor"
+                                android:textColorHint="@color/hintColor"
+                                android:textSize="@dimen/_7mdpi"
+                                />
 
+                        </androidx.appcompat.widget.LinearLayoutCompat>
 
                     </androidx.appcompat.widget.LinearLayoutCompat>
 

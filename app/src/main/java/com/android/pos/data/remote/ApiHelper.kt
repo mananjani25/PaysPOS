@@ -49,7 +49,11 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
         getResult { apiService.updatePrinterStatus(id, terminal_id, status) }
 
     suspend fun updateServiceChargeEnable(id: Int, enable_service_charge: Boolean) =
-        getResult { apiService.updateServiceChargeEnable(id, enable_service_charge) }
+        getResult { apiService.updateServiceChargeTakeoutEnable(id, enable_service_charge) }
+
+
+    suspend fun updateServiceChargeDininEnable(id: Int, enable_service_charge: Boolean) =
+        getResult { apiService.updateServiceChargeDineinEnable(id, enable_service_charge) }
 
     suspend fun syncVenueDetails() =
         getResult { apiService.syncVenueDetails() }
@@ -120,6 +124,9 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
 
     suspend fun getServiceChargeList() =
         getResult { apiService.getServiceChargeList() }
+
+    suspend fun getServiceChargeWholeList() =
+        getResult { apiService.getServiceChargeWholeList() }
 
     suspend fun loyaltyPointList() =
         getResult { apiService.loyaltyPointList() }
