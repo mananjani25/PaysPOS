@@ -11,10 +11,8 @@ import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import com.android.pos.data.entities.TbItem
 import com.android.pos.data.entities.TbServiceCharge
-import com.android.pos.data.model.responseModel.CreateOrderResponse
-import com.android.pos.data.model.responseModel.GetOrderDetailsResponse
-import com.android.pos.data.model.responseModel.GetTipReponse
-import com.android.pos.data.model.responseModel.OpenOrderResponse
+import com.android.pos.data.model.responseModel.*
+import com.android.pos.data.model.responseModel.report.KeyValue
 import com.android.pos.data.remote.Constants
 import com.epson.eposprint.Builder
 
@@ -43,6 +41,163 @@ fun padLine(
         partOne + repeat(" ", padding) + partTwo
     }
     return concat
+}
+
+fun addPaymentDetailsHeader(builder: Builder): Builder {
+    builder.addTextLineSpace(30)
+    builder.addFeedUnit(30)
+    builder.addTextFont(Builder.FONT_E)
+    // builder.addTextAlign(Builder.ALIGN_LEFT)
+    builder.addTextLang(Builder.LANG_EN)
+    addCustomerTextSize(builder, Constants.SMALL)
+    builder.addTextStyle(
+        Builder.FALSE,
+        Builder.FALSE,
+        Builder.TRUE,
+        Builder.COLOR_1
+    )
+    builder.addText("Details" + repeat(" ", 20) + "Refund" + repeat(" ", 9) + "Amount")
+
+
+    return builder
+}
+
+fun addPaymentDetailsThreeData(builder: Builder, keyValue: java.util.ArrayList<KeyValue>): Builder {
+    builder.addTextLineSpace(30)
+    builder.addFeedUnit(30)
+    builder.addTextFont(Builder.FONT_E)
+    // builder.addTextAlign(Builder.ALIGN_LEFT)
+    builder.addTextLang(Builder.LANG_EN)
+    addCustomerTextSize(builder, Constants.SMALL)
+    builder.addTextStyle(
+        Builder.FALSE,
+        Builder.FALSE,
+        Builder.FALSE,
+        Builder.COLOR_1
+    )
+    var title = ""
+    var refund = ""
+    var amount = ""
+
+
+    keyValue.forEach {
+
+
+        if (it.key.toString().toLowerCase().contains("Refund".toLowerCase())) {
+            refund = "$" + it.value
+        } else {
+            title = it.key.toString()
+            amount = MethodUtils.roundOffAmount( it.value.toString().toDouble())
+        }
+    }
+
+    var fPart = title + repeat(" ", 27 - title.length) + refund
+    var spaceLastPart = 48 - fPart.length
+    var spaceLast = 0
+    if (spaceLastPart > 1 && amount.length < spaceLastPart) {
+        spaceLast = spaceLastPart - amount.length
+    }
+
+    fPart += repeat(" ", spaceLast) + amount
+
+    builder.addText(fPart)
+
+    return builder
+}
+
+fun addPaymentDetailsTwoData(builder: Builder, keyValue: KeyValue): Builder {
+    builder.addTextLineSpace(30)
+    builder.addFeedUnit(30)
+    builder.addTextFont(Builder.FONT_E)
+    // builder.addTextAlign(Builder.ALIGN_LEFT)
+    builder.addTextLang(Builder.LANG_EN)
+    addCustomerTextSize(builder, Constants.SMALL)
+    builder.addTextStyle(
+        Builder.FALSE,
+        Builder.FALSE,
+        Builder.FALSE,
+        Builder.COLOR_1
+    )
+    builder.addText(padLine(keyValue.key, MethodUtils.roundOffAmount(keyValue.value.toString().toDouble() ?: 0.0), 48))
+
+    return builder
+}
+
+fun addSixHeaderForOrderSaleDetails(builder: Builder): Builder {
+
+
+    builder.addTextLineSpace(30)
+    builder.addFeedUnit(30)
+    builder.addTextFont(Builder.FONT_E)
+    // builder.addTextAlign(Builder.ALIGN_LEFT)
+    builder.addTextLang(Builder.LANG_EN)
+    addCustomerTextSize(builder, Constants.SMALL)
+    builder.addTextStyle(
+        Builder.FALSE,
+        Builder.FALSE,
+        Builder.TRUE,
+        Builder.COLOR_1
+    )
+
+    builder.addText("OrderId      Tip      SC     PayType      Amount")
+
+    return builder
+}
+
+fun addItemsInOrderSalesDetails(
+    builder: Builder,
+    details: EodReportResponse.Data.OrderSalesDetails.Details
+): Builder {
+
+
+    builder.addTextLineSpace(30)
+    builder.addFeedUnit(30)
+    builder.addTextFont(Builder.FONT_E)
+    // builder.addTextAlign(Builder.ALIGN_LEFT)
+    builder.addTextLang(Builder.LANG_EN)
+    addCustomerTextSize(builder, Constants.SMALL)
+    builder.addTextStyle(
+        Builder.FALSE,
+        Builder.FALSE,
+        Builder.FALSE,
+        Builder.COLOR_1
+    )
+    var orderID = "#" + details.orderId.length
+    var orderIdLength = 0
+    if (orderID.length < 7) {
+        orderIdLength = orderID.length - 7
+    }
+
+    var tipAmount = MethodUtils.roundOffAmount(details.tip)
+    var tipAmountLength = 0
+    if (tipAmount.length < 7) {
+        tipAmountLength = tipAmount.length - 7
+    }
+
+    var serviceCharge = MethodUtils.roundOffAmount(details.serviceCharge)
+    var serviceChargeLength = 0
+    if (serviceCharge.length < 7) {
+        serviceChargeLength = serviceCharge.length - 7
+    }
+
+    var amount = MethodUtils.roundOffAmount(details.amount)
+    var amountLength = 0
+    if (amount.length < 8) {
+        amountLength = amount.length - 8
+    }
+
+    var finalText = "${orderID}" + "${tipAmount}" + "${details.payType}" + amount
+
+    if (finalText.length < 48) {
+        when (48 - finalText.length) {
+
+
+        }
+    }
+    Log.e("finalTextfinalText", "finalTextfinalText  ${finalText}")
+
+    builder.addText(finalText)
+    return builder
 }
 
 

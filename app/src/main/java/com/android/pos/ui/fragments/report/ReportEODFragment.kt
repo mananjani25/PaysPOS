@@ -372,7 +372,7 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
             addHorizontalLine(builder)
 
-            if (eodReportData?.salesSummary?.isNotEmpty() == true) {
+            if (eodReportData?.orderSalesDetails?.data?.isNotEmpty() == true) {
                 builder.addFeedLine(2)
                 builder.addTextSize(2, 2)
 
@@ -387,6 +387,50 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
                     Builder.COLOR_1
                 )
                 builder.addText("ORDER SALES DETAILS")
+                builder.addFeedLine(2)
+
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.COLOR_1
+                )
+                addCustomerTextSize(builder, SMALL)
+                addHorizontalLine(builder)
+
+                addSixHeaderForOrderSaleDetails(builder)
+                builder.addFeedLine(1)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.COLOR_1
+                )
+                addCustomerTextSize(builder, SMALL)
+                addHorizontalLine(builder)
+
+                eodReportData?.orderSalesDetails?.data?.forEach {
+                    addItemsInOrderSalesDetails(builder, it)
+                }
+
+
+            }
+
+            if (eodReportData?.salesSummary?.isNotEmpty() == true) {
+                builder.addFeedLine(3)
+                builder.addTextSize(2, 2)
+
+                builder.addTextFont(Builder.FONT_E)
+                builder.addTextAlign(Builder.ALIGN_CENTER)
+                builder.addTextLang(Builder.LANG_EN)
+                addCustomerTextSize(builder, MEDIUM)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.TRUE,
+                    Builder.COLOR_1
+                )
+                builder.addText("SALES SUMMARY")
                 builder.addFeedLine(2)
 
                 builder.addTextStyle(
@@ -474,7 +518,7 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
                     Builder.TRUE,
                     Builder.COLOR_1
                 )
-                builder.addText(padLine("Category(Quantity)","Amount",48))
+                builder.addText(padLine("Category(Quantity)", "Amount", 48))
                 builder.addFeedLine(1)
                 builder.addTextStyle(
                     Builder.FALSE,
@@ -510,6 +554,101 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
             }
 
+            if (eodReportData?.paymentDetails?.isNotEmpty() == true) {
+                builder.addFeedLine(3)
+                builder.addTextSize(2, 2)
+
+                builder.addTextFont(Builder.FONT_E)
+                builder.addTextAlign(Builder.ALIGN_CENTER)
+                builder.addTextLang(Builder.LANG_EN)
+                addCustomerTextSize(builder, MEDIUM)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.TRUE,
+                    Builder.COLOR_1
+                )
+                builder.addText("PAYMENT DETAILS")
+
+                builder.addFeedLine(2)
+                addCustomerTextSize(builder, SMALL)
+                addHorizontalLine(builder)
+
+                addPaymentDetailsHeader(builder)
+                builder.addFeedLine(1)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.COLOR_1
+                )
+                addCustomerTextSize(builder, SMALL)
+                addHorizontalLine(builder)
+
+                eodReportData?.paymentDetails?.forEach {
+
+                    if (it.size == 2) {
+
+
+                        addPaymentDetailsThreeData(builder, it)
+
+                    } else if (it.size == 1) {
+                        it.forEach {
+                            addPaymentDetailsTwoData(builder, it)
+                        }
+                    }
+                }
+
+
+            }
+
+            if (eodReportData?.tipDetails?.isNotEmpty() == true) {
+                builder.addFeedLine(3)
+                builder.addTextSize(2, 2)
+
+                builder.addTextFont(Builder.FONT_E)
+                builder.addTextAlign(Builder.ALIGN_CENTER)
+                builder.addTextLang(Builder.LANG_EN)
+                addCustomerTextSize(builder, MEDIUM)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.TRUE,
+                    Builder.COLOR_1
+                )
+                builder.addText("TIPS DETAILS")
+
+                builder.addFeedLine(2)
+                addCustomerTextSize(builder, SMALL)
+                addHorizontalLine(builder)
+
+                addPaymentDetailsHeader(builder)
+                builder.addFeedLine(1)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.COLOR_1
+                )
+                addCustomerTextSize(builder, SMALL)
+                addHorizontalLine(builder)
+
+                eodReportData?.tipDetails?.forEach {
+
+                    if (it.size == 2) {
+
+
+                        addPaymentDetailsThreeData(builder, it)
+
+                    } else if (it.size == 1) {
+                        it.forEach {
+                            addPaymentDetailsTwoData(builder, it)
+                        }
+                    }
+                }
+
+
+            }
 
 
 
