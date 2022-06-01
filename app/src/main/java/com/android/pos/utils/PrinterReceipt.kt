@@ -87,7 +87,7 @@ fun addPaymentDetailsThreeData(builder: Builder, keyValue: java.util.ArrayList<K
             refund = "$" + it.value
         } else {
             title = it.key.toString()
-            amount = MethodUtils.roundOffAmount( it.value.toString().toDouble())
+            amount = MethodUtils.roundOffAmount(it.value.toString().toDouble())
         }
     }
 
@@ -118,9 +118,34 @@ fun addPaymentDetailsTwoData(builder: Builder, keyValue: KeyValue): Builder {
         Builder.FALSE,
         Builder.COLOR_1
     )
-    builder.addText(padLine(keyValue.key, MethodUtils.roundOffAmount(keyValue.value.toString().toDouble() ?: 0.0), 48))
+    builder.addText(
+        padLine(
+            keyValue.key,
+            MethodUtils.roundOffAmount(keyValue.value.toString().toDouble() ?: 0.0),
+            48
+        )
+    )
 
     return builder
+}
+
+fun addRefundVoidsMultiple(builder: Builder, keyValue: java.util.ArrayList<KeyValue>): Builder {
+    builder.addTextLineSpace(30)
+    builder.addFeedUnit(30)
+    builder.addTextFont(Builder.FONT_E)
+    // builder.addTextAlign(Builder.ALIGN_LEFT)
+    builder.addTextLang(Builder.LANG_EN)
+    addCustomerTextSize(builder, Constants.SMALL)
+    builder.addTextStyle(
+        Builder.FALSE,
+        Builder.FALSE,
+        Builder.FALSE,
+        Builder.COLOR_1
+    )
+
+
+    return builder
+
 }
 
 fun addSixHeaderForOrderSaleDetails(builder: Builder): Builder {
