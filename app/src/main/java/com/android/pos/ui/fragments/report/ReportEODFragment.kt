@@ -636,8 +636,6 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
                 eodReportData?.tipDetails?.forEach {
 
                     if (it.size == 2) {
-
-
                         addPaymentDetailsThreeData(builder, it)
 
                     } else if (it.size == 1) {
@@ -647,6 +645,153 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
                     }
                 }
 
+
+            }
+
+            if (eodReportData?.taxDetails?.isNotEmpty() == true) {
+                builder.addFeedLine(3)
+                builder.addTextSize(2, 2)
+
+                builder.addTextFont(Builder.FONT_E)
+                builder.addTextAlign(Builder.ALIGN_CENTER)
+                builder.addTextLang(Builder.LANG_EN)
+                addCustomerTextSize(builder, MEDIUM)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.TRUE,
+                    Builder.COLOR_1
+                )
+                builder.addText("TAX DETAILS")
+                builder.addFeedLine(2)
+
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.COLOR_1
+                )
+                addCustomerTextSize(builder, SMALL)
+                addHorizontalLine(builder)
+
+                builder.addTextFont(Builder.FONT_E)
+                builder.addTextAlign(Builder.ALIGN_CENTER)
+                builder.addTextLang(Builder.LANG_EN)
+                addCustomerTextSize(builder, SMALL)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.COLOR_1
+                )
+                builder.addFeedLine(1)
+
+                eodReportData?.taxDetails?.forEach {
+
+                    builder.addTextLineSpace(30)
+                    builder.addFeedUnit(30)
+                    builder.addTextFont(Builder.FONT_E)
+                    // builder.addTextAlign(Builder.ALIGN_LEFT)
+                    builder.addTextLang(Builder.LANG_EN)
+                    addCustomerTextSize(builder, SMALL)
+                    builder.addTextStyle(
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.COLOR_1
+                    )
+                    builder.addText(
+                        padLine(
+                            it.key,
+                            MethodUtils.roundOffAmount(it.value.toString().toDouble()),
+                            48
+                        )
+                    )
+                }
+
+            }
+
+            if (eodReportData?.refundAndVoidDetails?.isNotEmpty() == true) {
+                builder.addFeedLine(3)
+                builder.addTextSize(2, 2)
+
+                builder.addTextFont(Builder.FONT_E)
+                builder.addTextAlign(Builder.ALIGN_CENTER)
+                builder.addTextLang(Builder.LANG_EN)
+                addCustomerTextSize(builder, MEDIUM)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.TRUE,
+                    Builder.COLOR_1
+                )
+                builder.addText("REFUNDS/VOIDS")
+                builder.addFeedLine(2)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.COLOR_1
+                )
+                addCustomerTextSize(builder, SMALL)
+                addHorizontalLine(builder)
+
+
+                builder.addTextLineSpace(30)
+                builder.addFeedUnit(30)
+                builder.addTextFont(Builder.FONT_E)
+                // builder.addTextAlign(Builder.ALIGN_LEFT)
+                builder.addTextLang(Builder.LANG_EN)
+                addCustomerTextSize(builder, SMALL)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.TRUE,
+                    Builder.COLOR_1
+                )
+                builder.addText(padLine("Order Id(Employee Name)", "Amount", 48))
+                builder.addFeedLine(1)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.COLOR_1
+                )
+                addCustomerTextSize(builder, SMALL)
+                addHorizontalLine(builder)
+                builder.addTextFont(Builder.FONT_E)
+                builder.addTextAlign(Builder.ALIGN_CENTER)
+                builder.addTextLang(Builder.LANG_EN)
+                addCustomerTextSize(builder, SMALL)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.COLOR_1
+                )
+                builder.addFeedLine(1)
+
+                eodReportData?.refundAndVoidDetails?.forEach {
+
+                    builder.addTextLineSpace(30)
+                    builder.addFeedUnit(30)
+                    builder.addTextFont(Builder.FONT_E)
+                    // builder.addTextAlign(Builder.ALIGN_LEFT)
+                    builder.addTextLang(Builder.LANG_EN)
+                    addCustomerTextSize(builder, SMALL)
+                    builder.addTextStyle(
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.COLOR_1
+                    )
+                    if (it.size > 1) {
+                        addRefundVoidsMultiple(builder,it)
+                    }
+                    else if (it.size == 1){
+
+                    }
+                }
 
             }
 
