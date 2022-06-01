@@ -142,6 +142,17 @@ fun addRefundVoidsMultiple(builder: Builder, keyValue: java.util.ArrayList<KeyVa
         Builder.FALSE,
         Builder.COLOR_1
     )
+    keyValue.forEach {
+        if (!it.key?.trim().equals("Item Count".trim(), true)) {
+            builder.addText(
+                padLine(
+                    it.key,
+                    MethodUtils.roundOffAmount(it.value.toString().toDouble() ?: 0.0),
+                    48
+                )
+            )
+        }
+    }
 
 
     return builder
@@ -166,6 +177,115 @@ fun addSixHeaderForOrderSaleDetails(builder: Builder): Builder {
 
     builder.addText("OrderId      Tip      SC     PayType      Amount")
 
+    return builder
+}
+
+fun addCreditTipAuditHeader(builder: Builder):Builder{
+    builder.addTextLineSpace(30)
+    builder.addFeedUnit(30)
+    builder.addTextFont(Builder.FONT_E)
+    // builder.addTextAlign(Builder.ALIGN_LEFT)
+    builder.addTextLang(Builder.LANG_EN)
+    addCustomerTextSize(builder, Constants.SMALL)
+    builder.addTextStyle(
+        Builder.FALSE,
+        Builder.FALSE,
+        Builder.FALSE,
+        Builder.COLOR_1
+    )
+
+    builder.addText("SubTotal" + repeat(" ", 20) + "Tip" + repeat(" ", 12) + "Total")
+
+    return builder
+
+}
+
+fun addCreditTipAuditData(
+    builder: Builder,
+    fPArt:String,
+    sPart:String,
+    lPart:String
+): Builder {
+    builder.addTextLineSpace(30)
+    builder.addFeedUnit(30)
+    builder.addTextFont(Builder.FONT_E)
+    // builder.addTextAlign(Builder.ALIGN_LEFT)
+    builder.addTextLang(Builder.LANG_EN)
+    addCustomerTextSize(builder, Constants.SMALL)
+    builder.addTextStyle(
+        Builder.FALSE,
+        Builder.FALSE,
+        Builder.FALSE,
+        Builder.COLOR_1
+    )
+
+
+
+    var pOne = fPArt + repeat(
+        " ",
+        20 - fPArt.length
+    ) + sPart
+    var lastPart = 48 - pOne.length
+    var amount = lPart
+    var spaceLast = 0
+    if (lastPart > 1 && amount.length < lastPart) {
+        spaceLast = lastPart - amount.length
+    }
+    pOne += repeat(" ", spaceLast) + amount
+
+    builder.addText(pOne)
+    return builder
+}
+
+fun addCreditCardBreakDown(builder: Builder): Builder {
+    builder.addTextLineSpace(30)
+    builder.addFeedUnit(30)
+    builder.addTextFont(Builder.FONT_E)
+    // builder.addTextAlign(Builder.ALIGN_LEFT)
+    builder.addTextLang(Builder.LANG_EN)
+    addCustomerTextSize(builder, Constants.SMALL)
+    builder.addTextStyle(
+        Builder.FALSE,
+        Builder.FALSE,
+        Builder.FALSE,
+        Builder.COLOR_1
+    )
+
+    builder.addText("CardName" + repeat(" ", 20) + "Tip" + repeat(" ", 11) + "Amount")
+
+    return builder
+}
+
+
+fun addCreditCardBreakDownData(
+    builder: Builder,
+    creditCardBreakdown: EodReportResponse.Data.CreditCardBreakdown
+): Builder {
+    builder.addTextLineSpace(30)
+    builder.addFeedUnit(30)
+    builder.addTextFont(Builder.FONT_E)
+    // builder.addTextAlign(Builder.ALIGN_LEFT)
+    builder.addTextLang(Builder.LANG_EN)
+    addCustomerTextSize(builder, Constants.SMALL)
+    builder.addTextStyle(
+        Builder.FALSE,
+        Builder.FALSE,
+        Builder.FALSE,
+        Builder.COLOR_1
+    )
+    var pOne = creditCardBreakdown.key + repeat(
+        " ",
+        20 - creditCardBreakdown.key.length
+    ) + MethodUtils.roundOffAmount(creditCardBreakdown.tips)
+    var lastPart = 48 - pOne.length
+    var amount = MethodUtils.roundOffAmount(creditCardBreakdown.value)
+    var spaceLast = 0
+    if (lastPart > 1 && amount.length < lastPart) {
+        spaceLast = lastPart - amount.length
+    }
+    pOne += repeat(" ", spaceLast) + amount
+
+    builder.addText(pOne)
     return builder
 }
 
@@ -266,7 +386,6 @@ fun padLineCustomerItem(
     }
     return concat
 }
-
 
 fun addCustomerTextSize(builder: Builder, font: String): Builder {
     when (font) {

@@ -276,6 +276,7 @@ class PosRepository @Inject constructor(
     suspend fun deleteEODReportSettings() =
         appDatabase.eodReportSettings().deleteEODReportSettings()
 
+    fun getEodReportSettings() = performGetOperationDatabase(databaseQuery = {appDatabase.eodReportSettings().eodSettingsData})
     suspend fun addAllNotesDatabase(data: List<NoteResponse.Data>) =
         appDatabase.notesDao().addAllNotesSuspend(data)
 

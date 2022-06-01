@@ -49,6 +49,8 @@ class ReportEODViewModel @Inject constructor(
         return posRepository.getEmployeeEmail(emp_id)
     }
 
+    fun getEODReportSettings() = posRepository.getEodReportSettings()
+
     fun getCustomerPrinterList(): LiveData<Resource<List<PrinterResponse.Data.CustomerReceiptPrinters>>> {
         return posRepository.getCustomerPrinters()
     }
