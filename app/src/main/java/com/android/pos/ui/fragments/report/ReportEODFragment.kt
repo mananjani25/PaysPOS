@@ -1252,6 +1252,46 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
 
             }
+            if (eodReportData?.employeeGuestDetails?.isNotEmpty() == true && eodReportConfiguration?.employeeGuestReport == true) {
+                builder.addFeedLine(3)
+                builder.addTextSize(2, 2)
+
+                builder.addTextFont(Builder.FONT_E)
+                builder.addTextAlign(Builder.ALIGN_CENTER)
+                builder.addTextLang(Builder.LANG_EN)
+                addCustomerTextSize(builder, MEDIUM)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.TRUE,
+                    Builder.COLOR_1
+                )
+                builder.addText("EMPLOYEE GUEST DETAILS")
+
+                builder.addFeedLine(2)
+                addCustomerTextSize(builder, SMALL)
+                addHorizontalLine(builder)
+
+                addCreditTipAuditHeader(builder)
+                builder.addFeedLine(1)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.COLOR_1
+                )
+                addCustomerTextSize(builder, SMALL)
+                addHorizontalLine(builder)
+
+                eodReportData?.employeeGuestDetails?.forEach {
+                    it.forEach {
+                        employeeGuestDetailsData(builder, it)
+                    }
+
+                }
+
+
+            }
 
 
 
