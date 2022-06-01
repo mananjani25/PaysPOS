@@ -19,10 +19,12 @@ import androidx.viewbinding.ViewBinding
 import com.android.pos.R
 import com.android.pos.data.entities.Employee
 import com.android.pos.data.model.ShiftRportConfiguration
+import com.android.pos.data.model.responseModel.report.KeyValue
 import com.android.pos.data.remote.Constants
 import com.android.pos.databinding.FragmentReportEodBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.adapter.*
+import com.android.pos.ui.adapter.boldpos.SalesPerCategorySummary
 import com.android.pos.ui.fragments.loginscreen.ClockInOwnerViewModel
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.EventObserver
@@ -36,6 +38,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
+import kotlin.collections.ArrayList
 import kotlin.math.abs
 
 @AndroidEntryPoint
@@ -71,7 +74,7 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
     private val employeeGuestDetailsAdapter by lazy { EmployeeGuestDetailsAdapter() }
     private val creditTipAuditAdapter by lazy { CreditTipAuditAdapter() }
     private val tipDetailsAdapter by lazy { PaymentDetailsAdapter(hideRefund = false) }
-    private val saleCategorySummaryAdapter by lazy { SalesCategorySummaryAdapter() }
+    private val saleCategorySummaryAdapter by lazy { SalesPerCategorySummary() }
 
 
     private val salesOrderDetailsAdapter by lazy { SalesOrderDetailsAdapter() }
@@ -335,7 +338,7 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
         } else {
             startDatestring = sdf.format(myCalendar1.time)
         }
-        Log.e("CheckDate","startingDate   $startDatestring $timestring")
+        Log.e("CheckDate", "startingDate   $startDatestring $timestring")
         return "$startDatestring $timestring"
     }
 
@@ -532,8 +535,27 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
                     )
                 }
                 if (it.salesPerCategorySummary != null) {
-                    saleCategorySummaryAdapter.add(it.salesPerCategorySummary)
-                    saleCategorySummaryAdapter.notifyDataSetChanged()
+
+                    var arrayListSalePerCategory: ArrayList<KeyValue> = arrayListOf()
+
+                    it.salesPerCategorySummary.forEachIndexed { index, arrayList ->
+                        if (index == 0) {
+                            arrayListSalePerCategory.add(KeyValue("Cash Sales", ""))
+                            arrayList.forEach {
+                                arrayListSalePerCategory.add(it)
+                            }
+                        } else if (index == 1) {
+                            arrayListSalePerCategory.add(KeyValue("Credit/Non Cash Sales", ""))
+                            arrayList.forEach {
+                                arrayListSalePerCategory.add(it)
+                            }
+
+                        }
+                    }
+                    if (arrayListSalePerCategory.isNotEmpty()) {
+                        saleCategorySummaryAdapter.add(arrayListSalePerCategory)
+                        saleCategorySummaryAdapter.notifyDataSetChanged()
+                    }
                 }
 
 
