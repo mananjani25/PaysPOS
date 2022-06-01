@@ -509,8 +509,16 @@ class DineInFragment : Fragment() {
                             bundle
                         )
                     } else {
-                        val status =
-                            "This table is locked by " + dineInFloorTableModel.lock_by_name + "."
+                        var status = ""
+                        if(dineInFloorTableModel.lock_by_name!=null){
+                            status =
+                                "This table is locked by " + dineInFloorTableModel.lock_by_name + "."
+                        }else{
+                            status =
+                                "This table is locked by " + dineInFloorTableModel.currentOrderDetails.employeeName + "."
+                        }
+
+
 
                         AlertUtils.showCustomAlertWithListenerWithOK(
                             requireContext(),
@@ -531,8 +539,15 @@ class DineInFragment : Fragment() {
                     }
 
                 } else {
-                    val status =
-                        "This table is locked by " + dineInFloorTableModel.lock_by_name + "."
+                    var status = ""
+                    if(dineInFloorTableModel.lock_by_name!=null){
+                        status =
+                            "This table is locked by " + dineInFloorTableModel.lock_by_name + "."
+                    }else{
+                        status =
+                            "This table is locked by " + dineInFloorTableModel.currentOrderDetails.employeeName + "."
+                    }
+
 
                     AlertUtils.showCustomAlertWithListenerWithOK(
                         requireContext(),
@@ -587,8 +602,15 @@ class DineInFragment : Fragment() {
                         bundle
                     )
                 } else {
-                    val status =
-                        "This table is locked by " + dineInFloorTableModel.lock_by_name + "."
+                    var status = ""
+                    if(dineInFloorTableModel.lock_by_name!=null){
+                        status =
+                            "This table is locked by " + dineInFloorTableModel.lock_by_name + "."
+                    }else{
+                        status =
+                            "This table is locked by " + dineInFloorTableModel.currentOrderDetails.employeeName + "."
+                    }
+
 
                     AlertUtils.showCustomAlertWithListenerWithOK(
                         requireContext(),
