@@ -109,10 +109,11 @@ class TeamList : Fragment(), CustomCallback, OperationCallback {
 
                 empObject?.let { it1 -> adapter.removeItem(it1, requireActivity()) }
 
-
-                if (deteleempObject == empObject) {
-                    loadTeamDetails(null)
+                if (adapter.getPeople()?.isNotEmpty() == true) {
+                    empObject = adapter.getPeople()?.get(0)
                 }
+                loadTeamDetails (empObject)
+
 
             }
         }
