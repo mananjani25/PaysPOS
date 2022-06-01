@@ -662,13 +662,54 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
 
                     }
                     R.id.menu_order_discount -> {
+
+
+
+
+
                         val bundle = Bundle()
                         bundle.putBoolean("isOrderDiscount", true)
                         bundle.putDouble("totalPrice", viewModel.totalPrice)
                         if (cartList?.isNotEmpty() == true) {
+
+                            var totalItemswithQuantity = 0
+
+                            if (prefProvider.getValue(
+                                    Constants.ORDER_TYPE,
+                                    TAKEOUT
+                                ) == Constants.DINE_IN
+                            ) {
+                                cartList?.get(0)?.dineInList?.forEach {
+                                    it.items.forEach { it1 ->
+                                        totalItemswithQuantity += it1.itemQuantity
+                                    }
+                                }
+                            } else {
+                                cartList?.get(0)?.items?.forEach {
+                                    totalItemswithQuantity += it.itemQuantity
+
+                                }
+                            }
+
+                            var perItemDiscount = 0.0
+                            if (cartList?.get(0)?.discountPrice != 0.0) {
+                                if (totalItemswithQuantity == 0) {
+                                    totalItemswithQuantity = 1
+                                }
+                                perItemDiscount =
+                                    MethodUtils.roundOffAmountDouble(
+                                        (cartList?.get(0)?.discountPrice
+                                            ?: 0.0) / totalItemswithQuantity
+                                    )
+                            }
+
+                            cartList?.get(0)
+                                ?.let { bundle.putDouble("orderDiscount", it.discountPrice) }
                             bundle.putDouble("orderDiscountPrice", cartList!![0].discountPrice)
                             bundle.putString("orderDiscountType", cartList!![0].discountType)
                             bundle.putDouble("selectedvalue", cartList!![0].discountSelectdValue)
+                            bundle.putDouble("itemOrderDiscount", perItemDiscount)
+                            bundle.putInt("totalquantity", totalItemswithQuantity)
                         }
                         findNavController().navigate(
                             R.id.action_manualSaleNew__to_addDiscountDialog,
@@ -1258,6 +1299,48 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
             val bundle = Bundle().apply {
                 putInt("totalquantity", totalquantity)
                 putBoolean("isFromDetails", true)
+
+                if (cartList?.isNotEmpty() == true) {
+
+                    var totalItemswithQuantity = 0
+
+                    if (prefProvider.getValue(
+                            Constants.ORDER_TYPE,
+                            TAKEOUT
+                        ) == Constants.DINE_IN
+                    ) {
+                        cartList?.get(0)?.dineInList?.forEach {
+                            it.items.forEach { it1 ->
+                                totalItemswithQuantity += it1.itemQuantity
+                            }
+                        }
+                    } else {
+                        cartList?.get(0)?.items?.forEach {
+                            totalItemswithQuantity += it.itemQuantity
+
+                        }
+                    }
+
+                    var perItemDiscount = 0.0
+                    if (cartList?.get(0)?.discountPrice != 0.0) {
+                        if (totalItemswithQuantity == 0) {
+                            totalItemswithQuantity = 1
+                        }
+                        perItemDiscount =
+                            MethodUtils.roundOffAmountDouble(
+                                (cartList?.get(0)?.discountPrice
+                                    ?: 0.0) / totalItemswithQuantity
+                            )
+                    }
+
+                    cartList?.get(0)
+                        ?.let { putDouble("orderDiscount", it.discountPrice) }
+                    putDouble("orderDiscountPrice", cartList!![0].discountPrice)
+                    putString("orderDiscountType", cartList!![0].discountType)
+                    putDouble("selectedvalue", cartList!![0].discountSelectdValue)
+                    putDouble("itemOrderDiscount", perItemDiscount)
+                    putInt("totalquantity", totalItemswithQuantity)
+                }
                 putParcelable("model", model)
             }
             findNavController().navigate(R.id.action_manualSaleNew_to_addDiscountDialog, bundle)
@@ -1556,6 +1639,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
             R.id.txt_discount -> {
                 val bundle = Bundle().apply {
                     putBoolean("isFromDetails", false)
+                    cartList?.get(0)?.let { putDouble("orderDiscount", it.discountPrice) }
                     putParcelable("model", data)
                 }
 
