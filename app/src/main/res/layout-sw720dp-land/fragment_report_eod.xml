@@ -823,7 +823,7 @@
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/txtSaleCategorySummary"
                     style="@style/ReportTitleStyle"
-                    android:text="Sales Per Category Summary" />
+                    android:text="Sales Per Category Summary \n\n (Mixed-payment order items not included)" />
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rvSaleCategorySummary"
