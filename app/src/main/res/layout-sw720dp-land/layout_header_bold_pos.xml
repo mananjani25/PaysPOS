@@ -4,10 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:ignore="MissingDefaultResource">
 
-    <LinearLayout
+    <RelativeLayout
         android:id="@+id/rlRoot"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="@dimen/_23sdp"
         android:background="@color/bg_color"
         android:orientation="horizontal"
         >
@@ -15,11 +15,9 @@
 
         <androidx.appcompat.widget.LinearLayoutCompat
             android:id="@+id/linearFirst"
-            android:layout_weight="5"
-            android:layout_width="0dp"
-            android:layout_gravity="center"
-            android:paddingVertical="@dimen/_1sdp"
-            android:layout_height="wrap_content">
+            android:layout_width="wrap_content"
+            android:gravity="center"
+            android:layout_height="match_parent">
 
             <ImageView
                 android:id="@+id/imgDrawer"
@@ -77,13 +75,10 @@
 
         <androidx.appcompat.widget.LinearLayoutCompat
             android:id="@+id/linearSecond"
-            android:layout_width="0dp"
-            android:layout_gravity="end|center"
-            android:gravity="end"
-            android:layout_weight="5"
-            android:paddingVertical="@dimen/_1sdp"
-            android:layout_height="wrap_content"
-            >
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_alignParentEnd="true"
+            android:gravity="center">
 
 
             <AutoCompleteTextView
@@ -185,42 +180,12 @@
             <ImageView
                 android:id="@+id/ivLock"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:background="?attr/selectableItemBackground"
-                android:paddingHorizontal="@dimen/_8sdp"
-                android:src="@drawable/ic_lock"
-                app:tint="@color/txtColor" />
-
-
-
-        </androidx.appcompat.widget.LinearLayoutCompat>
-        <androidx.appcompat.widget.LinearLayoutCompat
-            android:id="@+id/linear_home_header"
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_gravity="end"
-            android:gravity="end"
-            android:visibility="gone"
-            android:layout_height="@dimen/_23sdp">
-            <TextView
-                android:id="@+id/txtHome"
-                style="@style/CustomFontBold"
-                android:layout_width="@dimen/_50sdp"
                 android:layout_height="match_parent"
                 android:layout_gravity="center"
-                android:background="@drawable/button_action_hover"
-                android:paddingStart="@dimen/_10sdp"
-                android:paddingTop="@dimen/_6sdp"
-                android:paddingEnd="@dimen/_10sdp"
-                android:gravity="center"
-                android:paddingBottom="@dimen/_6sdp"
-                android:text="@string/tv_home"
-                android:textAllCaps="true"
-                android:textColor="@color/white"
-                android:textSize="@dimen/_6mdpi"
-                android:visibility="visible" />
-
+                android:layout_marginEnd="@dimen/_5sdp"
+                android:padding="@dimen/_4sdp"
+                android:src="@drawable/ic_lock"
+                app:tint="@color/txtColor" />
         </androidx.appcompat.widget.LinearLayoutCompat>
-    </LinearLayout>
+    </RelativeLayout>
 </layout>

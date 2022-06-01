@@ -64,6 +64,7 @@
                 android:padding="@dimen/_5sdp"
                 android:text="dine in orders"
                 android:textAllCaps="true"
+                android:visibility="gone"
                 android:textColor="@color/btnColor"
                 android:textSize="@dimen/_6mdpi" />
 
