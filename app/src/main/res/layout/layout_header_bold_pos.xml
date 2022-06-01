@@ -5,18 +5,19 @@
     tools:ignore="MissingDefaultResource">
 
     <RelativeLayout
+        android:id="@+id/rlRoot"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="@dimen/_23sdp"
         android:background="@color/bg_color"
         android:orientation="horizontal"
-        android:paddingVertical="@dimen/_4sdp"
-        android:id="@+id/rlRoot">
+        >
 
 
         <androidx.appcompat.widget.LinearLayoutCompat
             android:id="@+id/linearFirst"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
+            android:gravity="center"
+            android:layout_height="match_parent">
 
             <ImageView
                 android:id="@+id/imgDrawer"
@@ -75,7 +76,8 @@
         <androidx.appcompat.widget.LinearLayoutCompat
             android:id="@+id/linearSecond"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center"
             android:layout_alignParentEnd="true">
 
 
@@ -163,8 +165,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    tools:text="ELEANOR RUSSELL"
-                    android:textSize="@dimen/_6mdpi" />
+                    android:textSize="@dimen/_6mdpi"
+                    tools:text="ELEANOR RUSSELL" />
             </LinearLayout>
 
             <View
@@ -176,33 +178,14 @@
                 android:background="@color/txtColor" />
 
             <ImageView
-                android:background="?attr/selectableItemBackground"
-
                 android:id="@+id/ivLock"
-                android:layout_width="@dimen/_10sdp"
-                android:layout_height="@dimen/_12sdp"
-                android:layout_gravity="center"
-                android:layout_marginEnd="@dimen/_5sdp"
-                android:padding="@dimen/_2sdp"
-                android:src="@drawable/ic_lock"
-                app:tint="@color/txtColor" />
-
-            <TextView
-                android:id="@+id/txtHome"
-                style="@style/CustomFontBold"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_marginEnd="@dimen/_10sdp"
                 android:background="?attr/selectableItemBackground"
-                android:padding="@dimen/_5sdp"
-                android:text="@string/tv_home"
-                android:textAllCaps="true"
-                android:textColor="@color/btnColor"
-                android:textSize="@dimen/_6mdpi"
-                android:visibility="gone" />
-
-
+                android:paddingHorizontal="@dimen/_8sdp"
+                android:src="@drawable/ic_lock"
+                app:tint="@color/txtColor" />
         </androidx.appcompat.widget.LinearLayoutCompat>
     </RelativeLayout>
 </layout>
