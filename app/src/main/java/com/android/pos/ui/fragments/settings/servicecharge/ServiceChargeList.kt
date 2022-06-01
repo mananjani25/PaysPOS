@@ -65,6 +65,7 @@ class ServiceChargeList : Fragment(), ServiceChargeListAdapter.ItemCallback,Serv
         observeShowProgress()
         viewModel.getServiceChargeWholeList()
         observeData()
+        deleteServiceCharge()
         binding.txtAddnew.setOnClickListener {
             findNavController().navigate(
                 R.id.action_settings_to_addServiceCharge,
@@ -167,9 +168,11 @@ class ServiceChargeList : Fragment(), ServiceChargeListAdapter.ItemCallback,Serv
     private fun setUpRecyclerView() {
         serviceChargeListadapter = ServiceChargeListAdapter(viewModel)
         binding.rvServiceChargeTakeoutopenorder.adapter = serviceChargeListadapter
+        serviceChargeListadapter.setCallback(this)
 
         serviceChargeDineiinListadapter = ServiceChargeDineinListAdapter(viewModel)
         binding.rvServiceChargeDineiin.adapter = serviceChargeDineiinListadapter
+        serviceChargeDineiinListadapter.setCallback(this)
     }
 
 
@@ -188,7 +191,6 @@ class ServiceChargeList : Fragment(), ServiceChargeListAdapter.ItemCallback,Serv
     }
 
     private fun setTaxDatatakeout(taxList: List<TbServiceCharge>) {
-        discountListUpdateDelete = taxList as ArrayList<TbServiceCharge>
         serviceChargeListadapter.apply {
             addServiceCharge(taxList)
             notifyDataSetChanged()
@@ -196,7 +198,6 @@ class ServiceChargeList : Fragment(), ServiceChargeListAdapter.ItemCallback,Serv
     }
 
     private fun setTaxDataDinein(taxList: List<TbServiceCharge>) {
-        discountListUpdateDelete = taxList as ArrayList<TbServiceCharge>
         serviceChargeDineiinListadapter.apply {
             addServiceCharge(taxList)
             notifyDataSetChanged()
@@ -210,12 +211,12 @@ class ServiceChargeList : Fragment(), ServiceChargeListAdapter.ItemCallback,Serv
 
 
                 AlertUtils.showCustomAlert(requireActivity(), it.message)
-                discountListUpdateDelete.remove(serviceChargeObject)
-                serviceChargeListadapter.addServiceCharge(discountListUpdateDelete)
-                serviceChargeListadapter.notifyItemRemoved(position)
-                serviceChargeListadapter.notifyItemRangeChanged(
+                dinein_servicechargelist.remove(serviceChargeObject)
+                serviceChargeDineiinListadapter.addServiceCharge(dinein_servicechargelist)
+                serviceChargeDineiinListadapter.notifyItemRemoved(position)
+                serviceChargeDineiinListadapter.notifyItemRangeChanged(
                     position,
-                    discountListUpdateDelete.size
+                    dinein_servicechargelist.size
                 )
 
             }
