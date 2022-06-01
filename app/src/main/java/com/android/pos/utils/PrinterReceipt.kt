@@ -105,6 +105,36 @@ fun addPaymentDetailsThreeData(builder: Builder, keyValue: java.util.ArrayList<K
     return builder
 }
 
+fun employeeGuestDetailsData(builder: Builder, keyValue: KeyValue): Builder {
+    builder.addTextLineSpace(30)
+    builder.addFeedUnit(30)
+    builder.addTextFont(Builder.FONT_E)
+    // builder.addTextAlign(Builder.ALIGN_LEFT)
+    builder.addTextLang(Builder.LANG_EN)
+    addCustomerTextSize(builder, Constants.SMALL)
+    builder.addTextStyle(
+        Builder.FALSE,
+        Builder.FALSE,
+        Builder.FALSE,
+        Builder.COLOR_1
+    )
+    var sPart = if (keyValue.key?.contains("Served", true) == true) {
+        keyValue.value.toString()
+    } else {
+        MethodUtils.roundOffAmount(keyValue.value?.toDouble() ?: 0.0)
+    }
+    builder.addText(
+        padLine(
+            keyValue.key,
+            sPart,
+            48
+        )
+    )
+
+    return builder
+
+}
+
 fun addPaymentDetailsTwoData(builder: Builder, keyValue: KeyValue): Builder {
     builder.addTextLineSpace(30)
     builder.addFeedUnit(30)
@@ -180,7 +210,7 @@ fun addSixHeaderForOrderSaleDetails(builder: Builder): Builder {
     return builder
 }
 
-fun addCreditTipAuditHeader(builder: Builder):Builder{
+fun addCreditTipAuditHeader(builder: Builder): Builder {
     builder.addTextLineSpace(30)
     builder.addFeedUnit(30)
     builder.addTextFont(Builder.FONT_E)
@@ -202,9 +232,9 @@ fun addCreditTipAuditHeader(builder: Builder):Builder{
 
 fun addCreditTipAuditData(
     builder: Builder,
-    fPArt:String,
-    sPart:String,
-    lPart:String
+    fPArt: String,
+    sPart: String,
+    lPart: String
 ): Builder {
     builder.addTextLineSpace(30)
     builder.addFeedUnit(30)
@@ -218,7 +248,6 @@ fun addCreditTipAuditData(
         Builder.FALSE,
         Builder.COLOR_1
     )
-
 
 
     var pOne = fPArt + repeat(
