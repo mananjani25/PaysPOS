@@ -95,6 +95,9 @@ class TaxServiceChargeRepository @Inject constructor(
     suspend fun addServiceCharges(serviceChargeList: List<TbServiceCharge>) {
         appDatabase.serviceChargeDao().addServiceCharges(serviceChargeList)
     }
+    suspend fun addServiceCharge(serviceChargeList: TbServiceCharge) {
+        appDatabase.serviceChargeDao().addServiceCharge(serviceChargeList)
+    }
 
     suspend fun createServiceCharge(data: CreateServiceChargeRequestModel) =
         apiHelperNew.createServiceCharge(data)

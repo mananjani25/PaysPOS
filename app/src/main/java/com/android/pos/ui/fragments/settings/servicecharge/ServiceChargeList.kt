@@ -34,7 +34,8 @@ import javax.inject.Inject
 import kotlin.collections.ArrayList
 
 @AndroidEntryPoint
-class ServiceChargeList : Fragment(), ServiceChargeListAdapter.ItemCallback,ServiceChargeDineinListAdapter.ItemCallback {
+class ServiceChargeList : Fragment(), ServiceChargeListAdapter.ItemCallback,
+    ServiceChargeDineinListAdapter.ItemCallback {
 
     private lateinit var binding: ServiceChargeFragmentBinding
 
@@ -105,6 +106,7 @@ class ServiceChargeList : Fragment(), ServiceChargeListAdapter.ItemCallback,Serv
     private fun observeData() {
         viewModel.servicedata.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
+                binding.linearFullview?.visible()
                 service_charge_dineinEnable = it.enableDineInServiceCharge
                 service_charge_takeoutEnable = it.serviceChargeEnable
                 if (service_charge_takeoutEnable) {
@@ -258,9 +260,10 @@ class ServiceChargeList : Fragment(), ServiceChargeListAdapter.ItemCallback,Serv
         popupMenu?.setOnMenuItemClickListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.menu_edit -> {
-                    serviceChargeObject = serviceChargeListadapter.getItem(pos)
+                    serviceChargeObject = serviceChargeDineiinListadapter.getItem(pos)
                     val bundle = Bundle()
                     bundle.putBoolean("isEdit", true)
+                    bundle.putString("isFrom", "dinein")
                     bundle.putParcelable("serviceChargeObject", serviceChargeObject)
 
                     //     var bundle= bundleOf()
@@ -278,8 +281,8 @@ class ServiceChargeList : Fragment(), ServiceChargeListAdapter.ItemCallback,Serv
                     ) {
                         positiveButton(getString(R.string.tv_delete)) {
                             // Do positive stuff here
-                            serviceChargeObject = serviceChargeListadapter.getItem(pos)
-                            viewModel.delete(serviceChargeListadapter.getItem(pos).id)
+                            serviceChargeObject = serviceChargeDineiinListadapter.getItem(pos)
+                            viewModel.delete(serviceChargeDineiinListadapter.getItem(pos).id)
                         }
                         negativeButton(R.string.tv_cancel) {
                             // Do negative stuff here

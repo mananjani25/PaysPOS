@@ -57,7 +57,11 @@ class CreateServiceCharge : Fragment() {
             binding.header.txtSave.text = getString(R.string.update)
             binding.header.txtTitle.text = getString(R.string.update_service_charge)
             serviceChargeData = arguments?.getParcelable("serviceChargeObject")!!
-            binding.editPercentage?.setText(String.format("%.2f", serviceChargeData.percentage))
+            binding.editPercentage.setText(String.format("%.2f", serviceChargeData.percentage))
+            if(isfrom =="dinein"){
+                binding.editMinguest.setText(serviceChargeData.min_guest_count.toString())
+                binding.editMaxguest.setText(serviceChargeData.max_guest_count.toString())
+            }
             viewModel.setDiscountData(serviceChargeData)
 
             binding.swtEnableCharge.isChecked = serviceChargeData.isEnabled

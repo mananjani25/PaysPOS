@@ -1,5 +1,6 @@
 package com.android.pos.ui.adapter
 
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -7,6 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.data.entities.TbServiceCharge
 import com.android.pos.databinding.ViewServiceChargeItemBinding
 import com.android.pos.ui.fragments.settings.servicecharge.ServiceChargeListViewModel
+import com.android.pos.utils.extensions.visible
 
 
 class ServiceChargeDineinListAdapter(val viewModel: ServiceChargeListViewModel) :
@@ -17,6 +19,7 @@ class ServiceChargeDineinListAdapter(val viewModel: ServiceChargeListViewModel) 
     fun setCallback(callback: ItemCallback) {
         mCallback = callback
     }
+
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
@@ -28,12 +31,25 @@ class ServiceChargeDineinListAdapter(val viewModel: ServiceChargeListViewModel) 
 
     }
 
-    override fun onBindViewHolder(holder: ServiceChargeDineinListAdapter.MyViewHolder, position: Int) {
+    @SuppressLint("SetTextI18n")
+    override fun onBindViewHolder(
+        holder: ServiceChargeDineinListAdapter.MyViewHolder,
+        position: Int
+    ) {
         val itemBinding = holder.discountItemBinding
         itemBinding.serviceChargeModel = serviceChargeList[position]
         itemBinding.viewModel = viewModel
+        itemBinding.linearGuestcoount?.visible()
+        itemBinding.minGuest?.text =
+            "Min Guest (" + serviceChargeList[position].min_guest_count.toString() + ")"
+        itemBinding.maxGuest?.text =
+            "Max Guest (" + serviceChargeList[position].max_guest_count.toString() + ")"
         itemBinding.layoutMenu.imgOrderMenu.setOnClickListener {
-            mCallback?.onItemClickDineinListener(it, position,serviceChargeList[position].order_type)
+            mCallback?.onItemClickDineinListener(
+                it,
+                position,
+                serviceChargeList[position].order_type
+            )
         }
         itemBinding.executePendingBindings()
     }
@@ -65,7 +81,6 @@ class ServiceChargeDineinListAdapter(val viewModel: ServiceChargeListViewModel) 
     interface ItemCallback {
         fun onItemClickDineinListener(view: View?, pos: Int, order_type: String)
     }
-
 
 
 }
