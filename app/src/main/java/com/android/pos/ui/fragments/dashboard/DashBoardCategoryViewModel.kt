@@ -1453,7 +1453,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                     modifierPrice += (it.price * it.itemQuantity)
                 }
 
-                val totalPrice = price + modifierPrice - discountPrice
+                val totalPrice = price + modifierPrice - (discountPrice * item.itemQuantity)
 
 
                 totalTax += if (tax.taxType == "Percentage") {
