@@ -1121,6 +1121,9 @@ class DashBoardCategoryViewModel @Inject constructor(
             order_note = cartModel.note
 
             subTotalPrice -= cartModel.discountPrice
+            if (subTotalPrice < 0){
+                subTotalPrice = 0.0
+            }
             serviceChargeCalculationModel(cartModel)
             var totalDis = cartModel.discountPrice
             var totalDineItemDis = 0.0
@@ -1201,10 +1204,13 @@ class DashBoardCategoryViewModel @Inject constructor(
                     }
 
 
+                    subTotalPrice -= cartModel.discountPrice
+                    if (subTotalPrice < 0){
+                        subTotalPrice = 0.0
+                    }
                     serviceChargeCalculationModel(cartModel)
 
                     totalDiscount += cartModel.discountPrice
-                    subTotalPrice -= cartModel.discountPrice
                     order_note = cartModel.note
 
                     var finalTotal = 0.0
@@ -1278,6 +1284,9 @@ class DashBoardCategoryViewModel @Inject constructor(
                     }
 
                     subTotalPrice -= cartModel.discountPrice
+                    if (subTotalPrice < 0){
+                        subTotalPrice = 0.0
+                    }
                     serviceChargeCalculationModel(cartModel)
 
                     totalDiscount += cartModel.discountPrice
@@ -1479,7 +1488,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                 } else {
                     Log.d("yash", "taxCalculation: " + tax.taxType)
 
-                    if (totalPrice < 0.0) {
+                    if (totalPrice <= 0.0) {
                         String.format("%.2f", 0.00)
                             .toDouble()
                     } else {
@@ -2966,6 +2975,11 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                 order_note = cartModel.note
                 subTotalPrice -= cartModel.discountPrice
+
+                if (subTotalPrice < 0){
+                    subTotalPrice = 0.0
+                }
+
                 serviceChargeCalculationModel(cartModel)
 
                 totalDiscount += cartModel.discountPrice
