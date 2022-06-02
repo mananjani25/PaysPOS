@@ -11,10 +11,8 @@ import androidx.core.content.ContextCompat
 import androidx.core.graphics.drawable.DrawableCompat
 import com.android.pos.data.entities.TbItem
 import com.android.pos.data.entities.TbServiceCharge
-import com.android.pos.data.model.responseModel.CreateOrderResponse
-import com.android.pos.data.model.responseModel.GetOrderDetailsResponse
-import com.android.pos.data.model.responseModel.GetTipReponse
-import com.android.pos.data.model.responseModel.OpenOrderResponse
+import com.android.pos.data.model.responseModel.*
+import com.android.pos.data.model.responseModel.report.KeyValue
 import com.android.pos.data.remote.Constants
 import com.epson.eposprint.Builder
 
@@ -43,6 +41,313 @@ fun padLine(
         partOne + repeat(" ", padding) + partTwo
     }
     return concat
+}
+
+fun addPaymentDetailsHeader(builder: Builder): Builder {
+    builder.addTextLineSpace(30)
+    builder.addFeedUnit(30)
+    builder.addTextFont(Builder.FONT_E)
+    // builder.addTextAlign(Builder.ALIGN_LEFT)
+    builder.addTextLang(Builder.LANG_EN)
+    addCustomerTextSize(builder, Constants.SMALL)
+    builder.addTextStyle(
+        Builder.FALSE,
+        Builder.FALSE,
+        Builder.TRUE,
+        Builder.COLOR_1
+    )
+    builder.addText("Details" + repeat(" ", 20) + "Refund" + repeat(" ", 9) + "Amount")
+
+
+    return builder
+}
+
+fun addPaymentDetailsThreeData(builder: Builder, keyValue: java.util.ArrayList<KeyValue>): Builder {
+    builder.addTextLineSpace(30)
+    builder.addFeedUnit(30)
+    builder.addTextFont(Builder.FONT_E)
+    // builder.addTextAlign(Builder.ALIGN_LEFT)
+    builder.addTextLang(Builder.LANG_EN)
+    addCustomerTextSize(builder, Constants.SMALL)
+    builder.addTextStyle(
+        Builder.FALSE,
+        Builder.FALSE,
+        Builder.FALSE,
+        Builder.COLOR_1
+    )
+    var title = ""
+    var refund = ""
+    var amount = ""
+
+
+    keyValue.forEach {
+
+
+        if (it.key.toString().toLowerCase().contains("Refund".toLowerCase())) {
+            refund = "$" + it.value
+        } else {
+            title = it.key.toString()
+            amount = MethodUtils.roundOffAmount(it.value.toString().toDouble())
+        }
+    }
+
+    var fPart = title + repeat(" ", 27 - title.length) + refund
+    var spaceLastPart = 48 - fPart.length
+    var spaceLast = 0
+    if (spaceLastPart > 1 && amount.length < spaceLastPart) {
+        spaceLast = spaceLastPart - amount.length
+    }
+
+    fPart += repeat(" ", spaceLast) + amount
+
+    builder.addText(fPart)
+
+    return builder
+}
+
+
+fun employeeGuestDetailsData(builder: Builder, keyValue: KeyValue): Builder {
+    builder.addTextLineSpace(30)
+    builder.addFeedUnit(30)
+    builder.addTextFont(Builder.FONT_E)
+    // builder.addTextAlign(Builder.ALIGN_LEFT)
+    builder.addTextLang(Builder.LANG_EN)
+    addCustomerTextSize(builder, Constants.SMALL)
+    builder.addTextStyle(
+        Builder.FALSE,
+        Builder.FALSE,
+        Builder.FALSE,
+        Builder.COLOR_1
+    )
+    var sPart = if (keyValue.key?.contains("Served", true) == true) {
+        keyValue.value.toString()
+    } else {
+        MethodUtils.roundOffAmount(keyValue.value?.toDouble() ?: 0.0)
+    }
+    builder.addText(
+        padLine(
+            keyValue.key,
+            sPart,
+            48
+        )
+    )
+
+    return builder
+
+}
+
+fun addPaymentDetailsTwoData(builder: Builder, keyValue: KeyValue): Builder {
+    builder.addTextLineSpace(30)
+    builder.addFeedUnit(30)
+    builder.addTextFont(Builder.FONT_E)
+    // builder.addTextAlign(Builder.ALIGN_LEFT)
+    builder.addTextLang(Builder.LANG_EN)
+    addCustomerTextSize(builder, Constants.SMALL)
+    builder.addTextStyle(
+        Builder.FALSE,
+        Builder.FALSE,
+        Builder.FALSE,
+        Builder.COLOR_1
+    )
+    builder.addText(
+        padLine(
+            keyValue.key,
+            MethodUtils.roundOffAmount(keyValue.value.toString().toDouble() ?: 0.0),
+            48
+        )
+    )
+
+    return builder
+}
+
+fun addRefundVoidsMultiple(builder: Builder, keyValue: java.util.ArrayList<KeyValue>): Builder {
+    builder.addTextLineSpace(30)
+    builder.addFeedUnit(30)
+    builder.addTextFont(Builder.FONT_E)
+    // builder.addTextAlign(Builder.ALIGN_LEFT)
+    builder.addTextLang(Builder.LANG_EN)
+    addCustomerTextSize(builder, Constants.SMALL)
+    builder.addTextStyle(
+        Builder.FALSE,
+        Builder.FALSE,
+        Builder.FALSE,
+        Builder.COLOR_1
+    )
+    keyValue.forEach {
+        if (!it.key?.trim().equals("Item Count".trim(), true)) {
+            builder.addText(
+                padLine(
+                    it.key,
+                    MethodUtils.roundOffAmount(it.value.toString().toDouble() ?: 0.0),
+                    48
+                )
+            )
+        }
+    }
+
+
+    return builder
+
+}
+
+fun addSixHeaderForOrderSaleDetails(builder: Builder): Builder {
+
+
+    builder.addTextLineSpace(30)
+    builder.addFeedUnit(30)
+    builder.addTextFont(Builder.FONT_E)
+    // builder.addTextAlign(Builder.ALIGN_LEFT)
+    builder.addTextLang(Builder.LANG_EN)
+    addCustomerTextSize(builder, Constants.SMALL)
+    builder.addTextStyle(
+        Builder.FALSE,
+        Builder.FALSE,
+        Builder.TRUE,
+        Builder.COLOR_1
+    )
+
+    builder.addText("OrderId    Tip      SC     PayType     Amount   ")
+
+    return builder
+}
+
+fun addCreditTipAuditHeader(builder: Builder): Builder {
+    builder.addTextLineSpace(30)
+    builder.addFeedUnit(30)
+    builder.addTextFont(Builder.FONT_E)
+    builder.addTextAlign(Builder.ALIGN_LEFT)
+    builder.addTextLang(Builder.LANG_EN)
+    addCustomerTextSize(builder, Constants.SMALL)
+    builder.addTextStyle(
+        Builder.FALSE,
+        Builder.FALSE,
+        Builder.FALSE,
+        Builder.COLOR_1
+    )
+
+    builder.addText(
+        "PaymentId" + repeat(" ", 4) + "SubTotal" + repeat(" ", 6) + "Tip" + repeat(
+            " ",
+            8
+        ) + "Total"
+    )
+
+    return builder
+
+}
+
+fun addCreditTipAuditData(
+    builder: Builder,
+    fPArt: String,
+    sPart: String,
+    TPArt: String,
+    lPart: String
+): Builder {
+    builder.addTextLineSpace(30)
+    builder.addFeedUnit(30)
+    builder.addTextFont(Builder.FONT_E)
+    builder.addTextAlign(Builder.ALIGN_LEFT)
+    builder.addTextLang(Builder.LANG_EN)
+    addCustomerTextSize(builder, Constants.SMALL)
+    builder.addTextStyle(
+        Builder.FALSE,
+        Builder.FALSE,
+        Builder.FALSE,
+        Builder.COLOR_1
+    )
+
+
+    var pOne = TPArt + repeat(" ", 13 - TPArt.length) + fPArt
+
+    pOne += repeat(" ", 27 - pOne.length) + sPart
+    pOne += repeat(" ", 38 - pOne.length) + lPart
+
+
+
+
+    builder.addText(pOne)
+    return builder
+}
+
+fun addCreditCardBreakDown(builder: Builder): Builder {
+    builder.addTextLineSpace(30)
+    builder.addFeedUnit(30)
+    builder.addTextFont(Builder.FONT_E)
+    // builder.addTextAlign(Builder.ALIGN_LEFT)
+    builder.addTextLang(Builder.LANG_EN)
+    addCustomerTextSize(builder, Constants.SMALL)
+    builder.addTextStyle(
+        Builder.FALSE,
+        Builder.FALSE,
+        Builder.FALSE,
+        Builder.COLOR_1
+    )
+
+    builder.addText("CardName" + repeat(" ", 20) + "Tip" + repeat(" ", 11) + "Amount")
+
+    return builder
+}
+
+
+fun addCreditCardBreakDownData(
+    builder: Builder,
+    creditCardBreakdown: EodReportResponse.Data.CreditCardBreakdown
+): Builder {
+    builder.addTextLineSpace(30)
+    builder.addFeedUnit(30)
+    builder.addTextFont(Builder.FONT_E)
+    // builder.addTextAlign(Builder.ALIGN_LEFT)
+    builder.addTextLang(Builder.LANG_EN)
+    addCustomerTextSize(builder, Constants.SMALL)
+    builder.addTextStyle(
+        Builder.FALSE,
+        Builder.FALSE,
+        Builder.FALSE,
+        Builder.COLOR_1
+    )
+    var pOne = creditCardBreakdown.key + repeat(
+        " ",
+        28 - creditCardBreakdown.key.length
+    ) + MethodUtils.roundOffAmount(creditCardBreakdown.tips)
+    var lastPart = 48 - pOne.length
+    var amount = MethodUtils.roundOffAmount(creditCardBreakdown.value)
+    var spaceLast = 0
+    if (lastPart > 1 && amount.length < lastPart) {
+        spaceLast = lastPart - amount.length
+    }
+    pOne += repeat(" ", spaceLast) + amount
+
+    builder.addText(pOne)
+    return builder
+}
+
+fun addItemsInOrderSalesDetails(
+    builder: Builder,
+    details: EodReportResponse.Data.OrderSalesDetails.Details
+): Builder {
+
+
+    builder.addTextLineSpace(30)
+    builder.addFeedUnit(30)
+    builder.addTextFont(Builder.FONT_E)
+    builder.addTextAlign(Builder.ALIGN_LEFT)
+    builder.addTextLang(Builder.LANG_EN)
+    addCustomerTextSize(builder, Constants.SMALL)
+    builder.addTextStyle(
+        Builder.FALSE,
+        Builder.FALSE,
+        Builder.FALSE,
+        Builder.COLOR_1
+    )
+
+    var data = details.orderId
+    data += repeat(" ", 10 - details.orderId.length) + MethodUtils.roundOffAmount(details.tip)
+    data += repeat(" ", 18 - data.length) + MethodUtils.roundOffAmount(details.serviceCharge)
+    data+= repeat(" ",27-data.length)+details.payType
+    data+= repeat(" ",39-data.length) + MethodUtils.roundOffAmount(details.amount)
+
+    builder.addText(data)
+    return builder
 }
 
 
@@ -86,7 +391,6 @@ fun padLineCustomerItem(
     }
     return concat
 }
-
 
 fun addCustomerTextSize(builder: Builder, font: String): Builder {
     when (font) {
@@ -234,6 +538,10 @@ fun addHorizontalLine(builder: Builder): Builder {
     return builder
 }
 
+fun orderSalesDetails(builder: Builder): Builder {
+    return builder
+}
+
 fun addHorizontalKitchenLine(builder: Builder): Builder {
 
 
@@ -299,8 +607,8 @@ fun addTipsList(
 fun addOrdersForKitchenDineIn(
     builder: Builder,
     list: ArrayList<TbItem>,
-    fontSizeH:Int=1,
-    fontSizeW:Int=1
+    fontSizeH: Int = 1,
+    fontSizeW: Int = 1
 ): Builder {
 
 
@@ -372,8 +680,8 @@ fun addOrdersForKitchenDineIn(
 fun addOrdersForKitchen(
     builder: Builder,
     list: List<CreateOrderResponse.Data.Order.OrderItem>,
-    fontSizeH:Int = 1,
-    fontSizeW:Int = 1
+    fontSizeH: Int = 1,
+    fontSizeW: Int = 1
 ): Builder {
     for (i in 0 until list.size) {
         val obj = list.get(i)

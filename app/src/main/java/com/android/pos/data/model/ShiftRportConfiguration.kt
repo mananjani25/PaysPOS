@@ -1,9 +1,13 @@
 package com.android.pos.data.model
 
 
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
 
+@Entity(tableName = "EodShiftReport")
 data class ShiftRportConfiguration(
+    @PrimaryKey
     @SerializedName("id") val id: Int,
     @SerializedName("employee_account") val employeeAccount: Boolean,
     @SerializedName("tip_and_fees_earned") val tipAndFeesEarned: Boolean,

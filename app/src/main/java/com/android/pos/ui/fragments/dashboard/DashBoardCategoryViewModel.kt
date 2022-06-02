@@ -2545,7 +2545,8 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 posRepository.addLoyaltyProgramFromDb(it.data.loyaltyPrograms)
                                 posRepository.deleteSurcharge()
                                 posRepository.addCashDiscountsFromDb(it.data.cash_discounts)
-
+                                posRepository.deleteEODReportSettings()
+                                posRepository.addEODReportSettings(it.data.shift_report_configuration)
                                 if (it.data.cash_discounts.isNotEmpty()) {
                                     it.data.cash_discounts.forEach {
                                         if (it.is_active) {

@@ -82,7 +82,8 @@ data class VenueDetailsResponse(
         @SerializedName("magensa_settings")
         val magensaSettings: List<MagensaSettings>,
         @SerializedName("shift_report_configuration")
-        val shift_report_configuration: ShiftRportConfiguration?
+        val shift_report_configuration: ShiftRportConfiguration
+
 
     ) {
         data class Printer(
