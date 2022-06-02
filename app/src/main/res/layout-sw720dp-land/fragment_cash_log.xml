@@ -128,15 +128,13 @@
                     android:textSize="@dimen/text_size_medium" />
 
                 <LinearLayout
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:background="@drawable/background_square_border_grey"
                     android:onClick="@{() -> viewModel.datePicker(true)}"
                     android:orientation="horizontal"
-                    android:paddingStart="@dimen/_5sdp"
-                    android:paddingEnd="@dimen/_5sdp"
+                    android:padding="@dimen/_5sdp"
                     android:layout_marginStart="@dimen/_5sdp"
-                    android:paddingVertical="@dimen/_5sdp"
                     >
 
                     <ImageView
@@ -164,7 +162,7 @@
             <androidx.appcompat.widget.LinearLayoutCompat
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:gravity="center"
+                android:gravity="start"
                 android:layout_gravity="center"
                 android:orientation="horizontal"
                 android:layout_marginStart="@dimen/_5sdp"
@@ -187,9 +185,7 @@
                     android:background="@drawable/background_square_border_grey"
                     android:onClick="@{() -> viewModel.datePicker(false)}"
                     android:orientation="horizontal"
-                    android:paddingStart="@dimen/_5sdp"
-                    android:paddingEnd="@dimen/_5sdp"
-                    android:paddingVertical="@dimen/_5sdp"
+                    android:padding="@dimen/_5sdp"
                     android:layout_marginStart="@dimen/_5sdp">
 
                     <ImageView
