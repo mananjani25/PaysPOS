@@ -32,6 +32,7 @@ import com.android.pos.data.remote.Constants.IS_UPDATE_ORDER_LOYALTY_APPLIED
 import com.android.pos.data.remote.Constants.IS_UPDATE_ORDER_OFFLINE_ID
 import com.android.pos.data.remote.Constants.IS_UPDATE_ORDER_PAYMENT_ID
 import com.android.pos.data.remote.Constants.IS_UPDATE_ORDER_PAY_OFFLINE_ID
+import com.android.pos.data.remote.Constants.LOYALTY_ADDED
 import com.android.pos.data.remote.Constants.MANUAL_SALE
 import com.android.pos.data.remote.Constants.OPEN_ORDER
 import com.android.pos.data.remote.Constants.OPTION_TYPE
@@ -993,6 +994,21 @@ class CartFragment(
                             var data: TbCustomer? = prefProvider.getCustomerData()
                             if (data != null) {
                                 if (viewModel.loyaltyPointCondition(data)) {
+                                    if (isOrderUpdate) {
+                                        viewModel.setcheckedLoyaltyApply(
+                                            prefProvider.getValueboolean(
+                                                IS_UPDATE_ORDER_LOYALTY_APPLIED,
+                                                false
+                                            )
+                                        )
+                                    } else {
+                                        viewModel.setcheckedLoyaltyApply(
+                                            prefProvider.getValueboolean(
+                                                LOYALTY_ADDED,
+                                                false
+                                            )
+                                        )
+                                    }
                                     if (isFromPayment) {
                                         if (viewModel.redeemLoyaltyInfo.needToApplyLoyalty) {
                                             binding.liinearInfoLayout.layoutParams.height =
@@ -1336,6 +1352,8 @@ class CartFragment(
         binding.lblLoyaltyPoints.visibility = View.GONE
         displayCustomer()
         refreshItemCalculation()
+        prefProvider.setValueboolean(IS_UPDATE_ORDER_LOYALTY_APPLIED,false)
+        prefProvider.setValueboolean(LOYALTY_ADDED,false)
     }
 
 
