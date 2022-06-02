@@ -109,8 +109,17 @@ interface CategoryDao {
     @Query("DELETE FROM CashDiscount")
     suspend fun deleteCD()
 
+    @Query("DELETE FROM TbCountryList")
+    suspend fun deleteCL()
+
+    @Query("DELETE FROM TbTimeZones")
+    suspend fun deleteTZ()
+
+    @Query("DELETE FROM TbBusinessDetails")
+    suspend fun deleteBD()
+
     @Transaction
-    suspend fun delete1(){
+    suspend fun delete1() {
         delete()
         deleteItem()
         deleteTax()
@@ -135,6 +144,10 @@ interface CategoryDao {
         deleteCS()
         deleteCOR()
         deleteCD()
+
+        deleteCL()
+        deleteTZ()
+        deleteBD()
     }
 
     @Query("UPDATE TbCategory SET sort = :sort WHERE  TbCategory.id = :id")
