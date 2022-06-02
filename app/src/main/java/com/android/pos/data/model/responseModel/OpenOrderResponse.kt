@@ -229,7 +229,7 @@ data class OpenOrderResponse(
                 @SerializedName("amount")
                 val amount: Double,
                 @SerializedName("created_at")
-                val createdAt: String,
+                val createdAt: String?=null,
                 @SerializedName("id")
                 val id: Int,
                 @SerializedName("name")

@@ -1386,6 +1386,8 @@ open class PaymentViewModel @Inject constructor(
         return orderItemTaxesAttributeList
     }
 
+
+
     private fun orderServiceChargesAttributes(
         cartModel: CartModel,
         subTotalPrice: Double
@@ -1393,26 +1395,39 @@ open class PaymentViewModel @Inject constructor(
 
         val orderServiceChargesAttributeList: ArrayList<OrderServiceChargesAttribute> =
             arrayListOf()
-
-        cartModel.serviceCharge?.forEach {
-            if (it.isEnabled) {
-                val orderServiceChargesAttribute = OrderServiceChargesAttribute()
-                orderServiceChargesAttribute.amount =
-                    MethodUtils.roundOffAmountDouble((subTotalPrice * it.percentage) / 100)
-                orderServiceChargesAttribute.name = it.name
-                orderServiceChargesAttribute.rate = it.percentage
-                orderServiceChargesAttribute.serviceChargeId = it.id
-
-                if (isUpdateOrder && it.order_service_charge_id != null)
-                    orderServiceChargesAttribute.id = it.order_service_charge_id
-
-                orderServiceChargesAttributeList.add(orderServiceChargesAttribute)
+        val serviceChargesList = cartModel.serviceCharge
+        if (serviceChargesList != null && serviceChargesList.isNotEmpty()) {
+            if (prefProvider.getValueboolean(Constants.SERVICECHARGE_TAKEOUT_OPENORDER, false)) {
+                serviceChargesList.forEach {
+                    val orderServiceChargesAttribute = OrderServiceChargesAttribute()
+                    orderServiceChargesAttribute.amount =
+                        MethodUtils.roundOffAmountDouble((subTotalPrice * it.percentage) / 100)
+                    orderServiceChargesAttribute.name = it.name
+                    orderServiceChargesAttribute.rate = it.percentage
+                    orderServiceChargesAttribute.serviceChargeId = it.id
+                    orderServiceChargesAttribute.order_type = it.order_type
+                    if (isUpdateOrder && it.order_service_charge_id != null)
+                        orderServiceChargesAttribute.id = it.order_service_charge_id
+                    orderServiceChargesAttributeList.add(orderServiceChargesAttribute)
+                }
+            } else if (prefProvider.getValueboolean(Constants.SERVICECHARGE_DINEIN_ORDER, false)) {
+                serviceChargesList.forEach {
+                    val orderServiceChargesAttribute = OrderServiceChargesAttribute()
+                    orderServiceChargesAttribute.amount =
+                        MethodUtils.roundOffAmountDouble((subTotalPrice * it.percentage) / 100)
+                    orderServiceChargesAttribute.name = it.name
+                    orderServiceChargesAttribute.rate = it.percentage
+                    orderServiceChargesAttribute.serviceChargeId = it.id
+                    orderServiceChargesAttribute.order_type = it.order_type
+                    orderServiceChargesAttribute.max_guest_count = it.max_guest_count
+                    orderServiceChargesAttribute.min_guest_count = it.min_guest_count
+                    if (isUpdateOrder && it.order_service_charge_id != null)
+                        orderServiceChargesAttribute.id = it.order_service_charge_id
+                    orderServiceChargesAttributeList.add(orderServiceChargesAttribute)
+                }
             }
 
         }
-
-
-
         return orderServiceChargesAttributeList
     }
 
@@ -1567,7 +1582,8 @@ open class PaymentViewModel @Inject constructor(
                     }
 
                     cardName = CardType
-                    cardNumber = if (cardNumberLast4.isNotEmpty() )cardNumberLast4.takeLast(4) else ""
+                    cardNumber =
+                        if (cardNumberLast4.isNotEmpty()) cardNumberLast4.takeLast(4) else ""
                 }
 
 

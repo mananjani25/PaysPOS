@@ -1,35 +1,25 @@
 package com.android.pos.ui.fragments.settings.servicecharge
 
-import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.widget.AppCompatTextView
 import androidx.appcompat.widget.PopupMenu
-import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.R
 import com.android.pos.data.entities.TbServiceCharge
-import com.android.pos.data.model.responseModel.ServiceChargeListResponse
-import com.android.pos.data.remote.Constants
 import com.android.pos.databinding.ServiceChargeFragmentBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.adapter.ServiceChargeDineinListAdapter
 import com.android.pos.ui.adapter.ServiceChargeListAdapter
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.ProgressUtils
-import com.android.pos.utils.SwipeHelper
-import com.android.pos.utils.callback.ItemCallback
 import com.android.pos.utils.extensions.*
-import com.android.pos.utils.statusUtils.Status
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
-import java.util.*
 import javax.inject.Inject
 import kotlin.collections.ArrayList
 
@@ -229,7 +219,7 @@ class ServiceChargeList : Fragment(), ServiceChargeListAdapter.ItemCallback,
     private fun setupSnackbar() =
         binding.root.liveSnackBar(this, viewModel.snackbarText, Snackbar.LENGTH_SHORT)
 
-    override fun onItemClickListener(view: View?, pos: Int, order_type: String) {
+    override fun onItemClickListener(view: View?, pos: Int, order_type: String?) {
         val popupMenu = view?.let { PopupMenu(requireContext(), it) }
         popupMenu?.menuInflater?.inflate(R.menu.edit_delete_menu, popupMenu.menu)
         popupMenu?.menu?.findItem(R.id.menu_delete)?.isVisible = false
@@ -254,7 +244,7 @@ class ServiceChargeList : Fragment(), ServiceChargeListAdapter.ItemCallback,
         popupMenu?.show()
     }
 
-    override fun onItemClickDineinListener(view: View?, pos: Int, order_type: String) {
+    override fun onItemClickDineinListener(view: View?, pos: Int, order_type: String?) {
         val popupMenu = view?.let { PopupMenu(requireContext(), it) }
         popupMenu?.menuInflater?.inflate(R.menu.edit_delete_menu, popupMenu.menu)
         popupMenu?.setOnMenuItemClickListener { menuItem ->

@@ -79,7 +79,7 @@ class ServiceChargeDineinListAdapter(val viewModel: ServiceChargeListViewModel) 
     }
 
     interface ItemCallback {
-        fun onItemClickDineinListener(view: View?, pos: Int, order_type: String)
+        fun onItemClickDineinListener(view: View?, pos: Int, order_type: String?)
     }
 
 

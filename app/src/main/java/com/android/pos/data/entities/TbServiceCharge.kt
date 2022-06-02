@@ -19,13 +19,13 @@ data class TbServiceCharge(
     @SerializedName("location_id")
     val locationId: Int,
     @SerializedName("min_guest_count")
-    val min_guest_count: Int?=null,
+    val min_guest_count: Int? = null,
     @SerializedName("max_guest_count")
-    val max_guest_count: Int?=null,
+    val max_guest_count: Int? = null,
     @SerializedName("name")
     val name: String,
     @SerializedName("order_type")
-    val order_type: String,
+    val order_type: String? = null,
     @SerializedName("percentage")
     val percentage: Double,
     @SerializedName("updated_at")

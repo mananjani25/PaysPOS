@@ -731,7 +731,7 @@ class ActiveOrderFragment(
 
         order.orderServiceCharges.forEach {
             val serviceCharge = TbServiceCharge(
-                it.createdAt,
+                it.createdAt!!,
                 it.serviceChargeId,
                 true,
                 order.locationId,

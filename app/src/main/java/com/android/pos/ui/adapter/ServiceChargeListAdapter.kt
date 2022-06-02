@@ -60,6 +60,6 @@ class ServiceChargeListAdapter(val viewModel: ServiceChargeListViewModel) :
 
 
     interface ItemCallback {
-        fun onItemClickListener(view: View?, pos: Int, order_type: String)
+        fun onItemClickListener(view: View?, pos: Int, order_type: String?)
     }
 }

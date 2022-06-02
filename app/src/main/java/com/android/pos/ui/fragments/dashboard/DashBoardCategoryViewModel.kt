@@ -1733,27 +1733,39 @@ class DashBoardCategoryViewModel @Inject constructor(
         cartModel: CartModel,
         subTotalPrice: Double
     ): List<OrderServiceChargesAttribute> {
-
         val orderServiceChargesAttributeList: ArrayList<OrderServiceChargesAttribute> =
             arrayListOf()
-
-        cartModel.serviceCharge?.forEach {
-            if (it.isEnabled) {
-                val orderServiceChargesAttribute = OrderServiceChargesAttribute()
-                orderServiceChargesAttribute.amount =
-                    MethodUtils.roundOffAmountDouble((subTotalPrice * it.percentage) / 100)
-                orderServiceChargesAttribute.name = it.name
-                orderServiceChargesAttribute.rate = it.percentage
-                orderServiceChargesAttribute.serviceChargeId = it.id
-
-
-                orderServiceChargesAttributeList.add(orderServiceChargesAttribute)
+        val serviceChargesList = cartModel.serviceCharge
+        if (serviceChargesList != null && serviceChargesList.isNotEmpty()) {
+            if (prefProvider.getValueboolean(Constants.SERVICECHARGE_TAKEOUT_OPENORDER, false)) {
+                serviceChargesList.forEach {
+                    val orderServiceChargesAttribute = OrderServiceChargesAttribute()
+                    orderServiceChargesAttribute.amount =
+                        MethodUtils.roundOffAmountDouble((subTotalPrice * it.percentage) / 100)
+                    orderServiceChargesAttribute.name = it.name
+                    orderServiceChargesAttribute.rate = it.percentage
+                    orderServiceChargesAttribute.serviceChargeId = it.id
+                    orderServiceChargesAttribute.order_type = it.order_type
+                    orderServiceChargesAttribute.serviceChargeId = it.id
+                    orderServiceChargesAttributeList.add(orderServiceChargesAttribute)
+                }
+            } else if (prefProvider.getValueboolean(Constants.SERVICECHARGE_DINEIN_ORDER, false)) {
+                serviceChargesList.forEach {
+                    val orderServiceChargesAttribute = OrderServiceChargesAttribute()
+                    orderServiceChargesAttribute.amount =
+                        MethodUtils.roundOffAmountDouble((subTotalPrice * it.percentage) / 100)
+                    orderServiceChargesAttribute.name = it.name
+                    orderServiceChargesAttribute.rate = it.percentage
+                    orderServiceChargesAttribute.serviceChargeId = it.id
+                    orderServiceChargesAttribute.order_type = it.order_type
+                    orderServiceChargesAttribute.max_guest_count = it.max_guest_count
+                    orderServiceChargesAttribute.min_guest_count = it.min_guest_count
+                    orderServiceChargesAttribute.serviceChargeId = it.id
+                    orderServiceChargesAttributeList.add(orderServiceChargesAttribute)
+                }
             }
 
         }
-
-
-
         return orderServiceChargesAttributeList
     }
 
