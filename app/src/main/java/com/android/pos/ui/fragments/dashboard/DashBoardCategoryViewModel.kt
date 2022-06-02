@@ -142,9 +142,10 @@ class DashBoardCategoryViewModel @Inject constructor(
         return posRepository.orderTypesDb()
     }
 
-    fun setcheckedLoyaltyApply(isapply:Boolean){
+    fun setcheckedLoyaltyApply(isapply: Boolean) {
         this.redeemLoyaltyInfo.needToApplyLoyalty = isapply
     }
+
     fun setOrderTypeList(ordertypelist: ArrayList<TbOrderType>) {
         this.ordertypelist = ordertypelist
     }
@@ -2952,11 +2953,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                 totalDiscount += cartModel.discountPrice
 
                 cartModel.items!!.forEach {
-                    totalDiscount += if (!it.isManualSales) {
-                        (it.discountPrice * it.itemQuantity)
-                    } else {
-                        it.discountPrice
-                    }
+                    totalDiscount += (it.discountPrice * it.itemQuantity)
                 }
 
                 var finalTotal = 0.0

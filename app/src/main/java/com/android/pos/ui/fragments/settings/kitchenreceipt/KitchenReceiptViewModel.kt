@@ -69,7 +69,7 @@ class KitchenReceiptViewModel @Inject constructor(
         }
     }
 
-    fun getKitchenSettings() = taxServiceChargeRepository.getKitchenReceiptSettings()
+    fun getKitchenSettings() = taxServiceChargeRepository.getKitchenReceiptSettingsDb()
 
     init {
 
