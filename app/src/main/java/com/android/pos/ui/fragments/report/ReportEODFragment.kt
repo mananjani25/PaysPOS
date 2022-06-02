@@ -4,6 +4,7 @@ import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.os.Build
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -42,6 +43,8 @@ import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 import java.text.SimpleDateFormat
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import java.util.*
 import javax.inject.Inject
 import kotlin.math.abs
@@ -393,6 +396,41 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
             addHorizontalLine(builder)
 
+            builder.addFeedLine(1)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                val current = LocalDateTime.now()
+                val formatter = DateTimeFormatter.ofPattern("MMM-dd-yyyy hh:mm:a")
+                val formatted = current.format(formatter)
+
+                builder.addTextLineSpace(30)
+                builder.addFeedUnit(30)
+                builder.addTextFont(Builder.FONT_E)
+                builder.addTextAlign(Builder.ALIGN_LEFT)
+                builder.addTextLang(Builder.LANG_EN)
+                addCustomerTextSize(builder, SMALL)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.COLOR_1
+                )
+                builder.addText("Print Time:" + formatted)
+            }
+
+            builder.addFeedLine(1)
+            builder.addTextLineSpace(30)
+            builder.addFeedUnit(30)
+            builder.addTextFont(Builder.FONT_E)
+            builder.addTextAlign(Builder.ALIGN_LEFT)
+            builder.addTextLang(Builder.LANG_EN)
+            addCustomerTextSize(builder, SMALL)
+            builder.addTextStyle(
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.COLOR_1
+            )
+            builder.addText("Employee Report:"+eodReportData?.reportTime)
             if (eodReportData?.orderSalesDetails?.data?.isNotEmpty() == true && eodReportConfiguration?.orderSalesDetails == true) {
                 builder.addFeedLine(2)
                 builder.addTextSize(2, 2)
@@ -1179,16 +1217,6 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
                 addCustomerTextSize(builder, SMALL)
                 addHorizontalLine(builder)
 
-                addCreditCardBreakDown(builder)
-                builder.addFeedLine(1)
-                builder.addTextStyle(
-                    Builder.FALSE,
-                    Builder.FALSE,
-                    Builder.FALSE,
-                    Builder.COLOR_1
-                )
-                addCustomerTextSize(builder, SMALL)
-                addHorizontalLine(builder)
 
                 eodReportData?.serviceChargeDetails?.forEach {
 
@@ -1234,6 +1262,7 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
                     var FPArt = ""
                     var SPart = ""
                     var LPart = ""
+                    var TPArt= ""
 
                     it.forEach {
 
@@ -1242,12 +1271,15 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
                             FPArt = MethodUtils.roundOffAmount(it.value?.toDouble() ?: 0.0)
                         } else if (it.key?.contains("Tip", true) == true) {
                             SPart = MethodUtils.roundOffAmount(it.value?.toDouble() ?: 0.0)
-                        } else if (it.key?.contains("Value", true) == true) {
+                        } else if (it.key?.contains("Total", true) == true) {
                             LPart = MethodUtils.roundOffAmount(it.value?.toDouble() ?: 0.0)
+                        }
+                        else if (it.key?.contains("Payment Id",true) == true){
+                            TPArt = it.value.toString()
                         }
 
                     }
-                    addCreditTipAuditData(builder, FPArt, SPart, LPart)
+                    addCreditTipAuditData(builder, FPArt, SPart,TPArt, LPart)
                 }
 
 
@@ -1272,16 +1304,6 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
                 addCustomerTextSize(builder, SMALL)
                 addHorizontalLine(builder)
 
-                addCreditTipAuditHeader(builder)
-                builder.addFeedLine(1)
-                builder.addTextStyle(
-                    Builder.FALSE,
-                    Builder.FALSE,
-                    Builder.FALSE,
-                    Builder.COLOR_1
-                )
-                addCustomerTextSize(builder, SMALL)
-                addHorizontalLine(builder)
 
                 eodReportData?.employeeGuestDetails?.forEach {
                     it.forEach {
@@ -1292,10 +1314,190 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
 
             }
+            if (eodReportData?.salesPerCategorySummary?.isNotEmpty() == true && eodReportConfiguration?.cashCreditPerSalesCategorySummary == true) {
+                builder.addFeedLine(3)
+                builder.addTextSize(2, 2)
+
+                builder.addTextFont(Builder.FONT_E)
+                builder.addTextAlign(Builder.ALIGN_CENTER)
+                builder.addTextLang(Builder.LANG_EN)
+                addCustomerTextSize(builder, MEDIUM)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.TRUE,
+                    Builder.COLOR_1
+                )
+                builder.addText("SALES PER CATEGORY SUMMARY\n(MIXED-PAYMENT ORDER ITEMS NOT INCLUDED)")
+
+                builder.addFeedLine(2)
+                addCustomerTextSize(builder, SMALL)
+                addHorizontalLine(builder)
+
+
+                eodReportData?.salesPerCategorySummary?.forEachIndexed { index, arrayList ->
+                    if (index == 0) {
+
+                        builder.addTextLineSpace(30)
+                        builder.addFeedUnit(30)
+                        builder.addTextFont(Builder.FONT_E)
+                        // builder.addTextAlign(Builder.ALIGN_LEFT)
+                        builder.addTextLang(Builder.LANG_EN)
+                        addCustomerTextSize(builder, Constants.SMALL)
+                        builder.addTextStyle(
+                            Builder.FALSE,
+                            Builder.FALSE,
+                            Builder.FALSE,
+                            Builder.COLOR_1
+                        )
+                        builder.addText("Cash Sales")
+                        builder.addFeedLine(1)
+                        builder.addTextStyle(
+                            Builder.FALSE,
+                            Builder.FALSE,
+                            Builder.FALSE,
+                            Builder.COLOR_1
+                        )
+                        addCustomerTextSize(builder, SMALL)
+                        addHorizontalLine(builder)
+
+                        builder.addFeedLine(1)
+                        arrayList.forEach {
+                            addPaymentDetailsTwoData(builder, it)
+                        }
+
+
+                    } else if (index == 1) {
+                        builder.addFeedLine(1)
+                        builder.addTextLineSpace(30)
+                        builder.addFeedUnit(30)
+                        builder.addTextFont(Builder.FONT_E)
+                        // builder.addTextAlign(Builder.ALIGN_LEFT)
+                        builder.addTextLang(Builder.LANG_EN)
+                        addCustomerTextSize(builder, Constants.SMALL)
+                        builder.addTextStyle(
+                            Builder.FALSE,
+                            Builder.FALSE,
+                            Builder.FALSE,
+                            Builder.COLOR_1
+                        )
+                        addHorizontalLine(builder)
+                        builder.addText("Credit/Non Cash Sales")
+                        builder.addFeedLine(1)
+                        builder.addTextStyle(
+                            Builder.FALSE,
+                            Builder.FALSE,
+                            Builder.FALSE,
+                            Builder.COLOR_1
+                        )
+                        addCustomerTextSize(builder, SMALL)
+                        addHorizontalLine(builder)
+                        builder.addFeedLine(1)
+                        arrayList.forEach {
+                            addPaymentDetailsTwoData(builder, it)
+                        }
+
+                    }
+
+
+                }
+
+
+            }
+            if (eodReportData?.cashLogDetails?.isNotEmpty() == true && eodReportConfiguration?.cashLogDetails == true) {
+                builder.addFeedLine(3)
+                builder.addTextSize(2, 2)
+
+                builder.addTextFont(Builder.FONT_E)
+                builder.addTextAlign(Builder.ALIGN_CENTER)
+                builder.addTextLang(Builder.LANG_EN)
+                addCustomerTextSize(builder, MEDIUM)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.TRUE,
+                    Builder.COLOR_1
+                )
+                builder.addText("CASH LOG DETAILS")
+
+                builder.addFeedLine(2)
+                addCustomerTextSize(builder, SMALL)
+                addHorizontalLine(builder)
+
+
+                eodReportData?.cashLogDetails?.forEach {
+
+                    addPaymentDetailsTwoData(builder, it)
+
+
+                }
+
+
+            }
+            if (eodReportData?.otherDetails?.isNotEmpty() == true && eodReportConfiguration?.otherDetails == true) {
+                builder.addFeedLine(3)
+                builder.addTextSize(2, 2)
+
+                builder.addTextFont(Builder.FONT_E)
+                builder.addTextAlign(Builder.ALIGN_CENTER)
+                builder.addTextLang(Builder.LANG_EN)
+                addCustomerTextSize(builder, MEDIUM)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.TRUE,
+                    Builder.COLOR_1
+                )
+                builder.addText("OTHER DETAILS")
+
+                builder.addFeedLine(2)
+                addCustomerTextSize(builder, SMALL)
+                addHorizontalLine(builder)
+
+
+                eodReportData?.otherDetails?.forEach {
+
+                    addPaymentDetailsTwoData(builder, it)
+
+
+                }
+
+
+            }
+
+
+            builder.addFeedLine(3)
+
+
+            builder.addTextFont(Builder.FONT_E)
+            builder.addTextAlign(Builder.ALIGN_CENTER)
+            builder.addTextLang(Builder.LANG_EN)
+            addCustomerTextSize(builder, SMALL)
+            builder.addTextStyle(
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.TRUE,
+                Builder.COLOR_1
+            )
+            builder.addText("EMPLOYEE x " + repeat("_", 37))
+
+            builder.addFeedLine(2)
+            builder.addTextFont(Builder.FONT_E)
+            builder.addTextAlign(Builder.ALIGN_CENTER)
+            builder.addTextLang(Builder.LANG_EN)
+            addCustomerTextSize(builder, SMALL)
+            builder.addTextStyle(
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.TRUE,
+                Builder.COLOR_1
+            )
+            builder.addText("CASH RECEIVED BY" + repeat("_", 32))
 
 
 
-            builder.addFeedLine(1)
+
+            builder.addFeedLine(2)
             builder.addCut(Builder.CUT_FEED)
 
             val status = IntArray(1)

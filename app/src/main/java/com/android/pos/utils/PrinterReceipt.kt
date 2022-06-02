@@ -105,6 +105,7 @@ fun addPaymentDetailsThreeData(builder: Builder, keyValue: java.util.ArrayList<K
     return builder
 }
 
+
 fun employeeGuestDetailsData(builder: Builder, keyValue: KeyValue): Builder {
     builder.addTextLineSpace(30)
     builder.addFeedUnit(30)
@@ -205,7 +206,7 @@ fun addSixHeaderForOrderSaleDetails(builder: Builder): Builder {
         Builder.COLOR_1
     )
 
-    builder.addText("OrderId      Tip      SC     PayType      Amount")
+    builder.addText("OrderId    Tip      SC     PayType     Amount   ")
 
     return builder
 }
@@ -214,7 +215,7 @@ fun addCreditTipAuditHeader(builder: Builder): Builder {
     builder.addTextLineSpace(30)
     builder.addFeedUnit(30)
     builder.addTextFont(Builder.FONT_E)
-    // builder.addTextAlign(Builder.ALIGN_LEFT)
+    builder.addTextAlign(Builder.ALIGN_LEFT)
     builder.addTextLang(Builder.LANG_EN)
     addCustomerTextSize(builder, Constants.SMALL)
     builder.addTextStyle(
@@ -224,7 +225,12 @@ fun addCreditTipAuditHeader(builder: Builder): Builder {
         Builder.COLOR_1
     )
 
-    builder.addText("SubTotal" + repeat(" ", 20) + "Tip" + repeat(" ", 12) + "Total")
+    builder.addText(
+        "PaymentId" + repeat(" ", 4) + "SubTotal" + repeat(" ", 6) + "Tip" + repeat(
+            " ",
+            8
+        ) + "Total"
+    )
 
     return builder
 
@@ -234,12 +240,13 @@ fun addCreditTipAuditData(
     builder: Builder,
     fPArt: String,
     sPart: String,
+    TPArt: String,
     lPart: String
 ): Builder {
     builder.addTextLineSpace(30)
     builder.addFeedUnit(30)
     builder.addTextFont(Builder.FONT_E)
-    // builder.addTextAlign(Builder.ALIGN_LEFT)
+    builder.addTextAlign(Builder.ALIGN_LEFT)
     builder.addTextLang(Builder.LANG_EN)
     addCustomerTextSize(builder, Constants.SMALL)
     builder.addTextStyle(
@@ -250,17 +257,13 @@ fun addCreditTipAuditData(
     )
 
 
-    var pOne = fPArt + repeat(
-        " ",
-        20 - fPArt.length
-    ) + sPart
-    var lastPart = 48 - pOne.length
-    var amount = lPart
-    var spaceLast = 0
-    if (lastPart > 1 && amount.length < lastPart) {
-        spaceLast = lastPart - amount.length
-    }
-    pOne += repeat(" ", spaceLast) + amount
+    var pOne = TPArt + repeat(" ", 13 - TPArt.length) + fPArt
+
+    pOne += repeat(" ", 27 - pOne.length) + sPart
+    pOne += repeat(" ", 38 - pOne.length) + lPart
+
+
+
 
     builder.addText(pOne)
     return builder
@@ -304,7 +307,7 @@ fun addCreditCardBreakDownData(
     )
     var pOne = creditCardBreakdown.key + repeat(
         " ",
-        20 - creditCardBreakdown.key.length
+        28 - creditCardBreakdown.key.length
     ) + MethodUtils.roundOffAmount(creditCardBreakdown.tips)
     var lastPart = 48 - pOne.length
     var amount = MethodUtils.roundOffAmount(creditCardBreakdown.value)
@@ -327,7 +330,7 @@ fun addItemsInOrderSalesDetails(
     builder.addTextLineSpace(30)
     builder.addFeedUnit(30)
     builder.addTextFont(Builder.FONT_E)
-    // builder.addTextAlign(Builder.ALIGN_LEFT)
+    builder.addTextAlign(Builder.ALIGN_LEFT)
     builder.addTextLang(Builder.LANG_EN)
     addCustomerTextSize(builder, Constants.SMALL)
     builder.addTextStyle(
@@ -336,41 +339,14 @@ fun addItemsInOrderSalesDetails(
         Builder.FALSE,
         Builder.COLOR_1
     )
-    var orderID = "#" + details.orderId.length
-    var orderIdLength = 0
-    if (orderID.length < 7) {
-        orderIdLength = orderID.length - 7
-    }
 
-    var tipAmount = MethodUtils.roundOffAmount(details.tip)
-    var tipAmountLength = 0
-    if (tipAmount.length < 7) {
-        tipAmountLength = tipAmount.length - 7
-    }
+    var data = details.orderId
+    data += repeat(" ", 10 - details.orderId.length) + MethodUtils.roundOffAmount(details.tip)
+    data += repeat(" ", 18 - data.length) + MethodUtils.roundOffAmount(details.serviceCharge)
+    data+= repeat(" ",27-data.length)+details.payType
+    data+= repeat(" ",39-data.length) + MethodUtils.roundOffAmount(details.amount)
 
-    var serviceCharge = MethodUtils.roundOffAmount(details.serviceCharge)
-    var serviceChargeLength = 0
-    if (serviceCharge.length < 7) {
-        serviceChargeLength = serviceCharge.length - 7
-    }
-
-    var amount = MethodUtils.roundOffAmount(details.amount)
-    var amountLength = 0
-    if (amount.length < 8) {
-        amountLength = amount.length - 8
-    }
-
-    var finalText = "${orderID}" + "${tipAmount}" + "${details.payType}" + amount
-
-    if (finalText.length < 48) {
-        when (48 - finalText.length) {
-
-
-        }
-    }
-    Log.e("finalTextfinalText", "finalTextfinalText  ${finalText}")
-
-    builder.addText(finalText)
+    builder.addText(data)
     return builder
 }
 
