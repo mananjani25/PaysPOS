@@ -97,6 +97,7 @@
                     android:padding="@dimen/_3sdp">
 
                     <TextView
+                        android:id="@+id/txtTitle"
                         style="@style/CustomFontSemiBold"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"

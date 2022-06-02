@@ -80,14 +80,15 @@
                 android:id="@+id/txtHome"
                 style="@style/CustomFontBold"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="@dimen/_10sdp"
+                android:layout_height="match_parent"
+                android:gravity="center"
                 android:layout_gravity="center"
-                android:padding="@dimen/_6sdp"
                 android:text="@string/tv_home"
                 android:textAllCaps="true"
-                android:textColor="@color/txt_color_blue"
+                android:textColor="@color/white"
                 android:textSize="@dimen/_6mdpi"
+                android:background="@drawable/button_action_hover"
+                android:paddingHorizontal="@dimen/padding_home_button"
                 android:visibility="visible" />
         </LinearLayout>
 
@@ -127,15 +128,13 @@
                     android:textSize="@dimen/text_size_medium" />
 
                 <LinearLayout
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:background="@drawable/background_square_border_grey"
                     android:onClick="@{() -> viewModel.datePicker(true)}"
                     android:orientation="horizontal"
-                    android:paddingStart="@dimen/_5sdp"
-                    android:paddingEnd="@dimen/_5sdp"
+                    android:padding="@dimen/_5sdp"
                     android:layout_marginStart="@dimen/_5sdp"
-                    android:paddingVertical="@dimen/_5sdp"
                     >
 
                     <ImageView
@@ -163,7 +162,7 @@
             <androidx.appcompat.widget.LinearLayoutCompat
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:gravity="center"
+                android:gravity="start"
                 android:layout_gravity="center"
                 android:orientation="horizontal"
                 android:layout_marginStart="@dimen/_5sdp"
@@ -186,9 +185,7 @@
                     android:background="@drawable/background_square_border_grey"
                     android:onClick="@{() -> viewModel.datePicker(false)}"
                     android:orientation="horizontal"
-                    android:paddingStart="@dimen/_5sdp"
-                    android:paddingEnd="@dimen/_5sdp"
-                    android:paddingVertical="@dimen/_5sdp"
+                    android:padding="@dimen/_5sdp"
                     android:layout_marginStart="@dimen/_5sdp">
 
                     <ImageView
@@ -396,8 +393,8 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:gravity="center"
-                android:layout_marginStart="@dimen/_5sdp"
+                android:gravity="left"
+                android:paddingLeft="@dimen/_30sdp"
                 android:text="@string/tv_order_id"
                 android:textColor="@color/white"
                 android:textSize="@dimen/_7mdpi"
@@ -407,9 +404,8 @@
                 style="@style/CustomFontBold"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-
                 android:layout_weight="1"
-                android:gravity="center"
+                android:gravity="left"
                 android:text="@string/tv_date_time"
                 android:textColor="@color/white"
                 android:textSize="@dimen/_7mdpi"
@@ -421,7 +417,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/_5sdp"
                 android:layout_weight="1"
-                android:gravity="center"
+                android:gravity="left"
                 android:text="@string/tv_total_amount"
                 android:textColor="@color/white"
                 android:textSize="@dimen/_7mdpi"
@@ -432,8 +428,8 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:gravity="center"
-                android:text="@string/tv_order_type"
+                android:gravity="left"
+                android:text="@string/order_type_n_team_name"
                 android:textColor="@color/white"
                 android:textSize="@dimen/_7mdpi"
                 android:textAllCaps="true" />
@@ -444,7 +440,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="@dimen/_5sdp"
                 android:layout_weight="1"
-                android:gravity="center"
+                android:gravity="left"
                 android:text="@string/event_type"
                 android:textColor="@color/white"
                 android:visibility="gone"
@@ -456,7 +452,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:gravity="center"
+                android:gravity="left"
                 android:text="@string/employee_name"
                 android:textColor="@color/white"
                 android:textSize="@dimen/_5mdpi"
@@ -468,7 +464,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:gravity="center"
+                android:gravity="left"
                 android:text="@string/tv_terminal_id"
                 android:textColor="@color/white"
                 android:textSize="@dimen/text_size_medium"
@@ -479,7 +475,8 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1.5"
-                android:gravity="center"
+                android:gravity="left"
+                android:paddingLeft="@dimen/_30sdp"
                 android:text="@string/reason"
                 android:textColor="@color/white"
                 android:textSize="@dimen/_7mdpi"
