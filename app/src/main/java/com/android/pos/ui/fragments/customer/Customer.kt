@@ -9,7 +9,6 @@ import android.text.TextWatcher
 import android.util.Log
 import android.view.*
 import androidx.appcompat.widget.PopupMenu
-import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
@@ -17,17 +16,14 @@ import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.R
 import com.android.pos.data.entities.TbCustomer
 import com.android.pos.data.remote.Constants.CUSTOMERDETAILS
 import com.android.pos.data.remote.Constants.KEY
 import com.android.pos.databinding.FragmentCustomerBinding
-import com.android.pos.ui.activities.MainActivity
 import com.android.pos.ui.adapter.CustomerListAdapter
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.ProgressUtils
-import com.android.pos.utils.SwipeHelper
 import com.android.pos.utils.callback.ItemCallback
 import com.android.pos.utils.callback.PaginationScrollListener
 import com.android.pos.utils.extensions.alert
@@ -133,6 +129,7 @@ class Customer : Fragment(),ItemCallback {
                     try {
                         if (!firstDetailLoad) {
                             if (data.isNotEmpty()) {
+                                setSubTitleFirstLastName(data[0])
                                 loadFragment(data[0])
                             }
                         }
@@ -180,17 +177,19 @@ class Customer : Fragment(),ItemCallback {
 
                                 if (!firstDetailLoad) {
                                     //loadFragment(data[0])
-                                    for (i in data.indices){
-                                        if (data.get(i).isSelcted){
-                                            customerAdapter.isSelectedPos=i
+                                    for (i in data.indices) {
+                                        if (data.get(i).isSelcted) {
+                                            customerAdapter.isSelectedPos = i
+                                            setSubTitleFirstLastName(data[i])
                                             loadFragment(data[i])
-                                            isIn=true
+                                            isIn = true
                                             break
                                         }
                                     }
                                 }
                                 if (!isIn)
-                                    loadFragment(data[0])
+                                    setSubTitleFirstLastName(data[0])
+                                loadFragment(data[0])
 
                             } catch (e: Exception) {
                                 e.printStackTrace()
@@ -250,6 +249,29 @@ class Customer : Fragment(),ItemCallback {
 
     }
 
+    public fun setSubTitleFirstLastName(model: TbCustomer) {
+        if (model.last_name != null && model.last_name!!.isNotEmpty() && !model.last_name.equals(
+                "null",
+                ignoreCase = true
+            )
+        ) {
+            var final_string =
+                model.first_name.toString().substring(0, 1)
+                    .toUpperCase() + model.first_name.toString()
+                    .substring(1, model.first_name.toString().length) + " " +
+                        model.last_name.toString().substring(0, 1)
+                            .toUpperCase() + model.last_name.toString()
+                    .substring(1, model.last_name.toString().length)
+            binding.layoutTool.txtSubTitle.setText(final_string)
+        } else {
+            var final_string =
+                model.first_name.toString().substring(0, 1)
+                    .toUpperCase() + model.first_name.toString()
+                    .substring(1, model.first_name.toString().length)
+            binding.layoutTool.txtSubTitle.setText(final_string)
+        }
+    }
+
     private fun searchQuery() {
         binding.autoSearch.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
@@ -280,12 +302,19 @@ class Customer : Fragment(),ItemCallback {
         viewModel.searchByTextCustomer(query)
     }
 
-    private fun loadFragment(model: TbCustomer) {
+    private fun removeFragment() {
+        val fragment: Fragment? =
+            requireActivity().supportFragmentManager.findFragmentByTag("Customer")
+        if (fragment != null) requireActivity().supportFragmentManager.beginTransaction()
+            .remove(fragment)
+            .commit()
+    }
 
+    private fun loadFragment(model: TbCustomer) {
         firstDetailLoad = true
         val frag = CustomerDetails.newInstance(model)
         val fm: FragmentManager = requireActivity().supportFragmentManager
-        fm.beginTransaction().replace(binding.frameContainer.id, frag).commit()
+        fm.beginTransaction().replace(binding.frameContainer.id, frag, "Customer").commit()
     }
 
 
@@ -328,91 +357,118 @@ class Customer : Fragment(),ItemCallback {
         viewModel.data.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
 
-                // customerAdapter.getList()[pos]
-
-
-                if (customerAdapter.getList().size - 1 != deletedPos) {
-                    if (customerAdapter.getList().lastIndex == deletedPos) {
-                        val model = deletedPos?.minus(1)
-                            ?.let { it1 -> customerAdapter.getList().get(it1) } as TbCustomer
-
-                        if (model.last_name != null && model.last_name.isNotEmpty() && !model.last_name.equals(
-                                "null",
-                                ignoreCase = true
-                            )
-                        ) { var final_string =
-                            model.first_name.toString().substring(0, 1)
-                                .toUpperCase() + model.first_name.toString()
-                                .substring(1, model.first_name.toString().length) + " " +
-                                    model.last_name.toString().substring(0, 1)
-                                        .toUpperCase() + model.last_name.toString()
-                                .substring(1, model.last_name.toString().length)
-                            binding.layoutTool.txtSubTitle.setText(final_string)
-                        } else {
-                            var final_string =
-                                model.first_name.toString().substring(0,1).toUpperCase() + model.first_name.toString()
-                                    .substring(1, model.first_name.toString().length)
-                            binding.layoutTool.txtSubTitle.setText(final_string)
-                        }
-
-                        loadFragment(model)
-                    } else {
-                        val model = deletedPos?.plus(1)
-                            ?.let { it1 -> customerAdapter.getList().get(it1) } as TbCustomer
-                        if (model.last_name != null && model.last_name.isNotEmpty() && !model.last_name.equals(
-                                "null",
-                                ignoreCase = true
-                            )
-                        ) { var final_string =
-                            model.first_name.toString().substring(0, 1)
-                                .toUpperCase() + model.first_name.toString()
-                                .substring(1, model.first_name.toString().length) + " " +
-                                    model.last_name.toString().substring(0, 1)
-                                        .toUpperCase() + model.last_name.toString()
-                                .substring(1, model.last_name.toString().length)
-                            binding.layoutTool.txtSubTitle.setText(final_string)
-                        } else {
-                            var final_string =
-                                model.first_name.toString().substring(0,1).toUpperCase() + model.first_name.toString()
-                                    .substring(1, model.first_name.toString().length)
-                            binding.layoutTool.txtSubTitle.setText(final_string)
-                        }
-
-                        loadFragment(model)
-                    }
-
-                } else {
-                    val model = deletedPos?.minus(1)
-                        ?.let { it1 -> customerAdapter.getList().get(it1) } as TbCustomer
-                    if (model.last_name != null && model.last_name.isNotEmpty() && !model.last_name.equals(
-                            "null",
-                            ignoreCase = true
-                        )
-                    ) { var final_string =
-                        model.first_name.toString().substring(0, 1)
-                            .toUpperCase() + model.first_name.toString()
-                            .substring(1, model.first_name.toString().length) + " " +
-                                model.last_name.toString().substring(0, 1)
-                                    .toUpperCase() + model.last_name.toString()
-                            .substring(1, model.last_name.toString().length)
-                        binding.layoutTool.txtSubTitle.setText(final_string)
-                    } else {
-                        var final_string =
-                            model.first_name.toString().substring(0,1).toUpperCase() + model.first_name.toString()
-                                .substring(1, model.first_name.toString().length)
-                        binding.layoutTool.txtSubTitle.setText(final_string)
-                    }
-
-                    loadFragment(model)
-                }
-
-
                 AlertUtils.showCustomAlertWithListenerWithOK(
                     requireContext(),
                     it.message
                 ) { _, _ ->
-
+                    if (customerAdapter.getList().size > 0) {
+                        if (customerAdapter.getList().size - 1 == deletedPos) {
+                            if (deletedPos == 0 && customerAdapter.getList().size>0) {
+                                customerAdapter.isSelectedPos = 0
+                                val model = customerAdapter.getList()[0]
+                                setSubTitleFirstLastName(model)
+                                loadFragment(model)
+                            }else{
+                                binding.layoutTool.txtSubTitle.text = ""
+                                removeFragment()
+                            }
+                        } else {
+                            customerAdapter.isSelectedPos = 0
+                            val model = customerAdapter.getList()[0]
+                            setSubTitleFirstLastName(model)
+                            loadFragment(model)
+                        }
+                    } else {
+                        binding.layoutTool.txtSubTitle.text = ""
+                        removeFragment()
+                    }
                 }
+
+
+//
+//                if (customerAdapter.getList().size - 1 != deletedPos) {
+//                    if (customerAdapter.getList().lastIndex == deletedPos) {
+//                        val model = deletedPos?.minus(1)
+//                            ?.let { it1 -> customerAdapter.getList().get(it1) } as TbCustomer
+//
+//                        if (model.last_name != null && model.last_name.isNotEmpty() && !model.last_name.equals(
+//                                "null",
+//                                ignoreCase = true
+//                            )
+//                        ) {
+//                            var final_string =
+//                                model.first_name.toString().substring(0, 1)
+//                                    .toUpperCase() + model.first_name.toString()
+//                                    .substring(1, model.first_name.toString().length) + " " +
+//                                        model.last_name.toString().substring(0, 1)
+//                                            .toUpperCase() + model.last_name.toString()
+//                                    .substring(1, model.last_name.toString().length)
+//                            binding.layoutTool.txtSubTitle.setText(final_string)
+//                        } else {
+//                            var final_string =
+//                                model.first_name.toString().substring(0, 1)
+//                                    .toUpperCase() + model.first_name.toString()
+//                                    .substring(1, model.first_name.toString().length)
+//                            binding.layoutTool.txtSubTitle.setText(final_string)
+//                        }
+//
+//                        loadFragment(model)
+//                    } else {
+//                        deletedPos = 0
+//                        customerAdapter.isSelectedPos = 0
+//                        val model = deletedPos?.let { it1 ->
+//                            customerAdapter.getList().get(it1)
+//                        } as TbCustomer
+//                        if (model.last_name != null && model.last_name.isNotEmpty() && !model.last_name.equals(
+//                                "null",
+//                                ignoreCase = true
+//                            )
+//                        ) {
+//                            var final_string =
+//                                model.first_name.toString().substring(0, 1)
+//                                    .toUpperCase() + model.first_name.toString()
+//                                    .substring(1, model.first_name.toString().length) + " " +
+//                                        model.last_name.toString().substring(0, 1)
+//                                            .toUpperCase() + model.last_name.toString()
+//                                    .substring(1, model.last_name.toString().length)
+//                            binding.layoutTool.txtSubTitle.setText(final_string)
+//                        } else {
+//                            var final_string =
+//                                model.first_name.toString().substring(0, 1)
+//                                    .toUpperCase() + model.first_name.toString()
+//                                    .substring(1, model.first_name.toString().length)
+//                            binding.layoutTool.txtSubTitle.setText(final_string)
+//                        }
+//
+//                        loadFragment(model)
+//                    }
+//
+//                } else {
+//                    val model = deletedPos?.minus(1)
+//                        ?.let { it1 -> customerAdapter.getList().get(it1) } as TbCustomer
+//                    if (model.last_name != null && model.last_name.isNotEmpty() && !model.last_name.equals(
+//                            "null",
+//                            ignoreCase = true
+//                        )
+//                    ) {
+//                        var final_string =
+//                            model.first_name.toString().substring(0, 1)
+//                                .toUpperCase() + model.first_name.toString()
+//                                .substring(1, model.first_name.toString().length) + " " +
+//                                    model.last_name.toString().substring(0, 1)
+//                                        .toUpperCase() + model.last_name.toString()
+//                                .substring(1, model.last_name.toString().length)
+//                        binding.layoutTool.txtSubTitle.setText(final_string)
+//                    } else {
+//                        var final_string =
+//                            model.first_name.toString().substring(0, 1)
+//                                .toUpperCase() + model.first_name.toString()
+//                                .substring(1, model.first_name.toString().length)
+//                        binding.layoutTool.txtSubTitle.setText(final_string)
+//                    }
+//
+//                    loadFragment(model)
+//                }
 
 
             }
@@ -429,27 +485,7 @@ class Customer : Fragment(),ItemCallback {
                 pos: Int,
                 model: TbCustomer
             ) {
-
-                if (model.last_name != null && model.last_name.isNotEmpty() && !model.last_name.equals(
-                        "null",
-                        ignoreCase = true
-                    )
-                ) { var final_string =
-                    model.first_name.toString().substring(0, 1)
-                        .toUpperCase() + model.first_name.toString()
-                        .substring(1, model.first_name.toString().length) + " " +
-                            model.last_name.toString().substring(0, 1)
-                                .toUpperCase() + model.last_name.toString()
-                        .substring(1, model.last_name.toString().length)
-                    binding.layoutTool.txtSubTitle.setText(final_string)
-                } else {
-                    var final_string =
-                        model.first_name.toString().substring(0,1).toUpperCase() + model.first_name.toString()
-                            .substring(1, model.first_name.toString().length)
-                    binding.layoutTool.txtSubTitle.setText(final_string)
-                }
-
-
+                setSubTitleFirstLastName(model)
                 loadFragment(model)
             }
 
@@ -465,7 +501,7 @@ class Customer : Fragment(),ItemCallback {
         val popupMenu = view?.let { PopupMenu(requireContext(), it) }
         popupMenu?.menuInflater?.inflate(R.menu.edit_delete__hide_menu, popupMenu.menu)
         popupMenu?.menu?.findItem(R.id.menu_edit)?.isVisible = false
-        popupMenu?.menu?.findItem(R.id.menu_hide)?.isVisible=false
+        popupMenu?.menu?.findItem(R.id.menu_hide)?.isVisible = false
         popupMenu?.setOnMenuItemClickListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.menu_delete -> {
