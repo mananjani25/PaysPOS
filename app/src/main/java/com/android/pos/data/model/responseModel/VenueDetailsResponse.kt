@@ -92,7 +92,7 @@ data class VenueDetailsResponse(
         @SerializedName("magensa_settings")
         val magensaSettings: List<MagensaSettings>,
         @SerializedName("shift_report_configuration")
-        val shift_report_configuration: EODShiftReport?,
+        val shift_report_configuration: ShiftRportConfiguration?,
         @SerializedName("time_zone_options")
         val time_zone_options: List<TbTimeZones>
 
