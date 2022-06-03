@@ -178,15 +178,7 @@ class ServiceChargeListViewModel @Inject constructor(
 
     fun updateData(
         serviceChargeList: ArrayList<TbServiceCharge>,
-        data: CreateServiceChargeResponse.Data
     ) {
-
-        serviceChargeList.forEach {
-            if (data.id == it.id) {
-                it.isEnabled = data.isEnabled
-            } else
-                it.isEnabled = false
-        }
         viewModelScope.launch {
             taxServiceChargeRepository.addServiceCharges(serviceChargeList)
         }

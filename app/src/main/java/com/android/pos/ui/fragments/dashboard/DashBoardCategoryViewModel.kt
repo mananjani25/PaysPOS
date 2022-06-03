@@ -2448,7 +2448,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
             when (resource.status) {
                 Status.SUCCESS -> {
-                    _showProgress.value = Event(false)
+
                     resource.data.let { venueDetailsResponse ->
                         if (venueDetailsResponse?.status == 200) {
 
@@ -2644,7 +2644,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                         }
 
                             }
-
+                            _showProgress.value = Event(false)
                             prefProvider.setValueboolean(Constants.SYNC_DATA, true)
                         } else {
                             _snackbarText.value = Event(resource.message)

@@ -731,7 +731,7 @@ class ActiveOrderFragment(
 
         order.orderServiceCharges.forEach {
             val serviceCharge = TbServiceCharge(
-                it.createdAt!!,
+                "",
                 it.serviceChargeId,
                 true,
                 order.locationId,
@@ -740,7 +740,7 @@ class ActiveOrderFragment(
                 it.name,
                 it.order_type,
                 it.rate,
-                it.updatedAt,
+                "",
                 isActive = false,
                 isChecked = true,
                 order_service_charge_id = it.id
