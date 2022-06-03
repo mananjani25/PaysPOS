@@ -548,14 +548,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 newList
             )
 
-            Log.e("OrderFre", "APIDISc  ${getOrderDetailsResponse?.totalDiscount?.toDouble()}")
-            Log.e("OrderFre", "totalDiscount  ${totalDiscount}")
-            Log.e("OrderFre", "OrderDiscount  ${globalOrderDiscount}")
 
-            bundle.putDouble(
-                "totalDiscount",
-                globalOrderDiscount
-            )
+            bundle.putDouble("totalDiscount", globalOrderDiscount)
             bundle.putString("order_note", order_note)
             bundle.putParcelable("tableDetails", getOrderDetailsResponse?.floorPlanTable)
 
@@ -922,10 +916,12 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
         var divideDiscount = divideDiscount2
         Log.e("WholeTabDis", "Fasf  ${wholeTableDiscount}")
-        var dividedWtDis: Double = MethodUtils.roundOffAmountDouble(wholeTableDiscount / (getOrderDetailsResponse?.guestAttributes?.size?.minus(1)!!))
+        var dividedWtDis: Double = MethodUtils.roundOffAmountDouble(
+            wholeTableDiscount / (getOrderDetailsResponse?.guestAttributes?.size?.minus(1)!!)
+        )
 
         divideDiscount += dividedWtDis
-        Log.e("saff","afadivideDiscount ${divideDiscount}")
+        Log.e("saff", "afadivideDiscount ${divideDiscount}")
 
         Log.e("TODAYBOLD", "subTotalB  ${subTotalGuest + dividedGuestAmt}")
         Log.e("TODAYBOLD", "totalGuest ${totalGuest}")
@@ -1928,7 +1924,6 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                         }
                     }
 
-                    Log.e(TAG, "notPayAnyAmount  ${notPayAnyAmount}")
                     if (notPayAnyAmount) {
                         binding.txtEditOrder.visibility = View.GONE
                     } else {

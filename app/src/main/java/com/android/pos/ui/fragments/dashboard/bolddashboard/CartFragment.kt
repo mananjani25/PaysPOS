@@ -1268,6 +1268,7 @@ class CartFragment(
                 updateActiveOrderFlagClear()
                 itemListner?.onCancelItemSelected()
                 if (prefProvider.getValue(ORDER_TYPE, "").toString() == Constants.DINE_IN) {
+                    prefProvider.setValue(Constants.DINE_IN_UPDATE_LIST, "")
                     prefProvider.setValueInt(Constants.DINE_INGUEST_SELECTED, 0)
                     viewModel.removeItemDineInList.clear()
 

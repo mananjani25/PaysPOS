@@ -432,13 +432,16 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                                     it, "Available"
                                 )
                             }
+                            prefProvider.setValue(Constants.DINE_IN_UPDATE_LIST, "")
                             findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_dineInFragment)
                         }
                     } else {
+                        prefProvider.setValue(Constants.DINE_IN_UPDATE_LIST, "")
                         findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_dineInFragment)
                     }
                 }
             } else {
+                prefProvider.setValue(Constants.DINE_IN_UPDATE_LIST, "")
                 findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_dineInFragment)
             }
 
