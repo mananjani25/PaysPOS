@@ -978,8 +978,8 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                 }
 
-                subTotalPrice -= (cartList[0].discountPrice)
                 calculateDineInServiceCharge(cartList[0])
+                subTotalPrice -= (cartList[0].discountPrice)
 
 
                 cartList[0].dineInList?.forEach {
@@ -1015,8 +1015,8 @@ class DashBoardCategoryViewModel @Inject constructor(
                     }
 
                     order_note = cartList[0].note
-                    subTotalPrice -= cartList[0].discountPrice
                     serviceChargeCalculation(cartList)
+                    subTotalPrice -= cartList[0].discountPrice
 
 
                     totalDiscount += cartList[0].discountPrice
@@ -1119,12 +1119,12 @@ class DashBoardCategoryViewModel @Inject constructor(
 
             }
             order_note = cartModel.note
-
+            serviceChargeCalculationModel(cartModel)
             subTotalPrice -= cartModel.discountPrice
             if (subTotalPrice < 0){
                 subTotalPrice = 0.0
             }
-            serviceChargeCalculationModel(cartModel)
+
             var totalDis = cartModel.discountPrice
             var totalDineItemDis = 0.0
             cartModel.dineInList?.forEach {
@@ -1203,12 +1203,12 @@ class DashBoardCategoryViewModel @Inject constructor(
                         }
                     }
 
+                    serviceChargeCalculationModel(cartModel)
 
                     subTotalPrice -= cartModel.discountPrice
                     if (subTotalPrice < 0){
                         subTotalPrice = 0.0
                     }
-                    serviceChargeCalculationModel(cartModel)
 
                     totalDiscount += cartModel.discountPrice
                     order_note = cartModel.note
@@ -1283,13 +1283,16 @@ class DashBoardCategoryViewModel @Inject constructor(
                         }
                     }
 
+                    serviceChargeCalculationModel(cartModel)
+
                     subTotalPrice -= cartModel.discountPrice
                     if (subTotalPrice < 0){
                         subTotalPrice = 0.0
                     }
-                    serviceChargeCalculationModel(cartModel)
 
                     totalDiscount += cartModel.discountPrice
+
+
                     order_note = cartModel.note
                     Log.e("OpenOrderCh", "cartDiscount  ${cartModel.discountPrice}")
                     Log.e("OpenOrderCh", "totalDiscounts  ${totalDiscount}")
@@ -1466,7 +1469,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                     modifierPrice += (it.price * it.itemQuantity)
                 }
 
-                val totalPrice = price + modifierPrice - (discountPrice * item.itemQuantity)
+                val totalPrice = price + modifierPrice /*- (discountPrice * item.itemQuantity)*/
 
 
                 totalTax += if (tax.taxType == "Percentage") {
@@ -2957,13 +2960,14 @@ class DashBoardCategoryViewModel @Inject constructor(
                 }
 
                 order_note = cartModel.note
+                serviceChargeCalculationModel(cartModel)
                 subTotalPrice -= cartModel.discountPrice
 
                 if (subTotalPrice < 0){
                     subTotalPrice = 0.0
                 }
 
-                serviceChargeCalculationModel(cartModel)
+
 
                 totalDiscount += cartModel.discountPrice
 
