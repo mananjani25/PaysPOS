@@ -40,7 +40,7 @@ class ItemAdapter(
                     lastChecked?.isSelected = false
                 }
                 lastChecked = checkedTextView
-                binding.txtCategoryName.isSelected = true
+                binding.txtCategoryName.isSelected = false
             } else {
                 binding.txtCategoryName.isSelected = false
 

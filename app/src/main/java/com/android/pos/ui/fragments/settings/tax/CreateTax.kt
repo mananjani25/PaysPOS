@@ -71,7 +71,7 @@ class CreateTax : Fragment() {
 
             binding.itemsCount.text = "" + taxData.itemIds.size + " Items"
             binding.tvItemPricing.text = taxData.itemPricing
-            binding.edtAmount.setText(viewModel.createTaxDetails.value?.rate.toString())
+            binding.edtAmount.setText(String.format("%.2f", viewModel.createTaxDetails.value?.rate))
             binding.swtEnableTax.isChecked = taxData.isDefault
             binding.swtCustomAmount.isChecked = taxData.isCustomAmount
             viewModel.isEditData(isEdit, taxData.id)
