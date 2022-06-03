@@ -25,9 +25,6 @@ import com.android.pos.data.model.ShiftRportConfiguration
 import com.android.pos.data.model.responseModel.EodReportResponse
 import com.android.pos.data.model.responseModel.PrinterResponse
 import com.android.pos.data.model.responseModel.report.KeyValue
-import com.android.pos.data.model.responseModel.EodReportResponse
-import com.android.pos.data.model.responseModel.PrinterResponse
-import com.android.pos.data.model.responseModel.report.KeyValue
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.MEDIUM
 import com.android.pos.data.remote.Constants.SMALL
