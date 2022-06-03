@@ -150,6 +150,7 @@
                                 android:digits="@string/disable_emoji_string"
                                 android:hint="@string/add_tax__percentage_"
                                 android:imeOptions="actionNext"
+                                android:maxLength="7"
                                 android:inputType="number"
                                 android:paddingStart="@dimen/_10sdp"
                                 android:textColor="@color/txtColor"
