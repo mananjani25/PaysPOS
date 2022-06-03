@@ -13,21 +13,22 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:paddingVertical="@dimen/_4sdp"
             app:layout_constraintTop_toTopOf="parent">
 
             <TextView
                 android:id="@+id/txtHome"
                 style="@style/CustomFontBold"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="@dimen/_23sdp"
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
-                android:layout_marginEnd="@dimen/_10sdp"
-                android:padding="@dimen/_5sdp"
+                android:background="@drawable/button_action_hover"
+                android:gravity="center_vertical"
+                android:paddingHorizontal="@dimen/_12sdp"
+                android:paddingVertical="@dimen/_5sdp"
                 android:text="Home"
                 android:textAllCaps="true"
-                android:textColor="@color/txt_color_blue"
+                android:textColor="@color/white"
                 android:textSize="@dimen/_6mdpi" />
 
             <androidx.appcompat.widget.AppCompatTextView
@@ -72,6 +73,7 @@
                 style="@style/CustomFontBold"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
                 android:layout_alignParentStart="true"
                 android:layout_marginEnd="@dimen/_4sdp"
                 android:gravity="center"
@@ -95,7 +97,7 @@
             android:id="@+id/linearHeaderNew"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/btnColorDark"
+            android:background="@color/btnColor"
             android:orientation="horizontal"
             android:paddingVertical="@dimen/_3sdp"
             android:weightSum="5"

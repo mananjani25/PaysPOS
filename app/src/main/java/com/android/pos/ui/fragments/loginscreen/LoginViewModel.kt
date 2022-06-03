@@ -1,27 +1,21 @@
 package com.android.pos.ui.fragments.loginscreen
 
 import android.text.TextUtils
-import android.util.Log
 import android.util.Patterns
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.android.pos.MainApplication
 import com.android.pos.R
 import com.android.pos.data.model.requestModel.LoginRequestModel
 import com.android.pos.data.model.responseModel.LogInResponse
-import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.AUTH_TOKEN
 import com.android.pos.data.remote.Constants.BASE_URL_NEW
 import com.android.pos.data.remote.Constants.EMAIL
 import com.android.pos.data.remote.Constants.LOCATION_ID
 import com.android.pos.data.remote.Constants.TERMINAL_ID
 import com.android.pos.data.remote.Constants.USERNAME
-import com.android.pos.data.remote.NetworkConnectionInterceptor
 import com.android.pos.data.repositories.UserRepository
-import com.android.pos.di.ApiModule
-import com.android.pos.di.ApiModule.BASE_URL
 import com.android.pos.di.HostSelectionInterceptor
 import com.android.pos.di.PrefProvider
 import com.android.pos.utils.Event
@@ -78,25 +72,13 @@ class LoginViewModel @Inject constructor(
                             if (logInResponse?.status == 200) {
 
                                 resource.data?.let {
-
-                                    prefProvider.setValue(AUTH_TOKEN, it.data.authToken)
-
                                     prefProvider.setValue(BASE_URL_NEW, it.data.baseUrl + "/")
                                     hostSelectionInterceptor.setHostBaseUrl()
 
-                                    prefProvider.setValueInt(LOCATION_ID, it.data.locationId)
-                                    prefProvider.setValue(EMAIL, it.data.email)
-                                    it.data.userName?.let { it1 ->
-                                        prefProvider.setValue(
-                                            USERNAME,
-                                            it1
-                                        )
-                                    }
 
+                                    defaultTerminalCall(device_token, it.data)
                                 }
 
-
-                                defaultTerminalCall(device_token)
 
                             } else {
                                 _snackbarText.value = Event(resource.message)
@@ -122,12 +104,11 @@ class LoginViewModel @Inject constructor(
 
     }
 
-    suspend fun defaultTerminalCall(device_token: String) {
+    suspend fun defaultTerminalCall(device_token: String, data: LogInResponse.Data) {
         _showProgress.value = Event(true)
 
         val unique_id = prefProvider.getUniqueId()
         viewModelScope.launch {
-            delay(3000)
 
             val defaultTerminal =
                 userRepository.getDefaultTerminal(unique_id, device_token)
@@ -137,12 +118,26 @@ class LoginViewModel @Inject constructor(
                     defaultTerminal.data.let { terminalResponse ->
                         if (terminalResponse?.status == 200) {
 
+                            prefProvider.setValue(AUTH_TOKEN, data.authToken)
+
+
+                            prefProvider.setValueInt(LOCATION_ID, data.locationId)
+                            prefProvider.setValue(EMAIL, data.email)
+                            data.userName?.let { it1 ->
+                                prefProvider.setValue(
+                                    USERNAME,
+                                    it1
+                                )
+                            }
+
                             prefProvider.setValueInt(TERMINAL_ID, terminalResponse.terminalData.id)
                             _data.value = Event(true)
 
 
                         } else {
                             _snackbarText.value = Event(defaultTerminal.message)
+                            prefProvider.setValue(AUTH_TOKEN, "")
+                            _data.value = Event(false)
                         }
 
                     }
@@ -152,6 +147,8 @@ class LoginViewModel @Inject constructor(
                 Status.ERROR -> {
                     _snackbarText.value = Event(defaultTerminal.message)
                     _showProgress.value = Event(false)
+                    prefProvider.setValue(AUTH_TOKEN, "")
+                    _data.value = Event(false)
                 }
 
                 Status.LOADING -> {
