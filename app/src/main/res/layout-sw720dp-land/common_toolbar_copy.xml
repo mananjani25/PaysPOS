@@ -57,8 +57,7 @@
                     android:layout_gravity="center"
                     android:background="?attr/selectableItemBackground"
                     android:padding="@dimen/_6sdp"
-                    android:src="@drawable/ic_dot_menu"
-                     />
+                    android:src="@drawable/ic_dot_menu" />
 
             </RelativeLayout>
 
@@ -82,9 +81,9 @@
                     android:layout_marginLeft="@dimen/_30sdp"
                     android:fontFamily="@font/sf_pro_display_medium"
                     android:gravity="center"
+                    android:inputType="textNoSuggestions"
                     android:textColor="@color/txtColor"
                     android:textSize="@dimen/_7mdpi"
-                    android:inputType="textNoSuggestions"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@+id/txtHome"
                     app:layout_constraintStart_toStartOf="parent"
@@ -113,25 +112,23 @@
                     android:textAllCaps="true"
                     android:textColor="@color/btnColor"
                     android:textSize="@dimen/_6mdpi"
-                    app:layout_constraintRight_toLeftOf="@+id/txtHome"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
                     android:visibility="gone"
-                    />
-
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintRight_toLeftOf="@+id/txtHome"
+                    app:layout_constraintTop_toTopOf="parent" />
 
 
                 <TextView
                     android:id="@+id/txtHome"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
+                    android:background="@drawable/button_action_hover"
                     android:fontFamily="@font/sf_pro_display_semibold"
-                    android:text="@string/tv_home"
                     android:gravity="center"
+                    android:paddingHorizontal="@dimen/padding_home_button"
+                    android:text="@string/tv_home"
                     android:textAllCaps="true"
                     android:textColor="@color/white"
-                    android:background="@drawable/button_action_hover"
-                    android:paddingHorizontal="@dimen/padding_home_button"
                     android:textSize="@dimen/_7mdpi"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -143,10 +140,10 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_marginEnd="@dimen/_10sdp"
+                    android:gravity="center"
                     android:padding="@dimen/_6sdp"
                     android:text="Edit"
                     android:textAllCaps="true"
-                    android:gravity="center"
                     android:textColor="@color/txt_color_blue"
                     android:textSize="@dimen/_6mdpi"
                     android:visibility="gone"

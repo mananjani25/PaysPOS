@@ -55,6 +55,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragment(), magtekCallback,
     DeleteOptionCallback, IDeviceListCallback {
+    private var cardNumber: String = ""
     private var isError: Boolean = false
     private var isCardRev: Boolean = false
     private var isInsert: Boolean = false
@@ -728,6 +729,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             } else {
                 magtekProPaymentCall()
             }
+
+            //  makePaymentCreditCard()
         }
         binding.llManualCardEntry.setOnClickListener {
             binding.frameLayoutId.visible()
@@ -806,7 +809,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                     String.format("%.2f", paymentAmount + cashDiscountSurcharge).toDouble()
             }
 
-            val cardNumber = binding.edtCardNumber.rawText.toString().trim()
+            cardNumber = binding.edtCardNumber.rawText.toString().trim()
 
             val cardExpDate = binding.edtMMYY.rawText.toString().trim()
             val cardCVV = binding.edtCVV.text.toString().trim()
@@ -1267,7 +1270,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 redeemLoyaltyInfo,
                 cashDiscountSurcharge,
                 true,
-                paymentType, cashDiscountType,
+                paymentType,
+                cashDiscountType,
                 tipID
             )
         }
@@ -1531,8 +1535,13 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                         if (response.body()!![0].transactionOutput?.isTransactionApproved == true) {
                             if (isDynamo())
                                 magtekModule.closeDevice()
-                            paymentviewModel.setMagensaResponse(Gson().toJson(response.body()!![0]))
+                            paymentviewModel.setMagensaResponse(
+                                Gson().toJson(response.body()!![0]),
+                                if (i == 3) cardNumber else ""
+                            )
+
                             makePaymentCreditCard()
+
                             isInsert = true
                             isCardRev = true
                             isError = false

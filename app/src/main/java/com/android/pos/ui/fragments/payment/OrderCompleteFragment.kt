@@ -37,8 +37,10 @@ import com.android.pos.data.remote.Constants.CASH_DISCOUNT_SURCHARGE
 import com.android.pos.data.remote.Constants.CUSTOMER
 import com.android.pos.data.remote.Constants.DINE_IN_ADAPTER_LIST
 import com.android.pos.data.remote.Constants.GUEST_POSITION
+import com.android.pos.data.remote.Constants.IS_UPDATE_ORDER_LOYALTY_APPLIED
 import com.android.pos.data.remote.Constants.KITCHEN
 import com.android.pos.data.remote.Constants.LARGE
+import com.android.pos.data.remote.Constants.LOYALTY_ADDED
 import com.android.pos.data.remote.Constants.OPEN_ORDER
 import com.android.pos.data.remote.Constants.OPTION_TYPE
 import com.android.pos.data.remote.Constants.PAYMENT_ID
@@ -4541,17 +4543,15 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 Builder.COLOR_1
             )
 
-            var newPaidAmount = paidAmount + tipAmount
-            /* if (MethodUtils.roundOffAmountDouble(paidAmount + tipAmount) == MethodUtils.roundOffAmountDouble(
-                     receiptModel?.order?.totalAmount?.toDouble() ?: 0.0
-                 )
+            var newPaidAmount = paidAmount
+             if (MethodUtils.roundOffAmountDouble(paidAmount + tipAmount) == MethodUtils.roundOffAmountDouble((receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size?.minus(1) ?: 0)?.amount ?: 0.0).plus((receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size?.minus(1) ?: 0)?.tips ?: 0.0))   ?: 0.0)
              ) {
                  newPaidAmount = paidAmount + tipAmount
              }
 
              if (isSpilt) {
                  newPaidAmount = paidAmount + tipAmount
-             }*/
+             }
             Log.e("ToCheck", "PaidAmount ${newPaidAmount}")
 
             builder.addText(
@@ -5588,6 +5588,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         prefProvider.setValue(SPLIT_DINEIN_MODEL, "")
         prefProvider.setValue(SPLIT_IS_GUESTPAY, "")
         prefProvider.setValue(SPLIT_DINEIN_CHECKOUT, "")
+        prefProvider.setValueboolean(IS_UPDATE_ORDER_LOYALTY_APPLIED,false)
+        prefProvider.setValueboolean(LOYALTY_ADDED,false)
     }
 
     private fun observeShowProgress() {

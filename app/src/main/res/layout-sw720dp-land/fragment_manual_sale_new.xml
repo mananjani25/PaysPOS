@@ -18,9 +18,7 @@
            android:background="@color/view"/>
         <include
             android:id="@+id/layout_header"
-            layout="@layout/layout_header_bold_pos"
-            app:layout_constraintEnd_toStartOf="@+id/linearMenu"
-            app:layout_constraintStart_toStartOf="parent"
+            layout="@layout/layout_header_bold_pos_with_homebutton"
             app:layout_constraintTop_toTopOf="parent"/>
 
         <include
@@ -360,7 +358,7 @@
                         style="@style/CustomFontSemiBold"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
-                        android:layout_weight="2"
+                        android:layout_weight="1.5"
                         android:text="Item Name"
                         android:textColor="@color/white"
                         android:textSize="@dimen/_5mdpi" />
@@ -371,7 +369,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="start"
                         android:layout_weight="0.5"
-                        android:gravity="start"
+                        android:gravity="center"
                         android:text="Qty"
                         android:textColor="@color/white"
                         android:textSize="@dimen/_5mdpi" />
@@ -381,7 +379,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_gravity="end"
-                        android:layout_weight="0.5"
+                        android:layout_weight="1"
                         android:gravity="end"
                         android:text="Each"
                         android:textColor="@color/white"

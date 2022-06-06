@@ -79,6 +79,8 @@ class ReasonForRefundDialog : DialogFragment() {
         paymentType = arguments?.getString("paymentType").toString()
 
 
+        binding.txtTitle.text = paymentType
+
         binding.tvTagRefundAmount.text = requireActivity()?.getString(R.string.tv_refund) + " " +
                 requireActivity()?.getString(R.string.symbole) + "" + String.format(
             requireActivity().getString(R.string.format), refundAmount

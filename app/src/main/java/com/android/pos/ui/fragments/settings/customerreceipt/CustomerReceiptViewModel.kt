@@ -35,7 +35,7 @@ class CustomerReceiptViewModel @Inject constructor(
     val showProgress: LiveData<Event<Boolean>> = _showProgress
     val customerId = MutableLiveData<Int>()
 
-    fun getCustomerSettings() = taxServiceChargeRepository.getCustomerReceiptSettings()
+    fun getCustomerSettings() = taxServiceChargeRepository.getCustomerReceiptSettingsDb()
 
     init {
         /* _showProgress.value = Event(true)

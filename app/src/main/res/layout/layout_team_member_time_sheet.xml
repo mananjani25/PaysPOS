@@ -18,24 +18,24 @@
         android:orientation="vertical">
 
         <LinearLayout
-            android:padding="@dimen/_3sdp"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">
 
             <androidx.appcompat.widget.AppCompatImageView
                 android:id="@+id/imgClose"
-                android:layout_width="wrap_content"
+                android:layout_width="@dimen/_20sdp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:padding="@dimen/_6sdp"
-                android:src="@drawable/ic_arrow_back" />
+                android:padding="@dimen/_3sdp"
+                android:src="@mipmap/ic_left_arrow"
+                android:tint="@color/drawable_ic_color"/>
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/txtTitle"
                 style="@style/CustomFontBold"
                 android:layout_width="0dp"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_weight="1"
                 android:gravity="center"
@@ -51,8 +51,9 @@
                 android:layout_gravity="center"
                 android:gravity="center"
                 android:textColor="@color/txtColor"
-                android:padding="@dimen/_6sdp"
+                android:padding="@dimen/_3sdp"
                 android:text="@string/tv_print"
+                android:visibility="gone"
                 android:textAllCaps="true"
                 android:textSize="@dimen/_6mdpi" />
 
@@ -61,14 +62,15 @@
                 style="@style/CustomFontBold"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:layout_gravity="center"
-                android:layout_marginEnd="@dimen/_10sdp"
+                android:background="@drawable/button_action_hover"
                 android:gravity="center"
-                android:padding="@dimen/_6sdp"
+                android:paddingHorizontal="@dimen/padding_home_button"
                 android:text="@string/tv_home"
                 android:textAllCaps="true"
-                android:textColor="@color/txt_color_blue"
-                android:textSize="@dimen/_6mdpi" />
+                android:textColor="@color/white"
+                android:textSize="@dimen/_7mdpi"
+                android:visibility="visible" />
+
         </LinearLayout>
 
         <View

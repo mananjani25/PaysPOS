@@ -76,8 +76,7 @@
         <androidx.appcompat.widget.LinearLayoutCompat
             android:id="@+id/linearSecond"
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:gravity="center"
+            android:layout_height="wrap_content"
             android:layout_alignParentEnd="true">
 
 
@@ -176,6 +175,7 @@
                 android:layout_marginStart="@dimen/_6sdp"
                 android:layout_marginEnd="@dimen/_6sdp"
                 android:background="@color/txtColor" />
+
             <ImageView
                 android:id="@+id/ivLock"
                 android:layout_width="wrap_content"
@@ -185,6 +185,20 @@
                 android:padding="@dimen/_4sdp"
                 android:src="@drawable/ic_lock"
                 app:tint="@color/txtColor" />
+            <TextView
+                android:id="@+id/txtHome"
+                style="@style/CustomFontBold"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/_23sdp"
+                android:background="@drawable/button_action_hover"
+                android:gravity="center"
+                android:paddingHorizontal="@dimen/padding_home_button"
+                android:text="@string/tv_home"
+                android:textAllCaps="true"
+                android:textColor="@color/white"
+                android:textSize="@dimen/_7mdpi"
+                android:visibility="visible" />
+
         </androidx.appcompat.widget.LinearLayoutCompat>
     </RelativeLayout>
 </layout>
