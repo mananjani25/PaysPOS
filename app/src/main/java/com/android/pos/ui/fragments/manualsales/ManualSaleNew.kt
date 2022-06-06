@@ -610,6 +610,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                                     binding.txtSubTotal.text = "$0.00"
                                     binding.txtTotalTax.text = "$0.00"
                                     binding.txtServiceCharge.text = "$0.00"
+                                    clearCustomer()
 
                                 }
                                 negativeButton(R.string.tv_cancel) {
