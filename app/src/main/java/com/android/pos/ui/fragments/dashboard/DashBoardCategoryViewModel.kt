@@ -46,6 +46,7 @@ import com.android.pos.data.repositories.TaxServiceChargeRepository
 import com.android.pos.data.repositories.TipDiscountRepository
 import com.android.pos.di.PrefProvider
 import com.android.pos.di.RolePermission
+import com.android.pos.ui.adapter.boldpos.TaxBirfurcationAdapter
 import com.android.pos.utils.Event
 import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.Pref
@@ -68,6 +69,7 @@ import java.net.HttpURLConnection
 import java.net.URL
 import java.util.*
 import javax.inject.Inject
+import kotlin.collections.ArrayList
 import kotlin.collections.set
 
 
@@ -101,6 +103,7 @@ class DashBoardCategoryViewModel @Inject constructor(
     var order_note = ""
     var cartModel: CartModel? = null
     var assignCustomer: TbCustomer? = null
+    lateinit var taxBirfurcationAdapter: TaxBirfurcationAdapter
     var orderItemDiscount = 0.0
     var selectedCustomer: TbCustomer? = null
     var activeLoyaltyProgram: LoyaltyProgramsModel? = null
@@ -156,6 +159,10 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     fun setCartModel(cartList: List<CartModel>) {
         this.cartModel = generateCombinedItems(cartList[0])
+    }
+
+    fun setTaxAdapter(taxBirfurcationAdaptertest: TaxBirfurcationAdapter) {
+        this.taxBirfurcationAdapter = taxBirfurcationAdaptertest
     }
 
     val serviceCharges = posRepository.serviceChargeList()
@@ -1121,7 +1128,7 @@ class DashBoardCategoryViewModel @Inject constructor(
             order_note = cartModel.note
             serviceChargeCalculationModel(cartModel)
             subTotalPrice -= cartModel.discountPrice
-            if (subTotalPrice < 0){
+            if (subTotalPrice < 0) {
                 subTotalPrice = 0.0
             }
 
@@ -1206,7 +1213,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                     serviceChargeCalculationModel(cartModel)
 
                     subTotalPrice -= cartModel.discountPrice
-                    if (subTotalPrice < 0){
+                    if (subTotalPrice < 0) {
                         subTotalPrice = 0.0
                     }
 
@@ -1266,6 +1273,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                     totalServiceCharge = 0.0
 
                     val itemCount = cartModel.items?.size
+                    var taxList: ArrayList<TaxData> = arrayListOf()
                     cartModel.items?.forEach { item ->
                         if (!item.isDestroy) {
                             totalCount += item.itemQuantity
@@ -1274,6 +1282,16 @@ class DashBoardCategoryViewModel @Inject constructor(
 
 
                             taxCalculation(item, cartModel.discountPrice / itemCount!!)
+                            var taxtTempList: ArrayList<TaxData> = arrayListOf()
+                            taxtTempList = taxBifurcationCalculation(item)
+                            if (taxtTempList.size > 1) {
+                                taxtTempList.forEach { itTax ->
+
+                                }
+                            } else {
+                                taxList.addAll(taxtTempList)
+                            }
+
 
 
                             item.modifiers.forEach {
@@ -1282,11 +1300,12 @@ class DashBoardCategoryViewModel @Inject constructor(
                             }
                         }
                     }
+                    taxBirfurcationAdapter.setList(taxList)
 
                     serviceChargeCalculationModel(cartModel)
 
                     subTotalPrice -= cartModel.discountPrice
-                    if (subTotalPrice < 0){
+                    if (subTotalPrice < 0) {
                         subTotalPrice = 0.0
                     }
 
@@ -1352,6 +1371,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
 
     }
+
 
     fun loyaltyPointCondition(customer: TbCustomer?): Boolean {
         return (customer?.enroll_to_loyalty == true && activeLoyaltyProgram != null && activeLoyaltyProgram?.rewardPoint ?: 0 <= customer.final_reward ?: 0)
@@ -1455,6 +1475,16 @@ class DashBoardCategoryViewModel @Inject constructor(
             }
 
         }
+    }
+
+    private fun taxBifurcationCalculation(item: TbItem): ArrayList<TaxData> {
+        var taxdatalist: ArrayList<TaxData> = arrayListOf()
+        item.taxes?.forEach { tax ->
+            if (tax.isActive) {
+                taxdatalist.add(tax)
+            }
+        }
+        return taxdatalist
     }
 
     private fun taxCalculation(item: TbItem, discountPrice: Double) {
@@ -2592,8 +2622,10 @@ class DashBoardCategoryViewModel @Inject constructor(
                                     business_name = it.data.businessName
                                     business_website = it.data.businessWebsite
                                     phone_number = it.data.phoneNumber
-                                    phone_number_1_country = it.data.phone_number_1_country.toString()
-                                    phone_number_2_country = it.data.phone_number_2_country.toString()
+                                    phone_number_1_country =
+                                        it.data.phone_number_1_country.toString()
+                                    phone_number_2_country =
+                                        it.data.phone_number_2_country.toString()
                                     phone_number_2 = it.data.phoneNumber2.toString()
                                     time_zone = it.data.business_time_zone.toString()
                                     customer_contact_email = it.data.customerContactEmail.toString()
@@ -2984,7 +3016,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                 serviceChargeCalculationModel(cartModel)
                 subTotalPrice -= cartModel.discountPrice
 
-                if (subTotalPrice < 0){
+                if (subTotalPrice < 0) {
                     subTotalPrice = 0.0
                 }
 

@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/_1sdp"
+        android:layout_marginBottom="@dimen/_1sdp"
+        android:orientation="horizontal"
+        android:padding="@dimen/_1sdp">
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/txt_name"
+            style="@style/CustomFontMediumStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_marginStart="@dimen/_3sdp"
+            android:text="@string/service_charge"
+            android:textColor="@color/dark_gray"
+            android:textSize="@dimen/_6mdpi" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/txt_value"
+            style="@style/CustomFontSemiBold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="@dimen/_3sdp"
+            android:gravity="end"
+            android:text="@string/_0_00"
+            android:textColor="@color/txtColor"
+            android:textSize="@dimen/text_size_medium" />
+    </RelativeLayout>
+</layout>

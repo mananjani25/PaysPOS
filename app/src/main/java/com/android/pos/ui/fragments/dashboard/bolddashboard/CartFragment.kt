@@ -44,6 +44,7 @@ import com.android.pos.databinding.FragmentCartBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.adapter.DineInAdapter
 import com.android.pos.ui.adapter.boldpos.CartAdapter
+import com.android.pos.ui.adapter.boldpos.TaxBirfurcationAdapter
 import com.android.pos.ui.fragments.checkout.CheckoutDineInPaymentViewModel
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.android.pos.ui.fragments.payment.PaymentViewModel
@@ -101,6 +102,7 @@ class CartFragment(
     private var serviceChargesObserve: Observer<Resource<List<TbServiceCharge>>>? = null
     private lateinit var nameObserver: Observer<List<CartModel>>
     private lateinit var dineInCartAdapter: DineInAdapter
+    private lateinit var taxBirfurcationAdapter: TaxBirfurcationAdapter
     private var assignCustomer: TbCustomer? = null
     private var openORderType: String = ""
     private var orderFloorDetails: GetOrderDetailsResponse.Data.FloorPlanTable =
@@ -109,6 +111,7 @@ class CartFragment(
 
     private var dineInFloorTableModel: GetFloorPlanResponse.Data.FloorPlanTable? = null
 
+    var taxClickable = false
     var cashDiscountSurcharge = 0.0
 
     @Inject
@@ -221,7 +224,17 @@ class CartFragment(
         callback()
         setupLoyalytyPoints()
         addObserver()
+        setupTaxAdapter()
 
+        binding.linearTaxDetail.setOnClickListener {
+            if (!taxClickable) {
+                binding.imgDropdown?.setImageResource(R.drawable.ic_solid_up_arrow)
+                binding.relativeDynamicTax?.visible()
+            } else {
+                binding.imgDropdown?.setImageResource(R.drawable.ic_arrow_drop_down)
+                binding.relativeDynamicTax?.gone()
+            }
+        }
 
 
         if (prefProvider.getValueInt(Constants.CUSTOMER_ID, -1) != -1) {
@@ -277,6 +290,13 @@ class CartFragment(
 
         uiSave()
 
+    }
+
+    private fun setupTaxAdapter() {
+        taxBirfurcationAdapter = TaxBirfurcationAdapter()
+        binding.rvTax?.adapter = taxBirfurcationAdapter
+        var taxlist = arrayListOf<TaxData>()
+        taxBirfurcationAdapter.setList(taxlist)
     }
 
     private fun updateActiveOrderFlag() {
@@ -713,6 +733,7 @@ class CartFragment(
                               binding.txtTotal,
                               requireContext()
                           )*/
+                            viewModel.setTaxAdapter(taxBirfurcationAdapter)
                             viewModel.setCartModel(it)
                             if (prefProvider.getValueboolean(
                                     Constants.DINE_IN_UPDATE,
@@ -922,7 +943,6 @@ class CartFragment(
                     } else {
                         binding.rvCartDineIn.gone()
                         binding.rvCartList.visible()
-
                         if (it.isNotEmpty()) {
                             viewModel.destroyedList.clear()
                             it[0].items?.filter { item -> item.isDestroy }?.let {
@@ -1352,8 +1372,8 @@ class CartFragment(
         binding.lblLoyaltyPoints.visibility = View.GONE
         displayCustomer()
         refreshItemCalculation()
-        prefProvider.setValueboolean(IS_UPDATE_ORDER_LOYALTY_APPLIED,false)
-        prefProvider.setValueboolean(LOYALTY_ADDED,false)
+        prefProvider.setValueboolean(IS_UPDATE_ORDER_LOYALTY_APPLIED, false)
+        prefProvider.setValueboolean(LOYALTY_ADDED, false)
     }
 
 
