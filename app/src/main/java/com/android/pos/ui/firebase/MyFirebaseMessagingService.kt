@@ -13,8 +13,6 @@ import com.android.pos.R
 import com.android.pos.data.remote.Constants.SEND_CLOCKOUT_NOTIFICATION
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.activities.MainActivity
-import com.android.pos.utils.Pref
-import com.google.firebase.messaging.Constants
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import javax.inject.Inject
@@ -26,12 +24,12 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
     lateinit var prefProvider: PrefProvider
 
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
-        Log.d(TAG, "From: ${remoteMessage.from}")
+        Log.e(TAG, "From: ${remoteMessage.from}")
 //        remoteMessage.data["type"]
         prefProvider = PrefProvider(this)
         if (remoteMessage.data.isNotEmpty()) {
             type = remoteMessage.data["type"].toString()
-            Log.d(TAG, "onMessageReceived: type : $type")
+            Log.e(TAG, "onMessageReceived: type : $type")
             if (type == "Clock Out") {
                 var intent = Intent()
                 intent.putExtra("isAuto", false)
@@ -46,18 +44,18 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
                 prefProvider.setValueboolean("clockOutFromNoti", true)
                 sendBroadcast(intent)
             }
-            Log.d(TAG, "Message data payload: ${remoteMessage.data}")
+            Log.e(TAG, "Message data payload: ${remoteMessage.data}")
         }
 
     }
 
     override fun onNewToken(token: String) {
-        Log.d(TAG, "Refreshed token: $token")
+        Log.e(TAG, "Refreshed token: $token")
         sendRegistrationToServer(token)
     }
 
     private fun sendRegistrationToServer(token: String?) {
-        Log.d(TAG, "sendRegistrationTokenToServer($token)")
+        Log.e(TAG, "sendRegistrationTokenToServer($token)")
     }
 
     private fun sendNotification(messageBody: String) {
