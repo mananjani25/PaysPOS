@@ -331,7 +331,11 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
                 note = it.note
             }
 
-            inventoryModelList.add(items)
+            try {
+                inventoryModelList.add(items)
+            } catch (e: Exception) {
+                Log.d(TAG, "inventoryList: "+e.printStackTrace())
+            }
 
         }
 

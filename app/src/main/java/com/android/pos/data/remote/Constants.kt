@@ -27,6 +27,7 @@ object Constants {
     //SharedPref Keys
     const val AUTH_TOKEN = "authToken"
     const val TERMINAL_ID = "terminalId"
+    const val ONLINE_ORDER_ENABLE = "ONLINE_ORDER_ENABLE"
     const val BASE_URL_NEW = "baseUrlNew"
     const val PASSCODE = "passcode"
     const val LOCATION_ID = "locationId"
@@ -250,6 +251,8 @@ object Constants {
     const val ORDER_ASSIGN_CUSTOMER = "orders/{id}/assign_customer_into_order"
     const val ORDER_PAY_AMOUNT_WISE = "payments/pay_amount_wise"
     const val ORDER_COUNTS = "orders/open_orders_show_count"
+    const val ONLINE_ORDER_COUNTS = "online_ordering_orders/web_orders_count"
+    const val ONLINE_ORDER_NOTIFICATION_COUNT = "locations/web_ordering_count"
 
     const val ACTIVE_ORDER = "active_order"
     const val UPCOMING_ORDER = "upcoming_order"
@@ -406,6 +409,9 @@ object Constants {
 
 
     const val OPEN_ORDERS = "orders/open_orders"
+    const val ONLINE_ORDERING= "online_ordering_orders/web_orders"
+    const val ACCEPTED_DECLINE_ONLINEORDER= "online_ordering_orders/{id}/accept_order"
+    const val UPDATE_ONLINE_ORDER= "online_ordering_orders/{id}"
     const val CASH_EVENTS = "cash_events"
 
     const val UTC_SERVER_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
@@ -536,6 +542,7 @@ object Constants {
 
     // broadcast
     const val SEND_CLOCKOUT_NOTIFICATION = "send_clockout_notification"
+    const val ONLINE_ORDER_GET_NOTIFICATION = "online_order_get_notification"
 
 
     // dinein

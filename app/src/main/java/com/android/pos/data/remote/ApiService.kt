@@ -14,6 +14,7 @@ import com.android.pos.data.model.responseModel.item.ItemResponseNew
 import com.android.pos.data.model.responseModel.item.ItemsResponse
 import com.android.pos.data.model.responseModel.orderhistory.OrderHistoryResponse
 import com.android.pos.data.model.responseModel.report.ReportSummaryResponse
+import com.android.pos.data.remote.Constants.ACCEPTED_DECLINE_ONLINEORDER
 import com.android.pos.data.remote.Constants.BUSINESS_UPDATE
 import com.android.pos.data.remote.Constants.CASH_EVENTS
 import com.android.pos.data.remote.Constants.CATEGORY
@@ -61,6 +62,10 @@ import com.android.pos.data.remote.Constants.MODIFIER_UPDATE_DELETE
 import com.android.pos.data.remote.Constants.NOTES
 import com.android.pos.data.remote.Constants.NOTES_ACTIVE
 import com.android.pos.data.remote.Constants.NOTE_UPDATE_DELETE
+import com.android.pos.data.remote.Constants.ONLINE_ORDERING
+import com.android.pos.data.remote.Constants.ONLINE_ORDER_COUNTS
+import com.android.pos.data.remote.Constants.ONLINE_ORDER_GET_NOTIFICATION
+import com.android.pos.data.remote.Constants.ONLINE_ORDER_NOTIFICATION_COUNT
 import com.android.pos.data.remote.Constants.OPEN_ORDERS
 import com.android.pos.data.remote.Constants.OPTION_SETS
 import com.android.pos.data.remote.Constants.OPTION_UPDATE_DELETE
@@ -100,6 +105,7 @@ import com.android.pos.data.remote.Constants.TIPS_ACTIVE
 import com.android.pos.data.remote.Constants.TIPS_UPDATE_DELETE
 import com.android.pos.data.remote.Constants.TRANSACTION_LIST
 import com.android.pos.data.remote.Constants.UNMERGE_TABLE
+import com.android.pos.data.remote.Constants.UPDATE_ONLINE_ORDER
 import com.android.pos.data.remote.Constants.UPDATE_PRINTER_STATUS
 import com.android.pos.data.remote.Constants.UPDATE_TIP
 import com.android.pos.data.remote.Constants.USERS_LOG_IN
@@ -179,6 +185,9 @@ interface ApiService {
 
     @GET(SYNC_VENUE_DETAILS)
     suspend fun syncVenueDetails(): VenueDetailsResponse
+
+    @GET(ONLINE_ORDER_NOTIFICATION_COUNT)
+    suspend fun getCountOnlineOrdering(): OnlineOrderNotificationCount
 
     @GET(ORDER_TYPES)
     suspend fun orderTypes(): OrderTypeResponse
@@ -603,6 +612,9 @@ interface ApiService {
     @POST(REFUND_PAYMENT)
     suspend fun refundPayment(@Body refundRequestModel: RefundRequestModel): BaseResponse
 
+    @POST(REFUND_PAYMENT)
+    suspend fun refundPaymentOnlineOrder(@Body refundRequestModel: RefundRequestModelOnlineOrder): BaseResponse
+
     @PUT(CUSTOMER_RECEIPTS_UPDATE_SETTINGS)
     suspend fun updateCustomerReceiptSettings(
         @Path("id") id: Int,
@@ -637,7 +649,32 @@ interface ApiService {
     suspend fun getOpenOrders(
         @Query("payment_status") paymentStatus: String,
         @Query("start_date") startDate: String,
-        @Query("end_date") endDate: String):OpenOrderResponse
+        @Query("end_date") endDate: String
+    ): OpenOrderResponse
+
+    @GET(ONLINE_ORDERING)
+    suspend fun getOnlineOrders(
+        @Query("start_date") starDate: String,
+        @Query("end_date") endDate: String,
+        @Query("order_status") order_status: String
+    ): OnlineOrderResponseModel
+
+
+    @PUT(ACCEPTED_DECLINE_ONLINEORDER)
+    suspend fun setAcceptedAndDeclineOrders(
+        @Path("id") id: Int,
+        @Query("is_accepted") is_accepted: Boolean,
+        @Query("preparation_time") preparation_time: Int,
+        @Query("employee_id") employee_id: Int,
+        @Query("terminal_id") terminalid: Int
+    ): BaseResponse
+
+
+    @PUT(UPDATE_ONLINE_ORDER)
+    suspend fun updateOnlineOrders(
+        @Path("id") id: Int,
+        @Query("order_status") order_status: String
+    ): BaseResponse
 
     @GET(OPEN_ORDERS)
     suspend fun getUpcomingOpenOrders(
@@ -753,8 +790,17 @@ interface ApiService {
     suspend fun createQueuePrinter(@Body createPrinterQueueRequest: CreateQueuePrinterRequestModel): BaseResponse
 
     @GET(ORDER_COUNTS)
-    suspend fun orderCounts( @Query("start_date") startDate: String?,
-                             @Query("end_date") endDate: String?): OrderCountsResponse
+    suspend fun orderCounts(
+        @Query("start_date") startDate: String?,
+        @Query("end_date") endDate: String?
+    ): OrderCountsResponse
+
+    @GET(ONLINE_ORDER_COUNTS)
+    suspend fun onlineOrderCounts(
+        @Query("start_date") startDate: String?,
+        @Query("end_date") endDate: String?
+    ): OnlineOrderCountResponse
+
     @GET(INVENTORY_COUNTS)
     suspend fun inventoryCounts(): InventoryCountsResponse
 

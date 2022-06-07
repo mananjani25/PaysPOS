@@ -120,7 +120,6 @@ class Orders : Fragment() {
                 setAdapter(position)
             }
         }
-
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
