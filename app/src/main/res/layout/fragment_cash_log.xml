@@ -129,7 +129,7 @@
 
                 <LinearLayout
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_height="@dimen/_24sdp"
                     android:background="@drawable/background_square_border_grey"
                     android:onClick="@{() -> viewModel.datePicker(true)}"
                     android:orientation="horizontal"
@@ -181,7 +181,7 @@
 
                 <LinearLayout
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_height="@dimen/_24sdp"
                     android:background="@drawable/background_square_border_grey"
                     android:onClick="@{() -> viewModel.datePicker(false)}"
                     android:orientation="horizontal"
