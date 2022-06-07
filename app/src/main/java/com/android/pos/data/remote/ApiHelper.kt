@@ -427,6 +427,9 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
     suspend fun refundPayment(data: RefundRequestModel) =
         getResult { apiService.refundPayment(data) }
 
+   suspend fun refundPaymentOnline(data: RefundRequestModelOnlineOrder) =
+        getResult { apiService.refundPaymentOnlineOrder(data) }
+
     suspend fun orderTypes() =
         getResult { apiService.orderTypes() }
 

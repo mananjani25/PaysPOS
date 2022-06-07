@@ -612,6 +612,9 @@ interface ApiService {
     @POST(REFUND_PAYMENT)
     suspend fun refundPayment(@Body refundRequestModel: RefundRequestModel): BaseResponse
 
+    @POST(REFUND_PAYMENT)
+    suspend fun refundPaymentOnlineOrder(@Body refundRequestModel: RefundRequestModelOnlineOrder): BaseResponse
+
     @PUT(CUSTOMER_RECEIPTS_UPDATE_SETTINGS)
     suspend fun updateCustomerReceiptSettings(
         @Path("id") id: Int,

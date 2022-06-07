@@ -27,6 +27,7 @@ object Constants {
     //SharedPref Keys
     const val AUTH_TOKEN = "authToken"
     const val TERMINAL_ID = "terminalId"
+    const val ONLINE_ORDER_ENABLE = "ONLINE_ORDER_ENABLE"
     const val BASE_URL_NEW = "baseUrlNew"
     const val PASSCODE = "passcode"
     const val LOCATION_ID = "locationId"

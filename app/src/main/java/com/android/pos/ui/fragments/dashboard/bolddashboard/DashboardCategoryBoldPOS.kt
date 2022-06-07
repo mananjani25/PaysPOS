@@ -23,6 +23,7 @@ import com.android.pos.data.remote.Constants.DINE_IN
 import com.android.pos.data.remote.Constants.EMPLOYEE_NAME
 import com.android.pos.data.remote.Constants.LARGE
 import com.android.pos.data.remote.Constants.MEDIUM
+import com.android.pos.data.remote.Constants.ONLINE_ORDER_ENABLE
 import com.android.pos.data.remote.Constants.OPEN_ORDER_ITEMS
 import com.android.pos.data.remote.Constants.ORDER_TYPE
 import com.android.pos.data.remote.Constants.SMALL
@@ -131,6 +132,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
         printerProgress()
         getwebOrderingCountObserver()
         viewModel.getOnlineOrderCount()
+        getOnlineOrderIsEnableOrNot()
         binding.lifecycleOwner = this
         return binding.root
     }
@@ -142,6 +144,19 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                     Log.d(TAG, "getwebOrderingCount: " + it.count)
                     onlineOrderBadgeDisplay(it.count)
                 }
+            }
+        }
+    }
+
+    private fun getOnlineOrderIsEnableOrNot() {
+        viewModel.enableOnlineOrder.observe(viewLifecycleOwner) { event ->
+            event.getContentIfNotHandled()?.let {
+                if (prefProvider.getValueboolean(ONLINE_ORDER_ENABLE, false)) {
+                    binding.layoutHeader.linearOnlineorder?.visible()
+                } else {
+                    binding.layoutHeader.linearOnlineorder?.gone()
+                }
+                viewModel.getOnlineOrderCount()
             }
         }
     }
@@ -316,6 +331,11 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
         super.onViewCreated(view, savedInstanceState)
 
         onClick()
+        if (prefProvider.getValueboolean(ONLINE_ORDER_ENABLE, false)) {
+            binding.layoutHeader.linearOnlineorder?.visible()
+        } else {
+            binding.layoutHeader.linearOnlineorder?.gone()
+        }
 
         isupdate = requireArguments().getBoolean("update")
         viewModel.setOpenOrderUpdate(isupdate)
@@ -343,8 +363,9 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                 val result = bundle.getParcelable<TbCustomer>("data")
                 if (result != null) {
                     Log.e(TAG, "assignResult:  ${Gson().toJson(result)}")
-                    if (cartList.isEmpty()){
-                        cartList = bundle.getParcelableArrayList<CartModel>("cartList") as ArrayList<CartModel>
+                    if (cartList.isEmpty()) {
+                        cartList =
+                            bundle.getParcelableArrayList<CartModel>("cartList") as ArrayList<CartModel>
                     }
                     val dineInList = cartList[0].dineInList
                     Log.e(TAG, "getdineInListSize:  ${dineInList?.size}")

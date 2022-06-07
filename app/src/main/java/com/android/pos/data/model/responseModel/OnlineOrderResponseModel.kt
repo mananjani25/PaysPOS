@@ -114,7 +114,9 @@ data class OnlineOrderResponseModel(
         val cashDiscountType: String,
         @SerializedName("updated_at")
         val updatedAt: String,
-        var isCheck: Boolean = false
+        var isCheck: Boolean = false,
+        @SerializedName("magensa_response")
+        val magensa_response_data: String,
     ) {
         data class OrderItem(
             @SerializedName("category_id")

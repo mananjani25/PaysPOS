@@ -123,6 +123,10 @@
             app:destination="@id/menuFragment"
             app:enterAnim="@anim/nav_default_enter_anim" />
         <action
+            android:id="@+id/action_onlineOrder_to_reasonForrefundonline"
+            app:destination="@id/reasonForRefundDialogonline"
+            app:enterAnim="@anim/nav_default_enter_anim" />
+        <action
             android:id="@+id/action_onlineOrder_to_dashboarCategorynew"
             app:destination="@id/dashboardCategoryBoldPOS"
             app:enterAnim="@anim/nav_default_enter_anim" />
@@ -1114,6 +1118,14 @@
         <action
             android:id="@+id/action_reasonForRefundDialog_to_transactionDetailsFragment"
             app:destination="@id/transactionDetailsFragment" />
+    </dialog>
+    <dialog
+        android:id="@+id/reasonForRefundDialogonline"
+        android:name="com.android.pos.ui.dialog.ReasonForRefundOnlineOrder"
+        android:label="ReasonForRefundDialogOnline">
+        <action
+            android:id="@+id/action_reasonForRefundDialogonline_to_onlinedetailfragment"
+            app:destination="@id/onlineOrderFragment" />
     </dialog>
     <fragment
         android:id="@+id/dineInFragment"

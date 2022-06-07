@@ -166,7 +166,7 @@ class OnlineOrderFragment : Fragment() {
                 val activeOrders = OnlineDetailFragment("1", startDate, endDate)
                 loadFragment(activeOrders)
                 binding.commonToolbar.txtSetItem.visibility = View.GONE
-                binding.commonToolbar.txtSubTitle.text = "Ongoing Orders"
+                binding.commonToolbar.txtSubTitle.text = "InProgress Orders"
             }
             2 -> {
                 val modifier: Fragment = OnlineDetailFragment("2", startDate, endDate)
@@ -179,7 +179,7 @@ class OnlineOrderFragment : Fragment() {
                 val cancelled = OnlineDetailFragment("3", startDate, endDate)
                 loadFragment(cancelled)
                 binding.commonToolbar.txtSetItem.visibility = View.GONE
-                binding.commonToolbar.txtSubTitle.text = "Cancelled Orders"
+                binding.commonToolbar.txtSubTitle.text = "Rejected Orders"
             }
 
         }

@@ -3,7 +3,6 @@ package com.android.pos.ui.fragments.onlineorder
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.content.Intent
-import androidx.lifecycle.ViewModelProvider
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -12,22 +11,20 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.android.pos.R
-import com.android.pos.data.entities.Employee
-import com.android.pos.data.model.responseModel.OnlineOrderResponseModel
+import com.android.pos.data.model.requestModel.RefundRequestModel
+import com.android.pos.data.model.requestModel.RefundRequestModelOnlineOrder
 import com.android.pos.data.remote.Constants
-import com.android.pos.databinding.FragmentOnlineOrderBinding
 import com.android.pos.databinding.OnlineDetailFragmentBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.di.RolePermission
 import com.android.pos.ui.adapter.OnlineOrderAdapter
-import com.android.pos.ui.adapter.OpenOrderAdapter
+import com.android.pos.ui.adapter.RefundItemListAdapter
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.callback.OrderCallBack
@@ -51,7 +48,7 @@ class OnlineDetailFragment(
 
     private val viewModel by viewModels<OnlineDetailViewModel>()
     lateinit var binding: OnlineDetailFragmentBinding
-
+    private lateinit var refundData: RefundRequestModelOnlineOrder
     private lateinit var startDate: DatePickerDialog.OnDateSetListener
     private lateinit var endDate: DatePickerDialog.OnDateSetListener
     private lateinit var startTime: TimePickerDialog.OnTimeSetListener
@@ -102,8 +99,14 @@ class OnlineDetailFragment(
             var time = bundle.getInt("time")
             var order_id = bundle.getInt("order_id")
             acceptedAndDeclineOrder(time, order_id, true)
+        }
 
-
+        requireActivity().supportFragmentManager.setFragmentResultListener(
+            "request_for_rejectOrder",
+            viewLifecycleOwner
+        ) { requestKey: String, bundle: Bundle ->
+            var order_id = bundle.getInt("order_id")
+            acceptedAndDeclineOrder(0, order_id, false)
         }
     }
 
@@ -500,7 +503,7 @@ class OnlineDetailFragment(
                 )
             }
         } else if (status == "Completed") {
-            alert("", "Are you sure you want to Complete The Order?") {
+            alert("", "Are you sure you want to Complete This Order?") {
                 this.positiveButton("YES") {
                     updateOrder(adapter.filterList[0].id, status)
                 }
@@ -509,9 +512,59 @@ class OnlineDetailFragment(
 
             }
         } else {
-            alert("", "Are you sure you want to Reject The Order?") {
+            alert("", "Are you sure you want to Reject This Order?") {
+
                 this.positiveButton("YES") {
-                    acceptedAndDeclineOrder(0, adapter.filterList[0].id, false)
+                    var employeeIdtemp = prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
+                    var terminal_id = prefProvider.getValueInt(Constants.TERMINAL_ID, 0)
+                    var orderItemRefundsAttributesList =
+                        ArrayList<RefundRequestModelOnlineOrder.PaymentRefund.OrderItemRefundsAttribute>()
+                    adapter.orderList[pos].orderItems.forEach { item ->
+                        val orderItemRefundsAttributeModel =
+                            RefundRequestModelOnlineOrder.PaymentRefund.OrderItemRefundsAttribute()
+
+                        orderItemRefundsAttributeModel.amount = item.totalPrice
+                        orderItemRefundsAttributeModel.employeeId = employeeIdtemp
+                        orderItemRefundsAttributeModel.orderId = item.orderId
+                        orderItemRefundsAttributeModel.refundType = 0
+                        orderItemRefundsAttributeModel.paymentId =
+                            adapter.orderList[pos].payments[0].id
+                        orderItemRefundsAttributeModel.orderItemId = item.id
+                        orderItemRefundsAttributeModel.quantity = item.quantity
+                        orderItemRefundsAttributesList.add(orderItemRefundsAttributeModel)
+                    }
+
+                    refundData = RefundRequestModelOnlineOrder().apply {
+                        paymentRefund = RefundRequestModelOnlineOrder.PaymentRefund().apply {
+                            amount = adapter.orderList[pos].payments[0].amount
+                            orderId = adapter.orderList[pos].id
+                            paymentId = adapter.orderList[pos].payments[0].id
+                            employeeId = employeeIdtemp
+                            taxRefunded = adapter.orderList[pos].payments[0].taxAmount
+                            tipsRefunded = adapter.orderList[pos].payments[0].tips
+                            terminalId = terminal_id
+                            serviceChargeRefunded =
+                                adapter.orderList[pos].payments[0].serviceChargeAmount
+                            cash_discount_or_surcharge_refunded =
+                                adapter.orderList[pos].payments[0].cashDiscount
+                            subtotal_refunded = adapter.orderList[pos].payments[0].subTotal
+                            orderItemRefundsAttributes = orderItemRefundsAttributesList
+                        }
+                    }
+                    val bundle = Bundle().apply {
+                        putParcelable("refundData", refundData)
+                        putDouble("refundAmount", adapter.orderList[pos].payments[0].amount)
+                        putString("paymentType", adapter.orderList[pos].payments[0].paymentType)
+                        putString(
+                            "magensa_response_data",
+                            adapter.orderList[pos].magensa_response_data
+                        )
+                    }
+                    findNavController().navigate(
+                        R.id.action_onlineOrder_to_reasonForrefundonline,
+                        bundle
+                    )
+
                 }
                 this.negativeButton("NO") {
                 }

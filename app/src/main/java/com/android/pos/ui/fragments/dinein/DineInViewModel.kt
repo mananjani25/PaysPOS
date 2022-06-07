@@ -198,7 +198,7 @@ class DineInViewModel @Inject constructor(
             model.category_id = it.categoryId
             model.discountAmount = it.discountAmount
             model.discountId = it.discountId
-            model.discountType = it.discountType
+            model.discountType = it.discountType.toString()
             model.editTimestamp = it.timestamp
             model.employeeId = it.employeeId
             //   model.id = it.id
@@ -272,7 +272,7 @@ class DineInViewModel @Inject constructor(
             model.category_id = it.categoryId
             model.discountAmount = it.discountAmount
             model.discountId = it.discountId
-            model.discountType = it.discountType
+            model.discountType = it.discountType.toString()
             model.editTimestamp = it.timestamp
             model.employeeId = it.employeeId
             //model.id = it.id
@@ -557,7 +557,7 @@ class DineInViewModel @Inject constructor(
                 model.category_id = it.categoryId
                 model.discountAmount = it.discountAmount
                 model.discountId = it.discountId
-                model.discountType = it.discountType
+                model.discountType = it.discountType.toString()
                 model.editTimestamp = it.timestamp
                 model.employeeId = it.employeeId
                 //model.id = it.id
@@ -823,7 +823,7 @@ class DineInViewModel @Inject constructor(
             model.category_id = it.categoryId
             model.discountAmount = it.discountAmount
             model.discountId = it.discountId
-            model.discountType = it.discountType
+            model.discountType = it.discountType.toString()
             model.editTimestamp = it.timestamp
             model.employeeId = it.employeeId
             model.id = it.id

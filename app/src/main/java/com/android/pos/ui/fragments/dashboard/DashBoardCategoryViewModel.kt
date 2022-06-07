@@ -37,6 +37,7 @@ import com.android.pos.data.remote.Constants.DINE_IN_LIST_EDIT
 import com.android.pos.data.remote.Constants.DINE_IN_UPDATE
 import com.android.pos.data.remote.Constants.EMPLOYEE_ID
 import com.android.pos.data.remote.Constants.IS_PRINTER_QUEUE_ENABLE
+import com.android.pos.data.remote.Constants.ONLINE_ORDER_ENABLE
 import com.android.pos.data.remote.Constants.ORDER_TYPE
 import com.android.pos.data.remote.Constants.SYSTEM_TIMEZONE
 import com.android.pos.data.remote.Constants.UPDATE
@@ -170,6 +171,10 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     private val _showProgress = MutableLiveData<Event<Boolean>>()
     val showProgress: LiveData<Event<Boolean>> = _showProgress
+
+
+    private val _enableOnlineOrder = MutableLiveData<Event<Boolean>>()
+    val enableOnlineOrder: LiveData<Event<Boolean>> = _enableOnlineOrder
 
     private val _snackbarText = MutableLiveData<Event<Any?>>()
     val snackbarText: LiveData<Event<Any?>> = _snackbarText
@@ -1124,7 +1129,7 @@ class DashBoardCategoryViewModel @Inject constructor(
             order_note = cartModel.note
             serviceChargeCalculationModel(cartModel)
             subTotalPrice -= cartModel.discountPrice
-            if (subTotalPrice < 0){
+            if (subTotalPrice < 0) {
                 subTotalPrice = 0.0
             }
 
@@ -1209,7 +1214,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                     serviceChargeCalculationModel(cartModel)
 
                     subTotalPrice -= cartModel.discountPrice
-                    if (subTotalPrice < 0){
+                    if (subTotalPrice < 0) {
                         subTotalPrice = 0.0
                     }
 
@@ -1289,7 +1294,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                     serviceChargeCalculationModel(cartModel)
 
                     subTotalPrice -= cartModel.discountPrice
-                    if (subTotalPrice < 0){
+                    if (subTotalPrice < 0) {
                         subTotalPrice = 0.0
                     }
 
@@ -1565,29 +1570,30 @@ class DashBoardCategoryViewModel @Inject constructor(
         }
     }
 
-     fun getOnlineOrderCount(){
+    fun getOnlineOrderCount() {
         _showProgress.value = Event(true)
-         viewModelScope.launch {
-             val resource = posRepository.getOnlineOrderNotificationCount()
-             when (resource.status) {
-                 Status.SUCCESS -> {
-                     _showProgress.value = Event(false)
-                     resource.data?.let { it ->
-                         _onlineOrderCount.value = Event(it.data)
-                     }
-                 }
-                 Status.ERROR -> {
-                     _snackbarText.value = Event(resource.message)
-                     _showProgress.value = Event(false)
-                 }
+        viewModelScope.launch {
+            val resource = posRepository.getOnlineOrderNotificationCount()
+            when (resource.status) {
+                Status.SUCCESS -> {
+                    _showProgress.value = Event(false)
+                    resource.data?.let { it ->
+                        _onlineOrderCount.value = Event(it.data)
+                    }
+                }
+                Status.ERROR -> {
+                    _snackbarText.value = Event(resource.message)
+                    _showProgress.value = Event(false)
+                }
 
-                 Status.LOADING -> {
-                     _showProgress.value = Event(true)
-                 }
+                Status.LOADING -> {
+                    _showProgress.value = Event(true)
+                }
 
-             }
-         }
+            }
+        }
     }
+
     private suspend fun callLogoutApi() {
         _showProgress.value = Event(true)
         val data = HashMap<String, String>()
@@ -2618,8 +2624,10 @@ class DashBoardCategoryViewModel @Inject constructor(
                                     business_name = it.data.businessName
                                     business_website = it.data.businessWebsite
                                     phone_number = it.data.phoneNumber
-                                    phone_number_1_country = it.data.phone_number_1_country.toString()
-                                    phone_number_2_country = it.data.phone_number_2_country.toString()
+                                    phone_number_1_country =
+                                        it.data.phone_number_1_country.toString()
+                                    phone_number_2_country =
+                                        it.data.phone_number_2_country.toString()
                                     phone_number_2 = it.data.phoneNumber2.toString()
                                     time_zone = it.data.business_time_zone.toString()
                                     customer_contact_email = it.data.customerContactEmail.toString()
@@ -2628,7 +2636,19 @@ class DashBoardCategoryViewModel @Inject constructor(
 
 
 
-
+                                it.data.terminals.forEach { terminal ->
+                                    if (terminal.id == prefProvider.getValueInt(
+                                            Constants.TERMINAL_ID,
+                                            0
+                                        )
+                                    ) {
+                                        prefProvider.setValueboolean(
+                                            ONLINE_ORDER_ENABLE,
+                                            terminal.enabled_for_receiving_web_order!!
+                                        )
+                                        _enableOnlineOrder.value = Event(true)
+                                    }
+                                }
                                 _callCashDiscount.value = Event(true)
 
                                 prefProvider.setValue(Constants.MAGENSA_SETTINGS, "")
@@ -3010,7 +3030,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                 serviceChargeCalculationModel(cartModel)
                 subTotalPrice -= cartModel.discountPrice
 
-                if (subTotalPrice < 0){
+                if (subTotalPrice < 0) {
                     subTotalPrice = 0.0
                 }
 

@@ -787,6 +787,10 @@ class PosRepository @Inject constructor(
         })
 
 
+
+    suspend fun refundPaymentOnline(data: RefundRequestModelOnlineOrder) =
+        apiHelperNew.refundPaymentOnline(data)
+
     fun getOnlineOrders(
         startDate: String,
         endDate: String,

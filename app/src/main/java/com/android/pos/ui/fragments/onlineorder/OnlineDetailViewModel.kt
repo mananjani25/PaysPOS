@@ -3,12 +3,17 @@ package com.android.pos.ui.fragments.onlineorder
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.android.pos.data.model.requestModel.RefundRequestModel
+import com.android.pos.data.model.requestModel.RefundRequestModelOnlineOrder
 import com.android.pos.data.model.responseModel.*
 import com.android.pos.data.repositories.PosRepository
 import com.android.pos.di.PrefProvider
 import com.android.pos.utils.Event
 import com.android.pos.utils.statusUtils.Resource
+import com.android.pos.utils.statusUtils.Status
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
@@ -23,6 +28,10 @@ class OnlineDetailViewModel @Inject constructor(
 
     private val _data = MutableLiveData<Event<BaseResponse?>>()
     val data: LiveData<Event<BaseResponse?>> = _data
+
+    private val _dataRefundDone = MutableLiveData<Event<BaseResponse?>>()
+    val dataRefundDone: LiveData<Event<BaseResponse?>> = _dataRefundDone
+
 
     private val _showProgress = MutableLiveData<Event<Boolean>>()
     val showProgress: LiveData<Event<Boolean>> = _showProgress
@@ -66,7 +75,49 @@ class OnlineDetailViewModel @Inject constructor(
     ): LiveData<Resource<BaseResponse>> =
         posRepository.acceptedAndDeclineOrders(time, order_id,isaccepted,employee_id,terminalid)
 
+    fun refundPaymentApiCall(
+        refundAmount: Double,
+        refundData: RefundRequestModelOnlineOrder,
+        refundReason: String,
+        paymentType: String
+    ) {
 
+        refundData.paymentRefund?.reasonForRefund = refundReason
+        refundData.paymentRefund?.amount = refundAmount
+
+        _showProgress.value = Event(true)
+
+        viewModelScope.launch {
+
+            val resource = posRepository.refundPaymentOnline(refundData)
+            when (resource.status) {
+                Status.SUCCESS -> {
+                    _showProgress.value = Event(false)
+                    resource.data.let { logInResponse ->
+                        if (logInResponse?.status == 200) {
+
+                            resource.data?.let { createTaxResponse ->
+                                _dataRefundDone.value = Event(createTaxResponse)
+                            }
+
+
+                        } else {
+                            _snackbarText.value = Event(resource.message)
+                        }
+                    }
+                }
+
+                Status.ERROR -> {
+                    _snackbarText.value = Event(resource.message)
+                    _showProgress.value = Event(false)
+                }
+
+                Status.LOADING -> {
+                    _showProgress.value = Event(true)
+                }
+            }
+        }
+    }
     fun updateOnlineOrder(
         order_id: Int,
         order_status: String
