@@ -5469,11 +5469,15 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             val status = IntArray(1)
             val battery = IntArray(1)
 
+            var timeOut = PrinterClass.SEND_TIMEOUT
+            if (customerReceiptPrinters.printer_type == BLUETOOTH){
+               timeOut =   BLUETOOTH_TIMEOUT
+            }
 
             try {
                 PrinterClass.getPrinter()?.sendData(
                     builder,
-                    PrinterClass.SEND_TIMEOUT, status, battery
+                    timeOut, status, battery
                 )
 
                 //printerDialog.dismiss()

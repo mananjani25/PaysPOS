@@ -5637,11 +5637,15 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             val status = IntArray(1)
             val battery = IntArray(1)
 
+            var timeOut = PrinterClass.SEND_TIMEOUT
+            if (customerReceiptPrinters.printer_type == Constants.BLUETOOTH){
+                timeOut = PrinterClass.BLUETOOTH_TIMEOUT
+            }
 
             try {
                 PrinterClass.getPrinter()?.sendData(
                     builder,
-                    PrinterClass.SEND_TIMEOUT, status, battery
+                    timeOut, status, battery
                 )
 
                 PrinterClass.closePrinter()
