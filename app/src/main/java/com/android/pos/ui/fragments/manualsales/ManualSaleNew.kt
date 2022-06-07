@@ -947,7 +947,8 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
         setFragmentResultListener("request_key_discount_order") { _: String, bundle: Bundle ->
             val result = bundle.getParcelable<TbDiscount>("data")
             val value = bundle.getDouble("value")
-            if (result != null && viewModel.totalPrice != 0.0) {
+            if (result != null /*&& viewModel.totalPrice != 0.0*/) {
+
                 orderDiscount = result.percentage
 
                 val discountApplyPrice = viewModel.totalPrice
