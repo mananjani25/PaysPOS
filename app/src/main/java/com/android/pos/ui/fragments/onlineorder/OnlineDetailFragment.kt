@@ -503,7 +503,7 @@ class OnlineDetailFragment(
                 )
             }
         } else if (status == "Completed") {
-            alert("", "Are you sure you want to Complete This Order?") {
+            alert("", "Are you sure you want to Complete this Order?") {
                 this.positiveButton("YES") {
                     updateOrder(adapter.filterList[0].id, status)
                 }
@@ -512,7 +512,7 @@ class OnlineDetailFragment(
 
             }
         } else {
-            alert("", "Are you sure you want to Reject This Order?") {
+            alert("", "Are you sure you want to Reject this Order?") {
 
                 this.positiveButton("YES") {
                     var employeeIdtemp = prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
@@ -536,7 +536,8 @@ class OnlineDetailFragment(
 
                     refundData = RefundRequestModelOnlineOrder().apply {
                         paymentRefund = RefundRequestModelOnlineOrder.PaymentRefund().apply {
-                            amount = adapter.orderList[pos].payments[0].amount
+                            amount =
+                                adapter.orderList[pos].payments[0].amount + adapter.orderList[pos].payments[0].tips
                             orderId = adapter.orderList[pos].id
                             paymentId = adapter.orderList[pos].payments[0].id
                             employeeId = employeeIdtemp
@@ -553,7 +554,10 @@ class OnlineDetailFragment(
                     }
                     val bundle = Bundle().apply {
                         putParcelable("refundData", refundData)
-                        putDouble("refundAmount", adapter.orderList[pos].payments[0].amount)
+                        putDouble(
+                            "refundAmount",
+                            adapter.orderList[pos].payments[0].amount + adapter.orderList[pos].payments[0].tips
+                        )
                         putString("paymentType", adapter.orderList[pos].payments[0].paymentType)
                         putString(
                             "magensa_response_data",
