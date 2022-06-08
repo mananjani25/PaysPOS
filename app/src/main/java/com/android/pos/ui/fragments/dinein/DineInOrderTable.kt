@@ -52,6 +52,7 @@ import com.android.pos.data.remote.Constants.ORDER_TYPE_ID
 import com.android.pos.data.remote.Constants.ORDER_TYPE_NAME
 import com.android.pos.data.remote.Constants.PRINT_DATA_DINE_IN
 import com.android.pos.data.remote.Constants.TERMINAL_ID
+import com.android.pos.data.remote.Constants.getCurrentTimeFromTimeZone
 import com.android.pos.databinding.FragmentDineInOrderTableBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.adapter.DineInTableAdapter
@@ -3496,7 +3497,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                             Builder.FALSE,
                             Builder.COLOR_1
                         )
-                        builder.addText("Print Time:" + formatted)
+                        builder.addText("Print Time:" + getCurrentTimeFromTimeZone(requireContext(),formatted))
                     }
 
 
@@ -3629,7 +3630,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                         builder.addText(
                             padLine(
                                 if (customerSettingModel.showPrintTime) {
-                                    "Print Time:" + formatted
+                                    "Print Time:" + getCurrentTimeFromTimeZone(requireContext(),formatted)
                                 } else {
                                     ""
                                 },
@@ -4463,7 +4464,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                             Builder.FALSE,
                             Builder.COLOR_1
                         )
-                        builder.addText("Print Time:" + formatted)
+                        builder.addText("Print Time:" + getCurrentTimeFromTimeZone(requireContext(),formatted))
                     }
 
 
@@ -4596,7 +4597,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                         builder.addText(
                             padLine(
                                 if (customerSettingModel.showPrintTime) {
-                                    "Print Time:" + formatted
+                                    "Print Time:" + getCurrentTimeFromTimeZone(requireContext(),formatted)
                                 } else {
                                     ""
                                 },
