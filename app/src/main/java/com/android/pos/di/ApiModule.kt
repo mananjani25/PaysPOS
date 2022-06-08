@@ -22,8 +22,8 @@ import javax.inject.Singleton
 @InstallIn(SingletonComponent::class)
 object ApiModule {
 
-    const val BASE_URL = "https://possoft.io/api/v1/"
-//    public const val BASE_URL = "https://hugepos.com/api/v1/"  // for BOLD POS
+    // private const val BASE_URL = "https://possoft.io/api/v1/"
+    public const val BASE_URL = "https://boldpos.site/api/v1/"  // for BOLD POS
     //  private const val BASE_URL = "http://34.205.43.53/api/v1/"
     //private const val BASE_URL = "https://possoft.io/api/v1/"
 
@@ -46,7 +46,7 @@ object ApiModule {
         prefProvider: PrefProvider,
         hostSelectionInterceptor: HostSelectionInterceptor,
 
-        ): ApiService =
+    ): ApiService =
         Retrofit.Builder()
             .baseUrl(prefProvider.getValue(BASE_URL_NEW, BASE_URL))
             .client(
