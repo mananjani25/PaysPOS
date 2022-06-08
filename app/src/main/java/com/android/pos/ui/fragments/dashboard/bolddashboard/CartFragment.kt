@@ -228,11 +228,26 @@ class CartFragment(
 
         binding.linearTaxDetail.setOnClickListener {
             if (!taxClickable) {
-                binding.imgDropdown?.setImageResource(R.drawable.ic_solid_up_arrow)
-                binding.relativeDynamicTax?.visible()
+                Log.d(TAG, "onViewCreated: " + taxBirfurcationAdapter.taxlist.size)
+                taxClickable = true
+                if (taxBirfurcationAdapter.taxlist.size == 1) {
+                    binding.liinearInfoLayout.layoutParams.height =
+                        resources.getDimension(R.dimen._60sdp).toInt()
+                } else if (taxBirfurcationAdapter.taxlist.size == 2) {
+                    binding.liinearInfoLayout.layoutParams.height =
+                        resources.getDimension(R.dimen._70sdp).toInt()
+                } else {
+                    binding.liinearInfoLayout.layoutParams.height =
+                        resources.getDimension(R.dimen._80sdp).toInt()
+                }
+                binding.imgDropdown.setImageResource(R.drawable.ic_solid_up_arrow)
+                binding.relativeDynamicTax.visible()
             } else {
-                binding.imgDropdown?.setImageResource(R.drawable.ic_arrow_drop_down)
-                binding.relativeDynamicTax?.gone()
+                binding.liinearInfoLayout.layoutParams.height =
+                    resources.getDimension(R.dimen._50sdp).toInt()
+                taxClickable = false
+                binding.imgDropdown.setImageResource(R.drawable.ic_arrow_drop_down)
+                binding.relativeDynamicTax.gone()
             }
         }
 
@@ -294,7 +309,7 @@ class CartFragment(
 
     private fun setupTaxAdapter() {
         taxBirfurcationAdapter = TaxBirfurcationAdapter()
-        binding.rvTax?.adapter = taxBirfurcationAdapter
+        binding.rvTax.adapter = taxBirfurcationAdapter
         var taxlist = arrayListOf<TaxData>()
         taxBirfurcationAdapter.setList(taxlist)
     }
@@ -632,7 +647,9 @@ class CartFragment(
 
 
                 } else {
+                    viewModel.clearListTax()
                     cartAdapter.clearList()
+                    taxBirfurcationAdapter.clearList()
                     binding.txtTotal.text = MethodUtils.roundOffAmount(0.0)
                     binding.txtSubTotal.text = MethodUtils.roundOffAmount(0.0)
                     binding.txtTax.text = MethodUtils.roundOffAmount(0.0)
@@ -733,7 +750,8 @@ class CartFragment(
                               binding.txtTotal,
                               requireContext()
                           )*/
-                            viewModel.setTaxAdapter(taxBirfurcationAdapter)
+
+
                             viewModel.setCartModel(it)
                             if (prefProvider.getValueboolean(
                                     Constants.DINE_IN_UPDATE,
@@ -916,6 +934,8 @@ class CartFragment(
                                 binding.relPreoceedToFire.visible()
                             }
                             dineInCartAdapter.clearList()
+                            viewModel.clearListTax()
+                            taxBirfurcationAdapter.clearList()
 //                        var data: TbCustomer? = prefProvider.getCustomerData()
 //                        if (data != null) {
 //                            if (viewModel.loyaltyPointCondition(data)) {
@@ -994,6 +1014,11 @@ class CartFragment(
                                 requireContext()
                             )
                             viewModel.setCartModel(it)
+                            if (viewModel.taxDynamicList.isNotEmpty()) {
+                                Log.d(TAG, "addObserver: " + viewModel.taxDynamicList.size)
+                                setupTaxAdapter()
+                                taxBirfurcationAdapter.setList(viewModel.taxDynamicList)
+                            }
                             if (viewModel.order_note.isNotEmpty()) {
                                 binding.relativeOrderNotes?.visibility = View.VISIBLE
                                 binding.txtOrderNote?.text = viewModel.order_note
@@ -1095,7 +1120,9 @@ class CartFragment(
 
 
                         } else {
+                            viewModel.clearListTax()
                             cartAdapter.clearList()
+                            taxBirfurcationAdapter.clearList()
                             binding.relativeOrderNotes?.visibility = View.GONE
                             binding.txtTotal.text = MethodUtils.roundOffAmount(0.0)
                             binding.txtSubTotal.text = MethodUtils.roundOffAmount(0.0)
@@ -1285,6 +1312,8 @@ class CartFragment(
             positiveButton(getString(R.string.tv_delete)) {
                 // Do positive stuff here
 
+                taxBirfurcationAdapter.clearList()
+                viewModel.clearListTax()
                 updateActiveOrderFlagClear()
                 itemListner?.onCancelItemSelected()
                 if (prefProvider.getValue(ORDER_TYPE, "").toString() == Constants.DINE_IN) {
@@ -1314,6 +1343,8 @@ class CartFragment(
                     cartlist.clear()
                     isOrderUpdate = false
                     dineInCartAdapter.clearList()
+                    taxBirfurcationAdapter.clearList()
+                    viewModel.clearListTax()
                     binding.rvCartDineIn.gone()
                     // prefProvider.setValue(DINE_IN_UPDATE_LIST, "")
 //                    uiSave()

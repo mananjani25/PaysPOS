@@ -1,18 +1,13 @@
 package com.android.pos.ui.adapter.boldpos
 
-import android.util.Log
+import android.R.attr.data
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.data.entities.TaxData
-import com.android.pos.data.entities.TbItem
 import com.android.pos.databinding.LayoutTaxBifurcationBinding
-import com.android.pos.databinding.ViewItemCartBinding
-import com.android.pos.ui.adapter.CartItemModifierAdapter
 import com.android.pos.utils.MethodUtils
-import com.android.pos.utils.extensions.strike
-import com.google.gson.Gson
+
 
 class TaxBirfurcationAdapter : RecyclerView.Adapter<TaxBirfurcationAdapter.MyViewHolder>() {
     var taxlist = ArrayList<TaxData>()
@@ -21,8 +16,20 @@ class TaxBirfurcationAdapter : RecyclerView.Adapter<TaxBirfurcationAdapter.MyVie
         RecyclerView.ViewHolder(binding.root) {
 
         fun bind(item: TaxData, pos: Int) {
-            binding.txtName.text = item.name
-            binding.txtValue.text = item.itemPricing
+            val items: List<String> = item.name!!.split(" ")
+            var stringBuffer: StringBuffer = StringBuffer()
+            items.forEach {
+                stringBuffer.append(it.substring(0, 1).toUpperCase() + it.substring(1, it.length))
+            }
+            binding.txtName.text = stringBuffer.toString()
+
+            if (item.taxType.equals("Percentage")) {
+                binding.txtValue.text = String.format("%.2f", item.rate) + "%"
+            } else {
+                binding.txtValue.text = "$" + String.format("%.2f", item.rate)
+            }
+
+            MethodUtils.setPriceTextView(binding.txtAmount, item.totalTaxTypePrice ?: 0.0)
         }
 
 
@@ -45,6 +52,12 @@ class TaxBirfurcationAdapter : RecyclerView.Adapter<TaxBirfurcationAdapter.MyVie
         taxlist = list
         notifyDataSetChanged()
 
+    }
+
+    fun clearList() {
+        taxlist.clear()
+        taxlist = arrayListOf()
+        notifyDataSetChanged()
     }
 
     override fun getItemCount(): Int {
