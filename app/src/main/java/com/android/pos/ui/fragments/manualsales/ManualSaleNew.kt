@@ -643,7 +643,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
 
                         val bundle = Bundle()
                         bundle.putBoolean("isOrderDiscount", true)
-                        bundle.putDouble("totalPrice", viewModel.totalPrice)
+                        bundle.putDouble("totalPrice", viewModel.subTotalPrice)
                         if (cartList?.isNotEmpty() == true) {
 
                             var totalItemswithQuantity = 0
