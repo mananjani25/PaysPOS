@@ -113,6 +113,7 @@ class PosRepository @Inject constructor(
 
     suspend fun syncVenueDetails() = apiHelperNew.syncVenueDetails()
 
+    suspend fun getOnlineOrderNotificationCount() = apiHelperNew.getOnlineOrderCountNoti()
 
     suspend fun syncInventory() = apiHelperNew.syncVenueData()
 
@@ -219,6 +220,13 @@ class PosRepository @Inject constructor(
     fun getItemsList() =
         performGetOperationDatabase(databaseQuery = { appDatabase.itemDao().allItem!! })
 
+
+    fun getTimeZones() =
+        performGetOperationDatabase(databaseQuery = { appDatabase.timeZonesDao().allItem })
+
+    fun getBusinessData() =
+        performGetOperationDatabase(databaseQuery = { appDatabase.businessDetailsDao().allData })
+
     fun getItemsbyId(itemId: Int) =
         performGetOperationDatabase(databaseQuery = { appDatabase.itemDao().itemById(itemId)!! })
 
@@ -320,6 +328,15 @@ class PosRepository @Inject constructor(
     suspend fun addAllCountryList(countryList: List<TbCountryList>) {
         appDatabase.countryListDao().addAll(countryList)
     }
+
+    suspend fun addTimeZones(countryList: List<TbTimeZones>) {
+        appDatabase.timeZonesDao().addAll(countryList)
+    }
+
+    suspend fun addBusinessDetails(countryList: TbBusinessDetails) {
+        appDatabase.businessDetailsDao().add(countryList)
+    }
+
 
     fun getCurrentUserTeamRoleFromDb() = performGetOperationDatabase(databaseQuery = {
         appDatabase.teamRoleDao().roleById(id = prefProvider.getEmployeeRoleId())
@@ -455,6 +472,9 @@ class PosRepository @Inject constructor(
 
     suspend fun updateCustomer(id: Int, data: CreateCustomerRequestModel) =
         apiHelperNew.updateCustomer(id, data)
+
+    suspend fun updateBusiness(id: Int, data: TbBusinessDetails) =
+        apiHelperNew.updateBusiness(id, data)
 
     suspend fun deleteCustomer(id: Int?) = apiHelperNew.deleteCustomer(id)
 
@@ -767,6 +787,52 @@ class PosRepository @Inject constructor(
         })
 
 
+
+    suspend fun refundPaymentOnline(data: RefundRequestModelOnlineOrder) =
+        apiHelperNew.refundPaymentOnline(data)
+
+    fun getOnlineOrders(
+        startDate: String,
+        endDate: String,
+        order_status: String
+    ): LiveData<Resource<OnlineOrderResponseModel>> =
+        performGetOperationNew(networkCall = {
+            apiHelperNew.getOnlineOrders(
+                startDate,
+                endDate,
+                order_status
+            )
+        })
+
+    fun acceptedAndDeclineOrders(
+        time: Int,
+        order_id: Int,
+        isaccepted: Boolean,
+        employee_id: Int,
+        terminalid:Int
+    ): LiveData<Resource<BaseResponse>> =
+        performGetOperationNew(networkCall = {
+            apiHelperNew.setAcceptedAndDeclineorder(
+                time,
+                order_id,
+                isaccepted,
+                employee_id,
+                terminalid
+            )
+        })
+
+    fun updateOnlineOrders(
+        order_id: Int,
+        order_status: String
+    ): LiveData<Resource<BaseResponse>> =
+        performGetOperationNew(networkCall = {
+            apiHelperNew.updateOnlineOrder(
+                order_id,
+                order_status
+            )
+        })
+
+
     suspend fun cashInOut(data: CashLogRequest) = apiHelperNew.cashInOut(data)
 
 
@@ -873,6 +939,9 @@ class PosRepository @Inject constructor(
 
     fun orderCounts(startDate: String?, endDate: String?) =
         performGetOperationNew(networkCall = { apiHelperNew.orderCounts(startDate, endDate) })
+
+    fun onlineOrderCounts(startDate: String?, endDate: String?) =
+        performGetOperationNew(networkCall = { apiHelperNew.onlineOrderCounts(startDate, endDate) })
 
     fun inventoryCounts() =
         performGetOperationNew(networkCall = { apiHelperNew.inventoryCounts() })

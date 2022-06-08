@@ -8,6 +8,7 @@ import com.android.pos.data.entities.TbCustomer
 import com.android.pos.data.entities.TeamRole
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.BASE_URL_NEW
+import com.android.pos.data.remote.Constants.LOCATION_ID
 import com.android.pos.data.remote.Constants.ROLE_ADMIN
 import com.android.pos.data.remote.Constants.ROLE_EMPLOYEE
 import com.android.pos.data.remote.Constants.ROLE_MANAGER
@@ -174,6 +175,10 @@ class PrefProvider @Inject constructor(@ApplicationContext context: Context) {
 
     fun getUniqueId(): String {
         return getValue(UNIQUE_ID, "")
+    }
+
+    fun getLocationId(): Int {
+        return getValueInt(LOCATION_ID, -1)
     }
 
     fun getBaseUrl(): String {

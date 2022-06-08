@@ -1540,7 +1540,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                                         item.isPaid = it.isPaid
                                         item.discountPrice = it.discountAmount
                                         item.discountId = it.discountId
-                                        item.discountType = it.discountType
+                                        item.discountType = it.discountType.toString()
 
                                         item.name = it.itemName
                                         item.itemId = it.itemId
@@ -2111,7 +2111,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                                     item.isPaid = it.isPaid
                                     item.discountPrice = it.discountAmount
                                     item.discountId = it.discountId
-                                    item.discountType = it.discountType
+                                    item.discountType = it.discountType.toString()
 
                                     item.name = it.itemName
                                     item.itemId = it.itemId
@@ -5783,7 +5783,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     orderItem.category_id = it.categoryId
                     orderItem.discountAmount = it.discountAmount
                     orderItem.discountId = it.discountId
-                    orderItem.discountType = it.discountType
+                    orderItem.discountType = it.discountType.toString()
                     orderItem.employeeId = it.employeeId
                     orderItem.id = it.id
                     orderItem.isPaid = it.isPaid

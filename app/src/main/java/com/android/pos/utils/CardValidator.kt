@@ -123,16 +123,17 @@ object CardValidator {
     fun validateExpiryDate(month: String, year: String): Boolean {
         val iMonth: Int
         val iYear: Int
-        var current_year = Calendar.getInstance().get(Calendar.YEAR) % 100
-        var current_month = Calendar.getInstance().get(Calendar.MONTH)+1
-        Log.d(TAG, "validateExpiryDate: year  "+current_month)
-        Log.d(TAG, "validateExpiryDate: month "+current_year)
-        if(current_year==year.toInt()){
-            return month.toInt()>=current_month && month.toInt()<=12
+        val current_year = Calendar.getInstance().get(Calendar.YEAR) % 100
+        val current_month = Calendar.getInstance().get(Calendar.MONTH)+1
+        Log.d(TAG, "validateExpiryDate: year  $current_month")
+        Log.d(TAG, "validateExpiryDate: month $current_year")
+        if (year.isEmpty() || month.isEmpty())
+            return false
+        return if(current_year==year.toInt()){
+            month.toInt() in current_month..12
         }else{
-            return (month.toInt()<=12) && current_year<=year.toInt()
+            (month.toInt()<=12) && current_year<=year.toInt()
         }
-        return true
     }
 
     /**

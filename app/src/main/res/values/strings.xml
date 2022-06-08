@@ -32,7 +32,7 @@
     <string name="last_name_">Last Name</string>
     <string name="phone">Mobile Number <font color='#E90C0C'>*</font></string>
     <string name="_phone">Mobile Number</string>
-    <string name="_phone_number">Phone Number</string>
+    <string name="_phone_number">Mobile Number</string>
     <string name="address_empty_validation">Please enter Full Address</string>
     <string name="birth_date_validation">Please enter Birth Date</string>
     `
@@ -414,6 +414,7 @@
     <string name="add_note">Add Note</string>
     <string name="remove_item">Remove Item</string>
     <string name="add_discount">Add Discount</string>
+    <string name="add_time_online">Add Time</string>
     <string name="remove_discount">Remove Discount</string>
     <string name="pay">Pay</string>
     <string name="pay_total">Pay Total</string>
@@ -438,7 +439,8 @@
     <string name="tv_add_new_role_name">Add Role Name</string>
     <string name="role_name">Role Name</string>
     <string name="tv_assign_member">Assign Team Members</string>
-    <string name="clear_items">Delete Order</string> //changed value by zeeshan as per Rohan's suggestion
+    <string name="clear_items">Delete Order</string>
+    //changed value by zeeshan as per Rohan's suggestion
     <!--<string name="delete_order">Delete Order</string>-->
     <string name="split_amount">Split Amount</string>
     <string name="connect_a_reader_to_swipe_insert_or_tap">Connect a reader to swipe, insert or tap</string>
@@ -574,9 +576,13 @@
     <string name="tv_print_receipt">Print Customer Receipt</string>
     <string name="tv_print_kitchen_receipt">Print Kitchen Receipt</string>
     <string name="tv_pay_now">Pay Now</string>
+    <string name="tv_complete">Complete</string>
+    <string name="tv_cancelled">Rejected</string>
+    <string name="tv_completed">Completed</string>
     <string name="tv_customer_name">Customer Name</string>
     <string name="tv_delivery_status">Delivery Status</string>
     <string name="payment_status">Payment Status</string>
+    <string name="order_status">Order Status</string>
     <string name="tv_edit_variation">Update Variation</string>
     <string name="tv_remove_variation">Remove Variation</string>
     <string name="cross">X&#160;&#160;&#160;</string>
@@ -795,7 +801,10 @@
     <string name="order_type_n_team_name">ORDER TYPE/TEAM NAME</string>
     <string name="time_sheet">Time Sheet</string>
     <string name="business_website">Business Website</string>
-    <string name="business_address">Business Address</string>
+    <string name="business_address">Business Address<font color='#E90C0C'>*</font></string>
+    <string name="business_name_">Business Name<font color='#E90C0C'>*</font></string>
+    <string name="business_phone_number">Business Phone Number<font color='#E90C0C'>*</font></string>
+    <string name="time_zone">Time Zone<font color='#E90C0C'>*</font></string>
 
 
 </resources>

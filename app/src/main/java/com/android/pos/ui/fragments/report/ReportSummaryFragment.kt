@@ -280,28 +280,36 @@ class ReportSummaryFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
     private fun initObservers() {
         binding.root.liveSnackBar(this, viewModel.snackbarText, Snackbar.LENGTH_SHORT)
-        viewModel.startDateSelection.observe(requireActivity(), { event ->
+        viewModel.startDateSelection.observe(requireActivity()) { event ->
             event.getContentIfNotHandled()?.let {
 
                 DatePickerDialog(
-                    requireActivity(),android.R.style.Theme_Material_Light_Dialog, startDate, myCalendar
-                        .get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
+                    requireActivity(),
+                    android.R.style.Theme_Material_Light_Dialog,
+                    startDate,
+                    myCalendar
+                        .get(Calendar.YEAR),
+                    myCalendar.get(Calendar.MONTH),
                     myCalendar.get(Calendar.DAY_OF_MONTH)
                 ).show()
             }
-        })
-        viewModel.endDateSelection.observe(requireActivity(), { event ->
+        }
+        viewModel.endDateSelection.observe(requireActivity()) { event ->
             event.getContentIfNotHandled()?.let {
 
                 DatePickerDialog(
-                    requireActivity(), android.R.style.Theme_Material_Light_Dialog,endDate, myCalendar1
-                        .get(Calendar.YEAR), myCalendar1.get(Calendar.MONTH),
+                    requireActivity(),
+                    android.R.style.Theme_Material_Light_Dialog,
+                    endDate,
+                    myCalendar1
+                        .get(Calendar.YEAR),
+                    myCalendar1.get(Calendar.MONTH),
                     myCalendar1.get(Calendar.DAY_OF_MONTH)
 
                 ).show()
             }
-        })
-        viewModel.showProgress.observe(viewLifecycleOwner, { event ->
+        }
+        viewModel.showProgress.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
                 if (it) {
                     ProgressUtils.showProgressDialog(requireActivity())
@@ -309,7 +317,7 @@ class ReportSummaryFragment : Fragment(), AdapterView.OnItemSelectedListener {
                     ProgressUtils.dismissProgressDialog()
                 }
             }
-        })
+        }
         viewModel.data.observe(viewLifecycleOwner, EventObserver { data ->
             data?.let {
                 terminalAdapter.add(it.terminals)

@@ -275,7 +275,7 @@ class AddEditCustomer : Fragment() {
                 var date = inputFormat.parse(editModel.birth_date)
                 val outputFormat = SimpleDateFormat("MMM-dd-yyyy")
                 val formattedDate = outputFormat.format(date)
-                binding.edtBirthDay.setText(formattedDate)
+                binding.edtBirthDay.text = formattedDate
             }
 
         }

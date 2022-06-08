@@ -27,6 +27,7 @@ object Constants {
     //SharedPref Keys
     const val AUTH_TOKEN = "authToken"
     const val TERMINAL_ID = "terminalId"
+    const val ONLINE_ORDER_ENABLE = "ONLINE_ORDER_ENABLE"
     const val BASE_URL_NEW = "baseUrlNew"
     const val PASSCODE = "passcode"
     const val LOCATION_ID = "locationId"
@@ -250,11 +251,16 @@ object Constants {
     const val ORDER_ASSIGN_CUSTOMER = "orders/{id}/assign_customer_into_order"
     const val ORDER_PAY_AMOUNT_WISE = "payments/pay_amount_wise"
     const val ORDER_COUNTS = "orders/open_orders_show_count"
+    const val ONLINE_ORDER_COUNTS = "online_ordering_orders/web_orders_count"
+    const val ONLINE_ORDER_NOTIFICATION_COUNT = "locations/web_ordering_count"
 
     const val ACTIVE_ORDER = "active_order"
     const val UPCOMING_ORDER = "upcoming_order"
     const val COMPLETED_ORDER = "completed_order"
     const val CANCELED_ORDER = "canceled_order"
+
+
+    const val BUSINESS_UPDATE = "locations/{id}/update_business_detail"
 
 
     const val UPDATE_TIP = "orders/{id}/update_tip"
@@ -403,12 +409,15 @@ object Constants {
 
 
     const val OPEN_ORDERS = "orders/open_orders"
+    const val ONLINE_ORDERING= "online_ordering_orders/web_orders"
+    const val ACCEPTED_DECLINE_ONLINEORDER= "online_ordering_orders/{id}/accept_order"
+    const val UPDATE_ONLINE_ORDER= "online_ordering_orders/{id}"
     const val CASH_EVENTS = "cash_events"
 
     const val UTC_SERVER_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
 
 
-    fun getReceiptFormatDateFromUTCServer(context:Context,mdate: String): String {
+    fun getReceiptFormatDateFromUTCServer(context: Context, mdate: String): String {
 
         /* val df = SimpleDateFormat(UTC_SERVER_FORMAT, Locale.ENGLISH)
          df.setTimeZone(TimeZone.getTimeZone("UTC"))
@@ -533,6 +542,7 @@ object Constants {
 
     // broadcast
     const val SEND_CLOCKOUT_NOTIFICATION = "send_clockout_notification"
+    const val ONLINE_ORDER_GET_NOTIFICATION = "online_order_get_notification"
 
 
     // dinein
@@ -586,8 +596,8 @@ object Constants {
     const val IS_UPDATE_ORDER_FROM_ACTIVE_ORDER = "is_update_order_from_active_order"
     const val IS_UPDATE_ORDER_LOYALTY_APPLIED = "is_update_order_loyalty_applied"
 
-    const val SPLIT_DINEIN_MODEL ="split_dinein_model"
-    const val SPLIT_IS_GUESTPAY ="split_is_guestpay"
+    const val SPLIT_DINEIN_MODEL = "split_dinein_model"
+    const val SPLIT_IS_GUESTPAY = "split_is_guestpay"
     const val SPLIT_DINEIN_CHECKOUT = "split_dinein_checkout"
 
 }

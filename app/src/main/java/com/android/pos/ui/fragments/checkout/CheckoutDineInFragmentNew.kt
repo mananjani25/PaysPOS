@@ -24,9 +24,7 @@ import com.android.pos.data.model.responseModel.GuestPaymentAttributes
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.DINE_IN_ADAPTER_LIST
 import com.android.pos.data.remote.Constants.DINE_IN_GUEST_PAYMENT_DATA
-import com.android.pos.data.remote.Constants.IS_ORDER_LAST_PAYMENT
 import com.android.pos.data.remote.Constants.PRINT_DATA_DINE_IN
-import com.android.pos.data.remote.Constants.SPLIT_ENABLE
 import com.android.pos.databinding.FragmentCheckoutDetailsNewBinding
 import com.android.pos.di.ApiModule1
 import com.android.pos.di.MagtekModule

@@ -729,6 +729,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             } else {
                 magtekProPaymentCall()
             }
+
+            //  makePaymentCreditCard()
         }
         binding.llManualCardEntry.setOnClickListener {
             binding.frameLayoutId.visible()

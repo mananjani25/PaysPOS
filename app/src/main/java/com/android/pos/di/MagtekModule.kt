@@ -175,10 +175,10 @@ open class MagtekModule @Inject constructor(
 
         when {
             "0500010000" == TLVParser.getHexString(bytes) -> {
-                listner?.processStart("Request Canceled", true)
+                listner?.processStart("Request Cancelled", true)
             }
             "0600910000" == TLVParser.getHexString(bytes) -> {
-                listner?.processStart("Request Canceled", true)
+                listner?.processStart("Request Cancelled", true)
             }
             "0200120000" == TLVParser.getHexString(bytes) -> {
                 if (!dataRecv) {

@@ -1,6 +1,7 @@
 package com.android.pos.data.remote
 
 import android.util.Log
+import com.android.pos.data.entities.TbBusinessDetails
 import com.android.pos.data.entities.VariationsAttribute
 import com.android.pos.data.model.requestModel.*
 import com.android.pos.utils.FileUtils.getContentType
@@ -49,6 +50,9 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
 
     suspend fun syncVenueDetails() =
         getResult { apiService.syncVenueDetails() }
+
+    suspend fun getOnlineOrderCountNoti() =
+        getResult { apiService.getCountOnlineOrdering() }
 
     suspend fun employeesList(locationId: Int) =
         getResult { apiService.employeesList(locationId) }
@@ -184,6 +188,9 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
 
     suspend fun updateCustomer(id: Int, data: CreateCustomerRequestModel) =
         getResult { apiService.updateCustomer(id, data) }
+
+    suspend fun updateBusiness(id: Int, data: TbBusinessDetails) =
+        getResult { apiService.updateBusiness(id, data) }
 
     suspend fun updateEmployee(taxId: Int, data: CreateEmployeeRequestModel) =
         getResult { apiService.updateEmployee(taxId, data) }
@@ -420,6 +427,9 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
     suspend fun refundPayment(data: RefundRequestModel) =
         getResult { apiService.refundPayment(data) }
 
+   suspend fun refundPaymentOnline(data: RefundRequestModelOnlineOrder) =
+        getResult { apiService.refundPaymentOnlineOrder(data) }
+
     suspend fun orderTypes() =
         getResult { apiService.orderTypes() }
 
@@ -434,6 +444,23 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
 
     suspend fun getOpenOrders(paymentStatus: String, startDate: String, endDate: String) =
         getResult { apiService.getOpenOrders(paymentStatus,startDate,endDate) }
+
+    suspend fun getOnlineOrders(startDate: String, endDate: String, order_status: String) =
+        getResult { apiService.getOnlineOrders(startDate, endDate, order_status) }
+
+    suspend fun setAcceptedAndDeclineorder(
+        time: Int,
+        order_id: Int,
+        isaccepted: Boolean,
+        employee_id:Int,
+        terminalid:Int
+    ) =
+        getResult { apiService.setAcceptedAndDeclineOrders(order_id, isaccepted, time,employee_id,terminalid) }
+    suspend fun updateOnlineOrder(
+        order_id: Int,
+        order_status: String
+    ) =
+        getResult { apiService.updateOnlineOrders(order_id, order_status) }
 
     suspend fun getUpcomingOpenOrders() =
         getResult { apiService.getUpcomingOpenOrders(true) }
@@ -523,6 +550,9 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
 
     suspend fun inventoryCounts() =
         getResult { apiService.inventoryCounts() }
+
+    suspend fun onlineOrderCounts(startDate: String?, endDate: String?) =
+        getResult { apiService.onlineOrderCounts(startDate,endDate) }
 
 
     suspend fun timeDetails() =
