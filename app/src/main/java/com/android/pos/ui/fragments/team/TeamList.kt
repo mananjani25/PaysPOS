@@ -31,6 +31,7 @@ import com.android.pos.utils.extensions.visible
 import com.android.pos.utils.statusUtils.Status
 import com.android.pos.utils.sticky_recycler.StickyHeaderLayoutManager
 import dagger.hilt.android.AndroidEntryPoint
+import java.util.*
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -165,7 +166,7 @@ class TeamList : Fragment(), CustomCallback, OperationCallback {
 
     private fun observeShowProgress() {
 
-        viewModel.showProgress.observe(viewLifecycleOwner, { event ->
+        viewModel.showProgress.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
                 if (it) {
                     ProgressUtils.showProgressDialog(requireActivity())
@@ -173,7 +174,7 @@ class TeamList : Fragment(), CustomCallback, OperationCallback {
                     ProgressUtils.dismissProgressDialog()
                 }
             }
-        })
+        }
 
     }
 
@@ -254,15 +255,15 @@ class TeamList : Fragment(), CustomCallback, OperationCallback {
                 )
             ) { var final_string =
                 data.firstName.toString().substring(0, 1)
-                    .toUpperCase() + data.firstName.toString()
+                    .uppercase(Locale.getDefault()) + data.firstName.toString()
                     .substring(1, data.firstName.toString().length) + " " +
                         data.lastName.toString().substring(0, 1)
-                            .toUpperCase() + data.lastName.toString()
+                            .uppercase(Locale.getDefault()) + data.lastName.toString()
                     .substring(1, data.lastName.toString().length)
                 binding.layoutTool.txtSubTitle.setText(final_string)
             } else {
                 var final_string =
-                    data.firstName.toString().substring(0,1).toUpperCase() + data.firstName.toString()
+                    data.firstName.toString().substring(0,1).uppercase(Locale.getDefault()) + data.firstName.toString()
                         .substring(1, data.firstName.toString().length)
                 binding.layoutTool.txtSubTitle.setText(final_string)
             }

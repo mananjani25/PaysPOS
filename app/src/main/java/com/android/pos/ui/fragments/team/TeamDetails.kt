@@ -72,10 +72,10 @@ class TeamDetails : Fragment() {
                 ""
             )
 
-        model?.teamRoleId?.let { viewModel.roleNameById(it) }?.observe(viewLifecycleOwner,
-            {
-                binding.txtPermissionSet.text = it.data?.name
-            })
+        model?.teamRoleId?.let { viewModel.roleNameById(it) }?.observe(viewLifecycleOwner
+        ) {
+            binding.txtPermissionSet.text = it.data?.name
+        }
 
     }
 

@@ -989,6 +989,11 @@ class DashBoardCategoryViewModel @Inject constructor(
                 calculateDineInServiceCharge(cartList[0])
                 subTotalPrice -= (cartList[0].discountPrice)
 
+                if (subTotalPrice < 0){
+                    subTotalPrice = 0.0
+                }
+
+
 
                 cartList[0].dineInList?.forEach {
                     it.items.forEach {
@@ -1025,6 +1030,10 @@ class DashBoardCategoryViewModel @Inject constructor(
                     order_note = cartList[0].note
                     serviceChargeCalculation(cartList)
                     subTotalPrice -= cartList[0].discountPrice
+
+                    if (subTotalPrice < 0){
+                        subTotalPrice = 0.0
+                    }
 
 
                     totalDiscount += cartList[0].discountPrice

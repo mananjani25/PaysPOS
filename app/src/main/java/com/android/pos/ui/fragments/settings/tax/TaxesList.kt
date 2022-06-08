@@ -106,16 +106,16 @@ class TaxesList : Fragment() , ItemCallback {
     }
 
     private fun notifyAdapter() {
-        viewModel.notifydata.observe(viewLifecycleOwner, { event ->
+        viewModel.notifydata.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
                 taxListadapter.notifyDataSetChanged()
             }
-        })
+        }
     }
 
     private fun observeShowProgress() {
 
-        viewModel.showProgress.observe(viewLifecycleOwner, { event ->
+        viewModel.showProgress.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
                 if (it) {
                     ProgressUtils.showProgressDialog(requireActivity())
@@ -123,7 +123,7 @@ class TaxesList : Fragment() , ItemCallback {
                     ProgressUtils.dismissProgressDialog()
                 }
             }
-        })
+        }
 
     }
 
@@ -137,7 +137,7 @@ class TaxesList : Fragment() , ItemCallback {
 
     private fun deleteTax() {
 
-        viewModel.data.observe(viewLifecycleOwner, { event ->
+        viewModel.data.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
                 /* AlertUtils.showAlert(requireActivity(), it.message)
                  var adapter = binding.rvTaxList.adapter as TaxListAdapter
@@ -154,7 +154,7 @@ class TaxesList : Fragment() , ItemCallback {
                  taxListadapter.notifyItemRangeChanged(position, taxListUpdateDelete.size)*/
 
             }
-        })
+        }
 
     }
 

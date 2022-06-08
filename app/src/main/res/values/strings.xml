@@ -32,7 +32,7 @@
     <string name="last_name_">Last Name</string>
     <string name="phone">Mobile Number <font color='#E90C0C'>*</font></string>
     <string name="_phone">Mobile Number</string>
-    <string name="_phone_number">Phone Number</string>
+    <string name="_phone_number">Mobile Number</string>
     <string name="address_empty_validation">Please enter Full Address</string>
     <string name="birth_date_validation">Please enter Birth Date</string>
     `

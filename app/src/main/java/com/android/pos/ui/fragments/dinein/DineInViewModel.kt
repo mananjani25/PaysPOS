@@ -816,9 +816,9 @@ class DineInViewModel @Inject constructor(
         //model.openOrderType = orderDetails.open_order_type
 
         //Order Items Attributes
-        var orderItemsAttr: ArrayList<OrderItemsAttribute> = arrayListOf()
+        val orderItemsAttr: ArrayList<OrderItemsAttribute> = arrayListOf()
         orderDetails.order_items.forEach {
-            var model = OrderItemsAttribute()
+            val model = OrderItemsAttribute()
             model.timestamp = it.timestamp
             model.category_id = it.categoryId
             model.discountAmount = it.discountAmount

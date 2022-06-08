@@ -236,13 +236,13 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
 
         order.orderServiceCharges.forEach {
             val serviceCharge = TbServiceCharge(
-                it.createdAt,
+                it.createdAt.toString(),
                 it.serviceChargeId,
                 true,
                 order.locationId,
                 it.name,
                 it.rate,
-                it.updatedAt,
+                it.updatedAt.toString(),
                 isActive = false,
                 isChecked = true,
                 order_service_charge_id = it.id

@@ -94,6 +94,7 @@ class TeamMemberTimeSheetFragment : Fragment(), AdapterView.OnItemSelectedListen
 
         binding.includeView.spRoles.onItemSelectedListener = this
 
+
         binding.includeView.edtSearch.addTextChangedListener(object : TextWatcher {
             override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
 
@@ -256,32 +257,40 @@ class TeamMemberTimeSheetFragment : Fragment(), AdapterView.OnItemSelectedListen
         return "$startDatestring $timestring"
     }
     private fun startDatePickerObserver() {
-        viewModel.startDateSelection.observe(requireActivity(), { event ->
+        viewModel.startDateSelection.observe(requireActivity()) { event ->
             event.getContentIfNotHandled()?.let {
 
                 DatePickerDialog(
-                    requireActivity(),android.R.style.Theme_Material_Light_Dialog, startDate, myCalendar
-                        .get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
+                    requireActivity(),
+                    android.R.style.Theme_Material_Light_Dialog,
+                    startDate,
+                    myCalendar
+                        .get(Calendar.YEAR),
+                    myCalendar.get(Calendar.MONTH),
                     myCalendar.get(Calendar.DAY_OF_MONTH)
 
                 ).show()
             }
 
-        })
+        }
     }
 
     private fun endDatePickerObserver() {
-        viewModel.endDateSelection.observe(requireActivity(), { event ->
+        viewModel.endDateSelection.observe(requireActivity()) { event ->
             event.getContentIfNotHandled()?.let {
 
                 DatePickerDialog(
-                    requireActivity(), android.R.style.Theme_Material_Light_Dialog,endDate, myCalendar1
-                        .get(Calendar.YEAR), myCalendar1.get(Calendar.MONTH),
+                    requireActivity(),
+                    android.R.style.Theme_Material_Light_Dialog,
+                    endDate,
+                    myCalendar1
+                        .get(Calendar.YEAR),
+                    myCalendar1.get(Calendar.MONTH),
                     myCalendar1.get(Calendar.DAY_OF_MONTH)
 
                 ).show()
             }
-        })
+        }
     }
 
 
@@ -334,7 +343,7 @@ class TeamMemberTimeSheetFragment : Fragment(), AdapterView.OnItemSelectedListen
     }
 
     private fun getRoleListObserver() {
-        viewModel.getTeamRoleList.observe(viewLifecycleOwner, {
+        viewModel.getTeamRoleList.observe(viewLifecycleOwner) {
             it?.let { resource ->
                 when (resource.status) {
                     Status.SUCCESS -> {
@@ -363,12 +372,13 @@ class TeamMemberTimeSheetFragment : Fragment(), AdapterView.OnItemSelectedListen
                     }
                 }
             }
-        })
+        }
     }
 
 
     override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
 
+        binding.includeView.edtSearch.setText("")
         viewModel.apiCallTimeSheet(teamRoleListGlobal[position].id.toString())
     }
 
@@ -382,6 +392,7 @@ class TeamMemberTimeSheetFragment : Fragment(), AdapterView.OnItemSelectedListen
             Constants.TEAM_MEMBER
         )
         navController.popBackStack()
+
     }
 
     private fun setupSnackbar() =
@@ -389,7 +400,7 @@ class TeamMemberTimeSheetFragment : Fragment(), AdapterView.OnItemSelectedListen
 
     private fun observeShowProgress() {
 
-        viewModel.showProgress.observe(viewLifecycleOwner, { event ->
+        viewModel.showProgress.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
                 if (it) {
                     ProgressUtils.showProgressDialog(requireActivity())
@@ -397,7 +408,7 @@ class TeamMemberTimeSheetFragment : Fragment(), AdapterView.OnItemSelectedListen
                     ProgressUtils.dismissProgressDialog()
                 }
             }
-        })
+        }
 
     }
 
