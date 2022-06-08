@@ -63,6 +63,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
+import kotlin.collections.ArrayList
 
 
 @AndroidEntryPoint
@@ -226,29 +227,38 @@ class CartFragment(
         addObserver()
         setupTaxAdapter()
 
+
+        if(taxBirfurcationAdapter.taxlist.size==0){
+            binding.imgDropdown.gone()
+        }else{
+            binding.imgDropdown.visible()
+        }
         binding.linearTaxDetail.setOnClickListener {
-            if (!taxClickable) {
-                Log.d(TAG, "onViewCreated: " + taxBirfurcationAdapter.taxlist.size)
-                taxClickable = true
-                if (taxBirfurcationAdapter.taxlist.size == 1) {
-                    binding.liinearInfoLayout.layoutParams.height =
-                        resources.getDimension(R.dimen._60sdp).toInt()
-                } else if (taxBirfurcationAdapter.taxlist.size == 2) {
-                    binding.liinearInfoLayout.layoutParams.height =
-                        resources.getDimension(R.dimen._70sdp).toInt()
+            if(taxBirfurcationAdapter.taxlist.size>0){
+                if (!taxClickable) {
+                    Log.d(TAG, "onViewCreated: " + taxBirfurcationAdapter.taxlist.size)
+                    taxClickable = true
+                    if (taxBirfurcationAdapter.taxlist.size == 1) {
+                        binding.liinearInfoLayout.layoutParams.height =
+                            resources.getDimension(R.dimen._60sdp).toInt()
+                    } else if (taxBirfurcationAdapter.taxlist.size == 2) {
+                        binding.liinearInfoLayout.layoutParams.height =
+                            resources.getDimension(R.dimen._70sdp).toInt()
+                    } else {
+                        binding.liinearInfoLayout.layoutParams.height =
+                            resources.getDimension(R.dimen._80sdp).toInt()
+                    }
+                    binding.imgDropdown.setImageResource(R.drawable.ic_solid_up_arrow)
+                    binding.relativeDynamicTax.visible()
                 } else {
                     binding.liinearInfoLayout.layoutParams.height =
-                        resources.getDimension(R.dimen._80sdp).toInt()
+                        resources.getDimension(R.dimen._50sdp).toInt()
+                    taxClickable = false
+                    binding.imgDropdown.setImageResource(R.drawable.ic_arrow_drop_down)
+                    binding.relativeDynamicTax.gone()
                 }
-                binding.imgDropdown.setImageResource(R.drawable.ic_solid_up_arrow)
-                binding.relativeDynamicTax.visible()
-            } else {
-                binding.liinearInfoLayout.layoutParams.height =
-                    resources.getDimension(R.dimen._50sdp).toInt()
-                taxClickable = false
-                binding.imgDropdown.setImageResource(R.drawable.ic_arrow_drop_down)
-                binding.relativeDynamicTax.gone()
             }
+
         }
 
 
@@ -964,6 +974,12 @@ class CartFragment(
                         binding.rvCartDineIn.gone()
                         binding.rvCartList.visible()
                         if (it.isNotEmpty()) {
+                            binding.liinearInfoLayout.layoutParams.height =
+                                resources.getDimension(R.dimen._50sdp).toInt()
+                            taxClickable = false
+                            binding.imgDropdown.setImageResource(R.drawable.ic_arrow_drop_down)
+                            binding.relativeDynamicTax.gone()
+                            binding.imgDropdown.visible()
                             viewModel.destroyedList.clear()
                             it[0].items?.filter { item -> item.isDestroy }?.let {
                                 viewModel.destroyedList.addAll(it)
@@ -1014,10 +1030,10 @@ class CartFragment(
                                 requireContext()
                             )
                             viewModel.setCartModel(it)
-                            if (viewModel.taxDynamicList.isNotEmpty()) {
-                                Log.d(TAG, "addObserver: " + viewModel.taxDynamicList.size)
+                            if (it[0].taxlistDynamic?.isNotEmpty() == true) {
+                                Log.d(TAG, "addObserver: " + it[0].taxlistDynamic?.size)
                                 setupTaxAdapter()
-                                taxBirfurcationAdapter.setList(viewModel.taxDynamicList)
+                                taxBirfurcationAdapter.setList(it[0].taxlistDynamic as ArrayList<TaxData>)
                             }
                             if (viewModel.order_note.isNotEmpty()) {
                                 binding.relativeOrderNotes?.visibility = View.VISIBLE
@@ -1120,6 +1136,12 @@ class CartFragment(
 
 
                         } else {
+                            binding.liinearInfoLayout.layoutParams.height =
+                                resources.getDimension(R.dimen._50sdp).toInt()
+                            taxClickable = false
+                            binding.imgDropdown.setImageResource(R.drawable.ic_arrow_drop_down)
+                            binding.relativeDynamicTax.gone()
+                            binding.imgDropdown.gone()
                             viewModel.clearListTax()
                             cartAdapter.clearList()
                             taxBirfurcationAdapter.clearList()

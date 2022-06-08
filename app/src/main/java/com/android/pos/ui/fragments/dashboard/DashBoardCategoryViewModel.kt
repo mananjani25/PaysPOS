@@ -413,7 +413,8 @@ class DashBoardCategoryViewModel @Inject constructor(
 
         if (cartList != null && cartList.isEmpty()) {
             // empty cart hoy to new cart create kare
-            val cartModel = item?.let { addCartModel(it, isManualSales) }
+            var cartModel = item?.let { addCartModel(it, isManualSales) }
+            cartModel = taxBifurcationCalculation(item!!, cartModel!!)
             if (cartModel != null) {
                 addCart(cartModel)
             }
@@ -587,6 +588,8 @@ class DashBoardCategoryViewModel @Inject constructor(
                 if (list != null && list.isNotEmpty()) {
 
                     if (type == ADD || type == UPDATE) {
+
+
                         var index = -1
 
                         for (i in list.indices) {
@@ -709,6 +712,9 @@ class DashBoardCategoryViewModel @Inject constructor(
                     }
 
                     val cartModel = cartList[0]
+                    cartModel.items?.forEach { item ->
+                        taxBifurcationCalculation(item, cartModel)
+                    }
                     cartModel.items = list
                     addCart(cartModel)
                     if (list.isEmpty()) {
@@ -1283,14 +1289,14 @@ class DashBoardCategoryViewModel @Inject constructor(
 
 
                             taxCalculation(item, cartModel.discountPrice / itemCount!!)
-                            taxBifurcationCalculation(item, cartModel)
+
                             item.modifiers.forEach {
                                 subTotalPrice += (it.price * it.itemQuantity)
 
                             }
                         }
                     }
-                    taxDynamicList = cartModel.taxlistDynamic!!.toCollection(ArrayList())
+//                    taxDynamicList = cartModel.taxlistDynamic!!.toCollection(ArrayList())
                     Log.d(TAG, "itemCalculationCartModel: " + taxDynamicList)
                     serviceChargeCalculationModel(cartModel)
 
@@ -1467,7 +1473,7 @@ class DashBoardCategoryViewModel @Inject constructor(
         }
     }
 
-    private fun taxBifurcationCalculation(item: TbItem, cartModel: CartModel) {
+    private fun taxBifurcationCalculation(item: TbItem, cartModel: CartModel): CartModel {
         item.taxes?.forEach { it ->
             if (it.isActive) {
                 if (cartModel.taxlistDynamic?.isNotEmpty() == true) {
@@ -1513,6 +1519,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                             }
                             it.totalTaxTypePrice = totaltaxtemp
                             cartModel.taxlistDynamic = listOf(it)
+                            return cartModel
                         } else {
                             var totaltaxtemp: Double = 0.0
                             var modifierPrice = 0.0
@@ -1554,6 +1561,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                             }
                             cartModel.taxlistDynamic?.get(index)?.totalTaxTypePrice =
                                 type.totalTaxTypePrice?.plus(totaltaxtemp)
+                            return cartModel
                         }
                     }
                 } else {
@@ -1597,10 +1605,12 @@ class DashBoardCategoryViewModel @Inject constructor(
                     }
                     it.totalTaxTypePrice = totaltaxtemp
                     cartModel.taxlistDynamic = listOf(it)
+                    return cartModel
                 }
             }
 
         }
+        return cartModel
     }
 
     private fun taxCalculation(item: TbItem, discountPrice: Double) {

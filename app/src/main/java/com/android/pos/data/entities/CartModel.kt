@@ -42,6 +42,6 @@ class CartModel : Parcelable {
     var openOrderType = ""
     var deliveryType = ""
     var reorder: Boolean = false
-    var taxlistDynamic: List<TaxData>? = arrayListOf()
+    var taxlistDynamic: List<TaxData>? = emptyList()
 
 }

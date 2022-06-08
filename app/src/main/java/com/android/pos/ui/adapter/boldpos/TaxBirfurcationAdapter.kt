@@ -19,7 +19,7 @@ class TaxBirfurcationAdapter : RecyclerView.Adapter<TaxBirfurcationAdapter.MyVie
             val items: List<String> = item.name!!.split(" ")
             var stringBuffer: StringBuffer = StringBuffer()
             items.forEach {
-                stringBuffer.append(it.substring(0, 1).toUpperCase() + it.substring(1, it.length))
+                stringBuffer.append(it.substring(0, 1).toUpperCase() + it.substring(1, it.length)+" ")
             }
             binding.txtName.text = stringBuffer.toString()
 
