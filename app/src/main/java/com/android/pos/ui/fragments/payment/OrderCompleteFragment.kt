@@ -55,6 +55,7 @@ import com.android.pos.data.remote.Constants.TAKEOUT
 import com.android.pos.data.remote.Constants.TOTAL_PRICE_DINEIN
 import com.android.pos.data.remote.Constants.VENUE_LOGO
 import com.android.pos.data.remote.Constants.WHOLE_AMOUNT
+import com.android.pos.data.remote.Constants.getCurrentTimeFromTimeZone
 import com.android.pos.data.remote.Constants.getReceiptFormatDateFromUTCServer
 import com.android.pos.databinding.FragmentOrderCompletBinding
 import com.android.pos.di.PrefProvider
@@ -1268,7 +1269,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                             Builder.FALSE,
                             Builder.COLOR_1
                         )
-                        builder.addText("Print Time:" + formatted)
+                        builder.addText("Print Time:" +getCurrentTimeFromTimeZone(requireContext(), formatted))
                     }
 
 
@@ -1401,7 +1402,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         builder.addText(
                             padLine(
                                 if (customerSettingModel.showPrintTime) {
-                                    "Print Time:" + formatted
+                                    "Print Time:" + getCurrentTimeFromTimeZone(requireContext(),formatted)
                                 } else {
                                     ""
                                 },
@@ -2400,7 +2401,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                             Builder.FALSE,
                             Builder.COLOR_1
                         )
-                        builder.addText("Print Time:" + formatted)
+                        builder.addText("Print Time:" + getCurrentTimeFromTimeZone(requireContext(),formatted))
                     }
 
 
@@ -2533,7 +2534,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         builder.addText(
                             padLine(
                                 if (customerSettingModel.showPrintTime) {
-                                    "Print Time:" + formatted
+                                    "Print Time:" + getCurrentTimeFromTimeZone(requireContext(),formatted)
                                 } else {
                                     ""
                                 },
@@ -3963,7 +3964,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                             Builder.FALSE,
                             Builder.COLOR_1
                         )
-                        builder.addText("Print Time:" + formatted)
+                        builder.addText("Print Time:" + getCurrentTimeFromTimeZone(requireContext(),formatted))
                     }
 
 
@@ -4092,7 +4093,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         builder.addText(
                             padLine(
                                 if (customerSettingModel.showPrintTime) {
-                                    "Print Time:" + formatted
+                                    "Print Time:" + getCurrentTimeFromTimeZone(requireContext(),formatted)
                                 } else {
                                     ""
                                 },
