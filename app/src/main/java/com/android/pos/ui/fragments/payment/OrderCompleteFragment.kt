@@ -4545,14 +4545,24 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             )
 
             var newPaidAmount = paidAmount
-             if (MethodUtils.roundOffAmountDouble(paidAmount + tipAmount) == MethodUtils.roundOffAmountDouble((receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size?.minus(1) ?: 0)?.amount ?: 0.0).plus((receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size?.minus(1) ?: 0)?.tips ?: 0.0))   ?: 0.0)
-             ) {
-                 newPaidAmount = paidAmount + tipAmount
-             }
+            if (MethodUtils.roundOffAmountDouble(paidAmount + tipAmount) == MethodUtils.roundOffAmountDouble(
+                    (receiptModel?.order?.payments?.get(
+                        receiptModel?.order?.payments?.size?.minus(1) ?: 0
+                    )?.amount ?: 0.0).plus(
+                        (receiptModel?.order?.payments?.get(
+                            receiptModel?.order?.payments?.size?.minus(
+                                1
+                            ) ?: 0
+                        )?.tips ?: 0.0)
+                    ) ?: 0.0
+                )
+            ) {
+                newPaidAmount = paidAmount + tipAmount
+            }
 
-             if (isSpilt) {
-                 newPaidAmount = paidAmount + tipAmount
-             }
+            if (isSpilt) {
+                newPaidAmount = paidAmount + tipAmount
+            }
             Log.e("ToCheck", "PaidAmount ${newPaidAmount}")
 
             builder.addText(
@@ -5133,7 +5143,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 customerReceiptPrinters.name
             }
 
-            if (customerReceiptPrinters.name.substring(0,4).equals("TM-U",true) || customerReceiptPrinters.name.contains("U")) {
+            if (customerReceiptPrinters.name.substring(0, 4)
+                    .equals("TM-U", true) || customerReceiptPrinters.name.contains("U")
+            ) {
 
                 var fontSizeH = 1
                 var fontSizeW = 1
@@ -5464,8 +5476,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                     }
                 }
-            }
-            else {
+            } else {
 
                 var fontSizeH = 1
                 var fontSizeW = 1
@@ -5814,8 +5825,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             val battery = IntArray(1)
 
             var timeOut = PrinterClass.SEND_TIMEOUT
-            if (customerReceiptPrinters.printer_type == BLUETOOTH){
-               timeOut =   BLUETOOTH_TIMEOUT
+            if (customerReceiptPrinters.printer_type == BLUETOOTH) {
+                timeOut = BLUETOOTH_TIMEOUT
             }
 
             try {
@@ -5936,8 +5947,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         prefProvider.setValue(SPLIT_DINEIN_MODEL, "")
         prefProvider.setValue(SPLIT_IS_GUESTPAY, "")
         prefProvider.setValue(SPLIT_DINEIN_CHECKOUT, "")
-        prefProvider.setValueboolean(IS_UPDATE_ORDER_LOYALTY_APPLIED,false)
-        prefProvider.setValueboolean(LOYALTY_ADDED,false)
+        prefProvider.setValueboolean(IS_UPDATE_ORDER_LOYALTY_APPLIED, false)
+        prefProvider.setValueboolean(LOYALTY_ADDED, false)
     }
 
     private fun observeShowProgress() {
