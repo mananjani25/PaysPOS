@@ -1415,13 +1415,26 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
 
             if (requestCancel) {
-                AlertUtils.showCustomAlert(
-                    requireContext(), message
-                )
+
+                if (message.equals("timeout", true)) {
+                    AlertUtils.showCustomAlert(
+                        requireContext(), "Timeout"
+                    )
+                } else {
+                    AlertUtils.showCustomAlert(
+                        requireContext(), message
+                    )
+                }
             } else {
-                AlertUtils.showCustomAlert(
-                    requireContext(), message
-                )
+                if (message.equals("timeout", true)) {
+                    AlertUtils.showCustomAlert(
+                        requireContext(), "Timeout"
+                    )
+                } else {
+                    AlertUtils.showCustomAlert(
+                        requireContext(), message
+                    )
+                }
             }
 
 

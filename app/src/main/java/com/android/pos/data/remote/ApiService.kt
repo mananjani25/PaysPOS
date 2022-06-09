@@ -690,6 +690,8 @@ interface ApiService {
         @Query("start_date") startDate: String,
         @Query("end_date") endDate: String,
         @Query("terminal_id") terminalId: String,
+        @Query("page") page: String,
+        @Query("per_page") perPage: String
 
         ): CashLogResponse
 

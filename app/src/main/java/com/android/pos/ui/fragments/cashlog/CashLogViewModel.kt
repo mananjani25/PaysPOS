@@ -56,7 +56,8 @@ class CashLogViewModel @Inject constructor(
         ).format(Date(System.currentTimeMillis() + 300000))
 
     }
-    fun setNumerFormat(){
+
+    fun setNumerFormat() {
 
     }
 
@@ -82,7 +83,7 @@ class CashLogViewModel @Inject constructor(
     }
 
 
-    fun apiCallTimeSheet(terminalId: String) {
+    fun apiCallTimeSheet(terminalId: String, currentPage: Int) {
 
         val tId = if (terminalId == "-1") "" else terminalId
 
@@ -91,7 +92,9 @@ class CashLogViewModel @Inject constructor(
             val resource = posRepository.getCashLog(
                 startDate.value.toString(),
                 endDate.value.toString(),
-                tId
+                tId,
+                currentPage.toString(),
+                "10"
             )
 
             when (resource.status) {
