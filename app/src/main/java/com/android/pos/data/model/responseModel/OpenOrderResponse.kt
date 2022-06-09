@@ -241,7 +241,7 @@ data class OpenOrderResponse(
                 @SerializedName("service_charge_id")
                 val serviceChargeId: Int,
                 @SerializedName("updated_at")
-                val updatedAt: String?
+                val updatedAt: String?,
                 @SerializedName("min_guest_count")
                 val min_guest_count: Int? = null,
                 @SerializedName("max_guest_count")
