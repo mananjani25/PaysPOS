@@ -1512,7 +1512,6 @@ class DashBoardCategoryViewModel @Inject constructor(
 
         } else {
             Log.d("yash", "taxCalculation: " + itemtype.taxType)
-
             if (totalPrice <= 0.0) {
                 String.format("%.2f", 0.00)
                     .toDouble()
@@ -1535,12 +1534,38 @@ class DashBoardCategoryViewModel @Inject constructor(
                             found = index
                         }
                     }
-                    Log.d(TAG, "taxBifurcationCalculation: "+found)
+                    Log.d(TAG, "taxBifurcationCalculation: " + found)
                     if (found == -1) {
+                        if (itemtype.taxType != "Percentage") {
+                            var modifierPrice: Double = 0.0
+                            val price =
+                                (item.price * item.itemQuantity) - (item.discountPrice * item.itemQuantity)
+
+                            item.modifiers.forEach {
+                                modifierPrice += (it.price * it.itemQuantity)
+                            }
+
+                            val totalPrice =
+                                price + modifierPrice
+                            itemtype.subTotalAmount = itemtype.subTotalAmount?.plus(totalPrice)
+                        }
                         itemtype.totalTaxTypePrice = getTotalTaxBirfurcation(item, itemtype)
                         cartModel.taxlistDynamic =
                             concatenate(cartModel.taxlistDynamic!!, listOf(itemtype))
                     } else {
+                        if (itemtype.taxType != "Percentage") {
+                            var modifierPrice: Double = 0.0
+                            val price =
+                                (item.price * item.itemQuantity) - (item.discountPrice * item.itemQuantity)
+
+                            item.modifiers.forEach {
+                                modifierPrice += (it.price * it.itemQuantity)
+                            }
+                            val totalPrice =
+                                price + modifierPrice
+                            cartModel.taxlistDynamic!![found].subTotalAmount =
+                                cartModel.taxlistDynamic!![found].subTotalAmount?.plus(totalPrice)
+                        }
                         cartModel.taxlistDynamic?.get(found)?.totalTaxTypePrice =
                             cartModel.taxlistDynamic!![found].totalTaxTypePrice?.plus(
                                 getTotalTaxBirfurcation(
@@ -1550,9 +1575,21 @@ class DashBoardCategoryViewModel @Inject constructor(
                             )
                     }
                 } else {
+                    if (itemtype.taxType != "Percentage") {
+                        var modifierPrice: Double = 0.0
+                        val price =
+                            (item.price * item.itemQuantity) - (item.discountPrice * item.itemQuantity)
+
+                        item.modifiers.forEach {
+                            modifierPrice += (it.price * it.itemQuantity)
+                        }
+
+                        val totalPrice =
+                            price + modifierPrice
+                        itemtype.subTotalAmount = itemtype.subTotalAmount?.plus(totalPrice)
+                    }
                     itemtype.totalTaxTypePrice = getTotalTaxBirfurcation(item, itemtype)
                     cartModel.taxlistDynamic = listOf(itemtype)
-                    return cartModel
                 }
             }
 

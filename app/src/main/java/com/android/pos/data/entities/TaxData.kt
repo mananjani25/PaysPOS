@@ -36,7 +36,8 @@ data class TaxData(
     val itemIds: List<Int>,
     var orderTaxId: Int? = null,
     var isChecked: Boolean? = false,
-    var totalTaxTypePrice: Double? = null
+    var totalTaxTypePrice: Double = 0.0,
+    var subTotalAmount: Double = 0.0
 
 ) : Parcelable {
     fun showFormattedTaxRate() = String.format(

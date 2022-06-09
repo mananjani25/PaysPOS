@@ -19,14 +19,25 @@ class TaxBirfurcationAdapter : RecyclerView.Adapter<TaxBirfurcationAdapter.MyVie
             val items: List<String> = item.name!!.split(" ")
             var stringBuffer: StringBuffer = StringBuffer()
             items.forEach {
-                stringBuffer.append(it.substring(0, 1).toUpperCase() + it.substring(1, it.length)+" ")
+                stringBuffer.append(
+                    it.substring(0, 1).toUpperCase() + it.substring(
+                        1,
+                        it.length
+                    ) + " "
+                )
             }
             binding.txtName.text = stringBuffer.toString()
 
             if (item.taxType.equals("Percentage")) {
                 binding.txtValue.text = String.format("%.2f", item.rate) + "%"
             } else {
-                binding.txtValue.text = "$" + String.format("%.2f", item.rate)
+                var totalAmountTax = item.totalTaxTypePrice
+                if (item.subTotalAmount != 0.0) {
+                    var final_percantage = (100 * totalAmountTax!!) / item.subTotalAmount!!
+                    binding.txtValue.text = String.format("%.2f", final_percantage) + "%"
+                }else{
+                    binding.txtValue.text = String.format("%.2f", 0.0) + "%"
+                }
             }
 
             MethodUtils.setPriceTextView(binding.txtAmount, item.totalTaxTypePrice ?: 0.0)
