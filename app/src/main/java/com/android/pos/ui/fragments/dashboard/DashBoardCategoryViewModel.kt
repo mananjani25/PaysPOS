@@ -144,6 +144,10 @@ class DashBoardCategoryViewModel @Inject constructor(
         return posRepository.orderTypesDb()
     }
 
+    fun setcheckedLoyaltyApply(isapply: Boolean) {
+        this.redeemLoyaltyInfo.needToApplyLoyalty = isapply
+    }
+
     fun setOrderTypeList(ordertypelist: ArrayList<TbOrderType>) {
         this.ordertypelist = ordertypelist
     }
@@ -476,7 +480,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                                 it.itemQuantity = model.itemQuantity
                                             }
                                             model.modifiers = item.modifiers
-                                            itemDiscountApply(model, item)
+//                                            itemDiscountApply(model, item)
                                         }
 
                                         if (prefProvider.getValueboolean(
@@ -951,7 +955,14 @@ class DashBoardCategoryViewModel @Inject constructor(
         if (cartList != null && cartList.isNotEmpty()) {
             if (cartList[0].orderType == DINE_IN) {
 
+                var dineInItems = 0
+
                 cartList[0].dineInList?.forEach { dine ->
+                    dineInItems += dine.items.size
+                }
+
+                cartList[0].dineInList?.forEach { dine ->
+
 
                     dine.items.forEach { item ->
                         totalCount += item.itemQuantity
@@ -959,7 +970,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                         subTotalPrice += (item.price * item.itemQuantity) - (item.discountPrice * item.itemQuantity)
 
 
-                        taxCalculation(item)
+                        taxCalculation(item, cartList[0].discountPrice / dineInItems)
 
                         item.modifiers.forEach {
                             subTotalPrice += (it.price * it.itemQuantity)
@@ -971,6 +982,11 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                 calculateDineInServiceCharge(cartList[0])
                 subTotalPrice -= (cartList[0].discountPrice)
+
+                if (subTotalPrice < 0){
+                    subTotalPrice = 0.0
+                }
+
 
 
                 cartList[0].dineInList?.forEach {
@@ -990,12 +1006,14 @@ class DashBoardCategoryViewModel @Inject constructor(
                 if (cartList[0].items?.isEmpty() == false) {
 
 
+                    val itemCount = cartList[0].items?.size
+
                     cartList[0].items?.forEach { item ->
                         totalCount += item.itemQuantity
                         subTotalPrice += (item.price * item.itemQuantity) - (item.discountPrice * item.itemQuantity)
 
 
-                        taxCalculation(item)
+                        taxCalculation(item, cartList[0].discountPrice / itemCount!!)
 
                         item.modifiers.forEach {
                             subTotalPrice += (it.price * it.itemQuantity)
@@ -1006,6 +1024,10 @@ class DashBoardCategoryViewModel @Inject constructor(
                     order_note = cartList[0].note
                     serviceChargeCalculation(cartList)
                     subTotalPrice -= cartList[0].discountPrice
+
+                    if (subTotalPrice < 0){
+                        subTotalPrice = 0.0
+                    }
 
 
                     totalDiscount += cartList[0].discountPrice
@@ -1086,13 +1108,19 @@ class DashBoardCategoryViewModel @Inject constructor(
             Log.e("TOCHE", "discountPriceDineIn  ${cartModel.discountPrice}")
             Log.e("TOCHE", "discountPriceDineIn  ${totalDiscount}")
 
+            var dineInItems = 0
+
+            cartModel.dineInList?.forEach { dine ->
+                dineInItems += dine.items.size
+            }
+
             cartModel.dineInList?.forEach { dine ->
 
                 dine.items.forEach { item ->
                     totalCount += item.itemQuantity
                     subTotalPrice += (item.price * item.itemQuantity) - (item.discountPrice * item.itemQuantity)
 
-                    taxCalculation(item)
+                    taxCalculation(item, cartModel.discountPrice / dineInItems)
 
                     item.modifiers.forEach {
                         subTotalPrice += (it.price * it.itemQuantity)
@@ -1105,6 +1133,10 @@ class DashBoardCategoryViewModel @Inject constructor(
             calculateDineInServiceCharge(cartModel)
 //            serviceChargeCalculationModel(cartModel)
             subTotalPrice -= cartModel.discountPrice
+            if (subTotalPrice < 0){
+                subTotalPrice = 0.0
+            }
+
             var totalDis = cartModel.discountPrice
             var totalDineItemDis = 0.0
             cartModel.dineInList?.forEach {
@@ -1168,11 +1200,14 @@ class DashBoardCategoryViewModel @Inject constructor(
             if (cartModel.items?.isEmpty() == false) {
 
                 if (cartModel.reorder) {
+
+                    val itemCount = cartModel.items?.size
+
                     cartModel.items?.forEach { item ->
                         totalCount += item.itemQuantity
                         totalDiscount += item.discountPrice
                         subTotalPrice += (item.price * item.itemQuantity) - (item.discountPrice * item.itemQuantity)
-                        taxCalculation(item)
+                        taxCalculation(item, cartModel.discountPrice / itemCount!!)
 
                         item.modifiers.forEach {
                             subTotalPrice += (it.price * it.itemQuantity)
@@ -1180,11 +1215,14 @@ class DashBoardCategoryViewModel @Inject constructor(
                         }
                     }
 
-
                     serviceChargeCalculationModel(cartModel)
 
-                    totalDiscount += cartModel.discountPrice
                     subTotalPrice -= cartModel.discountPrice
+                    if (subTotalPrice < 0){
+                        subTotalPrice = 0.0
+                    }
+
+                    totalDiscount += cartModel.discountPrice
                     order_note = cartModel.note
 
                     var finalTotal = 0.0
@@ -1239,7 +1277,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                     totalTax = 0.0
                     totalServiceCharge = 0.0
 
-
+                    val itemCount = cartModel.items?.size
                     cartModel.items?.forEach { item ->
                         if (!item.isDestroy) {
                             totalCount += item.itemQuantity
@@ -1247,7 +1285,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                             subTotalPrice += (item.price * item.itemQuantity) - (item.discountPrice * item.itemQuantity)
 
 
-                            taxCalculation(item)
+                            taxCalculation(item, cartModel.discountPrice / itemCount!!)
 
 
                             item.modifiers.forEach {
@@ -1258,9 +1296,15 @@ class DashBoardCategoryViewModel @Inject constructor(
                     }
 
                     serviceChargeCalculationModel(cartModel)
+
                     subTotalPrice -= cartModel.discountPrice
+                    if (subTotalPrice < 0){
+                        subTotalPrice = 0.0
+                    }
 
                     totalDiscount += cartModel.discountPrice
+
+
                     order_note = cartModel.note
                     Log.e("OpenOrderCh", "cartDiscount  ${cartModel.discountPrice}")
                     Log.e("OpenOrderCh", "totalDiscounts  ${totalDiscount}")
@@ -1442,7 +1486,7 @@ class DashBoardCategoryViewModel @Inject constructor(
         }
     }
 
-    private fun taxCalculation(item: TbItem) {
+    private fun taxCalculation(item: TbItem, discountPrice: Double) {
         item.taxes?.forEach { tax ->
             if (tax.isActive) {
 
@@ -1454,7 +1498,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                     modifierPrice += (it.price * it.itemQuantity)
                 }
 
-                val totalPrice = price + modifierPrice
+                val totalPrice = price + modifierPrice /*- (discountPrice * item.itemQuantity)*/
 
 
                 totalTax += if (tax.taxType == "Percentage") {
@@ -1476,7 +1520,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                 } else {
                     Log.d("yash", "taxCalculation: " + tax.taxType)
 
-                    if (totalPrice < 0.0) {
+                    if (totalPrice <= 0.0) {
                         String.format("%.2f", 0.00)
                             .toDouble()
                     } else {
@@ -2563,7 +2607,12 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 posRepository.addLoyaltyProgramFromDb(it.data.loyaltyPrograms)
                                 posRepository.deleteSurcharge()
                                 posRepository.addCashDiscountsFromDb(it.data.cash_discounts)
-
+                                posRepository.deleteEODReportSettings()
+                                it.data.shift_report_configuration?.let { it1 ->
+                                    posRepository.addEODReportSettings(
+                                        it1
+                                    )
+                                }
                                 if (it.data.cash_discounts.isNotEmpty()) {
                                     it.data.cash_discounts.forEach {
                                         if (it.is_active) {
@@ -2960,15 +3009,20 @@ class DashBoardCategoryViewModel @Inject constructor(
             if (cartModel.items?.isEmpty() == false) {
 
 
+                val itemCount = cartModel.items?.size
                 cartModel.items?.forEach { item ->
                     totalCount += item.itemQuantity
-                    subTotalPrice += if (!item.isManualSales) {
-                        (item.price * item.itemQuantity) - (item.discountPrice * item.itemQuantity)
-                    } else {
-                        (item.price * item.itemQuantity) - item.discountPrice
-                    }
 
-                    taxCalculation(item)
+                    subTotalPrice += (item.price * item.itemQuantity) - (item.discountPrice * item.itemQuantity)
+
+
+//                    subTotalPrice += if (!item.isManualSales) {
+//                        (item.price * item.itemQuantity) - (item.discountPrice * item.itemQuantity)
+//                    } else {
+//                        (item.price * item.itemQuantity) - item.discountPrice
+//                    }
+
+                    taxCalculation(item, cartModel.discountPrice / itemCount!!)
 
                     item.modifiers.forEach {
                         subTotalPrice += (it.price * it.itemQuantity)
@@ -2980,14 +3034,16 @@ class DashBoardCategoryViewModel @Inject constructor(
                 serviceChargeCalculationModel(cartModel)
                 subTotalPrice -= cartModel.discountPrice
 
+                if (subTotalPrice < 0){
+                    subTotalPrice = 0.0
+                }
+
+
+
                 totalDiscount += cartModel.discountPrice
 
                 cartModel.items!!.forEach {
-                    totalDiscount += if (!it.isManualSales) {
-                        (it.discountPrice * it.itemQuantity)
-                    } else {
-                        it.discountPrice
-                    }
+                    totalDiscount += (it.discountPrice * it.itemQuantity)
                 }
 
                 var finalTotal = 0.0

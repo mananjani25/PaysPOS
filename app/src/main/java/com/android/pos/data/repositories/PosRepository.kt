@@ -8,6 +8,7 @@ import com.android.pos.data.db.AppDatabase
 import com.android.pos.data.db.IDataManager
 import com.android.pos.data.entities.*
 import com.android.pos.data.entities.ModifierSet
+import com.android.pos.data.model.ShiftRportConfiguration
 import com.android.pos.data.model.SplitDetailListModel
 import com.android.pos.data.model.requestModel.*
 import com.android.pos.data.model.responseModel.*
@@ -272,6 +273,10 @@ class PosRepository @Inject constructor(
     suspend fun deleteNotesFromDb() =
         appDatabase.notesDao().delete()
 
+    suspend fun deleteEODReportSettings() =
+        appDatabase.eodReportSettings().deleteEODReportSettings()
+
+    fun getEodReportSettings() = performGetOperationDatabase(databaseQuery = {appDatabase.eodReportSettings().eodSettingsData})
     suspend fun addAllNotesDatabase(data: List<NoteResponse.Data>) =
         appDatabase.notesDao().addAllNotesSuspend(data)
 
@@ -338,6 +343,10 @@ class PosRepository @Inject constructor(
 
     suspend fun addCashDiscountsFromDb(data: List<CashDiscountModel>) {
         appDatabase.cashDiscountDao().addAll(data)
+    }
+
+    suspend fun addEODReportSettings(data: ShiftRportConfiguration) {
+        appDatabase.eodReportSettings().addEODReportSettings(data)
     }
 
     suspend fun deleteCustomerReceiptSettingsFromDb() {

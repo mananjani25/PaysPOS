@@ -252,6 +252,7 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
                     val bundle = Bundle().apply {
                         putParcelable("refundData", refundData)
                         putDouble("refundAmount", totalItemPrice)
+                        putString("paymentType", paymentOrderDetailsResponse.data.payment_type)
                         putString(
                             "magensa_response_data",
                             paymentOrderDetailsResponse.data.magensa_response_data

@@ -7,16 +7,17 @@
     <RelativeLayout
         android:id="@+id/rlRoot"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="@dimen/_23sdp"
         android:background="@color/bg_color"
         android:orientation="horizontal"
-        android:paddingVertical="@dimen/_4sdp">
+        >
 
 
         <androidx.appcompat.widget.LinearLayoutCompat
             android:id="@+id/linearFirst"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content">
+            android:gravity="center"
+            android:layout_height="match_parent">
 
             <ImageView
                 android:id="@+id/imgDrawer"
@@ -75,8 +76,9 @@
         <androidx.appcompat.widget.LinearLayoutCompat
             android:id="@+id/linearSecond"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true">
+            android:layout_height="match_parent"
+            android:layout_alignParentEnd="true"
+            android:gravity="center">
 
 
             <AutoCompleteTextView
@@ -178,33 +180,12 @@
             <ImageView
                 android:id="@+id/ivLock"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:background="?attr/selectableItemBackground"
-                android:paddingHorizontal="@dimen/_8sdp"
-                android:src="@drawable/ic_lock"
-                app:tint="@color/txtColor" />
-
-            <TextView
-                android:id="@+id/txtHome"
-                style="@style/CustomFontBold"
-                android:layout_width="wrap_content"
                 android:layout_height="match_parent"
                 android:layout_gravity="center"
-                android:layout_marginStart="@dimen/_7sdp"
-                android:layout_marginEnd="@dimen/_4sdp"
-                android:background="@drawable/button_action_hover"
-                android:paddingStart="@dimen/_10sdp"
-                android:paddingTop="@dimen/_6sdp"
-                android:paddingEnd="@dimen/_10sdp"
-                android:paddingBottom="@dimen/_6sdp"
-                android:text="@string/tv_home"
-                android:textAllCaps="true"
-                android:textColor="@color/white"
-                android:textSize="@dimen/_6mdpi"
-                android:visibility="gone" />
-
-
+                android:layout_marginEnd="@dimen/_5sdp"
+                android:padding="@dimen/_4sdp"
+                android:src="@drawable/ic_lock"
+                app:tint="@color/txtColor" />
         </androidx.appcompat.widget.LinearLayoutCompat>
     </RelativeLayout>
 </layout>

@@ -150,7 +150,6 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
     //created By Zeeshaan
     private fun setUpToolbar() {
         binding.layoutHeader.txtKeypad.setTextColor(requireContext().resources.getColor(R.color.btnColor))
-        binding.layoutHeader.txtHome.visibility = View.VISIBLE
         binding.layoutHeader.txtTransaction.setOnClickListener {
             if (rolePermission.hasTransactionPermission(binding.root)) {
                 findNavController().navigate(R.id.action_manualSalesNew_to_transactionFragment)
@@ -636,6 +635,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                                     binding.txtSubTotal.text = "$0.00"
                                     binding.txtTotalTax.text = "$0.00"
                                     binding.txtServiceCharge.text = "$0.00"
+                                    clearCustomer()
 
                                 }
                                 negativeButton(R.string.tv_cancel) {
@@ -972,7 +972,8 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
         setFragmentResultListener("request_key_discount_order") { _: String, bundle: Bundle ->
             val result = bundle.getParcelable<TbDiscount>("data")
             val value = bundle.getDouble("value")
-            if (result != null && viewModel.totalPrice != 0.0) {
+            if (result != null /*&& viewModel.totalPrice != 0.0*/) {
+
                 orderDiscount = result.percentage
 
                 val discountApplyPrice = viewModel.totalPrice

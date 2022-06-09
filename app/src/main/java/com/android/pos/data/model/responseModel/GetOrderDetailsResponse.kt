@@ -27,7 +27,7 @@ data class GetOrderDetailsResponse(
         @SerializedName("customer_id")
         val customerId: Int,
         @SerializedName("date")
-        val date: String,
+        val date: String?,
         @SerializedName("delivery_employee_id")
         val deliveryEmployeeId: String?,
         @SerializedName("delivery_type")
@@ -251,7 +251,7 @@ data class GetOrderDetailsResponse(
             @SerializedName("discount_id")
             val discountId: Int?,
             @SerializedName("discount_type")
-            val discountType: String,
+            val discountType: String?,
             @SerializedName("employee_id")
             val employeeId: Int,
             @SerializedName("float")
@@ -419,7 +419,7 @@ data class GetOrderDetailsResponse(
             @SerializedName("amount")
             val amount: Double,
             @SerializedName("created_at")
-            val createdAt: String,
+            val createdAt: String?,
             @SerializedName("id")
             val id: Int,
             @SerializedName("name")
@@ -431,7 +431,7 @@ data class GetOrderDetailsResponse(
             @SerializedName("service_charge_id")
             val serviceChargeId: Int,
             @SerializedName("updated_at")
-            val updatedAt: String,
+            val updatedAt: String?
             @SerializedName("min_guest_count")
             val min_guest_count: Int?=null,
             @SerializedName("max_guest_count")

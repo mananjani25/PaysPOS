@@ -956,7 +956,9 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
             Log.e(TAG, "PrinterException: " + e.message)
             printer = null
             viewModel.downloadFinished(false)
-            findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
+            if (findNavController().currentDestination?.id==R.id.dashboardCategoryBoldPOS){
+                findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
+            }
 
         }
 

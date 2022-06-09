@@ -215,7 +215,7 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
             orderTypeId = order.orderTypeId
             orderType = order.orderType
             orderTypeName = order.orderType
-            futureDeliveryDate = order.date
+            futureDeliveryDate = order.date.toString()
             isOpenOrder = false
             serviceCharge = serviceChargesList(order)
             customer = assignCustomer(order)
@@ -236,7 +236,7 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
 
         order.orderServiceCharges.forEach {
             val serviceCharge = TbServiceCharge(
-                it.createdAt,
+                it.createdAt.toString(),
                 it.serviceChargeId,
                 true,
                 order.locationId,
@@ -245,7 +245,7 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
                 it.name,
                 it.order_type,
                 it.rate,
-                it.updatedAt,
+                it.updatedAt.toString(),
                 isActive = false,
                 isChecked = true,
                 order_service_charge_id = it.id
@@ -326,7 +326,7 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
                 modifier_set_ids = modifiersIds(it.orderItemModifiers)
                 modifiers = modifierSets(it.orderItemModifiers)
                 discountPrice = it.discountAmount
-                discountType = it.discountType
+                discountType = it.discountType.toString()
                 if (it.discountId != null)
                     discountId = it.discountId
                 if (it.order_item_variation != null)

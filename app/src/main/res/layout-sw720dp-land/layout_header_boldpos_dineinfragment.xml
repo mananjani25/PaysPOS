@@ -64,6 +64,7 @@
                 android:layout_marginLeft="@dimen/_10sdp"
                 android:background="?attr/selectableItemBackground"
                 android:padding="@dimen/_5sdp"
+                android:visibility="gone"
                 android:text="dine in orders"
                 android:textAllCaps="true"
                 android:textColor="@color/btnColor"

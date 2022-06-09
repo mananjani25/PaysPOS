@@ -143,7 +143,7 @@
                         </androidx.appcompat.widget.LinearLayoutCompat>
 
 
-                        <androidx.appcompat.widget.LinearLayoutCompat
+                        <FrameLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:orientation="horizontal"
@@ -158,7 +158,8 @@
                                 android:layout_height="wrap_content"
                                 android:background="@null"
                                 android:digits="0123456789."
-                                android:hint="0.00%"
+                                android:hint="0.00"
+
                                 android:imeOptions="actionNext"
                                 android:maxLength="6"
                                 android:inputType="textVisiblePassword"
@@ -168,12 +169,23 @@
                                 android:textColorHint="@color/hintColor"
                                 android:textSize="@dimen/_7mdpi"
                                 />
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:textSize="@dimen/_7sdp"
+                                android:textStyle="bold"
+                                android:fontFamily="@font/sf_pro_display_bold"
+                                android:layout_gravity="center_vertical"
+                                android:layout_marginLeft="@dimen/_32sdp"
+                                android:textColor="@color/dark_gray"
+                                android:text="@string/percentage_symbol"
+                                android:layout_height="wrap_content"/>
 
 
 
 
 
                         </androidx.appcompat.widget.LinearLayoutCompat>
+                        </FrameLayout>
 
 
                         <androidx.appcompat.widget.LinearLayoutCompat

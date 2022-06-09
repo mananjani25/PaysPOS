@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.android.pos.data.entities.Employee
 import com.android.pos.data.model.responseModel.EodReportResponse
+import com.android.pos.data.model.responseModel.PrinterResponse
 import com.android.pos.data.model.responseModel.report.Terminal
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.repositories.PosRepository
@@ -46,6 +47,12 @@ class ReportEODViewModel @Inject constructor(
 
     fun getEmployeeEmail(emp_id:Int): LiveData<Resource<Employee>> {
         return posRepository.getEmployeeEmail(emp_id)
+    }
+
+    fun getEODReportSettings() = posRepository.getEodReportSettings()
+
+    fun getCustomerPrinterList(): LiveData<Resource<List<PrinterResponse.Data.CustomerReceiptPrinters>>> {
+        return posRepository.getCustomerPrinters()
     }
 
 
