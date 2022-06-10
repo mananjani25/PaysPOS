@@ -25,10 +25,13 @@ import com.android.pos.data.remote.Constants
 import com.android.pos.databinding.FragmentTransactionDetailsBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.adapter.OrderDetailsItemListAdapter
+import com.android.pos.ui.adapter.boldpos.TaxBirfurcationAdapter
 import com.android.pos.utils.*
 import com.android.pos.utils.TimeFormatUtils.convertCurrentDate
 import com.android.pos.utils.TimeFormatUtils.convertCurrentTime
+import com.android.pos.utils.extensions.gone
 import com.android.pos.utils.extensions.liveSnackBar
+import com.android.pos.utils.extensions.visible
 import com.android.pos.utils.printer.PrinterClass
 import com.android.pos.utils.statusUtils.Status
 import com.epson.eposprint.Builder
@@ -47,8 +50,9 @@ class TransactionDetailsFragment : Fragment() {
     private val viewModel by viewModels<TransactionDetailsViewModel>()
 
     private lateinit var orderDetailsItemAdapter: OrderDetailsItemListAdapter
+    private lateinit var taxBirfurcationAdapter: TaxBirfurcationAdapter
     private var orderIDglobal = 0
-
+    var taxClickable = false
     //    private lateinit var orderDetailsResponse: GetOrderDetailsResponse
     private var customerSettingModel = GetCustomerReceiptSettingsResponse.Data()
     private lateinit var paymentDetailsResponse: GetPaymentOrderDetailsResponse
@@ -114,6 +118,9 @@ class TransactionDetailsFragment : Fragment() {
     private fun setUpRecyclerView() {
         orderDetailsItemAdapter = OrderDetailsItemListAdapter()
         binding.rvOrderItems.adapter = orderDetailsItemAdapter
+
+        taxBirfurcationAdapter = TaxBirfurcationAdapter()
+        binding.rvTax.adapter = taxBirfurcationAdapter
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -140,7 +147,21 @@ class TransactionDetailsFragment : Fragment() {
             //getCustomerPrinters()
 
         }
+        binding.linearTaxDetail.setOnClickListener {
+            if(taxBirfurcationAdapter.taxlist.size>0){
+                if (!taxClickable) {
+                    Log.d(TAG, "onViewCreated: " + taxBirfurcationAdapter.taxlist.size)
+                    taxClickable = true
+                    binding.imgDropdown.setImageResource(R.drawable.ic_solid_up_arrow)
+                    binding.relativeDynamicTax.visible()
+                } else {
+                    taxClickable = false
+                    binding.imgDropdown.setImageResource(R.drawable.ic_arrow_drop_down)
+                    binding.relativeDynamicTax.gone()
+                }
+            }
 
+        }
         binding.tvIssueRefund.setOnClickListener {
             val bundle = Bundle().apply {
                 paymentDetailsResponse.data.order.order_items.forEach {
@@ -1278,7 +1299,7 @@ class TransactionDetailsFragment : Fragment() {
             builder.addText(
                 padLine(
                     "Transaction ID",
-                    ""+paymentDetailsResponse.data.id,
+                    "" + paymentDetailsResponse.data.id,
                     if (customerSettingModel.fonts == Constants.LARGE) {
                         24
                     } else {
