@@ -71,13 +71,7 @@ class CreateServiceChargeViewModel @Inject constructor(
 
     fun submit() {
         val value = createServiceChargeDetails.value
-        if (isfrom == "dinein") {
-            if (value?.min_guest_count == 0) {
-                _snackbarText.value = Event(R.string.minguest_valiidation)
-            } else if (value?.max_guest_count == 0) {
-                _snackbarText.value = Event(R.string.maxguest_valiidation)
-            }
-        }
+
         if (TextUtils.isEmpty(value?.name?.trim())) {
             _snackbarText.value = Event(R.string.sercharge_name_validate)
         } else if (TextUtils.isEmpty(
@@ -86,6 +80,10 @@ class CreateServiceChargeViewModel @Inject constructor(
             || value?.percentage == 0.0
         ) {
             _snackbarText.value = Event(R.string.sercharge_rate_validate)
+        } else if (value?.min_guest_count == 0 && isfrom == "dinein") {
+            _snackbarText.value = Event(R.string.minguest_valiidation)
+        } else if (value?.max_guest_count == 0 && isfrom == "dinein") {
+            _snackbarText.value = Event(R.string.maxguest_valiidation)
         } else {
             _showProgress.value = Event(true)
 
@@ -97,7 +95,7 @@ class CreateServiceChargeViewModel @Inject constructor(
                         isEnabled = enableSerChargeViewModel
                         locationId = prefProvider.getValueInt(LOCATION_ID, -1)
                         min_guest_count = value.min_guest_count
-                        max_guest_count =value.max_guest_count
+                        max_guest_count = value.max_guest_count
                         order_type = value.order_type
                     }
                 }
@@ -109,7 +107,7 @@ class CreateServiceChargeViewModel @Inject constructor(
                         isEnabled = enableSerChargeViewModel
                         locationId = prefProvider.getValueInt(LOCATION_ID, -1)
                         min_guest_count = value.min_guest_count
-                        max_guest_count =value.max_guest_count
+                        max_guest_count = value.max_guest_count
                         order_type = value.order_type
                     }
                 }

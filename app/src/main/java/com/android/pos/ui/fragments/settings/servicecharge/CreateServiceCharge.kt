@@ -58,7 +58,7 @@ class CreateServiceCharge : Fragment() {
             binding.header.txtTitle.text = getString(R.string.update_service_charge)
             serviceChargeData = arguments?.getParcelable("serviceChargeObject")!!
             binding.editPercentage.setText(String.format("%.2f", serviceChargeData.percentage))
-            if(isfrom =="dinein"){
+            if (isfrom == "dinein") {
                 binding.editMinguest.setText(serviceChargeData.min_guest_count.toString())
                 binding.editMaxguest.setText(serviceChargeData.max_guest_count.toString())
             }
@@ -66,7 +66,9 @@ class CreateServiceCharge : Fragment() {
 
             binding.swtEnableCharge.isChecked = serviceChargeData.isEnabled
 
-            viewModel.isEditData(isEdit, serviceChargeData.id,isfrom)
+            viewModel.isEditData(isEdit, serviceChargeData.id, isfrom)
+        }else{
+            viewModel.isEditData(false, -1, isfrom)
         }
 
         setupSnackbar()
@@ -107,10 +109,18 @@ class CreateServiceCharge : Fragment() {
             }
             viewModel.createServiceChargeDetails.value?.percentage = subPer.toDouble()
             if (isfrom == "dinein") {
-                viewModel.createServiceChargeDetails.value?.min_guest_count =
-                    binding.editMinguest?.text.toString().toInt()
-                viewModel.createServiceChargeDetails.value?.max_guest_count =
-                    binding.editMaxguest?.text.toString().toInt()
+                if (binding.editMinguest.text?.isNotEmpty() == true) {
+                    viewModel.createServiceChargeDetails.value?.min_guest_count =
+                        binding.editMinguest?.text.toString().toInt()
+                } else {
+                    viewModel.createServiceChargeDetails.value?.min_guest_count = 0
+                }
+                if (binding.editMaxguest?.text?.isNotEmpty() == true) {
+                    viewModel.createServiceChargeDetails.value?.max_guest_count =
+                        binding.editMaxguest?.text.toString().toInt()
+                } else {
+                    viewModel.createServiceChargeDetails.value?.max_guest_count = 0
+                }
                 viewModel.createServiceChargeDetails.value?.order_type = "DineIn"
             } else {
                 viewModel.createServiceChargeDetails.value?.order_type = "TakeOutAndParkOrder"
