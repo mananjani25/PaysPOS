@@ -246,7 +246,7 @@ class CartFragment(
                             resources.getDimension(R.dimen._70sdp).toInt()
                     } else {
                         binding.liinearInfoLayout.layoutParams.height =
-                            resources.getDimension(R.dimen._80sdp).toInt()
+                            resources.getDimension(R.dimen._95sdp).toInt()
                     }
                     binding.imgDropdown.setImageResource(R.drawable.ic_solid_up_arrow)
                     binding.relativeDynamicTax.visible()

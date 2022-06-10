@@ -167,10 +167,13 @@
                     android:orientation="horizontal"
                     android:weightSum="2">
 
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
+                    <ScrollView
+                        android:layout_width="match_parent"
                         android:layout_weight="1"
+                        android:layout_height="wrap_content">
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
                         android:orientation="vertical">
                         <androidx.appcompat.widget.LinearLayoutCompat
                             android:id="@+id/relative_order_notes"
@@ -340,7 +343,7 @@
 
 
                     </LinearLayout>
-
+                    </ScrollView>
 
                     <View
                         android:layout_width="1dp"

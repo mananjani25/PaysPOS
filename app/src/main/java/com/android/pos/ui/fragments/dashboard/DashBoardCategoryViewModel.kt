@@ -70,7 +70,6 @@ import java.util.*
 import javax.inject.Inject
 import kotlin.collections.ArrayList
 import kotlin.collections.set
-import kotlin.math.log
 
 
 @HiltViewModel
@@ -415,7 +414,7 @@ class DashBoardCategoryViewModel @Inject constructor(
         if (cartList != null && cartList.isEmpty()) {
             // empty cart hoy to new cart create kare
             var cartModel = item?.let { addCartModel(it, isManualSales) }
-            cartModel = taxBifurcationCalculation(item!!, cartModel!!)
+            cartModel = taxBifurcationCalculation(item!!, cartModel!!, type)
             if (cartModel != null) {
                 addCart(cartModel)
             }
@@ -713,7 +712,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                     }
 
                     var cartModel = cartList[0]
-                    cartModel = taxBifurcationCalculation(item!!, cartModel!!)
+                    cartModel = taxBifurcationCalculation(item!!, cartModel!!, type)
                     cartModel.items = list
                     addCart(cartModel)
                     if (list.isEmpty()) {
@@ -728,7 +727,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                         Log.e(TAG, "AddedListNull")
                         var cartModel = cartList?.get(0)
-                        cartModel = taxBifurcationCalculation(item!!, cartModel!!)
+                        cartModel = taxBifurcationCalculation(item!!, cartModel!!, type)
                         if (item != null)
                             cartModel?.items = listOf(item)
                         if (cartModel != null) {
@@ -1483,7 +1482,7 @@ class DashBoardCategoryViewModel @Inject constructor(
     }
 
 
-    private fun getTotalTaxBirfurcation(item: TbItem, itemtype: TaxData): Double {
+    private fun getTotalTaxBirfurcation(item: TbItem, itemtype: TaxData, type: String): Double {
         var totaltaxtemp: Double = 0.0
         var modifierPrice = 0.0
         val price =
@@ -1524,7 +1523,11 @@ class DashBoardCategoryViewModel @Inject constructor(
         return totaltaxtemp
     }
 
-    private fun taxBifurcationCalculation(item: TbItem, cartModel: CartModel): CartModel {
+    private fun taxBifurcationCalculation(
+        item: TbItem,
+        cartModel: CartModel,
+        type: String
+    ): CartModel {
         item.taxes?.forEachIndexed { indextax, itemtype ->
             if (itemtype.isActive) {
                 if (cartModel.taxlistDynamic?.isNotEmpty() == true) {
@@ -1549,7 +1552,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 price + modifierPrice
                             itemtype.subTotalAmount = itemtype.subTotalAmount?.plus(totalPrice)
                         }
-                        itemtype.totalTaxTypePrice = getTotalTaxBirfurcation(item, itemtype)
+                        itemtype.totalTaxTypePrice = getTotalTaxBirfurcation(item, itemtype, type)
                         cartModel.taxlistDynamic =
                             concatenate(cartModel.taxlistDynamic!!, listOf(itemtype))
                     } else {
@@ -1566,13 +1569,26 @@ class DashBoardCategoryViewModel @Inject constructor(
                             cartModel.taxlistDynamic!![found].subTotalAmount =
                                 cartModel.taxlistDynamic!![found].subTotalAmount?.plus(totalPrice)
                         }
-                        cartModel.taxlistDynamic?.get(found)?.totalTaxTypePrice =
-                            cartModel.taxlistDynamic!![found].totalTaxTypePrice?.plus(
-                                getTotalTaxBirfurcation(
-                                    item,
-                                    itemtype
+                        if (type == ADD||type== UPDATE) {
+                            cartModel.taxlistDynamic?.get(found)?.totalTaxTypePrice =
+                                cartModel.taxlistDynamic!![found].totalTaxTypePrice?.plus(
+                                    getTotalTaxBirfurcation(
+                                        item,
+                                        itemtype,
+                                        type
+                                    )
                                 )
-                            )
+                        } else if (type == DELETE) {
+                            cartModel.taxlistDynamic?.get(found)?.totalTaxTypePrice =
+                                cartModel.taxlistDynamic?.get(found)?.totalTaxTypePrice?.minus(
+                                    getTotalTaxBirfurcation(
+                                        item,
+                                        itemtype,
+                                        type
+                                    )
+                                )!!
+                        }
+
                     }
                 } else {
                     if (itemtype.taxType != "Percentage") {
@@ -1588,7 +1604,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                             price + modifierPrice
                         itemtype.subTotalAmount = itemtype.subTotalAmount?.plus(totalPrice)
                     }
-                    itemtype.totalTaxTypePrice = getTotalTaxBirfurcation(item, itemtype)
+                    itemtype.totalTaxTypePrice = getTotalTaxBirfurcation(item, itemtype, type)
                     cartModel.taxlistDynamic = listOf(itemtype)
                 }
             }
