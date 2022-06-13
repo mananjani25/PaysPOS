@@ -1214,12 +1214,25 @@ class CheckoutDineInPaymentViewModel @Inject constructor(
     fun isInRange(minn: Int, maxx: Int, value: Int): Boolean {
         return (minn <= value && value <= maxx)
     }
-
+    fun checkMaxGuestCountId(): Int {
+        var maxValue = 0
+        var serviceChargeId = 0
+        serviceChargesList.forEach { serviceCharge ->
+            if (serviceCharge.order_type == Constants.SERVICECHARGE_DINEIN_ORDER) {
+                if (serviceCharge.max_guest_count!! >= maxValue) {
+                    maxValue = serviceCharge.max_guest_count
+                    serviceChargeId = serviceCharge.id
+                }
+            }
+        }
+        return serviceChargeId
+    }
     private fun calculateDineInServiceCharge(cartModel: CartModel) {
         var guestCount = cartModel.dineInList?.size?.minus(1)
         if (serviceChargesList.isNotEmpty() && serviceChargesList != null) {
             Log.e(TAG, "dashboardserviceChargesList:  ${Gson().toJson(serviceChargesList)}")
             if (prefProvider.getValueboolean(Constants.SERVICECHARGE_DINEIN_ORDER, false)) {
+                var isApplied = false
                 serviceChargesList.forEach {
                     if (it.order_type == Constants.SERVICECHARGE_DINEIN_ORDER) {
                         if (isInRange(
@@ -1228,11 +1241,21 @@ class CheckoutDineInPaymentViewModel @Inject constructor(
                                 guestCount!!
                             )
                         ) {
+                            isApplied = true
                             totalServiceCharge += (subTotalPrice * it.percentage) / 100
+                            return@forEach
                             Log.d(
                                 TAG,
                                 "calculateDineInServiceCharge: Checkout " + it.min_guest_count + "....." + it.max_guest_count + " in between " + guestCount
                             )
+                        }
+                    }
+                }
+                if (!isApplied) {
+                    serviceChargesList.forEach { service ->
+                        if (service.id == checkMaxGuestCountId()) {
+                            totalServiceCharge += (subTotalPrice * service.percentage) / 100
+                            return@forEach
                         }
                     }
                 }

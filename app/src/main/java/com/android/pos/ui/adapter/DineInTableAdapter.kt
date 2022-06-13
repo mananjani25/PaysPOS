@@ -57,9 +57,7 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
 
     }
-    fun isInRange(minn: Int, maxx: Int, value: Int): Boolean {
-        return (minn <= value && value <= maxx)
-    }
+
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
 
@@ -226,7 +224,8 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
 
             if (serviceChargeList?.isNotEmpty() == true) {
-                serviceChargeList?.forEach {
+                var isApplied = false
+                serviceChargeList.forEach {
                     if (it.order_type == Constants.SERVICECHARGE_DINEIN_ORDER) {
                         if (isInRange(
                                 it.min_guest_count!!,
@@ -234,7 +233,9 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                                 list.get(0).totalGuestCount
                             )
                         ) {
+                            isApplied =true
                             totalServiceCharge += (guestSubTotal * it.percentage) / 100
+                            return@forEach
                             Log.d(
                                 TAG,
                                 "calculateDineInServiceCharge: Dinein " + it.min_guest_count + "....." + it.max_guest_count + " in between " + list.get(0).totalGuestCount
@@ -242,6 +243,14 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                         }
                     }
 
+                }
+                if (!isApplied) {
+                    serviceChargeList.forEach { service ->
+                        if (service.id == checkMaxGuestCountId()) {
+                            totalServiceCharge += (guestSubTotal * service.percentage) / 100
+                            return@forEach
+                        }
+                    }
                 }
 
 
@@ -443,6 +452,19 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
         fun isInRange(minn: Int, maxx: Int, value: Int): Boolean {
             return (minn <= value && value <= maxx)
+        }
+        fun checkMaxGuestCountId(): Int {
+            var maxValue = 0
+            var serviceChargeId = 0
+            serviceChargeList.forEach { serviceCharge ->
+                if (serviceCharge.order_type == Constants.SERVICECHARGE_DINEIN_ORDER) {
+                    if (serviceCharge.max_guest_count!! >= maxValue) {
+                        maxValue = serviceCharge.max_guest_count
+                        serviceChargeId = serviceCharge.id
+                    }
+                }
+            }
+            return serviceChargeId
         }
     }
 

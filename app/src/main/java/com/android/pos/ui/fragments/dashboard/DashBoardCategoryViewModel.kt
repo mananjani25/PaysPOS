@@ -983,7 +983,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                 calculateDineInServiceCharge(cartList[0])
                 subTotalPrice -= (cartList[0].discountPrice)
 
-                if (subTotalPrice < 0){
+                if (subTotalPrice < 0) {
                     subTotalPrice = 0.0
                 }
 
@@ -1025,7 +1025,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                     serviceChargeCalculation(cartList)
                     subTotalPrice -= cartList[0].discountPrice
 
-                    if (subTotalPrice < 0){
+                    if (subTotalPrice < 0) {
                         subTotalPrice = 0.0
                     }
 
@@ -1133,7 +1133,7 @@ class DashBoardCategoryViewModel @Inject constructor(
             calculateDineInServiceCharge(cartModel)
 //            serviceChargeCalculationModel(cartModel)
             subTotalPrice -= cartModel.discountPrice
-            if (subTotalPrice < 0){
+            if (subTotalPrice < 0) {
                 subTotalPrice = 0.0
             }
 
@@ -1218,7 +1218,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                     serviceChargeCalculationModel(cartModel)
 
                     subTotalPrice -= cartModel.discountPrice
-                    if (subTotalPrice < 0){
+                    if (subTotalPrice < 0) {
                         subTotalPrice = 0.0
                     }
 
@@ -1298,7 +1298,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                     serviceChargeCalculationModel(cartModel)
 
                     subTotalPrice -= cartModel.discountPrice
-                    if (subTotalPrice < 0){
+                    if (subTotalPrice < 0) {
                         subTotalPrice = 0.0
                     }
 
@@ -1441,6 +1441,20 @@ class DashBoardCategoryViewModel @Inject constructor(
         }
     }
 
+    fun checkMaxGuestCountId(): Int {
+        var maxValue = 0
+        var serviceChargeId = 0
+        serviceChargesList.forEach { serviceCharge ->
+            if (serviceCharge.order_type == Constants.SERVICECHARGE_DINEIN_ORDER) {
+                if (serviceCharge.max_guest_count!! >= maxValue) {
+                    maxValue = serviceCharge.max_guest_count
+                    serviceChargeId = serviceCharge.id
+                }
+            }
+        }
+        return serviceChargeId
+    }
+
     fun isInRange(minn: Int, maxx: Int, value: Int): Boolean {
         return (minn <= value && value <= maxx)
     }
@@ -1450,6 +1464,7 @@ class DashBoardCategoryViewModel @Inject constructor(
         if (serviceChargesList.isNotEmpty() && serviceChargesList != null) {
             Log.e(TAG, "dashboardserviceChargesList:  ${Gson().toJson(serviceChargesList)}")
             if (prefProvider.getValueboolean(SERVICECHARGE_DINEIN_ORDER, false)) {
+                var isApplied = false
                 serviceChargesList.forEach {
                     if (it.order_type == Constants.SERVICECHARGE_DINEIN_ORDER) {
                         if (isInRange(
@@ -1458,11 +1473,21 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 guestCount!!
                             )
                         ) {
+                            isApplied = true
                             Log.d(
                                 TAG,
                                 "calculateDineInServiceCharge: DashBoard " + it.min_guest_count + "....." + it.max_guest_count + " in between " + guestCount
                             )
                             totalServiceCharge += (subTotalPrice * it.percentage) / 100
+                            return@forEach
+                        }
+                    }
+                }
+                if (!isApplied) {
+                    serviceChargesList.forEach { service ->
+                        if (service.id == checkMaxGuestCountId()) {
+                            totalServiceCharge += (subTotalPrice * service.percentage) / 100
+                            return@forEach
                         }
                     }
                 }
@@ -1774,6 +1799,46 @@ class DashBoardCategoryViewModel @Inject constructor(
     }
 
     private fun orderServiceChargesAttributes(
+        cartModel: CartModel,
+        subTotalPrice: Double
+    ): List<OrderServiceChargesAttribute> {
+        val orderServiceChargesAttributeList: ArrayList<OrderServiceChargesAttribute> =
+            arrayListOf()
+        val serviceChargesList = cartModel.serviceCharge
+        if (serviceChargesList != null && serviceChargesList.isNotEmpty()) {
+            if (prefProvider.getValueboolean(Constants.SERVICECHARGE_TAKEOUT_OPENORDER, false)) {
+                serviceChargesList.forEach {
+                    val orderServiceChargesAttribute = OrderServiceChargesAttribute()
+                    orderServiceChargesAttribute.amount =
+                        MethodUtils.roundOffAmountDouble((subTotalPrice * it.percentage) / 100)
+                    orderServiceChargesAttribute.name = it.name
+                    orderServiceChargesAttribute.rate = it.percentage
+                    orderServiceChargesAttribute.serviceChargeId = it.id
+                    orderServiceChargesAttribute.order_type = it.order_type
+                    orderServiceChargesAttribute.serviceChargeId = it.id
+                    orderServiceChargesAttributeList.add(orderServiceChargesAttribute)
+                }
+            } else if (prefProvider.getValueboolean(Constants.SERVICECHARGE_DINEIN_ORDER, false)) {
+                serviceChargesList.forEach {
+                    val orderServiceChargesAttribute = OrderServiceChargesAttribute()
+                    orderServiceChargesAttribute.amount =
+                        MethodUtils.roundOffAmountDouble((subTotalPrice * it.percentage) / 100)
+                    orderServiceChargesAttribute.name = it.name
+                    orderServiceChargesAttribute.rate = it.percentage
+                    orderServiceChargesAttribute.serviceChargeId = it.id
+                    orderServiceChargesAttribute.order_type = it.order_type
+                    orderServiceChargesAttribute.max_guest_count = it.max_guest_count
+                    orderServiceChargesAttribute.min_guest_count = it.min_guest_count
+                    orderServiceChargesAttribute.serviceChargeId = it.id
+                    orderServiceChargesAttributeList.add(orderServiceChargesAttribute)
+                }
+            }
+
+        }
+        return orderServiceChargesAttributeList
+    }
+
+    private fun orderServiceChargesDineinAttributes(
         cartModel: CartModel,
         subTotalPrice: Double
     ): List<OrderServiceChargesAttribute> {
@@ -2642,8 +2707,10 @@ class DashBoardCategoryViewModel @Inject constructor(
                                     business_name = it.data.businessName
                                     business_website = it.data.businessWebsite
                                     phone_number = it.data.phoneNumber
-                                    phone_number_1_country = it.data.phone_number_1_country.toString()
-                                    phone_number_2_country = it.data.phone_number_2_country.toString()
+                                    phone_number_1_country =
+                                        it.data.phone_number_1_country.toString()
+                                    phone_number_2_country =
+                                        it.data.phone_number_2_country.toString()
                                     phone_number_2 = it.data.phoneNumber2.toString()
                                     time_zone = it.data.business_time_zone.toString()
                                     customer_contact_email = it.data.customerContactEmail.toString()
@@ -3034,7 +3101,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                 serviceChargeCalculationModel(cartModel)
                 subTotalPrice -= cartModel.discountPrice
 
-                if (subTotalPrice < 0){
+                if (subTotalPrice < 0) {
                     subTotalPrice = 0.0
                 }
 

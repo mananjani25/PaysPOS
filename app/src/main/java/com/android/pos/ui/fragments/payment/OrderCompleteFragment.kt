@@ -23,6 +23,7 @@ import com.android.pos.R
 import com.android.pos.data.entities.CartModel
 import com.android.pos.data.entities.RedeemLoyaltyInfo
 import com.android.pos.data.entities.TbItem
+import com.android.pos.data.entities.TbServiceCharge
 import com.android.pos.data.model.DineInModel
 import com.android.pos.data.model.GuestDataModel
 import com.android.pos.data.model.SplitBundleModel
@@ -1044,13 +1045,25 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
 
         if (prefProvider.getValueboolean(SERVICECHARGE_DINEIN_ORDER, false)) {
+            var isApplied = false
             dineInList.get(0).serviceChargeList?.forEach {
                 if (it.order_type == SERVICECHARGE_DINEIN_ORDER) {
                     if (isInRange(it.min_guest_count!!, it.max_guest_count!!, guestCount)) {
                         guestServiceCharge += (guestSubTotal * it.percentage) / 100
+                        isApplied =true
+                        return@forEach
                     }
                 }
             }
+            if (!isApplied) {
+                dineInList.get(0).serviceChargeList?.forEach { service ->
+                    if (service.id == checkMaxGuestCountId(dineInList.get(0).serviceChargeList!!)) {
+                        guestServiceCharge += (guestSubTotal * service.percentage) / 100
+                        return@forEach
+                    }
+                }
+            }
+
         }
 
 
@@ -2167,7 +2180,19 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
     fun isInRange(minn: Int, maxx: Int, value: Int): Boolean {
         return (minn <= value && value <= maxx)
     }
-
+    fun checkMaxGuestCountId(serviceChargeList: ArrayList<TbServiceCharge>): Int {
+        var maxValue = 0
+        var serviceChargeId = 0
+        serviceChargeList.forEach { serviceCharge ->
+            if (serviceCharge.order_type == Constants.SERVICECHARGE_DINEIN_ORDER) {
+                if (serviceCharge.max_guest_count!! >= maxValue) {
+                    maxValue = serviceCharge.max_guest_count
+                    serviceChargeId = serviceCharge.id
+                }
+            }
+        }
+        return serviceChargeId
+    }
     private fun generateDineInPrint(
         customerReceiptPrinters: PrinterResponse.Data.CustomerReceiptPrinters,
         type: String,

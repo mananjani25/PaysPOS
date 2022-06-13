@@ -960,10 +960,12 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
         var divideDiscount = divideDiscount2
         Log.e("WholeTabDis", "Fasf  ${wholeTableDiscount}")
-        var dividedWtDis: Double = MethodUtils.roundOffAmountDouble(wholeTableDiscount / (getOrderDetailsResponse?.guestAttributes?.size?.minus(1)!!))
+        var dividedWtDis: Double = MethodUtils.roundOffAmountDouble(
+            wholeTableDiscount / (getOrderDetailsResponse?.guestAttributes?.size?.minus(1)!!)
+        )
 
         divideDiscount += dividedWtDis
-        Log.e("saff","afadivideDiscount ${divideDiscount}")
+        Log.e("saff", "afadivideDiscount ${divideDiscount}")
 
         Log.e("TODAYBOLD", "subTotalB  ${subTotalGuest + dividedGuestAmt}")
         Log.e("TODAYBOLD", "totalGuest ${totalGuest}")
@@ -1161,7 +1163,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
             if (serviceChargeList?.isNotEmpty() == true) {
                 Log.e("AajeChange", "serviceChargeList:  ${Gson().toJson(serviceChargeList)}")
-                serviceChargeList?.forEach {
+                var isApplied = false
+                serviceChargeList.forEach {
                     if (prefProvider.getValueboolean(Constants.SERVICECHARGE_DINEIN_ORDER, false)) {
                         if (it.order_type == Constants.SERVICECHARGE_DINEIN_ORDER) {
                             if (isInRange(
@@ -1174,8 +1177,18 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                                     TAG,
                                     "calculateDineInServiceCharge: DashBoard " + it.min_guest_count + "....." + it.max_guest_count + " in between " + totalGuestCount
                                 )
+                                isApplied = true
                                 serviceCharge += MethodUtils.roundOffAmountDouble((wholeNewSubtotal * it.percentage) / 100)
+                                return@forEach
                             }
+                        }
+                    }
+                }
+                if (!isApplied) {
+                    serviceChargeList.forEach { service ->
+                        if (service.id == checkMaxGuestCountId(serviceChargeList)) {
+                            serviceCharge += MethodUtils.roundOffAmountDouble((wholeNewSubtotal * service.percentage) / 100)
+                            return@forEach
                         }
                     }
                 }
@@ -1325,6 +1338,20 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         )
 
 
+    }
+
+    fun checkMaxGuestCountId(serviceChargeList: ArrayList<TbServiceCharge>): Int {
+        var maxValue = 0
+        var serviceChargeId = 0
+        serviceChargeList.forEach { serviceCharge ->
+            if (serviceCharge.order_type == Constants.SERVICECHARGE_DINEIN_ORDER) {
+                if (serviceCharge.max_guest_count!! >= maxValue) {
+                    maxValue = serviceCharge.max_guest_count
+                    serviceChargeId = serviceCharge.id
+                }
+            }
+        }
+        return serviceChargeId
     }
 
     fun isInRange(minn: Int, maxx: Int, value: Int): Boolean {
@@ -1802,6 +1829,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                                                 false
                                             )
                                         ) {
+                                            var isApplied = false
                                             serviceChargeList.forEach {
                                                 if (it.order_type == Constants.SERVICECHARGE_DINEIN_ORDER) {
                                                     if (isInRange(
@@ -1810,7 +1838,17 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                                                             baseResponse.guestAttributes.size - 1
                                                         )
                                                     ) {
+                                                        isApplied = true
                                                         serviceChargeWT += (subTotalWT * it.percentage) / 100
+                                                        return@forEach
+                                                    }
+                                                }
+                                            }
+                                            if (!isApplied) {
+                                                serviceChargeList.forEach { service ->
+                                                    if (service.id == checkMaxGuestCountId(serviceChargeList)) {
+                                                        serviceChargeWT += (subTotalWT * service.percentage) / 100
+                                                        return@forEach
                                                     }
                                                 }
                                             }
@@ -1847,6 +1885,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     }
                     totalServiceChargeAmount = 0.0
                     if (prefProvider.getValueboolean(Constants.SERVICECHARGE_DINEIN_ORDER, false)) {
+                        var isApplied = false
                         serviceChargeList.forEach {
                             if (it.order_type == Constants.SERVICECHARGE_DINEIN_ORDER) {
                                 if (isInRange(
@@ -1861,7 +1900,17 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                                             1
                                         )
                                     )
+                                    isApplied = true
                                     totalServiceChargeAmount += (totalSubTotal * it.percentage) / 100
+                                    return@forEach
+                                }
+                            }
+                        }
+                        if (!isApplied) {
+                            serviceChargeList.forEach { service ->
+                                if (service.id == checkMaxGuestCountId(serviceChargeList)) {
+                                    totalServiceChargeAmount += (totalSubTotal * service.percentage) / 100
+                                    return@forEach
                                 }
                             }
                         }
@@ -1946,6 +1995,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                                     false
                                 )
                             ) {
+                                var isApplied = false
                                 serviceChargeList.forEach {
                                     if (it.order_type == Constants.SERVICECHARGE_DINEIN_ORDER) {
                                         if (isInRange(
@@ -1954,10 +2004,20 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                                                 totalGuestCount
                                             )
                                         ) {
+                                            isApplied = true
                                             tempServicecharge += (subTotalDInin * it.percentage) / 100
+                                            return@forEach
                                         }
                                     }
 
+                                }
+                                if (!isApplied) {
+                                    serviceChargeList.forEach { service ->
+                                        if (service.id == checkMaxGuestCountId(serviceChargeList)) {
+                                            tempServicecharge += (subTotalDInin * service.percentage) / 100
+                                            return@forEach
+                                        }
+                                    }
                                 }
 
                             }
@@ -2171,12 +2231,6 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                         }
 
                         serviceCharge = 0.0
-//                        var tmpSubTotal = subTotalWT - itemsDiscount
-//                        serviceChargeList.forEach {
-//                            if (it.isEnabled) {
-//                                serviceCharge += (tmpSubTotal * it.percentage) / 100
-//                            }
-//                        }
 
                         totalPay += fullAmt
 
@@ -2364,8 +2418,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                         }
                     }
                     if (serviceChargeList?.isNotEmpty() == true) {
-
-                        serviceChargeList?.forEach {
+                        var isApplied = false
+                        serviceChargeList.forEach {
                             if (prefProvider.getValueboolean(
                                     Constants.SERVICECHARGE_DINEIN_ORDER,
                                     false
@@ -2378,6 +2432,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                                             baseResponse.guestAttributes.size - 1
                                         )
                                     ) {
+                                        isApplied = true
                                         Log.d(
                                             TAG,
                                             "calculateDineInServiceCharge: DashBoard " + it.min_guest_count + "....." + it.max_guest_count + " in between " + baseResponse.guestAttributes.size.minus(
@@ -2385,7 +2440,16 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                                             )
                                         )
                                         WTServiceCharge += ((WTSubTotal - WTSubTotalDiscountPrice) * it.percentage) / 100
+                                        return@forEach
                                     }
+                                }
+                            }
+                        }
+                        if (!isApplied) {
+                            serviceChargeList.forEach { service ->
+                                if (service.id == checkMaxGuestCountId(serviceChargeList)) {
+                                    WTServiceCharge += ((WTSubTotal - WTSubTotalDiscountPrice) * service.percentage) / 100
+                                    return@forEach
                                 }
                             }
                         }
@@ -2638,6 +2702,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                         }
 
                         if (dineInList[0].serviceChargeList?.isNotEmpty() == true) {
+                            var isApplied = false
                             dineInList[0].serviceChargeList?.forEach {
                                 if (prefProvider.getValueboolean(
                                         Constants.SERVICECHARGE_DINEIN_ORDER,
@@ -2651,6 +2716,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                                                 baseResponse.guestAttributes.size - 1
                                             )
                                         ) {
+                                            isApplied = true
                                             Log.d(
                                                 TAG,
                                                 "calculateDineInServiceCharge: DashBoard " + it.min_guest_count + "....." + it.max_guest_count + " in between " + baseResponse.guestAttributes.size.minus(
@@ -2658,7 +2724,16 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                                                 )
                                             )
                                             serviceChargeGu += (guestSubTotal * it.percentage) / 100
+                                            return@forEach
                                         }
+                                    }
+                                }
+                            }
+                            if (!isApplied) {
+                                dineInList[0].serviceChargeList?.forEach { service ->
+                                    if (service.id == checkMaxGuestCountId(dineInList[0].serviceChargeList!!)) {
+                                        serviceChargeGu += (guestSubTotal * service.percentage) / 100
+                                        return@forEach
                                     }
                                 }
                             }
@@ -2695,6 +2770,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                             myShare -= WTServiceCharge / totalG * unpaidCount
                         } else {
                             if (dineInList[0].serviceChargeList?.isNotEmpty() == true) {
+                                var isApplied = false
                                 dineInList[0].serviceChargeList?.forEach {
                                     if (prefProvider.getValueboolean(
                                             Constants.SERVICECHARGE_DINEIN_ORDER,
@@ -2708,6 +2784,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                                                     baseResponse.guestAttributes.size - 1
                                                 )
                                             ) {
+                                                isApplied = true
                                                 Log.d(
                                                     TAG,
                                                     "calculateDineInServiceCharge: DashBoard " + it.min_guest_count + "....." + it.max_guest_count + " in between " + baseResponse.guestAttributes.size.minus(
@@ -2715,7 +2792,16 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                                                     )
                                                 )
                                                 serviceCharge += (subTotalDInin * it.percentage) / 100
+                                                return@forEach
                                             }
+                                        }
+                                    }
+                                }
+                                if (!isApplied) {
+                                    dineInList[0].serviceChargeList?.forEach { service ->
+                                        if (service.id == checkMaxGuestCountId(dineInList[0].serviceChargeList!!)) {
+                                            serviceCharge += (subTotalDInin * service.percentage) / 100
+                                            return@forEach
                                         }
                                     }
                                 }
@@ -2936,8 +3022,9 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             }
 
         }
-        if (serviceChargeList?.isNotEmpty() == true) {
-            serviceChargeList?.forEach {
+        if (serviceChargeList.isNotEmpty() == true) {
+            var isApplied = false
+            serviceChargeList.forEach {
                 if (prefProvider.getValueboolean(
                         Constants.SERVICECHARGE_DINEIN_ORDER,
                         false
@@ -2950,12 +3037,22 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                                 (guestCount - 1)
                             )
                         ) {
+                            isApplied = true
                             Log.d(
                                 TAG,
                                 "calculateDineInServiceCharge: DashBoard " + it.min_guest_count + "....." + it.max_guest_count + " in between " + (guestCount - 1)
                             )
                             WTServiceCharge += (wholeTableAmt * it.percentage) / 100
+                            return@forEach
                         }
+                    }
+                }
+            }
+            if (!isApplied) {
+                serviceChargeList.forEach { service ->
+                    if (service.id == checkMaxGuestCountId(serviceChargeList)) {
+                        WTServiceCharge += (wholeTableAmt * service.percentage) / 100
+                        return@forEach
                     }
                 }
             }
@@ -3430,7 +3527,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         )
 
         if (prefProvider.getValueboolean(SERVICECHARGE_DINEIN_ORDER, false)) {
-
+            var isApplied = false
             serviceChargeList.forEach {
 
                 if (it.order_type == Constants.SERVICECHARGE_DINEIN_ORDER) {
@@ -3440,10 +3537,20 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                             guestCount
                         )
                     ) {
+                        isApplied = true
                         guestServiceCharge += (guestSubTotal * it.percentage) / 100
+                        return@forEach
                     }
                 }
 
+            }
+            if (!isApplied) {
+                serviceChargeList.forEach { service ->
+                    if (service.id == checkMaxGuestCountId(serviceChargeList)) {
+                        guestServiceCharge += (guestSubTotal * service.percentage) / 100
+                        return@forEach
+                    }
+                }
             }
         }
 

@@ -16,6 +16,7 @@ import com.android.pos.data.remote.Constants.ADD_SERVICE_CHARGE
 import com.android.pos.data.remote.Constants.KEY
 import com.android.pos.databinding.DialogAddServiceChargeBinding
 import com.android.pos.utils.AlertUtils
+import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.extensions.gone
 import com.android.pos.utils.extensions.liveSnackBar
@@ -125,7 +126,7 @@ class CreateServiceCharge : Fragment() {
             } else {
                 viewModel.createServiceChargeDetails.value?.order_type = "TakeOutAndParkOrder"
             }
-
+            MethodUtils.hideKeyboard(requireActivity())
             viewModel.submit()
         }
 
