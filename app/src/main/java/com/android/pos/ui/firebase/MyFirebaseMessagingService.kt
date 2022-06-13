@@ -17,6 +17,7 @@ import com.android.pos.di.PrefProvider
 import com.android.pos.ui.activities.MainActivity
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
+import com.google.gson.Gson
 import javax.inject.Inject
 
 class MyFirebaseMessagingService : FirebaseMessagingService() {
@@ -27,6 +28,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
 
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
         Log.e(TAG, "From: ${remoteMessage.from}")
+        Log.e(TAG, "remoteMessage  ${Gson().toJson(remoteMessage)}")
 //        remoteMessage.data["type"]
         prefProvider = PrefProvider(this)
         if (remoteMessage.data.isNotEmpty()) {
@@ -53,6 +55,10 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
                 intent.action = ONLINE_ORDER_GET_NOTIFICATION
                 sendBroadcast(intent)
                 setSoundForOnlineOrder()
+            }
+            else{
+
+
             }
             Log.e(TAG, "Message data payload: ${remoteMessage.data}")
         }
@@ -115,5 +121,9 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
     companion object {
 
         private const val TAG = "MyFirebaseMsgService"
+    }
+
+    fun queuePrinterLogic(context: Context) {
+
     }
 }
