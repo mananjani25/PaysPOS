@@ -12,7 +12,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 object Constants {
-    val IS_ORDER_LAST_PAYMENT= "is_order_last_payment"
+    val IS_ORDER_LAST_PAYMENT = "is_order_last_payment"
     const val ARG_PARAM1 = "param1"
     const val ARG_PARAM2 = "param2"
     const val ARG_PARAM3 = "param2"
@@ -409,12 +409,37 @@ object Constants {
 
 
     const val OPEN_ORDERS = "orders/open_orders"
-    const val ONLINE_ORDERING= "online_ordering_orders/web_orders"
-    const val ACCEPTED_DECLINE_ONLINEORDER= "online_ordering_orders/{id}/accept_order"
-    const val UPDATE_ONLINE_ORDER= "online_ordering_orders/{id}"
+    const val ONLINE_ORDERING = "online_ordering_orders/web_orders"
+    const val ACCEPTED_DECLINE_ONLINEORDER = "online_ordering_orders/{id}/accept_order"
+    const val UPDATE_ONLINE_ORDER = "online_ordering_orders/{id}"
     const val CASH_EVENTS = "cash_events"
 
     const val UTC_SERVER_FORMAT = "yyyy-MM-dd'T'HH:mm:ss.SSS'Z'"
+
+    fun getCurrentTimeFromTimeZone(context: Context, mdate: String): String {
+        try {
+            val inputFormat = SimpleDateFormat("MMM-dd-yyyy hh:mm:a")
+
+            val outputFormat = SimpleDateFormat("MMM-dd-yyyy hh:mm:a")
+            TimeFormatUtils.prefProvider = PrefProvider(context = context)
+            outputFormat.timeZone =
+                TimeZone.getTimeZone(TimeFormatUtils.prefProvider.getValue(SYSTEM_TIMEZONE, ""))
+            val date = inputFormat.parse(mdate)
+            val formattedDate = outputFormat.format(date)
+            //  val formattedDateFinalDate = outputFormat.parse(formattedDate)
+            return formattedDate
+        } catch (e: Exception) {
+            e.printStackTrace()
+//Thu Jul 16 05:23:26 EDT 2020
+            val inputFormat = SimpleDateFormat("MMM-dd-yyyy hh:mm:a", Locale.US)
+            val outputFormat = SimpleDateFormat("MMM-dd-yyyy")
+            val date = inputFormat.parse(mdate)
+            val formattedDate = outputFormat.format(date)
+            //  val formattedDateFinalDate = outputFormat.parse(formattedDate)
+            return formattedDate
+
+        }
+    }
 
 
     fun getReceiptFormatDateFromUTCServer(context: Context, mdate: String): String {
@@ -431,7 +456,7 @@ object Constants {
             val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
             inputFormat.timeZone = TimeZone.getTimeZone("UTC")
             val outputFormat = SimpleDateFormat("MMM-dd-yyyy hh:mm:a")
-            TimeFormatUtils.prefProvider = PrefProvider(context = context!!)
+            TimeFormatUtils.prefProvider = PrefProvider(context = context)
             outputFormat.timeZone =
                 TimeZone.getTimeZone(TimeFormatUtils.prefProvider.getValue(SYSTEM_TIMEZONE, ""))
             val date = inputFormat.parse(mdate)

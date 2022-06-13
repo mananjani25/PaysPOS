@@ -1491,7 +1491,7 @@ class CartFragment(
 
                         val bundle = Bundle()
                         bundle.putBoolean("isOrderDiscount", true)
-                        bundle.putDouble("totalPrice", viewModel.totalPrice)
+                        bundle.putDouble("totalPrice", viewModel.subTotalPrice)
                         if (cartlist.isNotEmpty()) {
                             bundle.putDouble("orderDiscountPrice", cartlist[0].discountPrice)
                             bundle.putString("orderDiscountType", cartlist[0].discountType)

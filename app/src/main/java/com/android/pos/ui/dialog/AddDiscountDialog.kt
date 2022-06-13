@@ -34,6 +34,7 @@ import java.util.*
 class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountInterface,
     TextWatcher {
 
+    private var isSet: Boolean = false
     private var itemOrderDiscount: Double = 0.0
     private var itemPrice: Double = 0.0
     private var orderDiscountType: String = ""
@@ -195,7 +196,10 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
                     binding.edtAmount.setText(MethodUtils.roundOffAmountString(selectedvalue))
                     percentageView()
                 } else {
+                    isSet = true
+                    binding.edtAmount.removeTextChangedListener(this)
                     binding.edtAmount.setText(MethodUtils.roundOffAmountString(orderDiscountPrice))
+                    binding.edtAmount.addTextChangedListener(this)
                     amountView()
                 }
             }
@@ -505,7 +509,7 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
                         setFragmentResult("request_key_discount_details", result)
                     }
                     isOrderDiscount -> {
-                            setFragmentResult("request_key_discount_order", result)
+                        setFragmentResult("request_key_discount_order", result)
                     }
                     else -> {
 
@@ -648,16 +652,16 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
             binding.edtAmount.setText(removeLastCharacter(binding.edtAmount.text.toString()))
 
         } else {
-            if(number.isNotEmpty()){
+            if (number.isNotEmpty()) {
                 binding.edtAmount.append(number)
-            }else{
+            } else {
                 binding.edtAmount.addTextChangedListener(this)
             }
         }
     }
 
     private fun removeLastCharacter(str: String): String {
-        if(str.length==1){
+        if (str.length == 1) {
             binding.edtAmount.addTextChangedListener(this)
         }
         return str.substring(0, str.length - 1)
@@ -670,57 +674,62 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
     var current = ""
     override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
 
-        if (s.toString().isNotEmpty()) {
-            binding.edtAmount.removeTextChangedListener(this)
+
+        if (!isSet) {
+            if (s.toString().isNotEmpty()) {
+                binding.edtAmount.removeTextChangedListener(this)
 
 
-            val cleanString: String = s!!.replace("""[$,.%]""".toRegex(), "")
+                val cleanString: String = s!!.replace("""[$,.%]""".toRegex(), "")
 
 
-            val parsed = cleanString.toDouble()
+                val parsed = cleanString.toDouble()
 
-            val formatted = NumberFormat.getCurrencyInstance(Locale.US).format((parsed / 100))
-
-
-            current = formatted
-
-            binding.edtAmount.setText(formatted.replace("""[$,%]""".toRegex(), ""))
-            binding.edtAmount.setSelection(formatted.replace("""[$,%]""".toRegex(), "").length)
+                val formatted = NumberFormat.getCurrencyInstance(Locale.US).format((parsed / 100))
 
 
-            if (selectedCurrency == AMOUNT) {
+                current = formatted
 
-                var price = 0.0
+                binding.edtAmount.setText(formatted.replace("""[$,%]""".toRegex(), ""))
+                binding.edtAmount.setSelection(formatted.replace("""[$,%]""".toRegex(), "").length)
 
 
-                if (isOrderDiscount) {
-                    price = totalOrderPrice
-                } else {
-                    price = itemPrice /*- defaultModel.discountPrice*/
-                }
+                if (selectedCurrency == AMOUNT) {
 
-                if (defaultModel.discountPrice == 0.0) {
+                    var price = 0.0
 
-                    if (binding.edtAmount.text.toString().toDouble() > price) {
-                        binding.edtAmount.setText(MethodUtils.roundOffAmountString(price))
+
+                    if (isOrderDiscount) {
+                        price = totalOrderPrice
+                    } else {
+                        price = itemPrice /*- defaultModel.discountPrice*/
                     }
-                } else {
 
-                    if (binding.edtAmount.text.toString()
-                            .toDouble() > price
-                    ) {
-                        binding.edtAmount.setText(MethodUtils.roundOffAmountString(price))
+                    if (defaultModel.discountPrice == 0.0) {
+
+                        if (binding.edtAmount.text.toString().toDouble() > price) {
+                            binding.edtAmount.setText(MethodUtils.roundOffAmountString(price))
+                        }
+                    } else {
+
+                        if (binding.edtAmount.text.toString()
+                                .toDouble() > price
+                        ) {
+                            binding.edtAmount.setText(MethodUtils.roundOffAmountString(price))
+                        }
                     }
                 }
-            }
 
-            if (selectedCurrency == PERCENTAGE) {
-                if (binding.edtAmount.text.toString().toDouble() > 100) {
-                    binding.edtAmount.setText("100.00")
+                if (selectedCurrency == PERCENTAGE) {
+                    if (binding.edtAmount.text.toString().toDouble() > 100) {
+                        binding.edtAmount.setText("100.00")
+                    }
                 }
-            }
 
-            binding.edtAmount.addTextChangedListener(this)
+                binding.edtAmount.addTextChangedListener(this)
+            }
+        } else {
+            isSet = false
         }
     }
 

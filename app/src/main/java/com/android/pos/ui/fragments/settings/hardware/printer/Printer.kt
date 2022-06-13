@@ -35,6 +35,7 @@ import com.android.pos.data.remote.Constants.LOCATION_ID
 import com.android.pos.data.remote.Constants.PRINTER
 import com.android.pos.data.remote.Constants.TERMINAL_ID
 import com.android.pos.data.remote.Constants.WIFI
+import com.android.pos.data.remote.Constants.getCurrentTimeFromTimeZone
 import com.android.pos.databinding.FragmentPrinterBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.adapter.PrinterListAdapter
@@ -1718,7 +1719,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                 val current = LocalDateTime.now()
                 val formatter = DateTimeFormatter.ofPattern("MMM-dd-yyyy hh:mm:a")
                 val formatted = current.format(formatter)
-                builder.addText(formatted)
+                builder.addText(getCurrentTimeFromTimeZone(requireContext(),formatted))
             }
 
 
