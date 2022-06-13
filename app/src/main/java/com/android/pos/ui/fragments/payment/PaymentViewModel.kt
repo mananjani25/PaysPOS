@@ -1602,6 +1602,7 @@ open class PaymentViewModel @Inject constructor(
             }
 
 
+            magensa_response = magensaResponse.toString()
             cashDiscountFee = 0.0
             cash_discount_type = cashdiscountType
             employeeId = cartModel.employeeID

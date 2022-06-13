@@ -57,6 +57,7 @@ import com.android.pos.data.remote.Constants.TAKEOUT
 import com.android.pos.data.remote.Constants.TOTAL_PRICE_DINEIN
 import com.android.pos.data.remote.Constants.VENUE_LOGO
 import com.android.pos.data.remote.Constants.WHOLE_AMOUNT
+import com.android.pos.data.remote.Constants.getCurrentTimeFromTimeZone
 import com.android.pos.data.remote.Constants.getReceiptFormatDateFromUTCServer
 import com.android.pos.databinding.FragmentOrderCompletBinding
 import com.android.pos.di.PrefProvider
@@ -1287,7 +1288,12 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                             Builder.FALSE,
                             Builder.COLOR_1
                         )
-                        builder.addText("Print Time:" + formatted)
+                        builder.addText(
+                            "Print Time:" + getCurrentTimeFromTimeZone(
+                                requireContext(),
+                                formatted
+                            )
+                        )
                     }
 
 
@@ -1420,7 +1426,10 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         builder.addText(
                             padLine(
                                 if (customerSettingModel.showPrintTime) {
-                                    "Print Time:" + formatted
+                                    "Print Time:" + getCurrentTimeFromTimeZone(
+                                        requireContext(),
+                                        formatted
+                                    )
                                 } else {
                                     ""
                                 },
@@ -2436,7 +2445,12 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                             Builder.FALSE,
                             Builder.COLOR_1
                         )
-                        builder.addText("Print Time:" + formatted)
+                        builder.addText(
+                            "Print Time:" + getCurrentTimeFromTimeZone(
+                                requireContext(),
+                                formatted
+                            )
+                        )
                     }
 
 
@@ -2569,7 +2583,10 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         builder.addText(
                             padLine(
                                 if (customerSettingModel.showPrintTime) {
-                                    "Print Time:" + formatted
+                                    "Print Time:" + getCurrentTimeFromTimeZone(
+                                        requireContext(),
+                                        formatted
+                                    )
                                 } else {
                                     ""
                                 },
@@ -3546,7 +3563,6 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         kitchenPrinterList = it.data
                         val remain = requireArguments().getDouble("remainingAmount")
                         if (requireArguments().getBoolean("isDineIn")) {
-                            Log.e(TAG, "IsDineIn True: ")
                             customerPrintWholeOrder()
 
                         } else {
@@ -3729,9 +3745,10 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     enabled,
                     1000
                 )
-                printer?.setStatusChangeEventCallback(this)
+                //printer?.setStatusChangeEventCallback(this)
 
             } catch (e: Exception) {
+                e.printStackTrace()
                 pd.dismiss()
                 Log.e(TAG, "PrinterException: " + e.message)
                 printer = null
@@ -3999,7 +4016,12 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                             Builder.FALSE,
                             Builder.COLOR_1
                         )
-                        builder.addText("Print Time:" + formatted)
+                        builder.addText(
+                            "Print Time:" + getCurrentTimeFromTimeZone(
+                                requireContext(),
+                                formatted
+                            )
+                        )
                     }
 
 
@@ -4128,7 +4150,10 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         builder.addText(
                             padLine(
                                 if (customerSettingModel.showPrintTime) {
-                                    "Print Time:" + formatted
+                                    "Print Time:" + getCurrentTimeFromTimeZone(
+                                        requireContext(),
+                                        formatted
+                                    )
                                 } else {
                                     ""
                                 },
@@ -4276,7 +4301,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 )
             }
 
-            Log.e(TAG, "totalTips:  ${tipAmount}")
+
             if (tipAmount > 0) {
 
                 builder.addTextLineSpace(30)
@@ -4454,6 +4479,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             builder.addTextLineSpace(30)
             builder.addFeedUnit(30)
 
+            var totalfamount = 0.0
 
             if (receiptModel?.order?.totalAmount != null) {
                 builder.addTextLineSpace(30)
@@ -4475,6 +4501,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                          (totalAmt - MethodUtils.roundOffAmountDouble(receiptModel?.order?.totalDiscount!!))
 
                  }*/
+
 
                 if (paymentType == "Cash") {
 
@@ -4502,6 +4529,12 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                 }
                             )
                         )
+
+                        totalfamount = MethodUtils.roundOffAmountDouble(
+                            finalAmt - (receiptModel?.order?.payments?.get(
+                                receiptModel?.order?.payments?.size?.minus(1) ?: 0
+                            )?.cash_discount_or_surcharge ?: 0.0)
+                        )
                     } else {
                         builder.addText(
                             padLine(
@@ -4515,6 +4548,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                             )
                         )
 
+                        totalfamount = MethodUtils.roundOffAmountDouble(finalAmt)
+
                     }
 
                 } else {
@@ -4525,6 +4560,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                 receiptModel?.order?.payments?.size?.minus(1) ?: 0
                             )?.tips ?: 0.0
                         )
+
+                    totalfamount = finalAmt
 
                     if (receiptModel?.order?.cash_discount_type?.lowercase() == "SurCharge".lowercase()) {
 
@@ -4546,6 +4583,14 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                 }
                             )
                         )
+
+                        totalfamount = MethodUtils.roundOffAmountDouble(
+                            finalAmt.plus(
+                                (receiptModel?.order?.payments?.get(
+                                    receiptModel?.order?.payments?.size?.minus(1) ?: 0
+                                )?.cash_discount_or_surcharge ?: 0.0)
+                            )
+                        )
                     } else {
 
                         builder.addText(
@@ -4559,6 +4604,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                 }
                             )
                         )
+
+                        totalfamount = MethodUtils.roundOffAmountDouble(finalAmt)
                     }
                 }
 
@@ -4580,14 +4627,24 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             )
 
             var newPaidAmount = paidAmount
-             if (MethodUtils.roundOffAmountDouble(paidAmount + tipAmount) == MethodUtils.roundOffAmountDouble((receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size?.minus(1) ?: 0)?.amount ?: 0.0).plus((receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size?.minus(1) ?: 0)?.tips ?: 0.0))   ?: 0.0)
-             ) {
-                 newPaidAmount = paidAmount + tipAmount
-             }
+            if (MethodUtils.roundOffAmountDouble(paidAmount + tipAmount) == MethodUtils.roundOffAmountDouble(
+                    (receiptModel?.order?.payments?.get(
+                        receiptModel?.order?.payments?.size?.minus(1) ?: 0
+                    )?.amount ?: 0.0).plus(
+                        (receiptModel?.order?.payments?.get(
+                            receiptModel?.order?.payments?.size?.minus(
+                                1
+                            ) ?: 0
+                        )?.tips ?: 0.0)
+                    ) ?: 0.0
+                )
+            ) {
+                newPaidAmount = paidAmount + tipAmount
+            }
 
-             if (isSpilt) {
-                 newPaidAmount = paidAmount + tipAmount
-             }
+            if (isSpilt) {
+                newPaidAmount = paidAmount + tipAmount
+            }
             Log.e("ToCheck", "PaidAmount ${newPaidAmount}")
 
             builder.addText(
@@ -4741,8 +4798,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     addTipsList(
                         builder,
                         tipsList,
-                        if (receiptModel?.order?.totalDiscount != 0.0) {
-                            (receiptModel?.order?.totalAmount!!.toDouble() - receiptModel?.order?.totalDiscount!!.toDouble())
+                        if (receiptModel?.order?.totalDiscount != 0.0 && receiptModel?.order?.totalAmount ?: 0.0 > receiptModel?.order?.totalDiscount ?: 0.0) {
+                            (totalfamount)
                         } else {
                             receiptModel?.order?.totalAmount!!
                         },
@@ -5624,8 +5681,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         prefProvider.setValue(SPLIT_DINEIN_MODEL, "")
         prefProvider.setValue(SPLIT_IS_GUESTPAY, "")
         prefProvider.setValue(SPLIT_DINEIN_CHECKOUT, "")
-        prefProvider.setValueboolean(IS_UPDATE_ORDER_LOYALTY_APPLIED,false)
-        prefProvider.setValueboolean(LOYALTY_ADDED,false)
+        prefProvider.setValueboolean(IS_UPDATE_ORDER_LOYALTY_APPLIED, false)
+        prefProvider.setValueboolean(LOYALTY_ADDED, false)
     }
 
     private fun observeShowProgress() {

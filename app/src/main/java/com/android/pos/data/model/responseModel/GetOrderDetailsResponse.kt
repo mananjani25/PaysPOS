@@ -27,7 +27,7 @@ data class GetOrderDetailsResponse(
         @SerializedName("customer_id")
         val customerId: Int,
         @SerializedName("date")
-        val date: String?,
+        val date: String?=null,
         @SerializedName("delivery_employee_id")
         val deliveryEmployeeId: String?,
         @SerializedName("delivery_type")
@@ -251,7 +251,7 @@ data class GetOrderDetailsResponse(
             @SerializedName("discount_id")
             val discountId: Int?,
             @SerializedName("discount_type")
-            val discountType: String?,
+            val discountType: String?=null,
             @SerializedName("employee_id")
             val employeeId: Int,
             @SerializedName("float")

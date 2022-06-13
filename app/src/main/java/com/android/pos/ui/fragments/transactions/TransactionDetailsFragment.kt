@@ -22,6 +22,7 @@ import com.android.pos.data.model.responseModel.GetCustomerReceiptSettingsRespon
 import com.android.pos.data.model.responseModel.GetTipReponse
 import com.android.pos.data.model.responseModel.PrinterResponse
 import com.android.pos.data.remote.Constants
+import com.android.pos.data.remote.Constants.getCurrentTimeFromTimeZone
 import com.android.pos.databinding.FragmentTransactionDetailsBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.adapter.OrderDetailsItemListAdapter
@@ -699,7 +700,13 @@ class TransactionDetailsFragment : Fragment() {
                             Builder.FALSE,
                             Builder.COLOR_1
                         )
-                        builder.addText("Print Time:" + formatted)
+
+                        builder.addText(
+                            "Print Time:" + getCurrentTimeFromTimeZone(
+                                requireContext(),
+                                formatted
+                            )
+                        )
                     }
 
 
@@ -835,7 +842,10 @@ class TransactionDetailsFragment : Fragment() {
                         builder.addText(
                             padLine(
                                 if (customerSettingModel.showPrintTime) {
-                                    "Print Time:" + formatted
+                                    "Print Time:" + getCurrentTimeFromTimeZone(
+                                        requireContext(),
+                                        formatted
+                                    )
                                 } else {
                                     ""
                                 },
@@ -1301,7 +1311,7 @@ class TransactionDetailsFragment : Fragment() {
             builder.addText(
                 padLine(
                     "Transaction ID",
-                    ""+paymentDetailsResponse.data.id,
+                    "" + paymentDetailsResponse.data.id,
                     if (customerSettingModel.fonts == Constants.LARGE) {
                         24
                     } else {
@@ -1313,6 +1323,33 @@ class TransactionDetailsFragment : Fragment() {
 
 
             if (paymentDetailsResponse.data.payment_type.lowercase() == "Card".lowercase()) {
+
+                builder.addTextLineSpace(30)
+                builder.addFeedUnit(30)
+                builder.addTextFont(Builder.FONT_E)
+                // builder.addTextAlign(Builder.ALIGN_LEFT)
+                builder.addTextLang(Builder.LANG_EN)
+                addCustomerTextSize(builder, customerSettingModel.fonts)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.TRUE,
+                    Builder.COLOR_1
+                )
+
+                builder.addText(
+                    padLine(
+                        "Transaction Type",
+                        "Card",
+                        if (customerSettingModel.fonts == Constants.LARGE) {
+                            24
+                        } else {
+                            48
+                        }
+                    )
+                )
+
+
                 builder.addTextLineSpace(30)
                 builder.addFeedUnit(30)
                 builder.addTextFont(Builder.FONT_E)

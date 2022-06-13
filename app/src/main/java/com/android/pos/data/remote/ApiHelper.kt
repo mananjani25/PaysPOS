@@ -58,6 +58,9 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
     suspend fun syncVenueDetails() =
         getResult { apiService.syncVenueDetails() }
 
+    suspend fun getOnlineOrderCountNoti() =
+        getResult { apiService.getCountOnlineOrdering() }
+
     suspend fun employeesList(locationId: Int) =
         getResult { apiService.employeesList(locationId) }
 
@@ -434,6 +437,9 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
     suspend fun refundPayment(data: RefundRequestModel) =
         getResult { apiService.refundPayment(data) }
 
+   suspend fun refundPaymentOnline(data: RefundRequestModelOnlineOrder) =
+        getResult { apiService.refundPaymentOnlineOrder(data) }
+
     suspend fun orderTypes() =
         getResult { apiService.orderTypes() }
 
@@ -448,6 +454,23 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
 
     suspend fun getOpenOrders(paymentStatus: String, startDate: String, endDate: String) =
         getResult { apiService.getOpenOrders(paymentStatus,startDate,endDate) }
+
+    suspend fun getOnlineOrders(startDate: String, endDate: String, order_status: String) =
+        getResult { apiService.getOnlineOrders(startDate, endDate, order_status) }
+
+    suspend fun setAcceptedAndDeclineorder(
+        time: Int,
+        order_id: Int,
+        isaccepted: Boolean,
+        employee_id:Int,
+        terminalid:Int
+    ) =
+        getResult { apiService.setAcceptedAndDeclineOrders(order_id, isaccepted, time,employee_id,terminalid) }
+    suspend fun updateOnlineOrder(
+        order_id: Int,
+        order_status: String
+    ) =
+        getResult { apiService.updateOnlineOrders(order_id, order_status) }
 
     suspend fun getUpcomingOpenOrders() =
         getResult { apiService.getUpcomingOpenOrders(true) }
@@ -537,6 +560,9 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
 
     suspend fun inventoryCounts() =
         getResult { apiService.inventoryCounts() }
+
+    suspend fun onlineOrderCounts(startDate: String?, endDate: String?) =
+        getResult { apiService.onlineOrderCounts(startDate,endDate) }
 
 
     suspend fun timeDetails() =

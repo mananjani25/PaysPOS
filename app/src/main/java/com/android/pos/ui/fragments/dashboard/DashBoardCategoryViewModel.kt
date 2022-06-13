@@ -20,6 +20,7 @@ import com.android.pos.data.model.DineInOrderDetailAttributes
 import com.android.pos.data.model.GuestPaymentCalculationModel
 import com.android.pos.data.model.requestModel.*
 import com.android.pos.data.model.responseModel.CreateOrderResponse
+import com.android.pos.data.model.responseModel.OnlineOrderNotificationCount
 import com.android.pos.data.model.responseModel.PrinterResponse
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.ADD
@@ -36,6 +37,7 @@ import com.android.pos.data.remote.Constants.DINE_IN_LIST_EDIT
 import com.android.pos.data.remote.Constants.DINE_IN_UPDATE
 import com.android.pos.data.remote.Constants.EMPLOYEE_ID
 import com.android.pos.data.remote.Constants.IS_PRINTER_QUEUE_ENABLE
+import com.android.pos.data.remote.Constants.ONLINE_ORDER_ENABLE
 import com.android.pos.data.remote.Constants.ORDER_TYPE
 import com.android.pos.data.remote.Constants.SERVICECHARGE_DINEIN_ORDER
 import com.android.pos.data.remote.Constants.SERVICECHARGE_TAKEOUT_OPENORDER
@@ -172,11 +174,18 @@ class DashBoardCategoryViewModel @Inject constructor(
     private val _showProgress = MutableLiveData<Event<Boolean>>()
     val showProgress: LiveData<Event<Boolean>> = _showProgress
 
+
+    private val _enableOnlineOrder = MutableLiveData<Event<Boolean>>()
+    val enableOnlineOrder: LiveData<Event<Boolean>> = _enableOnlineOrder
+
     private val _snackbarText = MutableLiveData<Event<Any?>>()
     val snackbarText: LiveData<Event<Any?>> = _snackbarText
 
     private val _logout = MutableLiveData<Event<Boolean>>()
     val logout: LiveData<Event<Boolean>> = _logout
+
+    private val _onlineOrderCount = MutableLiveData<Event<OnlineOrderNotificationCount.Data>>()
+    val onlineOrderCount: LiveData<Event<OnlineOrderNotificationCount.Data>> = _onlineOrderCount
 
     val _tableStatusSuccess = MutableLiveData<Event<Int>>()
     val tableCheckSuccess: LiveData<Event<Int>> = _tableStatusSuccess
@@ -194,7 +203,6 @@ class DashBoardCategoryViewModel @Inject constructor(
     val _Basedata = MutableLiveData<Event<CreateOrderResponse.Data?>>()
 
     var barcodeFoundDbItemLiveData: LiveData<Resource<TbItem>>? = null
-
 
     fun modifierSet(intArray: IntArray) = posRepository.modifierSetList(intArray)
 
@@ -1616,6 +1624,30 @@ class DashBoardCategoryViewModel @Inject constructor(
         }
     }
 
+    fun getOnlineOrderCount() {
+        _showProgress.value = Event(true)
+        viewModelScope.launch {
+            val resource = posRepository.getOnlineOrderNotificationCount()
+            when (resource.status) {
+                Status.SUCCESS -> {
+                    _showProgress.value = Event(false)
+                    resource.data?.let { it ->
+                        _onlineOrderCount.value = Event(it.data)
+                    }
+                }
+                Status.ERROR -> {
+                    _snackbarText.value = Event(resource.message)
+                    _showProgress.value = Event(false)
+                }
+
+                Status.LOADING -> {
+                    _showProgress.value = Event(true)
+                }
+
+            }
+        }
+    }
+
     private suspend fun callLogoutApi() {
         _showProgress.value = Event(true)
         val data = HashMap<String, String>()
@@ -2719,7 +2751,19 @@ class DashBoardCategoryViewModel @Inject constructor(
 
 
 
-
+                                it.data.terminals.forEach { terminal ->
+                                    if (terminal.id == prefProvider.getValueInt(
+                                            Constants.TERMINAL_ID,
+                                            0
+                                        )
+                                    ) {
+                                        prefProvider.setValueboolean(
+                                            ONLINE_ORDER_ENABLE,
+                                            terminal.enabled_for_receiving_web_order!!
+                                        )
+                                        _enableOnlineOrder.value = Event(true)
+                                    }
+                                }
                                 _callCashDiscount.value = Event(true)
 
                                 prefProvider.setValue(Constants.MAGENSA_SETTINGS, "")

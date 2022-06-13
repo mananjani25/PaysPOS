@@ -569,6 +569,9 @@ class PaymentAttributes : Parcelable {
     @SerializedName("loyalty_program_id")
     var loyalty_program_id: String = ""
 
+     @SerializedName("magensa_response")
+    var magensa_response: String = ""
+
     @SerializedName("loyalty_amount")
     var loyalty_amount: Double? = 0.0
 
