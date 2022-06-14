@@ -229,7 +229,7 @@ data class OpenOrderResponse(
                 @SerializedName("amount")
                 val amount: Double,
                 @SerializedName("created_at")
-                val createdAt: String?,
+                val createdAt: String?=null,
                 @SerializedName("id")
                 val id: Int,
                 @SerializedName("name")
@@ -241,7 +241,7 @@ data class OpenOrderResponse(
                 @SerializedName("service_charge_id")
                 val serviceChargeId: Int,
                 @SerializedName("updated_at")
-                val updatedAt: String?
+                val updatedAt: String?=null
             )
 
             data class Payment(
