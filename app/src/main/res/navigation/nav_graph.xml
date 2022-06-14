@@ -1039,6 +1039,10 @@
             android:id="@+id/action_transactionDetailsFragment_to_issueRefundFragment"
             app:destination="@id/issueRefundFragment" />
         <action
+            android:id="@+id/action_transaction_to_reasonForrefundonline"
+            app:destination="@id/reasonForRefundDialogonline"
+             />
+        <action
             android:id="@+id/action_transactionDetailsFragment_to_dashboardboldpos"
             app:destination="@id/dashboardCategoryBoldPOS" />
         <action
@@ -1126,6 +1130,10 @@
         <action
             android:id="@+id/action_reasonForRefundDialogonline_to_onlinedetailfragment"
             app:destination="@id/onlineOrderFragment" />
+        <action
+            android:id="@+id/action_reasonForRefundDialogonline_to_transactionfragment"
+            app:destination="@id/transactionDetailsFragment" />
+
     </dialog>
     <fragment
         android:id="@+id/dineInFragment"
