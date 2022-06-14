@@ -333,8 +333,8 @@ class DashBoardCategoryViewModel @Inject constructor(
     fun manualSalecartLogic(cartList: List<CartModel>?, item: TbItem, type: String) {
 
         if (cartList != null && cartList.isEmpty()) {
-
-            val model = addCartModel(item, true)
+            var model = addCartModel(item, true)
+            model = taxBifurcationCalculation(item!!, model, type)
             addCart(model)
         } else {
             val list = cartList?.get(0)?.items?.toMutableList()
@@ -378,7 +378,8 @@ class DashBoardCategoryViewModel @Inject constructor(
                     }
                 }
 
-                val cartModel = cartList[0]
+                var cartModel = cartList[0]
+                cartModel = taxBifurcationCalculation(item!!, cartModel!!, type)
                 cartModel.items = list
                 addCart(cartModel)
 
@@ -391,9 +392,11 @@ class DashBoardCategoryViewModel @Inject constructor(
                 if (type == DELETE) {
                     deleteCart()
                 } else {
-                    val cartModel = cartList?.get(0)
+                    var cartModel = cartList?.get(0)
+                    cartModel = taxBifurcationCalculation(item!!, cartModel!!, type)
                     cartModel?.items = listOf(item)
                     if (cartModel != null) {
+
                         addCart(cartModel)
                     }
                 }
@@ -1569,7 +1572,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                             cartModel.taxlistDynamic!![found].subTotalAmount =
                                 cartModel.taxlistDynamic!![found].subTotalAmount?.plus(totalPrice)
                         }
-                        if (type == ADD||type== UPDATE) {
+                        if (type == ADD || type == UPDATE) {
                             cartModel.taxlistDynamic?.get(found)?.totalTaxTypePrice =
                                 cartModel.taxlistDynamic!![found].totalTaxTypePrice?.plus(
                                     getTotalTaxBirfurcation(

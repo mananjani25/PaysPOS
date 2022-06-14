@@ -512,32 +512,74 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="@dimen/_1sdp"
                             android:orientation="horizontal"
-                            android:padding="@dimen/_2sdp">
+                            android:layout_marginStart="@dimen/_1sdp"
+                            android:layout_gravity="center_vertical"
+                            android:gravity="center_vertical"
+                            android:padding="@dimen/_1sdp">
 
-                            <androidx.appcompat.widget.AppCompatTextView
-                                style="@style/CustomFontMediumStyle"
+                            <androidx.appcompat.widget.LinearLayoutCompat
+                                android:id="@+id/linear_tax_detail"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_marginStart="@dimen/_3sdp"
-                                android:text="@string/tv_tax"
-                                android:textColor="@color/dark_gray"
-                                android:textSize="@dimen/_6mdpi" />
+                                android:layout_centerVertical="true"
+                                android:gravity="center_vertical"
+                                android:orientation="horizontal">
+
+                                <androidx.appcompat.widget.AppCompatTextView
+                                    style="@style/CustomFontMediumStyle"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center_vertical"
+                                    android:layout_marginStart="@dimen/_3sdp"
+                                    android:gravity="center_vertical"
+                                    android:text="@string/tv_tax"
+                                    android:textColor="@color/dark_gray"
+                                    android:textSize="@dimen/_6mdpi" />
+
+                                <ImageView
+                                    android:id="@+id/img_dropdown"
+                                    android:layout_width="@dimen/_10sdp"
+                                    android:layout_height="@dimen/_10sdp"
+                                    android:visibility="gone"
+                                    android:src="@drawable/ic_arrow_drop_down"
+                                    app:tint="@color/txtColor" />
+                            </androidx.appcompat.widget.LinearLayoutCompat>
+
 
                             <androidx.appcompat.widget.AppCompatTextView
-                                android:id="@+id/txtTotalTax"
+                                android:id="@+id/txtTax"
                                 style="@style/CustomFontSemiBold"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_alignParentEnd="true"
-                                android:layout_gravity="end"
-                                android:layout_marginEnd="@dimen/_3sdp"
-                                android:gravity="end"
-                                android:text="$0.00"
+                                android:layout_centerVertical="true"
+                                android:layout_gravity="end|center_vertical"
+                                android:layout_marginEnd="@dimen/_4sdp"
+                                android:gravity="end|center_vertical"
+                                android:text="@string/_0_00"
                                 android:textColor="@color/txtColor"
                                 android:textSize="@dimen/text_size_medium" />
                         </RelativeLayout>
 
+                        <RelativeLayout
+                            android:id="@+id/relative_dynamic_tax"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:visibility="gone"
+                            android:paddingHorizontal="@dimen/_1sdp"
+                            android:layout_marginTop="@dimen/_1sdp"
+                            android:layout_marginBottom="@dimen/_1sdp"
+                            android:orientation="horizontal"
+                            >
 
+                            <androidx.recyclerview.widget.RecyclerView
+                                android:id="@+id/rv_tax"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                                tools:itemCount="1"
+                                tools:listitem="@layout/layout_tax_bifurcation" />
+                        </RelativeLayout>
                         <RelativeLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
@@ -624,7 +666,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="@dimen/_1sdp"
                             android:orientation="horizontal"
-                            android:padding="@dimen/_2sdp"
+                            android:padding="@dimen/_1sdp"
                             android:visibility="gone">
 
                             <androidx.appcompat.widget.AppCompatTextView
@@ -653,10 +695,11 @@
                         <RelativeLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="@dimen/_3sdp"
+                            android:layout_marginTop="@dimen/_1sdp"
                             android:layout_marginBottom="@dimen/_10sdp"
                             android:orientation="horizontal"
-                            android:padding="@dimen/_2sdp">
+                            android:layout_marginStart="@dimen/_1sdp"
+                            android:padding="@dimen/_1sdp">
 
                             <androidx.appcompat.widget.AppCompatTextView
                                 style="@style/CustomFontMediumStyle"
