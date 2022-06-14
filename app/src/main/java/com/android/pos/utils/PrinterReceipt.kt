@@ -14,7 +14,9 @@ import com.android.pos.data.entities.TbServiceCharge
 import com.android.pos.data.model.responseModel.*
 import com.android.pos.data.model.responseModel.report.KeyValue
 import com.android.pos.data.remote.Constants
+import com.android.pos.utils.MethodUtils.Companion.roundOffAmountString
 import com.epson.eposprint.Builder
+import com.sunmi.externalprinterlibrary.api.SunmiPrinterApi
 
 val TAG = "PrinterReceipt"
 
@@ -25,6 +27,14 @@ fun padLine(
 ): String? {
     var partOne = partOne
     var partTwo = partTwo
+
+    if (partOne != null) {
+        Log.e("partOne", partOne.length.toString())
+        if (partTwo != null) {
+            Log.e("partOne",partTwo.length.toString())
+        }
+    }
+
     if (partOne == null) {
         partOne = ""
     }
@@ -555,6 +565,19 @@ fun addHorizontalKitchenLine(builder: Builder): Builder {
     return builder
 }
 
+fun addHorizontalKitchenLine(): String {
+
+
+    var str: String = ""
+    for (i in 0 until 48) {
+        str += "-"
+    }
+
+
+
+    return str
+}
+
 fun addTipsList(
     builder: Builder,
     list: List<GetTipReponse.Data>,
@@ -602,6 +625,38 @@ fun addTipsList(
 
 
     return builder
+}
+
+fun addTipsList(
+    list: List<GetTipReponse.Data>,
+    totalAmt: Double
+) {
+    for (i in 0 until list.size) {
+        val obj = list.get(i)
+
+
+        val tipName = obj.name + "(" + roundOffAmountString(obj.rate) + "%)"
+
+        val price = "(Tip $" + calculateTipAmt(
+            obj.rate,
+            totalAmt
+        ) + " Total $" + roundOffAmountString(
+            (totalAmt + calculateTipAmt(
+                obj.rate,
+                totalAmt
+            ))
+        ) + ")"
+
+        val str = padLine(tipName, price, 48).toString()
+
+        SunmiPrinterApi.getInstance().enableBold(true)
+        SunmiPrinterApi.getInstance().setFontZoom(1, 1)
+        SunmiPrinterApi.getInstance().printText(str)
+        SunmiPrinterApi.getInstance().lineWrap(1)
+
+    }
+
+
 }
 
 fun addOrdersForKitchenDineIn(
@@ -1163,6 +1218,61 @@ fun addOrderItems(
 
 
     return builder
+}
+
+fun addOrderItems(
+    list: List<CreateOrderResponse.Data.Order.OrderItem>,
+    showModifiers: Boolean
+) {
+    for (i in 0 until list.size) {
+        val obj = list[i]
+
+
+        val item = padLineCustomerItem(
+            obj.quantity.toString() + "x " + obj.itemName,
+            "$" + roundOffAmountString(totalPrice(obj)),
+            48
+        )
+
+        SunmiPrinterApi.getInstance().enableBold(false)
+        SunmiPrinterApi.getInstance().setFontZoom(1, 1)
+        SunmiPrinterApi.getInstance().printText(item.toString())
+        SunmiPrinterApi.getInstance().lineWrap(1)
+
+
+
+        if (obj.orderItemModifiers.isNotEmpty()) {
+            for (j in 0 until obj.orderItemModifiers.size) {
+                val modifierObj = obj.orderItemModifiers.get(j)
+
+                val modifier = padLineCustomerItem(
+                    "   " + modifierObj.name,
+                    "$" + roundOffAmountString(modifierObj.price.toDouble() * modifierObj.quantity),
+                    48
+                )
+
+                SunmiPrinterApi.getInstance().enableBold(false)
+                SunmiPrinterApi.getInstance().setFontZoom(1, 1)
+                SunmiPrinterApi.getInstance().printText(modifier.toString())
+                SunmiPrinterApi.getInstance().lineWrap(1)
+
+            }
+
+        }
+
+        if (obj.note.isNotEmpty()) {
+
+            SunmiPrinterApi.getInstance().enableBold(false)
+            SunmiPrinterApi.getInstance().setFontZoom(1, 1)
+            SunmiPrinterApi.getInstance().printText("   Note: " + obj.note)
+            SunmiPrinterApi.getInstance().lineWrap(1)
+
+        }
+
+
+    }
+
+
 }
 
 fun addOrderItemsTransaction(
