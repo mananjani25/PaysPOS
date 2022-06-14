@@ -317,8 +317,10 @@ class CartFragment(
 
     private fun setupLoyalytyPoints() {
         binding.checkloylaty.setOnCheckedChangeListener { _, p1 ->
-            viewModel.redeemLoyaltyInfo.needToApplyLoyalty = p1
+            viewModel.setcheckedLoyaltyApply(p1)
+//            viewModel.redeemLoyaltyInfo.needToApplyLoyalty = p1
             prefProvider.setValueboolean(Constants.LOYALTY_ADDED, p1)
+            prefProvider.setValueboolean(Constants.IS_UPDATE_ORDER_LOYALTY_APPLIED, p1)
             addObserver()
         }
 

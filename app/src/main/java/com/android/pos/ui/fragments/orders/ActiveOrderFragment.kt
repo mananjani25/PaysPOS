@@ -377,6 +377,10 @@ class ActiveOrderFragment(
                     Constants.IS_UPDATE_ORDER_LOYALTY_APPLIED,
                     order.isLoyaltyApplied
                 )
+                prefProvider.setValueboolean(
+                    Constants.LOYALTY_ADDED,
+                    order.isLoyaltyApplied
+                )
                 prefProvider.setValueboolean(Constants.IS_UPDATE_ORDER_FROM_ACTIVE_ORDER, true)
                 prefProvider.setValueInt(Constants.IS_UPDATE_ORDER_ID, order.id)
 
@@ -507,6 +511,14 @@ class ActiveOrderFragment(
                 )
                 bundle.putBoolean("isFromActiveOrder", true)
                 bundle.putBoolean("isLoyaltyApplied", order.isLoyaltyApplied)
+                prefProvider.setValueboolean(
+                    Constants.IS_UPDATE_ORDER_LOYALTY_APPLIED,
+                    order.isLoyaltyApplied
+                )
+                prefProvider.setValueboolean(
+                    Constants.LOYALTY_ADDED,
+                    order.isLoyaltyApplied
+                )
 
                 findNavController().navigate(R.id.action_orders_to_paymentBoldPosFragment, bundle)
 
@@ -731,13 +743,13 @@ class ActiveOrderFragment(
 
         order.orderServiceCharges.forEach {
             val serviceCharge = TbServiceCharge(
-                it.createdAt,
+                it.createdAt.toString(),
                 it.serviceChargeId,
                 true,
                 order.locationId,
                 it.name,
                 it.rate,
-                it.updatedAt,
+                it.updatedAt.toString(),
                 isActive = false,
                 isChecked = true,
                 order_service_charge_id = it.id
