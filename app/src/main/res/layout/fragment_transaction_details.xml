@@ -189,7 +189,7 @@
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/_85sdp"
+                    android:layout_height="@dimen/_100sdp"
                     android:orientation="horizontal"
                     android:weightSum="2">
 
@@ -276,7 +276,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:visibility="gone"
-                            android:padding="@dimen/_2sdp"
+                            android:padding="@dimen/_1sdp"
                             android:orientation="horizontal"
                             >
 
@@ -284,9 +284,9 @@
                                 android:id="@+id/rv_tax"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                tools:itemCount="1"
                                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-                                />
+                                tools:itemCount="3"
+                                tools:listitem="@layout/layout_tax_bifurcation" />
                         </RelativeLayout>
 
 

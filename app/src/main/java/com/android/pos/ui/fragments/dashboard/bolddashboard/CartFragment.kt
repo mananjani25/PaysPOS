@@ -318,7 +318,7 @@ class CartFragment(
     }
 
     private fun setupTaxAdapter() {
-        taxBirfurcationAdapter = TaxBirfurcationAdapter()
+        taxBirfurcationAdapter = TaxBirfurcationAdapter("dashboard")
         binding.rvTax.adapter = taxBirfurcationAdapter
         var taxlist = arrayListOf<TaxData>()
         taxBirfurcationAdapter.setList(taxlist)

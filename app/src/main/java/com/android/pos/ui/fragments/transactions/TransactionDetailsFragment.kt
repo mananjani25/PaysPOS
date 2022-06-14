@@ -16,9 +16,11 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
+import com.android.pos.data.entities.TaxData
 import com.android.pos.data.entities.TbServiceCharge
 import com.android.pos.data.model.GetPaymentOrderDetailsResponse
 import com.android.pos.data.model.responseModel.GetCustomerReceiptSettingsResponse
+import com.android.pos.data.model.responseModel.GetOrderDetailsResponse
 import com.android.pos.data.model.responseModel.GetTipReponse
 import com.android.pos.data.model.responseModel.PrinterResponse
 import com.android.pos.data.remote.Constants
@@ -53,6 +55,7 @@ class TransactionDetailsFragment : Fragment() {
     private lateinit var taxBirfurcationAdapter: TaxBirfurcationAdapter
     private var orderIDglobal = 0
     var taxClickable = false
+
     //    private lateinit var orderDetailsResponse: GetOrderDetailsResponse
     private var customerSettingModel = GetCustomerReceiptSettingsResponse.Data()
     private lateinit var paymentDetailsResponse: GetPaymentOrderDetailsResponse
@@ -62,6 +65,7 @@ class TransactionDetailsFragment : Fragment() {
     private var paymentId: Int = -1
     private var isFromTrans: Boolean = false
     private var serviceChargesList: ArrayList<TbServiceCharge>? = arrayListOf()
+    private var taxlistbirfurcation: ArrayList<TaxData>? = arrayListOf()
     private var isSplitPayment = false
 
 
@@ -119,7 +123,7 @@ class TransactionDetailsFragment : Fragment() {
         orderDetailsItemAdapter = OrderDetailsItemListAdapter()
         binding.rvOrderItems.adapter = orderDetailsItemAdapter
 
-        taxBirfurcationAdapter = TaxBirfurcationAdapter()
+        taxBirfurcationAdapter = TaxBirfurcationAdapter("transaction")
         binding.rvTax.adapter = taxBirfurcationAdapter
     }
 
@@ -148,7 +152,7 @@ class TransactionDetailsFragment : Fragment() {
 
         }
         binding.linearTaxDetail.setOnClickListener {
-            if(taxBirfurcationAdapter.taxlist.size>0){
+            if (taxBirfurcationAdapter.taxlist.size > 0) {
                 if (!taxClickable) {
                     Log.d(TAG, "onViewCreated: " + taxBirfurcationAdapter.taxlist.size)
                     taxClickable = true
@@ -268,6 +272,94 @@ class TransactionDetailsFragment : Fragment() {
                     )
                 }
 
+                if (paymentDetailsResponse.data.order.order_items.isNotEmpty()) {
+                    paymentDetailsResponse.data.order.order_items.forEach { orderItem ->
+                        var totalPrice = orderItem.price * orderItem.quantity
+                        orderItem.orderItemModifiers.forEach { orderItemModifier ->
+                            totalPrice += orderItemModifier.price * orderItemModifier.quantity
+                        }
+                        Log.d(TAG, "navigate: itemPrice : $totalPrice")
+                        var totaltaxtemp = 0.0
+                        orderItem.orderItemTaxes.forEach { orderItemTaxe ->
+                            if (taxlistbirfurcation?.isNotEmpty() == true) {
+                                var found = -1
+                                taxlistbirfurcation?.forEachIndexed { index, taxData ->
+                                    if (taxData.orderTaxId == orderItemTaxe.taxId) {
+                                        found = index
+                                        return@forEachIndexed
+                                    }
+                                }
+                                if (found == -1) {
+                                    var taxData: TaxData = TaxData(
+                                        orderItemTaxe.createdAt,
+                                        orderItemTaxe.id,
+                                        0,
+                                        orderItemTaxe.name,
+                                        orderItemTaxe.rate,
+                                        orderItemTaxe.taxType,
+                                        orderItemTaxe.updatedAt,
+                                        true,
+                                        orderItemTaxe.isDefault,
+                                        false,
+                                        "",
+                                        listOf(orderItemTaxe.orderItemId),
+                                        orderItemTaxe.taxId,
+                                        false,
+                                        getTaxFromTotalPrice(
+                                            orderItemTaxe,
+                                            totalPrice,
+                                            orderItem
+                                        ),
+                                        totalPrice
+                                    )
+                                    taxlistbirfurcation?.add(taxData)
+                                } else {
+                                    taxlistbirfurcation!![found].totalTaxTypePrice =
+                                        taxlistbirfurcation!![found].totalTaxTypePrice + getTaxFromTotalPrice(
+                                            orderItemTaxe,
+                                            totalPrice,
+                                            orderItem
+                                        )
+                                    taxlistbirfurcation!![found].subTotalAmount =
+                                        taxlistbirfurcation!![found].subTotalAmount + totalPrice
+                                }
+                                Log.d(TAG, "found : " + found)
+                            } else {
+                                var taxData: TaxData = TaxData(
+                                    orderItemTaxe.createdAt,
+                                    orderItemTaxe.id,
+                                    0,
+                                    orderItemTaxe.name,
+                                    orderItemTaxe.rate,
+                                    orderItemTaxe.taxType,
+                                    orderItemTaxe.updatedAt,
+                                    true,
+                                    orderItemTaxe.isDefault,
+                                    false,
+                                    "",
+                                    listOf(orderItemTaxe.orderItemId),
+                                    orderItemTaxe.taxId,
+                                    false,
+                                    getTaxFromTotalPrice(
+                                        orderItemTaxe,
+                                        totalPrice,
+                                        orderItem
+                                    ),
+                                    totalPrice
+                                )
+                                taxlistbirfurcation?.add(taxData)
+                            }
+
+
+                            Log.d(TAG, "navigate: " + totaltaxtemp)
+                        }
+
+                    }
+
+                    taxBirfurcationAdapter.setList(taxlistbirfurcation!!)
+                    Log.d(TAG, "navigate: list " + Gson().toJson(taxlistbirfurcation))
+                }
+
                 if (paymentDetailsResponse.data.is_loyalty_applied == true) {
                     binding.llLoyalty.visibility = View.VISIBLE
                     binding.llLoyaltyPoints.visibility = View.VISIBLE
@@ -349,6 +441,40 @@ class TransactionDetailsFragment : Fragment() {
             }
         }
 
+    }
+
+    fun getTaxFromTotalPrice(
+        orderItemTaxe: GetOrderDetailsResponse.Data.OrderItem.OrderItemTaxe,
+        totalPrice: Double,
+        item: GetOrderDetailsResponse.Data.OrderItem
+    ): Double {
+        var totaltaxtemp = 0.0
+
+
+        totaltaxtemp += if (orderItemTaxe.taxType == "Percentage") {
+            if (totalPrice < 0.0) {
+
+                String.format("%.2f", 0.00)
+                    .toDouble()
+            } else {
+                val itemTaxPrice =
+                    (orderItemTaxe.rate * totalPrice) / 100
+                Log.e("itemTaxPrice", "" + itemTaxPrice)
+                String.format("%.2f", itemTaxPrice)
+                    .toDouble()
+            }
+
+        } else {
+            Log.d("yash", "taxCalculation: " + orderItemTaxe.taxType)
+            if (totalPrice <= 0.0) {
+                String.format("%.2f", 0.00)
+                    .toDouble()
+            } else {
+                String.format("%.2f", orderItemTaxe.rate * item.quantity)
+                    .toDouble()
+            }
+        }
+        return totaltaxtemp
     }
 
     private fun observeShowProgress() {
