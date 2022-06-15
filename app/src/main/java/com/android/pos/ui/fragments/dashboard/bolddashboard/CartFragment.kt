@@ -535,6 +535,23 @@ class CartFragment(
 
     }
 
+    fun setTaxBifurcationData(taxlistData:ArrayList<TaxData>){
+        if (taxlistData?.isNotEmpty()) {
+            Log.d(TAG, "addObserver: " + taxlistData.size)
+            setupTaxAdapter()
+            taxBirfurcationAdapter.setList(taxlistData)
+        }
+    }
+    fun reSetTaxBifurcationData(){
+        taxBirfurcationAdapter.clearList()
+        binding.liinearInfoLayout.layoutParams.height =
+            resources.getDimension(R.dimen._50sdp).toInt()
+        taxClickable = false
+        binding.imgDropdown.setImageResource(R.drawable.ic_arrow_drop_down)
+        binding.imgDropdown.gone()
+        binding.relativeDynamicTax.gone()
+    }
+
     private fun addObserver() {
 
 
@@ -569,6 +586,8 @@ class CartFragment(
                         binding.linearButtonView.visible()
                         binding.relPreoceedToFire.gone()
                     }
+
+
                     binding.rvCartDineIn.gone()
                     binding.rvCartList.visible()
 
@@ -578,6 +597,11 @@ class CartFragment(
                     cartlist = it as ArrayList<CartModel>
 
                     viewModel.setCartModel(it)
+                    if (it[0].taxlistDynamic?.isNotEmpty() == true) {
+                        Log.d(TAG, "addObserver: " + it[0].taxlistDynamic?.size)
+                        setupTaxAdapter()
+                        taxBirfurcationAdapter.setList(it[0].taxlistDynamic as ArrayList<TaxData>)
+                    }
                     if (viewModel.order_note.isNotEmpty()) {
                         binding.liinearInfoLayout.layoutParams.height =
                             resources.getDimension(R.dimen._60sdp).toInt()
@@ -1365,7 +1389,7 @@ class CartFragment(
                     cartlist.clear()
                     isOrderUpdate = false
                     dineInCartAdapter.clearList()
-                    taxBirfurcationAdapter.clearList()
+
                     viewModel.clearListTax()
                     binding.rvCartDineIn.gone()
                     // prefProvider.setValue(DINE_IN_UPDATE_LIST, "")
