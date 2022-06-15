@@ -32,6 +32,7 @@ import com.android.pos.data.remote.Constants.DELETE_UPDATE_PRINTER
 import com.android.pos.data.remote.Constants.DISCOUNTS
 import com.android.pos.data.remote.Constants.DISCOUNTS_ACTIVE
 import com.android.pos.data.remote.Constants.DISCOUNTS_UPDATE_DELETE
+import com.android.pos.data.remote.Constants.EMAIL_REPORT_SUMMARY
 import com.android.pos.data.remote.Constants.EMPLOYEES
 import com.android.pos.data.remote.Constants.EMPLOYEES_TIMESHEET
 import com.android.pos.data.remote.Constants.EMPLOYEES_TIMESHEET_DETAILS
@@ -656,8 +657,8 @@ interface ApiService {
         @Query("finalrewards") finalrewards: Int,
     ): CustomerAssignedResponse
 
-   /* @GET(OPEN_ORDERS)
-    suspend fun getOpenOrders(@Query("payment_status") payment_status: LinkedHashMap<String, String>): OpenOrderResponse*/
+    /* @GET(OPEN_ORDERS)
+     suspend fun getOpenOrders(@Query("payment_status") payment_status: LinkedHashMap<String, String>): OpenOrderResponse*/
 
     /*@GET(OPEN_ORDERS)
     suspend fun getOpenOrders(@Query("payment_status") payment_status: String): OpenOrderResponse*/
@@ -675,6 +676,14 @@ interface ApiService {
         @Query("end_date") endDate: String,
         @Query("order_status") order_status: String
     ): OnlineOrderResponseModel
+
+    @GET(EMAIL_REPORT_SUMMARY)
+    suspend fun sendEmailReportSummary(
+        @Query("start_date") starDate: String,
+        @Query("end_date") endDate: String,
+        @Query("email") email: String,
+        @Query("team_member_id") team_member_id: String
+    ): BaseResponse
 
 
     @PUT(ACCEPTED_DECLINE_ONLINEORDER)
@@ -710,7 +719,7 @@ interface ApiService {
         @Query("page") page: String,
         @Query("per_page") perPage: String
 
-        ): CashLogResponse
+    ): CashLogResponse
 
     @PUT(UPDATE_TIP)
     suspend fun orderUpdateTip(

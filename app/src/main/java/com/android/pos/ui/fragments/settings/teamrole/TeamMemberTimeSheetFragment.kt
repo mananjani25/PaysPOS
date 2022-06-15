@@ -11,9 +11,9 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
-import androidx.core.view.MenuHost
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -92,6 +92,20 @@ class TeamMemberTimeSheetFragment : Fragment(), AdapterView.OnItemSelectedListen
         observeShowProgress()
         navigate()
 
+        binding.includeView.txtEmail.setOnClickListener {
+            val bundle = Bundle()
+            bundle.putBoolean("isFromTimeSheet", true)
+            bundle.putString("email", "")
+            bundle.putInt("type", 2)
+            findNavController().navigate(
+                R.id.action_teamMemberTimeSheetFragment_to_sendReceiptFragment,
+                bundle
+            )
+        }
+        setFragmentResultListener("request_key_timesheet") { _: String, bundle: Bundle ->
+            viewModel.sendEmailTimeSheet( bundle.getString("email").toString(),"")
+
+        }
         binding.includeView.spRoles.onItemSelectedListener = this
 
 
@@ -181,6 +195,7 @@ class TeamMemberTimeSheetFragment : Fragment(), AdapterView.OnItemSelectedListen
         super.onCreate(savedInstanceState)
         viewModel.setCurrentDate(myCalendar)
     }
+
     private fun differnceTrue(date1: String, date2: String?): Long {
         var dateType1: Date
         var dateType2: Date
@@ -256,6 +271,7 @@ class TeamMemberTimeSheetFragment : Fragment(), AdapterView.OnItemSelectedListen
         }
         return "$startDatestring $timestring"
     }
+
     private fun startDatePickerObserver() {
         viewModel.startDateSelection.observe(requireActivity()) { event ->
             event.getContentIfNotHandled()?.let {

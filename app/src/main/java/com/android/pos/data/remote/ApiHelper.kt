@@ -543,6 +543,15 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
         getResult {
             apiService.getReportEOD(startDate, endDate, terminalId, employee_id, email)
         }
+    suspend fun sendEmailTimeSheet(
+        startDate: String,
+        endDate: String,
+        email: String,
+        employee_id: String
+    ) =
+        getResult {
+            apiService.sendEmailReportSummary(startDate, endDate, email, employee_id)
+        }
 
     suspend fun getOrderHistory(id: String) = getResult {
         apiService.getCustomerOrderHistory(id)

@@ -280,6 +280,7 @@ object Constants {
 
     const val REPORT_SUMMARY = "reports/report_summary"
     const val REPORT_EOD_SUMMARY = "reports/employee_eod_report"
+    const val EMAIL_REPORT_SUMMARY = "reports/email_timesheet"
     const val ORDER_HISTORY = "customers/{id}/customer_order_history"
 
     const val BUSINESS_NAME = "business_name"

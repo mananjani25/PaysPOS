@@ -674,6 +674,9 @@
             android:id="@+id/action_teamMemberTimeSheetFragment_to_singleTeamMemberTimeSheetFragment"
             app:destination="@id/singleTeamMemberTimeSheetFragment" />
         <action
+            android:id="@+id/action_teamMemberTimeSheetFragment_to_sendReceiptFragment"
+            app:destination="@id/sendReceiptFragment" />
+        <action
             android:id="@+id/action_teamMemberTimeSheetFragment_to_dashboardCategoryNew"
             app:destination="@id/dashboardCategoryBoldPOS"
             app:popUpToInclusive="true" />
@@ -686,6 +689,9 @@
             android:id="@+id/action_singleTeamMemberTimeSheetFragment_to_dashboardCategoryNew"
             app:destination="@id/dashboardCategoryBoldPOS"
             app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_singleteamMemberTimeSheetFragment_to_sendReceiptFragment"
+            app:destination="@id/sendReceiptFragment" />
     </fragment>
     <fragment
         android:id="@+id/userAccessPermissionListFragment"
