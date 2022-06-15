@@ -31,7 +31,7 @@ fun padLine(
     if (partOne != null) {
         Log.e("partOne", partOne.length.toString())
         if (partTwo != null) {
-            Log.e("partOne",partTwo.length.toString())
+            Log.e("partOne", partTwo.length.toString())
         }
     }
 
@@ -353,8 +353,8 @@ fun addItemsInOrderSalesDetails(
     var data = details.orderId
     data += repeat(" ", 10 - details.orderId.length) + MethodUtils.roundOffAmount(details.tip)
     data += repeat(" ", 18 - data.length) + MethodUtils.roundOffAmount(details.serviceCharge)
-    data+= repeat(" ",27-data.length)+details.payType
-    data+= repeat(" ",39-data.length) + MethodUtils.roundOffAmount(details.amount)
+    data += repeat(" ", 27 - data.length) + details.payType
+    data += repeat(" ", 39 - data.length) + MethodUtils.roundOffAmount(details.amount)
 
     builder.addText(data)
     return builder
@@ -995,41 +995,90 @@ fun addWholeTbItemToGuest(
     )
 
 
-    /*if (obj.modifiers.isNotEmpty() && showModifiers) {
-        for (j in 0 until obj.modifiers.size) {
-            val modifierObj = obj.modifiers.get(j)
-            builder.addTextLineSpace(30)
-            builder.addFeedUnit(30)
-            builder.addTextFont(Builder.FONT_E)
-            //builder.addTextAlign(Builder.ALIGN_LEFT)
-            builder.addTextLang(Builder.LANG_EN)
-            addCustomerTextSize(builder, font)
-            builder.addTextStyle(
-                Builder.FALSE,
-                Builder.FALSE,
-                Builder.FALSE,
-                Builder.COLOR_1
-            )
-            builder.addTextPosition(4)
-            builder.addText(
-                padLineCustomerItem(
-                    "   " + modifierObj.name,
-                    "$" + MethodUtils.roundOffAmountString(modifierObj.price.toDouble() * modifierObj.itemQuantity),
-                    if (font == Constants.LARGE) {
-                        23
-                    } else {
-                        47
-                    }
+    return builder
+}
+
+
+fun addWholeTbItemToGuest(
+    list: TbItem,
+    font: String,
+    showModifiers: Boolean,
+    guestCount: Int,
+    serviceChargeList: ArrayList<TbServiceCharge>
+) {
+
+    val obj = list
+
+    var subTotal = (obj.price * obj.itemQuantity).toDouble()
+
+    if (obj.modifiers.isNotEmpty()) {
+        obj.modifiers.forEach {
+            subTotal += it.price * it.itemQuantity
+        }
+    }
+    var WTTaxes = 0.0
+    var serviceCharge = 0.0
+
+
+    obj.taxes?.forEach { tax ->
+        if (tax.isActive) {
+            WTTaxes += if (tax.taxType == "Percentage") {
+
+                var modifierPrice = 0.0
+                val price =
+                    (obj.price * obj.itemQuantity) - obj.discountPrice
+
+                obj.modifiers.forEach {
+                    modifierPrice += (it.price * it.itemQuantity)
+                }
+
+                val totalPrice = price + modifierPrice
+
+                val itemTaxPrice =
+                    (tax.rate * totalPrice) / 100
+                Log.e("itemTaxPrice", "" + itemTaxPrice)
+                String.format("%.2f", itemTaxPrice)
+                    .toDouble()
+            } else {
+
+                String.format(
+                    "%.2f",
+                    tax.rate * obj.itemQuantity
                 )
-            )
-
-
+                    .toDouble()
+            }
         }
 
 
-    }*/
+    }
 
-    return builder
+    if (serviceChargeList.isNotEmpty()) {
+        serviceChargeList.forEach {
+            if (it.isEnabled) {
+                serviceCharge += (subTotal * it.percentage) / 100
+            }
+        }
+    }
+
+
+    val finalAmt = MethodUtils.roundOffAmount((subTotal) / guestCount)
+
+
+    SunmiPrinterApi.getInstance().enableBold(false)
+    SunmiPrinterApi.getInstance().setFontZoom(1, 1)
+    SunmiPrinterApi.getInstance().printText(
+        padLineCustomerItem(
+            obj.itemQuantity.toString() + "x " + obj.name,
+            "" + finalAmt,
+            if (font == Constants.LARGE) {
+                48
+            } else {
+                48
+            }
+        ).toString()
+    )
+    SunmiPrinterApi.getInstance().lineWrap(1)
+
 }
 
 fun addOrderItemForDineIn(
@@ -1123,6 +1172,73 @@ fun addOrderItemForDineIn(
 
 
     return builder
+}
+
+
+fun addOrderItemForDineIn(
+    list: TbItem,
+    font: String,
+    showModifiers: Boolean
+) {
+
+
+    val obj = list
+
+
+    SunmiPrinterApi.getInstance().enableBold(false)
+    SunmiPrinterApi.getInstance().setFontZoom(1, 1)
+    SunmiPrinterApi.getInstance().printText(
+        padLineCustomerItem(
+            obj.itemQuantity.toString() + "x " + obj.name,
+            "$" + MethodUtils.roundOffAmountString(totalPriceDineInItem(obj)),
+            if (font == Constants.LARGE) {
+                48
+            } else {
+                48
+            }
+        ).toString()
+    )
+    SunmiPrinterApi.getInstance().lineWrap(1)
+
+
+
+    if (obj.modifiers.isNotEmpty() && showModifiers) {
+        for (j in 0 until obj.modifiers.size) {
+            val modifierObj = obj.modifiers.get(j)
+
+
+            SunmiPrinterApi.getInstance().enableBold(false)
+            SunmiPrinterApi.getInstance().setFontZoom(1, 1)
+            SunmiPrinterApi.getInstance().printText(
+                padLineCustomerItem(
+                    "   " + modifierObj.name,
+                    "$" + MethodUtils.roundOffAmountString(modifierObj.price.toDouble() * modifierObj.itemQuantity),
+                    if (font == Constants.LARGE) {
+                        47
+                    } else {
+                        47
+                    }
+                ).toString()
+            )
+            SunmiPrinterApi.getInstance().lineWrap(1)
+
+
+        }
+
+
+    }
+
+    if (obj.note.isNotEmpty()) {
+
+        SunmiPrinterApi.getInstance().enableBold(false)
+        SunmiPrinterApi.getInstance().setFontZoom(1, 1)
+        SunmiPrinterApi.getInstance().printText("   Note: " + obj.note)
+        SunmiPrinterApi.getInstance().lineWrap(1)
+
+
+    }
+
+
 }
 
 
