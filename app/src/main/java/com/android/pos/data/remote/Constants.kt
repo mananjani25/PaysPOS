@@ -574,6 +574,7 @@ object Constants {
     // broadcast
     const val SEND_CLOCKOUT_NOTIFICATION = "send_clockout_notification"
     const val ONLINE_ORDER_GET_NOTIFICATION = "online_order_get_notification"
+    const val ONLINE_ORDER_REFRESH = "online_order_refresh"
 
 
     // dinein
