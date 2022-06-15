@@ -228,13 +228,13 @@ class CartFragment(
         setupTaxAdapter()
 
 
-        if(taxBirfurcationAdapter.taxlist.size==0){
+        if (taxBirfurcationAdapter.taxlist.size == 0) {
             binding.imgDropdown.gone()
-        }else{
+        } else {
             binding.imgDropdown.visible()
         }
         binding.linearTaxDetail.setOnClickListener {
-            if(taxBirfurcationAdapter.taxlist.size>0){
+            if (taxBirfurcationAdapter.taxlist.size > 0) {
                 if (!taxClickable) {
                     Log.d(TAG, "onViewCreated: " + taxBirfurcationAdapter.taxlist.size)
                     taxClickable = true
@@ -535,14 +535,17 @@ class CartFragment(
 
     }
 
-    fun setTaxBifurcationData(taxlistData:ArrayList<TaxData>){
+    fun setTaxBifurcationData(taxlistData: ArrayList<TaxData>) {
         if (taxlistData?.isNotEmpty()) {
             Log.d(TAG, "addObserver: " + taxlistData.size)
             setupTaxAdapter()
+            binding.imgDropdown.visible()
+            binding.imgDropdown.setImageResource(R.drawable.ic_arrow_drop_down)
             taxBirfurcationAdapter.setList(taxlistData)
         }
     }
-    fun reSetTaxBifurcationData(){
+
+    fun reSetTaxBifurcationData() {
         taxBirfurcationAdapter.clearList()
         binding.liinearInfoLayout.layoutParams.height =
             resources.getDimension(R.dimen._50sdp).toInt()
@@ -678,12 +681,13 @@ class CartFragment(
                     }
 
                     viewModel.itemCalculation(it, binding.txtTotal, requireContext())
+                    setTaxBifurcationData(it[0].taxlistDynamic as ArrayList<TaxData>)
 
 
                 } else {
                     viewModel.clearListTax()
                     cartAdapter.clearList()
-                    taxBirfurcationAdapter.clearList()
+                    reSetTaxBifurcationData()
                     binding.txtTotal.text = MethodUtils.roundOffAmount(0.0)
                     binding.txtSubTotal.text = MethodUtils.roundOffAmount(0.0)
                     binding.txtTax.text = MethodUtils.roundOffAmount(0.0)
@@ -869,7 +873,7 @@ class CartFragment(
                             } else {
                                 binding.txtDineInProceed.setText("Proceed To Fire")
                             }
-
+                            setTaxBifurcationData(it[0].taxlistDynamic as ArrayList<TaxData>)
                             binding.txtSubTotal.text =
                                 MethodUtils.roundOffAmount(viewModel.subTotalPrice)
                             binding.txtTax.text = MethodUtils.roundOffAmount(viewModel.totalTax)
@@ -969,7 +973,7 @@ class CartFragment(
                             }
                             dineInCartAdapter.clearList()
                             viewModel.clearListTax()
-                            taxBirfurcationAdapter.clearList()
+                            reSetTaxBifurcationData()
 //                        var data: TbCustomer? = prefProvider.getCustomerData()
 //                        if (data != null) {
 //                            if (viewModel.loyaltyPointCondition(data)) {
@@ -998,12 +1002,6 @@ class CartFragment(
                         binding.rvCartDineIn.gone()
                         binding.rvCartList.visible()
                         if (it.isNotEmpty()) {
-                            binding.liinearInfoLayout.layoutParams.height =
-                                resources.getDimension(R.dimen._50sdp).toInt()
-                            taxClickable = false
-                            binding.imgDropdown.setImageResource(R.drawable.ic_arrow_drop_down)
-                            binding.relativeDynamicTax.gone()
-                            binding.imgDropdown.visible()
                             viewModel.destroyedList.clear()
                             it[0].items?.filter { item -> item.isDestroy }?.let {
                                 viewModel.destroyedList.addAll(it)
@@ -1054,11 +1052,7 @@ class CartFragment(
                                 requireContext()
                             )
                             viewModel.setCartModel(it)
-                            if (it[0].taxlistDynamic?.isNotEmpty() == true) {
-                                Log.d(TAG, "addObserver: " + it[0].taxlistDynamic?.size)
-                                setupTaxAdapter()
-                                taxBirfurcationAdapter.setList(it[0].taxlistDynamic as ArrayList<TaxData>)
-                            }
+                            setTaxBifurcationData(it[0].taxlistDynamic as ArrayList<TaxData>)
                             if (viewModel.order_note.isNotEmpty()) {
                                 binding.relativeOrderNotes?.visibility = View.VISIBLE
                                 binding.txtOrderNote?.text = viewModel.order_note
@@ -1168,7 +1162,7 @@ class CartFragment(
                             binding.imgDropdown.gone()
                             viewModel.clearListTax()
                             cartAdapter.clearList()
-                            taxBirfurcationAdapter.clearList()
+                            reSetTaxBifurcationData()
                             binding.relativeOrderNotes?.visibility = View.GONE
                             binding.txtTotal.text = MethodUtils.roundOffAmount(0.0)
                             binding.txtSubTotal.text = MethodUtils.roundOffAmount(0.0)
