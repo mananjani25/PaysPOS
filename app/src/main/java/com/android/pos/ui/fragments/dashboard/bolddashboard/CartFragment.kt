@@ -239,14 +239,30 @@ class CartFragment(
                     Log.d(TAG, "onViewCreated: " + taxBirfurcationAdapter.taxlist.size)
                     taxClickable = true
                     if (taxBirfurcationAdapter.taxlist.size == 1) {
-                        binding.liinearInfoLayout.layoutParams.height =
-                            resources.getDimension(R.dimen._60sdp).toInt()
+                        if (viewModel.order_note.isNotEmpty()) {
+                            binding.liinearInfoLayout.layoutParams.height =
+                                resources.getDimension(R.dimen._70sdp).toInt()
+                        } else {
+                            binding.liinearInfoLayout.layoutParams.height =
+                                resources.getDimension(R.dimen._60sdp).toInt()
+                        }
                     } else if (taxBirfurcationAdapter.taxlist.size == 2) {
-                        binding.liinearInfoLayout.layoutParams.height =
-                            resources.getDimension(R.dimen._70sdp).toInt()
+                        if (viewModel.order_note.isNotEmpty()) {
+                            binding.liinearInfoLayout.layoutParams.height =
+                                resources.getDimension(R.dimen._80sdp).toInt()
+                        } else {
+                            binding.liinearInfoLayout.layoutParams.height =
+                                resources.getDimension(R.dimen._70sdp).toInt()
+                        }
                     } else {
-                        binding.liinearInfoLayout.layoutParams.height =
-                            resources.getDimension(R.dimen._95sdp).toInt()
+                        if (viewModel.order_note.isNotEmpty()) {
+                            binding.liinearInfoLayout.layoutParams.height =
+                                resources.getDimension(R.dimen._100sdp).toInt()
+                        } else {
+                            binding.liinearInfoLayout.layoutParams.height =
+                                resources.getDimension(R.dimen._95sdp).toInt()
+                        }
+
                     }
                     binding.imgDropdown.setImageResource(R.drawable.ic_solid_up_arrow)
                     binding.relativeDynamicTax.visible()
@@ -539,9 +555,27 @@ class CartFragment(
         if (taxlistData?.isNotEmpty()) {
             Log.d(TAG, "addObserver: " + taxlistData.size)
             setupTaxAdapter()
+            taxClickable = false
+            if(viewModel.order_note.isNotEmpty()){
+                binding.liinearInfoLayout.layoutParams.height =
+                    resources.getDimension(R.dimen._70sdp).toInt()
+            }else{
+                binding.liinearInfoLayout.layoutParams.height =
+                    resources.getDimension(R.dimen._50sdp).toInt()
+            }
+
             binding.imgDropdown.visible()
             binding.imgDropdown.setImageResource(R.drawable.ic_arrow_drop_down)
+            binding.imgDropdown.visible()
             taxBirfurcationAdapter.setList(taxlistData)
+        }else{
+            if(viewModel.order_note.isNotEmpty()){
+                binding.liinearInfoLayout.layoutParams.height =
+                    resources.getDimension(R.dimen._60sdp).toInt()
+            }else{
+                binding.liinearInfoLayout.layoutParams.height =
+                    resources.getDimension(R.dimen._50sdp).toInt()
+            }
         }
     }
 
@@ -606,13 +640,9 @@ class CartFragment(
                         taxBirfurcationAdapter.setList(it[0].taxlistDynamic as ArrayList<TaxData>)
                     }
                     if (viewModel.order_note.isNotEmpty()) {
-                        binding.liinearInfoLayout.layoutParams.height =
-                            resources.getDimension(R.dimen._60sdp).toInt()
                         binding.relativeOrderNotes?.visibility = View.VISIBLE
                         binding.txtOrderNote?.text = viewModel.order_note
                     } else {
-                        binding.liinearInfoLayout.layoutParams.height =
-                            resources.getDimension(R.dimen._50sdp).toInt()
                         binding.relativeOrderNotes?.visibility = View.GONE
                     }
 
@@ -884,13 +914,9 @@ class CartFragment(
                             binding.txtNoncashAdj.text =
                                 MethodUtils.roundOffAmount(viewModel.cashdiscountAmount)
                             if (viewModel.order_note.isNotEmpty()) {
-                                binding.liinearInfoLayout.layoutParams.height =
-                                    resources.getDimension(R.dimen._50sdp).toInt()
                                 binding.relativeOrderNotes?.visibility = View.VISIBLE
                                 binding.txtOrderNote?.text = viewModel.order_note
                             } else {
-                                binding.liinearInfoLayout.layoutParams.height =
-                                    resources.getDimension(R.dimen._50sdp).toInt()
                                 binding.relativeOrderNotes?.visibility = View.GONE
                             }
 //                        var data: TbCustomer? = prefProvider.getCustomerData()
@@ -1141,13 +1167,6 @@ class CartFragment(
                                     }
                                 }
                             } else {
-                                if (viewModel.order_note.isNotEmpty()) {
-                                    binding.liinearInfoLayout.layoutParams.height =
-                                        resources.getDimension(R.dimen._60sdp).toInt()
-                                } else {
-                                    binding.liinearInfoLayout.layoutParams.height =
-                                        resources.getDimension(R.dimen._50sdp).toInt()
-                                }
                                 binding.relativeLoylatyPoints.visibility = View.GONE
                                 binding.lblLoyaltyPoints.visibility = View.GONE
                             }

@@ -417,7 +417,9 @@ class DashBoardCategoryViewModel @Inject constructor(
         if (cartList != null && cartList.isEmpty()) {
             // empty cart hoy to new cart create kare
             var cartModel = item?.let { addCartModel(it, isManualSales) }
-            cartModel = taxBifurcationCalculation(item!!, cartModel!!, type)
+            if(item!=null){
+                cartModel = taxBifurcationCalculation(item!!, cartModel!!, type)
+            }
             if (cartModel != null) {
                 addCart(cartModel)
             }
@@ -425,7 +427,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
         } else {
             if (cartList?.get(0)?.orderType == DINE_IN) {
-                val cartModel = cartList[0]
+                var cartModel = cartList[0]
                 order_note = cartList[0].note
                 cartModel.dineInList = dineInList
                 if (type == ADD || type == UPDATE) {
@@ -480,6 +482,9 @@ class DashBoardCategoryViewModel @Inject constructor(
                                         dineInList.get(0).floorPlanTable
 
                                     cartModel.dineInList = dineIn
+                                    if(item!=null){
+                                        cartModel = taxBifurcationCalculation(item!!, cartModel, type)
+                                    }
                                     addCart(cartModel)
                                 } else {
                                     if (index != -1) {
@@ -506,9 +511,15 @@ class DashBoardCategoryViewModel @Inject constructor(
                                         dineIn.get(0).floorPlanTable =
                                             dineInList.get(0).floorPlanTable
                                         cartModel.dineInList = dineIn
+                                        if(item!=null){
+                                            cartModel = taxBifurcationCalculation(item!!, cartModel, type)
+                                        }
                                         addCart(cartModel)
                                     } else {
                                         cartModel.dineInList = dineInList
+                                        if(item!=null){
+                                            cartModel = taxBifurcationCalculation(item!!, cartModel, type)
+                                        }
                                         addCart(cartModel)
 
                                     }
@@ -531,7 +542,9 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 dineInList.get(dineInList.get(0).selectedPosition).items.add(item)
                             }
                             cartModel.dineInList = dineInList
-
+                            if(item!=null){
+                                cartModel = taxBifurcationCalculation(item!!, cartModel, type)
+                            }
                             addCart(cartModel)
                         }
 
@@ -568,6 +581,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                     }
 
                     cartModel.dineInList = dine
+                    cartModel = taxBifurcationCalculation(item!!, cartModel, type)
                     addCart(cartModel)
 
 
@@ -580,6 +594,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                     cartModel.orderTypeName = DINE_IN
                     cartModel.orderType = DINE_IN
                     cartModel.dineInList = dineInList
+                    cartModel = taxBifurcationCalculation(item!!, cartModel, type)
                     addCart(cartModel)
 
                 }

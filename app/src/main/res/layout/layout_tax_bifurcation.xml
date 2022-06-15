@@ -18,6 +18,9 @@
             android:layout_height="wrap_content"
             android:text="@string/service_charge"
             android:inputType="textCapWords"
+            android:textIsSelectable="false"
+            android:longClickable="false"
+            android:clickable="false"
             android:textColor="@color/hint_color"
             android:textSize="@dimen/_6mdpi" />
 
@@ -30,6 +33,9 @@
             android:layout_height="wrap_content"
             android:text="@string/_0_00"
             android:layout_gravity="end"
+            android:textIsSelectable="false"
+            android:longClickable="false"
+            android:clickable="false"
             android:gravity="end"
             android:textColor="@color/txtColor"
             android:textSize="@dimen/text_size_medium" />
@@ -41,6 +47,9 @@
             android:layout_weight="3"
             android:layout_height="wrap_content"
             android:gravity="end"
+            android:textIsSelectable="false"
+            android:longClickable="false"
+            android:clickable="false"
             android:text="@string/_0_00"
             android:textColor="@color/txtColor"
             android:textSize="@dimen/text_size_medium" />
