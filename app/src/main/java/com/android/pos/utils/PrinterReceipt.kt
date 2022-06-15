@@ -899,6 +899,68 @@ fun addOrderItemOpenOrder(
 
 }
 
+fun addOrderItemOpenOrderSunmi(
+    list: List<OpenOrderResponse.Data.Order.OrderItem>,
+    font: String,
+    showModifiers: Boolean
+) {
+    for (i in 0 until list.size) {
+        val obj = list.get(i)
+
+
+        SunmiPrinterApi.getInstance().enableBold(false)
+        SunmiPrinterApi.getInstance().setFontZoom(1, 1)
+        SunmiPrinterApi.getInstance().printText(
+            padLineCustomerItem(
+                obj.quantity.toString() + "x " + obj.itemName,
+                "$" + MethodUtils.roundOffAmountString(totalPriceOpenOrder(obj)),
+                if (font == Constants.LARGE) {
+                    24
+                } else {
+                    48
+                }
+            ).toString()
+        )
+        SunmiPrinterApi.getInstance().lineWrap(1)
+
+
+
+        if (obj.orderItemModifiers.isNotEmpty() && showModifiers) {
+            for (j in 0 until obj.orderItemModifiers.size) {
+                val modifierObj = obj.orderItemModifiers.get(j)
+
+                SunmiPrinterApi.getInstance().enableBold(false)
+                SunmiPrinterApi.getInstance().setFontZoom(1, 1)
+                SunmiPrinterApi.getInstance().printText(
+                    padLineCustomerItem(
+                        "   " + modifierObj.name,
+                        "$" + MethodUtils.roundOffAmountString(modifierObj.price.toDouble() * modifierObj.quantity),
+                        if (font == Constants.LARGE) {
+                            48
+                        } else {
+                            48
+                        }
+                    ).toString()
+                )
+                SunmiPrinterApi.getInstance().lineWrap(1)
+
+            }
+
+        }
+
+        if (obj.note.isNotEmpty()) {
+
+            SunmiPrinterApi.getInstance().enableBold(false)
+            SunmiPrinterApi.getInstance().setFontZoom(1, 1)
+            SunmiPrinterApi.getInstance().printText("   Note: " + obj.note)
+            SunmiPrinterApi.getInstance().lineWrap(1)
+
+        }
+    }
+
+
+}
+
 fun addWholeTbItemToGuest(
     builder: Builder,
     list: TbItem,

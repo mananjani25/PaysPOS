@@ -913,75 +913,111 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         divideDiscount: Double = 0.0
     ) {
 
-        PrinterClass.closePrinter()
-        if (PrinterClass.getPrinter() == null) {
-            var printer: Print? = Print(requireContext())
-            if (printer != null) {
+        if (customerReceiptPrinters.name.startsWith("CloudPrint", true)) {
+
+            if (isGuest) {
+
+                val checkOutDineInModel =
+                    requireArguments().getParcelable<GuestDataModel>(Constants.DINE_IN_GUEST_PAYMENT_DATA)
+                Log.e(
+                    TAG,
+                    "checkOutDineInModel:  ${Gson().toJson(checkOutDineInModel)}"
+                )
+
+
+                if (checkOutDineInModel != null) {
+                    generateGuestPrint(
+                        customerReceiptPrinters,
+                        type,
+                        paymentType,
+                        listGuestItem,
+                        guestName,
+                        listWTitems,
+                        checkOutDineInModel
+                    )
+                }
+
+            } else {
+
+
+                generateDineInPrint(customerReceiptPrinters, type, "")
+            }
+
+        } else {
+
+            PrinterClass.closePrinter()
+            if (PrinterClass.getPrinter() == null) {
+                var printer: Print? = Print(requireContext())
+                if (printer != null) {
 //                printer.setStatusChangeEventCallback(this)
 //                printer.setBatteryStatusChangeEventCallback(this)
-            }
-
-            val enabled = Print.FALSE
-
-            try {
-                var interval: Int = 1000
-                if (customerReceiptPrinters.printer_type == Constants.BLUETOOTH) {
-                    interval = PrinterClass.BLUETOOTH_TIMEOUT
                 }
-                printer?.openPrinter(
 
+                val enabled = Print.FALSE
+
+                try {
+                    var interval: Int = 1000
                     if (customerReceiptPrinters.printer_type == Constants.BLUETOOTH) {
-                        Print.DEVTYPE_BLUETOOTH
-                    } else {
-                        Print.DEVTYPE_TCP
-                    },
-                    customerReceiptPrinters.ipAddress,
-                    enabled,
-                    1000
-                )
-                //printer?.setStatusChangeEventCallback(this)
+                        interval = PrinterClass.BLUETOOTH_TIMEOUT
+                    }
+                    printer?.openPrinter(
 
-            } catch (e: Exception) {
-                Log.e(TAG, "PrinterException: " + e.message)
-                printer = null
-                return
-            }
-            try {
+                        if (customerReceiptPrinters.printer_type == Constants.BLUETOOTH) {
+                            Print.DEVTYPE_BLUETOOTH
+                        } else {
+                            Print.DEVTYPE_TCP
+                        },
+                        customerReceiptPrinters.ipAddress,
+                        enabled,
+                        1000
+                    )
+                    //printer?.setStatusChangeEventCallback(this)
 
-                if (printer != null) {
-                    PrinterClass.setPrinter(printer)
-                    if (isGuest) {
+                } catch (e: Exception) {
+                    Log.e(TAG, "PrinterException: " + e.message)
+                    printer = null
+                    return
+                }
+                try {
 
-                        val checkOutDineInModel =
-                            requireArguments().getParcelable<GuestDataModel>(Constants.DINE_IN_GUEST_PAYMENT_DATA)
-                        Log.e(TAG, "checkOutDineInModel:  ${Gson().toJson(checkOutDineInModel)}")
+                    if (printer != null) {
+                        PrinterClass.setPrinter(printer)
+                        if (isGuest) {
 
-
-                        if (checkOutDineInModel != null) {
-                            generateGuestPrint(
-                                customerReceiptPrinters,
-                                type,
-                                paymentType,
-                                listGuestItem,
-                                guestName,
-                                listWTitems,
-                                checkOutDineInModel
+                            val checkOutDineInModel =
+                                requireArguments().getParcelable<GuestDataModel>(Constants.DINE_IN_GUEST_PAYMENT_DATA)
+                            Log.e(
+                                TAG,
+                                "checkOutDineInModel:  ${Gson().toJson(checkOutDineInModel)}"
                             )
+
+
+                            if (checkOutDineInModel != null) {
+                                generateGuestPrint(
+                                    customerReceiptPrinters,
+                                    type,
+                                    paymentType,
+                                    listGuestItem,
+                                    guestName,
+                                    listWTitems,
+                                    checkOutDineInModel
+                                )
+                            }
+
+                        } else {
+
+
+                            generateDineInPrint(customerReceiptPrinters, type, "")
                         }
 
-                    } else {
-
-
-                        generateDineInPrint(customerReceiptPrinters, type, "")
                     }
 
+                } catch (e: Exception) {
+                    e.printStackTrace()
                 }
-
-            } catch (e: Exception) {
-                e.printStackTrace()
+            } else {
+                Log.e(TAG, "PrinterIsNotNull:")
             }
-        } else {
-            Log.e(TAG, "PrinterIsNotNull:")
         }
 
     }
@@ -2172,7 +2208,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             )
 
 
-            receiptModel?.order?.orderType?.trim()?.let { PrintSunmiUtils.printOrderType(it) }
+
+
+            getDineInOrderDetails?.orderType?.trim()?.let { PrintSunmiUtils.printOrderType(it) }
 
 
             if (customerSettingModel.fonts == LARGE) {
@@ -2286,6 +2324,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 SunmiPrinterApi.getInstance().lineWrap(1)
 
 
+
                 if (customerSettingModel.showTeam) {
 
                     val empName = padLine(
@@ -2296,7 +2335,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         },
                         "",
                         if (customerSettingModel.fonts == LARGE) {
-                            24
+                            48
                         } else {
                             48
                         }
@@ -2310,21 +2349,24 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
 
                 }
-                if (customerSettingModel.showOrderTime && receiptModel?.order?.createdAt?.isNotEmpty() == true) {
+
+
+
+                if (customerSettingModel.showOrderTime) {
 
 
                     val orderTime = padLine(
                         if (customerSettingModel.showOrderTime) {
-                            "Order Time:" + getReceiptFormatDateFromUTCServer(
+                            "Order Time:" + Constants.getReceiptFormatDateFromUTCServer(
                                 requireContext(),
-                                receiptModel?.order?.createdAt.toString()
+                                getDineInOrderDetails?.createdAt.toString()
                             )
                         } else {
                             ""
                         },
                         "",
-                        if (customerSettingModel.fonts == LARGE) {
-                            48
+                        if (customerSettingModel.fonts == Constants.LARGE) {
+                            24
                         } else {
                             48
                         }
@@ -2338,7 +2380,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                 }
 
-                if (customerSettingModel.showPrintTime && receiptModel?.order?.createdAt?.isNotEmpty() == true) {
+                if (customerSettingModel.showPrintTime) {
 
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
 
@@ -2374,8 +2416,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                     }
                 }
-            }
 
+            }
 
             PrintSunmiUtils.addHorizontal()
 
@@ -2395,6 +2437,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
             if (listGuestItem.isNotEmpty()) {
 
+                SunmiPrinterApi.getInstance().setAlignMode(1)
                 SunmiPrinterApi.getInstance().enableBold(false)
                 SunmiPrinterApi.getInstance().setFontZoom(1, 1)
                 SunmiPrinterApi.getInstance().printText(guestName)
@@ -2411,6 +2454,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                 }
             }
+            SunmiPrinterApi.getInstance().lineWrap(2)
 
             if (finaldisLocal != null) {
                 val str1 = padLine(
@@ -2633,6 +2677,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
             if (customerSettingModel.showTipSuggestion) {
 
+                SunmiPrinterApi.getInstance().setAlignMode(0)
                 SunmiPrinterApi.getInstance().enableBold(true)
                 SunmiPrinterApi.getInstance().setFontZoom(1, 1)
                 SunmiPrinterApi.getInstance().printText("Additional Tips")
@@ -2763,10 +2808,6 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             } else {
                 printDineInTable1()
             }
-
-
-
-
 
 
         } else {
@@ -4011,18 +4052,17 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
             if (paymentType.isNotEmpty()) {
 
-
                 SunmiPrinterApi.getInstance().setAlignMode(1)
                 SunmiPrinterApi.getInstance().enableBold(true)
-                SunmiPrinterApi.getInstance().setFontZoom(1, 2)
-                SunmiPrinterApi.getInstance().printText(paymentType + "\n")
+                SunmiPrinterApi.getInstance().setFontZoom(2, 2)
+                SunmiPrinterApi.getInstance().printText(paymentType)
                 SunmiPrinterApi.getInstance().lineWrap(1)
 
             }
 
             SunmiPrinterApi.getInstance().setAlignMode(1)
             SunmiPrinterApi.getInstance().enableBold(true)
-            SunmiPrinterApi.getInstance().setFontZoom(1, 2)
+            SunmiPrinterApi.getInstance().setFontZoom(2, 2)
             SunmiPrinterApi.getInstance().printText("Paid")
             SunmiPrinterApi.getInstance().lineWrap(1)
 
@@ -4233,7 +4273,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
             PrintSunmiUtils.addHorizontal()
 
-
+            SunmiPrinterApi.getInstance().lineWrap(1)
 
             for (i in 0 until dineInList?.size) {
                 if (dineInList[i].isHeader == 0) {
@@ -4243,7 +4283,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                         if (dineInList[i]?.customer == null) {
 
-                            SunmiPrinterApi.getInstance().setAlignMode(0)
+                            SunmiPrinterApi.getInstance().setAlignMode(1)
                             SunmiPrinterApi.getInstance().enableBold(false)
                             SunmiPrinterApi.getInstance().setFontZoom(1, 1)
                             dineInList[i]?.title?.let {
@@ -4255,7 +4295,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                         } else {
 
-                            SunmiPrinterApi.getInstance().setAlignMode(0)
+                            SunmiPrinterApi.getInstance().setAlignMode(1)
                             SunmiPrinterApi.getInstance().enableBold(false)
                             SunmiPrinterApi.getInstance().setFontZoom(1, 1)
                             SunmiPrinterApi.getInstance().printText(
@@ -4280,12 +4320,13 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         )
                     }
 
+                    SunmiPrinterApi.getInstance().lineWrap(1)
                 }
 
 
             }
 
-
+            SunmiPrinterApi.getInstance().lineWrap(2)
 
             if (getDineInOrderDetails?.totalDiscount != null) {
 
@@ -4558,21 +4599,26 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         ""
                     },
                     if (customerSettingModel.fonts == LARGE) {
-                        24
+                        48
                     } else {
                         48
                     }
                 ).toString()
+
+                Log.e("showTipLineForCash", str7.toString().length.toString())
+                SunmiPrinterApi.getInstance().setAlignMode(0)
                 SunmiPrinterApi.getInstance().enableBold(true)
                 SunmiPrinterApi.getInstance().setFontZoom(1, 1)
                 SunmiPrinterApi.getInstance().printText(str7)
-                SunmiPrinterApi.getInstance().lineWrap(2)
+                SunmiPrinterApi.getInstance().lineWrap(1)
 
             }
 
+            SunmiPrinterApi.getInstance().lineWrap(1)
 
             if (customerSettingModel.showTipSuggestion) {
 
+                SunmiPrinterApi.getInstance().setAlignMode(0)
                 SunmiPrinterApi.getInstance().enableBold(true)
                 SunmiPrinterApi.getInstance().setFontZoom(1, 1)
                 SunmiPrinterApi.getInstance().printText("Additional Tips")
@@ -4603,11 +4649,14 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         48
                     }
                 ).toString()
+                SunmiPrinterApi.getInstance().setAlignMode(0)
                 SunmiPrinterApi.getInstance().enableBold(true)
                 SunmiPrinterApi.getInstance().setFontZoom(1, 1)
                 SunmiPrinterApi.getInstance().printText(str10)
                 SunmiPrinterApi.getInstance().lineWrap(1)
 
+            } else {
+                SunmiPrinterApi.getInstance().lineWrap(1)
             }
 
             if (receiptModel?.order?.payments?.isNotEmpty() == true) {
@@ -4631,16 +4680,17 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
             if (getDineInOrderDetails?.note != null && getDineInOrderDetails?.note != "" && customerSettingModel.showOrderNote) {
 
+                SunmiPrinterApi.getInstance().setAlignMode(1)
                 SunmiPrinterApi.getInstance().enableBold(true)
                 SunmiPrinterApi.getInstance().setFontZoom(1, 1)
                 SunmiPrinterApi.getInstance().printText("Order Note")
                 SunmiPrinterApi.getInstance().lineWrap(1)
 
-
+                SunmiPrinterApi.getInstance().setAlignMode(1)
                 SunmiPrinterApi.getInstance().enableBold(false)
                 SunmiPrinterApi.getInstance().setFontZoom(1, 1)
                 SunmiPrinterApi.getInstance().printText(getDineInOrderDetails?.note!!)
-                SunmiPrinterApi.getInstance().lineWrap(1)
+                SunmiPrinterApi.getInstance().lineWrap(2)
             }
 
 
