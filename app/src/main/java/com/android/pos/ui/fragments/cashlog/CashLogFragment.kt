@@ -3,7 +3,6 @@ package com.android.pos.ui.fragments.cashlog
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
 import android.os.Bundle
-import android.provider.SyncStateContract
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -21,10 +20,10 @@ import com.android.pos.data.model.responseModel.VenueDetailsResponse
 import com.android.pos.data.remote.Constants
 import com.android.pos.databinding.FragmentCashLogBinding
 import com.android.pos.di.PrefProvider
-import com.android.pos.ui.activities.MainActivity
 import com.android.pos.ui.adapter.CashLogAdapter
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.ProgressUtils
+import com.android.pos.utils.callback.PaginationScrollListener
 import com.android.pos.utils.extensions.showAlert
 import com.android.pos.utils.statusUtils.Status
 import dagger.hilt.android.AndroidEntryPoint
@@ -46,6 +45,13 @@ class CashLogFragment : Fragment(), AdapterView.OnItemSelectedListener {
     private lateinit var startTime: TimePickerDialog.OnTimeSetListener
     private lateinit var endTime: TimePickerDialog.OnTimeSetListener
     private lateinit var terminalListGlobal: ArrayList<VenueDetailsResponse.Data.Terminal>
+
+    private var TOTAL_PAGES = 0
+    var PAGE_START = 1
+    private var isLoading = false
+    private var currentPage = PAGE_START
+    private var isLastPage = false
+
 
     @Inject
     lateinit var prefProvider: PrefProvider
@@ -98,7 +104,11 @@ class CashLogFragment : Fragment(), AdapterView.OnItemSelectedListener {
             timecalender.set(Calendar.MINUTE, minute)
             viewModel.startDate.value = timeCalculateForStartEndTime(hour, minute, "isstart")
             if (differnceTrue(viewModel.startDate.value!!, viewModel.endDate.value) <= 30) {
-                viewModel.apiCallTimeSheet(getTerminalId(binding.spTerminals.selectedItemPosition).toString())
+                currentPage = 1
+                viewModel.apiCallTimeSheet(
+                    getTerminalId(binding.spTerminals.selectedItemPosition).toString(),
+                    currentPage
+                )
             } else {
                 AlertUtils.showCustomAlertWithListenerWithOK(
                     requireActivity(),
@@ -114,7 +124,11 @@ class CashLogFragment : Fragment(), AdapterView.OnItemSelectedListener {
             timecalender.set(Calendar.MINUTE, minute)
             viewModel.endDate.value = timeCalculateForStartEndTime(hour, minute, "isend")
             if (differnceTrue(viewModel.endDate.value!!, viewModel.startDate.value) <= 30) {
-                viewModel.apiCallTimeSheet(getTerminalId(binding.spTerminals.selectedItemPosition).toString())
+                currentPage = 1
+                viewModel.apiCallTimeSheet(
+                    getTerminalId(binding.spTerminals.selectedItemPosition).toString(),
+                    currentPage
+                )
             } else {
                 AlertUtils.showCustomAlertWithListenerWithOK(
                     requireActivity(),
@@ -156,6 +170,41 @@ class CashLogFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
 
         }
+
+        val layoutManager =
+            LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+        binding.rvOpenOrder.layoutManager = layoutManager
+
+        binding.rvOpenOrder.addOnScrollListener(object :
+            PaginationScrollListener(layoutManager) {
+
+
+            override fun isLastPage(): Boolean {
+                return isLastPage
+            }
+
+            override fun isLoading(): Boolean {
+                return isLoading
+            }
+
+            override fun getTotalPageCount(): Int {
+                return 0
+            }
+
+
+            override fun loadMoreItems() {
+                currentPage += 1
+                if (currentPage <= TOTAL_PAGES) {
+                    isLoading = true
+                    viewModel.apiCallTimeSheet(getTerminalId(binding.spTerminals.selectedItemPosition).toString(),currentPage)
+
+                } else {
+                    adapter.showLoading(false)
+                }
+
+            }
+
+        })
 
 
         // viewModel.apiCallTimeSheet(getTerminalId(binding.spTerminals.selectedItemPosition).toString())
@@ -311,15 +360,52 @@ class CashLogFragment : Fragment(), AdapterView.OnItemSelectedListener {
                 if (it.data.cashes.isNotEmpty()) {
                     binding.txtNodata.visibility = View.GONE
                     binding.rvOpenOrder.visibility = View.VISIBLE
+
+                    TOTAL_PAGES = it.data.pagination.maxPageSize.toInt()
+                    adapter.showLoading(false)
+
                     cashLogResponse = it.data
                     binding.cashLogModel = cashLogResponse
+
+
+
                     adapter.add(cashLogResponse.cashes)
+
+                    isLoading = false
+                    if (currentPage != TOTAL_PAGES) {
+
+                        adapter.showLoading(true)
+                    }
+
                 } else {
-                    binding.rvOpenOrder.visibility = View.GONE
-                    binding.txtNodata.visibility = View.VISIBLE
-                    cashLogResponse = it.data
-                    binding.cashLogModel = cashLogResponse
-                    binding.txtNodata.text = it.message
+
+
+                    if (adapter.itemCount == 0) {
+                        binding.rvOpenOrder.visibility = View.GONE
+                        binding.txtNodata.visibility = View.VISIBLE
+                        cashLogResponse = it.data
+                        binding.cashLogModel = cashLogResponse
+                        binding.txtNodata.text = it.message
+
+                    } else {
+                        binding.txtNodata.visibility = View.GONE
+                        binding.rvOpenOrder.visibility = View.VISIBLE
+
+                        TOTAL_PAGES = it.data.pagination.maxPageSize.toInt()
+                        adapter.showLoading(false)
+
+                        cashLogResponse = it.data
+                        binding.cashLogModel = cashLogResponse
+
+                        adapter.add(cashLogResponse.cashes)
+
+                        isLoading = false
+                        if (currentPage != TOTAL_PAGES) {
+
+                            adapter.showLoading(true)
+                        }
+
+                    }
                 }
 
             }
@@ -397,7 +483,7 @@ class CashLogFragment : Fragment(), AdapterView.OnItemSelectedListener {
         terminalListGlobal.forEachIndexed { index, item ->
             if (item.id == prefProvider.getValueInt(Constants.TERMINAL_ID, 0)) {
                 Log.e("TerminalId", prefProvider.getValueInt(Constants.TERMINAL_ID, 0).toString())
-                Log.e("TerminalId name",item.name)
+                Log.e("TerminalId name", item.name)
                 binding.spTerminals.setSelection(index)
             }
         }
@@ -405,7 +491,8 @@ class CashLogFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
     override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
         viewModel.apiCallTimeSheet(
-            getTerminalId(binding.spTerminals.selectedItemPosition).toString()
+            getTerminalId(binding.spTerminals.selectedItemPosition).toString(),
+            currentPage
         )
 
     }

@@ -836,8 +836,14 @@ class PosRepository @Inject constructor(
     suspend fun cashInOut(data: CashLogRequest) = apiHelperNew.cashInOut(data)
 
 
-    suspend fun getCashLog(startDate: String, endDate: String, terminalId: String) =
-        apiHelperNew.getCashInOut(startDate, endDate, terminalId)
+    suspend fun getCashLog(
+        startDate: String,
+        endDate: String,
+        terminalId: String,
+        s: String,
+        s1: String
+    ) =
+        apiHelperNew.getCashInOut(startDate, endDate, terminalId,s,s1)
 
     suspend fun orderUpdateTip(orderId: Int, customerId: Double) =
         apiHelperNew.orderUpdateTip(orderId, customerId)
