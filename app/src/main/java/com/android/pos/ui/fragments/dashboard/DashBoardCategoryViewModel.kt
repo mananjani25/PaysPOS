@@ -303,6 +303,7 @@ class DashBoardCategoryViewModel @Inject constructor(
             totalDiscount = 0.0
             totalServiceCharge = 0.0
             totalCount = 0
+            order_note = ""
             posRepository.deleteManualSaleCart(prefProvider.getValueInt(EMPLOYEE_ID, 0))
 
         }
@@ -417,11 +418,24 @@ class DashBoardCategoryViewModel @Inject constructor(
         if (cartList != null && cartList.isEmpty()) {
             // empty cart hoy to new cart create kare
             var cartModel = item?.let { addCartModel(it, isManualSales) }
-            if(item!=null){
-                cartModel = taxBifurcationCalculation(item!!, cartModel!!, type)
+            if (item != null) {
+                if (type == UPDATE) {
+                    cartModel?.items?.forEach { items ->
+                        cartModel = taxBifurcationCalculation(items, cartModel!!, type)
+                    }
+                } else {
+                    cartModel = taxBifurcationCalculation(item, cartModel!!, type)
+                }
+            } else if (dineInList.isNotEmpty()) {
+                dineInList.forEach { dineInModel ->
+                    dineInModel.items.forEach { itemData ->
+                        cartModel = taxBifurcationCalculation(itemData, cartModel!!, type)
+                    }
+
+                }
             }
             if (cartModel != null) {
-                addCart(cartModel)
+                addCart(cartModel!!)
             }
 
 
@@ -482,8 +496,33 @@ class DashBoardCategoryViewModel @Inject constructor(
                                         dineInList.get(0).floorPlanTable
 
                                     cartModel.dineInList = dineIn
-                                    if(item!=null){
-                                        cartModel = taxBifurcationCalculation(item!!, cartModel, type)
+                                    if (item != null) {
+                                        if (type == UPDATE) {
+                                            dineInList.forEach { dineInModel ->
+                                                dineInModel.items.forEach { itemData ->
+                                                    cartModel = taxBifurcationCalculation(
+                                                        itemData,
+                                                        cartModel,
+                                                        type
+                                                    )
+                                                }
+
+                                            }
+                                        } else {
+                                            cartModel =
+                                                taxBifurcationCalculation(item, cartModel, type)
+                                        }
+                                    } else if (dineInList.isNotEmpty()) {
+                                        dineInList.forEach { dineInModel ->
+                                            dineInModel.items.forEach { itemData ->
+                                                cartModel = taxBifurcationCalculation(
+                                                    itemData,
+                                                    cartModel,
+                                                    type
+                                                )
+                                            }
+
+                                        }
                                     }
                                     addCart(cartModel)
                                 } else {
@@ -511,14 +550,73 @@ class DashBoardCategoryViewModel @Inject constructor(
                                         dineIn.get(0).floorPlanTable =
                                             dineInList.get(0).floorPlanTable
                                         cartModel.dineInList = dineIn
-                                        if(item!=null){
-                                            cartModel = taxBifurcationCalculation(item!!, cartModel, type)
+                                        if (item != null) {
+                                            if (type == UPDATE) {
+                                                dineInList.forEach { dineInModel ->
+                                                    dineInModel.items.forEach { itemData ->
+                                                        cartModel = taxBifurcationCalculation(
+                                                            itemData,
+                                                            cartModel,
+                                                            type
+                                                        )
+                                                    }
+
+                                                }
+                                            } else {
+                                                cartModel =
+                                                    taxBifurcationCalculation(
+                                                        item!!,
+                                                        cartModel,
+                                                        type
+                                                    )
+                                            }
+                                        } else if (dineInList.isNotEmpty()) {
+                                            dineInList.forEach { dineInModel ->
+                                                dineInModel.items.forEach { itemData ->
+                                                    cartModel = taxBifurcationCalculation(
+                                                        itemData,
+                                                        cartModel,
+                                                        type
+                                                    )
+                                                }
+
+                                            }
                                         }
                                         addCart(cartModel)
                                     } else {
                                         cartModel.dineInList = dineInList
-                                        if(item!=null){
-                                            cartModel = taxBifurcationCalculation(item!!, cartModel, type)
+                                        if (item != null) {
+                                            if (type == UPDATE) {
+                                                dineInList.forEach { dineInModel ->
+                                                    dineInModel.items.forEach { itemData ->
+                                                        cartModel = taxBifurcationCalculation(
+                                                            itemData,
+                                                            cartModel,
+                                                            type
+                                                        )
+                                                    }
+
+                                                }
+                                            } else {
+                                                cartModel =
+                                                    taxBifurcationCalculation(
+                                                        item!!,
+                                                        cartModel,
+                                                        type
+                                                    )
+                                            }
+
+                                        } else if (dineInList.isNotEmpty()) {
+                                            dineInList.forEach { dineInModel ->
+                                                dineInModel.items.forEach { itemData ->
+                                                    cartModel = taxBifurcationCalculation(
+                                                        itemData,
+                                                        cartModel,
+                                                        type
+                                                    )
+                                                }
+
+                                            }
                                         }
                                         addCart(cartModel)
 
@@ -542,8 +640,32 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 dineInList.get(dineInList.get(0).selectedPosition).items.add(item)
                             }
                             cartModel.dineInList = dineInList
-                            if(item!=null){
-                                cartModel = taxBifurcationCalculation(item!!, cartModel, type)
+                            if (item != null) {
+                                if (type == UPDATE) {
+                                    dineInList.forEach { dineInModel ->
+                                        dineInModel.items.forEach { itemData ->
+                                            cartModel = taxBifurcationCalculation(
+                                                itemData,
+                                                cartModel,
+                                                type
+                                            )
+                                        }
+
+                                    }
+                                } else {
+                                    cartModel = taxBifurcationCalculation(item!!, cartModel, type)
+                                }
+                            } else if (dineInList.isNotEmpty()) {
+                                dineInList.forEach { dineInModel ->
+                                    dineInModel.items.forEach { itemData ->
+                                        cartModel = taxBifurcationCalculation(
+                                            itemData,
+                                            cartModel,
+                                            type
+                                        )
+                                    }
+
+                                }
                             }
                             addCart(cartModel)
                         }
@@ -730,7 +852,17 @@ class DashBoardCategoryViewModel @Inject constructor(
                     }
 
                     var cartModel = cartList[0]
-                    cartModel = taxBifurcationCalculation(item!!, cartModel!!, type)
+                    if (type == UPDATE) {
+                        cartModel.items?.forEach { itemData ->
+                            cartModel = taxBifurcationCalculation(
+                                itemData,
+                                cartModel,
+                                type
+                            )
+                        }
+                    } else {
+                        cartModel = taxBifurcationCalculation(item!!, cartModel, type)
+                    }
                     cartModel.items = list
                     addCart(cartModel)
                     if (list.isEmpty()) {
@@ -749,7 +881,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                         if (item != null)
                             cartModel?.items = listOf(item)
                         if (cartModel != null) {
-                            addCart(cartModel)
+                            addCart(cartModel!!)
                         }
                     }
 
@@ -1569,6 +1701,8 @@ class DashBoardCategoryViewModel @Inject constructor(
                             val totalPrice =
                                 price + modifierPrice
                             itemtype.subTotalAmount = itemtype.subTotalAmount?.plus(totalPrice)
+                        }else{
+                            itemtype.subTotalAmount = 0.0
                         }
                         itemtype.totalTaxTypePrice = getTotalTaxBirfurcation(item, itemtype, type)
                         cartModel.taxlistDynamic =
@@ -1586,10 +1720,12 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 price + modifierPrice
                             cartModel.taxlistDynamic!![found].subTotalAmount =
                                 cartModel.taxlistDynamic!![found].subTotalAmount?.plus(totalPrice)
+                        }else{
+                            cartModel.taxlistDynamic!![found].subTotalAmount = 0.0
                         }
                         if (type == ADD || type == UPDATE) {
                             cartModel.taxlistDynamic?.get(found)?.totalTaxTypePrice =
-                                cartModel.taxlistDynamic!![found].totalTaxTypePrice?.plus(
+                                cartModel.taxlistDynamic!![found].totalTaxTypePrice.plus(
                                     getTotalTaxBirfurcation(
                                         item,
                                         itemtype,
@@ -1628,6 +1764,7 @@ class DashBoardCategoryViewModel @Inject constructor(
             }
 
         }
+        Log.d(TAG, "taxBifurcationCalculation: final list "+Gson().toJson(cartModel.taxlistDynamic))
         return cartModel
     }
 

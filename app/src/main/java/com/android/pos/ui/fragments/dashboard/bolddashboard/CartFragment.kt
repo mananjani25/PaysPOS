@@ -563,11 +563,10 @@ class CartFragment(
                 binding.liinearInfoLayout.layoutParams.height =
                     resources.getDimension(R.dimen._50sdp).toInt()
             }
-
-            binding.imgDropdown.visible()
             binding.imgDropdown.setImageResource(R.drawable.ic_arrow_drop_down)
             binding.imgDropdown.visible()
             taxBirfurcationAdapter.setList(taxlistData)
+            binding.relativeDynamicTax.gone()
         }else{
             if(viewModel.order_note.isNotEmpty()){
                 binding.liinearInfoLayout.layoutParams.height =
@@ -576,6 +575,12 @@ class CartFragment(
                 binding.liinearInfoLayout.layoutParams.height =
                     resources.getDimension(R.dimen._50sdp).toInt()
             }
+            binding.imgDropdown.setImageResource(R.drawable.ic_arrow_drop_down)
+            binding.imgDropdown.gone()
+            binding.relativeDynamicTax.gone()
+            binding.liinearInfoLayout.layoutParams.height =
+                resources.getDimension(R.dimen._50sdp).toInt()
+            taxClickable = false
         }
     }
 

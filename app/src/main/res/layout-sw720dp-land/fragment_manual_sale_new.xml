@@ -430,15 +430,18 @@
                 <LinearLayout
                     android:id="@+id/linear_bottom_info"
                     android:layout_width="match_parent"
-                    android:layout_height="@dimen/_50sdp"
+                    android:layout_height="@dimen/_60sdp"
                     android:orientation="horizontal"
                     android:weightSum="2">
-
+                    <ScrollView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1">
                     <LinearLayout
                         android:layout_width="wrap_content"
-                        android:layout_height="match_parent"
+                        android:layout_height="wrap_content"
                         android:layout_alignParentStart="true"
-                        android:layout_weight="1"
+
                         android:orientation="vertical">
                         <androidx.appcompat.widget.LinearLayoutCompat
                             android:id="@+id/relative_order_notes"
@@ -612,7 +615,7 @@
 
 
                     </LinearLayout>
-
+                    </ScrollView>
 
                     <View
                         android:layout_width="1dp"

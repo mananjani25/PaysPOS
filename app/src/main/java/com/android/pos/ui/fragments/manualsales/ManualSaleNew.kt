@@ -144,20 +144,41 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                     Log.d(TAG, "onViewCreated: " + taxBirfurcationAdapter.taxlist.size)
                     taxClickable = true
                     if (taxBirfurcationAdapter.taxlist.size == 1) {
-                        binding.linearBottomInfo.layoutParams.height =
-                            resources.getDimension(R.dimen._60sdp).toInt()
+                        if(viewModel.order_note.isNotEmpty()){
+                            binding.linearBottomInfo.layoutParams.height =
+                                resources.getDimension(R.dimen._75sdp).toInt()
+                        }else{
+                            binding.linearBottomInfo.layoutParams.height =
+                                resources.getDimension(R.dimen._60sdp).toInt()
+                        }
                     } else if (taxBirfurcationAdapter.taxlist.size == 2) {
-                        binding.linearBottomInfo.layoutParams.height =
-                            resources.getDimension(R.dimen._70sdp).toInt()
+                        if (viewModel.order_note.isNotEmpty()){
+                            binding.linearBottomInfo.layoutParams.height =
+                                resources.getDimension(R.dimen._85sdp).toInt()
+                        }else{
+                            binding.linearBottomInfo.layoutParams.height =
+                                resources.getDimension(R.dimen._75sdp).toInt()
+                        }
                     } else {
-                        binding.linearBottomInfo.layoutParams.height =
-                            resources.getDimension(R.dimen._100sdp).toInt()
+                        if (viewModel.order_note.isNotEmpty()){
+                            binding.linearBottomInfo.layoutParams.height =
+                                resources.getDimension(R.dimen._110sdp).toInt()
+                        }else{
+                            binding.linearBottomInfo.layoutParams.height =
+                                resources.getDimension(R.dimen._100sdp).toInt()
+                        }
+
                     }
                     binding.imgDropdown.setImageResource(R.drawable.ic_solid_up_arrow)
                     binding.relativeDynamicTax.visible()
                 } else {
-                    binding.linearBottomInfo.layoutParams.height =
-                        resources.getDimension(R.dimen._50sdp).toInt()
+                    if(viewModel.order_note.isNotEmpty()){
+                        binding.linearBottomInfo.layoutParams.height =
+                            resources.getDimension(R.dimen._60sdp).toInt()
+                    }else{
+                        binding.linearBottomInfo.layoutParams.height =
+                            resources.getDimension(R.dimen._50sdp).toInt()
+                    }
                     taxClickable = false
                     binding.imgDropdown.setImageResource(R.drawable.ic_arrow_drop_down)
                     binding.relativeDynamicTax.gone()
@@ -183,6 +204,52 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
         binding.layoutMenu.txtProducts.setOnClickListener {
             findNavController().popBackStack()
         }
+    }
+    fun setTaxBifurcationData(taxlistData: ArrayList<TaxData>) {
+        if (taxlistData?.isNotEmpty()) {
+            Log.d(TAG, "addObserver: " + taxlistData.size)
+            setupTaxAdapter()
+            taxClickable = false
+            if(viewModel.order_note.isNotEmpty()){
+                binding.linearBottomInfo.layoutParams.height =
+                    resources.getDimension(R.dimen._60sdp).toInt()
+            }else{
+                binding.linearBottomInfo.layoutParams.height =
+                    resources.getDimension(R.dimen._50sdp).toInt()
+            }
+            binding.imgDropdown.setImageResource(R.drawable.ic_arrow_drop_down)
+            binding.imgDropdown.visible()
+            taxBirfurcationAdapter.setList(taxlistData)
+            binding.relativeDynamicTax.gone()
+        }else{
+            if(viewModel.order_note.isNotEmpty()){
+                binding.linearBottomInfo.layoutParams.height =
+                    resources.getDimension(R.dimen._60sdp).toInt()
+            }else{
+                binding.linearBottomInfo.layoutParams.height =
+                    resources.getDimension(R.dimen._50sdp).toInt()
+            }
+            binding.imgDropdown.setImageResource(R.drawable.ic_arrow_drop_down)
+            binding.imgDropdown.gone()
+            binding.relativeDynamicTax.gone()
+            taxClickable = false
+        }
+    }
+
+    fun reSetTaxBifurcationData() {
+        taxBirfurcationAdapter.clearList()
+        if(viewModel.order_note.isNotEmpty()){
+            binding.linearBottomInfo.layoutParams.height =
+                resources.getDimension(R.dimen._60sdp).toInt()
+        }else{
+            binding.linearBottomInfo.layoutParams.height =
+                resources.getDimension(R.dimen._50sdp).toInt()
+        }
+
+        taxClickable = false
+        binding.imgDropdown.setImageResource(R.drawable.ic_arrow_drop_down)
+        binding.imgDropdown.gone()
+        binding.relativeDynamicTax.gone()
     }
 
     //created By Zeeshaan
@@ -274,39 +341,26 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                         cartList,
                         binding.txtTotalAmount, requireContext()
                     )
-                    setupTaxAdapter()
-                    taxBirfurcationAdapter.setList(cartList!![0].taxlistDynamic as ArrayList<TaxData>)
+                    setTaxBifurcationData(cartList!![0].taxlistDynamic as ArrayList<TaxData>)
                     setTextValue()
                     if (viewModel.order_note.isNotEmpty()) {
-                        binding.linearBottomInfo?.layoutParams?.height =
-                            resources.getDimension(R.dimen._60sdp).toInt()
                         binding.relativeOrderNotes?.visible()
                         binding.txtOrderNote!!.text = viewModel.order_note
 
                     } else {
                         binding.relativeOrderNotes?.gone()
-                        binding.linearBottomInfo?.layoutParams?.height =
-                            resources.getDimension(R.dimen._50sdp).toInt()
                     }
+
                 } else {
 
                     cartAdapter.clearList()
-                    setupTaxAdapter()
-                    taxBirfurcationAdapter.clearList()
-                    binding.linearBottomInfo.layoutParams.height =
-                        resources.getDimension(R.dimen._50sdp).toInt()
-                    taxClickable = false
-                    binding.imgDropdown.gone()
-                    binding.imgDropdown.setImageResource(R.drawable.ic_arrow_drop_down)
-                    binding.relativeDynamicTax.gone()
-
-
+                    reSetTaxBifurcationData()
 
                     viewModel.itemCalculation(
                         null,
                         binding.txtTotalAmount, requireContext()
                     )
-
+                    binding.relativeOrderNotes?.gone()
                     setTextValue()
 
                 }
@@ -658,6 +712,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                                     binding.txtTax.text = "$0.00"
                                     binding.txtServiceCharge.text = "$0.00"
                                     clearCustomer()
+                                    reSetTaxBifurcationData()
 
                                 }
                                 negativeButton(R.string.tv_cancel) {
