@@ -210,7 +210,7 @@ class ReasonForRefundOnlineOrder : DialogFragment() {
 
 
             } else {
-                AlertUtils.showCustomAlert(requireActivity(), "Please Enter Amount To Refund")
+                AlertUtils.showCustomAlert(requireActivity(), getString(R.string.msg_amount_refund))
             }
 
 

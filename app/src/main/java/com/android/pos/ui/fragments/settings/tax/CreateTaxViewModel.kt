@@ -109,7 +109,7 @@ class CreateTaxViewModel @Inject constructor(
                 itemIds = itemIdsViewModel
                 itemPricing = /*itemPricingViewModel*/ "Add Tax To Item Price"
                 taxType = taxTypeViewModel
-                isActive = isEnableTax
+                isActive = enableTaxViewModel
                 locationId = prefProvider.getValueInt(LOCATION_ID, -1)
 
             }
