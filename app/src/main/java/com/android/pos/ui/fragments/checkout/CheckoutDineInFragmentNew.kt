@@ -1656,16 +1656,29 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
             ProgressUtils.dismissProgressDialog()
 
 
-            if (requestCancel) {
-                AlertUtils.showCustomAlert(
-                    requireContext(), message
-                )
-            } else {
-                AlertUtils.showCustomAlert(
-                    requireContext(), message
-                )
-            }
 
+            if (requestCancel) {
+
+                if (message.equals("timeout", true)) {
+                    AlertUtils.showCustomAlert(
+                        requireContext(), "Timeout"
+                    )
+                } else {
+                    AlertUtils.showCustomAlert(
+                        requireContext(), message
+                    )
+                }
+            } else {
+                if (message.equals("timeout", true)) {
+                    AlertUtils.showCustomAlert(
+                        requireContext(), "Timeout"
+                    )
+                } else {
+                    AlertUtils.showCustomAlert(
+                        requireContext(), message
+                    )
+                }
+            }
 
         } else {
             ProgressUtils.showProgressDialog(message, requireActivity())

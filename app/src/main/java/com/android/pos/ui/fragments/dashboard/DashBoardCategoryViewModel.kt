@@ -20,6 +20,7 @@ import com.android.pos.data.model.DineInOrderDetailAttributes
 import com.android.pos.data.model.GuestPaymentCalculationModel
 import com.android.pos.data.model.requestModel.*
 import com.android.pos.data.model.responseModel.CreateOrderResponse
+import com.android.pos.data.model.responseModel.OnlineOrderNotificationCount
 import com.android.pos.data.model.responseModel.PrinterResponse
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.ADD
@@ -36,7 +37,10 @@ import com.android.pos.data.remote.Constants.DINE_IN_LIST_EDIT
 import com.android.pos.data.remote.Constants.DINE_IN_UPDATE
 import com.android.pos.data.remote.Constants.EMPLOYEE_ID
 import com.android.pos.data.remote.Constants.IS_PRINTER_QUEUE_ENABLE
+import com.android.pos.data.remote.Constants.ONLINE_ORDER_ENABLE
 import com.android.pos.data.remote.Constants.ORDER_TYPE
+import com.android.pos.data.remote.Constants.SERVICECHARGE_DINEIN_ORDER
+import com.android.pos.data.remote.Constants.SERVICECHARGE_TAKEOUT_OPENORDER
 import com.android.pos.data.remote.Constants.SYSTEM_TIMEZONE
 import com.android.pos.data.remote.Constants.UPDATE
 import com.android.pos.data.remote.Constants.VENUE_LOGO
@@ -114,7 +118,6 @@ class DashBoardCategoryViewModel @Inject constructor(
     var isOrderUpdate: Boolean = false
     val returnedVal = posRepository.getManualCategoryId()
     var viewModelcartList: ArrayList<CartModel> = arrayListOf()
-    var serviceCharge = posRepository.serviceChargeList()
     private var mPosition: Int = 0
     var tipTransactionAmount = 0.0
     private val _updateOrder = MutableLiveData<Event<Any?>>()
@@ -178,11 +181,18 @@ class DashBoardCategoryViewModel @Inject constructor(
     private val _showProgress = MutableLiveData<Event<Boolean>>()
     val showProgress: LiveData<Event<Boolean>> = _showProgress
 
+
+    private val _enableOnlineOrder = MutableLiveData<Event<Boolean>>()
+    val enableOnlineOrder: LiveData<Event<Boolean>> = _enableOnlineOrder
+
     private val _snackbarText = MutableLiveData<Event<Any?>>()
     val snackbarText: LiveData<Event<Any?>> = _snackbarText
 
     private val _logout = MutableLiveData<Event<Boolean>>()
     val logout: LiveData<Event<Boolean>> = _logout
+
+    private val _onlineOrderCount = MutableLiveData<Event<OnlineOrderNotificationCount.Data>>()
+    val onlineOrderCount: LiveData<Event<OnlineOrderNotificationCount.Data>> = _onlineOrderCount
 
     val _tableStatusSuccess = MutableLiveData<Event<Int>>()
     val tableCheckSuccess: LiveData<Event<Int>> = _tableStatusSuccess
@@ -200,7 +210,6 @@ class DashBoardCategoryViewModel @Inject constructor(
     val _Basedata = MutableLiveData<Event<CreateOrderResponse.Data?>>()
 
     var barcodeFoundDbItemLiveData: LiveData<Resource<TbItem>>? = null
-
 
     fun modifierSet(intArray: IntArray) = posRepository.modifierSetList(intArray)
 
@@ -239,7 +248,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     }
 
-    var serviceChargesList: List<TbServiceCharge> = emptyList()
+    var serviceChargesList: ArrayList<TbServiceCharge> = arrayListOf()
 
 
     fun addCart(cartModel: CartModel) {
@@ -1291,7 +1300,8 @@ class DashBoardCategoryViewModel @Inject constructor(
 
             }
             order_note = cartModel.note
-            serviceChargeCalculationModel(cartModel)
+            calculateDineInServiceCharge(cartModel)
+//            serviceChargeCalculationModel(cartModel)
             subTotalPrice -= cartModel.discountPrice
             if (subTotalPrice < 0) {
                 subTotalPrice = 0.0
@@ -1591,40 +1601,82 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     private fun serviceChargeCalculation(cartList: List<CartModel>) {
         val serviceChargesList = cartList[0].serviceCharge
-
         if (serviceChargesList != null && serviceChargesList.isNotEmpty()) {
-            serviceChargesList.forEach {
-                if (it.isEnabled) {
-                    totalServiceCharge += (subTotalPrice * it.percentage) / 100
-
+            if (prefProvider.getValueboolean(SERVICECHARGE_TAKEOUT_OPENORDER, false)) {
+                serviceChargesList.forEach {
+                    if (it.order_type == Constants.SERVICECHARGE_TAKEOUT_OPENORDER) {
+                        totalServiceCharge += (subTotalPrice * it.percentage) / 100
+                    }
                 }
             }
 
         }
     }
 
-    private fun calculateDineInServiceCharge(cartModel: CartModel) {
-        if (serviceChargesList.isNotEmpty() && serviceChargesList != null) {
-            Log.e(TAG, "dashboardserviceChargesList:  ${Gson().toJson(serviceChargesList)}")
-
-            serviceChargesList.forEach {
-                if (it.isEnabled) {
-                    totalServiceCharge += (subTotalPrice * it.percentage) / 100
-
+    fun checkMaxGuestCountId(): Int {
+        var maxValue = 0
+        var serviceChargeId = 0
+        serviceChargesList.forEach { serviceCharge ->
+            if (serviceCharge.order_type == Constants.SERVICECHARGE_DINEIN_ORDER) {
+                if (serviceCharge.max_guest_count!! >= maxValue) {
+                    maxValue = serviceCharge.max_guest_count
+                    serviceChargeId = serviceCharge.id
                 }
             }
+        }
+        return serviceChargeId
+    }
+
+    fun isInRange(minn: Int, maxx: Int, value: Int): Boolean {
+        return (minn <= value && value <= maxx)
+    }
+
+    private fun calculateDineInServiceCharge(cartModel: CartModel) {
+        var guestCount = cartModel.dineInList?.size?.minus(1)
+        if (serviceChargesList.isNotEmpty() && serviceChargesList != null) {
+            Log.e(TAG, "dashboardserviceChargesList:  ${Gson().toJson(serviceChargesList)}")
+            if (prefProvider.getValueboolean(SERVICECHARGE_DINEIN_ORDER, false)) {
+                var isApplied = false
+                serviceChargesList.forEach {
+                    if (it.order_type == Constants.SERVICECHARGE_DINEIN_ORDER) {
+                        if (isInRange(
+                                it.min_guest_count!!,
+                                it.max_guest_count!!,
+                                guestCount!!
+                            )
+                        ) {
+                            isApplied = true
+                            Log.d(
+                                TAG,
+                                "calculateDineInServiceCharge: DashBoard " + it.min_guest_count + "....." + it.max_guest_count + " in between " + guestCount
+                            )
+                            totalServiceCharge += (subTotalPrice * it.percentage) / 100
+                            return@forEach
+                        }
+                    }
+                }
+                if (!isApplied) {
+                    serviceChargesList.forEach { service ->
+                        if (service.id == checkMaxGuestCountId()) {
+                            totalServiceCharge += (subTotalPrice * service.percentage) / 100
+                            return@forEach
+                        }
+                    }
+                }
+            }
+
         }
 
     }
 
     private fun serviceChargeCalculationModel(cartModel: CartModel) {
         val serviceChargesList = cartModel.serviceCharge
-
         if (serviceChargesList != null && serviceChargesList.isNotEmpty()) {
-            serviceChargesList.forEach {
-                if (it.isEnabled) {
-                    totalServiceCharge += (subTotalPrice * it.percentage) / 100
-
+            if (prefProvider.getValueboolean(SERVICECHARGE_TAKEOUT_OPENORDER, false)) {
+                serviceChargesList.forEach {
+                    if (it.order_type == Constants.SERVICECHARGE_TAKEOUT_OPENORDER) {
+                        totalServiceCharge += (subTotalPrice * it.percentage) / 100
+                    }
                 }
             }
 
@@ -1819,7 +1871,7 @@ class DashBoardCategoryViewModel @Inject constructor(
         }
     }
 
-    fun setServiceCharges(mList: List<TbServiceCharge>?) {
+    fun setServiceCharges(mList: ArrayList<TbServiceCharge>?) {
 
         if (mList != null) {
             this.serviceChargesList = mList
@@ -1874,6 +1926,30 @@ class DashBoardCategoryViewModel @Inject constructor(
             }
 
 
+        }
+    }
+
+    fun getOnlineOrderCount() {
+        _showProgress.value = Event(true)
+        viewModelScope.launch {
+            val resource = posRepository.getOnlineOrderNotificationCount()
+            when (resource.status) {
+                Status.SUCCESS -> {
+                    _showProgress.value = Event(false)
+                    resource.data?.let { it ->
+                        _onlineOrderCount.value = Event(it.data)
+                    }
+                }
+                Status.ERROR -> {
+                    _snackbarText.value = Event(resource.message)
+                    _showProgress.value = Event(false)
+                }
+
+                Status.LOADING -> {
+                    _showProgress.value = Event(true)
+                }
+
+            }
         }
     }
 
@@ -2063,27 +2139,79 @@ class DashBoardCategoryViewModel @Inject constructor(
         cartModel: CartModel,
         subTotalPrice: Double
     ): List<OrderServiceChargesAttribute> {
-
         val orderServiceChargesAttributeList: ArrayList<OrderServiceChargesAttribute> =
             arrayListOf()
-
-        cartModel.serviceCharge?.forEach {
-            if (it.isEnabled) {
-                val orderServiceChargesAttribute = OrderServiceChargesAttribute()
-                orderServiceChargesAttribute.amount =
-                    MethodUtils.roundOffAmountDouble((subTotalPrice * it.percentage) / 100)
-                orderServiceChargesAttribute.name = it.name
-                orderServiceChargesAttribute.rate = it.percentage
-                orderServiceChargesAttribute.serviceChargeId = it.id
-
-
-                orderServiceChargesAttributeList.add(orderServiceChargesAttribute)
+        val serviceChargesList = cartModel.serviceCharge
+        if (serviceChargesList != null && serviceChargesList.isNotEmpty()) {
+            if (prefProvider.getValueboolean(Constants.SERVICECHARGE_TAKEOUT_OPENORDER, false)) {
+                serviceChargesList.forEach {
+                    val orderServiceChargesAttribute = OrderServiceChargesAttribute()
+                    orderServiceChargesAttribute.amount =
+                        MethodUtils.roundOffAmountDouble((subTotalPrice * it.percentage) / 100)
+                    orderServiceChargesAttribute.name = it.name
+                    orderServiceChargesAttribute.rate = it.percentage
+                    orderServiceChargesAttribute.serviceChargeId = it.id
+                    orderServiceChargesAttribute.order_type = it.order_type
+                    orderServiceChargesAttribute.serviceChargeId = it.id
+                    orderServiceChargesAttributeList.add(orderServiceChargesAttribute)
+                }
+            } else if (prefProvider.getValueboolean(Constants.SERVICECHARGE_DINEIN_ORDER, false)) {
+                serviceChargesList.forEach {
+                    val orderServiceChargesAttribute = OrderServiceChargesAttribute()
+                    orderServiceChargesAttribute.amount =
+                        MethodUtils.roundOffAmountDouble((subTotalPrice * it.percentage) / 100)
+                    orderServiceChargesAttribute.name = it.name
+                    orderServiceChargesAttribute.rate = it.percentage
+                    orderServiceChargesAttribute.serviceChargeId = it.id
+                    orderServiceChargesAttribute.order_type = it.order_type
+                    orderServiceChargesAttribute.max_guest_count = it.max_guest_count
+                    orderServiceChargesAttribute.min_guest_count = it.min_guest_count
+                    orderServiceChargesAttribute.serviceChargeId = it.id
+                    orderServiceChargesAttributeList.add(orderServiceChargesAttribute)
+                }
             }
 
         }
+        return orderServiceChargesAttributeList
+    }
 
+    private fun orderServiceChargesDineinAttributes(
+        cartModel: CartModel,
+        subTotalPrice: Double
+    ): List<OrderServiceChargesAttribute> {
+        val orderServiceChargesAttributeList: ArrayList<OrderServiceChargesAttribute> =
+            arrayListOf()
+        val serviceChargesList = cartModel.serviceCharge
+        if (serviceChargesList != null && serviceChargesList.isNotEmpty()) {
+            if (prefProvider.getValueboolean(Constants.SERVICECHARGE_TAKEOUT_OPENORDER, false)) {
+                serviceChargesList.forEach {
+                    val orderServiceChargesAttribute = OrderServiceChargesAttribute()
+                    orderServiceChargesAttribute.amount =
+                        MethodUtils.roundOffAmountDouble((subTotalPrice * it.percentage) / 100)
+                    orderServiceChargesAttribute.name = it.name
+                    orderServiceChargesAttribute.rate = it.percentage
+                    orderServiceChargesAttribute.serviceChargeId = it.id
+                    orderServiceChargesAttribute.order_type = it.order_type
+                    orderServiceChargesAttribute.serviceChargeId = it.id
+                    orderServiceChargesAttributeList.add(orderServiceChargesAttribute)
+                }
+            } else if (prefProvider.getValueboolean(Constants.SERVICECHARGE_DINEIN_ORDER, false)) {
+                serviceChargesList.forEach {
+                    val orderServiceChargesAttribute = OrderServiceChargesAttribute()
+                    orderServiceChargesAttribute.amount =
+                        MethodUtils.roundOffAmountDouble((subTotalPrice * it.percentage) / 100)
+                    orderServiceChargesAttribute.name = it.name
+                    orderServiceChargesAttribute.rate = it.percentage
+                    orderServiceChargesAttribute.serviceChargeId = it.id
+                    orderServiceChargesAttribute.order_type = it.order_type
+                    orderServiceChargesAttribute.max_guest_count = it.max_guest_count
+                    orderServiceChargesAttribute.min_guest_count = it.min_guest_count
+                    orderServiceChargesAttribute.serviceChargeId = it.id
+                    orderServiceChargesAttributeList.add(orderServiceChargesAttribute)
+                }
+            }
 
-
+        }
         return orderServiceChargesAttributeList
     }
 
@@ -2766,7 +2894,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
             when (resource.status) {
                 Status.SUCCESS -> {
-                    _showProgress.value = Event(false)
+
                     resource.data.let { venueDetailsResponse ->
                         if (venueDetailsResponse?.status == 200) {
 
@@ -2838,6 +2966,14 @@ class DashBoardCategoryViewModel @Inject constructor(
                                     it.data.businessWebsite.toString()
                                 )
 
+                                prefProvider.setValueboolean(
+                                    SERVICECHARGE_TAKEOUT_OPENORDER,
+                                    it.data.service_charge_enable
+                                )
+                                prefProvider.setValueboolean(
+                                    SERVICECHARGE_DINEIN_ORDER,
+                                    it.data.enable_dine_in_service_charge
+                                )
                                 posRepository.addCashDiscountsFromDb(it.data.cash_discounts)
                                 taxServiceChargeRepository.deleteTaxFromDb()
                                 taxServiceChargeRepository.addAllTaxDatabase(it.data.taxes)
@@ -2846,6 +2982,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 tipDiscountRepository.deleteDiscountsFromDb()
                                 tipDiscountRepository.addDiscount(it.data.discounts)
                                 taxServiceChargeRepository.deleteServiceChargesFromDb()
+                                serviceChargesList.clear()
                                 taxServiceChargeRepository.addServiceCharges(it.data.service_charges)
                                 posRepository.deleteTerminalsFromDb()
                                 posRepository.addTerminalsDatabase(it.data.terminals)
@@ -2919,7 +3056,19 @@ class DashBoardCategoryViewModel @Inject constructor(
 
 
 
-
+                                it.data.terminals.forEach { terminal ->
+                                    if (terminal.id == prefProvider.getValueInt(
+                                            Constants.TERMINAL_ID,
+                                            0
+                                        )
+                                    ) {
+                                        prefProvider.setValueboolean(
+                                            ONLINE_ORDER_ENABLE,
+                                            terminal.enabled_for_receiving_web_order!!
+                                        )
+                                        _enableOnlineOrder.value = Event(true)
+                                    }
+                                }
                                 _callCashDiscount.value = Event(true)
 
                                 prefProvider.setValue(Constants.MAGENSA_SETTINGS, "")
@@ -2960,7 +3109,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                         }
 
                             }
-
+                            _showProgress.value = Event(false)
                             prefProvider.setValueboolean(Constants.SYNC_DATA, true)
                         } else {
                             _snackbarText.value = Event(resource.message)

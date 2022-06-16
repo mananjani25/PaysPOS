@@ -14,6 +14,7 @@ import com.android.pos.data.model.responseModel.item.ItemResponseNew
 import com.android.pos.data.model.responseModel.item.ItemsResponse
 import com.android.pos.data.model.responseModel.orderhistory.OrderHistoryResponse
 import com.android.pos.data.model.responseModel.report.ReportSummaryResponse
+import com.android.pos.data.remote.Constants.ACCEPTED_DECLINE_ONLINEORDER
 import com.android.pos.data.remote.Constants.BUSINESS_UPDATE
 import com.android.pos.data.remote.Constants.CASH_EVENTS
 import com.android.pos.data.remote.Constants.CATEGORY
@@ -31,6 +32,7 @@ import com.android.pos.data.remote.Constants.DELETE_UPDATE_PRINTER
 import com.android.pos.data.remote.Constants.DISCOUNTS
 import com.android.pos.data.remote.Constants.DISCOUNTS_ACTIVE
 import com.android.pos.data.remote.Constants.DISCOUNTS_UPDATE_DELETE
+import com.android.pos.data.remote.Constants.EMAIL_REPORT_SUMMARY
 import com.android.pos.data.remote.Constants.EMPLOYEES
 import com.android.pos.data.remote.Constants.EMPLOYEES_TIMESHEET
 import com.android.pos.data.remote.Constants.EMPLOYEES_TIMESHEET_DETAILS
@@ -61,6 +63,10 @@ import com.android.pos.data.remote.Constants.MODIFIER_UPDATE_DELETE
 import com.android.pos.data.remote.Constants.NOTES
 import com.android.pos.data.remote.Constants.NOTES_ACTIVE
 import com.android.pos.data.remote.Constants.NOTE_UPDATE_DELETE
+import com.android.pos.data.remote.Constants.ONLINE_ORDERING
+import com.android.pos.data.remote.Constants.ONLINE_ORDER_COUNTS
+import com.android.pos.data.remote.Constants.ONLINE_ORDER_GET_NOTIFICATION
+import com.android.pos.data.remote.Constants.ONLINE_ORDER_NOTIFICATION_COUNT
 import com.android.pos.data.remote.Constants.OPEN_ORDERS
 import com.android.pos.data.remote.Constants.OPTION_SETS
 import com.android.pos.data.remote.Constants.OPTION_UPDATE_DELETE
@@ -87,6 +93,7 @@ import com.android.pos.data.remote.Constants.REPORT_SUMMARY
 import com.android.pos.data.remote.Constants.SERVICE_CHARGE
 import com.android.pos.data.remote.Constants.SERVICE_CHARGE_ACTIVE
 import com.android.pos.data.remote.Constants.SERVICE_CHARGE_UPDATE_DELETE
+import com.android.pos.data.remote.Constants.SERVICE_CHARGE_WHOLE
 import com.android.pos.data.remote.Constants.SYNC_VENUE_DATA
 import com.android.pos.data.remote.Constants.SYNC_VENUE_DETAILS
 import com.android.pos.data.remote.Constants.TAXES
@@ -100,7 +107,9 @@ import com.android.pos.data.remote.Constants.TIPS_ACTIVE
 import com.android.pos.data.remote.Constants.TIPS_UPDATE_DELETE
 import com.android.pos.data.remote.Constants.TRANSACTION_LIST
 import com.android.pos.data.remote.Constants.UNMERGE_TABLE
+import com.android.pos.data.remote.Constants.UPDATE_ONLINE_ORDER
 import com.android.pos.data.remote.Constants.UPDATE_PRINTER_STATUS
+import com.android.pos.data.remote.Constants.UPDATE_SERVICECHARGE
 import com.android.pos.data.remote.Constants.UPDATE_TIP
 import com.android.pos.data.remote.Constants.USERS_LOG_IN
 import okhttp3.MultipartBody
@@ -177,8 +186,23 @@ interface ApiService {
         @Query("status") status: Boolean
     ): DeletePrinterResponseModel
 
+    @PUT(UPDATE_SERVICECHARGE)
+    suspend fun updateServiceChargeTakeoutEnable(
+        @Path("id") Id: Int,
+        @Query("service_charge_enable") service_charge_enable: Boolean,
+    ): ServiceChargeUpdate
+
+    @PUT(UPDATE_SERVICECHARGE)
+    suspend fun updateServiceChargeDineinEnable(
+        @Path("id") Id: Int,
+        @Query("enable_dine_in_service_charge") service_charge_enable: Boolean,
+    ): ServiceChargeUpdate
+
     @GET(SYNC_VENUE_DETAILS)
     suspend fun syncVenueDetails(): VenueDetailsResponse
+
+    @GET(ONLINE_ORDER_NOTIFICATION_COUNT)
+    suspend fun getCountOnlineOrdering(): OnlineOrderNotificationCount
 
     @GET(ORDER_TYPES)
     suspend fun orderTypes(): OrderTypeResponse
@@ -268,6 +292,9 @@ interface ApiService {
 
     @GET(SERVICE_CHARGE)
     suspend fun getServiceChargeList(): GetServiceChargeResponse
+
+    @GET(SERVICE_CHARGE_WHOLE)
+    suspend fun getServiceChargeWholeList(): ServiceChargeListResponse
 
     @GET(LOYALTY_POINT)
     suspend fun loyaltyPointList(): LoyaltyPointResponse
@@ -603,6 +630,9 @@ interface ApiService {
     @POST(REFUND_PAYMENT)
     suspend fun refundPayment(@Body refundRequestModel: RefundRequestModel): BaseResponse
 
+    @POST(REFUND_PAYMENT)
+    suspend fun refundPaymentOnlineOrder(@Body refundRequestModel: RefundRequestModelOnlineOrder): BaseResponse
+
     @PUT(CUSTOMER_RECEIPTS_UPDATE_SETTINGS)
     suspend fun updateCustomerReceiptSettings(
         @Path("id") id: Int,
@@ -627,8 +657,8 @@ interface ApiService {
         @Query("finalrewards") finalrewards: Int,
     ): CustomerAssignedResponse
 
-   /* @GET(OPEN_ORDERS)
-    suspend fun getOpenOrders(@Query("payment_status") payment_status: LinkedHashMap<String, String>): OpenOrderResponse*/
+    /* @GET(OPEN_ORDERS)
+     suspend fun getOpenOrders(@Query("payment_status") payment_status: LinkedHashMap<String, String>): OpenOrderResponse*/
 
     /*@GET(OPEN_ORDERS)
     suspend fun getOpenOrders(@Query("payment_status") payment_status: String): OpenOrderResponse*/
@@ -637,7 +667,40 @@ interface ApiService {
     suspend fun getOpenOrders(
         @Query("payment_status") paymentStatus: String,
         @Query("start_date") startDate: String,
-        @Query("end_date") endDate: String):OpenOrderResponse
+        @Query("end_date") endDate: String
+    ): OpenOrderResponse
+
+    @GET(ONLINE_ORDERING)
+    suspend fun getOnlineOrders(
+        @Query("start_date") starDate: String,
+        @Query("end_date") endDate: String,
+        @Query("order_status") order_status: String
+    ): OnlineOrderResponseModel
+
+    @GET(EMAIL_REPORT_SUMMARY)
+    suspend fun sendEmailReportSummary(
+        @Query("start_date") starDate: String,
+        @Query("end_date") endDate: String,
+        @Query("email") email: String,
+        @Query("team_member_id") team_member_id: String
+    ): BaseResponse
+
+
+    @PUT(ACCEPTED_DECLINE_ONLINEORDER)
+    suspend fun setAcceptedAndDeclineOrders(
+        @Path("id") id: Int,
+        @Query("is_accepted") is_accepted: Boolean,
+        @Query("preparation_time") preparation_time: Int,
+        @Query("employee_id") employee_id: Int,
+        @Query("terminal_id") terminalid: Int
+    ): BaseResponse
+
+
+    @PUT(UPDATE_ONLINE_ORDER)
+    suspend fun updateOnlineOrders(
+        @Path("id") id: Int,
+        @Query("order_status") order_status: String
+    ): BaseResponse
 
     @GET(OPEN_ORDERS)
     suspend fun getUpcomingOpenOrders(
@@ -653,8 +716,10 @@ interface ApiService {
         @Query("start_date") startDate: String,
         @Query("end_date") endDate: String,
         @Query("terminal_id") terminalId: String,
+        @Query("page") page: String,
+        @Query("per_page") perPage: String
 
-        ): CashLogResponse
+    ): CashLogResponse
 
     @PUT(UPDATE_TIP)
     suspend fun orderUpdateTip(
@@ -753,8 +818,17 @@ interface ApiService {
     suspend fun createQueuePrinter(@Body createPrinterQueueRequest: CreateQueuePrinterRequestModel): BaseResponse
 
     @GET(ORDER_COUNTS)
-    suspend fun orderCounts( @Query("start_date") startDate: String?,
-                             @Query("end_date") endDate: String?): OrderCountsResponse
+    suspend fun orderCounts(
+        @Query("start_date") startDate: String?,
+        @Query("end_date") endDate: String?
+    ): OrderCountsResponse
+
+    @GET(ONLINE_ORDER_COUNTS)
+    suspend fun onlineOrderCounts(
+        @Query("start_date") startDate: String?,
+        @Query("end_date") endDate: String?
+    ): OnlineOrderCountResponse
+
     @GET(INVENTORY_COUNTS)
     suspend fun inventoryCounts(): InventoryCountsResponse
 

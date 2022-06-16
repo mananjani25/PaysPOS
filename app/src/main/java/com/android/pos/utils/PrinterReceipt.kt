@@ -14,6 +14,7 @@ import com.android.pos.data.entities.TbServiceCharge
 import com.android.pos.data.model.responseModel.*
 import com.android.pos.data.model.responseModel.report.KeyValue
 import com.android.pos.data.remote.Constants
+import com.android.pos.di.PrefProvider
 import com.epson.eposprint.Builder
 
 val TAG = "PrinterReceipt"
@@ -343,8 +344,8 @@ fun addItemsInOrderSalesDetails(
     var data = details.orderId
     data += repeat(" ", 10 - details.orderId.length) + MethodUtils.roundOffAmount(details.tip)
     data += repeat(" ", 18 - data.length) + MethodUtils.roundOffAmount(details.serviceCharge)
-    data+= repeat(" ",27-data.length)+details.payType
-    data+= repeat(" ",39-data.length) + MethodUtils.roundOffAmount(details.amount)
+    data += repeat(" ", 27 - data.length) + details.payType
+    data += repeat(" ", 39 - data.length) + MethodUtils.roundOffAmount(details.amount)
 
     builder.addText(data)
     return builder
@@ -850,7 +851,8 @@ fun addWholeTbItemToGuest(
     font: String,
     showModifiers: Boolean,
     guestCount: Int,
-    serviceChargeList: ArrayList<TbServiceCharge>
+    serviceChargeList: ArrayList<TbServiceCharge>,
+    prefProvider: PrefProvider
 ): Builder {
 
     val obj = list
@@ -912,9 +914,24 @@ fun addWholeTbItemToGuest(
     }
 
     if (serviceChargeList?.isNotEmpty() == true) {
-        serviceChargeList?.forEach {
-            if (it.isEnabled) {
-                serviceCharge += (subTotal * it.percentage) / 100
+        if (prefProvider.getValueboolean(Constants.SERVICECHARGE_DINEIN_ORDER, false)) {
+            var isApplied = false
+            serviceChargeList.forEach {
+                if (it.order_type == Constants.SERVICECHARGE_DINEIN_ORDER) {
+                    if (isInRange(it.min_guest_count!!, it.max_guest_count!!, guestCount)) {
+                        isApplied = true
+                        serviceCharge += (subTotal * it.percentage) / 100
+                        return@forEach
+                    }
+                }
+            }
+            if (!isApplied) {
+                serviceChargeList.forEach { service ->
+                    if (service.id == checkMaxGuestCountId(serviceChargeList)) {
+                        serviceCharge += (subTotal * service.percentage) / 100
+                        return@forEach
+                    }
+                }
             }
         }
 
@@ -976,6 +993,25 @@ fun addWholeTbItemToGuest(
 
     return builder
 }
+
+fun isInRange(minn: Int, maxx: Int, value: Int): Boolean {
+    return (minn <= value && value <= maxx)
+}
+
+fun checkMaxGuestCountId(serviceChargeList: ArrayList<TbServiceCharge>): Int {
+    var maxValue = 0
+    var serviceChargeId = 0
+    serviceChargeList.forEach { serviceCharge ->
+        if (serviceCharge.order_type == Constants.SERVICECHARGE_DINEIN_ORDER) {
+            if (serviceCharge.max_guest_count!! >= maxValue) {
+                maxValue = serviceCharge.max_guest_count
+                serviceChargeId = serviceCharge.id
+            }
+        }
+    }
+    return serviceChargeId
+}
+
 
 fun addOrderItemForDineIn(
     builder: Builder,

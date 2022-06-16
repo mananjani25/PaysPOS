@@ -378,8 +378,10 @@ class CartFragment(
 
     private fun setupLoyalytyPoints() {
         binding.checkloylaty.setOnCheckedChangeListener { _, p1 ->
-            viewModel.redeemLoyaltyInfo.needToApplyLoyalty = p1
+            viewModel.setcheckedLoyaltyApply(p1)
+//            viewModel.redeemLoyaltyInfo.needToApplyLoyalty = p1
             prefProvider.setValueboolean(Constants.LOYALTY_ADDED, p1)
+            prefProvider.setValueboolean(Constants.IS_UPDATE_ORDER_LOYALTY_APPLIED, p1)
             addObserver()
         }
 
@@ -416,6 +418,46 @@ class CartFragment(
 
         }
 
+    }
+
+    fun checkMaxGuestCountId(): Int {
+        var maxValue = 0
+        var serviceChargeId = 0
+        viewModel.serviceChargesList.forEach { serviceCharge ->
+            if (serviceCharge.order_type == Constants.SERVICECHARGE_DINEIN_ORDER) {
+                if (serviceCharge.max_guest_count!! >= maxValue) {
+                    maxValue = serviceCharge.max_guest_count
+                    serviceChargeId = serviceCharge.id
+                }
+            }
+        }
+        return serviceChargeId
+    }
+
+    fun getServiceChargeFromGuestCount(guestcount: Int): List<TbServiceCharge> {
+        var list: List<TbServiceCharge> = listOf()
+        var isApplied = false
+        viewModel.serviceChargesList.forEach {
+            if (it.order_type == Constants.SERVICECHARGE_DINEIN_ORDER) {
+                if (isInRange(it.min_guest_count!!, it.max_guest_count!!, guestcount)) {
+                    isApplied = true
+                    list = listOf(it)
+                }
+            }
+        }
+        if (!isApplied) {
+            viewModel.serviceChargesList.forEach { service ->
+                if (service.id == checkMaxGuestCountId()) {
+                    list = listOf(service)
+                    return@forEach
+                }
+            }
+        }
+        return list
+    }
+
+    fun isInRange(minn: Int, maxx: Int, value: Int): Boolean {
+        return (minn <= value && value <= maxx)
     }
 
     private fun getDineInCartList() {
@@ -476,7 +518,7 @@ class CartFragment(
                 orderType = prefProvider.getValue(Constants.ORDER_TYPE, "").toString()
                 orderTypeName = prefProvider.getValue(Constants.ORDER_TYPE_NAME, "").toString()
 
-                serviceCharge = serviceChargesList
+                serviceCharge = getServiceChargeFromGuestCount(numOfGuest)
 
             }
             cartlist.add(cartModel)
@@ -1605,7 +1647,7 @@ class CartFragment(
 
                         val bundle = Bundle()
                         bundle.putBoolean("isOrderDiscount", true)
-                        bundle.putDouble("totalPrice", viewModel.totalPrice)
+                        bundle.putDouble("totalPrice", viewModel.subTotalPrice)
                         if (cartlist.isNotEmpty()) {
                             bundle.putDouble("orderDiscountPrice", cartlist[0].discountPrice)
                             bundle.putString("orderDiscountType", cartlist[0].discountType)

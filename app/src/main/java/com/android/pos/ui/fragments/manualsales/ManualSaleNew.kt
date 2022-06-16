@@ -27,6 +27,7 @@ import com.android.pos.data.remote.Constants.CUSTOMER_NAME
 import com.android.pos.data.remote.Constants.KEY
 import com.android.pos.data.remote.Constants.LOYALTY_ADDED
 import com.android.pos.data.remote.Constants.MANUALSALE
+import com.android.pos.data.remote.Constants.ORDER_TYPE
 import com.android.pos.data.remote.Constants.TAKEOUT
 import com.android.pos.databinding.FragmentManualSaleNewBinding
 import com.android.pos.di.PrefProvider
@@ -65,7 +66,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
     var taxClickable = false
     @Inject
     lateinit var rolePermission: RolePermission
-    private var serviceChargesList: List<TbServiceCharge>? = null
+    private var serviceChargesList: ArrayList<TbServiceCharge>? = null
     private var discountList: List<TbDiscount>? = null
     private var taxList: List<TaxData>? = null
     private var assignCustomer: TbCustomer? = null
@@ -403,9 +404,33 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
     }
 
     private fun getServiceCharge() {
-        viewModel.serviceCharge.observe(requireActivity()) {
+        viewModel.serviceCharges.observe(requireActivity()) {
             if (it.data != null)
-                serviceChargesList = it.data
+                if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == Constants.DINE_IN) {
+                    serviceChargesList = arrayListOf()
+                    it.data.forEach { service ->
+                        if (service.order_type == Constants.SERVICECHARGE_DINEIN_ORDER) {
+                            serviceChargesList?.add(service)
+                        }
+                    }
+                    serviceChargesList = it.data as ArrayList<TbServiceCharge>?
+                } else {
+                    if (prefProvider.getValueboolean(
+                            Constants.SERVICECHARGE_TAKEOUT_OPENORDER,
+                            false
+                        )
+                    ) {
+                        Log.e(TAG, "getServiceCharge:  ${Gson().toJson(it.data)}")
+                        serviceChargesList = arrayListOf()
+                        it.data?.forEach { service ->
+                            if (service.order_type == Constants.SERVICECHARGE_TAKEOUT_OPENORDER) {
+                                serviceChargesList?.add(service)
+                            }
+                        }
+
+                    }
+                }
+
         }
     }
 
@@ -743,7 +768,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
 
                         val bundle = Bundle()
                         bundle.putBoolean("isOrderDiscount", true)
-                        bundle.putDouble("totalPrice", viewModel.totalPrice)
+                        bundle.putDouble("totalPrice", viewModel.subTotalPrice)
                         if (cartList?.isNotEmpty() == true) {
 
                             var totalItemswithQuantity = 0

@@ -1,0 +1,171 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:ignore="MissingDefaultResource">
+
+    <data>
+
+        <variable
+            name="viewModel"
+            type="com.android.pos.data.model.responseModel.OnlineOrderResponseModel.Data" />
+    </data>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:id="@+id/llMainLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/backgroundColor"
+            android:orientation="horizontal"
+            android:paddingVertical="@dimen/_7sdp"
+            android:paddingStart="@dimen/_18sdp"
+            android:weightSum="6">
+
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_weight="1"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tvOrderID"
+                    style="@style/CustomFontMediumStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@{viewModel.offlineId}"
+                    android:textColor="@color/txtColor"
+                    android:textSize="@dimen/_5mdpi"
+                    tools:text="offlineId" />
+                <ImageView
+                    android:id="@+id/imgIndicator"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:srcCompat="@drawable/ic_arrow_down"
+                    app:tint="@color/drawable_ic_color"
+                    android:layout_marginLeft="@dimen/_5sdp"
+                    />
+            </androidx.appcompat.widget.LinearLayoutCompat>
+
+
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_gravity="center"
+                android:orientation="vertical">
+
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tvDate"
+                    style="@style/CustomFontMediumStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/txtColor"
+                    android:textSize="@dimen/_6mdpi"
+                    tools:text="@string/tv_date_time" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tvtime"
+                    style="@style/CustomFontMediumStyle"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/txtColor"
+                    android:textSize="@dimen/_6mdpi"
+                    android:visibility="visible"
+                    tools:text="@string/tv_date_time" />
+
+            </androidx.appcompat.widget.LinearLayoutCompat>
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tvTotalAmount"
+                style="@style/CustomFontMediumStyle"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_weight="1"
+                android:gravity="left"
+                android:text="@{@string/symbole +``+String.format(@string/format,viewModel.totalAmount)}"
+                android:textColor="@color/txtColor"
+                android:textSize="@dimen/_6mdpi"
+                tools:text="Amount" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/tv_paymentstatus"
+                style="@style/CustomFontMediumStyle"
+                android:layout_width="0dp"
+                android:layout_gravity="center"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="left"
+                android:textColor="@color/btnColor"
+                android:textSize="@dimen/_6mdpi"
+                tools:text="@{viewModel.paymentStatus}" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/txtCustomerName"
+                style="@style/CustomFontMediumStyle"
+                android:layout_width="0dp"
+                android:layout_gravity="center"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="left"
+                android:textColor="@color/txtColor"
+                android:textSize="@dimen/_6mdpi"
+                tools:text="John Smith" />
+
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_gravity="left"
+                android:gravity="left"
+                android:orientation="horizontal">
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/accept_img"
+                    android:layout_width="@dimen/_20sdp"
+                    android:padding="@dimen/_4sdp"
+                    android:layout_height="@dimen/_20sdp"
+                    android:src="@drawable/check_mark"
+                    android:layout_marginRight="@dimen/_5sdp"
+                    android:tint="@color/colorGreen" />
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/decline_img"
+                    android:padding="@dimen/_5sdp"
+                    android:layout_width="@dimen/_20sdp"
+                    android:layout_height="@dimen/_20sdp"
+                    android:src="@drawable/close_thin"
+                    android:tint="@color/colorRed" />
+
+            </LinearLayout>
+
+
+        </LinearLayout>
+        <LinearLayout
+            android:id="@+id/llShowLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="visible">
+
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvOpenOrder"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                tools:itemCount="2"
+                tools:listitem="@layout/view_open_order_items" />
+        </LinearLayout>
+    </LinearLayout>
+</layout>

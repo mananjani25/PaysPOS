@@ -113,6 +113,7 @@ class PosRepository @Inject constructor(
 
     suspend fun syncVenueDetails() = apiHelperNew.syncVenueDetails()
 
+    suspend fun getOnlineOrderNotificationCount() = apiHelperNew.getOnlineOrderCountNoti()
 
     suspend fun syncInventory() = apiHelperNew.syncVenueData()
 
@@ -786,11 +787,63 @@ class PosRepository @Inject constructor(
         })
 
 
+
+    suspend fun refundPaymentOnline(data: RefundRequestModelOnlineOrder) =
+        apiHelperNew.refundPaymentOnline(data)
+
+    fun getOnlineOrders(
+        startDate: String,
+        endDate: String,
+        order_status: String
+    ): LiveData<Resource<OnlineOrderResponseModel>> =
+        performGetOperationNew(networkCall = {
+            apiHelperNew.getOnlineOrders(
+                startDate,
+                endDate,
+                order_status
+            )
+        })
+
+    fun acceptedAndDeclineOrders(
+        time: Int,
+        order_id: Int,
+        isaccepted: Boolean,
+        employee_id: Int,
+        terminalid:Int
+    ): LiveData<Resource<BaseResponse>> =
+        performGetOperationNew(networkCall = {
+            apiHelperNew.setAcceptedAndDeclineorder(
+                time,
+                order_id,
+                isaccepted,
+                employee_id,
+                terminalid
+            )
+        })
+
+    fun updateOnlineOrders(
+        order_id: Int,
+        order_status: String
+    ): LiveData<Resource<BaseResponse>> =
+        performGetOperationNew(networkCall = {
+            apiHelperNew.updateOnlineOrder(
+                order_id,
+                order_status
+            )
+        })
+
+
     suspend fun cashInOut(data: CashLogRequest) = apiHelperNew.cashInOut(data)
 
 
-    suspend fun getCashLog(startDate: String, endDate: String, terminalId: String) =
-        apiHelperNew.getCashInOut(startDate, endDate, terminalId)
+    suspend fun getCashLog(
+        startDate: String,
+        endDate: String,
+        terminalId: String,
+        s: String,
+        s1: String
+    ) =
+        apiHelperNew.getCashInOut(startDate, endDate, terminalId,s,s1)
 
     suspend fun orderUpdateTip(orderId: Int, customerId: Double) =
         apiHelperNew.orderUpdateTip(orderId, customerId)
@@ -853,6 +906,13 @@ class PosRepository @Inject constructor(
         email: String
     ) =
         apiHelperNew.getReportEOD(startDate, endDate, terminalId, employee_id, email)
+ suspend fun sendEmailReportSummary(
+        startDate: String,
+        endDate: String,
+        email: String,
+        employee_id: String
+ ) =
+        apiHelperNew.sendEmailTimeSheet(startDate, endDate,  email,employee_id)
 
     suspend fun getOrderHistory(id: String) =
         apiHelperNew.getOrderHistory(id)
@@ -892,6 +952,9 @@ class PosRepository @Inject constructor(
 
     fun orderCounts(startDate: String?, endDate: String?) =
         performGetOperationNew(networkCall = { apiHelperNew.orderCounts(startDate, endDate) })
+
+    fun onlineOrderCounts(startDate: String?, endDate: String?) =
+        performGetOperationNew(networkCall = { apiHelperNew.onlineOrderCounts(startDate, endDate) })
 
     fun inventoryCounts() =
         performGetOperationNew(networkCall = { apiHelperNew.inventoryCounts() })

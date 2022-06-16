@@ -23,8 +23,8 @@ import androidx.core.view.GravityCompat
 import androidx.databinding.DataBindingUtil
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentActivity
 import androidx.navigation.NavController
+import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
 import com.android.pos.BuildConfig
@@ -37,6 +37,7 @@ import com.android.pos.di.ApiModule.BASE_URL
 import com.android.pos.di.HostSelectionInterceptor
 import com.android.pos.di.PrefProvider
 import com.android.pos.di.RolePermission
+import com.android.pos.ui.fragments.dashboard.bolddashboard.DashboardCategoryBoldPOS
 import com.android.pos.ui.fragments.settings.hardware.Hardware
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.FileUtils
@@ -97,6 +98,19 @@ class MainActivity : BaseScannerActivity() {
         }
 
     }
+    var broadcastReceiveronlineOrder = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            var count = intent?.getStringExtra("count")
+            count?.toInt()
+                ?.let { DashboardCategoryBoldPOS.newInstance().onlineOrderBadgeDisplay(it) }
+            if (navController?.currentDestination?.id == R.id.onlineOrderFragment) {
+                var intent = Intent()
+                intent.putExtra("refresh", true)
+                intent.action = Constants.ONLINE_ORDER_REFRESH
+                sendBroadcast(intent)
+            }
+        }
+    }
 
     private fun clockoutFromSystem() {
         prefProvider?.setValueInt(Constants.EMPLOYEE_ID, 0)
@@ -122,6 +136,7 @@ class MainActivity : BaseScannerActivity() {
     override fun onDestroy() {
         super.onDestroy()
         unregisterReceiver(broadcastReceiver)
+        unregisterReceiver(broadcastReceiveronlineOrder)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -131,6 +146,10 @@ class MainActivity : BaseScannerActivity() {
 
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
         registerReceiver(broadcastReceiver, IntentFilter(Constants.SEND_CLOCKOUT_NOTIFICATION))
+        registerReceiver(
+            broadcastReceiveronlineOrder,
+            IntentFilter(Constants.ONLINE_ORDER_GET_NOTIFICATION)
+        )
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
             window.statusBarColor = getColor(R.color.txtColorGray)

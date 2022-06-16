@@ -240,7 +240,10 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
                 it.serviceChargeId,
                 true,
                 order.locationId,
+                it.max_guest_count,
+                it.min_guest_count,
                 it.name,
+                it.order_type,
                 it.rate,
                 it.updatedAt.toString(),
                 isActive = false,
@@ -331,7 +334,11 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
                 note = it.note
             }
 
-            inventoryModelList.add(items)
+            try {
+                inventoryModelList.add(items)
+            } catch (e: Exception) {
+                Log.d(TAG, "inventoryList: "+e.printStackTrace())
+            }
 
         }
 

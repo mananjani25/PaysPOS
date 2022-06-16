@@ -1,12 +1,12 @@
 package com.android.pos.ui.adapter
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.data.entities.TbServiceCharge
 import com.android.pos.databinding.ViewServiceChargeItemBinding
 import com.android.pos.ui.fragments.settings.servicecharge.ServiceChargeListViewModel
-import com.android.pos.utils.callback.ItemCallback
 
 class ServiceChargeListAdapter(val viewModel: ServiceChargeListViewModel) :
     RecyclerView.Adapter<ServiceChargeListAdapter.MyViewHolder>() {
@@ -16,6 +16,7 @@ class ServiceChargeListAdapter(val viewModel: ServiceChargeListViewModel) :
     fun setCallback(callback: ItemCallback) {
         mCallback = callback
     }
+
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
@@ -31,7 +32,9 @@ class ServiceChargeListAdapter(val viewModel: ServiceChargeListViewModel) :
         val itemBinding = holder.discountItemBinding
         itemBinding.serviceChargeModel = serviceChargeList[position]
         itemBinding.viewModel = viewModel
-
+        itemBinding.layoutMenu.imgOrderMenu.setOnClickListener {
+            mCallback?.onItemClickListener(it, position, serviceChargeList[position].order_type)
+        }
         itemBinding.executePendingBindings()
     }
 
@@ -53,19 +56,10 @@ class ServiceChargeListAdapter(val viewModel: ServiceChargeListViewModel) :
     inner class MyViewHolder(val discountItemBinding: ViewServiceChargeItemBinding) :
         RecyclerView.ViewHolder(discountItemBinding.root) {
 
-        init {
-            discountItemBinding.imgCheckBox.setOnClickListener {
-                serviceChargeList[layoutPosition].isChecked =
-                    !serviceChargeList[layoutPosition].isChecked
-                notifyDataSetChanged()
-            }
-            discountItemBinding.layoutMenu.imgOrderMenu.setOnClickListener {
-                mCallback?.onItemClickListener(it, bindingAdapterPosition)
-            }
-
-        }
     }
 
 
-
+    interface ItemCallback {
+        fun onItemClickListener(view: View?, pos: Int, order_type: String?)
+    }
 }

@@ -113,6 +113,28 @@
             app:destination="@id/createItem"
             app:enterAnim="@anim/nav_default_enter_anim" />
     </fragment>
+
+    <fragment
+        android:id="@+id/onlineOrderFragment"
+        android:name="com.android.pos.ui.fragments.onlineorder.OnlineOrderFragment"
+        android:label="onlineOrder">
+        <action
+            android:id="@+id/action_onlineOrder_to_menuposbold"
+            app:destination="@id/menuFragment"
+            app:enterAnim="@anim/nav_default_enter_anim" />
+        <action
+            android:id="@+id/action_onlineOrder_to_reasonForrefundonline"
+            app:destination="@id/reasonForRefundDialogonline"
+            app:enterAnim="@anim/nav_default_enter_anim" />
+        <action
+            android:id="@+id/action_onlineOrder_to_dashboarCategorynew"
+            app:destination="@id/dashboardCategoryBoldPOS"
+            app:enterAnim="@anim/nav_default_enter_anim" />
+        <action
+            android:id="@+id/action_onlineOrder_to_addOnlneTime"
+            app:destination="@id/addOnlineTimeDialog" />
+    </fragment>
+
     <fragment
         android:id="@+id/createItem"
         android:name="com.android.pos.ui.fragments.createitem.CreateItem"
@@ -652,6 +674,9 @@
             android:id="@+id/action_teamMemberTimeSheetFragment_to_singleTeamMemberTimeSheetFragment"
             app:destination="@id/singleTeamMemberTimeSheetFragment" />
         <action
+            android:id="@+id/action_teamMemberTimeSheetFragment_to_sendReceiptFragment"
+            app:destination="@id/sendReceiptFragment" />
+        <action
             android:id="@+id/action_teamMemberTimeSheetFragment_to_dashboardCategoryNew"
             app:destination="@id/dashboardCategoryBoldPOS"
             app:popUpToInclusive="true" />
@@ -664,6 +689,9 @@
             android:id="@+id/action_singleTeamMemberTimeSheetFragment_to_dashboardCategoryNew"
             app:destination="@id/dashboardCategoryBoldPOS"
             app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_singleteamMemberTimeSheetFragment_to_sendReceiptFragment"
+            app:destination="@id/sendReceiptFragment" />
     </fragment>
     <fragment
         android:id="@+id/userAccessPermissionListFragment"
@@ -1017,6 +1045,10 @@
             android:id="@+id/action_transactionDetailsFragment_to_issueRefundFragment"
             app:destination="@id/issueRefundFragment" />
         <action
+            android:id="@+id/action_transaction_to_reasonForrefundonline"
+            app:destination="@id/reasonForRefundDialogonline"
+             />
+        <action
             android:id="@+id/action_transactionDetailsFragment_to_dashboardboldpos"
             app:destination="@id/dashboardCategoryBoldPOS" />
         <action
@@ -1078,6 +1110,10 @@
         android:name="com.android.pos.ui.dialog.AddTipsDialog"
         android:label="AddTipsDialog" />
     <dialog
+        android:id="@+id/addOnlineTimeDialog"
+        android:name="com.android.pos.ui.dialog.AddOnlineTimeDialog"
+        android:label="AddOnlineTimeDialog" />
+    <dialog
         android:id="@+id/issueRefundFragment"
         android:name="com.android.pos.ui.dialog.IssueRefundDialog"
         android:label="IssueRefundFragment">
@@ -1092,6 +1128,18 @@
         <action
             android:id="@+id/action_reasonForRefundDialog_to_transactionDetailsFragment"
             app:destination="@id/transactionDetailsFragment" />
+    </dialog>
+    <dialog
+        android:id="@+id/reasonForRefundDialogonline"
+        android:name="com.android.pos.ui.dialog.ReasonForRefundOnlineOrder"
+        android:label="ReasonForRefundDialogOnline">
+        <action
+            android:id="@+id/action_reasonForRefundDialogonline_to_onlinedetailfragment"
+            app:destination="@id/onlineOrderFragment" />
+        <action
+            android:id="@+id/action_reasonForRefundDialogonline_to_transactionfragment"
+            app:destination="@id/transactionDetailsFragment" />
+
     </dialog>
     <fragment
         android:id="@+id/dineInFragment"
@@ -1143,6 +1191,7 @@
             app:popUpTo="@id/dashboardCategoryBoldPOS"
             app:popUpToInclusive="true" />
     </fragment>
+
     <dialog
         android:id="@+id/orderTypeDialog"
         android:name="com.android.pos.ui.dialog.OrderTypeDialog">
@@ -1407,6 +1456,10 @@
         <action
             android:id="@+id/action_dashboardCategoryBoldPOS_to_addVariablePriceDialog"
             app:destination="@id/addVariablePriceDialog" />
+        <action
+            android:id="@+id/action_dashboardCategoryBoldPOS_to_onlineOrderFragment"
+            app:destination="@id/onlineOrderFragment"
+            app:enterAnim="@anim/nav_default_enter_anim" />
         <action
             android:id="@+id/action_dashboardCategoryBoldPOS_to_transactionFragment"
             app:destination="@id/transactionFragment"

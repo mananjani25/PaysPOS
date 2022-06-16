@@ -1,14 +1,18 @@
 package com.android.pos.ui.fragments.settings.teamrole
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.android.pos.data.entities.Employee
+import com.android.pos.data.model.responseModel.BaseResponse
 import com.android.pos.data.model.responseModel.GetEmployeeTimeSheetDetailsResponse
 import com.android.pos.data.model.responseModel.GetEmployeesTimeSheetResponse
 import com.android.pos.data.repositories.PosRepository
 import com.android.pos.data.repositories.TaxServiceChargeRepository
 import com.android.pos.utils.Event
+import com.android.pos.utils.statusUtils.Resource
 import com.android.pos.utils.statusUtils.Status
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -28,6 +32,9 @@ class TeamMemberSheetViewModel @Inject constructor(
 
     private val _data = MutableLiveData<Event<GetEmployeesTimeSheetResponse?>>()
     val data: LiveData<Event<GetEmployeesTimeSheetResponse?>> = _data
+
+    private val _sendTimeSheet = MutableLiveData<Event<String>>()
+    val sendTimeSheet: LiveData<Event<String>> = _sendTimeSheet
 
     private val _timeSheetDetails = MutableLiveData<Event<GetEmployeeTimeSheetDetailsResponse?>>()
     val timeSheetDetails: LiveData<Event<GetEmployeeTimeSheetDetailsResponse?>> = _timeSheetDetails
@@ -175,6 +182,63 @@ class TeamMemberSheetViewModel @Inject constructor(
             }
         }
 
+    }
+
+    fun sendEmailTimeSheet(emailId: String, teamId: String) {
+
+        _showProgress.value = Event(true)
+        viewModelScope.launch {
+
+            Log.e("startDate", startDate.value ?: "")
+            Log.e("endDate", endDate.value ?: "")
+            var resource: Resource<BaseResponse>?= null
+            if (teamId.isNotEmpty()) {
+                resource =
+                    posRepository.sendEmailReportSummary(
+                        startDate = startDate.value.toString(),
+                        endDate = endDate.value.toString(),
+                        employee_id = teamId,
+                        email = emailId
+                    )
+            } else {
+                resource =
+                    posRepository.sendEmailReportSummary(
+                        startDate = startDate.value.toString(),
+                        endDate = endDate.value.toString(),
+                        employee_id ="",
+                        email = emailId
+                    )
+            }
+
+            when (resource.status) {
+                Status.SUCCESS -> {
+                    _showProgress.value = Event(false)
+                    resource.data.let {
+                        if (it?.status == 200) {
+
+                            if (emailId.isEmpty()) {
+                                _sendTimeSheet.postValue(Event(it.message))
+                            } else {
+                                _snackbarText.value = Event(it.message)
+                            }
+                        }
+                    }
+                }
+
+                Status.ERROR -> {
+                    _snackbarText.value = Event(resource.message)
+                    _showProgress.value = Event(false)
+                }
+
+                Status.LOADING -> {
+                    _showProgress.value = Event(true)
+                }
+            }
+        }
+    }
+
+    fun getEmployeeEmail(emp_id: Int): LiveData<Resource<Employee>> {
+        return posRepository.getEmployeeEmail(emp_id)
     }
 
     private fun validateDates(startDate: String?, endDate: String?): Boolean {

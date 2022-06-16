@@ -5,16 +5,16 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.media.MediaPlayer
 import android.media.RingtoneManager
 import android.os.Build
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import com.android.pos.R
+import com.android.pos.data.remote.Constants.ONLINE_ORDER_GET_NOTIFICATION
 import com.android.pos.data.remote.Constants.SEND_CLOCKOUT_NOTIFICATION
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.activities.MainActivity
-import com.android.pos.utils.Pref
-import com.google.firebase.messaging.Constants
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import javax.inject.Inject
@@ -45,10 +45,27 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
                 intent.action = SEND_CLOCKOUT_NOTIFICATION
                 prefProvider.setValueboolean("clockOutFromNoti", true)
                 sendBroadcast(intent)
+            } else if (type == "onlineorder") {
+                var intent = Intent()
+                intent.putExtra("message", remoteMessage.data["message"].toString())
+                intent.putExtra("count", remoteMessage.data["count"])
+                intent.action = ONLINE_ORDER_GET_NOTIFICATION
+                sendBroadcast(intent)
+                setSoundForOnlineOrder()
             }
             Log.d(TAG, "Message data payload: ${remoteMessage.data}")
         }
 
+    }
+
+    private fun setSoundForOnlineOrder() {
+        try {
+            val resID = resources.getIdentifier("bell", "raw", packageName)
+            val mediaPlayer: MediaPlayer = MediaPlayer.create(this, resID)
+            mediaPlayer.start()
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
     override fun onNewToken(token: String) {

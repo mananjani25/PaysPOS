@@ -27,7 +27,7 @@ data class GetOrderDetailsResponse(
         @SerializedName("customer_id")
         val customerId: Int,
         @SerializedName("date")
-        val date: String?,
+        val date: String?=null,
         @SerializedName("delivery_employee_id")
         val deliveryEmployeeId: String?,
         @SerializedName("delivery_type")
@@ -251,7 +251,7 @@ data class GetOrderDetailsResponse(
             @SerializedName("discount_id")
             val discountId: Int?,
             @SerializedName("discount_type")
-            val discountType: String?,
+            val discountType: String?=null,
             @SerializedName("employee_id")
             val employeeId: Int,
             @SerializedName("float")
@@ -431,7 +431,13 @@ data class GetOrderDetailsResponse(
             @SerializedName("service_charge_id")
             val serviceChargeId: Int,
             @SerializedName("updated_at")
-            val updatedAt: String?
+            val updatedAt: String?,
+            @SerializedName("min_guest_count")
+            val min_guest_count: Int?=null,
+            @SerializedName("max_guest_count")
+            val max_guest_count: Int?=null,
+            @SerializedName("order_type")
+            val order_type: String,
         ) : Parcelable
 
         @Parcelize

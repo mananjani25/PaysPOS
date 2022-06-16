@@ -9,6 +9,7 @@ import com.android.pos.R
 import com.android.pos.data.entities.TbServiceCharge
 import com.android.pos.data.model.requestModel.CreateServiceChargeRequestModel
 import com.android.pos.data.model.responseModel.*
+import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.LOCATION_ID
 import com.android.pos.data.repositories.PosRepository
 import com.android.pos.data.repositories.TaxServiceChargeRepository
@@ -18,7 +19,9 @@ import com.android.pos.utils.statusUtils.Resource
 import com.android.pos.utils.statusUtils.Status
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import org.w3c.dom.Text
 import javax.inject.Inject
+import kotlin.math.min
 
 
 @HiltViewModel
@@ -43,14 +46,16 @@ class CreateServiceChargeViewModel @Inject constructor(
 
     private var enableSerChargeViewModel: Boolean = false
     private var isEdit: Boolean = false
+    var isfrom = "takeout"
 
     private lateinit var serviceChargeData: CreateServiceChargeRequestModel
 
     private lateinit var resource: Resource<CreateServiceChargeResponse>
 
-    fun isEditData(isEdit: Boolean, serviceChargeId: Int) {
+    fun isEditData(isEdit: Boolean, serviceChargeId: Int, isfromm: String) {
         this.serviceChargeId = serviceChargeId
         this.isEdit = isEdit
+        this.isfrom = isfromm
     }
 
 
@@ -66,6 +71,7 @@ class CreateServiceChargeViewModel @Inject constructor(
 
     fun submit() {
         val value = createServiceChargeDetails.value
+
         if (TextUtils.isEmpty(value?.name?.trim())) {
             _snackbarText.value = Event(R.string.sercharge_name_validate)
         } else if (TextUtils.isEmpty(
@@ -74,6 +80,10 @@ class CreateServiceChargeViewModel @Inject constructor(
             || value?.percentage == 0.0
         ) {
             _snackbarText.value = Event(R.string.sercharge_rate_validate)
+        } else if (value?.min_guest_count == 0 && isfrom == "dinein") {
+            _snackbarText.value = Event(R.string.minguest_valiidation)
+        } else if (value?.max_guest_count == 0 && isfrom == "dinein") {
+            _snackbarText.value = Event(R.string.maxguest_valiidation)
         } else {
             _showProgress.value = Event(true)
 
@@ -84,6 +94,9 @@ class CreateServiceChargeViewModel @Inject constructor(
                         percentage = value.percentage
                         isEnabled = enableSerChargeViewModel
                         locationId = prefProvider.getValueInt(LOCATION_ID, -1)
+                        min_guest_count = value.min_guest_count
+                        max_guest_count = value.max_guest_count
+                        order_type = value.order_type
                     }
                 }
             } else {
@@ -93,6 +106,9 @@ class CreateServiceChargeViewModel @Inject constructor(
                         percentage = value.percentage
                         isEnabled = enableSerChargeViewModel
                         locationId = prefProvider.getValueInt(LOCATION_ID, -1)
+                        min_guest_count = value.min_guest_count
+                        max_guest_count = value.max_guest_count
+                        order_type = value.order_type
                     }
                 }
             }
@@ -124,7 +140,10 @@ class CreateServiceChargeViewModel @Inject constructor(
                                         name = createServiceChargeResponse.data.name,
                                         percentage = createServiceChargeResponse.data.percentage,
                                         updatedAt = createServiceChargeResponse.data.updatedAt,
-                                        isActive = createServiceChargeResponse.data.isActive
+                                        isActive = createServiceChargeResponse.data.isActive,
+                                        min_guest_count = 0,
+                                        max_guest_count = 0,
+                                        order_type = Constants.SERVICECHARGE_TAKEOUT_OPENORDER
                                     )
 
                                     taxServiceChargeRepository.createServiceChargeDatabase(
