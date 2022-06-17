@@ -72,6 +72,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
+import java.util.stream.Collectors
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -146,7 +147,6 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         )
         binding.lifecycleOwner = this
         progressDialog()
-        prefProvider.setValue(ORDER_TYPE, DINE_IN)
         optionType = prefProvider.getValue(Constants.OPTION_TYPE, "")
         observeShowProgress()
         setupSnackbar()
@@ -193,45 +193,21 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         viewModel.getServiceChargeList.observe(viewLifecycleOwner) {
             if (it.data?.isNotEmpty() == true) {
                 if (it.status == Status.SUCCESS) {
-                    if (prefProvider.getValue(Constants.ORDER_TYPE, Constants.TAKEOUT) == DINE_IN) {
-                        if (prefProvider.getValueboolean(
-                                Constants.SERVICECHARGE_DINEIN_ORDER,
-                                false
-                            )
-                        ) {
-                            Log.e(TAG, "getServiceCharge:  ${Gson().toJson(it.data)}")
-                            serviceChargeList = arrayListOf()
-                            it.data?.forEach { service ->
-                                if (service.order_type == Constants.SERVICECHARGE_DINEIN_ORDER) {
-                                    serviceChargeList = it.data.toCollection(arrayListOf())
-                                    dineInTableAdapter.setSurchargeList(serviceChargeList)
-                                }
+                    if (prefProvider.getValueboolean(
+                            Constants.SERVICECHARGE_DINEIN_ORDER,
+                            false
+                        )
+                    ) {
+                        Log.e(TAG, "getServiceCharge:  ${Gson().toJson(it.data)}")
+                        serviceChargeList = arrayListOf()
+                        it.data.forEach { service ->
+                            if (service.order_type == Constants.SERVICECHARGE_DINEIN_ORDER) {
+                                serviceChargeList = it.data.toCollection(arrayListOf())
+                                dineInTableAdapter.setSurchargeList(serviceChargeList)
                             }
-                        }
-                    } else {
-                        if (prefProvider.getValueboolean(
-                                Constants.SERVICECHARGE_TAKEOUT_OPENORDER,
-                                false
-                            )
-                        ) {
-                            if (prefProvider.getValueboolean(
-                                    Constants.SERVICECHARGE_TAKEOUT_OPENORDER,
-                                    false
-                                )
-                            ) {
-                                Log.e(TAG, "getServiceCharge:  ${Gson().toJson(it.data)}")
-                                serviceChargeList = arrayListOf()
-                                it.data?.forEach { service ->
-                                    if (service.order_type == Constants.SERVICECHARGE_TAKEOUT_OPENORDER) {
-                                        serviceChargeList = it.data.toCollection(arrayListOf())
-                                        dineInTableAdapter.setSurchargeList(serviceChargeList)
-                                    }
-                                }
-                            }
-
-
                         }
                     }
+
                 }
 
             }
@@ -387,36 +363,79 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             cartList!!.taxlistDynamic = listOf()
             var temp_itemsList: ArrayList<TbItem> = arrayListOf()
             cartList?.dineInList?.forEach { dineModel ->
-                temp_itemsList.addAll(dineModel.items)
-            }
-            /*temp_itemsList.forEach { item ->
-                if (paidGuestAmount > 0) {
-                    var temp_item =
-                        item.price / getOrderDetailsResponse?.guestAttributes?.size!! - 1
-                    item.price = item.price - (temp_item * paidGuestAmount)
-                    Log.d(TAG, "onClick: tax " + item.price)
-                    Log.d(TAG, "onClick: tax paid" + paidGuestAmount)
-                    Log.d(
-                        TAG,
-                        "onClick: tax totall " + getOrderDetailsResponse?.guestAttributes?.size!!.minus(
-                            1
-                        )
-                    )
-                    item.modifiers.forEach { modifier ->
-                        var temp_modifier =
-                            modifier.price / getOrderDetailsResponse?.guestAttributes?.size!!.minus(
-                                1
-                            )
-                        modifier.price = modifier.price - (temp_modifier * paidGuestAmount)
-                    }
+                if (!dineModel.isPaid) {
+                    temp_itemsList.addAll(dineModel.items)
                 }
+            }
+
+
+            temp_itemsList.forEach { item ->
                 cartList = taxBifurcationCalculation(
                     item,
                     cartList!!
                 )
-            }*/
+            }
+
 
             Log.d(TAG, "onClick: listof Tax:  " + Gson().toJson(cartList?.taxlistDynamic))
+
+            listWT.forEach { wholetableitems ->
+                wholetableitems.taxes?.forEachIndexed { index, taxData ->
+                    var modifierPrice: Double = 0.0
+                    var totaltaxtemp: Double = 0.0
+                    val price =
+                        (wholetableitems.price * wholetableitems.itemQuantity) - (wholetableitems.discountPrice * wholetableitems.itemQuantity)
+
+                    wholetableitems.modifiers.forEach {
+                        modifierPrice += (it.price * it.itemQuantity)
+                    }
+
+                    val totalPrice =
+                        price + modifierPrice
+                    totaltaxtemp += if (taxData.taxType == "Percentage") {
+                        if (totalPrice < 0.0) {
+
+                            String.format("%.2f", 0.00)
+                                .toDouble()
+                        } else {
+                            val itemTaxPrice =
+                                (taxData.rate * totalPrice) / 100
+                            Log.e("itemTaxPrice", "" + itemTaxPrice)
+                            String.format("%.2f", itemTaxPrice)
+                                .toDouble()
+                        }
+
+                    } else {
+                        Log.d("yash", "taxCalculation: " + taxData.taxType)
+                        if (totalPrice <= 0.0) {
+                            String.format("%.2f", 0.00)
+                                .toDouble()
+                        } else {
+                            String.format("%.2f", taxData.rate * wholetableitems.itemQuantity)
+                                .toDouble()
+                        }
+
+                    }
+
+                    Log.d(TAG, "onClick: wholetable total tax $totaltaxtemp")
+                    var found = -1
+                    totaltaxtemp /= (getOrderDetailsResponse?.guestAttributes?.size!! - 1)
+                    var temp_remaining = totaltaxtemp * paidGuestAmount
+                    cartList?.taxlistDynamic?.forEachIndexed { indexcart, cartTaxtData ->
+                        if (cartTaxtData.taxType == taxData.taxType) {
+                            found = indexcart
+                        }
+                    }
+                    if (found != -1) {
+                        cartList?.taxlistDynamic?.get(found)?.totalTaxTypePrice =
+                            cartList?.taxlistDynamic?.get(found)?.totalTaxTypePrice!!.minus(
+                                temp_remaining
+                            )
+                    }
+
+                }
+            }
+            Log.d(TAG, "onClick: listof Tax: after  " + Gson().toJson(cartList?.taxlistDynamic))
             viewModelPayment.addCart(cartList!!)
             Log.e(TAG, "getcartListAfterAdd  ${Gson().toJson(cartList)}")
 
