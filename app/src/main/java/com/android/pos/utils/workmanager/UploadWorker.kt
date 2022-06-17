@@ -198,31 +198,33 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
 
 
                 itemArray.forEach {
-                    var modifiersList =
-                        it.asJsonObject.get("order_item_modifiers_attributes").asJsonArray
+                    if (it.asJsonObject.has("order_item_modifiers_attributes")) {
+                        var modifiersList =
+                            it.asJsonObject.get("order_item_modifiers_attributes").asJsonArray
 
-                    if (modifiersList.size() != 0) {
-                        modifiersList.forEach {
-                            val jsonObj = it.asJsonObject
-                            itemModifiers.add(
-                                CreateOrderResponse.Data.Order.OrderItem.OrderItemModifiers(
-                                    name = jsonObj.get("name").asString,
-                                    id = 0,
-                                    orderItemId = 0,
-                                    orderId = 0,
-                                    quantity = jsonObj.get("quantity").asInt,
-                                    price = 0.0,
-                                    modifierSetId = 0,
-                                    updatedAt = "",
-                                    createdAt = "",
-                                    totalPrice = 0.0,
-                                    isModifier = false
+                        if (modifiersList.size() != 0) {
+                            modifiersList.forEach {
+                                val jsonObj = it.asJsonObject
+                                itemModifiers.add(
+                                    CreateOrderResponse.Data.Order.OrderItem.OrderItemModifiers(
+                                        name = jsonObj.get("name").asString,
+                                        id = 0,
+                                        orderItemId = 0,
+                                        orderId = 0,
+                                        quantity = jsonObj.get("quantity").asInt,
+                                        price = 0.0,
+                                        modifierSetId = 0,
+                                        updatedAt = "",
+                                        createdAt = "",
+                                        totalPrice = 0.0,
+                                        isModifier = false
+                                    )
                                 )
-                            )
 
+
+                            }
 
                         }
-
                     }
                     var orderItem = CreateOrderResponse.Data.Order.OrderItem(
                         categoryId = it.asJsonObject.get("category_id").asInt,
@@ -312,9 +314,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                 } else {
                     Print.DEVTYPE_TCP
                 },
-                data.ipAddress,
-                enabled,
-                10000
+                data.ipAddress
             )
 
 
@@ -626,13 +626,13 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
             builder.addCut(Builder.CUT_FEED)
 
             val status = IntArray(1)
-            val battery = IntArray(1)
+            status[0] = 0
 
 
             try {
                 PrinterClass.getPrinter()?.sendData(
                     builder,
-                    PrinterClass.TEST_PRINT_LAN_TIME, status, battery
+                    10000, status
                 )
 
                 PrinterClass.closePrinter()

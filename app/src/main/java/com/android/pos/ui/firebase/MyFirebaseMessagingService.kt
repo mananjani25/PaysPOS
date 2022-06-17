@@ -17,7 +17,6 @@ import com.android.pos.di.PrefProvider
 import com.android.pos.ui.activities.MainActivity
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
-import com.google.gson.Gson
 import javax.inject.Inject
 
 class MyFirebaseMessagingService : FirebaseMessagingService() {
@@ -28,7 +27,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
 
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
         Log.e(TAG, "From: ${remoteMessage.from}")
-        Log.e(TAG, "remoteMessage  ${Gson().toJson(remoteMessage)}")
+
 //        remoteMessage.data["type"]
         prefProvider = PrefProvider(this)
         if (remoteMessage.data.isNotEmpty()) {
@@ -48,22 +47,24 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
                 prefProvider.setValueboolean("clockOutFromNoti", true)
                 sendBroadcast(intent)
             } else if (type == "onlineorder") {
-
                 var intent = Intent()
                 intent.putExtra("message", remoteMessage.data["message"].toString())
                 intent.putExtra("count", remoteMessage.data["count"])
                 intent.action = ONLINE_ORDER_GET_NOTIFICATION
                 sendBroadcast(intent)
-                setSoundForOnlineOrder()
-            }
-            else{
+                // setSoundForOnlineOrder()
+            } else {
+                var intent = Intent()
+                intent.putExtra("printer_queue", "rem")
+                intent.action = "PrinterQueue"
+                sendBroadcast(intent)
 
-
             }
-            Log.e(TAG, "Message data payload: ${remoteMessage.data}")
+
         }
 
     }
+
 
     private fun setSoundForOnlineOrder() {
         try {
@@ -124,6 +125,17 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
     }
 
     fun queuePrinterLogic(context: Context) {
+        /*  val data = Data.Builder()
+              .putString("kitchenPrinterList", Gson().toJson(kitchenPrinterList))
+              .put("kitchenSettingData", Gson().toJson(kitchenSettingModel))
+              .put("location_id", prefProvider.getValueInt(Constants.LOCATION_ID, 0))
+              .put("base_url", prefProvider.getValue(Constants.BASE_URL_NEW, ""))
+              .build()
+  */
+
+        /*val uploadWorkRequest =
+            OneTimeWorkRequest.Builder(UploadWorker::class.java).setInputData(data).build()*/
+
 
     }
 }

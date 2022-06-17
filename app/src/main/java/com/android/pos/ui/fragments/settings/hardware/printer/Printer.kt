@@ -136,8 +136,8 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
     private fun setUpHeader() {
         binding.header.imgSync.visible()
-        binding.header.txtTitle.text=getString(R.string.printers)
-        binding.header.txtSave.text=getString(R.string.tv_home)
+        binding.header.txtTitle.text = getString(R.string.printers)
+        binding.header.txtSave.text = getString(R.string.tv_home)
     }
 
 
@@ -1324,8 +1324,8 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
             try {
                 printer?.openPrinter(
                     if (printerListModel.connectionType == BLUETOOTH) Print.DEVTYPE_BLUETOOTH else Print.DEVTYPE_TCP,
-                    printerListModel.deviceModel?.ipAddress)
-
+                    printerListModel.deviceModel?.ipAddress
+                )
 
 
             } catch (e: Exception) {
@@ -1719,7 +1719,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                 val current = LocalDateTime.now()
                 val formatter = DateTimeFormatter.ofPattern("MMM-dd-yyyy hh:mm:a")
                 val formatted = current.format(formatter)
-                builder.addText(getCurrentTimeFromTimeZone(requireContext(),formatted))
+                builder.addText(getCurrentTimeFromTimeZone(requireContext(), formatted))
             }
 
 
@@ -1745,7 +1745,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
             try {
                 PrinterClass.getPrinter()?.sendData(
-                    builder,  10000, status
+                    builder, 10000, status
                 )
                 //PrinterClass.getPrinter()?.sendData(builder, 0, status, battery)
             } catch (e: Exception) {

@@ -952,6 +952,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 break
             }
         }
+        Log.e(TAG,"GuetItems  ${Gson().toJson(totalItem)}")
         if (totalItem.isNotEmpty()) {
             totalItem.forEach {
                 subTotal += it.price * it.itemQuantity

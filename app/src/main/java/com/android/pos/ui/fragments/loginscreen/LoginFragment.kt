@@ -23,9 +23,10 @@ import com.android.pos.di.PrefProvider
 import com.android.pos.ui.activities.MainActivity
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.extensions.liveSnackBar
+import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.material.snackbar.Snackbar
+import com.google.firebase.messaging.FirebaseMessaging
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.delay
 import javax.inject.Inject
 
 
@@ -98,7 +99,7 @@ class LoginFragment : Fragment() {
     private fun firebaseToken() {
 
         
-      /*  FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
+        FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
             if (!task.isSuccessful) {
                 Log.w("FirebaseMessaging", "Fetching FCM registration token failed", task.exception)
                 return@OnCompleteListener
@@ -108,7 +109,7 @@ class LoginFragment : Fragment() {
             device_token = task.result
             prefProvider?.setValue("device_token", device_token)
             Log.d("FirebaseMessaging Token", device_token)
-        })*/
+        })
     }
 
     private fun copy() {
