@@ -73,7 +73,6 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
 import javax.inject.Inject
-import kotlin.collections.ArrayList
 
 @AndroidEntryPoint
 class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
@@ -335,6 +334,24 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
         binding.btnPayNew.setOnClickListener {
             //new Calculation for total Discount
+            var listWT: ArrayList<TbItem> = arrayListOf()
+            var list = dineInTableAdapter.getList()
+
+            for (i in 0 until list.size) {
+                if (list.get(i).title.equals("Whole Table", true) && i + 1 <= list.size) {
+                    if (list[i + 1].isHeader == 1) {
+                        for (j in i + 1 until list.size) {
+                            if (list.get(j).isHeader == 1) {
+                                listWT.add(list.get(j).item!!)
+                            } else {
+                                break
+                            }
+                        }
+                    }
+                }
+            }
+            Log.e(TAG, "listWTItems ${Gson().toJson(listWT)}")
+
             var dividedOrderDiscount = 0.0
 
             if (paidGuestAmount > 0 && globalOrderDiscount > 0.0) {
@@ -372,8 +389,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             cartList?.dineInList?.forEach { dineModel ->
                 temp_itemsList.addAll(dineModel.items)
             }
-
-            temp_itemsList.forEach { item ->
+            /*temp_itemsList.forEach { item ->
                 if (paidGuestAmount > 0) {
                     var temp_item =
                         item.price / getOrderDetailsResponse?.guestAttributes?.size!! - 1
@@ -398,10 +414,11 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     item,
                     cartList!!
                 )
-            }
+            }*/
 
             Log.d(TAG, "onClick: listof Tax:  " + Gson().toJson(cartList?.taxlistDynamic))
             viewModelPayment.addCart(cartList!!)
+            Log.e(TAG, "getcartListAfterAdd  ${Gson().toJson(cartList)}")
 
             totalTax = 0.0
             var subTotal = 0.0
