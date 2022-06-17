@@ -2230,11 +2230,7 @@ class ActiveOrderFragment(
                         48
                     }
                 ).toString()
-                SunmiPrinterApi.getInstance().enableBold(false)
-                SunmiPrinterApi.getInstance().setFontZoom(1, 1)
-                SunmiPrinterApi.getInstance().printText(str1)
-                SunmiPrinterApi.getInstance().lineWrap(1)
-
+                PrintSunmiUtils.totalDiscount(str1)
 
             }
 
@@ -2248,12 +2244,8 @@ class ActiveOrderFragment(
                     48
                 }
             ).toString()
-            SunmiPrinterApi.getInstance().enableBold(false)
-            SunmiPrinterApi.getInstance().setFontZoom(1, 1)
-            SunmiPrinterApi.getInstance().printText(str2)
-            SunmiPrinterApi.getInstance().lineWrap(1)
 
-
+            PrintSunmiUtils.subTotal(str2)
 
 
             if (receiptModel?.totalTaxAmount != null) {
@@ -2268,10 +2260,7 @@ class ActiveOrderFragment(
                         48
                     }
                 ).toString()
-                SunmiPrinterApi.getInstance().enableBold(false)
-                SunmiPrinterApi.getInstance().setFontZoom(1, 1)
-                SunmiPrinterApi.getInstance().printText(str3)
-                SunmiPrinterApi.getInstance().lineWrap(1)
+                PrintSunmiUtils.tax(str3)
             }
 
             if (receiptModel.totalServiceCharges != null) {
@@ -2286,11 +2275,7 @@ class ActiveOrderFragment(
                         48
                     }
                 ).toString()
-                SunmiPrinterApi.getInstance().enableBold(false)
-                SunmiPrinterApi.getInstance().setFontZoom(1, 1)
-                SunmiPrinterApi.getInstance().printText(str4)
-                SunmiPrinterApi.getInstance().lineWrap(2)
-
+                PrintSunmiUtils.serviceCharge(str4)
             }
 
             if (receiptModel?.totalTips != 0.0) {
@@ -2309,10 +2294,9 @@ class ActiveOrderFragment(
                         48
                     }
                 ).toString()
-                SunmiPrinterApi.getInstance().enableBold(true)
-                SunmiPrinterApi.getInstance().setFontZoom(1, 1)
-                SunmiPrinterApi.getInstance().printText(str8)
-                SunmiPrinterApi.getInstance().lineWrap(2)
+                PrintSunmiUtils.tip(str8)
+
+
             }
 
 
@@ -2332,10 +2316,7 @@ class ActiveOrderFragment(
                             48
                         }
                     ).toString()
-                    SunmiPrinterApi.getInstance().enableBold(true)
-                    SunmiPrinterApi.getInstance().setFontZoom(1, 1)
-                    SunmiPrinterApi.getInstance().printText(str8)
-                    SunmiPrinterApi.getInstance().lineWrap(2)
+                    PrintSunmiUtils.surCharge(str8)
 
                 } else {
 
@@ -2352,10 +2333,7 @@ class ActiveOrderFragment(
                             48
                         }
                     ).toString()
-                    SunmiPrinterApi.getInstance().enableBold(true)
-                    SunmiPrinterApi.getInstance().setFontZoom(1, 1)
-                    SunmiPrinterApi.getInstance().printText(str8)
-                    SunmiPrinterApi.getInstance().lineWrap(1)
+                    PrintSunmiUtils.cashDiscount(str8)
 
                 }
             }
@@ -2375,10 +2353,8 @@ class ActiveOrderFragment(
                         48
                     }
                 ).toString()
-                SunmiPrinterApi.getInstance().enableBold(true)
-                SunmiPrinterApi.getInstance().setFontZoom(1, 1)
-                SunmiPrinterApi.getInstance().printText(str8)
-                SunmiPrinterApi.getInstance().lineWrap(2)
+
+                PrintSunmiUtils.loyaltyAmount(str8)
 
                 val str9 = padLine(
                     "Used Loyalty Points",
@@ -2389,10 +2365,8 @@ class ActiveOrderFragment(
                         48
                     }
                 ).toString()
-                SunmiPrinterApi.getInstance().enableBold(true)
-                SunmiPrinterApi.getInstance().setFontZoom(1, 1)
-                SunmiPrinterApi.getInstance().printText(str9)
-                SunmiPrinterApi.getInstance().lineWrap(2)
+
+                PrintSunmiUtils.loyaltyPoint(str9)
 
 
             }
@@ -2413,11 +2387,7 @@ class ActiveOrderFragment(
                         48
                     }
                 ).toString()
-                SunmiPrinterApi.getInstance().enableBold(true)
-                SunmiPrinterApi.getInstance().setFontZoom(1, 1)
-                SunmiPrinterApi.getInstance().printText(str5)
-                SunmiPrinterApi.getInstance().lineWrap(1)
-
+                PrintSunmiUtils.totalPrice(str5)
 
             }
 
@@ -2534,36 +2504,10 @@ class ActiveOrderFragment(
 
                 if (receiptModel.customer != null) {
 
-
-                    SunmiPrinterApi.getInstance().enableBold(true)
-                    SunmiPrinterApi.getInstance().setFontZoom(1, 1)
-                    SunmiPrinterApi.getInstance().printText(
-                        padLine(
-                            "Customer Details",
-                            "",
-                            if (customerSettingModel.fonts == Constants.LARGE) {
-                                24
-                            } else {
-                                48
-                            }
-                        ).toString()
-                    )
-                    SunmiPrinterApi.getInstance().lineWrap(1)
-
-
-
-                    PrintSunmiUtils.addHorizontal()
+                    PrintSunmiUtils.customerDetails()
 
                     if (customerSettingModel.showCustomerName) {
-
-
-                        SunmiPrinterApi.getInstance().setAlignMode(0)
-                        SunmiPrinterApi.getInstance().enableBold(false)
-                        SunmiPrinterApi.getInstance().setFontZoom(1, 1)
-                        SunmiPrinterApi.getInstance()
-                            .printText(receiptModel.customer.firstName + " " + receiptModel.customer.lastName)
-                        SunmiPrinterApi.getInstance().lineWrap(1)
-
+                        PrintSunmiUtils.customerName(receiptModel.customer.firstName + " " + receiptModel.customer.lastName)
                     }
 
                     if (customerSettingModel.showCustomerPhone) {
@@ -2572,32 +2516,17 @@ class ActiveOrderFragment(
                             val phoneNoFormatted = MethodUtils.getUSFormatNumber(
                                 receiptModel?.customer?.phones?.get(receiptModel?.customer?.phones?.size - 1).phoneNumber
                             )
-                            Log.e(TAG, "phoneNoFormatted:  ${phoneNoFormatted}")
-
-                            SunmiPrinterApi.getInstance().setAlignMode(0)
-                            SunmiPrinterApi.getInstance().enableBold(false)
-                            SunmiPrinterApi.getInstance().setFontZoom(1, 1)
-                            SunmiPrinterApi.getInstance().printText(phoneNoFormatted)
-                            SunmiPrinterApi.getInstance().lineWrap(1)
+                            PrintSunmiUtils.customerPhone(phoneNoFormatted)
 
                         }
-
-
                     }
-
-
-
 
                     if (customerSettingModel.showCustomerAddress) {
                         if (receiptModel.customer?.addresses?.isNotEmpty() == true) {
 
-                            SunmiPrinterApi.getInstance().setAlignMode(0)
-                            SunmiPrinterApi.getInstance().enableBold(false)
-                            SunmiPrinterApi.getInstance().setFontZoom(1, 1)
-                            SunmiPrinterApi.getInstance().printText(
+                            PrintSunmiUtils.customerAddress(
                                 receiptModel.customer?.addresses?.get(receiptModel.customer?.addresses?.size - 1)?.fullAddress
                             )
-                            SunmiPrinterApi.getInstance().lineWrap(1)
                         }
                     }
 
@@ -2607,31 +2536,14 @@ class ActiveOrderFragment(
 
             if (receiptModel.note != null && receiptModel.note != "" && customerSettingModel.showOrderNote) {
 
-
-                SunmiPrinterApi.getInstance().setAlignMode(1)
-                SunmiPrinterApi.getInstance().enableBold(true)
-                SunmiPrinterApi.getInstance().setFontZoom(1, 1)
-                SunmiPrinterApi.getInstance().printText("Order Note")
-                SunmiPrinterApi.getInstance().lineWrap(1)
-
-                SunmiPrinterApi.getInstance().setAlignMode(1)
-                SunmiPrinterApi.getInstance().enableBold(false)
-                SunmiPrinterApi.getInstance().setFontZoom(1, 1)
-                SunmiPrinterApi.getInstance().printText(receiptModel.note)
-                SunmiPrinterApi.getInstance().lineWrap(1)
-
+                PrintSunmiUtils.orderNote(receiptModel.note)
             }
             SunmiPrinterApi.getInstance().lineWrap(2)
 
 
             if (customerSettingModel.showQrCode) {
 
-                SunmiPrinterApi.getInstance().setAlignMode(1)
-                receiptModel.digitalReceiptUrl.let {
-                    SunmiPrinterApi.getInstance().printQrCode(
-                        it, 6, 0
-                    )
-                }
+                PrintSunmiUtils.qrCode(receiptModel.digitalReceiptUrl)
             }
 
             SunmiPrinterApi.getInstance().lineWrap(5)

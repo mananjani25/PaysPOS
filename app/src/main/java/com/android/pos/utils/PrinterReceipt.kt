@@ -1527,6 +1527,59 @@ fun addOrderItemsTransaction(
     return builder
 }
 
+
+fun addOrderItemsTransaction(
+    list: List<GetOrderDetailsResponse.Data.OrderItem>,
+    font: String,
+    showModifiers: Boolean
+) {
+    for (i in 0 until list.size) {
+        val obj = list.get(i)
+
+        val item = padLineCustomerItem(
+            obj.quantity.toString() + "x " + obj.itemName,
+            "$" + MethodUtils.roundOffAmountString(totalPriceTransaction(obj)),
+            if (font == Constants.LARGE) {
+                24
+            } else {
+                48
+            }
+        )
+
+        SunmiPrinterApi.getInstance().enableBold(false)
+        SunmiPrinterApi.getInstance().setFontZoom(1, 1)
+        SunmiPrinterApi.getInstance().printText(item.toString())
+        SunmiPrinterApi.getInstance().lineWrap(1)
+
+
+
+        if (obj.orderItemModifiers.isNotEmpty() && showModifiers) {
+            for (j in 0 until obj.orderItemModifiers.size) {
+                val modifierObj = obj.orderItemModifiers.get(j)
+
+
+                val modifier = padLineCustomerItem(
+                    "   " + modifierObj.name,
+                    "$" + MethodUtils.roundOffAmountString(modifierObj.price.toDouble() * modifierObj.quantity),
+                    if (font == Constants.LARGE) {
+                        23
+                    } else {
+                        47
+                    }
+                )
+
+                SunmiPrinterApi.getInstance().enableBold(false)
+                SunmiPrinterApi.getInstance().setFontZoom(1, 1)
+                SunmiPrinterApi.getInstance().printText(modifier.toString())
+                SunmiPrinterApi.getInstance().lineWrap(1)
+
+
+            }
+
+        }
+    }
+}
+
 private fun totalPriceOpenOrder(model: OpenOrderResponse.Data.Order.OrderItem): Double {
     return if (model.orderItemModifiers.isNotEmpty()) {
 

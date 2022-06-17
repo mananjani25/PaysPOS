@@ -4680,28 +4680,14 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
             if (getDineInOrderDetails?.note != null && getDineInOrderDetails?.note != "" && customerSettingModel.showOrderNote) {
 
-                SunmiPrinterApi.getInstance().setAlignMode(1)
-                SunmiPrinterApi.getInstance().enableBold(true)
-                SunmiPrinterApi.getInstance().setFontZoom(1, 1)
-                SunmiPrinterApi.getInstance().printText("Order Note")
-                SunmiPrinterApi.getInstance().lineWrap(1)
-
-                SunmiPrinterApi.getInstance().setAlignMode(1)
-                SunmiPrinterApi.getInstance().enableBold(false)
-                SunmiPrinterApi.getInstance().setFontZoom(1, 1)
-                SunmiPrinterApi.getInstance().printText(getDineInOrderDetails?.note!!)
-                SunmiPrinterApi.getInstance().lineWrap(2)
+                PrintSunmiUtils.orderNote(getDineInOrderDetails?.note!!)
             }
 
 
             if (customerSettingModel.showQrCode) {
 
-                SunmiPrinterApi.getInstance().setAlignMode(1)
-                getDineInOrderDetails?.digitalReceiptUrl?.let {
-                    SunmiPrinterApi.getInstance().printQrCode(
-                        it, 6, 0
-                    )
-                }
+
+                getDineInOrderDetails?.digitalReceiptUrl?.let { PrintSunmiUtils.qrCode(it) }
             }
 
 
