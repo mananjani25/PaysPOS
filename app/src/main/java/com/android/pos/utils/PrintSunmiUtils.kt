@@ -47,6 +47,17 @@ class PrintSunmiUtils {
             SunmiPrinterApi.getInstance().lineWrap(1)
         }
 
+        fun addLable(value: String){
+
+            SunmiPrinterApi.getInstance().setAlignMode(1)
+            SunmiPrinterApi.getInstance().enableBold(true)
+            SunmiPrinterApi.getInstance().setFontZoom(1, 2)
+            SunmiPrinterApi.getInstance().printText(value)
+            SunmiPrinterApi.getInstance().lineWrap(2)
+            addHorizontal()
+
+        }
+
         fun printBusinessDetails(value: String, value1: String, value2: String) {
 
             SunmiPrinterApi.getInstance().setAlignMode(1)
@@ -96,6 +107,17 @@ class PrintSunmiUtils {
 
         fun orderTime(value: String) {
             SunmiPrinterApi.getInstance().setAlignMode(0)
+            SunmiPrinterApi.getInstance().enableBold(false)
+            SunmiPrinterApi.getInstance().setFontZoom(1, 1)
+            SunmiPrinterApi.getInstance().printText(
+                value
+            )
+            SunmiPrinterApi.getInstance().lineWrap(1)
+
+        }
+
+        fun addValue(value: String) {
+            SunmiPrinterApi.getInstance().setAlignMode(1)
             SunmiPrinterApi.getInstance().enableBold(false)
             SunmiPrinterApi.getInstance().setFontZoom(1, 1)
             SunmiPrinterApi.getInstance().printText(
