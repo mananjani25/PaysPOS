@@ -48,6 +48,7 @@ import com.android.pos.data.remote.Constants.IS_GUEST_PAYMNET
 import com.android.pos.data.remote.Constants.IS_PRINTER_QUEUE_ENABLE
 import com.android.pos.data.remote.Constants.LOCATION_ID
 import com.android.pos.data.remote.Constants.MERGEDANDOCCUPIED
+import com.android.pos.data.remote.Constants.ORDER_TYPE
 import com.android.pos.data.remote.Constants.ORDER_TYPE_ID
 import com.android.pos.data.remote.Constants.ORDER_TYPE_NAME
 import com.android.pos.data.remote.Constants.PRINT_DATA_DINE_IN
@@ -72,6 +73,7 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
 import javax.inject.Inject
+import kotlin.collections.ArrayList
 
 @AndroidEntryPoint
 class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
@@ -145,7 +147,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         )
         binding.lifecycleOwner = this
         progressDialog()
-
+        prefProvider.setValue(ORDER_TYPE, DINE_IN)
         optionType = prefProvider.getValue(Constants.OPTION_TYPE, "")
         observeShowProgress()
         setupSnackbar()
@@ -365,11 +367,39 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             cartList = getCartModel(adapterList.toCollection(arrayListOf()))
             cartList?.note = order_note
             Log.e(TAG, "getcartList  ${Gson().toJson(cartList)}")
+            cartList!!.taxlistDynamic = listOf()
+            var temp_itemsList: ArrayList<TbItem> = arrayListOf()
             cartList?.dineInList?.forEach { dineModel ->
-                dineModel.items.forEach { item ->
-                    cartList = taxBifurcationCalculation(item, cartList!!)
-                }
+                temp_itemsList.addAll(dineModel.items)
             }
+
+            temp_itemsList.forEach { item ->
+                if (paidGuestAmount > 0) {
+                    var temp_item =
+                        item.price / getOrderDetailsResponse?.guestAttributes?.size!! - 1
+                    item.price = item.price - (temp_item * paidGuestAmount)
+                    Log.d(TAG, "onClick: tax " + item.price)
+                    Log.d(TAG, "onClick: tax paid" + paidGuestAmount)
+                    Log.d(
+                        TAG,
+                        "onClick: tax totall " + getOrderDetailsResponse?.guestAttributes?.size!!.minus(
+                            1
+                        )
+                    )
+                    item.modifiers.forEach { modifier ->
+                        var temp_modifier =
+                            modifier.price / getOrderDetailsResponse?.guestAttributes?.size!!.minus(
+                                1
+                            )
+                        modifier.price = modifier.price - (temp_modifier * paidGuestAmount)
+                    }
+                }
+                cartList = taxBifurcationCalculation(
+                    item,
+                    cartList!!
+                )
+            }
+
             Log.d(TAG, "onClick: listof Tax:  " + Gson().toJson(cartList?.taxlistDynamic))
             viewModelPayment.addCart(cartList!!)
 
@@ -762,7 +792,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
                             val totalPrice =
                                 price + modifierPrice
-                            itemtype.subTotalAmount = itemtype.subTotalAmount?.plus(totalPrice)
+
+                            itemtype.subTotalAmount = itemtype.subTotalAmount.plus(totalPrice)
                         }
                         itemtype.totalTaxTypePrice = getTotalTaxBirfurcation(item, itemtype)
                         cartModel.taxlistDynamic =
@@ -781,6 +812,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                             cartModel.taxlistDynamic!![found].subTotalAmount =
                                 cartModel.taxlistDynamic!![found].subTotalAmount?.plus(totalPrice)
                         }
+
                         cartModel.taxlistDynamic?.get(found)?.totalTaxTypePrice =
                             cartModel.taxlistDynamic!![found].totalTaxTypePrice.plus(
                                 getTotalTaxBirfurcation(
@@ -1081,7 +1113,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         serviceChargeGuest: Double,
         divideDiscount2: Double,
         dividedGuestAmt: Double,
-        listItemWT: ArrayList<TbItem>
+        listItemWT: ArrayList<TbItem>,
+        listItemGuestSelected: ArrayList<TbItem>
     ) {
 
         //New Drag and Drop
@@ -1459,11 +1492,19 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         prefProvider.setValue(Constants.ORDER_TYPE, Constants.DINE_IN)
         bundle.putParcelable("dineinPaymentModel", dineinCartPaymentModel)
         cartList = getCartModel(adapterList.toCollection(arrayListOf()))
-        cartList?.dineInList?.forEach { dineModel ->
-            dineModel.items.forEach { item ->
-                cartList = taxBifurcationCalculation(item, cartList!!)
-            }
+
+        var temp_itemslist: ArrayList<TbItem> = arrayListOf()
+        listItemWT.forEach { items ->
+            items.price = (items.price / totalGuestCount)
+
         }
+        temp_itemslist.addAll(listItemWT)
+        temp_itemslist.addAll(listItemGuestSelected)
+        cartList?.taxlistDynamic = listOf()
+        temp_itemslist.forEach { item ->
+            cartList = taxBifurcationCalculation(item, cartList!!)
+        }
+
         Log.d(TAG, "onClick: listof Tax:  " + Gson().toJson(cartList?.taxlistDynamic))
         viewModelPayment.addCart(cartList!!)
         findNavController().navigate(
@@ -1980,7 +2021,10 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                                             }
                                             if (!isApplied) {
                                                 serviceChargeList.forEach { service ->
-                                                    if (service.id == checkMaxGuestCountId(serviceChargeList)) {
+                                                    if (service.id == checkMaxGuestCountId(
+                                                            serviceChargeList
+                                                        )
+                                                    ) {
                                                         serviceChargeWT += (subTotalWT * service.percentage) / 100
                                                         return@forEach
                                                     }
@@ -3918,7 +3962,12 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                             Builder.FALSE,
                             Builder.COLOR_1
                         )
-                        builder.addText("Print Time:" + getCurrentTimeFromTimeZone(requireContext(),formatted))
+                        builder.addText(
+                            "Print Time:" + getCurrentTimeFromTimeZone(
+                                requireContext(),
+                                formatted
+                            )
+                        )
                     }
 
 
@@ -4051,7 +4100,10 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                         builder.addText(
                             padLine(
                                 if (customerSettingModel.showPrintTime) {
-                                    "Print Time:" + getCurrentTimeFromTimeZone(requireContext(),formatted)
+                                    "Print Time:" + getCurrentTimeFromTimeZone(
+                                        requireContext(),
+                                        formatted
+                                    )
                                 } else {
                                     ""
                                 },
@@ -4886,7 +4938,12 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                             Builder.FALSE,
                             Builder.COLOR_1
                         )
-                        builder.addText("Print Time:" + getCurrentTimeFromTimeZone(requireContext(),formatted))
+                        builder.addText(
+                            "Print Time:" + getCurrentTimeFromTimeZone(
+                                requireContext(),
+                                formatted
+                            )
+                        )
                     }
 
 
@@ -5019,7 +5076,10 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                         builder.addText(
                             padLine(
                                 if (customerSettingModel.showPrintTime) {
-                                    "Print Time:" + getCurrentTimeFromTimeZone(requireContext(),formatted)
+                                    "Print Time:" + getCurrentTimeFromTimeZone(
+                                        requireContext(),
+                                        formatted
+                                    )
                                 } else {
                                     ""
                                 },
@@ -6301,47 +6361,57 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             }
 
             arrayItems.forEachIndexed { index, orderItem ->
-                if (itemIds.contains(getOrderDetailsResponse?.orderItems?.get(index)?.id)) {
-                    Log.e("InsideLoop", "Inside")
-                    if (getOrderDetailsResponse?.orderItems?.get(index)?.quantity != orderItem.quantity) {
-                        if (getOrderDetailsResponse?.orderItems?.get(index)?.quantity!! > arrayItems[index].quantity) {
-                            getOrderDetailsResponse?.orderItems?.get(index)?.quantity =
-                                getOrderDetailsResponse?.orderItems?.get(index)?.quantity!! - arrayItems[index].quantity
-                            if (!printOrderItems.contains(
-                                    getOrderDetailsResponse?.orderItems?.get(
-                                        index
+                if (getOrderDetailsResponse?.orderItems?.size!!.minus(1) >= index) {
+                    if (itemIds.contains(getOrderDetailsResponse?.orderItems?.get(index)?.id)) {
+                        Log.e("InsideLoop", "Inside")
+                        if (getOrderDetailsResponse?.orderItems?.get(index)?.quantity != orderItem.quantity) {
+                            if (getOrderDetailsResponse?.orderItems?.get(index)?.quantity!! > arrayItems[index].quantity) {
+                                getOrderDetailsResponse?.orderItems?.get(index)?.quantity =
+                                    getOrderDetailsResponse?.orderItems?.get(index)?.quantity!! - arrayItems[index].quantity
+                                if (!printOrderItems.contains(
+                                        getOrderDetailsResponse?.orderItems?.get(
+                                            index
+                                        )
                                     )
-                                )
-                            ) {
-                                printOrderItems.add(getOrderDetailsResponse?.orderItems?.get(index)!!)
-                                var tbItem: TbItem = TbItem()
-                                tbItem.name =
-                                    getOrderDetailsResponse?.orderItems?.get(index)?.itemName ?: ""
-                                tbItem.price =
-                                    getOrderDetailsResponse?.orderItems?.get(index)?.price ?: 0.0
-                                tbItem.itemQuantity =
-                                    getOrderDetailsResponse?.orderItems?.get(index)?.quantity ?: 0
-                                if (getOrderDetailsResponse?.orderItems?.get(index)?.orderItemModifiers?.isNotEmpty() == true) {
-                                    var modifierList: ArrayList<Modifier> = arrayListOf()
-                                    getOrderDetailsResponse?.orderItems?.get(index)?.orderItemModifiers?.forEach {
-                                        val modifiers = Modifier()
-                                        modifiers.price = it.price
-                                        modifiers.name = it.name
-                                        modifiers.itemQuantity = it.quantity
-                                        modifierList.add(modifiers)
+                                ) {
+                                    printOrderItems.add(
+                                        getOrderDetailsResponse?.orderItems?.get(
+                                            index
+                                        )!!
+                                    )
+                                    var tbItem: TbItem = TbItem()
+                                    tbItem.name =
+                                        getOrderDetailsResponse?.orderItems?.get(index)?.itemName
+                                            ?: ""
+                                    tbItem.price =
+                                        getOrderDetailsResponse?.orderItems?.get(index)?.price
+                                            ?: 0.0
+                                    tbItem.itemQuantity =
+                                        getOrderDetailsResponse?.orderItems?.get(index)?.quantity
+                                            ?: 0
+                                    if (getOrderDetailsResponse?.orderItems?.get(index)?.orderItemModifiers?.isNotEmpty() == true) {
+                                        var modifierList: ArrayList<Modifier> = arrayListOf()
+                                        getOrderDetailsResponse?.orderItems?.get(index)?.orderItemModifiers?.forEach {
+                                            val modifiers = Modifier()
+                                            modifiers.price = it.price
+                                            modifiers.name = it.name
+                                            modifiers.itemQuantity = it.quantity
+                                            modifierList.add(modifiers)
+                                        }
+                                        tbItem.modifiers = modifierList
                                     }
-                                    tbItem.modifiers = modifierList
-                                }
 
-                                listItem.add(tbItem)
+                                    listItem.add(tbItem)
+                                }
                             }
+
+                        } else {
+
                         }
 
-                    } else {
-
                     }
-
                 }
+
             }
 
             prefProvider.setValue(DINE_IN_UPDATE_LIST, "")

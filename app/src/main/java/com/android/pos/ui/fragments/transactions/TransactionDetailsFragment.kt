@@ -127,8 +127,14 @@ class TransactionDetailsFragment : Fragment() {
                     Constants.TAKEOUT
                 ) == Constants.DINE_IN
             ) {
-                serviceChargesList = arrayListOf()
-                serviceChargesList = it.data as ArrayList<TbServiceCharge>?
+                if (prefProvider.getValueboolean(
+                        Constants.SERVICECHARGE_DINEIN_ORDER,
+                        false
+                    )
+                ) {
+                    serviceChargesList = arrayListOf()
+                    serviceChargesList = it.data as ArrayList<TbServiceCharge>?
+                }
             } else {
                 if (prefProvider.getValueboolean(
                         Constants.SERVICECHARGE_TAKEOUT_OPENORDER,
@@ -361,25 +367,63 @@ class TransactionDetailsFragment : Fragment() {
                         paymentDetailsResponse.data.order.total_discount
                     )
                 }
-
-                if (paymentDetailsResponse.data.order.order_items.isNotEmpty()) {
-                    paymentDetailsResponse.data.order.order_items.forEach { orderItem ->
-                        var totalPrice = orderItem.price * orderItem.quantity
-                        orderItem.orderItemModifiers.forEach { orderItemModifier ->
-                            totalPrice += orderItemModifier.price * orderItemModifier.quantity
-                        }
-                        Log.d(TAG, "navigate: itemPrice : $totalPrice")
-                        var totaltaxtemp = 0.0
-                        orderItem.orderItemTaxes.forEach { orderItemTaxe ->
-                            if (taxlistbirfurcation?.isNotEmpty() == true) {
-                                var found = -1
-                                taxlistbirfurcation?.forEachIndexed { index, taxData ->
-                                    if (taxData.orderTaxId == orderItemTaxe.taxId) {
-                                        found = index
-                                        return@forEachIndexed
+                if (!isSplitPayment) {
+                    if (paymentDetailsResponse.data.tax_amount != 0.0) {
+                        binding.imgDropdown.visible()
+                    }
+                    if (paymentDetailsResponse.data.order.order_items.isNotEmpty()) {
+                        paymentDetailsResponse.data.order.order_items.forEach { orderItem ->
+                            var totalPrice = orderItem.price * orderItem.quantity
+                            orderItem.orderItemModifiers.forEach { orderItemModifier ->
+                                totalPrice += orderItemModifier.price * orderItemModifier.quantity
+                            }
+                            Log.d(TAG, "navigate: itemPrice : $totalPrice")
+                            var totaltaxtemp = 0.0
+                            orderItem.orderItemTaxes.forEach { orderItemTaxe ->
+                                if (taxlistbirfurcation?.isNotEmpty() == true) {
+                                    var found = -1
+                                    taxlistbirfurcation?.forEachIndexed { index, taxData ->
+                                        if (taxData.orderTaxId == orderItemTaxe.taxId) {
+                                            found = index
+                                            return@forEachIndexed
+                                        }
                                     }
-                                }
-                                if (found == -1) {
+                                    if (found == -1) {
+                                        var taxData: TaxData = TaxData(
+                                            orderItemTaxe.createdAt,
+                                            orderItemTaxe.id,
+                                            0,
+                                            orderItemTaxe.name,
+                                            orderItemTaxe.rate,
+                                            orderItemTaxe.taxType,
+                                            orderItemTaxe.updatedAt,
+                                            true,
+                                            orderItemTaxe.isDefault,
+                                            false,
+                                            "",
+                                            listOf(orderItemTaxe.orderItemId),
+                                            orderItemTaxe.taxId,
+                                            false,
+                                            getTaxFromTotalPrice(
+                                                orderItemTaxe,
+                                                totalPrice,
+                                                orderItem
+                                            ),
+                                            totalPrice
+                                        )
+                                        taxlistbirfurcation?.add(taxData)
+                                    } else {
+                                        taxlistbirfurcation!![found].totalTaxTypePrice =
+                                            taxlistbirfurcation!![found].totalTaxTypePrice + getTaxFromTotalPrice(
+                                                orderItemTaxe,
+                                                totalPrice,
+                                                orderItem
+                                            )
+                                        taxlistbirfurcation!![found].subTotalAmount =
+                                            taxlistbirfurcation!![found].subTotalAmount + totalPrice
+                                    }
+                                    Log.d(TAG, "found : " + found)
+                                } else {
                                     var taxData: TaxData = TaxData(
                                         orderItemTaxe.createdAt,
                                         orderItemTaxe.id,
@@ -403,52 +447,26 @@ class TransactionDetailsFragment : Fragment() {
                                         totalPrice
                                     )
                                     taxlistbirfurcation?.add(taxData)
-                                } else {
-                                    taxlistbirfurcation!![found].totalTaxTypePrice =
-                                        taxlistbirfurcation!![found].totalTaxTypePrice + getTaxFromTotalPrice(
-                                            orderItemTaxe,
-                                            totalPrice,
-                                            orderItem
-                                        )
-                                    taxlistbirfurcation!![found].subTotalAmount =
-                                        taxlistbirfurcation!![found].subTotalAmount + totalPrice
                                 }
-                                Log.d(TAG, "found : " + found)
-                            } else {
-                                var taxData: TaxData = TaxData(
-                                    orderItemTaxe.createdAt,
-                                    orderItemTaxe.id,
-                                    0,
-                                    orderItemTaxe.name,
-                                    orderItemTaxe.rate,
-                                    orderItemTaxe.taxType,
-                                    orderItemTaxe.updatedAt,
-                                    true,
-                                    orderItemTaxe.isDefault,
-                                    false,
-                                    "",
-                                    listOf(orderItemTaxe.orderItemId),
-                                    orderItemTaxe.taxId,
-                                    false,
-                                    getTaxFromTotalPrice(
-                                        orderItemTaxe,
-                                        totalPrice,
-                                        orderItem
-                                    ),
-                                    totalPrice
-                                )
-                                taxlistbirfurcation?.add(taxData)
+
+
+                                Log.d(TAG, "navigate: " + totaltaxtemp)
                             }
 
-
-                            Log.d(TAG, "navigate: " + totaltaxtemp)
                         }
 
+                        taxBirfurcationAdapter.setList(taxlistbirfurcation!!)
+                        Log.d(TAG, "navigate: list " + Gson().toJson(taxlistbirfurcation))
                     }
-
-                    taxBirfurcationAdapter.setList(taxlistbirfurcation!!)
-                    Log.d(TAG, "navigate: list " + Gson().toJson(taxlistbirfurcation))
+                } else {
+                    binding.relativeDynamicTax.gone()
+                    binding.imgDropdown.gone()
+                    binding.linearPaymentinfo.layoutParams.height =
+                        resources.getDimension(R.dimen._78sdp).toInt()
+                    binding.linearSummary.layoutParams.height =
+                        resources.getDimension(R.dimen._85sdp).toInt()
                 }
+
 
                 if (paymentDetailsResponse.data.is_loyalty_applied == true) {
                     binding.llLoyalty.visibility = View.VISIBLE

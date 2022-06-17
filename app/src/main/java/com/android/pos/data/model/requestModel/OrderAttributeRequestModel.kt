@@ -83,6 +83,9 @@ class OrderAttributeRequestModel {
     @SerializedName("magensa_response")
     var magensaResponse: String = ""
 
+    @SerializedName("tax_bifurcation_data")
+    var tax_bifurcation_data: String = ""
+
     @SerializedName("cash_discount_or_surcharge")
     var cash_discount_or_surcharge: Double = 0.0
 

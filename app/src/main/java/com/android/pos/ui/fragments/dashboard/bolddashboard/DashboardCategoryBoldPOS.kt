@@ -732,18 +732,27 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
         serviceChargesObserve = Observer {
             if (it.status == Status.SUCCESS) {
                 if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == DINE_IN) {
-                    Log.e(TAG, "getServiceCharge:  ${Gson().toJson(it.data)}")
-                    serviceChargesList = ArrayList()
-                    viewModel.serviceChargesList.clear()
-                    it.data?.forEach { service->
-                        if (service.order_type == Constants.SERVICECHARGE_DINEIN_ORDER) {
-                            serviceChargesList?.add(service)
-                            viewModel.serviceChargesList.add(service)
+                    if (prefProvider.getValueboolean(Constants.SERVICECHARGE_DINEIN_ORDER, false)) {
+                        Log.e(TAG, "getServiceCharge:  ${Gson().toJson(it.data)}")
+                        serviceChargesList = ArrayList()
+                        viewModel.serviceChargesList.clear()
+                        it.data?.forEach { service ->
+                            if (service.order_type == Constants.SERVICECHARGE_DINEIN_ORDER) {
+                                serviceChargesList?.add(service)
+                                viewModel.serviceChargesList.add(service)
+                            }
                         }
                     }
-                    Log.d(TAG, "getServiceCharges: finall "+Gson().toJson(viewModel.serviceChargesList))
+                    Log.d(
+                        TAG,
+                        "getServiceCharges: finall " + Gson().toJson(viewModel.serviceChargesList)
+                    )
                 } else {
-                    if (prefProvider.getValueboolean(Constants.SERVICECHARGE_TAKEOUT_OPENORDER, false)) {
+                    if (prefProvider.getValueboolean(
+                            Constants.SERVICECHARGE_TAKEOUT_OPENORDER,
+                            false
+                        )
+                    ) {
                         Log.e(TAG, "getServiceCharge:  ${Gson().toJson(it.data)}")
                         serviceChargesList = ArrayList()
                         viewModel.serviceChargesList.clear()
@@ -753,7 +762,10 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                                 viewModel.serviceChargesList.add(service)
                             }
                         }
-                        Log.d(TAG, "getServiceCharges: finall "+Gson().toJson(viewModel.serviceChargesList))
+                        Log.d(
+                            TAG,
+                            "getServiceCharges: finall " + Gson().toJson(viewModel.serviceChargesList)
+                        )
 
                     }
                 }
@@ -1013,7 +1025,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
             Log.e(TAG, "PrinterException: " + e.message)
             printer = null
             viewModel.downloadFinished(false)
-            if (findNavController().currentDestination?.id==R.id.dashboardCategoryBoldPOS){
+            if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
                 findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
             }
 

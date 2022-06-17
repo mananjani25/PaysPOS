@@ -20,11 +20,13 @@ import com.android.pos.R
 import com.android.pos.data.model.responseModel.GetFloorPlanResponse
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.AVAILABLE
+import com.android.pos.data.remote.Constants.DINE_IN
 import com.android.pos.data.remote.Constants.DINE_IN_STATUS
 import com.android.pos.data.remote.Constants.EMPLOYEE_ID
 import com.android.pos.data.remote.Constants.MERGED
 import com.android.pos.data.remote.Constants.MERGEDANDOCCUPIED
 import com.android.pos.data.remote.Constants.OCCUPIED
+import com.android.pos.data.remote.Constants.ORDER_TYPE
 import com.android.pos.databinding.FragmentDineInBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.di.RolePermission
@@ -481,6 +483,7 @@ class DineInFragment : Fragment() {
                         val bundle = Bundle()
                         bundle.putBoolean("isFromFloor", true)
                         bundle.putBoolean("isMerged", false)
+                        prefProvider.setValue(ORDER_TYPE, DINE_IN)
                         bundle.putParcelable("floorPlan", dineInFloorTableModel)
 
 
@@ -563,6 +566,7 @@ class DineInFragment : Fragment() {
                 val bundle = Bundle()
                 bundle.putBoolean("isMerged", false)
                 bundle.putParcelable("dineInFloorTableObject", dineInFloorTableModel)
+                prefProvider.setValue(ORDER_TYPE, DINE_IN)
                 findNavController().navigate(
                     R.id.action_dineInFragment_to_dineInGuestFragment,
                     bundle
@@ -574,6 +578,7 @@ class DineInFragment : Fragment() {
                 val bundle = Bundle()
                 bundle.putBoolean("isMerged", true)
                 bundle.putParcelable("dineInFloorTableObject", dineInFloorTableModel)
+                prefProvider.setValue(ORDER_TYPE, DINE_IN)
                 findNavController().navigate(
                     R.id.action_dineInFragment_to_dineInGuestFragment,
                     bundle
@@ -594,6 +599,7 @@ class DineInFragment : Fragment() {
                     val bundle = Bundle()
                     bundle.putBoolean("isFromFloor", true)
                     bundle.putBoolean("isMerged", false)
+                    prefProvider.setValue(ORDER_TYPE, DINE_IN)
                     bundle.putParcelable("floorPlan", dineInFloorTableModel)
 
 
