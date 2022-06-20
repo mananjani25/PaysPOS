@@ -46,6 +46,9 @@ import com.epson.eposprint.Builder
 import com.epson.eposprint.Print
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.sunmi.externalprinterlibrary.api.ConnectCallback
+import com.sunmi.externalprinterlibrary.api.SunmiPrinter
+import com.sunmi.externalprinterlibrary.api.SunmiPrinterApi
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -921,7 +924,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
     private fun dineInUpdateOrder() {
 
 
-        viewModel.updateOrder.observe(viewLifecycleOwner, { event ->
+        viewModel.updateOrder.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
 
 
@@ -935,15 +938,13 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                 clearCustomer()
 
 
-
-
                 findNavController().navigate(
                     R.id.action_dashboardCategoryBoldPOS_to_dineInOrderTable,
                     bundle
                 )
 
             }
-        })
+        }
 
     }
 
@@ -958,57 +959,99 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
         createOrderResponse: CreateOrderResponse
     ) {
 
-        try {
-            PrinterClass.closePrinter()
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-        /*if (PrinterClass.getPrinter() == null) {*/
-        var printer: Print? = Print(requireContext())
-        if (printer != null) {
-            /* printer.setStatusChangeEventCallback(this)
-             printer.setBatteryStatusChangeEventCallback(this)*/
-        }
 
-        val enabled = Print.TRUE
+        if (data.name.startsWith("CloudPrint", true)) {
 
-        try {
+            SunmiPrinterApi.getInstance()
+                .setPrinter(SunmiPrinter.SunmiBlueToothPrinter, data.ipAddress)
 
-            printer?.openPrinter(
-                if (data.printer_type == Constants.BLUETOOTH) {
-                    Print.DEVTYPE_BLUETOOTH
-                } else {
-                    Print.DEVTYPE_TCP
-                },
-                data.ipAddress,
-                enabled,
-                1000
-            )
-            //  printer?.setStatusChangeEventCallback(this)
+            if (!SunmiPrinterApi.getInstance().isConnected) {
+                SunmiPrinterApi.getInstance()
+                    .connectPrinter(requireContext(), object : ConnectCallback {
 
-        } catch (e: Exception) {
-            Log.e(TAG, "PrinterException: " + e.message)
-            printer = null
-            viewModel.downloadFinished(false)
-            if (findNavController().currentDestination?.id==R.id.dashboardCategoryBoldPOS){
-                findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
+                        override fun onFound() {
+                            println("onFound")
+                        }
+
+                        override fun onUnfound() {
+                            println("onUnfound")
+
+                            viewModel.downloadFinished(false)
+                            if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
+                                findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
+                            }
+                        }
+
+                        override fun onConnect() {
+                            println("onConnect")
+                            generateKitchenReceiptSunmi(data, type, createOrderResponse.data)
+
+                        }
+
+                        override fun onDisconnect() {
+                            println("onDisconnect")
+                        }
+
+                    })
+            } else {
+                generateKitchenReceiptSunmi(data, type, createOrderResponse.data)
             }
-
-        }
-
-
-        if (printer != null) {
-            PrinterClass.setPrinter(printer)
-
-            generateKitchenReceipt(data, type, createOrderResponse.data)
 
         } else {
-            Log.e(TAG, "PrinterIsNotNull:")
-            viewModel.downloadFinished(false)
-            if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
-                findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
+
+
+            try {
+                PrinterClass.closePrinter()
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+            /*if (PrinterClass.getPrinter() == null) {*/
+            var printer: Print? = Print(requireContext())
+            if (printer != null) {
+                /* printer.setStatusChangeEventCallback(this)
+             printer.setBatteryStatusChangeEventCallback(this)*/
             }
 
+            val enabled = Print.TRUE
+
+            try {
+
+                printer?.openPrinter(
+                    if (data.printer_type == Constants.BLUETOOTH) {
+                        Print.DEVTYPE_BLUETOOTH
+                    } else {
+                        Print.DEVTYPE_TCP
+                    },
+                    data.ipAddress,
+                    enabled,
+                    1000
+                )
+                //  printer?.setStatusChangeEventCallback(this)
+
+            } catch (e: Exception) {
+                Log.e(TAG, "PrinterException: " + e.message)
+                printer = null
+                viewModel.downloadFinished(false)
+                if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
+                    findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
+                }
+
+            }
+
+
+            if (printer != null) {
+                PrinterClass.setPrinter(printer)
+
+                generateKitchenReceipt(data, type, createOrderResponse.data)
+
+            } else {
+                Log.e(TAG, "PrinterIsNotNull:")
+                viewModel.downloadFinished(false)
+                if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
+                    findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
+                }
+
+            }
         }
 
         /* } else {
@@ -1552,14 +1595,145 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
 
     }
 
+    private fun generateKitchenReceiptSunmi(
+        customerReceiptPrinters: PrinterResponse.Data.KitchenReceiptPrinters,
+        type: String,
+        receiptModel: CreateOrderResponse.Data
+    ) {
+        try {
+
+            if (kitchenSettingModel.showOrderType) {
+                PrintSunmiUtils.printOrderType(receiptModel?.order?.orderType.toString())
+            }
+            PrintSunmiUtils.printOrderType(receiptModel?.order?.deliveryType.toString())
+
+            PrintSunmiUtils.orderId(
+                padLine(
+                    "OrderID:" + receiptModel?.order?.id,
+                    "",
+                    48
+                ).toString()
+            )
+
+            PrintSunmiUtils.receiptID(
+                padLine(
+                    "ReceiptID:" + receiptModel?.order?.offlineId,
+                    "",
+                    48
+                ).toString()
+            )
+
+            if (kitchenSettingModel.showTeamMember) {
+
+                PrintSunmiUtils.employee(
+                    padLine(
+                        "Employee:" + receiptModel?.order?.employee?.name, "",
+                        48
+                    ).toString()
+                )
+
+
+            }
+
+
+            PrintSunmiUtils.orderTime(
+                padLine(
+                    Constants.getReceiptFormatDateFromUTCServer(
+                        requireContext(),
+                        receiptModel?.order?.createdAt.toString()
+                    ),
+                    "",
+                    48
+                ).toString()
+            )
+
+            PrintSunmiUtils.addHorizontal()
+
+            receiptModel?.order?.orderItems?.let {
+                addOrdersForKitchen(
+                    it
+                )
+            }
+
+            if (receiptModel?.order?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote) {
+
+                PrintSunmiUtils.orderNote(receiptModel?.order?.note.toString())
+
+            }
+
+
+            if (kitchenSettingModel.showCustomerAddress != false or kitchenSettingModel.showCustomerPhone != false or kitchenSettingModel.showCustomerName) {
+                if (receiptModel?.order?.customer != null) {
+
+                    PrintSunmiUtils.customerDetails()
+
+
+                    if (kitchenSettingModel.showCustomerName) {
+
+                        PrintSunmiUtils.customerName(receiptModel?.order?.customer?.firstName + " " + receiptModel?.order?.customer?.lastName)
+
+
+                    }
+
+
+                    if (kitchenSettingModel.showCustomerPhone) {
+
+                        if (receiptModel?.order?.customer?.phones?.isNotEmpty()) {
+
+
+                            receiptModel?.order?.customer?.phones?.get(0)?.phoneNumber?.let {
+                                PrintSunmiUtils.customerPhone(
+                                    it
+                                )
+                            }
+                        }
+
+                    }
+
+
+                    if (kitchenSettingModel.showCustomerAddress) {
+
+                        if (receiptModel?.order?.orderType.trim().lowercase() == "Open Order".trim()
+                                .lowercase() && receiptModel?.order?.deliveryType.trim()
+                                .lowercase() == "Pickup".trim()
+                                .lowercase()
+                        ) {
+
+                        } else if (receiptModel.order?.customer?.addresses?.isNotEmpty()) {
+
+
+                            receiptModel?.order?.customer?.addresses?.get(0)?.fullAddress?.let {
+                                PrintSunmiUtils.customerAddress(
+                                    it
+                                )
+                            }
+                        }
+                    }
+
+                }
+            }
+
+            PrintSunmiUtils.cutPaper()
+
+            viewModel.downloadFinished(false)
+            findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
+
+
+        } catch (e: Exception) {
+            e.printStackTrace()
+            viewModel.downloadFinished(false)
+            findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
+        }
+
+    }
+
     private fun getKitchenReceiptSettings() {
-        viewModel.getKitchenReceiptSettings().observe(viewLifecycleOwner, {
+        viewModel.getKitchenReceiptSettings().observe(viewLifecycleOwner) {
 
             if (it != null) {
                 kitchenSettingModel = it
-
             }
-        })
+        }
     }
 
     private fun printerProgress() {

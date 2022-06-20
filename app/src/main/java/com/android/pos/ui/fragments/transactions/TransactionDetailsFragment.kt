@@ -2230,8 +2230,7 @@ class TransactionDetailsFragment : Fragment() {
 
             }
 
-            SunmiPrinterApi.getInstance().lineWrap(5)
-            SunmiPrinterApi.getInstance().cutPaper(1, 1)
+            PrintSunmiUtils.cutPaper()
 
         } catch (e: Exception) {
             e.printStackTrace()

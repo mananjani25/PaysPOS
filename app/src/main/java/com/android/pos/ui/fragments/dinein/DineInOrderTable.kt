@@ -3194,8 +3194,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                         divideDiscount,
                     )
 
-                }
-                else {
+                } else {
                     generatePrintSunmi(customerReceiptPrinters, type, "")
                 }
             }
@@ -6283,45 +6282,82 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         item: ArrayList<TbItem>
 
     ) {
-        PrinterClass.setPrinter(null)
-        if (PrinterClass.getPrinter() == null) {
-            var printer: Print? = Print(requireContext())
-            if (printer != null) {
-//                printer.setStatusChangeEventCallback(this)
-//                printer.setBatteryStatusChangeEventCallback(this)
-            }
 
-            val enabled = Print.TRUE
 
-            try {
+        if (data.name.startsWith("CloudPrint", true)) {
 
-                printer?.openPrinter(
-                    if (data.printer_type == Constants.BLUETOOTH) {
-                        Print.DEVTYPE_BLUETOOTH
-                    } else {
-                        Print.DEVTYPE_TCP
-                    },
-                    data.ipAddress,
-                    enabled,
-                    1000
-                )
-                // printer?.setStatusChangeEventCallback(this)
+            SunmiPrinterApi.getInstance()
+                .setPrinter(SunmiPrinter.SunmiBlueToothPrinter, data.ipAddress)
 
-            } catch (e: Exception) {
-                Log.e(TAG, "PrinterException: " + e.message)
-                printer = null
-                return
-            }
+            if (!SunmiPrinterApi.getInstance().isConnected) {
+                SunmiPrinterApi.getInstance()
+                    .connectPrinter(requireContext(), object : ConnectCallback {
 
-            if (printer != null) {
-                PrinterClass.setPrinter(printer)
+                        override fun onFound() {
+                            println("onFound")
+                        }
 
-                generateKitchenReceipt(data, type, item)
+                        override fun onUnfound() {
+                            println("onUnfound")
+                        }
 
+                        override fun onConnect() {
+                            println("onConnect")
+                            generateKitchenReceiptSunmi(data, type, item)
+
+                        }
+
+                        override fun onDisconnect() {
+                            println("onDisconnect")
+                        }
+
+                    })
+            } else {
+                generateKitchenReceiptSunmi(data, type, item)
             }
 
         } else {
-            Log.e(TAG, "PrinterIsNotNull:")
+
+            PrinterClass.setPrinter(null)
+            if (PrinterClass.getPrinter() == null) {
+                var printer: Print? = Print(requireContext())
+                if (printer != null) {
+//                printer.setStatusChangeEventCallback(this)
+//                printer.setBatteryStatusChangeEventCallback(this)
+                }
+
+                val enabled = Print.TRUE
+
+                try {
+
+                    printer?.openPrinter(
+                        if (data.printer_type == Constants.BLUETOOTH) {
+                            Print.DEVTYPE_BLUETOOTH
+                        } else {
+                            Print.DEVTYPE_TCP
+                        },
+                        data.ipAddress,
+                        enabled,
+                        1000
+                    )
+                    // printer?.setStatusChangeEventCallback(this)
+
+                } catch (e: Exception) {
+                    Log.e(TAG, "PrinterException: " + e.message)
+                    printer = null
+                    return
+                }
+
+                if (printer != null) {
+                    PrinterClass.setPrinter(printer)
+
+                    generateKitchenReceipt(data, type, item)
+
+                }
+
+            } else {
+                Log.e(TAG, "PrinterIsNotNull:")
+            }
         }
 
     }
@@ -6543,116 +6579,6 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             }
 
 
-            /*if (kitchenSettingModel.showCustomerAddress != false or kitchenSettingModel.showCustomerPhone != false or kitchenSettingModel.showCustomerName) {
-                if (receiptModel?.order?.customer != null) {
-
-                    builder.addTextLineSpace(30)
-                    builder.addFeedUnit(30)
-                    builder.addFeedLine(1)
-                    builder.addTextFont(Builder.FONT_E)
-                    //builder.addTextLineSpace(20)
-                    builder.addTextAlign(Builder.ALIGN_LEFT)
-                    builder.addTextLang(Builder.LANG_EN)
-                    builder.addTextSize(1, 1)
-                    builder.addTextStyle(
-                        Builder.FALSE,
-                        Builder.FALSE,
-                        Builder.TRUE,
-                        Builder.COLOR_1
-                    )
-                    builder.addText("Customer Details" + "\n")
-
-                    builder.addTextFont(Builder.FONT_B)
-                    //builder.addTextLineSpace(20)
-                    builder.addTextLang(Builder.LANG_EN)
-                    builder.addTextSize(1, 1)
-                    builder.addTextStyle(
-                        Builder.FALSE,
-                        Builder.FALSE,
-                        Builder.FALSE,
-                        Builder.COLOR_1
-                    )
-                    addHorizontalKitchenLine(builder)
-
-                    if (kitchenSettingModel.showCustomerName) {
-
-                        builder.addTextLineSpace(30)
-                        builder.addFeedUnit(30)
-                        builder.addTextFont(Builder.FONT_E)
-                        builder.addTextAlign(Builder.ALIGN_LEFT)
-                        //builder.addTextLineSpace(20)
-                        builder.addTextLang(Builder.LANG_EN)
-                        builder.addTextSize(1, 1)
-                        builder.addTextStyle(
-                            Builder.FALSE,
-                            Builder.FALSE,
-                            Builder.TRUE,
-                            Builder.COLOR_1
-                        )
-                        builder.addText(receiptModel?.order?.customer?.firstName + " " + receiptModel?.order?.customer?.lastName)
-
-                    }
-
-
-                    if (kitchenSettingModel.showCustomerPhone) {
-
-                        if (receiptModel?.order?.customer?.phones?.isNotEmpty() == true) {
-                            builder.addTextLineSpace(30)
-                            builder.addFeedUnit(30)
-                            builder.addTextFont(Builder.FONT_E)
-                            builder.addTextAlign(Builder.ALIGN_LEFT)
-                            //builder.addTextLineSpace(20)
-                            builder.addTextLang(Builder.LANG_EN)
-                            builder.addTextSize(1, 1)
-                            builder.addTextStyle(
-                                Builder.FALSE,
-                                Builder.FALSE,
-                                Builder.TRUE,
-                                Builder.COLOR_1
-                            )
-                            builder.addText(receiptModel?.order?.customer?.phones?.get(0)?.phoneNumber)
-                        }
-
-                    }
-                    *//* builder.addTextLineSpace(30)
-                 builder.addFeedUnit(30)
-                 builder.addTextFont(Builder.FONT_E)
-                 builder.addTextAlign(Builder.ALIGN_LEFT)
-                 //builder.addTextLineSpace(20)
-                 builder.addTextLang(Builder.LANG_EN)
-                 builder.addTextSize(1, 1)
-                 builder.addTextStyle(
-                     Builder.FALSE,
-                     Builder.FALSE,
-                     Builder.TRUE,
-                     Builder.COLOR_1
-                 )
-                 builder.addText(receiptModel?.order?.customer?.email)*//*
-
-                    if (kitchenSettingModel.showCustomerAddress) {
-                        if (getOrderDetailsResponse?.customer?.addresses?.isNotEmpty() == true) {
-
-                            builder.addTextLineSpace(30)
-                            builder.addFeedUnit(30)
-                            builder.addTextFont(Builder.FONT_E)
-                            builder.addTextAlign(Builder.ALIGN_LEFT)
-                            //builder.addTextLineSpace(20)
-                            builder.addTextLang(Builder.LANG_EN)
-                            builder.addTextSize(1, 1)
-                            builder.addTextStyle(
-                                Builder.FALSE,
-                                Builder.FALSE,
-                                Builder.TRUE,
-                                Builder.COLOR_1
-                            )
-
-                            builder.addText(getOrderDetailsResponse?.customer?.addresses?.get(0)?.fullAddress)
-                        }
-                    }
-
-                }
-            }*/
-
             builder.addFeedLine(2)
 
             builder.addCut(Builder.CUT_FEED)
@@ -6683,8 +6609,89 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
     }
 
+    private fun generateKitchenReceiptSunmi(
+        customerReceiptPrinters: PrinterResponse.Data.KitchenReceiptPrinters,
+        type: String,
+        item: ArrayList<TbItem>
+    ) {
+        try {
+
+
+            if (kitchenSettingModel.showOrderType) {
+
+                PrintSunmiUtils.printOrderType(getOrderDetailsResponse?.orderType.toString())
+
+            }
+
+
+            PrintSunmiUtils.addValue(getOrderDetailsResponse?.floorPlanTable?.tableName + " (" + getOrderDetailsResponse?.floorPlanTable?.tableNumber + ")")
+
+            PrintSunmiUtils.orderId(
+                padLine(
+                    "OrderID:" + getOrderDetailsResponse?.id,
+                    "",
+                    48
+                ).toString()
+            )
+
+            PrintSunmiUtils.receiptID(
+                padLine(
+                    "ReceiptID:" + if (getOrderDetailsResponse?.offlineId?.isEmpty() == true) {
+                        "ENTJKOIJH8745"
+                    } else {
+                        getOrderDetailsResponse?.offlineId
+                    },
+                    "",
+                    33
+                ).toString()
+            )
+
+
+            if (kitchenSettingModel.showTeamMember) {
+
+
+                PrintSunmiUtils.employee(
+                    padLine(
+                        "Employee:" + getOrderDetailsResponse?.employee?.name, "",
+                        48
+                    ).toString()
+                )
+
+            }
+
+            PrintSunmiUtils.orderTime(
+                padLine(
+                    Constants.getReceiptFormatDateFromUTCServer(
+                        requireContext(),
+                        getOrderDetailsResponse?.createdAt.toString()
+                    ),
+                    "",
+                    33
+                ).toString()
+            )
+
+            PrintSunmiUtils.addHorizontal()
+
+
+            addOrdersForKitchenDineIn(item)
+
+            if (getOrderDetailsResponse?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote) {
+
+                PrintSunmiUtils.orderNote(getOrderDetailsResponse?.note.toString())
+            }
+
+
+            PrintSunmiUtils.cutPaper()
+
+
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
+    }
+
     private fun observeUnMergeTable() {
-        viewModel.unMergeStatusUpdate.observe(viewLifecycleOwner, { event ->
+        viewModel.unMergeStatusUpdate.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let { status ->
 
                 AlertUtils.showCustomAlertWithListenerWithOK(
@@ -6695,20 +6702,18 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
 
             }
-        })
+        }
     }
 
     private fun observeQueueCreated() {
-        viewModel.queueCreateSuccess.observe(viewLifecycleOwner, { event ->
+        viewModel.queueCreateSuccess.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let { status ->
-
             }
-
-        })
+        }
     }
 
     private fun observeFireAll() {
-        viewModel.fireAllStatus.observe(viewLifecycleOwner, { event ->
+        viewModel.fireAllStatus.observe(viewLifecycleOwner) { event ->
             Log.e(TAG, "FireAllStatusObserved")
 
             if (prefProvider.getValueboolean(IS_PRINTER_QUEUE_ENABLE, false)) {
@@ -6790,7 +6795,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 viewModel.createQueuePrinter(createQueueRequest)
             }
 
-        })
+        }
     }
 
     private fun singleItemFireObserver() {

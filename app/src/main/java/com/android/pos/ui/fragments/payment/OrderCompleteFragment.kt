@@ -6444,52 +6444,86 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         type: String
     ) {
 
-        PrinterClass.closePrinter()
-        if (PrinterClass.getPrinter() == null) {
-            //  printerDialog.show(requireContext())
+        if (data.name.startsWith("CloudPrint", true)) {
 
-            var printer: Print? = Print(requireContext())
-            if (printer != null) {
-                printer.setStatusChangeEventCallback(this)
-                printer.setBatteryStatusChangeEventCallback(this)
-            }
+            SunmiPrinterApi.getInstance()
+                .setPrinter(SunmiPrinter.SunmiBlueToothPrinter, data.ipAddress)
 
+            if (!SunmiPrinterApi.getInstance().isConnected) {
+                SunmiPrinterApi.getInstance()
+                    .connectPrinter(requireContext(), object : ConnectCallback {
 
-            val enabled = Print.TRUE
+                        override fun onFound() {
+                            println("onFound")
+                        }
 
-            try {
+                        override fun onUnfound() {
+                            println("onUnfound")
+                        }
 
-                printer?.openPrinter(
-                    if (data.printer_type == BLUETOOTH) {
-                        Print.DEVTYPE_BLUETOOTH
-                    } else {
-                        Print.DEVTYPE_TCP
-                    },
-                    data.ipAddress,
-                    enabled,
-                    1000
-                )
-                printer?.setStatusChangeEventCallback(this)
+                        override fun onConnect() {
+                            println("onConnect")
+                            generateKitchenReceiptSunmi(data, type)
 
-            } catch (e: Exception) {
-                //  printerDialog.dismiss()
-                Log.e(TAG, "PrinterException: " + e.message)
-                printer = null
-                return
-            }
+                        }
 
-            if (printer != null) {
-                PrinterClass.setPrinter(printer)
+                        override fun onDisconnect() {
+                            println("onDisconnect")
+                        }
 
-
-                generateKitchenReceipt(data, type)
-
+                    })
+            } else {
+                generateKitchenReceiptSunmi(data, type)
             }
 
         } else {
-            Log.e(TAG, "PrinterIsNotNull:")
-        }
 
+            PrinterClass.closePrinter()
+            if (PrinterClass.getPrinter() == null) {
+                //  printerDialog.show(requireContext())
+
+                var printer: Print? = Print(requireContext())
+                if (printer != null) {
+                    printer.setStatusChangeEventCallback(this)
+                    printer.setBatteryStatusChangeEventCallback(this)
+                }
+
+
+                val enabled = Print.TRUE
+
+                try {
+
+                    printer?.openPrinter(
+                        if (data.printer_type == BLUETOOTH) {
+                            Print.DEVTYPE_BLUETOOTH
+                        } else {
+                            Print.DEVTYPE_TCP
+                        },
+                        data.ipAddress,
+                        enabled,
+                        1000
+                    )
+                    printer?.setStatusChangeEventCallback(this)
+
+                } catch (e: Exception) {
+                    //  printerDialog.dismiss()
+                    Log.e(TAG, "PrinterException: " + e.message)
+                    printer = null
+                    return
+                }
+
+                if (printer != null) {
+                    PrinterClass.setPrinter(printer)
+
+
+                    generateKitchenReceipt(data, type)
+
+                }
+
+            } else {
+                Log.e(TAG, "PrinterIsNotNull:")
+            }
+        }
     }
 
     private fun generateKitchenReceipt(
@@ -6862,6 +6896,146 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 Log.e(TAG, "PrinterError: " + e.localizedMessage)
             }
 
+
+        } catch (e: Exception) {
+            // printerDialog.dismiss()
+            e.printStackTrace()
+        }
+
+    }
+
+    private fun generateKitchenReceiptSunmi(
+        customerReceiptPrinters: PrinterResponse.Data.KitchenReceiptPrinters,
+        type: String
+    ) {
+        try {
+
+            if (kitchenSettingModel.showOrderType) {
+
+
+                PrintSunmiUtils.printOrderType(receiptModel?.order?.orderType.toString())
+
+            }
+
+            if (receiptModel?.order?.orderType.toString().lowercase() == "OpenOrder".trim()
+                    .toString().lowercase() || receiptModel?.order?.orderType.toString()
+                    .lowercase() == "Open Order".trim()
+                    .toString().lowercase()
+            ) {
+
+                PrintSunmiUtils.printOrderType(receiptModel?.order?.deliveryType.toString())
+            }
+
+
+            PrintSunmiUtils.orderId(
+                padLine(
+                    "OrderID:" + receiptModel?.order?.id,
+                    "",
+                    48
+                ).toString()
+            )
+
+            PrintSunmiUtils.receiptID(
+                padLine(
+                    "ReceiptID:" + receiptModel?.order?.offlineId,
+                    "",
+                    48
+                ).toString()
+            )
+
+
+            if (kitchenSettingModel.showTeamMember) {
+
+                PrintSunmiUtils.employee(
+                    padLine(
+                        "Employee:" + receiptModel?.order?.employee?.name, "",
+                        48
+                    ).toString()
+                )
+
+
+            }
+
+            PrintSunmiUtils.orderTime(
+                padLine(
+                    getReceiptFormatDateFromUTCServer(
+                        requireContext(),
+                        receiptModel?.order?.createdAt.toString()
+                    ),
+                    "",
+                    48
+                ).toString()
+            )
+
+
+
+            PrintSunmiUtils.addHorizontal()
+
+            receiptModel?.order?.orderItems?.let {
+                addOrdersForKitchen(
+                    it
+                )
+            }
+
+            if (receiptModel?.order?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote) {
+
+                PrintSunmiUtils.orderNote(receiptModel?.order?.note.toString())
+
+            }
+
+
+            if (kitchenSettingModel.showCustomerAddress != false or kitchenSettingModel.showCustomerPhone != false or kitchenSettingModel.showCustomerName != false) {
+                if (receiptModel?.order?.customer != null) {
+
+
+                    PrintSunmiUtils.customerDetails()
+
+                    if (kitchenSettingModel.showCustomerName) {
+
+                        PrintSunmiUtils.customerName(receiptModel?.order?.customer?.firstName + " " + receiptModel?.order?.customer?.lastName)
+
+                    }
+
+
+                    if (kitchenSettingModel.showCustomerPhone) {
+
+                        if (receiptModel?.order?.customer?.phones?.isNotEmpty() == true) {
+
+                            receiptModel?.order?.customer?.phones?.get(0)?.phoneNumber?.let {
+                                PrintSunmiUtils.customerPhone(
+                                    it
+                                )
+                            }
+                        }
+
+                    }
+
+                    if (kitchenSettingModel.showCustomerAddress) {
+                        if (receiptModel?.order?.orderType?.trim().toString()
+                                .lowercase() == "Open Order".trim()
+                                .toString().lowercase()
+                            && receiptModel?.order?.deliveryType?.trim().toString()
+                                .lowercase() == "Pickup".trim().lowercase()
+                        ) {
+
+                        } else {
+
+                            if (receiptModel?.order?.customer?.addresses?.isNotEmpty() == true) {
+
+
+                                receiptModel?.order?.customer?.addresses?.get(0)?.fullAddress?.let {
+                                    PrintSunmiUtils.customerAddress(
+                                        it
+                                    )
+                                }
+                            }
+                        }
+                    }
+
+                }
+            }
+
+            PrintSunmiUtils.cutPaper()
 
         } catch (e: Exception) {
             // printerDialog.dismiss()
@@ -8086,12 +8260,12 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
     private fun printBusinessLogo() {
         val decodedString: ByteArray = Base64.decode(
             prefProvider.getValue(VENUE_LOGO, ""),
-            Base64.DEFAULT
+            Base64.NO_CLOSE
         )
         val bitmap: Bitmap =
             BitmapFactory.decodeByteArray(decodedString, 0, decodedString.size)
 
-        val newBitmap = Bitmap.createScaledBitmap(bitmap!!, 210, 210, true)
+        val newBitmap = Bitmap.createScaledBitmap(bitmap!!, 210, 210, false)
 
         PrintSunmiUtils.printLogo(newBitmap)
 

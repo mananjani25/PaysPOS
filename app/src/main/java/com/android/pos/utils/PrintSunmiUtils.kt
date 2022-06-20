@@ -40,6 +40,7 @@ class PrintSunmiUtils {
     companion object {
         fun printLogo(newBitmap: Bitmap?) {
 
+            SunmiPrinterApi.getInstance().printerInit()
             SunmiPrinterApi.getInstance().setAlignMode(1)
             if (newBitmap != null) {
                 SunmiPrinterApi.getInstance().printBitmap(newBitmap, 0)
@@ -380,6 +381,12 @@ class PrintSunmiUtils {
                     it, 6, 0
                 )
             }
+        }
+
+        fun cutPaper() {
+
+            SunmiPrinterApi.getInstance().lineWrap(5)
+            SunmiPrinterApi.getInstance().cutPaper(1, 1)
         }
 
     }

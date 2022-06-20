@@ -891,6 +891,34 @@ fun addOrdersForKitchenDineIn(
     return builder
 }
 
+fun addOrdersForKitchenDineIn(
+
+    list: ArrayList<TbItem>
+) {
+
+    list.forEach { obj ->
+
+
+        PrintSunmiUtils.orderTime(obj.itemQuantity.toString() + " " + obj.name)
+
+        if (obj.modifiers.isNotEmpty()) {
+            for (j in 0 until obj.modifiers.size) {
+                val modifierObj = obj.modifiers.get(j)
+
+                PrintSunmiUtils.orderTime("  " + modifierObj.name)
+
+
+            }
+        }
+        if (obj.note.isNotEmpty()) {
+
+            PrintSunmiUtils.orderTime("  Note:" + obj.note)
+
+        }
+    }
+
+}
+
 fun addOrdersForKitchen(
     builder: Builder,
     list: List<CreateOrderResponse.Data.Order.OrderItem>,
@@ -961,6 +989,33 @@ fun addOrdersForKitchen(
 
 
     return builder
+}
+
+fun addOrdersForKitchen(
+    list: List<CreateOrderResponse.Data.Order.OrderItem>
+) {
+    for (i in 0 until list.size) {
+        val obj = list.get(i)
+
+
+        PrintSunmiUtils.orderTime(obj.quantity.toString() + " " + obj.itemName)
+
+        if (obj.orderItemModifiers.isNotEmpty()) {
+            for (j in 0 until obj.orderItemModifiers.size) {
+                val modifierObj = obj.orderItemModifiers.get(j)
+
+                PrintSunmiUtils.orderTime("  " + modifierObj.name)
+
+
+            }
+        }
+        if (obj.note.isNotEmpty()) {
+            PrintSunmiUtils.orderTime("  Note:" + obj.note)
+        }
+
+
+    }
+
 }
 
 fun addOrderItemOpenOrder(
