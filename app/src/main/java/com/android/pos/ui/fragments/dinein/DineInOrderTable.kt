@@ -1530,18 +1530,83 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         cartList = getCartModel(adapterList.toCollection(arrayListOf()))
 
         var temp_itemslist: ArrayList<TbItem> = arrayListOf()
-        listItemWT.forEach { items ->
-            items.price = (items.price / totalGuestCount)
 
-        }
-        temp_itemslist.addAll(listItemWT)
+
+//        temp_itemslist.addAll(listItemWT)
         temp_itemslist.addAll(listItemGuestSelected)
         cartList?.taxlistDynamic = listOf()
         temp_itemslist.forEach { item ->
             cartList = taxBifurcationCalculation(item, cartList!!)
         }
 
-        Log.d(TAG, "onClick: listof Tax:  " + Gson().toJson(cartList?.taxlistDynamic))
+        Log.e(TAG, "getcartListbeforeAdd  ${Gson().toJson(cartList?.taxlistDynamic)}")
+        listItemWT.forEach { wholetableitems ->
+            wholetableitems.taxes?.forEachIndexed { index, taxData ->
+                var modifierPrice: Double = 0.0
+                var totaltaxtemp: Double = 0.0
+                val price =
+                    (wholetableitems.price * wholetableitems.itemQuantity) - (wholetableitems.discountPrice * wholetableitems.itemQuantity)
+
+                wholetableitems.modifiers.forEach {
+                    modifierPrice += (it.price * it.itemQuantity)
+                }
+
+                val totalPrice =
+                    price + modifierPrice
+                totaltaxtemp += if (taxData.taxType == "Percentage") {
+                    if (totalPrice < 0.0) {
+
+                        String.format("%.2f", 0.00)
+                            .toDouble()
+                    } else {
+                        val itemTaxPrice =
+                            (taxData.rate * totalPrice) / 100
+                        Log.e("itemTaxPrice", "" + itemTaxPrice)
+                        String.format("%.2f", itemTaxPrice)
+                            .toDouble()
+                    }
+
+                } else {
+                    Log.d("yash", "taxCalculation: " + taxData.taxType)
+                    if (totalPrice <= 0.0) {
+                        String.format("%.2f", 0.00)
+                            .toDouble()
+                    } else {
+                        String.format("%.2f", taxData.rate * wholetableitems.itemQuantity)
+                            .toDouble()
+                    }
+
+                }
+
+
+                var found = -1
+                totaltaxtemp /= (getOrderDetailsResponse?.guestAttributes?.size!! - 1)
+                var temp_remaining = totaltaxtemp
+                var temp_subtotal =
+                    totalPrice / (getOrderDetailsResponse?.guestAttributes?.size!! - 1)
+                cartList?.taxlistDynamic?.forEachIndexed { indexcart, cartTaxtData ->
+                    if (cartTaxtData.taxType == taxData.taxType) {
+                        found = indexcart
+                    }
+                }
+                Log.d(TAG, "onClick: wholetable total tax $totaltaxtemp")
+                if (found != -1) {
+                    if(cartList?.taxlistDynamic?.get(found)?.taxType!="Percentage"){
+                        cartList?.taxlistDynamic?.get(found)?.subTotalAmount =
+                            cartList?.taxlistDynamic?.get(found)?.subTotalAmount!!.plus(
+                                temp_subtotal
+                            )
+                    }
+                    cartList?.taxlistDynamic?.get(found)?.totalTaxTypePrice =
+                        cartList?.taxlistDynamic?.get(found)?.totalTaxTypePrice!!.plus(
+                            temp_remaining
+                        )
+                }
+
+            }
+        }
+        Log.e(TAG, "getcartListAfterAdd  ${Gson().toJson(cartList?.taxlistDynamic)}")
+
         viewModelPayment.addCart(cartList!!)
         findNavController().navigate(
             R.id.action_dineInOrderTable_to_checkoutDineIN,
