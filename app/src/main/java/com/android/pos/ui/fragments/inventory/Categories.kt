@@ -101,7 +101,7 @@ class Categories(val clickedPosition: Int) : Fragment(),ItemCallback {
 
     private fun observeShowProgress() {
 
-        viewModel.showProgress.observe(viewLifecycleOwner, { event ->
+        viewModel.showProgress.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
                 if (it) {
                     ProgressUtils.showProgressDialog(requireActivity())
@@ -109,32 +109,32 @@ class Categories(val clickedPosition: Int) : Fragment(),ItemCallback {
                     ProgressUtils.dismissProgressDialog()
                 }
             }
-        })
+        }
 
     }
 
     private fun deleteObserve() {
 
-        viewModel.data.observe(viewLifecycleOwner, { event ->
+        viewModel.data.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
 
-                if (!isreOrder)
+//                if (!isreOrder)
                     AlertUtils.showCustomAlert(requireActivity(), it.message)
 
                 if (isreOrder) {
 
                     isreOrder = false
-                    Log.e(TAG,"getAllCategories  ${Gson().toJson(adapter.getAll())}")
+                    Log.e(TAG, "getAllCategories  ${Gson().toJson(adapter.getAll())}")
                     viewModel.reOrder(adapter.getAll())
                     // categoriesObserver()
                 }
 
-                val intent = Intent()
-                intent.action = "inventory"
-                intent.putExtra("position", clickedPosition)
-                requireContext().sendBroadcast(intent)
+//                val intent = Intent()
+//                intent.action = "inventory"
+//                intent.putExtra("position", clickedPosition)
+//                requireContext().sendBroadcast(intent)
             }
-        })
+        }
 
     }
 

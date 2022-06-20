@@ -3553,7 +3553,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
     }
 
     private fun getKitchenPrinters() {
-        viewModel.getKitchenPrinterList().observe(viewLifecycleOwner, { it ->
+        viewModel.getKitchenPrinterList().observe(viewLifecycleOwner) { it ->
             when (it.status) {
                 Status.SUCCESS -> {
                     ProgressUtils.dismissProgressDialog()
@@ -3621,12 +3621,12 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 }
             }
 
-        })
+        }
 
     }
 
     private fun getCustomerPrinterForDineIn() {
-        viewModel.getCustomerPrinterList().observe(viewLifecycleOwner, {
+        viewModel.getCustomerPrinterList().observe(viewLifecycleOwner) {
             when (it.status) {
                 Status.SUCCESS -> {
                     ProgressUtils.dismissProgressDialog()
@@ -3648,12 +3648,12 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
             }
 
-        })
+        }
     }
 
     private fun getCustomerPrinters(autoPrintCheck: Boolean) {
 
-        viewModel.getCustomerPrinterList().observe(viewLifecycleOwner, {
+        viewModel.getCustomerPrinterList().observe(viewLifecycleOwner) {
             when (it.status) {
                 Status.SUCCESS -> {
                     ProgressUtils.dismissProgressDialog()
@@ -3708,7 +3708,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
             }
 
-        })
+        }
 
     }
 
@@ -5687,7 +5687,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
     private fun observeShowProgress() {
 
-        viewModel.showProgress.observe(viewLifecycleOwner, { event ->
+        viewModel.showProgress.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
                 if (it) {
                     ProgressUtils.showProgressDialog(requireActivity())
@@ -5695,9 +5695,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     ProgressUtils.dismissProgressDialog()
                 }
             }
-        })
+        }
 
-        viewModel.data.observe(viewLifecycleOwner, { event ->
+        viewModel.data.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let { baseResponse ->
                 activity?.let {
                     AlertUtils.showCustomAlertWithListenerWithOK(
@@ -5707,9 +5707,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     }
                 }
             }
-        })
+        }
 
-        viewModel.data1.observe(viewLifecycleOwner, { event ->
+        viewModel.data1.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let { baseResponse ->
                 binding.txtAddCustomer.visibility = View.GONE
                 activity?.let {
@@ -5720,7 +5720,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     }
                 }
             }
-        })
+        }
 
 
     }

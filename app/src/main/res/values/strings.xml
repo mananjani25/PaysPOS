@@ -813,6 +813,7 @@
     <string name="time_zone">Time Zone<font color='#E90C0C'>*</font></string>
     <string name="min_guest">Min Guest<font color='#E90C0C'>*</font></string>
     <string name="max_guest">Max Guest<font color='#E90C0C'>*</font></string>
+    <string name="msg_amount_refund">Please enter amount to Refund</string>
 
 
 </resources>

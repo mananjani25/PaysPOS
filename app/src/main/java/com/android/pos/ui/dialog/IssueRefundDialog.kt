@@ -206,7 +206,7 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
         binding.txtDone.setOnClickListener {
             if (isItem) {
                 if (TextUtils.isEmpty(binding.edtAmount.text.toString())) {
-                    AlertUtils.showCustomAlert(requireActivity(), "Please Enter Amount To Refund")
+                    AlertUtils.showCustomAlert(requireActivity(), getString(R.string.msg_amount_refund))
                 } else {
                     subTotalPrice = binding.edtAmount.text.toString().toDouble()
                     refundData = RefundRequestModel().apply {
@@ -380,7 +380,7 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
                     "totalItemPrice = " + totalItemPrice + "\n totalServiceCharge = " + totalServiceCharge + "\n totalTax = " + totalTax + "\n loyaltyAmount = " + loyaltyAmount
                 )
                 val totalItemPerItem =
-                    totalItemPrice - applyDiscount + totalServiceCharge + totalTax + loyaltyAmount
+                    totalItemPrice - applyDiscount + totalServiceCharge + totalTax - loyaltyAmount
 
                 Log.e("subTotalPrice1", totalItemPerItem.toString())
 
