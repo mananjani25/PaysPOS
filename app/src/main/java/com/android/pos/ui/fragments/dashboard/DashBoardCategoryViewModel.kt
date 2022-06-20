@@ -344,7 +344,13 @@ class DashBoardCategoryViewModel @Inject constructor(
 
         if (cartList != null && cartList.isEmpty()) {
             var model = addCartModel(item, true)
-            model = taxBifurcationCalculation(item!!, model, type)
+            if (type == UPDATE) {
+                cartModel?.items?.forEach { items ->
+                    model = taxBifurcationCalculation(items, model, type)
+                }
+            } else {
+                model = taxBifurcationCalculation(item, model, type)
+            }
             addCart(model)
         } else {
             val list = cartList?.get(0)?.items?.toMutableList()
@@ -389,7 +395,17 @@ class DashBoardCategoryViewModel @Inject constructor(
                 }
 
                 var cartModel = cartList[0]
-                cartModel = taxBifurcationCalculation(item!!, cartModel!!, type)
+                if (type == UPDATE) {
+                    cartModel.items?.forEach { itemData ->
+                        cartModel = taxBifurcationCalculation(
+                            itemData,
+                            cartModel,
+                            type
+                        )
+                    }
+                } else {
+                    cartModel = taxBifurcationCalculation(item!!, cartModel, type)
+                }
                 cartModel.items = list
                 addCart(cartModel)
 
@@ -407,7 +423,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                     cartModel?.items = listOf(item)
                     if (cartModel != null) {
 
-                        addCart(cartModel)
+                        addCart(cartModel!!)
                     }
                 }
 
@@ -1770,9 +1786,19 @@ class DashBoardCategoryViewModel @Inject constructor(
                             }
                             val totalPrice =
                                 price + modifierPrice
-                            cartModel.taxlistDynamic!![found].subTotalAmount =
-                                cartModel.taxlistDynamic!![found].subTotalAmount?.plus(totalPrice)
-                        }else{
+                            if (type == DELETE) {
+                                cartModel.taxlistDynamic!![found].subTotalAmount =
+                                    cartModel.taxlistDynamic!![found].subTotalAmount.minus(
+                                        totalPrice
+                                    )
+                            } else {
+                                cartModel.taxlistDynamic!![found].subTotalAmount =
+                                    cartModel.taxlistDynamic!![found].subTotalAmount.plus(
+                                        totalPrice
+                                    )
+                            }
+
+                        } else {
                             cartModel.taxlistDynamic!![found].subTotalAmount = 0.0
                         }
                         if (type == ADD || type == UPDATE) {
@@ -1793,6 +1819,33 @@ class DashBoardCategoryViewModel @Inject constructor(
                                         type
                                     )
                                 )!!
+                            if (cartModel.taxlistDynamic?.get(found)?.totalTaxTypePrice == 0.0) {
+                                var temp_arraylist: ArrayList<TaxData> =
+                                    cartModel.taxlistDynamic!!.toCollection(
+                                        arrayListOf()
+                                    )
+                                temp_arraylist.removeAt(found)
+                                cartModel.taxlistDynamic = temp_arraylist.toList()
+                                Log.d(
+                                    TAG,
+                                    "taxBifurcationCalculation: delete : " + Gson().toJson(cartModel.taxlistDynamic)
+                                )
+                            }
+                            if (cartModel.taxlistDynamic?.get(found)?.taxType!= "Percentage"){
+                                if (cartModel.taxlistDynamic?.get(found)?.subTotalAmount == 0.0) {
+                                    var temp_arraylist: ArrayList<TaxData> =
+                                        cartModel.taxlistDynamic!!.toCollection(
+                                            arrayListOf()
+                                        )
+                                    temp_arraylist.removeAt(found)
+                                    cartModel.taxlistDynamic = temp_arraylist.toList()
+                                    Log.d(
+                                        TAG,
+                                        "taxBifurcationCalculation: delete : " + Gson().toJson(cartModel.taxlistDynamic)
+                                    )
+                                }
+                            }
+
                         }
 
                     }
@@ -1816,7 +1869,10 @@ class DashBoardCategoryViewModel @Inject constructor(
             }
 
         }
-        Log.d(TAG, "taxBifurcationCalculation: final list "+Gson().toJson(cartModel.taxlistDynamic))
+        Log.d(
+            TAG,
+            "taxBifurcationCalculation: final list " + Gson().toJson(cartModel.taxlistDynamic)
+        )
         return cartModel
     }
 

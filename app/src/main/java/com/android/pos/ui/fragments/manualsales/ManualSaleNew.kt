@@ -1072,6 +1072,13 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
         setFragmentResultListener("request_key_item_rename") { resultKey: String, bundle: Bundle ->
             val data = bundle.getString("item_name")
             cartItemModel.name = data.toString()
+            cartList?.get(0)?.taxlistDynamic = arrayListOf()
+            cartList?.get(0)?.items?.forEach { items ->
+                items.taxes?.forEach { taxData ->
+                    taxData.subTotalAmount = 0.0
+                    taxData.totalTaxTypePrice = 0.0
+                }
+            }
             cartItemModel?.let {
                 viewModel.manualSalecartLogic(cartList, it, Constants.UPDATE)
             }
@@ -1111,7 +1118,13 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                 }
             } else {
                 cartItemModel.note = note.toString()
-
+                cartList?.get(0)?.taxlistDynamic = arrayListOf()
+                cartList?.get(0)?.items?.forEach { items ->
+                    items.taxes?.forEach { taxData ->
+                        taxData.subTotalAmount = 0.0
+                        taxData.totalTaxTypePrice = 0.0
+                    }
+                }
                 cartItemModel?.let {
                     viewModel.manualSalecartLogic(
                         cartList,
@@ -1137,6 +1150,13 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                     cartModel.isDiscountDefault = true
 
                     Log.e(TAG, "cartModelPArseMsd   ${Gson().toJson(cartModel)}")
+                    cartList?.get(0)?.taxlistDynamic = arrayListOf()
+                    cartList?.get(0)?.items?.forEach { items ->
+                        items.taxes?.forEach { taxData ->
+                            taxData.subTotalAmount = 0.0
+                            taxData.totalTaxTypePrice = 0.0
+                        }
+                    }
                     viewModel.manualSalecartLogic(cartList, cartModel, Constants.UPDATE)
 
                 } else if (result.discountType == "Amount") {
@@ -1145,6 +1165,13 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                         MethodUtils.roundOffAmountDouble(result.percentage * cartModel.itemQuantity)
                     cartModel.isDiscountDefault = false
                     cartModel.discountType = result.discountType
+                    cartList?.get(0)?.taxlistDynamic = arrayListOf()
+                    cartList?.get(0)?.items?.forEach { items ->
+                        items.taxes?.forEach { taxData ->
+                            taxData.subTotalAmount = 0.0
+                            taxData.totalTaxTypePrice = 0.0
+                        }
+                    }
                     viewModel.manualSalecartLogic(cartList, cartModel, Constants.UPDATE)
 
                 } else {
@@ -1152,6 +1179,13 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                     cartModel.discountPrice = 0.0
                     cartModel.discountType = ""
                     cartModel.isManualSales = true
+                    cartList?.get(0)?.taxlistDynamic = arrayListOf()
+                    cartList?.get(0)?.items?.forEach { items ->
+                        items.taxes?.forEach { taxData ->
+                            taxData.subTotalAmount = 0.0
+                            taxData.totalTaxTypePrice = 0.0
+                        }
+                    }
                     viewModel.manualSalecartLogic(cartList, cartModel, Constants.UPDATE)
 
 
@@ -1333,7 +1367,13 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
             Log.e(TAG, "Itemmodel: ${Gson().toJson(model)}")
 
             Log.e(TAG, "ItemPosition: $position")
-
+            cartList?.get(0)?.taxlistDynamic = arrayListOf()
+            cartList?.get(0)?.items?.forEach { items ->
+                items.taxes?.forEach { taxData ->
+                    taxData.subTotalAmount = 0.0
+                    taxData.totalTaxTypePrice = 0.0
+                }
+            }
             viewModel.manualSalecartLogic(cartList, model, Constants.UPDATE)
 
         }
@@ -1373,6 +1413,13 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                         model.discountId = result.id
                         model.discountType = result.discountType
                         model.isManualSales = true
+                        cartList?.get(0)?.taxlistDynamic = arrayListOf()
+                        cartList?.get(0)?.items?.forEach { items ->
+                            items.taxes?.forEach { taxData ->
+                                taxData.subTotalAmount = 0.0
+                                taxData.totalTaxTypePrice = 0.0
+                            }
+                        }
                         viewModel.manualSalecartLogic(cartList, model, Constants.UPDATE)
                         txtTitle.text = model.name + "  $" + String.format(
                             "%.2f",
@@ -1386,6 +1433,13 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                         model.discountType = result.discountType
                         model.isManualSales = true
 
+                        cartList?.get(0)?.taxlistDynamic = arrayListOf()
+                        cartList?.get(0)?.items?.forEach { items ->
+                            items.taxes?.forEach { taxData ->
+                                taxData.subTotalAmount = 0.0
+                                taxData.totalTaxTypePrice = 0.0
+                            }
+                        }
                         viewModel.manualSalecartLogic(cartList, model, Constants.UPDATE)
                         txtTitle.text = model.name + "  $" + String.format(
                             "%.2f",
@@ -1395,12 +1449,26 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                         model.discountPrice = 0.0
                         model.discountType = ""
                         model.isManualSales = true
+                        cartList?.get(0)?.taxlistDynamic = arrayListOf()
+                        cartList?.get(0)?.items?.forEach { items ->
+                            items.taxes?.forEach { taxData ->
+                                taxData.subTotalAmount = 0.0
+                                taxData.totalTaxTypePrice = 0.0
+                            }
+                        }
                         viewModel.manualSalecartLogic(cartList, model, Constants.UPDATE)
                     }
                 } else {
                     model.discountPrice = 0.0
                     model.discountType = ""
                     model.isManualSales = true
+                    cartList?.get(0)?.taxlistDynamic = arrayListOf()
+                    cartList?.get(0)?.items?.forEach { items ->
+                        items.taxes?.forEach { taxData ->
+                            taxData.subTotalAmount = 0.0
+                            taxData.totalTaxTypePrice = 0.0
+                        }
+                    }
                     viewModel.manualSalecartLogic(cartList, model, Constants.UPDATE)
 
 
