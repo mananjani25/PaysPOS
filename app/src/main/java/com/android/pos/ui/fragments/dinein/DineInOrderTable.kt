@@ -198,9 +198,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                                 false
                             )
                         ) {
-                            Log.e(TAG, "getServiceCharge:  ${Gson().toJson(it.data)}")
                             serviceChargeList = arrayListOf()
-                            it.data?.forEach { service ->
+                            it.data.forEach { service ->
                                 if (service.order_type == Constants.SERVICECHARGE_DINEIN_ORDER) {
                                     serviceChargeList = it.data.toCollection(arrayListOf())
                                     dineInTableAdapter.setSurchargeList(serviceChargeList)
@@ -218,7 +217,6 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                                     false
                                 )
                             ) {
-                                Log.e(TAG, "getServiceCharge:  ${Gson().toJson(it.data)}")
                                 serviceChargeList = arrayListOf()
                                 it.data?.forEach { service ->
                                     if (service.order_type == Constants.SERVICECHARGE_TAKEOUT_OPENORDER) {
@@ -1847,7 +1845,10 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                                             }
                                             if (!isApplied) {
                                                 serviceChargeList.forEach { service ->
-                                                    if (service.id == checkMaxGuestCountId(serviceChargeList)) {
+                                                    if (service.id == checkMaxGuestCountId(
+                                                            serviceChargeList
+                                                        )
+                                                    ) {
                                                         serviceChargeWT += (subTotalWT * service.percentage) / 100
                                                         return@forEach
                                                     }
@@ -1934,6 +1935,9 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                         totalTaxWT / (baseResponse.guestAttributes.size - 1)
                     dineInList.get(0).wholeTableSurTax =
                         serviceChargeWT / (baseResponse.guestAttributes.size - 1)
+                    Log.e("WholeDiscount", "wholeTableDiscount  ${wholeTableDiscount}")
+                    dineInList.get(0).wholeTableDiscont = MethodUtils.roundOffAmountDouble(wholeTableDiscount / (baseResponse.guestAttributes.size - 1))
+
                     dineInList.get(0).orderDiscount = orderDiscount
                     dineInList.get(0).orderTotalAmount =
                         MethodUtils.roundOffAmountDouble(baseResponse.subTotal + baseResponse.totalTaxAmount + baseResponse.totalServiceCharges)
@@ -3785,7 +3789,12 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                             Builder.FALSE,
                             Builder.COLOR_1
                         )
-                        builder.addText("Print Time:" + getCurrentTimeFromTimeZone(requireContext(),formatted))
+                        builder.addText(
+                            "Print Time:" + getCurrentTimeFromTimeZone(
+                                requireContext(),
+                                formatted
+                            )
+                        )
                     }
 
 
@@ -3918,7 +3927,10 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                         builder.addText(
                             padLine(
                                 if (customerSettingModel.showPrintTime) {
-                                    "Print Time:" + getCurrentTimeFromTimeZone(requireContext(),formatted)
+                                    "Print Time:" + getCurrentTimeFromTimeZone(
+                                        requireContext(),
+                                        formatted
+                                    )
                                 } else {
                                     ""
                                 },
@@ -4013,11 +4025,11 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     padLine(
                         "Total Discount",
 
-                        if (guestDiscount == 0.0) {
+                        if (divideDiscount == 0.0) {
                             "$" + MethodUtils.roundOffAmountString(0.00)
                         } else {
 
-                            "-$" + MethodUtils.roundOffAmountString(guestDiscount)
+                            "-$" + MethodUtils.roundOffAmountString(divideDiscount)
 
                         },
                         if (customerSettingModel.fonts == Constants.LARGE) {
@@ -4113,36 +4125,37 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 )
             }
 
-            if (cashDiscountGlobal > 0) {
-                var cashDis =
-                    cashDiscountGlobal / (getOrderDetailsResponse?.guestAttributes?.size?.minus(
-                        1
-                    ) ?: 1)
-                builder.addTextLineSpace(30)
-                builder.addFeedUnit(30)
-                builder.addTextFont(Builder.FONT_E)
-                // builder.addTextAlign(Builder.ALIGN_LEFT)
-                builder.addTextLang(Builder.LANG_EN)
-                addCustomerTextSize(builder, customerSettingModel.fonts)
-                builder.addTextStyle(
-                    Builder.FALSE,
-                    Builder.FALSE,
-                    Builder.FALSE,
-                    Builder.COLOR_1
-                )
-
-                builder.addText(
-                    padLine(
-                        "Cash Discount",
-
-                        "-$" + MethodUtils.roundOffAmountString(cashDis),
-                        if (customerSettingModel.fonts == Constants.LARGE) {
-                            24
-                        } else {
-                            48
-                        }
+            if (!paymentType.equals("Unpaid", true)) {
+                if (cashDiscountGlobal > 0) {
+                    var cashDis =
+                        cashDiscountGlobal / (getOrderDetailsResponse?.guestAttributes?.size?.minus(
+                            1
+                        ) ?: 1)
+                    builder.addTextLineSpace(30)
+                    builder.addFeedUnit(30)
+                    builder.addTextFont(Builder.FONT_E)
+                    // builder.addTextAlign(Builder.ALIGN_LEFT)
+                    builder.addTextLang(Builder.LANG_EN)
+                    addCustomerTextSize(builder, customerSettingModel.fonts)
+                    builder.addTextStyle(
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.COLOR_1
                     )
-                )
+
+                    builder.addText(
+                        padLine(
+                            "Cash Discount",
+                            "-$" + MethodUtils.roundOffAmountString(cashDis),
+                            if (customerSettingModel.fonts == Constants.LARGE) {
+                                24
+                            } else {
+                                48
+                            }
+                        )
+                    )
+                }
             }
 
 
@@ -4753,7 +4766,12 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                             Builder.FALSE,
                             Builder.COLOR_1
                         )
-                        builder.addText("Print Time:" + getCurrentTimeFromTimeZone(requireContext(),formatted))
+                        builder.addText(
+                            "Print Time:" + getCurrentTimeFromTimeZone(
+                                requireContext(),
+                                formatted
+                            )
+                        )
                     }
 
 
@@ -4886,7 +4904,10 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                         builder.addText(
                             padLine(
                                 if (customerSettingModel.showPrintTime) {
-                                    "Print Time:" + getCurrentTimeFromTimeZone(requireContext(),formatted)
+                                    "Print Time:" + getCurrentTimeFromTimeZone(
+                                        requireContext(),
+                                        formatted
+                                    )
                                 } else {
                                     ""
                                 },
