@@ -1990,21 +1990,9 @@ class ActiveOrderFragment(
 
 
             if (printType == PRINT_PAID) {
-
-                SunmiPrinterApi.getInstance().setAlignMode(1)
-                SunmiPrinterApi.getInstance().enableBold(true)
-                SunmiPrinterApi.getInstance().setFontZoom(2, 2)
-                SunmiPrinterApi.getInstance().printText("Paid")
-                SunmiPrinterApi.getInstance().lineWrap(1)
-
+                PrintSunmiUtils.paidStatus("Paid")
             } else {
-
-                SunmiPrinterApi.getInstance().setAlignMode(1)
-                SunmiPrinterApi.getInstance().enableBold(true)
-                SunmiPrinterApi.getInstance().setFontZoom(2, 2)
-                SunmiPrinterApi.getInstance().printText("Unpaid")
-                SunmiPrinterApi.getInstance().lineWrap(1)
-
+                PrintSunmiUtils.paidStatus("Unpaid")
             }
 
             PrintSunmiUtils.printBusinessDetails(
@@ -2020,11 +2008,7 @@ class ActiveOrderFragment(
                 || receiptModel?.orderType?.lowercase() == Constants.OPEN_ORDER.lowercase()
             ) {
 
-                SunmiPrinterApi.getInstance().setAlignMode(1)
-                SunmiPrinterApi.getInstance().enableBold(true)
-                SunmiPrinterApi.getInstance().setFontZoom(2, 2)
-                SunmiPrinterApi.getInstance().printText(receiptModel?.deliveryType)
-                SunmiPrinterApi.getInstance().lineWrap(1)
+                PrintSunmiUtils.deliveryType(receiptModel?.deliveryType)
 
             }
 
@@ -2034,46 +2018,27 @@ class ActiveOrderFragment(
             if (customerSettingModel.fonts == Constants.LARGE) {
 
                 if (customerSettingModel.showOrderIdTop) {
-                    SunmiPrinterApi.getInstance().setAlignMode(0)
-                    SunmiPrinterApi.getInstance().enableBold(false)
-                    SunmiPrinterApi.getInstance().setFontZoom(1, 1)
-                    SunmiPrinterApi.getInstance()
-                        .printText("OrderID:" + receiptModel?.id)
-                    SunmiPrinterApi.getInstance().lineWrap(1)
-
+                    PrintSunmiUtils.orderId("OrderID:" + receiptModel?.id)
                 }
 
-                SunmiPrinterApi.getInstance().setAlignMode(0)
-                SunmiPrinterApi.getInstance().enableBold(false)
-                SunmiPrinterApi.getInstance().setFontZoom(1, 1)
-                SunmiPrinterApi.getInstance()
-                    .printText("ReceiptID:" + receiptModel?.offlineId)
-                SunmiPrinterApi.getInstance().lineWrap(1)
+                PrintSunmiUtils.receiptID("ReceiptID:" + receiptModel?.offlineId)
 
 
                 if (customerSettingModel.showTeam) {
-                    SunmiPrinterApi.getInstance().setAlignMode(0)
-                    SunmiPrinterApi.getInstance().enableBold(false)
-                    SunmiPrinterApi.getInstance().setFontZoom(1, 1)
-                    SunmiPrinterApi.getInstance()
-                        .printText("Employee:" + receiptModel?.employee?.name)
-                    SunmiPrinterApi.getInstance().lineWrap(1)
+
+                    PrintSunmiUtils.employee("Employee:" + receiptModel?.employee?.name)
 
                 }
 
                 if (customerSettingModel.showOrderTime) {
 
 
-                    SunmiPrinterApi.getInstance().setAlignMode(0)
-                    SunmiPrinterApi.getInstance().enableBold(false)
-                    SunmiPrinterApi.getInstance().setFontZoom(1, 1)
-                    SunmiPrinterApi.getInstance().printText(
+                    PrintSunmiUtils.orderTime(
                         "Order Time:" + Constants.getReceiptFormatDateFromUTCServer(
                             requireContext(),
                             receiptModel?.createdAt.toString()
                         )
                     )
-                    SunmiPrinterApi.getInstance().lineWrap(1)
 
                 }
 
@@ -2082,22 +2047,12 @@ class ActiveOrderFragment(
 
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
 
-
-                        val current = LocalDateTime.now()
-                        val formatter = DateTimeFormatter.ofPattern("MMM-dd-yyyy hh:mm:a")
-                        val formatted = current.format(formatter)
-
-
-                        SunmiPrinterApi.getInstance().setAlignMode(0)
-                        SunmiPrinterApi.getInstance().enableBold(false)
-                        SunmiPrinterApi.getInstance().setFontZoom(1, 1)
-                        SunmiPrinterApi.getInstance().printText(
+                        PrintSunmiUtils.orderTime(
                             "Print Time:" + Constants.getCurrentTimeFromTimeZone(
                                 requireContext(),
-                                formatted
+                                MethodUtils.formatted()
                             )
                         )
-                        SunmiPrinterApi.getInstance().lineWrap(1)
                     }
 
 
@@ -2118,14 +2073,8 @@ class ActiveOrderFragment(
                         48
                     }
                 ).toString().trim()
-                Log.e("SunmiPrinterApi", str)
 
-                SunmiPrinterApi.getInstance().enableBold(true)
-                SunmiPrinterApi.getInstance().setFontZoom(1, 1)
-                SunmiPrinterApi.getInstance().setAlignMode(0)
-                SunmiPrinterApi.getInstance().printText(str.trim())
-                SunmiPrinterApi.getInstance().lineWrap(1)
-
+                PrintSunmiUtils.orderId(str)
                 if (customerSettingModel.showTeam) {
 
 
@@ -2135,20 +2084,10 @@ class ActiveOrderFragment(
                         } else {
                             ""
                         },
-                        "",
-                        if (customerSettingModel.fonts == Constants.LARGE) {
-                            24
-                        } else {
-                            48
-                        }
+                        ""
                     ).toString()
-                    SunmiPrinterApi.getInstance().setAlignMode(0)
 
-                    SunmiPrinterApi.getInstance().enableBold(false)
-                    SunmiPrinterApi.getInstance().setFontZoom(1, 1)
-                    SunmiPrinterApi.getInstance().printText(empName)
-                    SunmiPrinterApi.getInstance().lineWrap(1)
-
+                    PrintSunmiUtils.employee(empName)
                 }
                 if (customerSettingModel.showOrderTime) {
 
@@ -2162,20 +2101,10 @@ class ActiveOrderFragment(
                         } else {
                             ""
                         },
-                        "",
-                        if (customerSettingModel.fonts == Constants.LARGE) {
-                            24
-                        } else {
-                            48
-                        }
+                        ""
                     ).toString()
 
-                    SunmiPrinterApi.getInstance().setAlignMode(0)
-                    SunmiPrinterApi.getInstance().enableBold(false)
-                    SunmiPrinterApi.getInstance().setFontZoom(1, 1)
-                    SunmiPrinterApi.getInstance().printText(orderTime)
-                    SunmiPrinterApi.getInstance().lineWrap(1)
-
+                    PrintSunmiUtils.orderTime(orderTime)
                 }
 
 
@@ -2191,23 +2120,14 @@ class ActiveOrderFragment(
 
                         val printTime = padLine(
                             if (customerSettingModel.showPrintTime) {
-                                "Print Time:" + formatted
+                                "Print Time:$formatted"
                             } else {
                                 ""
                             },
-                            "",
-                            if (customerSettingModel.fonts == Constants.LARGE) {
-                                24
-                            } else {
-                                48
-                            }
+                            ""
                         ).toString()
 
-                        SunmiPrinterApi.getInstance().setAlignMode(0)
-                        SunmiPrinterApi.getInstance().enableBold(false)
-                        SunmiPrinterApi.getInstance().setFontZoom(1, 1)
-                        SunmiPrinterApi.getInstance().printText(printTime)
-                        SunmiPrinterApi.getInstance().lineWrap(1)
+                        PrintSunmiUtils.orderTime(printTime)
 
                     }
                 }
@@ -2238,11 +2158,6 @@ class ActiveOrderFragment(
                         "$" + MethodUtils.roundOffAmountString(receiptModel.totalDiscount)
                     } else {
                         "-$" + MethodUtils.roundOffAmountString(receiptModel.totalDiscount)
-                    },
-                    if (customerSettingModel.fonts == Constants.LARGE) {
-                        24
-                    } else {
-                        48
                     }
                 ).toString()
                 PrintSunmiUtils.totalDiscount(str1)
@@ -2252,12 +2167,7 @@ class ActiveOrderFragment(
 
             val str2 = padLine(
                 "Sub Total",
-                "$" + MethodUtils.roundOffAmountString(receiptModel.subTotal),
-                if (customerSettingModel.fonts == Constants.LARGE) {
-                    24
-                } else {
-                    48
-                }
+                "$" + MethodUtils.roundOffAmountString(receiptModel.subTotal)
             ).toString()
 
             PrintSunmiUtils.subTotal(str2)
@@ -2268,12 +2178,7 @@ class ActiveOrderFragment(
 
                 val str3 = padLine(
                     "Tax",
-                    "$" + MethodUtils.roundOffAmountString(receiptModel.totalTaxAmount),
-                    if (customerSettingModel.fonts == Constants.LARGE) {
-                        24
-                    } else {
-                        48
-                    }
+                    "$" + MethodUtils.roundOffAmountString(receiptModel.totalTaxAmount)
                 ).toString()
                 PrintSunmiUtils.tax(str3)
             }
@@ -2283,12 +2188,7 @@ class ActiveOrderFragment(
 
                 val str4 = padLine(
                     "Service Charge",
-                    "$" + MethodUtils.roundOffAmountString(receiptModel.totalServiceCharges),
-                    if (customerSettingModel.fonts == Constants.LARGE) {
-                        24
-                    } else {
-                        48
-                    }
+                    "$" + MethodUtils.roundOffAmountString(receiptModel.totalServiceCharges)
                 ).toString()
                 PrintSunmiUtils.serviceCharge(str4)
             }
@@ -2302,11 +2202,6 @@ class ActiveOrderFragment(
                         MethodUtils.roundOffAmountString(
                             it
                         )
-                    },
-                    if (customerSettingModel.fonts == Constants.LARGE) {
-                        24
-                    } else {
-                        48
                     }
                 ).toString()
                 PrintSunmiUtils.tip(str8)
@@ -2324,12 +2219,7 @@ class ActiveOrderFragment(
 
                     val str8 = padLine(
                         "SurCharge",
-                        "$" + MethodUtils.roundOffAmountString(receiptModel.cash_discount_or_surcharge!!),
-                        if (customerSettingModel.fonts == Constants.LARGE) {
-                            24
-                        } else {
-                            48
-                        }
+                        "$" + MethodUtils.roundOffAmountString(receiptModel.cash_discount_or_surcharge!!)
                     ).toString()
                     PrintSunmiUtils.surCharge(str8)
 
@@ -2341,11 +2231,6 @@ class ActiveOrderFragment(
                             "$" + MethodUtils.roundOffAmountString(receiptModel.cash_discount_or_surcharge!!)
                         } else {
                             "-$" + MethodUtils.roundOffAmountString(receiptModel.cash_discount_or_surcharge!!)
-                        },
-                        if (customerSettingModel.fonts == Constants.LARGE) {
-                            24
-                        } else {
-                            48
                         }
                     ).toString()
                     PrintSunmiUtils.cashDiscount(str8)
@@ -2361,11 +2246,6 @@ class ActiveOrderFragment(
                         MethodUtils.roundOffAmountString(
                             it
                         )
-                    },
-                    if (customerSettingModel.fonts == Constants.LARGE) {
-                        24
-                    } else {
-                        48
                     }
                 ).toString()
 
@@ -2373,12 +2253,7 @@ class ActiveOrderFragment(
 
                 val str9 = padLine(
                     "Used Loyalty Points",
-                    receiptModel?.usedRewardPoints.toString(),
-                    if (customerSettingModel.fonts == Constants.LARGE) {
-                        24
-                    } else {
-                        48
-                    }
+                    receiptModel?.usedRewardPoints.toString()
                 ).toString()
 
                 PrintSunmiUtils.loyaltyPoint(str9)
@@ -2395,12 +2270,7 @@ class ActiveOrderFragment(
 
                 val str5 = padLine(
                     "Total Price",
-                    "$" + MethodUtils.roundOffAmountString(totalAmt),
-                    if (customerSettingModel.fonts == Constants.LARGE) {
-                        24
-                    } else {
-                        48
-                    }
+                    "$" + MethodUtils.roundOffAmountString(totalAmt)
                 ).toString()
                 PrintSunmiUtils.totalPrice(str5)
 
@@ -2410,17 +2280,10 @@ class ActiveOrderFragment(
 
                 val str7 = padLine(
                     "Change Amount",
-                    "$" + MethodUtils.roundOffAmountString(0.00),
-                    if (customerSettingModel.fonts == Constants.LARGE) {
-                        24
-                    } else {
-                        48
-                    }
+                    "$" + MethodUtils.roundOffAmountString(0.00)
                 ).toString()
-                SunmiPrinterApi.getInstance().enableBold(true)
-                SunmiPrinterApi.getInstance().setFontZoom(1, 1)
-                SunmiPrinterApi.getInstance().printText(str7)
-                SunmiPrinterApi.getInstance().lineWrap(3)
+                PrintSunmiUtils.changeAmount(str7)
+                SunmiPrinterApi.getInstance().lineWrap(2)
 
 
             }
@@ -2440,20 +2303,10 @@ class ActiveOrderFragment(
                         "_____________"
                     } else {
                         ""
-                    },
-                    if (customerSettingModel.fonts == Constants.LARGE) {
-                        24
-                    } else {
-                        48
                     }
                 ).toString()
 
-                Log.e("showTipLineForCash", str7.toString().length.toString())
-                SunmiPrinterApi.getInstance().setAlignMode(0)
-                SunmiPrinterApi.getInstance().enableBold(true)
-                SunmiPrinterApi.getInstance().setFontZoom(1, 1)
-                SunmiPrinterApi.getInstance().printText(str7)
-                SunmiPrinterApi.getInstance().lineWrap(1)
+                PrintSunmiUtils.tips(str7)
 
             }
 
@@ -2463,13 +2316,7 @@ class ActiveOrderFragment(
             if (customerSettingModel.showTipSuggestion) {
 
 
-                SunmiPrinterApi.getInstance().setAlignMode(0)
-                SunmiPrinterApi.getInstance().enableBold(true)
-                SunmiPrinterApi.getInstance().setFontZoom(1, 1)
-                SunmiPrinterApi.getInstance().printText("Additional Tips")
-                SunmiPrinterApi.getInstance().lineWrap(1)
-
-                PrintSunmiUtils.addHorizontal()
+                PrintSunmiUtils.additionalTips()
 
                 if (tipsList.isNotEmpty()) {
                     addTipsList(
@@ -2484,36 +2331,18 @@ class ActiveOrderFragment(
 
                 val str10 = padLine(
                     "Transaction ID",
-                    receiptModel.payments.get(0).transactionId,
-                    if (customerSettingModel.fonts == Constants.LARGE) {
-                        24
-                    } else {
-                        48
-                    }
+                    receiptModel.payments.get(0).transactionId
                 ).toString()
-                SunmiPrinterApi.getInstance().setAlignMode(0)
-                SunmiPrinterApi.getInstance().enableBold(true)
-                SunmiPrinterApi.getInstance().setFontZoom(1, 1)
-                SunmiPrinterApi.getInstance().printText(str10)
-                SunmiPrinterApi.getInstance().lineWrap(1)
+                PrintSunmiUtils.transactionId(str10)
             }
 
             if (printType == PRINT_PAID) {
 
                 val str11 = padLine(
                     "Transaction Type",
-                    receiptModel.payments.get(0).paymentType,
-                    if (customerSettingModel.fonts == Constants.LARGE) {
-                        24
-                    } else {
-                        48
-                    }
+                    receiptModel.payments.get(0).paymentType
                 ).toString()
-                SunmiPrinterApi.getInstance().enableBold(true)
-                SunmiPrinterApi.getInstance().setFontZoom(1, 1)
-                SunmiPrinterApi.getInstance().printText(str11)
-                SunmiPrinterApi.getInstance().lineWrap(2)
-
+                PrintSunmiUtils.transactionType(str11)
             }
             if (customerSettingModel.showCustomerAddress or customerSettingModel.showCustomerPhone or customerSettingModel.showCustomerName) {
 
@@ -2561,9 +2390,7 @@ class ActiveOrderFragment(
                 PrintSunmiUtils.qrCode(receiptModel.digitalReceiptUrl)
             }
 
-            SunmiPrinterApi.getInstance().lineWrap(5)
-            SunmiPrinterApi.getInstance().cutPaper(1, 1)
-
+            PrintSunmiUtils.cutPaper()
 
         } catch (e: Exception) {
             e.printStackTrace()

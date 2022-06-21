@@ -1853,7 +1853,10 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                                             }
                                             if (!isApplied) {
                                                 serviceChargeList.forEach { service ->
-                                                    if (service.id == checkMaxGuestCountId(serviceChargeList)) {
+                                                    if (service.id == checkMaxGuestCountId(
+                                                            serviceChargeList
+                                                        )
+                                                    ) {
                                                         serviceChargeWT += (subTotalWT * service.percentage) / 100
                                                         return@forEach
                                                     }
@@ -4860,14 +4863,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 )
             }
 
-
-            SunmiPrinterApi.getInstance().setAlignMode(1)
-            SunmiPrinterApi.getInstance().enableBold(false)
-            SunmiPrinterApi.getInstance().setFontZoom(1, 1)
-            SunmiPrinterApi.getInstance().printText(guestName)
-            SunmiPrinterApi.getInstance().lineWrap(1)
-
-
+            PrintSunmiUtils.printTextCenter(guestName)
 
             listGuestItem.forEach {
                 addOrderItemForDineIn(
@@ -6254,22 +6250,11 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
                         if (dineInList[i]?.customer == null) {
 
-                            SunmiPrinterApi.getInstance().setAlignMode(1)
-                            SunmiPrinterApi.getInstance().enableBold(false)
-                            SunmiPrinterApi.getInstance().setFontZoom(1, 1)
-                            dineInList[i]?.title?.let {
-                                SunmiPrinterApi.getInstance().printText(
-                                    it
-                                )
-                            }
-                            SunmiPrinterApi.getInstance().lineWrap(1)
+                            dineInList[i]?.title?.let { PrintSunmiUtils.printTextCenter(it) }
 
                         } else {
 
-                            SunmiPrinterApi.getInstance().setAlignMode(1)
-                            SunmiPrinterApi.getInstance().enableBold(false)
-                            SunmiPrinterApi.getInstance().setFontZoom(1, 1)
-                            SunmiPrinterApi.getInstance().printText(
+                            PrintSunmiUtils.printTextCenter(
                                 dineInList[i]?.customer?.first_name + " " +
                                         if (dineInList[i]?.customer?.last_name != null) {
                                             dineInList[i].customer?.last_name
@@ -6277,7 +6262,6 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                                             ""
                                         }
                             )
-                            SunmiPrinterApi.getInstance().lineWrap(1)
                         }
                     }
 

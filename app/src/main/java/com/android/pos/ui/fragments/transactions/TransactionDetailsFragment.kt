@@ -1902,20 +1902,10 @@ class TransactionDetailsFragment : Fragment() {
                         } else {
                             ""
                         },
-                        "",
-                        if (customerSettingModel.fonts == Constants.LARGE) {
-                            24
-                        } else {
-                            48
-                        }
+                        ""
                     ).toString()
 
-                    SunmiPrinterApi.getInstance().setAlignMode(0)
-
-                    SunmiPrinterApi.getInstance().enableBold(false)
-                    SunmiPrinterApi.getInstance().setFontZoom(1, 1)
-                    SunmiPrinterApi.getInstance().printText(empName)
-                    SunmiPrinterApi.getInstance().lineWrap(1)
+                  PrintSunmiUtils.employee(empName)
 
                 }
                 if (customerSettingModel.showOrderTime) {
@@ -1930,19 +1920,10 @@ class TransactionDetailsFragment : Fragment() {
                         } else {
                             ""
                         },
-                        "",
-                        if (customerSettingModel.fonts == Constants.LARGE) {
-                            24
-                        } else {
-                            48
-                        }
+                        ""
                     ).toString()
 
-                    SunmiPrinterApi.getInstance().setAlignMode(0)
-                    SunmiPrinterApi.getInstance().enableBold(false)
-                    SunmiPrinterApi.getInstance().setFontZoom(1, 1)
-                    SunmiPrinterApi.getInstance().printText(orderTime)
-                    SunmiPrinterApi.getInstance().lineWrap(1)
+                    PrintSunmiUtils.orderTime(orderTime)
 
                 }
 
@@ -1950,33 +1931,19 @@ class TransactionDetailsFragment : Fragment() {
 
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
 
-
-                        val current = LocalDateTime.now()
-                        val formatter = DateTimeFormatter.ofPattern("MMM-dd-yyyy hh:mm:a")
-                        val formatted = current.format(formatter)
-
                         val printTime = padLine(
                             if (customerSettingModel.showPrintTime) {
                                 "Print Time:" + getCurrentTimeFromTimeZone(
                                     requireContext(),
-                                    formatted
+                                    MethodUtils.formatted()
                                 )
                             } else {
                                 ""
                             },
-                            "",
-                            if (customerSettingModel.fonts == Constants.LARGE) {
-                                24
-                            } else {
-                                48
-                            }
+                            ""
                         ).toString()
 
-                        SunmiPrinterApi.getInstance().setAlignMode(0)
-                        SunmiPrinterApi.getInstance().enableBold(false)
-                        SunmiPrinterApi.getInstance().setFontZoom(1, 1)
-                        SunmiPrinterApi.getInstance().printText(printTime)
-                        SunmiPrinterApi.getInstance().lineWrap(1)
+                        PrintSunmiUtils.orderTime(printTime)
 
                     }
                 }
@@ -2006,11 +1973,6 @@ class TransactionDetailsFragment : Fragment() {
                         "-$" + MethodUtils.roundOffAmountString(paymentDetailsResponse?.data.total_discount)
                     } else {
                         "-$" + MethodUtils.roundOffAmountString(paymentDetailsResponse?.data.order.total_discount)
-                    },
-                    if (customerSettingModel.fonts == Constants.LARGE) {
-                        24
-                    } else {
-                        48
                     }
                 ).toString()
                 PrintSunmiUtils.totalDiscount(str1)
@@ -2019,12 +1981,7 @@ class TransactionDetailsFragment : Fragment() {
 
             val sub = padLine(
                 "Sub Total",
-                "$" + MethodUtils.roundOffAmountString(paymentDetailsResponse.data.sub_total),
-                if (customerSettingModel.fonts == Constants.LARGE) {
-                    24
-                } else {
-                    48
-                }
+                "$" + MethodUtils.roundOffAmountString(paymentDetailsResponse.data.sub_total)
             ).toString()
 
             PrintSunmiUtils.subTotal(sub)
@@ -2037,12 +1994,7 @@ class TransactionDetailsFragment : Fragment() {
                 PrintSunmiUtils.tax(
                     padLine(
                         "Tax",
-                        "$" + MethodUtils.roundOffAmountString(paymentDetailsResponse.data.tax_amount),
-                        if (customerSettingModel.fonts == Constants.LARGE) {
-                            24
-                        } else {
-                            48
-                        }
+                        "$" + MethodUtils.roundOffAmountString(paymentDetailsResponse.data.tax_amount)
                     ).toString()
                 )
             }
@@ -2052,12 +2004,7 @@ class TransactionDetailsFragment : Fragment() {
                 PrintSunmiUtils.serviceCharge(
                     padLine(
                         "Service Charge",
-                        "$" + MethodUtils.roundOffAmountString(paymentDetailsResponse.data.service_charge_amount),
-                        if (customerSettingModel.fonts == Constants.LARGE) {
-                            24
-                        } else {
-                            48
-                        }
+                        "$" + MethodUtils.roundOffAmountString(paymentDetailsResponse.data.service_charge_amount)
                     ).toString()
                 )
             }
@@ -2071,11 +2018,6 @@ class TransactionDetailsFragment : Fragment() {
                             MethodUtils.roundOffAmountString(
                                 it
                             )
-                        },
-                        if (customerSettingModel.fonts == Constants.LARGE) {
-                            24
-                        } else {
-                            48
                         }
                     ).toString()
                 )
@@ -2094,11 +2036,6 @@ class TransactionDetailsFragment : Fragment() {
                                 "$" + MethodUtils.roundOffAmountString(paymentDetailsResponse.data?.cash_discount_or_surcharge)
                             } else {
                                 "$" + MethodUtils.roundOffAmountString(paymentDetailsResponse.data.order?.cash_discount_or_surcharge)
-                            },
-                            if (customerSettingModel.fonts == Constants.LARGE) {
-                                24
-                            } else {
-                                48
                             }
                         ).toString()
 
@@ -2114,11 +2051,6 @@ class TransactionDetailsFragment : Fragment() {
                             "-$" + MethodUtils.roundOffAmountString(paymentDetailsResponse.data?.cash_discount_or_surcharge)
                         } else {
                             "$" + MethodUtils.roundOffAmountString(paymentDetailsResponse.data.order?.cash_discount_or_surcharge)
-                        },
-                        if (customerSettingModel.fonts == Constants.LARGE) {
-                            24
-                        } else {
-                            48
                         }
                     ).toString()
 
@@ -2139,11 +2071,6 @@ class TransactionDetailsFragment : Fragment() {
                             MethodUtils.roundOffAmountString(
                                 it.toDouble()
                             )
-                        },
-                        if (customerSettingModel.fonts == Constants.LARGE) {
-                            24
-                        } else {
-                            48
                         }
                     ).toString()
                     PrintSunmiUtils.loyaltyAmount(loyaltyAmount)
@@ -2154,12 +2081,7 @@ class TransactionDetailsFragment : Fragment() {
 
                     val loyaltyPoint = padLine(
                         "Used Loyalty Points",
-                        paymentDetailsResponse?.data?.used_reward_points.toString(),
-                        if (customerSettingModel.fonts == Constants.LARGE) {
-                            24
-                        } else {
-                            48
-                        }
+                        paymentDetailsResponse?.data?.used_reward_points.toString()
                     ).toString()
 
                     PrintSunmiUtils.loyaltyPoint(loyaltyPoint)
@@ -2174,12 +2096,7 @@ class TransactionDetailsFragment : Fragment() {
             PrintSunmiUtils.totalPrice(
                 padLine(
                     "Total Price",
-                    "$" + MethodUtils.roundOffAmountString(totalAmt),
-                    if (customerSettingModel.fonts == Constants.LARGE) {
-                        24
-                    } else {
-                        48
-                    }
+                    "$" + MethodUtils.roundOffAmountString(totalAmt)
                 ).toString()
             )
 
@@ -2189,12 +2106,7 @@ class TransactionDetailsFragment : Fragment() {
                 PrintSunmiUtils.refundAmount(
                     padLine(
                         "Refund Amount",
-                        "$" + MethodUtils.roundOffAmountString(paymentDetailsResponse?.data?.order?.refund_detail?.refunded_amount),
-                        if (customerSettingModel.fonts == Constants.LARGE) {
-                            24
-                        } else {
-                            48
-                        }
+                        "$" + MethodUtils.roundOffAmountString(paymentDetailsResponse?.data?.order?.refund_detail?.refunded_amount)
                     ).toString()
                 )
                 SunmiPrinterApi.getInstance().lineWrap(1)
@@ -2210,11 +2122,6 @@ class TransactionDetailsFragment : Fragment() {
                         "_____________"
                     } else {
                         ""
-                    },
-                    if (customerSettingModel.fonts == Constants.LARGE) {
-                        24
-                    } else {
-                        48
                     }
                 ).toString()
 
@@ -2239,12 +2146,7 @@ class TransactionDetailsFragment : Fragment() {
 
             val tranId = padLine(
                 "Transaction ID",
-                "" + paymentDetailsResponse.data.id,
-                if (customerSettingModel.fonts == Constants.LARGE) {
-                    24
-                } else {
-                    48
-                }
+                "" + paymentDetailsResponse.data.id
             ).toString()
 
             PrintSunmiUtils.transactionId(tranId)
@@ -2255,12 +2157,7 @@ class TransactionDetailsFragment : Fragment() {
 
                 val tranType = padLine(
                     "Transaction Type",
-                    "Card",
-                    if (customerSettingModel.fonts == Constants.LARGE) {
-                        24
-                    } else {
-                        48
-                    }
+                    "Card"
                 ).toString()
 
                 PrintSunmiUtils.transactionType(tranType)
@@ -2278,12 +2175,7 @@ class TransactionDetailsFragment : Fragment() {
                 PrintSunmiUtils.transactionType(
                     padLine(
                         "Transaction Type",
-                        "Cash",
-                        if (customerSettingModel.fonts == Constants.LARGE) {
-                            24
-                        } else {
-                            48
-                        }
+                        "Cash"
                     ).toString()
                 )
 

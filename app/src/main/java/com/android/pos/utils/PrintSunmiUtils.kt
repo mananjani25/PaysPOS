@@ -48,7 +48,7 @@ class PrintSunmiUtils {
             SunmiPrinterApi.getInstance().lineWrap(1)
         }
 
-        fun addLable(value: String){
+        fun addLable(value: String) {
 
             SunmiPrinterApi.getInstance().setAlignMode(1)
             SunmiPrinterApi.getInstance().enableBold(true)
@@ -244,6 +244,15 @@ class PrintSunmiUtils {
 
         }
 
+        fun changeAmount(value: String) {
+
+            SunmiPrinterApi.getInstance().enableBold(true)
+            SunmiPrinterApi.getInstance().setFontZoom(1, 1)
+            SunmiPrinterApi.getInstance().printText(value)
+            SunmiPrinterApi.getInstance().lineWrap(1)
+
+        }
+
         fun refundAmount(value: String) {
 
             SunmiPrinterApi.getInstance().enableBold(true)
@@ -295,7 +304,7 @@ class PrintSunmiUtils {
             SunmiPrinterApi.getInstance().enableBold(true)
             SunmiPrinterApi.getInstance().setFontZoom(1, 1)
             SunmiPrinterApi.getInstance().printText(value)
-            SunmiPrinterApi.getInstance().lineWrap(1)
+            SunmiPrinterApi.getInstance().lineWrap(2)
 
         }
 
@@ -387,6 +396,33 @@ class PrintSunmiUtils {
 
             SunmiPrinterApi.getInstance().lineWrap(5)
             SunmiPrinterApi.getInstance().cutPaper(1, 1)
+        }
+
+        fun printTextCenter(value: String) {
+
+            SunmiPrinterApi.getInstance().setAlignMode(1)
+            SunmiPrinterApi.getInstance().enableBold(false)
+            SunmiPrinterApi.getInstance().setFontZoom(1, 1)
+            SunmiPrinterApi.getInstance().printText(value)
+            SunmiPrinterApi.getInstance().lineWrap(1)
+        }
+
+        fun deliveryType(value: String) {
+            SunmiPrinterApi.getInstance().setAlignMode(1)
+            SunmiPrinterApi.getInstance().enableBold(true)
+            SunmiPrinterApi.getInstance().setFontZoom(1, 2)
+            SunmiPrinterApi.getInstance().printText(value)
+            SunmiPrinterApi.getInstance().lineWrap(2)
+
+        }
+
+        fun paidStatus(value: String) {
+            SunmiPrinterApi.getInstance().setAlignMode(1)
+            SunmiPrinterApi.getInstance().enableBold(true)
+            SunmiPrinterApi.getInstance().setFontZoom(2, 2)
+            SunmiPrinterApi.getInstance().printText(value)
+            SunmiPrinterApi.getInstance().lineWrap(1)
+
         }
 
     }

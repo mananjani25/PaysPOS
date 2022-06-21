@@ -1075,7 +1075,8 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
     fun test() {
         if (SunmiPrinterApi.getInstance().isConnected) {
             SunmiPrinterApi.getInstance().printerInit()
-            SunmiPrinterApi.getInstance().printText("Test Print\n")
+            SunmiPrinterApi.getInstance().printText("\n\nTest Print\n\n")
+            SunmiPrinterApi.getInstance().cutPaper(1,1)
 
 
         }

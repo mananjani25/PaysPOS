@@ -46,6 +46,28 @@ fun padLine(
     return concat
 }
 
+fun padLine(
+    @Nullable partOne: String?,
+    @Nullable partTwo: String?,
+): String? {
+    var partOne = partOne
+    var partTwo = partTwo
+    if (partOne == null) {
+        partOne = ""
+    }
+    if (partTwo == null) {
+        partTwo = ""
+    }
+    val concat: String = if (partOne.length + partTwo.length > 48) {
+
+        "$partOne $partTwo"
+    } else {
+        val padding = 48 - (partOne.length + partTwo.length)
+        partOne + repeat(" ", padding) + partTwo
+    }
+    return concat
+}
+
 fun addPaymentDetailsHeader(builder: Builder): Builder {
     builder.addTextLineSpace(30)
     builder.addFeedUnit(30)
@@ -751,11 +773,11 @@ fun addTipsList(
             Builder.COLOR_1
         )
 
-        val tipName = obj.name + "(" + MethodUtils.roundOffAmountString(obj.rate) + "%)"
+        val tipName = obj.name + "(" + roundOffAmountString(obj.rate) + "%)"
         val price = "(Tip $" + calculateTipAmt(
             obj.rate,
             totalAmt
-        ) + " Total $" + MethodUtils.roundOffAmountString(
+        ) + " Total $" + roundOffAmountString(
             (totalAmt + calculateTipAmt(
                 obj.rate,
                 totalAmt
@@ -801,10 +823,7 @@ fun addTipsList(
 
         val str = padLine(tipName, price, 48).toString()
 
-        SunmiPrinterApi.getInstance().enableBold(true)
-        SunmiPrinterApi.getInstance().setFontZoom(1, 1)
-        SunmiPrinterApi.getInstance().printText(str)
-        SunmiPrinterApi.getInstance().lineWrap(1)
+        PrintSunmiUtils.orderTime(str)
 
     }
 
@@ -1037,7 +1056,7 @@ fun addOrderItemOpenOrder(
         builder.addText(
             padLineCustomerItem(
                 obj.quantity.toString() + "x " + obj.itemName,
-                "$" + MethodUtils.roundOffAmountString(totalPriceOpenOrder(obj)),
+                "$" + roundOffAmountString(totalPriceOpenOrder(obj)),
                 if (font == Constants.LARGE) {
                     24
                 } else {
@@ -1066,7 +1085,7 @@ fun addOrderItemOpenOrder(
                 builder.addText(
                     padLineCustomerItem(
                         "   " + modifierObj.name,
-                        "$" + MethodUtils.roundOffAmountString(modifierObj.price.toDouble() * modifierObj.quantity),
+                        "$" + roundOffAmountString(modifierObj.price.toDouble() * modifierObj.quantity),
                         if (font == Constants.LARGE) {
                             23
                         } else {
@@ -1114,21 +1133,13 @@ fun addOrderItemOpenOrderSunmi(
     for (i in 0 until list.size) {
         val obj = list.get(i)
 
-
-        SunmiPrinterApi.getInstance().enableBold(false)
-        SunmiPrinterApi.getInstance().setFontZoom(1, 1)
-        SunmiPrinterApi.getInstance().printText(
+        PrintSunmiUtils.orderTime(
             padLineCustomerItem(
                 obj.quantity.toString() + "x " + obj.itemName,
-                "$" + MethodUtils.roundOffAmountString(totalPriceOpenOrder(obj)),
-                if (font == Constants.LARGE) {
-                    24
-                } else {
-                    48
-                }
+                "$" + roundOffAmountString(totalPriceOpenOrder(obj)),
+                48
             ).toString()
         )
-        SunmiPrinterApi.getInstance().lineWrap(1)
 
 
 
@@ -1136,20 +1147,13 @@ fun addOrderItemOpenOrderSunmi(
             for (j in 0 until obj.orderItemModifiers.size) {
                 val modifierObj = obj.orderItemModifiers.get(j)
 
-                SunmiPrinterApi.getInstance().enableBold(false)
-                SunmiPrinterApi.getInstance().setFontZoom(1, 1)
-                SunmiPrinterApi.getInstance().printText(
+                PrintSunmiUtils.orderTime(
                     padLineCustomerItem(
                         "   " + modifierObj.name,
-                        "$" + MethodUtils.roundOffAmountString(modifierObj.price.toDouble() * modifierObj.quantity),
-                        if (font == Constants.LARGE) {
-                            48
-                        } else {
-                            48
-                        }
+                        "$" + roundOffAmountString(modifierObj.price.toDouble() * modifierObj.quantity),
+                        48
                     ).toString()
                 )
-                SunmiPrinterApi.getInstance().lineWrap(1)
 
             }
 
@@ -1157,10 +1161,7 @@ fun addOrderItemOpenOrderSunmi(
 
         if (obj.note.isNotEmpty()) {
 
-            SunmiPrinterApi.getInstance().enableBold(false)
-            SunmiPrinterApi.getInstance().setFontZoom(1, 1)
-            SunmiPrinterApi.getInstance().printText("   Note: " + obj.note)
-            SunmiPrinterApi.getInstance().lineWrap(1)
+            PrintSunmiUtils.orderTime("   Note: " + obj.note)
 
         }
     }
@@ -1349,20 +1350,13 @@ fun addWholeTbItemToGuest(
     val finalAmt = MethodUtils.roundOffAmount((subTotal) / guestCount)
 
 
-    SunmiPrinterApi.getInstance().enableBold(false)
-    SunmiPrinterApi.getInstance().setFontZoom(1, 1)
-    SunmiPrinterApi.getInstance().printText(
+    PrintSunmiUtils.orderTime(
         padLineCustomerItem(
             obj.itemQuantity.toString() + "x " + obj.name,
             "" + finalAmt,
-            if (font == Constants.LARGE) {
-                48
-            } else {
-                48
-            }
+            48
         ).toString()
     )
-    SunmiPrinterApi.getInstance().lineWrap(1)
 
 }
 
@@ -1412,7 +1406,7 @@ fun addOrderItemForDineIn(
     builder.addText(
         padLineCustomerItem(
             obj.itemQuantity.toString() + "x " + obj.name,
-            "$" + MethodUtils.roundOffAmountString(totalPriceDineInItem(obj)),
+            "$" + roundOffAmountString(totalPriceDineInItem(obj)),
             if (font == Constants.LARGE) {
                 24
             } else {
@@ -1441,7 +1435,7 @@ fun addOrderItemForDineIn(
             builder.addText(
                 padLineCustomerItem(
                     "   " + modifierObj.name,
-                    "$" + MethodUtils.roundOffAmountString(modifierObj.price.toDouble() * modifierObj.itemQuantity),
+                    "$" + roundOffAmountString(modifierObj.price.toDouble() * modifierObj.itemQuantity),
                     if (font == Constants.LARGE) {
                         23
                     } else {
@@ -1489,12 +1483,10 @@ fun addOrderItemForDineIn(
     val obj = list
 
 
-    SunmiPrinterApi.getInstance().enableBold(false)
-    SunmiPrinterApi.getInstance().setFontZoom(1, 1)
-    SunmiPrinterApi.getInstance().printText(
+    PrintSunmiUtils.orderTime(
         padLineCustomerItem(
             obj.itemQuantity.toString() + "x " + obj.name,
-            "$" + MethodUtils.roundOffAmountString(totalPriceDineInItem(obj)),
+            "$" + roundOffAmountString(totalPriceDineInItem(obj)),
             if (font == Constants.LARGE) {
                 48
             } else {
@@ -1502,7 +1494,6 @@ fun addOrderItemForDineIn(
             }
         ).toString()
     )
-    SunmiPrinterApi.getInstance().lineWrap(1)
 
 
 
@@ -1511,20 +1502,13 @@ fun addOrderItemForDineIn(
             val modifierObj = obj.modifiers.get(j)
 
 
-            SunmiPrinterApi.getInstance().enableBold(false)
-            SunmiPrinterApi.getInstance().setFontZoom(1, 1)
-            SunmiPrinterApi.getInstance().printText(
+            PrintSunmiUtils.orderTime(
                 padLineCustomerItem(
                     "   " + modifierObj.name,
-                    "$" + MethodUtils.roundOffAmountString(modifierObj.price.toDouble() * modifierObj.itemQuantity),
-                    if (font == Constants.LARGE) {
-                        47
-                    } else {
-                        47
-                    }
+                    "$" + roundOffAmountString(modifierObj.price.toDouble() * modifierObj.itemQuantity),
+                    47
                 ).toString()
             )
-            SunmiPrinterApi.getInstance().lineWrap(1)
 
 
         }
@@ -1533,13 +1517,7 @@ fun addOrderItemForDineIn(
     }
 
     if (obj.note.isNotEmpty()) {
-
-        SunmiPrinterApi.getInstance().enableBold(false)
-        SunmiPrinterApi.getInstance().setFontZoom(1, 1)
-        SunmiPrinterApi.getInstance().printText("   Note: " + obj.note)
-        SunmiPrinterApi.getInstance().lineWrap(1)
-
-
+        PrintSunmiUtils.orderTime("   Note: " + obj.note)
     }
 
 
@@ -1572,7 +1550,7 @@ fun addOrderItems(
         builder.addText(
             padLineCustomerItem(
                 obj.quantity.toString() + "x " + obj.itemName,
-                "$" + MethodUtils.roundOffAmountString(totalPrice(obj)),
+                "$" + roundOffAmountString(totalPrice(obj)),
                 if (font == Constants.LARGE) {
                     24
                 } else {
@@ -1601,7 +1579,7 @@ fun addOrderItems(
                 builder.addText(
                     padLineCustomerItem(
                         "   " + modifierObj.name,
-                        "$" + MethodUtils.roundOffAmountString(modifierObj.price.toDouble() * modifierObj.quantity),
+                        "$" + roundOffAmountString(modifierObj.price.toDouble() * modifierObj.quantity),
                         if (font == Constants.LARGE) {
                             23
                         } else {
@@ -1654,10 +1632,7 @@ fun addOrderItems(
             48
         )
 
-        SunmiPrinterApi.getInstance().enableBold(false)
-        SunmiPrinterApi.getInstance().setFontZoom(1, 1)
-        SunmiPrinterApi.getInstance().printText(item.toString())
-        SunmiPrinterApi.getInstance().lineWrap(1)
+        PrintSunmiUtils.orderTime(item.toString())
 
 
 
@@ -1671,10 +1646,7 @@ fun addOrderItems(
                     48
                 )
 
-                SunmiPrinterApi.getInstance().enableBold(false)
-                SunmiPrinterApi.getInstance().setFontZoom(1, 1)
-                SunmiPrinterApi.getInstance().printText(modifier.toString())
-                SunmiPrinterApi.getInstance().lineWrap(1)
+                PrintSunmiUtils.orderTime(modifier.toString())
 
             }
 
@@ -1682,10 +1654,7 @@ fun addOrderItems(
 
         if (obj.note.isNotEmpty()) {
 
-            SunmiPrinterApi.getInstance().enableBold(false)
-            SunmiPrinterApi.getInstance().setFontZoom(1, 1)
-            SunmiPrinterApi.getInstance().printText("   Note: " + obj.note)
-            SunmiPrinterApi.getInstance().lineWrap(1)
+            PrintSunmiUtils.orderTime("   Note: " + obj.note)
 
         }
 
@@ -1721,7 +1690,7 @@ fun addOrderItemsTransaction(
         builder.addText(
             padLineCustomerItem(
                 obj.quantity.toString() + "x " + obj.itemName,
-                "$" + MethodUtils.roundOffAmountString(totalPriceTransaction(obj)),
+                "$" + roundOffAmountString(totalPriceTransaction(obj)),
                 if (font == Constants.LARGE) {
                     24
                 } else {
@@ -1750,7 +1719,7 @@ fun addOrderItemsTransaction(
                 builder.addText(
                     padLineCustomerItem(
                         "   " + modifierObj.name,
-                        "$" + MethodUtils.roundOffAmountString(modifierObj.price.toDouble() * modifierObj.quantity),
+                        "$" + roundOffAmountString(modifierObj.price.toDouble() * modifierObj.quantity),
                         if (font == Constants.LARGE) {
                             23
                         } else {
@@ -1780,18 +1749,11 @@ fun addOrderItemsTransaction(
 
         val item = padLineCustomerItem(
             obj.quantity.toString() + "x " + obj.itemName,
-            "$" + MethodUtils.roundOffAmountString(totalPriceTransaction(obj)),
-            if (font == Constants.LARGE) {
-                24
-            } else {
-                48
-            }
+            "$" + roundOffAmountString(totalPriceTransaction(obj)),
+            48
         )
 
-        SunmiPrinterApi.getInstance().enableBold(false)
-        SunmiPrinterApi.getInstance().setFontZoom(1, 1)
-        SunmiPrinterApi.getInstance().printText(item.toString())
-        SunmiPrinterApi.getInstance().lineWrap(1)
+        PrintSunmiUtils.orderTime(item.toString())
 
 
 
@@ -1802,18 +1764,10 @@ fun addOrderItemsTransaction(
 
                 val modifier = padLineCustomerItem(
                     "   " + modifierObj.name,
-                    "$" + MethodUtils.roundOffAmountString(modifierObj.price.toDouble() * modifierObj.quantity),
-                    if (font == Constants.LARGE) {
-                        23
-                    } else {
-                        47
-                    }
+                    "$" + roundOffAmountString(modifierObj.price.toDouble() * modifierObj.quantity),
+                    47
                 )
-
-                SunmiPrinterApi.getInstance().enableBold(false)
-                SunmiPrinterApi.getInstance().setFontZoom(1, 1)
-                SunmiPrinterApi.getInstance().printText(modifier.toString())
-                SunmiPrinterApi.getInstance().lineWrap(1)
+                PrintSunmiUtils.orderTime(modifier.toString())
 
 
             }
