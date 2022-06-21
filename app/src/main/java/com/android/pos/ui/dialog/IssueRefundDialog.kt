@@ -15,6 +15,7 @@ import com.android.pos.R
 import com.android.pos.data.entities.TbServiceCharge
 import com.android.pos.data.model.GetPaymentOrderDetailsResponse
 import com.android.pos.data.model.requestModel.RefundRequestModel
+import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.CASH_DISCOUNT_SURCHARGE_AMOUNT_TYPE
 import com.android.pos.data.remote.Constants.CASH_DISCOUNT_SURCHARGE_RATE
 import com.android.pos.databinding.DialogIssueRefundBinding
@@ -205,7 +206,7 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
         binding.txtDone.setOnClickListener {
             if (isItem) {
                 if (TextUtils.isEmpty(binding.edtAmount.text.toString())) {
-                    AlertUtils.showCustomAlert(requireActivity(), "Please Enter Amount To Refund")
+                    AlertUtils.showCustomAlert(requireActivity(), getString(R.string.msg_amount_refund))
                 } else {
                     subTotalPrice = binding.edtAmount.text.toString().toDouble()
                     refundData = RefundRequestModel().apply {
@@ -359,7 +360,7 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
 
 
                 serviceChargesList?.forEach {
-                    if (it.isEnabled) {
+                    if (it.order_type == Constants.SERVICECHARGE_TAKEOUT_OPENORDER) {
                         totalServiceCharge += (totalItemPrice * it.percentage) / 100
                     }
                 }
@@ -379,7 +380,7 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
                     "totalItemPrice = " + totalItemPrice + "\n totalServiceCharge = " + totalServiceCharge + "\n totalTax = " + totalTax + "\n loyaltyAmount = " + loyaltyAmount
                 )
                 val totalItemPerItem =
-                    totalItemPrice - applyDiscount + totalServiceCharge + totalTax + loyaltyAmount
+                    totalItemPrice - applyDiscount + totalServiceCharge + totalTax - loyaltyAmount
 
                 Log.e("subTotalPrice1", totalItemPerItem.toString())
 

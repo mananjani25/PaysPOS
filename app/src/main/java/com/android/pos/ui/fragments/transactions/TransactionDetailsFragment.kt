@@ -21,6 +21,7 @@ import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.data.entities.TbServiceCharge
 import com.android.pos.data.model.GetPaymentOrderDetailsResponse
+import com.android.pos.data.model.requestModel.RefundRequestModelOnlineOrder
 import com.android.pos.data.model.responseModel.GetCustomerReceiptSettingsResponse
 import com.android.pos.data.model.responseModel.GetTipReponse
 import com.android.pos.data.model.responseModel.PrinterResponse
@@ -33,6 +34,7 @@ import com.android.pos.utils.*
 import com.android.pos.utils.TimeFormatUtils.convertCurrentDate
 import com.android.pos.utils.TimeFormatUtils.convertCurrentTime
 import com.android.pos.utils.extensions.liveSnackBar
+import com.android.pos.utils.extensions.showAlert
 import com.android.pos.utils.printer.PrinterClass
 import com.android.pos.utils.statusUtils.Status
 import com.epson.eposprint.Builder
@@ -66,6 +68,7 @@ class TransactionDetailsFragment : Fragment() {
     private var tipsList: List<GetTipReponse.Data> = listOf()
     private var paymentId: Int = -1
     private var isFromTrans: Boolean = false
+    private var isFromOnlineOrderRefund: Boolean = false
     private var serviceChargesList: ArrayList<TbServiceCharge>? = arrayListOf()
     private var isSplitPayment = false
 
@@ -91,6 +94,7 @@ class TransactionDetailsFragment : Fragment() {
         orderId = arguments?.getInt("orderId")!!
         paymentId = arguments?.getInt("paymentId")!!
         isFromTrans = arguments?.getBoolean("isFromTrans")!!
+        isFromOnlineOrderRefund = arguments?.getBoolean("isFromOnlineOrderRefund")!!
 //        if (isFromTrans) {
         viewModel.apiCallPaymentDetails(paymentId)
 //        } else {
@@ -104,6 +108,10 @@ class TransactionDetailsFragment : Fragment() {
         navigate()
         getCustomerReceiptSettings()
 
+        if (isFromOnlineOrderRefund) {
+            acceptedAndDeclineOrder()
+        }
+
 
         val callback: OnBackPressedCallback =
             object : OnBackPressedCallback(true /* enabled by default */) {
@@ -114,7 +122,30 @@ class TransactionDetailsFragment : Fragment() {
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
 
         viewModel.serviceCharges.observe(requireActivity()) {
-            serviceChargesList = it.data as ArrayList<TbServiceCharge>?
+            if (prefProvider.getValue(
+                    Constants.ORDER_TYPE,
+                    Constants.TAKEOUT
+                ) == Constants.DINE_IN
+            ) {
+                serviceChargesList = arrayListOf()
+                serviceChargesList = it.data as ArrayList<TbServiceCharge>?
+            } else {
+                if (prefProvider.getValueboolean(
+                        Constants.SERVICECHARGE_TAKEOUT_OPENORDER,
+                        false
+                    )
+                ) {
+                    serviceChargesList = arrayListOf()
+                    Log.e(TAG, "getServiceCharge:  ${Gson().toJson(it.data)}")
+                    it.data?.forEach { service ->
+                        if (service.order_type == Constants.SERVICECHARGE_TAKEOUT_OPENORDER) {
+                            serviceChargesList?.add(service)
+                        }
+                    }
+
+                }
+            }
+
 
         }
         return binding.root
@@ -151,19 +182,77 @@ class TransactionDetailsFragment : Fragment() {
         }
 
         binding.tvIssueRefund.setOnClickListener {
-            val bundle = Bundle().apply {
-                paymentDetailsResponse.data.order.order_items.forEach {
-                    it.isChecked = true
+            if (paymentDetailsResponse.data.order.order_type == "OnlineWebOrder") {
+                lateinit var refundData: RefundRequestModelOnlineOrder
+                var employeeIdtemp = prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
+                var terminal_id = prefProvider.getValueInt(Constants.TERMINAL_ID, 0)
+                var orderItemRefundsAttributesList =
+                    ArrayList<RefundRequestModelOnlineOrder.PaymentRefund.OrderItemRefundsAttribute>()
+                paymentDetailsResponse.data.order.order_items.forEach { item ->
+                    val orderItemRefundsAttributeModel =
+                        RefundRequestModelOnlineOrder.PaymentRefund.OrderItemRefundsAttribute()
+                    orderItemRefundsAttributeModel.amount = item.totalPrice
+                    orderItemRefundsAttributeModel.employeeId = employeeIdtemp
+                    orderItemRefundsAttributeModel.orderId = item.orderId
+                    orderItemRefundsAttributeModel.refundType = 0
+                    orderItemRefundsAttributeModel.paymentId = paymentDetailsResponse.data.id
+                    orderItemRefundsAttributeModel.orderItemId = item.id
+                    orderItemRefundsAttributeModel.quantity = item.quantity
+                    orderItemRefundsAttributesList.add(orderItemRefundsAttributeModel)
                 }
-                putInt("paymentId", paymentId)
-                putParcelable("orderDetailsResponse", paymentDetailsResponse)
-                putBoolean("isSplitPayment", isSplitPayment)
-                putParcelableArrayList("serviceChargesList", serviceChargesList)
+
+                refundData = RefundRequestModelOnlineOrder().apply {
+                    paymentRefund = RefundRequestModelOnlineOrder.PaymentRefund().apply {
+                        amount =
+                            paymentDetailsResponse.data.amount + paymentDetailsResponse.data.tips
+                        orderId = paymentDetailsResponse.data.order_id
+                        paymentId = paymentDetailsResponse.data.id
+                        employeeId = employeeIdtemp
+                        taxRefunded = paymentDetailsResponse.data.tax_amount
+                        tipsRefunded = paymentDetailsResponse.data.tips
+                        terminalId = terminal_id
+                        serviceChargeRefunded =
+                            paymentDetailsResponse.data.service_charge_amount
+                        cash_discount_or_surcharge_refunded =
+                            paymentDetailsResponse.data.cash_discount_or_surcharge
+                        subtotal_refunded = paymentDetailsResponse.data.sub_total
+                        orderItemRefundsAttributes = orderItemRefundsAttributesList
+                    }
+                }
+                val bundle = Bundle().apply {
+                    putParcelable("refundData", refundData)
+                    putDouble(
+                        "refundAmount",
+                        paymentDetailsResponse.data.amount + paymentDetailsResponse.data.tips
+                    )
+                    putString("paymentType", paymentDetailsResponse.data.payment_type)
+                    putBoolean("isfromTransaction", true)
+                    putString(
+                        "magensa_response_data",
+                        paymentDetailsResponse.data.magensa_response_data
+                    )
+                }
+                findNavController().navigate(
+                    R.id.action_transaction_to_reasonForrefundonline,
+                    bundle
+                )
+
+            } else {
+                val bundle = Bundle().apply {
+                    paymentDetailsResponse.data.order.order_items.forEach {
+                        it.isChecked = true
+                    }
+                    putInt("paymentId", paymentId)
+                    putParcelable("orderDetailsResponse", paymentDetailsResponse)
+                    putBoolean("isSplitPayment", isSplitPayment)
+                    putParcelableArrayList("serviceChargesList", serviceChargesList)
+                }
+                findNavController().navigate(
+                    R.id.action_transactionDetailsFragment_to_issueRefundFragment,
+                    bundle
+                )
             }
-            findNavController().navigate(
-                R.id.action_transactionDetailsFragment_to_issueRefundFragment,
-                bundle
-            )
+
         }
 
         binding.txtTextReceipt.setOnClickListener {
@@ -337,6 +426,35 @@ class TransactionDetailsFragment : Fragment() {
             }
         }
 
+    }
+
+    private fun acceptedAndDeclineOrder() {
+        var employee_id = prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
+        var terminal_id = prefProvider.getValueInt(Constants.TERMINAL_ID, 0)
+        viewModel.acceptedAndDeclineOrder(
+            0,
+            orderId,
+            false,
+            employee_id,
+            terminal_id
+        ).observe(viewLifecycleOwner) { it ->
+
+            it?.let { resource ->
+                when (resource.status) {
+                    Status.SUCCESS -> {
+                        ProgressUtils.dismissProgressDialog()
+                    }
+                    Status.ERROR -> {
+                        ProgressUtils.dismissProgressDialog()
+                        binding.root.showAlert(resource.message)
+
+                    }
+                    Status.LOADING -> {
+                        ProgressUtils.showProgressDialog(requireActivity())
+                    }
+                }
+            }
+        }
     }
 
     private fun observeShowProgress() {

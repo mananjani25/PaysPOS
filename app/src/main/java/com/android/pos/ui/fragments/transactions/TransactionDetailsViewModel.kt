@@ -87,6 +87,14 @@ class TransactionDetailsViewModel @Inject constructor(
             }
         }
     }
+    fun acceptedAndDeclineOrder(
+        time: Int,
+        order_id: Int,
+        isaccepted: Boolean,
+        employee_id:Int,
+        terminalid:Int
+    ): LiveData<Resource<BaseResponse>> =
+        posRepository.acceptedAndDeclineOrders(time, order_id,isaccepted,employee_id,terminalid)
 
 
     fun getCashDiscountDetails(active: Int): LiveData<CashDiscountModel>? {

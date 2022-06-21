@@ -22,6 +22,7 @@ import com.android.pos.data.entities.Employee
 import com.android.pos.data.entities.TbOrderType
 import com.android.pos.data.entities.TeamRole
 import com.android.pos.data.model.responseModel.GetTransactionListResponse
+import com.android.pos.data.model.responseModel.MagtekOnlineOrderRefundResponse
 import com.android.pos.data.model.responseModel.VenueDetailsResponse
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.KEY
@@ -972,135 +973,264 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
     }
 
     private fun magtekCall(refundAmount: Double) {
+        if(singleTransaction?.orderDetails?.orderType=="OnlineWebOrder"){
+            val model = Gson().fromJson(
+                singleTransaction?.orderDetails?.magensaResponse,
+                MagtekOnlineOrderRefundResponse::class.java
+            )
+            val jsonArray: JsonArray?
 
-        val model = Gson().fromJson(
-            singleTransaction?.orderDetails?.magensaResponse,
-            PaymentResponse.PaymentResponseItem::class.java
-        )
+            when {
 
+                Constants.FIRST_DATA_GATEWAY == magtekRequestUtils.gatewayName() -> {
 
-        val jsonArray: JsonArray?
+                    val amount = refundAmount
 
-        when {
+                    if (model != null) {
+                        jsonArray =
+                            model.transactionOutput?.token?.let { it1 ->
+                                amount.times(100).let {
+                                    magtekRequestUtils.processTokenFirstData(
+                                        it.toInt(),
+                                        it1,
+                                        model.customerTransactionID ?: "",
+                                        model.transactionOutput.transactionOutputDetails[0].value,
+                                        Constants.CAPTURE
+                                    )
+                                }
+                            }
 
-            Constants.FIRST_DATA_GATEWAY == magtekRequestUtils.gatewayName() -> {
+                        networkCall(jsonArray, 0)
+                    }
+                }
 
-                val amount = refundAmount
+                // not support CAPTURE
+                Constants.ELAVON_GATEWAY == magtekRequestUtils.gatewayName() -> {
 
-                if (model != null) {
                     jsonArray =
                         model.transactionOutput?.token?.let { it1 ->
-                            amount.times(100).let {
-                                magtekRequestUtils.processTokenFirstData(
-                                    it.toInt(),
-                                    it1,
-                                    model.customerTransactionID ?: "",
-                                    model.transactionOutput.transactionOutputDetails[0].value,
-                                    Constants.CAPTURE
-                                )
-                            }
+                            magtekRequestUtils.processTokenElavon(
+                                (refundAmount * 100).toInt(),
+                                it1,
+                                model.customerTransactionID ?: "",
+                                model.transactionOutput.transactionOutputDetails[0].value
+
+                            )
                         }
 
                     networkCall(jsonArray, 0)
                 }
-            }
 
-            // not support CAPTURE
-            Constants.ELAVON_GATEWAY == magtekRequestUtils.gatewayName() -> {
+                Constants.EPX_GATEWAY == magtekRequestUtils.gatewayName() -> {
 
-                jsonArray =
-                    model.transactionOutput?.token?.let { it1 ->
-                        magtekRequestUtils.processTokenElavon(
+                    jsonArray = model.transactionOutput?.transactionID?.let { it1 ->
+                        singleTransaction?.amount?.times(100)?.let {
+                            magtekRequestUtils.processReferenceIDEPXForce(
+                                it.toInt(),
+                                model.customerTransactionID ?: "", it1, Constants.CAPTURE,
+                                (tipAmount * 100).toInt().toString()
+                            )
+                        }
+                    }
+                    networkCall(jsonArray, 1)
+                }
+
+                Constants.VANIT_EXORESS_GATEWAY == magtekRequestUtils.gatewayName() -> {
+
+                    jsonArray = model.transactionOutput?.transactionID?.let { it1 ->
+                        magtekRequestUtils.processReferenceIDCapture(
                             (refundAmount * 100).toInt(),
-                            it1,
-                            model.customerTransactionID ?: "",
-                            model.transactionOutput.transactionOutputDetails[0].value
-
-                        )
-                    }
-
-                networkCall(jsonArray, 0)
-            }
-
-            Constants.EPX_GATEWAY == magtekRequestUtils.gatewayName() -> {
-
-                jsonArray = model.transactionOutput?.transactionID?.let { it1 ->
-                    singleTransaction?.amount?.times(100)?.let {
-                        magtekRequestUtils.processReferenceIDEPXForce(
-                            it.toInt(),
-                            model.customerTransactionID ?: "", it1, Constants.CAPTURE,
-                            (tipAmount * 100).toInt().toString()
-                        )
-                    }
-                }
-                networkCall(jsonArray, 1)
-            }
-
-            Constants.VANIT_EXORESS_GATEWAY == magtekRequestUtils.gatewayName() -> {
-
-                jsonArray = model.transactionOutput?.transactionID?.let { it1 ->
-                    magtekRequestUtils.processReferenceIDCapture(
-                        (refundAmount * 100).toInt(),
-                        model.customerTransactionID ?: "", it1,
-                        model.transactionOutput.authCode,
-                        ""
-                    )
-                }
-                networkCall(jsonArray, 1)
-            }
-
-            Constants.CHASE_GATEWAY == magtekRequestUtils.gatewayName() -> {
-
-                val amount = singleTransaction?.amount?.plus(refundAmount)
-
-                jsonArray = amount?.times(100)?.let {
-                    magtekRequestUtils.processTokenChase(
-                        it.toInt(),
-                        model.transactionOutput?.token ?: "",
-                        model.customerTransactionID ?: "",
-                        model.transactionOutput?.authCode ?: "",
-                        Constants.CAPTURE
-                    )
-                }
-
-                networkCall(jsonArray, 0)
-            }
-            Constants.HEARTLAND_GATEWAY == magtekRequestUtils.gatewayName() -> {
-
-                val amount = singleTransaction?.amount?.plus(refundAmount)
-
-                jsonArray = model.transactionOutput?.transactionID?.let { it1 ->
-                    amount?.times(100)?.let {
-                        magtekRequestUtils.processReferenceIdHeartlandCapture(
-                            it.toInt(),
-                            model.customerTransactionID ?: "",
-                            it1,
+                            model.customerTransactionID ?: "", it1,
                             model.transactionOutput.authCode,
-                            (tipAmount * 100).toInt().toString()
+                            ""
                         )
                     }
+                    networkCall(jsonArray, 1)
                 }
-                networkCall(jsonArray, 1)
-            }
-            Constants.TSYS_GATEWAY == magtekRequestUtils.gatewayName() -> {
 
-                val amount = singleTransaction?.amount?.plus(refundAmount)
+                Constants.CHASE_GATEWAY == magtekRequestUtils.gatewayName() -> {
 
-                jsonArray = model.transactionOutput?.transactionID?.let { it1 ->
-                    amount?.times(100)?.let {
-                        magtekRequestUtils.processReferenceIDTSYSCapture(
+                    val amount = singleTransaction?.amount?.plus(refundAmount)
+
+                    jsonArray = amount?.times(100)?.let {
+                        magtekRequestUtils.processTokenChase(
                             it.toInt(),
+                            model.transactionOutput?.token ?: "",
                             model.customerTransactionID ?: "",
-                            it1,
-                            (tipAmount * 100).toInt().toString()
+                            model.transactionOutput?.authCode ?: "",
+                            Constants.CAPTURE
                         )
                     }
+
+                    networkCall(jsonArray, 0)
                 }
-                networkCall(jsonArray, 1)
+                Constants.HEARTLAND_GATEWAY == magtekRequestUtils.gatewayName() -> {
+
+                    val amount = singleTransaction?.amount?.plus(refundAmount)
+
+                    jsonArray = model.transactionOutput?.transactionID?.let { it1 ->
+                        amount?.times(100)?.let {
+                            magtekRequestUtils.processReferenceIdHeartlandCapture(
+                                it.toInt(),
+                                model.customerTransactionID ?: "",
+                                it1,
+                                model.transactionOutput.authCode,
+                                (tipAmount * 100).toInt().toString()
+                            )
+                        }
+                    }
+                    networkCall(jsonArray, 1)
+                }
+                Constants.TSYS_GATEWAY == magtekRequestUtils.gatewayName() -> {
+
+                    val amount = singleTransaction?.amount?.plus(refundAmount)
+
+                    jsonArray = model.transactionOutput?.transactionID?.let { it1 ->
+                        amount?.times(100)?.let {
+                            magtekRequestUtils.processReferenceIDTSYSCapture(
+                                it.toInt(),
+                                model.customerTransactionID ?: "",
+                                it1,
+                                (tipAmount * 100).toInt().toString()
+                            )
+                        }
+                    }
+                    networkCall(jsonArray, 1)
+                }
+
+
             }
+        }else{
+            val model = Gson().fromJson(
+                singleTransaction?.orderDetails?.magensaResponse,
+                PaymentResponse.PaymentResponseItem::class.java
+            )
 
 
+            val jsonArray: JsonArray?
+
+            when {
+
+                Constants.FIRST_DATA_GATEWAY == magtekRequestUtils.gatewayName() -> {
+
+                    val amount = refundAmount
+
+                    if (model != null) {
+                        jsonArray =
+                            model.transactionOutput?.token?.let { it1 ->
+                                amount.times(100).let {
+                                    magtekRequestUtils.processTokenFirstData(
+                                        it.toInt(),
+                                        it1,
+                                        model.customerTransactionID ?: "",
+                                        model.transactionOutput.transactionOutputDetails[0].value,
+                                        Constants.CAPTURE
+                                    )
+                                }
+                            }
+
+                        networkCall(jsonArray, 0)
+                    }
+                }
+
+                // not support CAPTURE
+                Constants.ELAVON_GATEWAY == magtekRequestUtils.gatewayName() -> {
+
+                    jsonArray =
+                        model.transactionOutput?.token?.let { it1 ->
+                            magtekRequestUtils.processTokenElavon(
+                                (refundAmount * 100).toInt(),
+                                it1,
+                                model.customerTransactionID ?: "",
+                                model.transactionOutput.transactionOutputDetails[0].value
+
+                            )
+                        }
+
+                    networkCall(jsonArray, 0)
+                }
+
+                Constants.EPX_GATEWAY == magtekRequestUtils.gatewayName() -> {
+
+                    jsonArray = model.transactionOutput?.transactionID?.let { it1 ->
+                        singleTransaction?.amount?.times(100)?.let {
+                            magtekRequestUtils.processReferenceIDEPXForce(
+                                it.toInt(),
+                                model.customerTransactionID ?: "", it1, Constants.CAPTURE,
+                                (tipAmount * 100).toInt().toString()
+                            )
+                        }
+                    }
+                    networkCall(jsonArray, 1)
+                }
+
+                Constants.VANIT_EXORESS_GATEWAY == magtekRequestUtils.gatewayName() -> {
+
+                    jsonArray = model.transactionOutput?.transactionID?.let { it1 ->
+                        magtekRequestUtils.processReferenceIDCapture(
+                            (refundAmount * 100).toInt(),
+                            model.customerTransactionID ?: "", it1,
+                            model.transactionOutput.authCode,
+                            ""
+                        )
+                    }
+                    networkCall(jsonArray, 1)
+                }
+
+                Constants.CHASE_GATEWAY == magtekRequestUtils.gatewayName() -> {
+
+                    val amount = singleTransaction?.amount?.plus(refundAmount)
+
+                    jsonArray = amount?.times(100)?.let {
+                        magtekRequestUtils.processTokenChase(
+                            it.toInt(),
+                            model.transactionOutput?.token ?: "",
+                            model.customerTransactionID ?: "",
+                            model.transactionOutput?.authCode ?: "",
+                            Constants.CAPTURE
+                        )
+                    }
+
+                    networkCall(jsonArray, 0)
+                }
+                Constants.HEARTLAND_GATEWAY == magtekRequestUtils.gatewayName() -> {
+
+                    val amount = singleTransaction?.amount?.plus(refundAmount)
+
+                    jsonArray = model.transactionOutput?.transactionID?.let { it1 ->
+                        amount?.times(100)?.let {
+                            magtekRequestUtils.processReferenceIdHeartlandCapture(
+                                it.toInt(),
+                                model.customerTransactionID ?: "",
+                                it1,
+                                model.transactionOutput.authCode,
+                                (tipAmount * 100).toInt().toString()
+                            )
+                        }
+                    }
+                    networkCall(jsonArray, 1)
+                }
+                Constants.TSYS_GATEWAY == magtekRequestUtils.gatewayName() -> {
+
+                    val amount = singleTransaction?.amount?.plus(refundAmount)
+
+                    jsonArray = model.transactionOutput?.transactionID?.let { it1 ->
+                        amount?.times(100)?.let {
+                            magtekRequestUtils.processReferenceIDTSYSCapture(
+                                it.toInt(),
+                                model.customerTransactionID ?: "",
+                                it1,
+                                (tipAmount * 100).toInt().toString()
+                            )
+                        }
+                    }
+                    networkCall(jsonArray, 1)
+                }
+
+
+            }
         }
+
     }
 
     private fun networkCall(jsonArray1: JsonArray?, i: Int) {

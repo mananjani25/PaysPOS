@@ -46,7 +46,6 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
                 prefProvider.setValueboolean("clockOutFromNoti", true)
                 sendBroadcast(intent)
             } else if (type == "onlineorder") {
-
                 var intent = Intent()
                 intent.putExtra("message", remoteMessage.data["message"].toString())
                 intent.putExtra("count", remoteMessage.data["count"])

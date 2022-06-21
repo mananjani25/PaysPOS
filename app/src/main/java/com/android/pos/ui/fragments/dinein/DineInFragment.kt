@@ -7,6 +7,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
+import android.widget.ImageView
 import android.widget.LinearLayout
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.core.os.bundleOf
@@ -31,6 +32,7 @@ import com.android.pos.di.RolePermission
 import com.android.pos.ui.adapter.DineInFloorNameListAdapter
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.ProgressUtils
+import com.android.pos.utils.extensions.gone
 import com.android.pos.utils.extensions.showAlert
 import com.android.pos.utils.extensions.toDp
 import com.android.pos.utils.statusUtils.Status
@@ -280,6 +282,13 @@ class DineInFragment : Fragment() {
                         val tvTableName: AppCompatTextView =
                             inflatedViewSquare.findViewById(R.id.tvTableName)
 
+                        val img_chair: ImageView =
+                            inflatedViewSquare.findViewById(R.id.img_chair)
+
+
+                        val img_table: ImageView =
+                            inflatedViewSquare.findViewById(R.id.img_table)
+
                         tvTableName.text = "" + dineInFloorTablesList[i].tableName
 
                         val tvTableNumber: AppCompatTextView =
@@ -305,6 +314,12 @@ class DineInFragment : Fragment() {
                             tvTableNumber.text = "" + dineInFloorTablesList[i].tableNumber
                             tvNoOFChairs.text = "" + dineInFloorTablesList[i].chairCount
 
+                        }
+                        if (dineInFloorTablesList[i].status == MERGED || dineInFloorTablesList[i].status == MERGEDANDOCCUPIED) {
+                            img_chair.gone()
+                            img_table.gone()
+                            tvNoOFChairs.gone()
+                            tvTableName.gone()
                         }
                         if (llMainParentSquare.parent != null) {
                             (llMainParentSquare.parent as ViewGroup).removeView(llMainParentSquare)
@@ -376,6 +391,13 @@ class DineInFragment : Fragment() {
 
                         //tvNoOFChairs.text = "" + dineInFloorTablesList[i].chairCount
 
+
+                        val img_chair: ImageView =
+                            inflatedViewRound.findViewById(R.id.img_round_chair)
+
+
+                        val img_table: ImageView =
+                            inflatedViewRound.findViewById(R.id.img_round_table)
                         val tvTableName: AppCompatTextView =
                             inflatedViewRound.findViewById(R.id.tvTableName)
 
@@ -407,7 +429,12 @@ class DineInFragment : Fragment() {
                         if (llMainParentRound.parent != null) {
                             (llMainParentRound.parent as ViewGroup).removeView(llMainParentRound)
                         }
-
+                        if (dineInFloorTablesList[i].status == MERGED || dineInFloorTablesList[i].status == MERGEDANDOCCUPIED) {
+                            img_chair.gone()
+                            img_table.gone()
+                            tvNoOFChairs.gone()
+                            tvTableName.gone()
+                        }
                         /*pass object in settag*/
                         inflatedViewRound.tag = dineInFloorTablesList[i]
                         val paramsRound =
@@ -510,10 +537,10 @@ class DineInFragment : Fragment() {
                         )
                     } else {
                         var status = ""
-                        if(dineInFloorTableModel.lock_by_name!=null){
+                        if (dineInFloorTableModel.lock_by_name != null) {
                             status =
                                 "This table is locked by " + dineInFloorTableModel.lock_by_name + "."
-                        }else{
+                        } else {
                             status =
                                 "This table is locked by " + dineInFloorTableModel.currentOrderDetails.employeeName + "."
                         }
@@ -540,10 +567,10 @@ class DineInFragment : Fragment() {
 
                 } else {
                     var status = ""
-                    if(dineInFloorTableModel.lock_by_name!=null){
+                    if (dineInFloorTableModel.lock_by_name != null) {
                         status =
                             "This table is locked by " + dineInFloorTableModel.lock_by_name + "."
-                    }else{
+                    } else {
                         status =
                             "This table is locked by " + dineInFloorTableModel.currentOrderDetails.employeeName + "."
                     }
@@ -603,10 +630,10 @@ class DineInFragment : Fragment() {
                     )
                 } else {
                     var status = ""
-                    if(dineInFloorTableModel.lock_by_name!=null){
+                    if (dineInFloorTableModel.lock_by_name != null) {
                         status =
                             "This table is locked by " + dineInFloorTableModel.lock_by_name + "."
-                    }else{
+                    } else {
                         status =
                             "This table is locked by " + dineInFloorTableModel.currentOrderDetails.employeeName + "."
                     }

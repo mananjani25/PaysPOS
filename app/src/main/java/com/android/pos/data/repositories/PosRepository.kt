@@ -906,6 +906,13 @@ class PosRepository @Inject constructor(
         email: String
     ) =
         apiHelperNew.getReportEOD(startDate, endDate, terminalId, employee_id, email)
+ suspend fun sendEmailReportSummary(
+        startDate: String,
+        endDate: String,
+        email: String,
+        employee_id: String
+ ) =
+        apiHelperNew.sendEmailTimeSheet(startDate, endDate,  email,employee_id)
 
     suspend fun getOrderHistory(id: String) =
         apiHelperNew.getOrderHistory(id)

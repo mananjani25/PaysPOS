@@ -24,6 +24,7 @@ import com.android.pos.R
 import com.android.pos.data.entities.CartModel
 import com.android.pos.data.entities.RedeemLoyaltyInfo
 import com.android.pos.data.entities.TbItem
+import com.android.pos.data.entities.TbServiceCharge
 import com.android.pos.data.model.DineInModel
 import com.android.pos.data.model.GuestDataModel
 import com.android.pos.data.model.SplitBundleModel
@@ -47,6 +48,7 @@ import com.android.pos.data.remote.Constants.OPTION_TYPE
 import com.android.pos.data.remote.Constants.PAYMENT_ID
 import com.android.pos.data.remote.Constants.PRINT_DATA_DINE_IN
 import com.android.pos.data.remote.Constants.SAVE_SPLIT_BUNDLE
+import com.android.pos.data.remote.Constants.SERVICECHARGE_DINEIN_ORDER
 import com.android.pos.data.remote.Constants.SPLIT_DINEIN_CHECKOUT
 import com.android.pos.data.remote.Constants.SPLIT_DINEIN_MODEL
 import com.android.pos.data.remote.Constants.SPLIT_IS_GUESTPAY
@@ -1083,11 +1085,28 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         finaldisLocal = orderDiscount + guestDiscount
 
 
-        dineInList.get(0).serviceChargeList?.forEach {
-            if (it.isEnabled) {
-                guestServiceCharge += (guestSubTotal * it.percentage) / 100
+        if (prefProvider.getValueboolean(SERVICECHARGE_DINEIN_ORDER, false)) {
+            var isApplied = false
+            dineInList.get(0).serviceChargeList?.forEach {
+                if (it.order_type == SERVICECHARGE_DINEIN_ORDER) {
+                    if (isInRange(it.min_guest_count!!, it.max_guest_count!!, guestCount)) {
+                        guestServiceCharge += (guestSubTotal * it.percentage) / 100
+                        isApplied =true
+                        return@forEach
+                    }
+                }
             }
+            if (!isApplied) {
+                dineInList.get(0).serviceChargeList?.forEach { service ->
+                    if (service.id == checkMaxGuestCountId(dineInList.get(0).serviceChargeList!!)) {
+                        guestServiceCharge += (guestSubTotal * service.percentage) / 100
+                        return@forEach
+                    }
+                }
+            }
+
         }
+
 
 
         if (customerReceiptPrinters.name.startsWith("CloudPrint", true)) {
@@ -1510,16 +1529,17 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         Builder.COLOR_1
                     )
 
-                    addWholeTbItemToGuest(
-                        builder,
-                        listWTitems.get(i),
-                        customerSettingModel.fonts,
-                        customerSettingModel.showModifiers,
-                        dineInList.get(0).totalGuestCount,
-                        dineInList.get(0).serviceChargeList ?: arrayListOf()
-                    )
-                }
-                builder.addFeedLine(1)
+                addWholeTbItemToGuest(
+                    builder,
+                    listWTitems.get(i),
+                    customerSettingModel.fonts,
+                    customerSettingModel.showModifiers,
+                    dineInList.get(0).totalGuestCount,
+                    dineInList.get(0).serviceChargeList ?: arrayListOf(),
+                    prefProvider
+                )
+            }
+            builder.addFeedLine(1)
 
 
                 if (listGuestItem.isNotEmpty()) {
@@ -2770,6 +2790,22 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         }
     }
 
+    fun isInRange(minn: Int, maxx: Int, value: Int): Boolean {
+        return (minn <= value && value <= maxx)
+    }
+    fun checkMaxGuestCountId(serviceChargeList: ArrayList<TbServiceCharge>): Int {
+        var maxValue = 0
+        var serviceChargeId = 0
+        serviceChargeList.forEach { serviceCharge ->
+            if (serviceCharge.order_type == Constants.SERVICECHARGE_DINEIN_ORDER) {
+                if (serviceCharge.max_guest_count!! >= maxValue) {
+                    maxValue = serviceCharge.max_guest_count
+                    serviceChargeId = serviceCharge.id
+                }
+            }
+        }
+        return serviceChargeId
+    }
     private fun generateDineInPrint(
         customerReceiptPrinters: PrinterResponse.Data.CustomerReceiptPrinters,
         type: String,
@@ -5017,24 +5053,25 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     }
                     printer?.openPrinter(
 
-                        if (customerReceiptPrinters.printer_type == BLUETOOTH) {
-                            Print.DEVTYPE_BLUETOOTH
-                        } else {
-                            Print.DEVTYPE_TCP
-                        },
-                        customerReceiptPrinters.ipAddress,
-                        enabled,
-                        1000
-                    )
-                    printer?.setStatusChangeEventCallback(this)
+                    if (customerReceiptPrinters.printer_type == BLUETOOTH) {
+                        Print.DEVTYPE_BLUETOOTH
+                    } else {
+                        Print.DEVTYPE_TCP
+                    },
+                    customerReceiptPrinters.ipAddress,
+                    enabled,
+                    1000
+                )
+                //printer?.setStatusChangeEventCallback(this)
 
-                } catch (e: Exception) {
-                    pd.dismiss()
-                    Log.e(TAG, "PrinterException: " + e.message)
-                    printer = null
-                    return
-                }
-                try {
+            } catch (e: Exception) {
+                e.printStackTrace()
+                pd.dismiss()
+                Log.e(TAG, "PrinterException: " + e.message)
+                printer = null
+                return
+            }
+            try {
 
                     if (printer != null) {
                         PrinterClass.setPrinter(printer)

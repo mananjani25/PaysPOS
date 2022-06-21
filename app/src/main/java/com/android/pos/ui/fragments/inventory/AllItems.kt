@@ -190,7 +190,7 @@ class AllItems(val clickedPosition: Int) : Fragment(),ItemCallback {
 
         viewModel.data.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
-                if (!isreOrder)
+//                if (!isreOrder)
                     AlertUtils.showCustomAlert(requireActivity(), it.message)
 
                 if (isreOrder) {
@@ -198,10 +198,10 @@ class AllItems(val clickedPosition: Int) : Fragment(),ItemCallback {
                     viewModel.reOrder(adapter.getAll())
                 }
 
-                val intent = Intent()
-                intent.action = "inventory"
-                intent.putExtra("position", clickedPosition)
-                requireContext().sendBroadcast(intent)
+//                val intent = Intent()
+//                intent.action = "inventory"
+//                intent.putExtra("position", clickedPosition)
+//                requireContext().sendBroadcast(intent)
 
 
                 // viewModel.dbDeleteAndHide(deleteObj!!.itemId, deleteAndHide)

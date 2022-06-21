@@ -381,6 +381,10 @@ class ActiveOrderFragment(
                     Constants.IS_UPDATE_ORDER_LOYALTY_APPLIED,
                     order.isLoyaltyApplied
                 )
+                prefProvider.setValueboolean(
+                    Constants.LOYALTY_ADDED,
+                    order.isLoyaltyApplied
+                )
                 prefProvider.setValueboolean(Constants.IS_UPDATE_ORDER_FROM_ACTIVE_ORDER, true)
                 prefProvider.setValueInt(Constants.IS_UPDATE_ORDER_ID, order.id)
 
@@ -511,6 +515,14 @@ class ActiveOrderFragment(
                 )
                 bundle.putBoolean("isFromActiveOrder", true)
                 bundle.putBoolean("isLoyaltyApplied", order.isLoyaltyApplied)
+                prefProvider.setValueboolean(
+                    Constants.IS_UPDATE_ORDER_LOYALTY_APPLIED,
+                    order.isLoyaltyApplied
+                )
+                prefProvider.setValueboolean(
+                    Constants.LOYALTY_ADDED,
+                    order.isLoyaltyApplied
+                )
 
                 findNavController().navigate(R.id.action_orders_to_paymentBoldPosFragment, bundle)
 
@@ -739,7 +751,10 @@ class ActiveOrderFragment(
                 it.serviceChargeId,
                 true,
                 order.locationId,
+                it.max_guest_count,
+                it.min_guest_count,
                 it.name,
+                it.order_type,
                 it.rate,
                 it.updatedAt.toString(),
                 isActive = false,

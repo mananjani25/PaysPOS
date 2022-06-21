@@ -48,6 +48,13 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
     suspend fun updatePrinterStatus(id: Int, terminal_id: Int, status: Boolean) =
         getResult { apiService.updatePrinterStatus(id, terminal_id, status) }
 
+    suspend fun updateServiceChargeEnable(id: Int, enable_service_charge: Boolean) =
+        getResult { apiService.updateServiceChargeTakeoutEnable(id, enable_service_charge) }
+
+
+    suspend fun updateServiceChargeDininEnable(id: Int, enable_service_charge: Boolean) =
+        getResult { apiService.updateServiceChargeDineinEnable(id, enable_service_charge) }
+
     suspend fun syncVenueDetails() =
         getResult { apiService.syncVenueDetails() }
 
@@ -120,6 +127,9 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
 
     suspend fun getServiceChargeList() =
         getResult { apiService.getServiceChargeList() }
+
+    suspend fun getServiceChargeWholeList() =
+        getResult { apiService.getServiceChargeWholeList() }
 
     suspend fun loyaltyPointList() =
         getResult { apiService.loyaltyPointList() }
@@ -532,6 +542,15 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
     ) =
         getResult {
             apiService.getReportEOD(startDate, endDate, terminalId, employee_id, email)
+        }
+    suspend fun sendEmailTimeSheet(
+        startDate: String,
+        endDate: String,
+        email: String,
+        employee_id: String
+    ) =
+        getResult {
+            apiService.sendEmailReportSummary(startDate, endDate, email, employee_id)
         }
 
     suspend fun getOrderHistory(id: String) = getResult {

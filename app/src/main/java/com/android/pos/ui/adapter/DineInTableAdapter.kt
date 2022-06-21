@@ -12,6 +12,7 @@ import com.android.pos.R
 import com.android.pos.data.entities.TbItem
 import com.android.pos.data.entities.TbServiceCharge
 import com.android.pos.data.model.DineInModel
+import com.android.pos.data.remote.Constants
 import com.android.pos.databinding.ViewDineInHeaderBinding
 import com.android.pos.databinding.ViewDineInTableItemsBinding
 import com.android.pos.utils.MethodUtils
@@ -223,10 +224,32 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
 
             if (serviceChargeList?.isNotEmpty() == true) {
-                serviceChargeList?.forEach {
-                    if (it.isEnabled) {
-                        totalServiceCharge += (guestSubTotal * it.percentage) / 100
+                var isApplied = false
+                serviceChargeList.forEach {
+                    if (it.order_type == Constants.SERVICECHARGE_DINEIN_ORDER) {
+                        if (isInRange(
+                                it.min_guest_count!!,
+                                it.max_guest_count!!,
+                                list.get(0).totalGuestCount
+                            )
+                        ) {
+                            isApplied =true
+                            totalServiceCharge += (guestSubTotal * it.percentage) / 100
+                            return@forEach
+                            Log.d(
+                                TAG,
+                                "calculateDineInServiceCharge: Dinein " + it.min_guest_count + "....." + it.max_guest_count + " in between " + list.get(0).totalGuestCount
+                            )
+                        }
+                    }
 
+                }
+                if (!isApplied) {
+                    serviceChargeList.forEach { service ->
+                        if (service.id == checkMaxGuestCountId()) {
+                            totalServiceCharge += (guestSubTotal * service.percentage) / 100
+                            return@forEach
+                        }
                     }
                 }
 
@@ -425,6 +448,23 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             }
 
 
+        }
+
+        fun isInRange(minn: Int, maxx: Int, value: Int): Boolean {
+            return (minn <= value && value <= maxx)
+        }
+        fun checkMaxGuestCountId(): Int {
+            var maxValue = 0
+            var serviceChargeId = 0
+            serviceChargeList.forEach { serviceCharge ->
+                if (serviceCharge.order_type == Constants.SERVICECHARGE_DINEIN_ORDER) {
+                    if (serviceCharge.max_guest_count!! >= maxValue) {
+                        maxValue = serviceCharge.max_guest_count
+                        serviceChargeId = serviceCharge.id
+                    }
+                }
+            }
+            return serviceChargeId
         }
     }
 

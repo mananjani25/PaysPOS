@@ -25,7 +25,6 @@
             layout="@layout/view_header_toolbar" />
 
 
-
         <androidx.core.widget.NestedScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -55,16 +54,16 @@
 
 
                     <View
-                        android:visibility="gone"
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
-                        android:background="@color/view" />
+                        android:background="@color/view"
+                        android:visibility="gone" />
 
                     <androidx.appcompat.widget.LinearLayoutCompat
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:visibility="gone"
-                        android:orientation="horizontal">
+                        android:orientation="horizontal"
+                        android:visibility="gone">
 
                         <TextView
                             android:layout_width="0dp"
@@ -95,8 +94,8 @@
                     <View
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
-                        android:visibility="gone"
-                        android:background="@color/view" />
+                        android:background="@color/view"
+                        android:visibility="gone" />
 
 
                     <androidx.appcompat.widget.LinearLayoutCompat
@@ -108,9 +107,9 @@
                         <androidx.appcompat.widget.LinearLayoutCompat
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:orientation="horizontal"
+                            android:background="@drawable/background_square_border_grey"
 
-                            android:background="@drawable/background_square_border_grey">
+                            android:orientation="horizontal">
 
                             <androidx.appcompat.widget.AppCompatTextView
                                 style="@style/CustomFontSemiBold"
@@ -122,7 +121,7 @@
                                 android:text="@string/service_charge_name"
                                 android:textColor="@color/txtColor"
                                 android:textSize="@dimen/text_size_medium"
-                                android:visibility="gone"/>
+                                android:visibility="gone" />
 
                             <androidx.appcompat.widget.AppCompatEditText
                                 style="@style/CustomFontSemiBold"
@@ -146,9 +145,9 @@
                         <FrameLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:orientation="horizontal"
                             android:layout_marginTop="@dimen/_15sdp"
-                            android:background="@drawable/background_square_border_grey">
+                            android:background="@drawable/background_square_border_grey"
+                            android:orientation="horizontal">
 
 
                             <androidx.appcompat.widget.AppCompatEditText
@@ -161,40 +160,84 @@
                                 android:hint="0.00"
 
                                 android:imeOptions="actionNext"
-                                android:maxLength="6"
                                 android:inputType="textVisiblePassword"
+                                android:maxLength="6"
                                 android:paddingVertical="@dimen/_9sdp"
                                 android:paddingLeft="@dimen/_9sdp"
                                 android:textColor="@color/txtColor"
                                 android:textColorHint="@color/hintColor"
-                                android:textSize="@dimen/_7mdpi"
-                                />
+                                android:textSize="@dimen/_7mdpi" />
+
                             <TextView
                                 android:layout_width="wrap_content"
-                                android:textSize="@dimen/_7sdp"
-                                android:textStyle="bold"
-                                android:fontFamily="@font/sf_pro_display_bold"
+                                android:layout_height="wrap_content"
                                 android:layout_gravity="center_vertical"
                                 android:layout_marginLeft="@dimen/_32sdp"
-                                android:textColor="@color/dark_gray"
+                                android:fontFamily="@font/sf_pro_display_bold"
                                 android:text="@string/percentage_symbol"
-                                android:layout_height="wrap_content"/>
-
+                                android:textColor="@color/dark_gray"
+                                android:textSize="@dimen/_7sdp"
+                                android:textStyle="bold" />
 
 
                         </FrameLayout>
+                    </androidx.appcompat.widget.LinearLayoutCompat>
 
 
+                    <androidx.appcompat.widget.LinearLayoutCompat
+                        android:id="@+id/linear_guest"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/_15sdp"
+                        android:orientation="horizontal"
+                        android:visibility="gone">
 
+                        <androidx.appcompat.widget.AppCompatEditText
+                            android:id="@+id/edit_minguest"
+                            style="@style/CustomFontSemiBold"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginRight="@dimen/_5sdp"
+                            android:layout_weight="5"
+                            android:background="@drawable/background_square_border_grey"
+                            android:digits="0123456789"
+                            android:hint="@string/min_guest"
+                            android:imeOptions="actionNext"
+                            android:inputType="number"
+                            android:maxLength="3"
+                            android:paddingVertical="@dimen/_9sdp"
+                            android:paddingLeft="@dimen/_9sdp"
+                            android:textColor="@color/txtColor"
+                            android:textColorHint="@color/hintColor"
+                            android:textSize="@dimen/_7mdpi" />
+
+                        <androidx.appcompat.widget.AppCompatEditText
+                            android:id="@+id/edit_maxguest"
+                            style="@style/CustomFontSemiBold"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginLeft="@dimen/_5sdp"
+                            android:layout_weight="5"
+                            android:background="@drawable/background_square_border_grey"
+                            android:digits="0123456789"
+                            android:hint="@string/max_guest"
+                            android:imeOptions="actionNext"
+                            android:inputType="number"
+                            android:maxLength="3"
+                            android:paddingVertical="@dimen/_9sdp"
+                            android:paddingLeft="@dimen/_9sdp"
+                            android:textColor="@color/txtColor"
+                            android:textColorHint="@color/hintColor"
+                            android:textSize="@dimen/_7mdpi" />
 
                     </androidx.appcompat.widget.LinearLayoutCompat>
 
                 </androidx.appcompat.widget.LinearLayoutCompat>
-
             </LinearLayout>
+
+
         </androidx.core.widget.NestedScrollView>
-
-
     </androidx.appcompat.widget.LinearLayoutCompat>
+
 
 </layout>

@@ -81,7 +81,7 @@ class CheckoutDineInPaymentViewModel @Inject constructor(
     var isOrderUpdate: Boolean = false
     val returnedVal = posRepository.getManualCategoryId()
     var viewModelcartList: ArrayList<CartModel> = arrayListOf()
-    var serviceCharge = posRepository.serviceChargeList()
+
     private var mPosition: Int = 0
 
     private val _updateOrder = MutableLiveData<Event<Any?>>()
@@ -108,7 +108,6 @@ class CheckoutDineInPaymentViewModel @Inject constructor(
         this.cartModel = generateCombinedItems(cartList[0])
     }
 
-    val serviceCharges = posRepository.serviceChargeList()
     val getOrderTypes = posRepository.getOrderTypes()
 
     val activeLoyaltyProgramLiveData = posRepository.getActiveLoyaltyProgramFromDb()
@@ -1201,26 +1200,67 @@ class CheckoutDineInPaymentViewModel @Inject constructor(
         val serviceChargesList = cartList[0].serviceCharge
 
         if (serviceChargesList != null && serviceChargesList.isNotEmpty()) {
-            serviceChargesList.forEach {
-                if (it.isEnabled) {
-                    totalServiceCharge += (subTotalPrice * it.percentage) / 100
-
+            if (prefProvider.getValueboolean(Constants.SERVICECHARGE_TAKEOUT_OPENORDER, false)) {
+                serviceChargesList.forEach {
+                    if (it.order_type == Constants.SERVICECHARGE_TAKEOUT_OPENORDER) {
+                        totalServiceCharge += (subTotalPrice * it.percentage) / 100
+                    }
                 }
             }
 
         }
     }
 
-    private fun calculateDineInServiceCharge(cartModel: CartModel) {
-        if (serviceChargesList.isNotEmpty() && serviceChargesList != null) {
-            Log.e(TAG, "dashboardserviceChargesList:  ${Gson().toJson(serviceChargesList)}")
-
-            serviceChargesList.forEach {
-                if (it.isEnabled) {
-                    totalServiceCharge += (subTotalPrice * it.percentage) / 100
-
+    fun isInRange(minn: Int, maxx: Int, value: Int): Boolean {
+        return (minn <= value && value <= maxx)
+    }
+    fun checkMaxGuestCountId(): Int {
+        var maxValue = 0
+        var serviceChargeId = 0
+        serviceChargesList.forEach { serviceCharge ->
+            if (serviceCharge.order_type == Constants.SERVICECHARGE_DINEIN_ORDER) {
+                if (serviceCharge.max_guest_count!! >= maxValue) {
+                    maxValue = serviceCharge.max_guest_count
+                    serviceChargeId = serviceCharge.id
                 }
             }
+        }
+        return serviceChargeId
+    }
+    private fun calculateDineInServiceCharge(cartModel: CartModel) {
+        var guestCount = cartModel.dineInList?.size?.minus(1)
+        if (serviceChargesList.isNotEmpty() && serviceChargesList != null) {
+            Log.e(TAG, "dashboardserviceChargesList:  ${Gson().toJson(serviceChargesList)}")
+            if (prefProvider.getValueboolean(Constants.SERVICECHARGE_DINEIN_ORDER, false)) {
+                var isApplied = false
+                serviceChargesList.forEach {
+                    if (it.order_type == Constants.SERVICECHARGE_DINEIN_ORDER) {
+                        if (isInRange(
+                                it.min_guest_count!!,
+                                it.max_guest_count!!,
+                                guestCount!!
+                            )
+                        ) {
+                            isApplied = true
+                            totalServiceCharge += (subTotalPrice * it.percentage) / 100
+                            return@forEach
+                            Log.d(
+                                TAG,
+                                "calculateDineInServiceCharge: Checkout " + it.min_guest_count + "....." + it.max_guest_count + " in between " + guestCount
+                            )
+                        }
+                    }
+                }
+                if (!isApplied) {
+                    serviceChargesList.forEach { service ->
+                        if (service.id == checkMaxGuestCountId()) {
+                            totalServiceCharge += (subTotalPrice * service.percentage) / 100
+                            return@forEach
+                        }
+                    }
+                }
+            }
+
         }
 
     }
@@ -1229,13 +1269,13 @@ class CheckoutDineInPaymentViewModel @Inject constructor(
         val serviceChargesList = cartModel.serviceCharge
 
         if (serviceChargesList != null && serviceChargesList.isNotEmpty()) {
-            serviceChargesList.forEach {
-                if (it.isEnabled) {
-                    totalServiceCharge += (subTotalPrice * it.percentage) / 100
-
+            if (prefProvider.getValueboolean(Constants.SERVICECHARGE_TAKEOUT_OPENORDER, false)) {
+                serviceChargesList.forEach {
+                    if (it.order_type == Constants.SERVICECHARGE_TAKEOUT_OPENORDER) {
+                        totalServiceCharge += (subTotalPrice * it.percentage) / 100
+                    }
                 }
             }
-
         }
     }
 
@@ -1500,32 +1540,43 @@ class CheckoutDineInPaymentViewModel @Inject constructor(
             //           transactionId = ""
         }
     }
-
     private fun orderServiceChargesAttributes(
         cartModel: CartModel,
         subTotalPrice: Double
     ): List<OrderServiceChargesAttribute> {
-
         val orderServiceChargesAttributeList: ArrayList<OrderServiceChargesAttribute> =
             arrayListOf()
-
-        cartModel.serviceCharge?.forEach {
-            if (it.isEnabled) {
-                val orderServiceChargesAttribute = OrderServiceChargesAttribute()
-                orderServiceChargesAttribute.amount =
-                    MethodUtils.roundOffAmountDouble((subTotalPrice * it.percentage) / 100)
-                orderServiceChargesAttribute.name = it.name
-                orderServiceChargesAttribute.rate = it.percentage
-                orderServiceChargesAttribute.serviceChargeId = it.id
-
-
-                orderServiceChargesAttributeList.add(orderServiceChargesAttribute)
+        val serviceChargesList = cartModel.serviceCharge
+        if (serviceChargesList != null && serviceChargesList.isNotEmpty()) {
+            if (prefProvider.getValueboolean(Constants.SERVICECHARGE_TAKEOUT_OPENORDER, false)) {
+                serviceChargesList.forEach {
+                    val orderServiceChargesAttribute = OrderServiceChargesAttribute()
+                    orderServiceChargesAttribute.amount =
+                        MethodUtils.roundOffAmountDouble((subTotalPrice * it.percentage) / 100)
+                    orderServiceChargesAttribute.name = it.name
+                    orderServiceChargesAttribute.rate = it.percentage
+                    orderServiceChargesAttribute.serviceChargeId = it.id
+                    orderServiceChargesAttribute.order_type = it.order_type
+                    orderServiceChargesAttribute.serviceChargeId = it.id
+                    orderServiceChargesAttributeList.add(orderServiceChargesAttribute)
+                }
+            } else if (prefProvider.getValueboolean(Constants.SERVICECHARGE_DINEIN_ORDER, false)) {
+                serviceChargesList.forEach {
+                    val orderServiceChargesAttribute = OrderServiceChargesAttribute()
+                    orderServiceChargesAttribute.amount =
+                        MethodUtils.roundOffAmountDouble((subTotalPrice * it.percentage) / 100)
+                    orderServiceChargesAttribute.name = it.name
+                    orderServiceChargesAttribute.rate = it.percentage
+                    orderServiceChargesAttribute.serviceChargeId = it.id
+                    orderServiceChargesAttribute.order_type = it.order_type
+                    orderServiceChargesAttribute.max_guest_count = it.max_guest_count
+                    orderServiceChargesAttribute.min_guest_count = it.min_guest_count
+                    orderServiceChargesAttribute.serviceChargeId = it.id
+                    orderServiceChargesAttributeList.add(orderServiceChargesAttribute)
+                }
             }
 
         }
-
-
-
         return orderServiceChargesAttributeList
     }
 

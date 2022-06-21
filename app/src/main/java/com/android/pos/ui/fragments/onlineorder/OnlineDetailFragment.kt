@@ -2,7 +2,10 @@ package com.android.pos.ui.fragments.onlineorder
 
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
+import android.content.BroadcastReceiver
+import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -25,6 +28,7 @@ import com.android.pos.di.PrefProvider
 import com.android.pos.di.RolePermission
 import com.android.pos.ui.adapter.OnlineOrderAdapter
 import com.android.pos.ui.adapter.RefundItemListAdapter
+import com.android.pos.ui.fragments.dashboard.bolddashboard.DashboardCategoryBoldPOS
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.callback.OrderCallBack
@@ -65,11 +69,31 @@ class OnlineDetailFragment(
 
     @Inject
     lateinit var rolePermission: RolePermission
+    var broadcastReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            var refresh = intent?.getBooleanExtra("refresh", false)
+            if (refresh == true) {
+                adapter.orderList.clear()
+                adapter.filterList.clear()
+                getOnlineOrders()
+            }
+
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        requireActivity().unregisterReceiver(broadcastReceiver)
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupAdapter()
         observeShowProgress()
+        requireActivity().registerReceiver(
+            broadcastReceiver,
+            IntentFilter(Constants.ONLINE_ORDER_REFRESH)
+        )
         when (param1) {
             "0" -> {
                 order_status = "Pending"
