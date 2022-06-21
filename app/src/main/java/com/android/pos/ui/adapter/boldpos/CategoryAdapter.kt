@@ -7,6 +7,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.data.model.CategoryTabModel
 import com.android.pos.databinding.ViewBoldCategoryBinding
 import com.android.pos.ui.adapter.CategoryTabAdapter1
+import com.android.pos.utils.MethodUtils
 
 class CategoryAdapter(
     val context: Context,
@@ -28,7 +29,13 @@ class CategoryAdapter(
         fun bind(model: CategoryTabModel) {
             binding.txtCategoryName.isSelected = model.isSelected
             binding.txtCategoryName.text = model.title
-
+            var itename_price: StringBuffer = StringBuffer()
+            if (model.title.length > 30) {
+                itename_price.append(model.title.substring(0, 30) + "...")
+                binding.txtCategoryName.text = itename_price
+            } else {
+                binding.txtCategoryName.text = model.title
+            }
             binding.root.setOnClickListener {
                 listner.onTabSelected(bindingAdapterPosition)
                 list.forEachIndexed { index, categoryTabModel ->
