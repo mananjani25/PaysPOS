@@ -254,7 +254,7 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
                         if (found == -1) {
                             var taxData: TaxData = TaxData(
                                 orderItemTaxe.createdAt,
-                                orderItemTaxe.id,
+                                orderItemTaxe.taxId,
                                 0,
                                 orderItemTaxe.name,
                                 orderItemTaxe.rate,
@@ -289,7 +289,7 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
                     } else {
                         var taxData: TaxData = TaxData(
                             orderItemTaxe.createdAt,
-                            orderItemTaxe.id,
+                            orderItemTaxe.taxId,
                             0,
                             orderItemTaxe.name,
                             orderItemTaxe.rate,

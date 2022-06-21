@@ -599,7 +599,7 @@ class ActiveOrderFragment(
                         if (found == -1) {
                             var taxData: TaxData = TaxData(
                                 orderItemTaxe.createdAt,
-                                orderItemTaxe.id,
+                                orderItemTaxe.taxId,
                                 0,
                                 orderItemTaxe.name,
                                 orderItemTaxe.rate,
@@ -634,7 +634,7 @@ class ActiveOrderFragment(
                     } else {
                         var taxData: TaxData = TaxData(
                             orderItemTaxe.createdAt,
-                            orderItemTaxe.id,
+                            orderItemTaxe.taxId,
                             0,
                             orderItemTaxe.name,
                             orderItemTaxe.rate,
