@@ -1121,7 +1121,7 @@ class TransactionDetailsFragment : Fragment() {
 
 
 
-            if (paymentDetailsResponse.data?.cash_discount_or_surcharge != null) {
+            if (paymentDetailsResponse.data?.cash_discount_or_surcharge != null && paymentDetailsResponse.data?.cash_discount_or_surcharge != 0.0 ) {
 
                 builder.addTextLineSpace(30)
                 builder.addFeedUnit(30)
