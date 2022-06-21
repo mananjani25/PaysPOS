@@ -337,7 +337,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
                     }
                 }
             } else {
-                cartList.get(0).items?.forEach {
+                cartList[0].items?.forEach {
                     totalItemswithQuantity += it.itemQuantity
 
                 }

@@ -316,7 +316,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
 
             val mList = model.modifiers
             mList.forEach { items ->
-                totalPrice += items.price * items.itemQuantity
+                totalPrice += items.price
             }
 
             (model.price) + totalPrice
