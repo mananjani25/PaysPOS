@@ -1730,6 +1730,7 @@ open class PaymentViewModel @Inject constructor(
         createOrder: CreateOrderResponse
     ) {
         _showProgress.value = Event(true)
+        Log.e("CreateOrderRequest","createQueuePrinterModel  ${Gson().toJson(createQueuePrinterModel)}")
 
         viewModelScope.launch {
             val resource = posRepository.createQueuePrinter(createQueuePrinterModel)

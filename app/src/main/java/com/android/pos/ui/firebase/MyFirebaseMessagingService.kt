@@ -28,6 +28,8 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
         Log.e(TAG, "From: ${remoteMessage.from}")
 
+//        createNotification()
+
 //        remoteMessage.data["type"]
         prefProvider = PrefProvider(this)
         if (remoteMessage.data.isNotEmpty()) {
@@ -63,6 +65,21 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
 
         }
 
+    }
+
+    private fun createNotification() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val manager = getSystemService(Context.NOTIFICATION_SERVICE)
+                    as NotificationManager
+            val channelId = getString(R.string.default_notification_channel_id)
+            if(manager.getNotificationChannel(channelId)==null) {
+                val channel = NotificationChannel(channelId,
+                    getString(R.string.common_google_play_services_notification_channel_name),
+                    NotificationManager.IMPORTANCE_DEFAULT)
+                channel.description = ""
+                manager.createNotificationChannel(channel)
+            }
+        }
     }
 
 

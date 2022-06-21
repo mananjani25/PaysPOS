@@ -995,7 +995,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
             Log.e(TAG, "PrinterException: " + e.message)
             printer = null
             viewModel.downloadFinished(false)
-            if (findNavController().currentDestination?.id==R.id.dashboardCategoryBoldPOS){
+            if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
                 findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
             }
 
@@ -1034,7 +1034,8 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                 }
 
                 clearCustomer()
-                getKitchenPrinters(it)
+                findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
+                // getKitchenPrinters(it)
 
 
             }
@@ -1915,6 +1916,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
             }
         }
     }
+
     private fun createQueuePrinter(createOrder: CreateOrderResponse) {
         val listPrinter: List<Int> = listOf()
         if (cartList.isNotEmpty()) {

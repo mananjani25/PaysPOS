@@ -136,7 +136,7 @@ class MainApplication : Application() {
      */
     private fun createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val id = getString(R.string.virtual_tether_notification_channel_id)
+            val id = getString(R.string.default_notification_channel_id)
             val name: CharSequence = getString(R.string.virtual_tether_notification_channel_name)
             val description = getString(R.string.virtual_tether_notification_channel_description)
             val importance = NotificationManager.IMPORTANCE_HIGH

@@ -2501,14 +2501,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
 
                                 try {
-                                    Log.e(
-                                        TAG, "getURL  ${
-                                            prefProvider.getValue(
-                                                Constants.VENUE_LOGO_URL,
-                                                ""
-                                            )
-                                        }"
-                                    )
+
                                     if (it.data.logo != null) {
                                         if (it.data.logo.logoUrl.isNotEmpty() && !prefProvider.getValue(
                                                 Constants.VENUE_LOGO_URL,

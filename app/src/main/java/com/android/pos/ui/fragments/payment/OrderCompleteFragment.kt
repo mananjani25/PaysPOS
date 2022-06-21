@@ -3552,7 +3552,6 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                     if (it.printType.lowercase()
                                                             .equals(KITCHEN.lowercase()) && it.autoPrinting
                                                     ) {
-                                                        Log.e("OrderCom", "PrinterStarted")
                                                         initKitchenPrinter(
                                                             kitchenPrinterList.get(i),
                                                             KITCHEN
