@@ -65,7 +65,6 @@ import com.android.pos.data.remote.Constants.NOTES_ACTIVE
 import com.android.pos.data.remote.Constants.NOTE_UPDATE_DELETE
 import com.android.pos.data.remote.Constants.ONLINE_ORDERING
 import com.android.pos.data.remote.Constants.ONLINE_ORDER_COUNTS
-import com.android.pos.data.remote.Constants.ONLINE_ORDER_GET_NOTIFICATION
 import com.android.pos.data.remote.Constants.ONLINE_ORDER_NOTIFICATION_COUNT
 import com.android.pos.data.remote.Constants.OPEN_ORDERS
 import com.android.pos.data.remote.Constants.OPTION_SETS
@@ -693,7 +692,7 @@ interface ApiService {
         @Query("preparation_time") preparation_time: Int,
         @Query("employee_id") employee_id: Int,
         @Query("terminal_id") terminalid: Int
-    ): BaseResponse
+    ): OnlineOrderStatusUpdateResponse
 
 
     @PUT(UPDATE_ONLINE_ORDER)

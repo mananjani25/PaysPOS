@@ -10,6 +10,7 @@ import com.android.pos.data.model.requestModel.CashLogRequest
 import com.android.pos.data.model.requestModel.RefundRequestModel
 import com.android.pos.data.model.responseModel.BaseResponse
 import com.android.pos.data.model.responseModel.GetOrderDetailsResponse
+import com.android.pos.data.model.responseModel.OnlineOrderStatusUpdateResponse
 import com.android.pos.data.model.responseModel.PrinterResponse
 import com.android.pos.data.repositories.PosRepository
 import com.android.pos.data.repositories.TaxServiceChargeRepository
@@ -93,7 +94,7 @@ class TransactionDetailsViewModel @Inject constructor(
         isaccepted: Boolean,
         employee_id:Int,
         terminalid:Int
-    ): LiveData<Resource<BaseResponse>> =
+    ): LiveData<Resource<OnlineOrderStatusUpdateResponse>> =
         posRepository.acceptedAndDeclineOrders(time, order_id,isaccepted,employee_id,terminalid)
 
 

@@ -10,31 +10,30 @@ import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.os.bundleOf
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.android.pos.R
-import com.android.pos.data.model.requestModel.RefundRequestModel
 import com.android.pos.data.model.requestModel.RefundRequestModelOnlineOrder
+import com.android.pos.data.model.responseModel.GetKitchenReceiptSettingsResponse
 import com.android.pos.data.remote.Constants
 import com.android.pos.databinding.OnlineDetailFragmentBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.di.RolePermission
 import com.android.pos.ui.adapter.OnlineOrderAdapter
-import com.android.pos.ui.adapter.RefundItemListAdapter
-import com.android.pos.ui.fragments.dashboard.bolddashboard.DashboardCategoryBoldPOS
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.callback.OrderCallBack
 import com.android.pos.utils.extensions.alert
 import com.android.pos.utils.extensions.showAlert
 import com.android.pos.utils.statusUtils.Status
+import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 import java.text.SimpleDateFormat
 import java.util.*
@@ -63,6 +62,9 @@ class OnlineDetailFragment(
     val myCalendar2 = Calendar.getInstance()
     val myCalendar3 = Calendar.getInstance()
     var order_status = "Pending"
+    private val TAG = "OnlineDetailFragment"
+    private var kitchenSettingModel = GetKitchenReceiptSettingsResponse.Data()
+
 
     @Inject
     lateinit var prefProvider: PrefProvider
@@ -150,6 +152,7 @@ class OnlineDetailFragment(
                     Status.SUCCESS -> {
                         ProgressUtils.dismissProgressDialog()
                         resource.data?.let {
+                            Log.e(TAG, "getREsponseForOnline  ${Gson().toJson(it)}")
                             getOnlineOrders()
                         }
                     }
@@ -268,6 +271,8 @@ class OnlineDetailFragment(
         binding = OnlineDetailFragmentBinding.inflate(inflater, container, false)
         binding.viewModel = viewModel
         binding.lifecycleOwner = this
+        getKitchenReceiptSettings()
+        getKitchenPrinters()
         startDatePickerObserver()
         endDatePickerObserver()
 
@@ -486,7 +491,7 @@ class OnlineDetailFragment(
 
     private fun setupAdapter() {
 
-        binding.rvOpenOrder?.addItemDecoration(
+        binding.rvOpenOrder.addItemDecoration(
             DividerItemDecoration(
                 context,
                 LinearLayoutManager.VERTICAL
@@ -599,5 +604,36 @@ class OnlineDetailFragment(
 
             }
         }
+    }
+
+    private fun getKitchenReceiptSettings() {
+        viewModel.getKitchenReceiptSettings().observe(viewLifecycleOwner, {
+
+            if (it != null) {
+                kitchenSettingModel = it
+
+            }
+        })
+    }
+
+    private fun getKitchenPrinters() {
+        viewModel.getKitchenPrinterList().observe(viewLifecycleOwner) { it ->
+            when (it.status) {
+                Status.SUCCESS -> {
+
+
+                }
+                Status.LOADING -> {
+                    ProgressUtils.showProgressDialog(requireActivity())
+                }
+                Status.ERROR -> {
+                    ProgressUtils.dismissProgressDialog()
+                    findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
+
+                }
+            }
+
+        }
+
     }
 }
