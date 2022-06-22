@@ -2,7 +2,6 @@ package com.android.pos.data.model.requestModel
 
 
 import android.os.Parcelable
-import androidx.room.PrimaryKey
 import com.android.pos.data.model.DineInOrderDetailAttributes
 import com.google.gson.annotations.SerializedName
 import kotlinx.parcelize.Parcelize
@@ -39,7 +38,7 @@ class OrderAttributeRequestModel {
     var note: String = ""
 
     @SerializedName("offline_id")
-    var offlineId: String = ""
+    var offlineId: String? = null
 
     @SerializedName("open_order_type")
     var openOrderType: String = ""
@@ -569,7 +568,7 @@ class PaymentAttributes : Parcelable {
     @SerializedName("loyalty_program_id")
     var loyalty_program_id: String = ""
 
-     @SerializedName("magensa_response")
+    @SerializedName("magensa_response")
     var magensa_response: String = ""
 
     @SerializedName("loyalty_amount")
