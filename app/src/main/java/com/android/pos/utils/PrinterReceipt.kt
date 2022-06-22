@@ -46,27 +46,6 @@ fun padLine(
     return concat
 }
 
-fun padLine(
-    @Nullable partOne: String?,
-    @Nullable partTwo: String?,
-): String? {
-    var partOne = partOne
-    var partTwo = partTwo
-    if (partOne == null) {
-        partOne = ""
-    }
-    if (partTwo == null) {
-        partTwo = ""
-    }
-    val concat: String = if (partOne.length + partTwo.length > 48) {
-
-        "$partOne $partTwo"
-    } else {
-        val padding = 48 - (partOne.length + partTwo.length)
-        partOne + repeat(" ", padding) + partTwo
-    }
-    return concat
-}
 
 fun addPaymentDetailsHeader(builder: Builder): Builder {
     builder.addTextLineSpace(30)
@@ -561,7 +540,12 @@ fun padLineCustomerItem(
         strBuffer.append("\n")
         var tempStr = ""
         var tempPartOne = partOne.substring(columnsPerLine - 8, partOne.length)
-        val tempPadding = (columnsPerLine - tempPartOne.length) - partTwo.length
+        var tempPadding = 0
+        if (((columnsPerLine - tempPartOne.length) - partTwo.length) < 0) {
+            tempPadding =  partTwo.length
+        } else {
+            tempPadding = (columnsPerLine - tempPartOne.length) - partTwo.length
+        }
         tempStr = tempPartOne + repeat(" ", tempPadding)
 
         strBuffer.append(tempStr)
@@ -739,11 +723,17 @@ fun addHorizontalKitchenLine(builder: Builder): Builder {
     return builder
 }
 
-fun addHorizontalKitchenLine(): String {
+fun addHorizontalKitchenLineSunmi(fontSize: String): String {
 
+    var int = 48
+    when (fontSize) {
+        Constants.LARGE -> {
+            int = 46
+        }
+    }
 
     var str: String = ""
-    for (i in 0 until 48) {
+    for (i in 0 until int) {
         str += "-"
     }
 
@@ -803,7 +793,8 @@ fun addTipsList(
 
 fun addTipsList(
     list: List<GetTipReponse.Data>,
-    totalAmt: Double
+    totalAmt: Double,
+    font: String
 ) {
     for (i in 0 until list.size) {
         val obj = list.get(i)
@@ -821,7 +812,13 @@ fun addTipsList(
             ))
         ) + ")"
 
-        val str = padLine(tipName, price, 48).toString()
+        val str = padLine(
+            tipName, price, if (font == Constants.LARGE) {
+                23
+            } else {
+                48
+            }
+        ).toString()
 
         PrintSunmiUtils.orderTime(str)
 
@@ -1137,7 +1134,11 @@ fun addOrderItemOpenOrderSunmi(
             padLineCustomerItem(
                 obj.quantity.toString() + "x " + obj.itemName,
                 "$" + roundOffAmountString(totalPriceOpenOrder(obj)),
-                48
+                if (font == Constants.LARGE) {
+                    23
+                } else {
+                    48
+                }
             ).toString()
         )
 
@@ -1151,7 +1152,11 @@ fun addOrderItemOpenOrderSunmi(
                     padLineCustomerItem(
                         "   " + modifierObj.name,
                         "$" + roundOffAmountString(modifierObj.price.toDouble() * modifierObj.quantity),
-                        48
+                        if (font == Constants.LARGE) {
+                            23
+                        } else {
+                            48
+                        }
                     ).toString()
                 )
 
@@ -1354,7 +1359,7 @@ fun addWholeTbItemToGuest(
         padLineCustomerItem(
             obj.itemQuantity.toString() + "x " + obj.name,
             "" + finalAmt,
-            48
+            if (font == Constants.LARGE) 23 else 48
         ).toString()
     )
 
@@ -1487,11 +1492,7 @@ fun addOrderItemForDineIn(
         padLineCustomerItem(
             obj.itemQuantity.toString() + "x " + obj.name,
             "$" + roundOffAmountString(totalPriceDineInItem(obj)),
-            if (font == Constants.LARGE) {
-                48
-            } else {
-                48
-            }
+            if (font == Constants.LARGE) 23 else 48
         ).toString()
     )
 
@@ -1506,7 +1507,7 @@ fun addOrderItemForDineIn(
                 padLineCustomerItem(
                     "   " + modifierObj.name,
                     "$" + roundOffAmountString(modifierObj.price.toDouble() * modifierObj.itemQuantity),
-                    47
+                    if (font == Constants.LARGE) 23 else 48
                 ).toString()
             )
 
@@ -1620,7 +1621,8 @@ fun addOrderItems(
 
 fun addOrderItems(
     list: List<CreateOrderResponse.Data.Order.OrderItem>,
-    showModifiers: Boolean
+    showModifiers: Boolean,
+    font: String,
 ) {
     for (i in 0 until list.size) {
         val obj = list[i]
@@ -1629,7 +1631,7 @@ fun addOrderItems(
         val item = padLineCustomerItem(
             obj.quantity.toString() + "x " + obj.itemName,
             "$" + roundOffAmountString(totalPrice(obj)),
-            48
+            if (font == Constants.LARGE) 23 else 48
         )
 
         PrintSunmiUtils.orderTime(item.toString())
@@ -1643,7 +1645,7 @@ fun addOrderItems(
                 val modifier = padLineCustomerItem(
                     "   " + modifierObj.name,
                     "$" + roundOffAmountString(modifierObj.price.toDouble() * modifierObj.quantity),
-                    48
+                    if (font == Constants.LARGE) 22 else 48
                 )
 
                 PrintSunmiUtils.orderTime(modifier.toString())
@@ -1750,7 +1752,7 @@ fun addOrderItemsTransaction(
         val item = padLineCustomerItem(
             obj.quantity.toString() + "x " + obj.itemName,
             "$" + roundOffAmountString(totalPriceTransaction(obj)),
-            48
+            if (font == Constants.LARGE) 23 else 48
         )
 
         PrintSunmiUtils.orderTime(item.toString())
@@ -1765,7 +1767,7 @@ fun addOrderItemsTransaction(
                 val modifier = padLineCustomerItem(
                     "   " + modifierObj.name,
                     "$" + roundOffAmountString(modifierObj.price.toDouble() * modifierObj.quantity),
-                    47
+                    if (font == Constants.LARGE) 23 else 48
                 )
                 PrintSunmiUtils.orderTime(modifier.toString())
 

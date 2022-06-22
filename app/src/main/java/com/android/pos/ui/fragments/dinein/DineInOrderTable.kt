@@ -3450,23 +3450,25 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
                     })
             } else {
-                if (guestPrint && getOrderDetailsResponse?.guestAttributes?.size!! > 2) {
-                    generateGuestPrintSunmi(
-                        customerReceiptPrinters,
-                        type,
-                        paymentType,
-                        listGuestItem,
-                        guestName,
-                        listWTitems,
-                        subTotalGuest,
-                        total,
-                        taxGuest,
-                        serviceChargeGuest,
-                        divideDiscount,
-                    )
+                if (SunmiPrinterApi.getInstance().isConnected) {
+                    if (guestPrint && getOrderDetailsResponse?.guestAttributes?.size!! > 2) {
+                        generateGuestPrintSunmi(
+                            customerReceiptPrinters,
+                            type,
+                            paymentType,
+                            listGuestItem,
+                            guestName,
+                            listWTitems,
+                            subTotalGuest,
+                            total,
+                            taxGuest,
+                            serviceChargeGuest,
+                            divideDiscount,
+                        )
 
-                } else {
-                    generatePrintSunmi(customerReceiptPrinters, type, "")
+                    } else {
+                        generatePrintSunmi(customerReceiptPrinters, type, "")
+                    }
                 }
             }
 
@@ -4062,7 +4064,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             builder.addTextLineSpace(30)
             builder.addFeedUnit(30)
             builder.addTextFont(Builder.FONT_E)
-            // builder.addTextAlign(Builder.ALIGN_LEFT)
+            builder.addTextAlign(Builder.ALIGN_CENTER)
             builder.addTextLang(Builder.LANG_EN)
             addCustomerTextSize(builder, customerSettingModel.fonts)
             builder.addTextStyle(
@@ -4671,6 +4673,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
         try {
 
+            PrintSunmiUtils.fontSize(customerSettingModel.fonts)
+
             if (customerSettingModel.showVenueLogo && prefProvider.getValue(
                     Constants.VENUE_LOGO,
                     ""
@@ -4762,7 +4766,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                             getOrderDetailsResponse?.offlineId
                         },
                         if (customerSettingModel.fonts == Constants.LARGE) {
-                            24
+                            23
                         } else {
                             48
                         }
@@ -4781,7 +4785,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                             },
                             "",
                             if (customerSettingModel.fonts == Constants.LARGE) {
-                                24
+                                23
                             } else {
                                 48
                             }
@@ -4804,7 +4808,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                             },
                             "",
                             if (customerSettingModel.fonts == Constants.LARGE) {
-                                24
+                                23
                             } else {
                                 48
                             }
@@ -4834,7 +4838,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                                 },
                                 "",
                                 if (customerSettingModel.fonts == Constants.LARGE) {
-                                    24
+                                    23
                                 } else {
                                     48
                                 }
@@ -4889,7 +4893,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
                         },
                         if (customerSettingModel.fonts == Constants.LARGE) {
-                            24
+                            23
                         } else {
                             48
                         }
@@ -4906,7 +4910,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                         subTotalGuest
                     ),
                     if (customerSettingModel.fonts == Constants.LARGE) {
-                        24
+                        23
                     } else {
                         48
                     }
@@ -4922,7 +4926,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                         "Tax",
                         "$" + MethodUtils.roundOffAmountString(taxGuest),
                         if (customerSettingModel.fonts == Constants.LARGE) {
-                            24
+                            23
                         } else {
                             48
                         }
@@ -4938,7 +4942,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                         "Service Charge",
                         "$" + MethodUtils.roundOffAmountString(serviceChargeGuest),
                         if (customerSettingModel.fonts == Constants.LARGE) {
-                            24
+                            23
                         } else {
                             48
                         }
@@ -4958,7 +4962,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
                         "-$" + MethodUtils.roundOffAmountString(cashDis),
                         if (customerSettingModel.fonts == Constants.LARGE) {
-                            24
+                            23
                         } else {
                             48
                         }
@@ -4982,7 +4986,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     "Total Price",
                     "$" + MethodUtils.roundOffAmountString(total),
                     if (customerSettingModel.fonts == Constants.LARGE) {
-                        24
+                        23
                     } else {
                         48
                     }
@@ -5004,7 +5008,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                                 )?.amount!! - getOrderDetailsResponse?.totalAmount!!)
                             ),
                             if (customerSettingModel.fonts == Constants.LARGE) {
-                                24
+                                23
                             } else {
                                 48
                             }
@@ -5020,7 +5024,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 if (tipsList.isNotEmpty()) {
                     PrintSunmiUtils.addTipList(
                         tipsList,
-                        MethodUtils.roundOffAmountDouble(guestSubTotal + guestServiceCharge + guestTaxes)
+                        MethodUtils.roundOffAmountDouble(guestSubTotal + guestServiceCharge + guestTaxes),
+                        customerSettingModel.fonts
                     )
                 }
                 SunmiPrinterApi.getInstance().lineWrap(1)
@@ -5033,7 +5038,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                         "Transaction ID",
                         getOrderDetailsResponse?.payments?.get(0)?.transactionId,
                         if (customerSettingModel.fonts == Constants.LARGE) {
-                            24
+                            23
                         } else {
                             48
                         }
@@ -5049,7 +5054,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                         "Transaction Type",
                         getOrderDetailsResponse?.payments?.get(0)?.paymentType,
                         if (customerSettingModel.fonts == Constants.LARGE) {
-                            24
+                            23
                         } else {
                             48
                         }
@@ -5073,6 +5078,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             SunmiPrinterApi.getInstance().lineWrap(5)
             SunmiPrinterApi.getInstance().cutPaper(1, 1)
 
+            SunmiPrinterApi.getInstance().disconnectPrinter(requireContext())
 
         } catch (e: Exception) {
             e.printStackTrace()
@@ -6062,6 +6068,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
     ) {
 
         try {
+            PrintSunmiUtils.fontSize(customerSettingModel.fonts)
             if (customerSettingModel.showVenueLogo && prefProvider.getValue(
                     Constants.VENUE_LOGO,
                     ""
@@ -6158,7 +6165,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                             getOrderDetailsResponse?.offlineId
                         },
                         if (customerSettingModel.fonts == Constants.LARGE) {
-                            24
+                            23
                         } else {
                             48
                         }
@@ -6176,7 +6183,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                             },
                             "",
                             if (customerSettingModel.fonts == Constants.LARGE) {
-                                24
+                                23
                             } else {
                                 48
                             }
@@ -6198,7 +6205,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                             },
                             "",
                             if (customerSettingModel.fonts == Constants.LARGE) {
-                                24
+                                23
                             } else {
                                 48
                             }
@@ -6228,7 +6235,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                                 },
                                 "",
                                 if (customerSettingModel.fonts == Constants.LARGE) {
-                                    24
+                                    23
                                 } else {
                                     48
                                 }
@@ -6299,7 +6306,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                             }
                         },
                         if (customerSettingModel.fonts == Constants.LARGE) {
-                            24
+                            23
                         } else {
                             48
                         }
@@ -6314,7 +6321,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     "Sub Total",
                     "$" + MethodUtils.roundOffAmountString(subTotalDInin),
                     if (customerSettingModel.fonts == Constants.LARGE) {
-                        24
+                        23
                     } else {
                         48
                     }
@@ -6330,7 +6337,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                         "Tax",
                         "$" + MethodUtils.roundOffAmountString(finalTaxAmt),
                         if (customerSettingModel.fonts == Constants.LARGE) {
-                            24
+                            23
                         } else {
                             48
                         }
@@ -6345,7 +6352,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                         "Service Charge",
                         "$" + MethodUtils.roundOffAmountString(serviceCharge),
                         if (customerSettingModel.fonts == Constants.LARGE) {
-                            24
+                            23
                         } else {
                             48
                         }
@@ -6365,7 +6372,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                             )
                         },
                         if (customerSettingModel.fonts == Constants.LARGE) {
-                            24
+                            23
                         } else {
                             48
                         }
@@ -6383,7 +6390,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     "Total Price",
                     "$" + MethodUtils.roundOffAmountString(totalAmt),
                     if (customerSettingModel.fonts == Constants.LARGE) {
-                        24
+                        23
                     } else {
                         48
                     }
@@ -6405,7 +6412,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                                 )?.amount!! - getOrderDetailsResponse?.totalAmount!!)
                             ),
                             if (customerSettingModel.fonts == Constants.LARGE) {
-                                24
+                                23
                             } else {
                                 48
                             }
@@ -6422,7 +6429,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 if (tipsList.isNotEmpty()) {
                     PrintSunmiUtils.addTipList(
                         tipsList,
-                        totalAmt
+                        totalAmt,
+                        customerSettingModel.fonts
                     )
                 }
                 SunmiPrinterApi.getInstance().lineWrap(1)
@@ -6436,7 +6444,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                         "Transaction ID",
                         getOrderDetailsResponse?.payments?.get(0)?.transactionId,
                         if (customerSettingModel.fonts == Constants.LARGE) {
-                            24
+                            23
                         } else {
                             48
                         }
@@ -6452,7 +6460,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                         "Transaction Type",
                         getOrderDetailsResponse?.payments?.get(0)?.paymentType,
                         if (customerSettingModel.fonts == Constants.LARGE) {
-                            24
+                            23
                         } else {
                             48
                         }
@@ -6475,7 +6483,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             SunmiPrinterApi.getInstance().lineWrap(5)
             SunmiPrinterApi.getInstance().cutPaper(1, 1)
 
-
+            SunmiPrinterApi.getInstance().disconnectPrinter(requireContext())
         } catch (e: Exception) {
             e.printStackTrace()
         }
@@ -6588,7 +6596,9 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
                     })
             } else {
-                generateKitchenReceiptSunmi(data, type, item)
+
+                if (SunmiPrinterApi.getInstance().isConnected)
+                    generateKitchenReceiptSunmi(data, type, item)
             }
 
         } else {
@@ -6891,24 +6901,28 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
     ) {
         try {
 
+            PrintSunmiUtils.fontSize(kitchenSettingModel.fonts)
 
             if (kitchenSettingModel.showOrderType) {
 
                 PrintSunmiUtils.printOrderType(getOrderDetailsResponse?.orderType.toString())
 
+                SunmiPrinterApi.getInstance().lineWrap(1)
             }
 
 
             PrintSunmiUtils.addValue(getOrderDetailsResponse?.floorPlanTable?.tableName + " (" + getOrderDetailsResponse?.floorPlanTable?.tableNumber + ")")
 
+            SunmiPrinterApi.getInstance().lineWrap(1)
             PrintSunmiUtils.orderId(
                 padLine(
                     "OrderID:" + getOrderDetailsResponse?.id,
                     "",
-                    48
+                    if (kitchenSettingModel.fonts == Constants.LARGE) 23 else 48
                 ).toString()
             )
 
+            SunmiPrinterApi.getInstance().lineWrap(1)
             PrintSunmiUtils.receiptID(
                 padLine(
                     "ReceiptID:" + if (getOrderDetailsResponse?.offlineId?.isEmpty() == true) {
@@ -6917,10 +6931,11 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                         getOrderDetailsResponse?.offlineId
                     },
                     "",
-                    33
+                    if (kitchenSettingModel.fonts == Constants.LARGE) 23 else 48
                 ).toString()
             )
 
+            SunmiPrinterApi.getInstance().lineWrap(1)
 
             if (kitchenSettingModel.showTeamMember) {
 
@@ -6928,11 +6943,13 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 PrintSunmiUtils.employee(
                     padLine(
                         "Employee:" + getOrderDetailsResponse?.employee?.name, "",
-                        48
+                        if (kitchenSettingModel.fonts == Constants.LARGE) 23 else 48
                     ).toString()
                 )
 
             }
+
+            SunmiPrinterApi.getInstance().lineWrap(1)
 
             PrintSunmiUtils.orderTime(
                 padLine(
@@ -6941,12 +6958,13 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                         getOrderDetailsResponse?.createdAt.toString()
                     ),
                     "",
-                    33
+                    if (kitchenSettingModel.fonts == Constants.LARGE) 23 else 48
                 ).toString()
             )
 
             PrintSunmiUtils.addHorizontal()
 
+            SunmiPrinterApi.getInstance().lineWrap(1)
 
             addOrdersForKitchenDineIn(item)
 

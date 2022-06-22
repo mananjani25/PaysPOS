@@ -1978,6 +1978,8 @@ class ActiveOrderFragment(
     ) {
         try {
 
+            PrintSunmiUtils.fontSize(customerSettingModel.fonts)
+
             if (customerSettingModel.showVenueLogo && prefProvider.getValue(
                     Constants.VENUE_LOGO,
                     ""
@@ -2068,7 +2070,7 @@ class ActiveOrderFragment(
                     },
                     "ReceiptID:" + receiptModel?.offlineId,
                     if (customerSettingModel.fonts == Constants.LARGE) {
-                        24
+                        23
                     } else {
                         48
                     }
@@ -2084,7 +2086,12 @@ class ActiveOrderFragment(
                         } else {
                             ""
                         },
-                        ""
+                        "",
+                        if (customerSettingModel.fonts == Constants.LARGE) {
+                            23
+                        } else {
+                            48
+                        }
                     ).toString()
 
                     PrintSunmiUtils.employee(empName)
@@ -2101,7 +2108,12 @@ class ActiveOrderFragment(
                         } else {
                             ""
                         },
-                        ""
+                        "",
+                        if (customerSettingModel.fonts == Constants.LARGE) {
+                            23
+                        } else {
+                            48
+                        }
                     ).toString()
 
                     PrintSunmiUtils.orderTime(orderTime)
@@ -2124,7 +2136,12 @@ class ActiveOrderFragment(
                             } else {
                                 ""
                             },
-                            ""
+                            "",
+                            if (customerSettingModel.fonts == Constants.LARGE) {
+                                23
+                            } else {
+                                48
+                            }
                         ).toString()
 
                         PrintSunmiUtils.orderTime(printTime)
@@ -2158,6 +2175,11 @@ class ActiveOrderFragment(
                         "$" + MethodUtils.roundOffAmountString(receiptModel.totalDiscount)
                     } else {
                         "-$" + MethodUtils.roundOffAmountString(receiptModel.totalDiscount)
+                    },
+                    if (customerSettingModel.fonts == Constants.LARGE) {
+                        23
+                    } else {
+                        48
                     }
                 ).toString()
                 PrintSunmiUtils.totalDiscount(str1)
@@ -2167,7 +2189,12 @@ class ActiveOrderFragment(
 
             val str2 = padLine(
                 "Sub Total",
-                "$" + MethodUtils.roundOffAmountString(receiptModel.subTotal)
+                "$" + MethodUtils.roundOffAmountString(receiptModel.subTotal),
+                if (customerSettingModel.fonts == Constants.LARGE) {
+                    23
+                } else {
+                    48
+                }
             ).toString()
 
             PrintSunmiUtils.subTotal(str2)
@@ -2178,7 +2205,12 @@ class ActiveOrderFragment(
 
                 val str3 = padLine(
                     "Tax",
-                    "$" + MethodUtils.roundOffAmountString(receiptModel.totalTaxAmount)
+                    "$" + MethodUtils.roundOffAmountString(receiptModel.totalTaxAmount),
+                    if (customerSettingModel.fonts == Constants.LARGE) {
+                        23
+                    } else {
+                        48
+                    }
                 ).toString()
                 PrintSunmiUtils.tax(str3)
             }
@@ -2188,7 +2220,12 @@ class ActiveOrderFragment(
 
                 val str4 = padLine(
                     "Service Charge",
-                    "$" + MethodUtils.roundOffAmountString(receiptModel.totalServiceCharges)
+                    "$" + MethodUtils.roundOffAmountString(receiptModel.totalServiceCharges),
+                    if (customerSettingModel.fonts == Constants.LARGE) {
+                        23
+                    } else {
+                        48
+                    }
                 ).toString()
                 PrintSunmiUtils.serviceCharge(str4)
             }
@@ -2202,6 +2239,11 @@ class ActiveOrderFragment(
                         MethodUtils.roundOffAmountString(
                             it
                         )
+                    },
+                    if (customerSettingModel.fonts == Constants.LARGE) {
+                        23
+                    } else {
+                        48
                     }
                 ).toString()
                 PrintSunmiUtils.tip(str8)
@@ -2219,7 +2261,12 @@ class ActiveOrderFragment(
 
                     val str8 = padLine(
                         "SurCharge",
-                        "$" + MethodUtils.roundOffAmountString(receiptModel.cash_discount_or_surcharge!!)
+                        "$" + MethodUtils.roundOffAmountString(receiptModel.cash_discount_or_surcharge!!),
+                        if (customerSettingModel.fonts == Constants.LARGE) {
+                            23
+                        } else {
+                            48
+                        }
                     ).toString()
                     PrintSunmiUtils.surCharge(str8)
 
@@ -2231,6 +2278,11 @@ class ActiveOrderFragment(
                             "$" + MethodUtils.roundOffAmountString(receiptModel.cash_discount_or_surcharge!!)
                         } else {
                             "-$" + MethodUtils.roundOffAmountString(receiptModel.cash_discount_or_surcharge!!)
+                        },
+                        if (customerSettingModel.fonts == Constants.LARGE) {
+                            23
+                        } else {
+                            48
                         }
                     ).toString()
                     PrintSunmiUtils.cashDiscount(str8)
@@ -2246,6 +2298,11 @@ class ActiveOrderFragment(
                         MethodUtils.roundOffAmountString(
                             it
                         )
+                    },
+                    if (customerSettingModel.fonts == Constants.LARGE) {
+                        23
+                    } else {
+                        48
                     }
                 ).toString()
 
@@ -2253,7 +2310,12 @@ class ActiveOrderFragment(
 
                 val str9 = padLine(
                     "Used Loyalty Points",
-                    receiptModel?.usedRewardPoints.toString()
+                    receiptModel?.usedRewardPoints.toString(),
+                    if (customerSettingModel.fonts == Constants.LARGE) {
+                        23
+                    } else {
+                        48
+                    }
                 ).toString()
 
                 PrintSunmiUtils.loyaltyPoint(str9)
@@ -2264,13 +2326,20 @@ class ActiveOrderFragment(
 
 
 
+            SunmiPrinterApi.getInstance().lineWrap(1)
+
             if (receiptModel.totalAmount != null) {
 
                 val totalAmt = MethodUtils.roundOffAmountDouble(receiptModel.totalAmount)
 
                 val str5 = padLine(
                     "Total Price",
-                    "$" + MethodUtils.roundOffAmountString(totalAmt)
+                    "$" + MethodUtils.roundOffAmountString(totalAmt),
+                    if (customerSettingModel.fonts == Constants.LARGE) {
+                        23
+                    } else {
+                        48
+                    }
                 ).toString()
                 PrintSunmiUtils.totalPrice(str5)
 
@@ -2280,7 +2349,12 @@ class ActiveOrderFragment(
 
                 val str7 = padLine(
                     "Change Amount",
-                    "$" + MethodUtils.roundOffAmountString(0.00)
+                    "$" + MethodUtils.roundOffAmountString(0.00),
+                    if (customerSettingModel.fonts == Constants.LARGE) {
+                        23
+                    } else {
+                        48
+                    }
                 ).toString()
                 PrintSunmiUtils.changeAmount(str7)
                 SunmiPrinterApi.getInstance().lineWrap(2)
@@ -2303,6 +2377,11 @@ class ActiveOrderFragment(
                         "_____________"
                     } else {
                         ""
+                    },
+                    if (customerSettingModel.fonts == Constants.LARGE) {
+                        23
+                    } else {
+                        48
                     }
                 ).toString()
 
@@ -2322,6 +2401,7 @@ class ActiveOrderFragment(
                     addTipsList(
                         tipsList,
                         receiptModel.totalAmount.toDouble(),
+                        customerSettingModel.fonts
                     )
 
                 }
@@ -2331,7 +2411,12 @@ class ActiveOrderFragment(
 
                 val str10 = padLine(
                     "Transaction ID",
-                    receiptModel.payments.get(0).transactionId
+                    receiptModel.payments.get(0).transactionId,
+                    if (customerSettingModel.fonts == Constants.LARGE) {
+                        23
+                    } else {
+                        48
+                    }
                 ).toString()
                 PrintSunmiUtils.transactionId(str10)
             }
@@ -2340,11 +2425,18 @@ class ActiveOrderFragment(
 
                 val str11 = padLine(
                     "Transaction Type",
-                    receiptModel.payments.get(0).paymentType
+                    receiptModel.payments.get(0).paymentType,
+                    if (customerSettingModel.fonts == Constants.LARGE) {
+                        23
+                    } else {
+                        48
+                    }
                 ).toString()
                 PrintSunmiUtils.transactionType(str11)
             }
             if (customerSettingModel.showCustomerAddress or customerSettingModel.showCustomerPhone or customerSettingModel.showCustomerName) {
+
+                SunmiPrinterApi.getInstance().lineWrap(1)
 
                 if (receiptModel.customer != null) {
 
@@ -2379,7 +2471,7 @@ class ActiveOrderFragment(
 
 
             if (receiptModel.note != null && receiptModel.note != "" && customerSettingModel.showOrderNote) {
-
+                SunmiPrinterApi.getInstance().lineWrap(1)
                 PrintSunmiUtils.orderNote(receiptModel.note)
             }
             SunmiPrinterApi.getInstance().lineWrap(2)

@@ -1075,8 +1075,24 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
     fun test() {
         if (SunmiPrinterApi.getInstance().isConnected) {
             SunmiPrinterApi.getInstance().printerInit()
-            SunmiPrinterApi.getInstance().printText("\n\nTest Print\n\n")
-            SunmiPrinterApi.getInstance().cutPaper(1,1)
+            SunmiPrinterApi.getInstance().printText("")
+            SunmiPrinterApi.getInstance().lineWrap(2)
+            SunmiPrinterApi.getInstance().setAlignMode(1)
+            SunmiPrinterApi.getInstance().setFontZoom(2,2)
+            SunmiPrinterApi.getInstance().printText("Test Print")
+            SunmiPrinterApi.getInstance().lineWrap(1)
+            val current = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                LocalDateTime.now()
+            } else {
+                TODO("VERSION.SDK_INT < O")
+            }
+            val formatter = DateTimeFormatter.ofPattern("MMM-dd-yyyy hh:mm:a")
+            val formatted = current.format(formatter)
+            SunmiPrinterApi.getInstance().setAlignMode(1)
+            SunmiPrinterApi.getInstance().setFontZoom(2,2)
+            SunmiPrinterApi.getInstance().printText(getCurrentTimeFromTimeZone(requireContext(), formatted))
+            SunmiPrinterApi.getInstance().lineWrap(2)
+            SunmiPrinterApi.getInstance().cutPaper(2,20)
 
 
         }

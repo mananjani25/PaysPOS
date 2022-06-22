@@ -16,7 +16,6 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.viewModelScope
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.data.entities.TbServiceCharge
@@ -1808,6 +1807,10 @@ class TransactionDetailsFragment : Fragment() {
     ) {
         try {
 
+            PrintSunmiUtils.fontSize(customerSettingModel.fonts)
+
+            SunmiPrinterApi.getInstance().printerInit()
+
             if (customerSettingModel.showVenueLogo && prefProvider.getValue(
                     Constants.VENUE_LOGO,
                     ""
@@ -1884,11 +1887,7 @@ class TransactionDetailsFragment : Fragment() {
                         ""
                     },
                     "ReceiptID:" + paymentDetailsResponse?.data.order.offline_id,
-                    if (customerSettingModel.fonts == Constants.LARGE) {
-                        24
-                    } else {
-                        48
-                    }
+                    if (customerSettingModel.fonts == Constants.LARGE) 23 else 48
                 ).toString().trim()
 
                 PrintSunmiUtils.orderId(str.trim())
@@ -1902,10 +1901,10 @@ class TransactionDetailsFragment : Fragment() {
                         } else {
                             ""
                         },
-                        ""
+                        "", if (customerSettingModel.fonts == Constants.LARGE) 23 else 48
                     ).toString()
 
-                  PrintSunmiUtils.employee(empName)
+                    PrintSunmiUtils.employee(empName)
 
                 }
                 if (customerSettingModel.showOrderTime) {
@@ -1920,7 +1919,7 @@ class TransactionDetailsFragment : Fragment() {
                         } else {
                             ""
                         },
-                        ""
+                        "", if (customerSettingModel.fonts == Constants.LARGE) 23 else 48
                     ).toString()
 
                     PrintSunmiUtils.orderTime(orderTime)
@@ -1940,7 +1939,7 @@ class TransactionDetailsFragment : Fragment() {
                             } else {
                                 ""
                             },
-                            ""
+                            "", if (customerSettingModel.fonts == Constants.LARGE) 23 else 48
                         ).toString()
 
                         PrintSunmiUtils.orderTime(printTime)
@@ -1973,7 +1972,7 @@ class TransactionDetailsFragment : Fragment() {
                         "-$" + MethodUtils.roundOffAmountString(paymentDetailsResponse?.data.total_discount)
                     } else {
                         "-$" + MethodUtils.roundOffAmountString(paymentDetailsResponse?.data.order.total_discount)
-                    }
+                    }, if (customerSettingModel.fonts == Constants.LARGE) 23 else 48
                 ).toString()
                 PrintSunmiUtils.totalDiscount(str1)
 
@@ -1981,7 +1980,8 @@ class TransactionDetailsFragment : Fragment() {
 
             val sub = padLine(
                 "Sub Total",
-                "$" + MethodUtils.roundOffAmountString(paymentDetailsResponse.data.sub_total)
+                "$" + MethodUtils.roundOffAmountString(paymentDetailsResponse.data.sub_total),
+                if (customerSettingModel.fonts == Constants.LARGE) 23 else 48
             ).toString()
 
             PrintSunmiUtils.subTotal(sub)
@@ -1994,7 +1994,8 @@ class TransactionDetailsFragment : Fragment() {
                 PrintSunmiUtils.tax(
                     padLine(
                         "Tax",
-                        "$" + MethodUtils.roundOffAmountString(paymentDetailsResponse.data.tax_amount)
+                        "$" + MethodUtils.roundOffAmountString(paymentDetailsResponse.data.tax_amount),
+                        if (customerSettingModel.fonts == Constants.LARGE) 23 else 48
                     ).toString()
                 )
             }
@@ -2004,7 +2005,8 @@ class TransactionDetailsFragment : Fragment() {
                 PrintSunmiUtils.serviceCharge(
                     padLine(
                         "Service Charge",
-                        "$" + MethodUtils.roundOffAmountString(paymentDetailsResponse.data.service_charge_amount)
+                        "$" + MethodUtils.roundOffAmountString(paymentDetailsResponse.data.service_charge_amount),
+                        if (customerSettingModel.fonts == Constants.LARGE) 23 else 48
                     ).toString()
                 )
             }
@@ -2018,7 +2020,7 @@ class TransactionDetailsFragment : Fragment() {
                             MethodUtils.roundOffAmountString(
                                 it
                             )
-                        }
+                        }, if (customerSettingModel.fonts == Constants.LARGE) 23 else 48
                     ).toString()
                 )
             }
@@ -2036,7 +2038,7 @@ class TransactionDetailsFragment : Fragment() {
                                 "$" + MethodUtils.roundOffAmountString(paymentDetailsResponse.data?.cash_discount_or_surcharge)
                             } else {
                                 "$" + MethodUtils.roundOffAmountString(paymentDetailsResponse.data.order?.cash_discount_or_surcharge)
-                            }
+                            }, if (customerSettingModel.fonts == Constants.LARGE) 23 else 48
                         ).toString()
 
                     PrintSunmiUtils.surCharge(surCharge)
@@ -2051,7 +2053,7 @@ class TransactionDetailsFragment : Fragment() {
                             "-$" + MethodUtils.roundOffAmountString(paymentDetailsResponse.data?.cash_discount_or_surcharge)
                         } else {
                             "$" + MethodUtils.roundOffAmountString(paymentDetailsResponse.data.order?.cash_discount_or_surcharge)
-                        }
+                        }, if (customerSettingModel.fonts == Constants.LARGE) 23 else 48
                     ).toString()
 
 
@@ -2071,7 +2073,7 @@ class TransactionDetailsFragment : Fragment() {
                             MethodUtils.roundOffAmountString(
                                 it.toDouble()
                             )
-                        }
+                        }, if (customerSettingModel.fonts == Constants.LARGE) 23 else 48
                     ).toString()
                     PrintSunmiUtils.loyaltyAmount(loyaltyAmount)
 
@@ -2081,7 +2083,8 @@ class TransactionDetailsFragment : Fragment() {
 
                     val loyaltyPoint = padLine(
                         "Used Loyalty Points",
-                        paymentDetailsResponse?.data?.used_reward_points.toString()
+                        paymentDetailsResponse?.data?.used_reward_points.toString(),
+                        if (customerSettingModel.fonts == Constants.LARGE) 23 else 48
                     ).toString()
 
                     PrintSunmiUtils.loyaltyPoint(loyaltyPoint)
@@ -2096,7 +2099,8 @@ class TransactionDetailsFragment : Fragment() {
             PrintSunmiUtils.totalPrice(
                 padLine(
                     "Total Price",
-                    "$" + MethodUtils.roundOffAmountString(totalAmt)
+                    "$" + MethodUtils.roundOffAmountString(totalAmt),
+                    if (customerSettingModel.fonts == Constants.LARGE) 23 else 48
                 ).toString()
             )
 
@@ -2106,7 +2110,8 @@ class TransactionDetailsFragment : Fragment() {
                 PrintSunmiUtils.refundAmount(
                     padLine(
                         "Refund Amount",
-                        "$" + MethodUtils.roundOffAmountString(paymentDetailsResponse?.data?.order?.refund_detail?.refunded_amount)
+                        "$" + MethodUtils.roundOffAmountString(paymentDetailsResponse?.data?.order?.refund_detail?.refunded_amount),
+                        if (customerSettingModel.fonts == Constants.LARGE) 23 else 48
                     ).toString()
                 )
                 SunmiPrinterApi.getInstance().lineWrap(1)
@@ -2115,29 +2120,27 @@ class TransactionDetailsFragment : Fragment() {
             }
 
             if (paymentDetailsResponse.data.order?.total_tips == 0.0) {
+                if (customerSettingModel.showTipLineForCash) {
 
-                val stTips = padLine(
-                    "Tips",
-                    if (customerSettingModel.showTipLineForCash) {
-                        "_____________"
+                    if (customerSettingModel.fonts == Constants.LARGE) {
+                        PrintSunmiUtils.tips("Tips      _____________")
+                        SunmiPrinterApi.getInstance().lineWrap(1)
                     } else {
-                        ""
+                        PrintSunmiUtils.tips("Tips                              _____________")
                     }
-                ).toString()
 
-                PrintSunmiUtils.tips(stTips)
-
-
+                }
             }
 
 
             if (customerSettingModel.showTipSuggestion) {
-
+                SunmiPrinterApi.getInstance().lineWrap(1)
                 PrintSunmiUtils.additionalTips()
                 if (tipsList.isNotEmpty()) {
                     PrintSunmiUtils.addTipList(
                         tipsList,
-                        paymentDetailsResponse.data.order.total_amount
+                        paymentDetailsResponse.data.order.total_amount,
+                        customerSettingModel.fonts
                     )
                 }
                 SunmiPrinterApi.getInstance().lineWrap(1)
@@ -2146,7 +2149,8 @@ class TransactionDetailsFragment : Fragment() {
 
             val tranId = padLine(
                 "Transaction ID",
-                "" + paymentDetailsResponse.data.id
+                "" + paymentDetailsResponse.data.id,
+                if (customerSettingModel.fonts == Constants.LARGE) 23 else 48
             ).toString()
 
             PrintSunmiUtils.transactionId(tranId)
@@ -2157,7 +2161,7 @@ class TransactionDetailsFragment : Fragment() {
 
                 val tranType = padLine(
                     "Transaction Type",
-                    "Card"
+                    "Card", if (customerSettingModel.fonts == Constants.LARGE) 23 else 48
                 ).toString()
 
                 PrintSunmiUtils.transactionType(tranType)
@@ -2175,7 +2179,7 @@ class TransactionDetailsFragment : Fragment() {
                 PrintSunmiUtils.transactionType(
                     padLine(
                         "Transaction Type",
-                        "Cash"
+                        "Cash", if (customerSettingModel.fonts == Constants.LARGE) 23 else 48
                     ).toString()
                 )
 

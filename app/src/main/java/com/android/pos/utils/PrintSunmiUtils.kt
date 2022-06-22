@@ -1,43 +1,18 @@
 package com.android.pos.utils
 
-import android.annotation.SuppressLint
-import android.app.Activity
-import android.content.Context
 import android.graphics.Bitmap
-import android.os.SystemClock
-import android.provider.Settings
-import android.text.TextUtils
-import android.util.Log
-import android.view.inputmethod.InputMethodManager
-import android.widget.TextView
-import androidx.appcompat.widget.AppCompatEditText
-import androidx.appcompat.widget.AppCompatTextView
-import androidx.fragment.app.FragmentActivity
-import com.android.pos.MainApplication
-import com.android.pos.R
-import com.android.pos.data.model.requestModel.CreateCategoryRequestModel
-import com.android.pos.data.model.requestModel.CreateItemRequestModel
 import com.android.pos.data.model.responseModel.GetTipReponse
 import com.android.pos.data.remote.Constants
-import com.android.pos.di.PrefProvider
-import com.android.pos.utils.extensions.toMultiPartRequestBody
-import com.google.i18n.phonenumbers.PhoneNumberUtil
-import com.google.i18n.phonenumbers.Phonenumber
 import com.sunmi.externalprinterlibrary.api.SunmiPrinterApi
-import okhttp3.MultipartBody
-import okhttp3.RequestBody
-import java.io.File
-import java.text.ParseException
-import java.text.SimpleDateFormat
-import java.util.*
-import java.util.regex.Matcher
-import java.util.regex.Pattern
-import kotlin.math.ceil
-import kotlin.math.floor
 
 
 class PrintSunmiUtils {
+
+
     companion object {
+
+        var fontSize = ""
+
         fun printLogo(newBitmap: Bitmap?) {
 
             SunmiPrinterApi.getInstance().printerInit()
@@ -69,23 +44,24 @@ class PrintSunmiUtils {
 
             SunmiPrinterApi.getInstance().setAlignMode(1)
             SunmiPrinterApi.getInstance().enableBold(false)
-            SunmiPrinterApi.getInstance().setFontZoom(1, 1)
+            setFontSize()
             SunmiPrinterApi.getInstance().printText(value1)
             SunmiPrinterApi.getInstance().lineWrap(1)
 
             SunmiPrinterApi.getInstance().setAlignMode(1)
             SunmiPrinterApi.getInstance().enableBold(false)
-            SunmiPrinterApi.getInstance().setFontZoom(1, 1)
+            setFontSize()
             SunmiPrinterApi.getInstance().printText(value2)
             SunmiPrinterApi.getInstance().lineWrap(1)
 
 
         }
 
+
         fun venueWebsite(value: String) {
             SunmiPrinterApi.getInstance().setAlignMode(1)
             SunmiPrinterApi.getInstance().enableBold(false)
-            SunmiPrinterApi.getInstance().setFontZoom(1, 1)
+            setFontSize()
             SunmiPrinterApi.getInstance().printText(value)
             SunmiPrinterApi.getInstance().lineWrap(1)
         }
@@ -101,7 +77,7 @@ class PrintSunmiUtils {
         fun orderId(value: String) {
             SunmiPrinterApi.getInstance().setAlignMode(0)
             SunmiPrinterApi.getInstance().enableBold(false)
-            SunmiPrinterApi.getInstance().setFontZoom(1, 1)
+            setFontSize()
             SunmiPrinterApi.getInstance().printText(value)
             SunmiPrinterApi.getInstance().lineWrap(1)
         }
@@ -109,7 +85,7 @@ class PrintSunmiUtils {
         fun orderTime(value: String) {
             SunmiPrinterApi.getInstance().setAlignMode(0)
             SunmiPrinterApi.getInstance().enableBold(false)
-            SunmiPrinterApi.getInstance().setFontZoom(1, 1)
+            setFontSize()
             SunmiPrinterApi.getInstance().printText(
                 value
             )
@@ -120,7 +96,7 @@ class PrintSunmiUtils {
         fun addValue(value: String) {
             SunmiPrinterApi.getInstance().setAlignMode(1)
             SunmiPrinterApi.getInstance().enableBold(false)
-            SunmiPrinterApi.getInstance().setFontZoom(1, 1)
+             setFontSize()
             SunmiPrinterApi.getInstance().printText(
                 value
             )
@@ -131,7 +107,7 @@ class PrintSunmiUtils {
         fun employee(value: String) {
             SunmiPrinterApi.getInstance().setAlignMode(0)
             SunmiPrinterApi.getInstance().enableBold(false)
-            SunmiPrinterApi.getInstance().setFontZoom(1, 1)
+            setFontSize()
             SunmiPrinterApi.getInstance().printText(value)
             SunmiPrinterApi.getInstance().lineWrap(1)
         }
@@ -139,7 +115,7 @@ class PrintSunmiUtils {
         fun receiptID(value: String) {
             SunmiPrinterApi.getInstance().setAlignMode(0)
             SunmiPrinterApi.getInstance().enableBold(false)
-            SunmiPrinterApi.getInstance().setFontZoom(1, 1)
+            setFontSize()
             SunmiPrinterApi.getInstance().printText(value)
             SunmiPrinterApi.getInstance().lineWrap(1)
         }
@@ -150,15 +126,18 @@ class PrintSunmiUtils {
             SunmiPrinterApi.getInstance().enableBold(true)
             SunmiPrinterApi.getInstance().setFontZoom(2, 2)
             SunmiPrinterApi.getInstance().printText(value)
-            SunmiPrinterApi.getInstance().lineWrap(3)
+            SunmiPrinterApi.getInstance().lineWrap(1)
 
         }
 
         fun addHorizontal() {
-            val st = addHorizontalKitchenLine()
+
+
+
+            val st = addHorizontalKitchenLineSunmi(fontSize)
             SunmiPrinterApi.getInstance().enableUnderline(true)
             SunmiPrinterApi.getInstance().enableBold(false)
-            SunmiPrinterApi.getInstance().setFontZoom(1, 1)
+             setFontSize()
             SunmiPrinterApi.getInstance().printText(st)
             SunmiPrinterApi.getInstance().lineWrap(1)
 
@@ -166,7 +145,7 @@ class PrintSunmiUtils {
 
         fun totalDiscount(value: String) {
             SunmiPrinterApi.getInstance().enableBold(false)
-            SunmiPrinterApi.getInstance().setFontZoom(1, 1)
+             setFontSize()
             SunmiPrinterApi.getInstance().printText(value)
             SunmiPrinterApi.getInstance().lineWrap(1)
 
@@ -174,7 +153,7 @@ class PrintSunmiUtils {
 
         fun subTotal(value: String) {
             SunmiPrinterApi.getInstance().enableBold(false)
-            SunmiPrinterApi.getInstance().setFontZoom(1, 1)
+             setFontSize()
             SunmiPrinterApi.getInstance().printText(value)
             SunmiPrinterApi.getInstance().lineWrap(1)
 
@@ -183,7 +162,7 @@ class PrintSunmiUtils {
 
         fun tax(value: String) {
             SunmiPrinterApi.getInstance().enableBold(false)
-            SunmiPrinterApi.getInstance().setFontZoom(1, 1)
+             setFontSize()
             SunmiPrinterApi.getInstance().printText(value)
             SunmiPrinterApi.getInstance().lineWrap(1)
 
@@ -191,7 +170,7 @@ class PrintSunmiUtils {
 
         fun serviceCharge(value: String) {
             SunmiPrinterApi.getInstance().enableBold(false)
-            SunmiPrinterApi.getInstance().setFontZoom(1, 1)
+            setFontSize()
             SunmiPrinterApi.getInstance().printText(value)
             SunmiPrinterApi.getInstance().lineWrap(1)
 
@@ -200,7 +179,7 @@ class PrintSunmiUtils {
 
         fun tip(value: String) {
             SunmiPrinterApi.getInstance().enableBold(true)
-            SunmiPrinterApi.getInstance().setFontZoom(1, 1)
+            setFontSize()
             SunmiPrinterApi.getInstance().printText(value)
             SunmiPrinterApi.getInstance().lineWrap(1)
 
@@ -208,21 +187,21 @@ class PrintSunmiUtils {
 
         fun surCharge(value: String) {
             SunmiPrinterApi.getInstance().enableBold(true)
-            SunmiPrinterApi.getInstance().setFontZoom(1, 1)
+            setFontSize()
             SunmiPrinterApi.getInstance().printText(value)
             SunmiPrinterApi.getInstance().lineWrap(1)
         }
 
         fun cashDiscount(value: String) {
             SunmiPrinterApi.getInstance().enableBold(true)
-            SunmiPrinterApi.getInstance().setFontZoom(1, 1)
+            setFontSize()
             SunmiPrinterApi.getInstance().printText(value)
             SunmiPrinterApi.getInstance().lineWrap(1)
         }
 
         fun loyaltyAmount(value: String) {
             SunmiPrinterApi.getInstance().enableBold(true)
-            SunmiPrinterApi.getInstance().setFontZoom(1, 1)
+            setFontSize()
             SunmiPrinterApi.getInstance().printText(value)
             SunmiPrinterApi.getInstance().lineWrap(1)
 
@@ -230,7 +209,7 @@ class PrintSunmiUtils {
 
         fun loyaltyPoint(value: String) {
             SunmiPrinterApi.getInstance().enableBold(true)
-            SunmiPrinterApi.getInstance().setFontZoom(1, 1)
+            setFontSize()
             SunmiPrinterApi.getInstance().printText(value)
             SunmiPrinterApi.getInstance().lineWrap(1)
         }
@@ -238,7 +217,7 @@ class PrintSunmiUtils {
         fun totalPrice(value: String) {
 
             SunmiPrinterApi.getInstance().enableBold(true)
-            SunmiPrinterApi.getInstance().setFontZoom(1, 1)
+            setFontSize()
             SunmiPrinterApi.getInstance().printText(value)
             SunmiPrinterApi.getInstance().lineWrap(1)
 
@@ -247,7 +226,7 @@ class PrintSunmiUtils {
         fun changeAmount(value: String) {
 
             SunmiPrinterApi.getInstance().enableBold(true)
-            SunmiPrinterApi.getInstance().setFontZoom(1, 1)
+            setFontSize()
             SunmiPrinterApi.getInstance().printText(value)
             SunmiPrinterApi.getInstance().lineWrap(1)
 
@@ -256,7 +235,7 @@ class PrintSunmiUtils {
         fun refundAmount(value: String) {
 
             SunmiPrinterApi.getInstance().enableBold(true)
-            SunmiPrinterApi.getInstance().setFontZoom(1, 1)
+            setFontSize()
             SunmiPrinterApi.getInstance().printText(value)
             SunmiPrinterApi.getInstance().lineWrap(1)
 
@@ -266,7 +245,7 @@ class PrintSunmiUtils {
 
             SunmiPrinterApi.getInstance().setAlignMode(0)
             SunmiPrinterApi.getInstance().enableBold(true)
-            SunmiPrinterApi.getInstance().setFontZoom(1, 1)
+            setFontSize()
             SunmiPrinterApi.getInstance().printText(value)
             SunmiPrinterApi.getInstance().lineWrap(2)
         }
@@ -275,18 +254,19 @@ class PrintSunmiUtils {
 
             SunmiPrinterApi.getInstance().setAlignMode(0)
             SunmiPrinterApi.getInstance().enableBold(true)
-            SunmiPrinterApi.getInstance().setFontZoom(1, 1)
+            setFontSize()
             SunmiPrinterApi.getInstance().printText("Additional Tips")
             SunmiPrinterApi.getInstance().lineWrap(1)
             addHorizontal()
 
         }
 
-        fun addTipList(tipsList: List<GetTipReponse.Data>, totalAmount: Double) {
+        fun addTipList(tipsList: List<GetTipReponse.Data>, totalAmount: Double, fonts: String) {
 
             addTipsList(
                 tipsList,
-                totalAmount
+                totalAmount,
+                fonts
             )
         }
 
@@ -294,7 +274,7 @@ class PrintSunmiUtils {
 
             SunmiPrinterApi.getInstance().setAlignMode(0)
             SunmiPrinterApi.getInstance().enableBold(true)
-            SunmiPrinterApi.getInstance().setFontZoom(1, 1)
+            setFontSize()
             SunmiPrinterApi.getInstance().printText(value)
             SunmiPrinterApi.getInstance().lineWrap(1)
         }
@@ -302,7 +282,7 @@ class PrintSunmiUtils {
         fun transactionType(value: String) {
 
             SunmiPrinterApi.getInstance().enableBold(true)
-            SunmiPrinterApi.getInstance().setFontZoom(1, 1)
+            setFontSize()
             SunmiPrinterApi.getInstance().printText(value)
             SunmiPrinterApi.getInstance().lineWrap(2)
 
@@ -314,7 +294,7 @@ class PrintSunmiUtils {
 
                 SunmiPrinterApi.getInstance().setAlignMode(2)
                 SunmiPrinterApi.getInstance().enableBold(true)
-                SunmiPrinterApi.getInstance().setFontZoom(1, 1)
+                setFontSize()
                 when (i) {
                     1 -> {
                         SunmiPrinterApi.getInstance().printText(cardName)
@@ -334,7 +314,7 @@ class PrintSunmiUtils {
         fun customerDetails() {
 
             SunmiPrinterApi.getInstance().enableBold(true)
-            SunmiPrinterApi.getInstance().setFontZoom(1, 1)
+            setFontSize()
             SunmiPrinterApi.getInstance().printText("Customer Details")
             SunmiPrinterApi.getInstance().lineWrap(1)
 
@@ -346,7 +326,7 @@ class PrintSunmiUtils {
 
             SunmiPrinterApi.getInstance().setAlignMode(0)
             SunmiPrinterApi.getInstance().enableBold(false)
-            SunmiPrinterApi.getInstance().setFontZoom(1, 1)
+            setFontSize()
             SunmiPrinterApi.getInstance()
                 .printText(value)
             SunmiPrinterApi.getInstance().lineWrap(1)
@@ -355,7 +335,7 @@ class PrintSunmiUtils {
         fun customerPhone(value: String) {
             SunmiPrinterApi.getInstance().setAlignMode(0)
             SunmiPrinterApi.getInstance().enableBold(false)
-            SunmiPrinterApi.getInstance().setFontZoom(1, 1)
+            setFontSize()
             SunmiPrinterApi.getInstance().printText(value)
             SunmiPrinterApi.getInstance().lineWrap(1)
         }
@@ -363,7 +343,7 @@ class PrintSunmiUtils {
         fun customerAddress(value: String) {
             SunmiPrinterApi.getInstance().setAlignMode(0)
             SunmiPrinterApi.getInstance().enableBold(false)
-            SunmiPrinterApi.getInstance().setFontZoom(1, 1)
+            setFontSize()
             SunmiPrinterApi.getInstance().printText(value)
             SunmiPrinterApi.getInstance().lineWrap(1)
         }
@@ -372,13 +352,13 @@ class PrintSunmiUtils {
 
             SunmiPrinterApi.getInstance().setAlignMode(1)
             SunmiPrinterApi.getInstance().enableBold(true)
-            SunmiPrinterApi.getInstance().setFontZoom(1, 1)
+            setFontSize()
             SunmiPrinterApi.getInstance().printText("Order Note")
             SunmiPrinterApi.getInstance().lineWrap(1)
 
             SunmiPrinterApi.getInstance().setAlignMode(1)
             SunmiPrinterApi.getInstance().enableBold(false)
-            SunmiPrinterApi.getInstance().setFontZoom(1, 1)
+            setFontSize()
             SunmiPrinterApi.getInstance().printText(value)
             SunmiPrinterApi.getInstance().lineWrap(1)
         }
@@ -402,7 +382,7 @@ class PrintSunmiUtils {
 
             SunmiPrinterApi.getInstance().setAlignMode(1)
             SunmiPrinterApi.getInstance().enableBold(false)
-            SunmiPrinterApi.getInstance().setFontZoom(1, 1)
+            setFontSize()
             SunmiPrinterApi.getInstance().printText(value)
             SunmiPrinterApi.getInstance().lineWrap(1)
         }
@@ -410,7 +390,7 @@ class PrintSunmiUtils {
         fun deliveryType(value: String) {
             SunmiPrinterApi.getInstance().setAlignMode(1)
             SunmiPrinterApi.getInstance().enableBold(true)
-            SunmiPrinterApi.getInstance().setFontZoom(1, 2)
+            SunmiPrinterApi.getInstance().setFontZoom(2, 2)
             SunmiPrinterApi.getInstance().printText(value)
             SunmiPrinterApi.getInstance().lineWrap(2)
 
@@ -424,6 +404,26 @@ class PrintSunmiUtils {
             SunmiPrinterApi.getInstance().lineWrap(1)
 
         }
+
+        fun fontSize(fonts: String) {
+            this.fontSize = fonts
+        }
+
+        private fun setFontSize() {
+            when (fontSize) {
+                Constants.SMALL -> {
+                    SunmiPrinterApi.getInstance().setFontZoom(1, 1)
+                }
+                Constants.MEDIUM -> {
+                    SunmiPrinterApi.getInstance().setFontZoom(1, 2)
+                }
+                Constants.LARGE -> {
+                    SunmiPrinterApi.getInstance().setFontZoom(2, 2)
+                }
+                else -> SunmiPrinterApi.getInstance().setFontZoom(1, 1)
+            }
+        }
+
 
     }
 
