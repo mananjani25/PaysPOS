@@ -23,6 +23,7 @@ import com.android.pos.data.model.responseModel.GetCustomerReceiptSettingsRespon
 import com.android.pos.data.model.responseModel.GetTipReponse
 import com.android.pos.data.model.responseModel.PrinterResponse
 import com.android.pos.data.remote.Constants
+import com.android.pos.data.remote.Constants.KEY
 import com.android.pos.data.remote.Constants.getCurrentTimeFromTimeZone
 import com.android.pos.databinding.FragmentTransactionDetailsBinding
 import com.android.pos.di.PrefProvider
@@ -105,13 +106,6 @@ class TransactionDetailsFragment : Fragment() {
         }
 
 
-        val callback: OnBackPressedCallback =
-            object : OnBackPressedCallback(true /* enabled by default */) {
-                override fun handleOnBackPressed() {
-                    findNavController().popBackStack(R.id.transactionFragment, false)
-                }
-            }
-        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
 
         viewModel.serviceCharges.observe(requireActivity()) {
             if (prefProvider.getValue(
@@ -150,13 +144,34 @@ class TransactionDetailsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        var selectedorderType = arguments?.getInt("selectedorderType")
+        var selectedtransactionType = arguments?.getInt("selectedtransactionType")
+        var selectedroleType = arguments?.getInt("selectedroleType")
+        var selectedemployeeType = arguments?.getInt("selectedemployeeType")
+        var selectedterminalType = arguments?.getInt("selectedterminalType")
+        val callback: OnBackPressedCallback =
+            object : OnBackPressedCallback(true /* enabled by default */) {
+                override fun handleOnBackPressed() {
+                    var bundle: Bundle = Bundle()
+                    bundle.putInt("selectedorderType", selectedorderType!!)
+                    bundle.putInt("selectedtransactionType", selectedtransactionType!!)
+                    bundle.putInt("selectedroleType", selectedroleType!!)
+                    bundle.putInt("selectedemployeeType", selectedemployeeType!!)
+                    bundle.putInt("selectedterminalType", selectedterminalType!!)
+                    sendBackData(bundle)
+
+                }
+            }
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
 
         binding.imgBack.setOnClickListener {
-//            val navControll = findNavController()
-//            navControll.previousBackStackEntry?.savedStateHandle?.set(KEY, arguments)
-//            navControll.popBackStack()
-
-            findNavController().popBackStack(R.id.transactionFragment, false)
+            var bundle: Bundle = Bundle()
+            bundle.putInt("selectedorderType", selectedorderType!!)
+            bundle.putInt("selectedtransactionType", selectedtransactionType!!)
+            bundle.putInt("selectedroleType", selectedroleType!!)
+            bundle.putInt("selectedemployeeType", selectedemployeeType!!)
+            bundle.putInt("selectedterminalType", selectedterminalType!!)
+            sendBackData(bundle)
         }
 
         binding.txtHome.setOnClickListener {
@@ -257,6 +272,11 @@ class TransactionDetailsFragment : Fragment() {
             openReceiptDialog(2)
 
         }
+    }
+
+    private fun sendBackData(bundle: Bundle) {
+        findNavController().previousBackStackEntry?.savedStateHandle?.set(KEY, bundle)
+        findNavController().popBackStack(R.id.transactionFragment, false)
     }
 
     private fun openReceiptDialog(type: Int) {
@@ -1121,7 +1141,7 @@ class TransactionDetailsFragment : Fragment() {
 
 
 
-            if (paymentDetailsResponse.data?.cash_discount_or_surcharge != null && paymentDetailsResponse.data?.cash_discount_or_surcharge != 0.0 ) {
+            if (paymentDetailsResponse.data?.cash_discount_or_surcharge != null && paymentDetailsResponse.data?.cash_discount_or_surcharge != 0.0) {
 
                 builder.addTextLineSpace(30)
                 builder.addFeedUnit(30)

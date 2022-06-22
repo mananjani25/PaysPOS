@@ -186,19 +186,24 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
             val result = bundle.getParcelable<TbDiscount>("data")
             val value = bundle.getDouble("value")
             if (result != null && viewModel.totalPrice != 0.0) {
-                orderDiscount = result.percentage
+                try {
+                    orderDiscount = result.percentage
 
-                val discountApplyPrice = viewModel.totalPrice
-                val price = discountApplyPrice - orderDiscount
-
-                if (cartList.isNotEmpty()) {
-                    cartList[0].discountPrice = orderDiscount
-                    cartList[0].discountSelectdValue = value
-                    cartList[0].discountType = result.discountType
-                    if (result.id != -1) {
-                        cartList[0].discountId = result.id
+                    val discountApplyPrice = viewModel.totalPrice
+                    val price = discountApplyPrice - orderDiscount
+                    Log.d(TAG, "resultListener: " + cartList.size)
+                    if (viewModel.cartModel != null) {
+                        viewModel.cartModel!!.discountPrice = orderDiscount
+                        viewModel.cartModel!!.discountSelectdValue = value
+                        viewModel.cartModel!!.discountType = result.discountType
+                        if (result.id != -1) {
+                            viewModel.cartModel!!.discountId = result.id
+                        }
+                        viewModel.addCart(viewModel.cartModel!!)
                     }
-                    viewModel.addCart(cartList[0])
+                    Log.d(TAG, "resultListener: " + Gson().toJson(viewModel.cartModel!!))
+                } catch (e: Exception) {
+                    e.printStackTrace()
                 }
 
 
@@ -300,8 +305,6 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
             cartList[0].customer = result
             viewModel.addCart(cartList[0])
         }
-
-
     }
 
     private fun calculateDiscountPercentage(originalPrice: Double, percentage: Double): Double {
@@ -735,15 +738,22 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                     Log.e(TAG, "getServiceCharge:  ${Gson().toJson(it.data)}")
                     serviceChargesList = ArrayList()
                     viewModel.serviceChargesList.clear()
-                    it.data?.forEach { service->
+                    it.data?.forEach { service ->
                         if (service.order_type == Constants.SERVICECHARGE_DINEIN_ORDER) {
                             serviceChargesList?.add(service)
                             viewModel.serviceChargesList.add(service)
                         }
                     }
-                    Log.d(TAG, "getServiceCharges: finall "+Gson().toJson(viewModel.serviceChargesList))
+                    Log.d(
+                        TAG,
+                        "getServiceCharges: finall " + Gson().toJson(viewModel.serviceChargesList)
+                    )
                 } else {
-                    if (prefProvider.getValueboolean(Constants.SERVICECHARGE_TAKEOUT_OPENORDER, false)) {
+                    if (prefProvider.getValueboolean(
+                            Constants.SERVICECHARGE_TAKEOUT_OPENORDER,
+                            false
+                        )
+                    ) {
                         Log.e(TAG, "getServiceCharge:  ${Gson().toJson(it.data)}")
                         serviceChargesList = ArrayList()
                         viewModel.serviceChargesList.clear()
@@ -753,7 +763,10 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                                 viewModel.serviceChargesList.add(service)
                             }
                         }
-                        Log.d(TAG, "getServiceCharges: finall "+Gson().toJson(viewModel.serviceChargesList))
+                        Log.d(
+                            TAG,
+                            "getServiceCharges: finall " + Gson().toJson(viewModel.serviceChargesList)
+                        )
 
                     }
                 }
@@ -1013,7 +1026,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
             Log.e(TAG, "PrinterException: " + e.message)
             printer = null
             viewModel.downloadFinished(false)
-            if (findNavController().currentDestination?.id==R.id.dashboardCategoryBoldPOS){
+            if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
                 findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
             }
 

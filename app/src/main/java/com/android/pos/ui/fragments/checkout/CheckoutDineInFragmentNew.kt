@@ -894,10 +894,17 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                     String.format("%.2f", paymentAmount + cashDiscountSurcharge).toDouble()
             }
             //  makePaymentCreditCard()
-            if (device == 0) {
-                magtekPaymentCall()
+            paymentAmount += tipAmount
+
+            if (paymentAmount != 0.0) {
+                magtekModule.stopListner(false)
+                if (device == 0) {
+                    magtekPaymentCall()
+                } else {
+                    magtekProPaymentCall()
+                }
             } else {
-                magtekProPaymentCall()
+                errorDisplay("Payment Amount is zero.")
             }
         }
         binding.llManualCardEntry.setOnClickListener {
@@ -986,7 +993,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                 paymentAmount =
                     String.format("%.2f", paymentAmount + cashDiscountSurcharge).toDouble()
             }
-
+            paymentAmount += tipAmount
             cardNumber = binding.edtCardNumber.rawText.toString().trim()
             cardExpDate = binding.edtMMYY.rawText.toString().trim()
             cardCVV = binding.edtCVV.text.toString().trim()
@@ -1006,12 +1013,15 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                     errorDisplay("Please enter valid CVV number")
                 }
                 else -> {
-
-                    manualCardPaymentCall(
-                        cardNumber,
-                        cardExpDate.takeLast(2) + cardExpDate.take(2),
-                        cardCVV
-                    )
+                    if (paymentAmount != 0.0) {
+                        manualCardPaymentCall(
+                            cardNumber,
+                            cardExpDate.takeLast(2) + cardExpDate.take(2),
+                            cardCVV
+                        )
+                    } else {
+                        errorDisplay("Payment Amount is zero.")
+                    }
                 }
             }
 
@@ -1774,6 +1784,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                             )
                             if (isGuestPay) {
                                 paymentType = "Card"
+                                paymentAmount-=tipAmount
                                 dineinOrderVieweModel.totalPayAmount(paymentAmount)
 
                                 guestAttributeCalculation(i, Gson().toJson(response.body()!![0]))
@@ -1792,6 +1803,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                                     )
                                 }
                             } else {
+                                paymentAmount-=tipAmount
                                 makePaymentCreditCard()
                             }
                         } else {

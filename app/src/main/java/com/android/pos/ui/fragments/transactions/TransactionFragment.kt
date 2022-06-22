@@ -297,16 +297,16 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
         else {
             findNavController().currentBackStackEntry?.savedStateHandle?.getLiveData<Bundle>(KEY)
                 ?.observe(viewLifecycleOwner) { it ->
-                    it.getString("selectedorderType")?.toInt()
-                        ?.let { it1 -> binding.includeView.spOrders.setSelection(it1) }
-                    it.getString("selectedtransactionType")?.toInt()
-                        ?.let { it1 -> binding.includeView.spTransactionTypes.setSelection(it1) }
-                    it.getString("selectedroleType")?.toInt()
-                        ?.let { it1 -> binding.includeView.spRoles.setSelection(it1) }
-                    it.getString("selectedemployeeType")?.toInt()
-                        ?.let { it1 -> binding.includeView.spEmployees.setSelection(it1) }
-                    it.getString("selectedterminalType")?.toInt()
-                        ?.let { it1 -> binding.includeView.spTerminals.setSelection(it1) }
+                    it.getInt("selectedorderType")
+                        .let { it1 -> binding.includeView.spOrders.setSelection(it1) }
+                    it.getInt("selectedtransactionType")
+                        .let { it1 -> binding.includeView.spTransactionTypes.setSelection(it1) }
+                    it.getInt("selectedroleType")
+                        .let { it1 -> binding.includeView.spRoles.setSelection(it1) }
+                    it.getInt("selectedemployeeType")
+                        .let { it1 -> binding.includeView.spEmployees.setSelection(it1) }
+                    it.getInt("selectedterminalType")
+                        .let { it1 -> binding.includeView.spTerminals.setSelection(it1) }
                     apiCallTimeSheet()
                 }
         }
@@ -907,25 +907,25 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
                     putBoolean("isFromTrans", true)
                     putString("orderType", it.orderDetails.orderType)
 
-                    putString(
+                    putInt(
                         "selectedorderType",
-                        binding.includeView.spOrders.selectedItemPosition.toString()
+                        binding.includeView.spOrders.selectedItemPosition
                     )
-                    putString(
+                    putInt(
                         "selectedtransactionType",
-                        binding.includeView.spTransactionTypes.selectedItemPosition.toString()
+                        binding.includeView.spTransactionTypes.selectedItemPosition
                     )
-                    putString(
+                    putInt(
                         "selectedroleType",
-                        binding.includeView.spRoles.selectedItemPosition.toString()
+                        binding.includeView.spRoles.selectedItemPosition
                     )
-                    putString(
+                    putInt(
                         "selectedemployeeType",
-                        binding.includeView.spEmployees.selectedItemPosition.toString()
+                        binding.includeView.spEmployees.selectedItemPosition
                     )
-                    putString(
+                    putInt(
                         "selectedterminalType",
-                        binding.includeView.spTerminals.selectedItemPosition.toString()
+                        binding.includeView.spTerminals.selectedItemPosition
                     )
                 }
                 findNavController().navigate(
@@ -960,6 +960,7 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
         selectedPos = pos
         singleTransaction = transactionAdapter.getItem(pos)
 
+
         val bundle = Bundle()
         bundle.putDouble("totalTip", singleTransaction!!.tips)
         bundle.putBoolean("isFromTransaction", true)
@@ -973,7 +974,7 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
     }
 
     private fun magtekCall(refundAmount: Double) {
-        if(singleTransaction?.orderDetails?.orderType=="OnlineWebOrder"){
+        if (singleTransaction?.orderDetails?.orderType == "OnlineWebOrder") {
             val model = Gson().fromJson(
                 singleTransaction?.orderDetails?.magensaResponse,
                 MagtekOnlineOrderRefundResponse::class.java
@@ -1100,7 +1101,7 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
 
 
             }
-        }else{
+        } else {
             val model = Gson().fromJson(
                 singleTransaction?.orderDetails?.magensaResponse,
                 PaymentResponse.PaymentResponseItem::class.java
