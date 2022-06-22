@@ -1755,7 +1755,7 @@ class ActiveOrderFragment(
                 builder.addText(
                     padLine(
                         "Transaction ID",
-                        receiptModel.payments.get(0).transactionId,
+                        receiptModel.payments.get(0).id.toString(),
                         if (customerSettingModel.fonts == Constants.LARGE) {
                             24
                         } else {

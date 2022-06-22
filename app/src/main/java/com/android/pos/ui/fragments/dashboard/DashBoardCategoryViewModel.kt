@@ -72,7 +72,6 @@ import java.net.HttpURLConnection
 import java.net.URL
 import java.util.*
 import javax.inject.Inject
-import kotlin.collections.ArrayList
 import kotlin.collections.set
 
 
@@ -2382,8 +2381,10 @@ class DashBoardCategoryViewModel @Inject constructor(
     fun updateOrder(cartModel: CartModel): OrderRequestModel {
         val orderModel: OrderAttributeRequestModel = OrderAttributeRequestModel()
         var ttotalDiscount = totalDiscount
+        Log.e(TAG,"getCartmodelId  ${cartModel.orderId}")
         orderModel.apply {
             date = TimeFormatUtils.getCurrentDate()
+            id = if (cartModel.orderId != null && cartModel.orderId != 0){ cartModel.orderId}else{null}
 
             employeeId = prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
             locationId = prefProvider.getValueInt(Constants.LOCATION_ID, 1)
@@ -2397,6 +2398,7 @@ class DashBoardCategoryViewModel @Inject constructor(
             totalServiceCharges = totalServiceCharge
             totalTaxAmount = totalTax
             orderItemsAttributes = dineInOrderItemAttributed(cartModel)
+            offlineId = null
             //            paymentAttributes =
 //                paymentAttributes(
 //                    cartModel,

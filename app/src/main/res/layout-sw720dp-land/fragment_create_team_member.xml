@@ -331,7 +331,7 @@
                         android:layout_gravity="center"
                         android:background="@drawable/background_square_border_grey"
                         android:digits="@string/disable_emoji_string"
-                        android:hint="Add Hourly rate"
+                        android:hint="Add Hourly Rate"
                         android:imeOptions="actionNext"
                         android:inputType="numberDecimal"
                         android:padding="@dimen/_9sdp"

@@ -24,6 +24,7 @@ data class DineInModel(
     var orderDiscount: Double = 0.0,
     var wholeTableSurTax: Double = 0.0,
     var wholeTableTax: Double = 0.0,
+    var wholeTableDiscont: Double = 0.0,
     var totalGuestCount: Int = 0,
     var isHeader: Int = 0,
     var item: TbItem? = null,

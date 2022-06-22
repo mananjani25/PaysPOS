@@ -900,6 +900,78 @@ fun addOrdersForKitchenDineIn(
     return builder
 }
 
+fun addOrdersForKitchenOnlineOrder(
+    builder: Builder,
+    list: List<OnlineOrderResponseModel.Data.OrderItem>,
+    fontSizeH: Int = 1,
+    fontSizeW: Int = 1
+): Builder {
+    for (i in 0 until list.size) {
+        val obj = list.get(i)
+        builder.addTextLineSpace(30)
+        builder.addFeedUnit(30)
+        builder.addTextFont(Builder.FONT_C)
+        builder.addTextLang(Builder.LANG_EN)
+        builder.addTextAlign(Builder.ALIGN_LEFT)
+        builder.addTextSize(fontSizeH, fontSizeW)
+        builder.addTextStyle(
+            Builder.FALSE,
+            Builder.FALSE,
+            Builder.TRUE,
+            Builder.COLOR_1
+        )
+
+        builder.addText(obj.quantity.toString() + " " + obj.itemName)
+
+        if (obj.orderItemModifiers.isNotEmpty()) {
+            for (j in 0 until obj.orderItemModifiers.size) {
+                val modifierObj = obj.orderItemModifiers.get(j)
+                builder.addTextLineSpace(30)
+                builder.addFeedUnit(30)
+                builder.addTextFont(Builder.FONT_C)
+                //builder.addTextLineSpace(20)
+                builder.addTextAlign(Builder.ALIGN_LEFT)
+                builder.addTextLang(Builder.LANG_EN)
+                builder.addTextSize(fontSizeH, fontSizeW)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.TRUE,
+                    Builder.COLOR_2
+                )
+                //builder.addTextPosition(1)
+
+
+                builder.addText("  " + modifierObj.name)
+
+
+            }
+        }
+        if (obj.note.isNotEmpty()) {
+            builder.addTextLineSpace(30)
+            builder.addFeedUnit(30)
+            builder.addTextFont(Builder.FONT_C)
+            //builder.addTextLineSpace(20)
+            builder.addTextAlign(Builder.ALIGN_LEFT)
+            builder.addTextLang(Builder.LANG_EN)
+            builder.addTextSize(fontSizeH, fontSizeW)
+            builder.addTextStyle(
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.TRUE,
+                Builder.COLOR_1
+            )
+            builder.addText("  Note:" + obj.note)
+
+        }
+
+
+    }
+
+
+    return builder
+}
+
 fun addOrdersForKitchenDineIn(
 
     list: ArrayList<TbItem>

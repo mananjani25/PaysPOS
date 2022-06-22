@@ -300,6 +300,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         Log.e(TAG, "receiptModel:  ${Gson().toJson(receiptModel)}")
         setLabelData()
 
+        binding.edtEmail.setOnFocusChangeListener { v, hasFocus ->
+            if (hasFocus) {
+                binding.edtEmail.setHint("")
+            }
+        }
         if (!isDineIn) {
             if (isSpilt) {
                 // saveDataInPrefrences()
@@ -3312,59 +3317,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 }
 
 
-                /*if (getDineInOrderDetails?.cash_discount_or_surcharge != null) {
-                    builder.addTextLineSpace(30)
-                    builder.addFeedUnit(30)
-                    builder.addTextFont(Builder.FONT_E)
-                    // builder.addTextAlign(Builder.ALIGN_LEFT)
-                    builder.addTextLang(Builder.LANG_EN)
-                    addCustomerTextSize(builder, customerSettingModel.fonts)
-                    builder.addTextStyle(
-                        Builder.FALSE,
-                        Builder.FALSE,
-                        Builder.FALSE,
-                        Builder.COLOR_1
-                    )
 
-                    builder.addText(
-                        padLine(
-                            "Cash Discount",
-                            if (getDineInOrderDetails?.cash_discount_or_surcharge == 0.0) {
-                                "$" + getDineInOrderDetails?.cash_discount_or_surcharge?.let {
-                                    MethodUtils.roundOffAmountString(
-                                        it
-                                    )
-                                }
-                            } else {
-                                "-$" + getDineInOrderDetails?.cash_discount_or_surcharge?.let {
-                                    MethodUtils.roundOffAmountString(
-                                        it
-                                    )
-                                }
-                            },
-                            if (customerSettingModel.fonts == Constants.LARGE) {
-                                24
-                            } else {
-                                48
-                            }
-                        )
-                    )
-                }*/
-
-                builder.addTextLineSpace(30)
-                builder.addFeedUnit(30)
-
-
-                Log.e(
-                    TAG,
-                    "getDineInOrderDetailsgetDineInOrderDetails  ${
-                        Gson().toJson(
-                            getDineInOrderDetails
-                        )
-                    }"
-                )
-                builder.addTextLineSpace(30)
-                builder.addFeedUnit(30)
+            builder.addTextLineSpace(30)
+            builder.addFeedUnit(30)
 
                 builder.addTextFont(Builder.FONT_E)
                 // builder.addTextAlign(Builder.ALIGN_LEFT)
@@ -3456,18 +3411,22 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     Builder.COLOR_1
                 )
 
-                //ADDCHANGE
-                builder.addText(
-                    padLine(
-                        "Change Amount",
-                        "$" + MethodUtils.roundOffAmountString(changeAmtGlobal),
-                        if (customerSettingModel.fonts == LARGE) {
-                            24
-                        } else {
-                            48
-                        }
-                    )
+            //ADDCHANGE
+
+            if (remainingAmount == 0.0) {
+                changeAmtGlobal += tipAmount
+            }
+            builder.addText(
+                padLine(
+                    "Change Amount",
+                    "$" + MethodUtils.roundOffAmountString(changeAmtGlobal),
+                    if (customerSettingModel.fonts == LARGE) {
+                        24
+                    } else {
+                        48
+                    }
                 )
+            )
 
                 if (isSpilt) {
                     builder.addTextLineSpace(30)

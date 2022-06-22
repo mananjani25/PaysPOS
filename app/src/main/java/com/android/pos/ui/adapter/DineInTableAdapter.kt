@@ -167,8 +167,6 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             }
 
 
-            Log.e("GuestPAid", "${list.get(position).isPaid}")
-
             guestAmt += list.get(0).guestDividedAmt
 
 
@@ -223,7 +221,7 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             var totalServiceCharge = 0.0
 
 
-            if (serviceChargeList?.isNotEmpty() == true) {
+            if (serviceChargeList.isNotEmpty() == true) {
                 var isApplied = false
                 serviceChargeList.forEach {
                     if (it.order_type == Constants.SERVICECHARGE_DINEIN_ORDER) {
@@ -236,10 +234,7 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                             isApplied =true
                             totalServiceCharge += (guestSubTotal * it.percentage) / 100
                             return@forEach
-                            Log.d(
-                                TAG,
-                                "calculateDineInServiceCharge: Dinein " + it.min_guest_count + "....." + it.max_guest_count + " in between " + list.get(0).totalGuestCount
-                            )
+
                         }
                     }
 
@@ -384,15 +379,18 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
                     Log.e("AAjeCje","orderDiscount  ${list[0].orderDiscount}")
                     Log.e("AAjeCje","guestDiscount  ${guestDiscount}")
+                    Log.e("AAjeCje","wholeTableDiscont  ${list[0].wholeTableDiscont}")
+                    Log.e("AAjeCjerer","guestSubTotal  ${guestSubTotal}")
+                    Log.e("AAjeCjerer","wholeTableSubTotal  ${list.get(0).wholeTableSubTotal}")
                     listner.onGuestPrint(
                         listItem,
                         guestName,
                         listItemWT,
-                        MethodUtils.roundOffAmountDouble(guestSubTotal + list.get(0).wholeTableSubTotal),
+                        MethodUtils.roundOffAmountDouble(guestSubTotal + list.get(0).wholeTableSubTotal - (list[0].orderDiscount / list[0].totalGuestCount)),
                         MethodUtils.roundOffAmountDouble(finalAmt),
                         MethodUtils.roundOffAmountDouble(totalTaxAmt + list.get(0).wholeTableTax),
                         MethodUtils.roundOffAmountDouble(totalServiceCharge + list.get(0).wholeTableSurTax),
-                        list[0].orderDiscount + guestDiscount
+                        (list[0].orderDiscount / list[0].totalGuestCount) + guestDiscount +list[0].wholeTableDiscont
                     )
                 }
 
