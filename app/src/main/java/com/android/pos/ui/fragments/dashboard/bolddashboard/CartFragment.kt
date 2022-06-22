@@ -1775,7 +1775,7 @@ class CartFragment(
             tableNumber = dineInFloorTableModel?.tableNumber,
             chairCount = dineInFloorTableModel?.chairCount,
             floorPlanName = "",
-            totalGuestCount = dineInCartAdapter.getList().size + 1
+            totalGuestCount = dineInCartAdapter.getList().size - 1
 
 
         )

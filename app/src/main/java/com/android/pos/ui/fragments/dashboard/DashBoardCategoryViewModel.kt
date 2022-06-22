@@ -1753,10 +1753,7 @@ class DashBoardCategoryViewModel @Inject constructor(
             orderServiceChargesAttributes(cartModel, subTotalPrice)
 
         orderAttributeRequestModel.guestsAttributes = getGuestsAttributes(cartModel)
-        Log.e(
-            TAG,
-            "guestsAttributesData:  ${Gson().toJson(orderAttributeRequestModel.guestsAttributes)}"
-        )
+
 
         orderAttributeRequestModel.orderItemsAttributes = dineInOrderItemAttributed(cartModel)
 
