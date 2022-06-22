@@ -699,12 +699,14 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
             paymentType = "Cash"
             guestAttributeCalculation(-1, "")
             guestRequestModel?.paymentAttributes?.let { logPrintGuest(it) }
-            if(dineInDataModel.isLastPayment){
+            if (dineInDataModel.isLastPayment) {
                 dineinOrderVieweModel.payByGuest(
-                    dineInDataModel.guestId ?: 0, dineInDataModel.guestPaymentReq!!,
-                    dineInDataModel.isLastPayment == isSelectedCount <= 1, dineInDataModel.splitModel!!
+                    dineInDataModel.guestId ?: 0,
+                    dineInDataModel.guestPaymentReq!!,
+                    dineInDataModel.isLastPayment == isSelectedCount <= 1,
+                    dineInDataModel.splitModel!!
                 )
-            }else{
+            } else {
                 dineinOrderVieweModel.payByGuest(
                     dineInDataModel.guestId ?: 0, dineInDataModel.guestPaymentReq!!,
                     false, dineInDataModel.splitModel!!
@@ -788,7 +790,8 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
 
 
                 guestRequestModel?.paymentAttributes!!.cardType = "Credit"
-                guestRequestModel?.paymentAttributes!!.transactionId = model.transactionOutput?.transactionID.toString()
+                guestRequestModel?.paymentAttributes!!.transactionId =
+                    model.transactionOutput?.transactionID.toString()
             }
         }
         val guestPaymentAttributes = GuestPaymentAttributes()
@@ -823,7 +826,8 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
             guestPaymentAttributes.cardName = guestRequestModel?.paymentAttributes!!.cardName
             guestPaymentAttributes.cardNumber = guestRequestModel?.paymentAttributes!!.cardNumber
             guestPaymentAttributes.cardType = guestRequestModel?.paymentAttributes!!.cardType
-            guestPaymentAttributes.transactionId = guestRequestModel?.paymentAttributes!!.transactionId
+            guestPaymentAttributes.transactionId =
+                guestRequestModel?.paymentAttributes!!.transactionId
         }
 
         guestRequestModel?.paymentAttributes!!.paymentAttributes =
@@ -1427,6 +1431,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
     }
 
     private fun makePaymentCreditCard() {
+        paymentAmount -= tipAmount
         paymentType = "Card"
         Log.e(TAG, "cartList:  ${Gson().toJson(cartList)}")
         Log.e(TAG, "cartListcartItems:  ${Gson().toJson(cartItems)}")
@@ -1784,26 +1789,26 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                             )
                             if (isGuestPay) {
                                 paymentType = "Card"
-                                paymentAmount-=tipAmount
                                 dineinOrderVieweModel.totalPayAmount(paymentAmount)
 
                                 guestAttributeCalculation(i, Gson().toJson(response.body()!![0]))
                                 guestRequestModel?.paymentAttributes?.let { logPrintGuest(it) }
-                                if(dineInDataModel.isLastPayment){
+                                if (dineInDataModel.isLastPayment) {
                                     dineinOrderVieweModel.payByGuest(
                                         dineInDataModel.guestId ?: 0,
                                         dineInDataModel.guestPaymentReq!!,
                                         dineInDataModel.isLastPayment == isSelectedCount <= 1,
                                         dineInDataModel.splitModel
                                     )
-                                }else{
+                                } else {
                                     dineinOrderVieweModel.payByGuest(
-                                        dineInDataModel.guestId ?: 0, dineInDataModel.guestPaymentReq!!,
-                                        false, dineInDataModel.splitModel!!
+                                        dineInDataModel.guestId ?: 0,
+                                        dineInDataModel.guestPaymentReq!!,
+                                        false,
+                                        dineInDataModel.splitModel!!
                                     )
                                 }
                             } else {
-                                paymentAmount-=tipAmount
                                 makePaymentCreditCard()
                             }
                         } else {

@@ -1247,6 +1247,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
     }
 
     private fun makePaymentCreditCard() {
+        paymentAmount -= tipAmount
         paymentType = "Card"
         Log.e(TAG, "cartList:  ${Gson().toJson(cartList)}")
         Log.e(TAG, "cartListcartItems:  ${Gson().toJson(cartItems)}")
@@ -1562,7 +1563,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                                 if (i == 3) cardNumber else ""
                             )
 
-                            paymentAmount -= tipAmount
+
                             makePaymentCreditCard()
 
                             isInsert = true
