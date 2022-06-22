@@ -4,7 +4,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.android.pos.data.model.requestModel.RefundRequestModel
 import com.android.pos.data.model.requestModel.RefundRequestModelOnlineOrder
 import com.android.pos.data.model.responseModel.*
 import com.android.pos.data.repositories.PosRepository
@@ -39,6 +38,13 @@ class OnlineDetailViewModel @Inject constructor(
     private val _startDateSelection = MutableLiveData<Event<Unit>>()
     val startDateSelection: LiveData<Event<Unit>> = _startDateSelection
 
+    fun getKitchenReceiptSettings() = posRepository.getKitchenReceiptSettings()
+
+    fun getKitchenPrinterList(): LiveData<Resource<List<PrinterResponse.Data.KitchenReceiptPrinters>>> {
+        return posRepository.getKitchenPrinters()
+    }
+
+
     private val _endDateSelection = MutableLiveData<Event<Unit>>()
     val endDateSelection: LiveData<Event<Unit>> = _endDateSelection
 
@@ -72,7 +78,7 @@ class OnlineDetailViewModel @Inject constructor(
         isaccepted: Boolean,
         employee_id:Int,
         terminalid:Int
-    ): LiveData<Resource<BaseResponse>> =
+    ): LiveData<Resource<OnlineOrderStatusUpdateResponse>> =
         posRepository.acceptedAndDeclineOrders(time, order_id,isaccepted,employee_id,terminalid)
 
     fun refundPaymentApiCall(
