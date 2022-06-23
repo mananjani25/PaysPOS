@@ -1,6 +1,7 @@
 package com.android.pos.ui.adapter.boldpos
 
 import android.R.attr.data
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
@@ -27,7 +28,13 @@ class TaxBirfurcationAdapter(var isFrom: String) : RecyclerView.Adapter<Recycler
                     ) + " "
                 )
             }
-            binding.txtName.text = stringBuffer.toString()
+
+            if (stringBuffer.length > 15) {
+                var value = stringBuffer.toString().substring(0, 15).toString() + "..."
+                binding.txtName.text = value
+            } else {
+                binding.txtName.text = stringBuffer.toString()
+            }
 
             if (item.taxType.equals("Percentage")) {
                 binding.txtValue.text = String.format("%.2f", item.rate) + "%"
@@ -55,6 +62,7 @@ class TaxBirfurcationAdapter(var isFrom: String) : RecyclerView.Adapter<Recycler
 
     class MyViewHolderDashBoard(private val binding: LayoutTaxDashBifurcatioinBinding) :
         RecyclerView.ViewHolder(binding.root) {
+        @SuppressLint("SetTextI18n")
         fun bind(item: TaxData, pos: Int) {
             val items: List<String> = item.name!!.split(" ")
             var stringBuffer: StringBuffer = StringBuffer()
@@ -66,7 +74,12 @@ class TaxBirfurcationAdapter(var isFrom: String) : RecyclerView.Adapter<Recycler
                     ) + " "
                 )
             }
-            binding.txtName.text = stringBuffer.toString()
+            if (stringBuffer.length > 15) {
+                var value = stringBuffer.toString().substring(0, 15).toString() + "..."
+                binding.txtName.text = value
+            } else {
+                binding.txtName.text = stringBuffer.toString()
+            }
 
             if (item.taxType.equals("Percentage")) {
                 binding.txtValue.text = String.format("%.2f", item.rate) + "%"

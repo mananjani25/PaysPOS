@@ -1,6 +1,6 @@
 package com.android.pos.ui.fragments.manualsales
 
-import android.annotation.SuppressLint
+import  android.annotation.SuppressLint
 import android.app.Dialog
 import android.graphics.Color
 import android.graphics.drawable.BitmapDrawable
@@ -64,6 +64,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
     var amountToBepaid = 0.0
     var totalquantity = 0
     var taxClickable = false
+
     @Inject
     lateinit var rolePermission: RolePermission
     private var serviceChargesList: ArrayList<TbServiceCharge>? = null
@@ -140,31 +141,31 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
         callbackForDialog()
         setupTaxAdapter()
         binding.linearTaxDetail.setOnClickListener {
-            if(taxBirfurcationAdapter.taxlist.size>0){
+            if (taxBirfurcationAdapter.taxlist.size > 0) {
                 if (!taxClickable) {
                     Log.d(TAG, "onViewCreated: " + taxBirfurcationAdapter.taxlist.size)
                     taxClickable = true
                     if (taxBirfurcationAdapter.taxlist.size == 1) {
-                        if(viewModel.order_note.isNotEmpty()){
+                        if (viewModel.order_note.isNotEmpty()) {
                             binding.linearBottomInfo.layoutParams.height =
                                 resources.getDimension(R.dimen._75sdp).toInt()
-                        }else{
+                        } else {
                             binding.linearBottomInfo.layoutParams.height =
                                 resources.getDimension(R.dimen._60sdp).toInt()
                         }
                     } else if (taxBirfurcationAdapter.taxlist.size == 2) {
-                        if (viewModel.order_note.isNotEmpty()){
+                        if (viewModel.order_note.isNotEmpty()) {
                             binding.linearBottomInfo.layoutParams.height =
                                 resources.getDimension(R.dimen._85sdp).toInt()
-                        }else{
+                        } else {
                             binding.linearBottomInfo.layoutParams.height =
                                 resources.getDimension(R.dimen._75sdp).toInt()
                         }
                     } else {
-                        if (viewModel.order_note.isNotEmpty()){
+                        if (viewModel.order_note.isNotEmpty()) {
                             binding.linearBottomInfo.layoutParams.height =
                                 resources.getDimension(R.dimen._110sdp).toInt()
-                        }else{
+                        } else {
                             binding.linearBottomInfo.layoutParams.height =
                                 resources.getDimension(R.dimen._100sdp).toInt()
                         }
@@ -173,10 +174,10 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                     binding.imgDropdown.setImageResource(R.drawable.ic_solid_up_arrow)
                     binding.relativeDynamicTax.visible()
                 } else {
-                    if(viewModel.order_note.isNotEmpty()){
+                    if (viewModel.order_note.isNotEmpty()) {
                         binding.linearBottomInfo.layoutParams.height =
                             resources.getDimension(R.dimen._60sdp).toInt()
-                    }else{
+                    } else {
                         binding.linearBottomInfo.layoutParams.height =
                             resources.getDimension(R.dimen._50sdp).toInt()
                     }
@@ -206,15 +207,16 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
             findNavController().popBackStack()
         }
     }
+
     fun setTaxBifurcationData(taxlistData: ArrayList<TaxData>) {
         if (taxlistData?.isNotEmpty()) {
             Log.d(TAG, "addObserver: " + taxlistData.size)
             setupTaxAdapter()
             taxClickable = false
-            if(viewModel.order_note.isNotEmpty()){
+            if (viewModel.order_note.isNotEmpty()) {
                 binding.linearBottomInfo.layoutParams.height =
                     resources.getDimension(R.dimen._60sdp).toInt()
-            }else{
+            } else {
                 binding.linearBottomInfo.layoutParams.height =
                     resources.getDimension(R.dimen._50sdp).toInt()
             }
@@ -222,11 +224,11 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
             binding.imgDropdown.visible()
             taxBirfurcationAdapter.setList(taxlistData)
             binding.relativeDynamicTax.gone()
-        }else{
-            if(viewModel.order_note.isNotEmpty()){
+        } else {
+            if (viewModel.order_note.isNotEmpty()) {
                 binding.linearBottomInfo.layoutParams.height =
                     resources.getDimension(R.dimen._60sdp).toInt()
-            }else{
+            } else {
                 binding.linearBottomInfo.layoutParams.height =
                     resources.getDimension(R.dimen._50sdp).toInt()
             }
@@ -239,10 +241,10 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
 
     fun reSetTaxBifurcationData() {
         taxBirfurcationAdapter.clearList()
-        if(viewModel.order_note.isNotEmpty()){
+        if (viewModel.order_note.isNotEmpty()) {
             binding.linearBottomInfo.layoutParams.height =
                 resources.getDimension(R.dimen._60sdp).toInt()
-        }else{
+        } else {
             binding.linearBottomInfo.layoutParams.height =
                 resources.getDimension(R.dimen._50sdp).toInt()
         }
@@ -548,11 +550,37 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
 
                 if (cartList != null && cartList!!.isNotEmpty()) {
 
+                    var manuallist = cartList!![0].taxlistDynamic
 
+
+                    mainCartList[0].taxlistDynamic?.forEachIndexed { index, taxData ->
+                        var found = -1
+                        manuallist?.forEachIndexed { indexmanual, manualtax ->
+                            if (taxData.id == manualtax.id) {
+                                found = indexmanual
+                            }else{
+                                mainCartList[0].taxlistDynamic = concatenate(mainCartList[0].taxlistDynamic!!, listOf(manualtax))
+                            }
+                        }
+                        if (found != -1) {
+                            mainCartList[0].taxlistDynamic?.get(index)?.subTotalAmount =
+                                mainCartList[0].taxlistDynamic?.get(index)?.subTotalAmount!!.plus(
+                                    manuallist?.get(found)?.subTotalAmount!!
+                                )
+                            mainCartList[0].taxlistDynamic?.get(index)?.totalTaxTypePrice =
+                                mainCartList[0].taxlistDynamic?.get(index)?.totalTaxTypePrice!!.plus(
+                                    manuallist.get(found).totalTaxTypePrice
+                                )
+                        }
+                    }
+
+
+
+
+                    Log.d(TAG, "onClick:  tax : " + Gson().toJson(mainCartList[0].taxlistDynamic))
                     val manualItems = cartList!![0].items
                     val mainItems = mainCartList[0].items
                     val mergeItems = merge(mainItems!!, manualItems!!)
-
                     mainCartList[0].items = mergeItems
                     if (cartList!![0].discountPrice != 0.00)
                         mainCartList[0].discountPrice += cartList!![0].discountPrice
@@ -922,7 +950,9 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
 
         }
     }
-
+    fun <T> concatenate(vararg lists: List<T>): List<T> {
+        return listOf(*lists).flatten()
+    }
     private fun onClickKeypad() {
         binding.llKeypad.manualKeypad.tvOne.setOnClickListener {
             calculateValue("1", false)
