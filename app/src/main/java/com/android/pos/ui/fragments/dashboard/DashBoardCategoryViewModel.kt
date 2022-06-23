@@ -37,6 +37,7 @@ import com.android.pos.data.remote.Constants.DINE_IN_LIST_EDIT
 import com.android.pos.data.remote.Constants.DINE_IN_UPDATE
 import com.android.pos.data.remote.Constants.EMPLOYEE_ID
 import com.android.pos.data.remote.Constants.IS_PRINTER_QUEUE_ENABLE
+import com.android.pos.data.remote.Constants.LOCK_SCREEN_TRANSACTION
 import com.android.pos.data.remote.Constants.ONLINE_ORDER_ENABLE
 import com.android.pos.data.remote.Constants.ORDER_TYPE
 import com.android.pos.data.remote.Constants.SERVICECHARGE_DINEIN_ORDER
@@ -147,7 +148,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     fun setcheckedLoyaltyApply(isapply: Boolean) {
         redeemLoyaltyInfo.needToApplyLoyalty = isapply
-        Log.d(TAG, "setcheckedLoyaltyApply: "+redeemLoyaltyInfo.needToApplyLoyalty)
+        Log.d(TAG, "setcheckedLoyaltyApply: " + redeemLoyaltyInfo.needToApplyLoyalty)
     }
 
     fun setOrderTypeList(ordertypelist: ArrayList<TbOrderType>) {
@@ -2379,10 +2380,14 @@ class DashBoardCategoryViewModel @Inject constructor(
     fun updateOrder(cartModel: CartModel): OrderRequestModel {
         val orderModel: OrderAttributeRequestModel = OrderAttributeRequestModel()
         var ttotalDiscount = totalDiscount
-        Log.e(TAG,"getCartmodelId  ${cartModel.orderId}")
+        Log.e(TAG, "getCartmodelId  ${cartModel.orderId}")
         orderModel.apply {
             date = TimeFormatUtils.getCurrentDate()
-            id = if (cartModel.orderId != null && cartModel.orderId != 0){ cartModel.orderId}else{null}
+            id = if (cartModel.orderId != null && cartModel.orderId != 0) {
+                cartModel.orderId
+            } else {
+                null
+            }
 
             employeeId = prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
             locationId = prefProvider.getValueInt(Constants.LOCATION_ID, 1)
@@ -2669,6 +2674,11 @@ class DashBoardCategoryViewModel @Inject constructor(
                                     SERVICECHARGE_DINEIN_ORDER,
                                     it.data.enable_dine_in_service_charge
                                 )
+                                prefProvider.setValueboolean(
+                                    LOCK_SCREEN_TRANSACTION,
+                                    it.data.lock_screen_after_each_transaction
+                                )
+
                                 posRepository.addCashDiscountsFromDb(it.data.cash_discounts)
                                 taxServiceChargeRepository.deleteTaxFromDb()
                                 taxServiceChargeRepository.addAllTaxDatabase(it.data.taxes)

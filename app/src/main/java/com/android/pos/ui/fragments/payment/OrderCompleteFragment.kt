@@ -41,9 +41,11 @@ import com.android.pos.data.remote.Constants.GUEST_POSITION
 import com.android.pos.data.remote.Constants.IS_UPDATE_ORDER_LOYALTY_APPLIED
 import com.android.pos.data.remote.Constants.KITCHEN
 import com.android.pos.data.remote.Constants.LARGE
+import com.android.pos.data.remote.Constants.LOCK_SCREEN_TRANSACTION
 import com.android.pos.data.remote.Constants.LOYALTY_ADDED
 import com.android.pos.data.remote.Constants.OPEN_ORDER
 import com.android.pos.data.remote.Constants.OPTION_TYPE
+import com.android.pos.data.remote.Constants.ORDER_COMPLETED
 import com.android.pos.data.remote.Constants.PAYMENT_ID
 import com.android.pos.data.remote.Constants.PRINT_DATA_DINE_IN
 import com.android.pos.data.remote.Constants.SAVE_SPLIT_BUNDLE
@@ -3480,13 +3482,26 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 } else {
                     removeCustomer()
                     removePrefrenceDinein()
-                    findNavController().navigate(R.id.action_orderCompleteFragment_to_dashboardCategoryNew)
+                    // redirect to passcode
+                    if (prefProvider.getValueboolean(LOCK_SCREEN_TRANSACTION, false)) {
+                        prefProvider.setValueboolean(ORDER_COMPLETED, true)
+                        findNavController().navigate(R.id.action_orderCompleteFragment_to_passcode)
+                    } else {
+                        findNavController().navigate(R.id.action_orderCompleteFragment_to_dashboardCategoryNew)
+                    }
+
                 }
             } else {
                 if (findNavController().currentDestination?.id == R.id.orderCompleteFragment) {
                     removeCustomer()
                     removePrefrenceDinein()
-                    findNavController().navigate(R.id.action_orderCompleteFragment_to_dashboardCategoryNew)
+                    // redirect to passcode
+                    if (prefProvider.getValueboolean(LOCK_SCREEN_TRANSACTION, false)) {
+                        prefProvider.setValueboolean(ORDER_COMPLETED, true)
+                        findNavController().navigate(R.id.action_orderCompleteFragment_to_passcode)
+                    } else {
+                        findNavController().navigate(R.id.action_orderCompleteFragment_to_dashboardCategoryNew)
+                    }
                 }
             }
         }

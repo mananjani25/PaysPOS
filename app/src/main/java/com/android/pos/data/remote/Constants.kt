@@ -26,6 +26,7 @@ object Constants {
 
     const val SERVICECHARGE_TAKEOUT_OPENORDER = "TakeOutAndParkOrder"
     const val SERVICECHARGE_DINEIN_ORDER = "DineIn"
+    const val LOCK_SCREEN_TRANSACTION = "lock_screen_after_each_transaction"
 
     //SharedPref Keys
     const val AUTH_TOKEN = "authToken"
@@ -189,6 +190,7 @@ object Constants {
     const val HORIZONTAL = "horizontal"
 
     const val KEY = "key"
+    const val ORDER_COMPLETED = "order_completed"
     const val MANUALSALE = "ManualSale"
     const val CUSTOMERDETAILS = "customer_details"
     const val CREATECATEGORY = "create_category"
@@ -258,6 +260,9 @@ object Constants {
     const val ORDER_COUNTS = "orders/open_orders_show_count"
     const val ONLINE_ORDER_COUNTS = "online_ordering_orders/web_orders_count"
     const val ONLINE_ORDER_NOTIFICATION_COUNT = "locations/web_ordering_count"
+    const val UPDATE_LOCK_SCREEN_PERMISSION = "locations/update_lock_screen_permission"
+
+
 
     const val ACTIVE_ORDER = "active_order"
     const val UPCOMING_ORDER = "upcoming_order"
