@@ -304,6 +304,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
         if (cartList.isNotEmpty()) {
             cartList[0].customer = result
             viewModel.addCart(cartList[0])
+            viewModel.setcheckedLoyaltyApply(false)
         }
     }
 
