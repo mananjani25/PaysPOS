@@ -1530,7 +1530,7 @@ class CartFragment(
         binding.relPreoceedToFire.setOnClickListener {
             if (viewModel.restrictedAmount(binding.txtTotal)) {
                 //cartlist[0] = viewModel.generateCombinedItems(viewModel.cartModel!!)
-                Log.e(TAG, "destroyedListdestroyedList  ${Gson().toJson(viewModel.destroyedList)}")
+
                 if (cartlist.isNotEmpty()) {
                     if (prefProvider.getValueboolean(DINE_IN_UPDATE, false)) {
                         var itemCount = 0
@@ -1890,7 +1890,7 @@ class CartFragment(
             tableNumber = dineInFloorTableModel?.tableNumber,
             chairCount = dineInFloorTableModel?.chairCount,
             floorPlanName = "",
-            totalGuestCount = dineInCartAdapter.getList().size + 1
+            totalGuestCount = dineInCartAdapter.getList().size - 1
 
 
         )

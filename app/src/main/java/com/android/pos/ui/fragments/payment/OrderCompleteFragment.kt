@@ -296,6 +296,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         Log.e(TAG, "receiptModel:  ${Gson().toJson(receiptModel)}")
         setLabelData()
 
+        binding.edtEmail.setOnFocusChangeListener { v, hasFocus ->
+            if (hasFocus) {
+                binding.edtEmail.setHint("")
+            }
+        }
         if (!isDineIn) {
             if (isSpilt) {
                 // saveDataInPrefrences()
@@ -1051,7 +1056,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 if (it.order_type == SERVICECHARGE_DINEIN_ORDER) {
                     if (isInRange(it.min_guest_count!!, it.max_guest_count!!, guestCount)) {
                         guestServiceCharge += (guestSubTotal * it.percentage) / 100
-                        isApplied =true
+                        isApplied = true
                         return@forEach
                     }
                 }
@@ -2189,6 +2194,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
     fun isInRange(minn: Int, maxx: Int, value: Int): Boolean {
         return (minn <= value && value <= maxx)
     }
+
     fun checkMaxGuestCountId(serviceChargeList: ArrayList<TbServiceCharge>): Int {
         var maxValue = 0
         var serviceChargeId = 0
@@ -2202,6 +2208,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         }
         return serviceChargeId
     }
+
     private fun generateDineInPrint(
         customerReceiptPrinters: PrinterResponse.Data.CustomerReceiptPrinters,
         type: String,
@@ -2875,53 +2882,10 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             }
 
 
-            /*if (getDineInOrderDetails?.cash_discount_or_surcharge != null) {
-                builder.addTextLineSpace(30)
-                builder.addFeedUnit(30)
-                builder.addTextFont(Builder.FONT_E)
-                // builder.addTextAlign(Builder.ALIGN_LEFT)
-                builder.addTextLang(Builder.LANG_EN)
-                addCustomerTextSize(builder, customerSettingModel.fonts)
-                builder.addTextStyle(
-                    Builder.FALSE,
-                    Builder.FALSE,
-                    Builder.FALSE,
-                    Builder.COLOR_1
-                )
-
-                builder.addText(
-                    padLine(
-                        "Cash Discount",
-                        if (getDineInOrderDetails?.cash_discount_or_surcharge == 0.0) {
-                            "$" + getDineInOrderDetails?.cash_discount_or_surcharge?.let {
-                                MethodUtils.roundOffAmountString(
-                                    it
-                                )
-                            }
-                        } else {
-                            "-$" + getDineInOrderDetails?.cash_discount_or_surcharge?.let {
-                                MethodUtils.roundOffAmountString(
-                                    it
-                                )
-                            }
-                        },
-                        if (customerSettingModel.fonts == Constants.LARGE) {
-                            24
-                        } else {
-                            48
-                        }
-                    )
-                )
-            }*/
 
             builder.addTextLineSpace(30)
             builder.addFeedUnit(30)
 
-
-            Log.e(
-                TAG,
-                "getDineInOrderDetailsgetDineInOrderDetails  ${Gson().toJson(getDineInOrderDetails)}"
-            )
             builder.addTextLineSpace(30)
             builder.addFeedUnit(30)
 
@@ -3016,6 +2980,10 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             )
 
             //ADDCHANGE
+
+            if (remainingAmount == 0.0) {
+                changeAmtGlobal += tipAmount
+            }
             builder.addText(
                 padLine(
                     "Change Amount",

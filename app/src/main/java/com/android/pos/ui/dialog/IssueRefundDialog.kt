@@ -27,7 +27,6 @@ import com.android.pos.utils.MethodUtils
 import dagger.hilt.android.AndroidEntryPoint
 import java.text.NumberFormat
 import java.util.*
-import kotlin.collections.ArrayList
 
 
 @AndroidEntryPoint
@@ -206,7 +205,10 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
         binding.txtDone.setOnClickListener {
             if (isItem) {
                 if (TextUtils.isEmpty(binding.edtAmount.text.toString())) {
-                    AlertUtils.showCustomAlert(requireActivity(), getString(R.string.msg_amount_refund))
+                    AlertUtils.showCustomAlert(
+                        requireActivity(),
+                        getString(R.string.msg_amount_refund)
+                    )
                 } else {
                     subTotalPrice = binding.edtAmount.text.toString().toDouble()
                     refundData = RefundRequestModel().apply {
@@ -485,8 +487,11 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
 
             val cleanString: String = s!!.replace("""[$,.%]""".toRegex(), "")
 
+            var parsed = 0.0
+            if (cleanString.isNotEmpty()) {
 
-            val parsed = cleanString.toDouble()
+                parsed = cleanString.toDouble()
+            }
 
             val formatted = NumberFormat.getCurrencyInstance(Locale.US).format((parsed / 100))
 

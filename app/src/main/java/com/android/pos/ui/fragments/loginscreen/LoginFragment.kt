@@ -3,6 +3,9 @@ package com.android.pos.ui.fragments.loginscreen
 import android.content.ClipboardManager
 import android.content.Context
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
+import android.text.style.UnderlineSpan
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -27,7 +30,6 @@ import com.google.android.gms.tasks.OnCompleteListener
 import com.google.android.material.snackbar.Snackbar
 import com.google.firebase.messaging.FirebaseMessaging
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.delay
 import javax.inject.Inject
 
 
@@ -92,7 +94,25 @@ class LoginFragment : Fragment() {
 
         prefProvider?.setUniqueId((requireActivity() as MainActivity).getDeviceId())
         binding.terminalId.text = prefProvider?.getUniqueId()
+        binding.edtEmail.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
 
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+                try {
+                    for (span in s!!.getSpans(0, s.toString().length, UnderlineSpan::class.java)) {
+                        s.removeSpan(span)
+                    }
+                } catch (e: Exception) {
+                }
+            }
+
+        });
         return binding.root
     }
 
@@ -158,7 +178,7 @@ class LoginFragment : Fragment() {
                     }
                     // hostSelectionInterceptor?.setHostBaseUrl()
                     findNavController().navigate(R.id.action_login_to_passcode, bundle)
-                }else{
+                } else {
                     prefProvider?.setValue(Constants.BASE_URL_NEW, BASE_URL)
                     hostSelectionInterceptor?.setHostBaseUrl()
 
