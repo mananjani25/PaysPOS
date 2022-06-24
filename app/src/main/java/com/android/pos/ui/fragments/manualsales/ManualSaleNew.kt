@@ -550,6 +550,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
 
                 if (cartList != null && cartList!!.isNotEmpty()) {
 
+//                    var mainlist = mainCartList[0].taxlistDynamic
                     var manuallist = cartList!![0].taxlistDynamic
 
 
@@ -558,8 +559,11 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                         manuallist?.forEachIndexed { indexmanual, manualtax ->
                             if (taxData.id == manualtax.id) {
                                 found = indexmanual
-                            }else{
-                                mainCartList[0].taxlistDynamic = concatenate(mainCartList[0].taxlistDynamic!!, listOf(manualtax))
+                            } else {
+                                mainCartList[0].taxlistDynamic = concatenate(
+                                    mainCartList[0].taxlistDynamic!!,
+                                    listOf(manualtax)
+                                )
                             }
                         }
                         if (found != -1) {
@@ -572,9 +576,14 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                                     manuallist.get(found).totalTaxTypePrice
                                 )
                         }
+                        var list: List<TaxData> = emptyList()
+                        manuallist?.forEachIndexed { i, tdata ->
+                            if (i != found) {
+                                list = listOf(tdata)
+                            }
+                        }
+                        Log.d(TAG, "onClick: " + Gson().toJson(list))
                     }
-
-
 
 
                     Log.d(TAG, "onClick:  tax : " + Gson().toJson(mainCartList[0].taxlistDynamic))
@@ -950,9 +959,11 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
 
         }
     }
+
     fun <T> concatenate(vararg lists: List<T>): List<T> {
         return listOf(*lists).flatten()
     }
+
     private fun onClickKeypad() {
         binding.llKeypad.manualKeypad.tvOne.setOnClickListener {
             calculateValue("1", false)

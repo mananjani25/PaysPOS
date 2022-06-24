@@ -1840,22 +1840,25 @@ class DashBoardCategoryViewModel @Inject constructor(
                                     "taxBifurcationCalculation: delete : " + Gson().toJson(cartModel.taxlistDynamic)
                                 )
                             }
-                            if (cartModel.taxlistDynamic?.get(found)?.taxType != "Percentage") {
-                                if (cartModel.taxlistDynamic?.get(found)?.subTotalAmount == 0.0) {
-                                    var temp_arraylist: ArrayList<TaxData> =
-                                        cartModel.taxlistDynamic!!.toCollection(
-                                            arrayListOf()
+                            if(cartModel.taxlistDynamic!!.isNotEmpty()){
+                                if (cartModel.taxlistDynamic?.get(found)?.taxType != "Percentage") {
+                                    if (cartModel.taxlistDynamic?.get(found)?.subTotalAmount == 0.0) {
+                                        var temp_arraylist: ArrayList<TaxData> =
+                                            cartModel.taxlistDynamic!!.toCollection(
+                                                arrayListOf()
+                                            )
+                                        temp_arraylist.removeAt(found)
+                                        cartModel.taxlistDynamic = temp_arraylist.toList()
+                                        Log.d(
+                                            TAG,
+                                            "taxBifurcationCalculation: delete : " + Gson().toJson(
+                                                cartModel.taxlistDynamic
+                                            )
                                         )
-                                    temp_arraylist.removeAt(found)
-                                    cartModel.taxlistDynamic = temp_arraylist.toList()
-                                    Log.d(
-                                        TAG,
-                                        "taxBifurcationCalculation: delete : " + Gson().toJson(
-                                            cartModel.taxlistDynamic
-                                        )
-                                    )
+                                    }
                                 }
                             }
+
 
                         }
 
