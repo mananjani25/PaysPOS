@@ -1153,10 +1153,7 @@ fun addWholeTbItemToGuest(
 
     }
 
-    Log.e(TAG, "serviceCharge  ${serviceCharge}")
-    Log.e(TAG, "serviceWTTaxes  ${WTTaxes}")
-    Log.e("DineInWholeTableItems", "serviceSubTotal  ${subTotal}")
-    Log.e("DineInWholeTableItems", "dineinguestCount:  ${guestCount}")
+
 
     var finalAmt = MethodUtils.roundOffAmount((subTotal) / guestCount)
     builder.addText(
