@@ -12,6 +12,7 @@ import com.android.pos.data.model.responseModel.BaseResponse
 import com.android.pos.data.model.responseModel.CreateOrderResponse
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.DINE_IN
+import com.android.pos.data.remote.Constants.IS_PRINTER_QUEUE_ENABLE
 import com.android.pos.data.remote.Constants.PAYMENT_ID
 import com.android.pos.data.remote.Constants.TAKEOUT
 import com.android.pos.data.repositories.PosRepository
@@ -138,8 +139,11 @@ open class PaymentViewModel @Inject constructor(
                                 }
 
                                 Log.e(TAG, "isOnlySave:  ${onlySave}")
-                                _queueStartSaveOrder.value = Event(createOrderResponse)
-                                if (onlySave) {
+                                if (prefProvider.getValueboolean(IS_PRINTER_QUEUE_ENABLE,false)) {
+                                    _queueStartSaveOrder.value = Event(createOrderResponse)
+                                }
+                                if (onlySave ) {
+
                                     _queueStart.value = Event(createOrderResponse)
 
                                 } else {
@@ -147,6 +151,10 @@ open class PaymentViewModel @Inject constructor(
                                         cashLogApi(createOrderResponse, "in")
                                     } else {
                                         _data.value = Event(createOrderResponse)
+                                    }
+
+                                    if (createOrderResponse.data.order.orderType != "Dine In"){
+                                        _queueStart.value = Event(createOrderResponse)
                                     }
                                 }
 
@@ -403,7 +411,9 @@ open class PaymentViewModel @Inject constructor(
         needToAddPaymentAttributes: Boolean?,
         paymentType: String,
         cashdiscountType: String,
-        tipID: Int? = null
+        tipID: Int? = null,
+        isPrinterQueue :Boolean = false,
+        offlineId:String = ""
     ): OrderRequestModel {
 
         val orderAttributeRequestModel = OrderAttributeRequestModel()
@@ -462,6 +472,10 @@ open class PaymentViewModel @Inject constructor(
             if (isUpdateOrder) orderOfflineId.toString() else MethodUtils.randomOfflineId(
                 prefProvider.getValueInt(Constants.LOCATION_ID, -1).toString()
             )
+
+        if (isPrinterQueue){
+            orderAttributeRequestModel.offlineId = offlineId
+        }
         Log.e(TAG, "openOrderType: " + cartModel.orderType)
         orderAttributeRequestModel.paymentStatus = if (isPaid) 1 else 0
         orderAttributeRequestModel.serviceChargeEnabled = true

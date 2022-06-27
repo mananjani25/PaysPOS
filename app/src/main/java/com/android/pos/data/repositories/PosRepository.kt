@@ -14,6 +14,7 @@ import com.android.pos.data.model.requestModel.*
 import com.android.pos.data.model.responseModel.*
 import com.android.pos.data.remote.ApiHelper
 import com.android.pos.data.remote.Constants.DINE_IN
+import com.android.pos.data.remote.Constants.TERMINAL_ID
 import com.android.pos.di.PrefProvider
 import com.android.pos.utils.performGetOperation
 import com.android.pos.utils.performGetOperationDatabase
@@ -52,7 +53,7 @@ class PosRepository @Inject constructor(
         databaseQuery = {
             appDatabase.printerDao().customerPrintList
         },
-        networkCall = { apiHelperNew.getPrinterData() },
+        networkCall = { apiHelperNew.getPrinterData(prefProvider.getValueInt(TERMINAL_ID, 0)) },
         saveCallResult = {
             appDatabase.printerDao().addCustomerPrinterList(it.data.customerReceiptPrinters)
             it.data.kitchenReceiptPrinters?.let { it1 ->
@@ -111,7 +112,11 @@ class PosRepository @Inject constructor(
     /*fun syncVenueDetails() =
         performGetOperationNew(networkCall = { apiHelperNew.syncVenueDetails() })*/
 
-    suspend fun syncVenueDetails() = apiHelperNew.syncVenueDetails()
+    suspend fun syncVenueDetails() = apiHelperNew.syncVenueDetails(
+        prefProvider.getValueInt(
+            TERMINAL_ID, 0
+        )
+    )
 
     suspend fun getOnlineOrderNotificationCount() = apiHelperNew.getOnlineOrderCountNoti()
 
@@ -277,7 +282,9 @@ class PosRepository @Inject constructor(
     suspend fun deleteEODReportSettings() =
         appDatabase.eodReportSettings().deleteEODReportSettings()
 
-    fun getEodReportSettings() = performGetOperationDatabase(databaseQuery = {appDatabase.eodReportSettings().eodSettingsData})
+    fun getEodReportSettings() =
+        performGetOperationDatabase(databaseQuery = { appDatabase.eodReportSettings().eodSettingsData })
+
     suspend fun addAllNotesDatabase(data: List<NoteResponse.Data>) =
         appDatabase.notesDao().addAllNotesSuspend(data)
 
@@ -787,7 +794,6 @@ class PosRepository @Inject constructor(
         })
 
 
-
     suspend fun refundPaymentOnline(data: RefundRequestModelOnlineOrder) =
         apiHelperNew.refundPaymentOnline(data)
 
@@ -809,7 +815,7 @@ class PosRepository @Inject constructor(
         order_id: Int,
         isaccepted: Boolean,
         employee_id: Int,
-        terminalid:Int
+        terminalid: Int
     ): LiveData<Resource<OnlineOrderStatusUpdateResponse>> =
         performGetOperationNew(networkCall = {
             apiHelperNew.setAcceptedAndDeclineorder(
@@ -843,7 +849,7 @@ class PosRepository @Inject constructor(
         s: String,
         s1: String
     ) =
-        apiHelperNew.getCashInOut(startDate, endDate, terminalId,s,s1)
+        apiHelperNew.getCashInOut(startDate, endDate, terminalId, s, s1)
 
     suspend fun orderUpdateTip(orderId: Int, customerId: Double) =
         apiHelperNew.orderUpdateTip(orderId, customerId)
@@ -906,13 +912,14 @@ class PosRepository @Inject constructor(
         email: String
     ) =
         apiHelperNew.getReportEOD(startDate, endDate, terminalId, employee_id, email)
- suspend fun sendEmailReportSummary(
+
+    suspend fun sendEmailReportSummary(
         startDate: String,
         endDate: String,
         email: String,
         employee_id: String
- ) =
-        apiHelperNew.sendEmailTimeSheet(startDate, endDate,  email,employee_id)
+    ) =
+        apiHelperNew.sendEmailTimeSheet(startDate, endDate, email, employee_id)
 
     suspend fun getOrderHistory(id: String) =
         apiHelperNew.getOrderHistory(id)

@@ -33,6 +33,7 @@ import java.time.format.DateTimeFormatter
 
 class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters) :
     Worker(context, params) {
+    private var globalPrinterQueue: JsonElement?=null
     private val TAG = UploadWorker::class.java.name
 
 
@@ -60,7 +61,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                     serializeObjKitchenPrinters,
                     type
                 ) as ArrayList<PrinterResponse.Data.KitchenReceiptPrinters>
-            Log.e(TAG, "arrayKitList  ${Gson().toJson(kitchenPrinterList)}")
+
 
         }
         connectActionCable()
@@ -144,6 +145,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
 
                     if (it.asJsonObject.has("printer_queue")) {
                         isPrinterRunning = true
+                        globalPrinterQueue = it.asJsonObject.get("printer_queue")
                         getQueueDataResponse(it.asJsonObject.get("printer_queue"))
 
 
@@ -168,7 +170,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                 subscription?.perform("received", params)
             }?.onFailed {
                 Log.e(TAG, "onActiononFailed")
-                subscription = consumer?.subscriptions?.create(appearanceChannel)
+                //subscription = consumer?.subscriptions?.create(appearanceChannel)
                 val params = JsonObject()
                 params.addProperty("id", locationId)
                 subscription?.perform("received", params)
@@ -261,14 +263,14 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
 
                     }
                     printerQueueModel.orderItems = itemAttribute
-                    printerQueueModel.terminalName = ""
+                    printerQueueModel.orderID = ""
                     printerQueueModel.orderType = it.asJsonObject.get("order_type").asString
                     printerQueueModel.id = it.asJsonObject.get("id").asInt
                     printerQueueModel.offlineId = obj.asJsonObject.get("offline_id").asString
                     printerQueueModel.paymentType = "Cash"
                     printerQueueModel.status = Constants.PENDING
                     printerQueueModel.totalAmt = obj.asJsonObject.get("total_amount").asDouble
-                    printerQueueModel.terminalName = ""
+                    printerQueueModel.orderID = ""+it.asJsonObject.get("orderid").asInt
                     //obj.asJsonObject.get("terminal_name")?.asString ?: ""
                     printerQueueModel.position = index
 
@@ -384,10 +386,13 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
 
             Log.e(TAG, "PrinterException: " + e.message)
             printer = null
-            return
+            globalPrinterQueue?.let { getQueueDataResponse(it) }
+
+
         }
 
         if (printer != null) {
+            Log.e(TAG,"PrinterIsNotConnected")
             PrinterClass.setPrinter(printer)
 
             generateKitchenReceipt(data, "", printerQueueModel, index)
@@ -403,10 +408,8 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
         printerQueueModel: PrinterQueueModel,
         index: Int
     ) {
-        Log.e("GEtPrinterQueueData", "printerQueueModell:  ${Gson().toJson(printerQueueModel)}")
         var builder: Builder? = null
         try {
-            Log.e(TAG, "KitchenPrinterName ${customerReceiptPrinters.name}")
             val pname = if (customerReceiptPrinters.name.substring(0, 6).toString()
                     .lowercase() == "TM-m30".lowercase()
             ) {
@@ -507,7 +510,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
 
             builder.addText(
                 padLine(
-                    "OrderID:" + printerQueueModel.id,
+                    "OrderID:" + printerQueueModel.orderID,
                     "",
                     48
                 )
@@ -900,29 +903,29 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                      )*/
                 }
 
-
+            isPrinterRunning = false
                 //PrinterClass.getPrinter()?.sendData(builder, 0, status, battery)
             } catch (e: Exception) {
 
 
                 PrinterClass.closePrinter()
-                printerQueueModel.id?.let {
-                    val params = JsonObject()
-                    var deleteUrl = baseUrl + Constants.CREATE_QUEUE_PRINTER + "/" + it
-                    Log.e(TAG, "DeleteUrl ${deleteUrl}")
-                    params.addProperty("url", deleteUrl)
-                    subscription?.perform("delete_order", params)
+                /* printerQueueModel.id?.let {
+                     val params = JsonObject()
+                     var deleteUrl = baseUrl + Constants.CREATE_QUEUE_PRINTER + "/" + it
+                     Log.e(TAG, "DeleteUrl ${deleteUrl}")
+                     params.addProperty("url", deleteUrl)
+                     subscription?.perform("delete_order", params)
 
-                    /* viewModel.deleteQueuePrinter(
+                     *//* viewModel.deleteQueuePrinter(
                          it,
                          printerQueueModel.position
-                     )*/
-                }
+                     )*//*
+                }*/
                 e.printStackTrace()
                 val params = JsonObject()
                 params.addProperty("id", locationId)
                 subscription?.perform("received", params)
-                isPrinterRunning = false
+                //isPrinterRunning = false
 
             }
 

@@ -11,8 +11,8 @@ import javax.inject.Inject
 class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDataSource() {
 
     suspend fun userLogIn(data: HashMap<String, String>) = getResult { apiService.userLogIn(data) }
-    suspend fun getDefaultTerminal(uniq_id: String,device_token:String) =
-        getResult { apiService.getDefaultTerminal(uniq_id,device_token) }
+    suspend fun getDefaultTerminal(uniq_id: String, device_token: String) =
+        getResult { apiService.getDefaultTerminal(uniq_id, device_token) }
 
     suspend fun employeeClockIn(data: HashMap<String, String>) =
         getResult { apiService.employeeClockIn(data) }
@@ -29,18 +29,20 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
     suspend fun syncVenueData() =
         getResult { apiService.syncVenueData() }
 
-    suspend fun getPrinterData() =
-        getResult { apiService.getPrinterList() }
+    suspend fun getPrinterData(terminalId:Int) =
+        getResult { apiService.getPrinterList(terminalId) }
 
     suspend fun createPrinter(data: CreatePrinterRequestModel) = getResult {
         apiService.createPrinter(data)
     }
 
-    suspend fun deletePrinter(id: Int,type:String?=null) = getResult { apiService.deletePrinter(id,type) }
+    suspend fun deletePrinter(id: Int, type: String? = null) =
+        getResult { apiService.deletePrinter(id, type) }
 
     suspend fun deleteQueuePrinter(id: Int) = getResult { apiService.deletePrinterQueue(id) }
 
-    suspend fun deleteAllQueuePrinter(id:Array<Int>) = getResult { apiService.deleteAllPrinterQueue(id) }
+    suspend fun deleteAllQueuePrinter(id: Array<Int>) =
+        getResult { apiService.deleteAllPrinterQueue(id) }
 
     suspend fun updatePrinter(id: Int, model: CreatePrinterRequestModel) =
         getResult { apiService.updatePrinter(id, model) }
@@ -55,8 +57,8 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
     suspend fun updateServiceChargeDininEnable(id: Int, enable_service_charge: Boolean) =
         getResult { apiService.updateServiceChargeDineinEnable(id, enable_service_charge) }
 
-    suspend fun syncVenueDetails() =
-        getResult { apiService.syncVenueDetails() }
+    suspend fun syncVenueDetails(terminalId:Int) =
+        getResult { apiService.syncVenueDetails(terminalId) }
 
     suspend fun getOnlineOrderCountNoti() =
         getResult { apiService.getCountOnlineOrdering() }
@@ -208,7 +210,7 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
     suspend fun deleteEmployee(data: Int) =
         getResult { apiService.deleteEmployee(data) }
 
-     suspend fun searchCustomers(query: String) =
+    suspend fun searchCustomers(query: String) =
         getResult { apiService.customerSearch(query) }
 
     suspend fun deleteItem(itemId: Int) =
@@ -437,7 +439,7 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
     suspend fun refundPayment(data: RefundRequestModel) =
         getResult { apiService.refundPayment(data) }
 
-   suspend fun refundPaymentOnline(data: RefundRequestModelOnlineOrder) =
+    suspend fun refundPaymentOnline(data: RefundRequestModelOnlineOrder) =
         getResult { apiService.refundPaymentOnlineOrder(data) }
 
     suspend fun orderTypes() =
@@ -449,11 +451,25 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
     suspend fun phoneReceipt(data: HashMap<String, String>) =
         getResult { apiService.phoneReceipt(data) }
 
-    suspend fun assignCustomerOrder(orderId: Int, customerId: Int, newPos: Int,paymentId: Int,finalrewards:Int) =
-        getResult { apiService.assignCustomerOrder(orderId, customerId, newPos,paymentId,finalrewards) }
+    suspend fun assignCustomerOrder(
+        orderId: Int,
+        customerId: Int,
+        newPos: Int,
+        paymentId: Int,
+        finalrewards: Int
+    ) =
+        getResult {
+            apiService.assignCustomerOrder(
+                orderId,
+                customerId,
+                newPos,
+                paymentId,
+                finalrewards
+            )
+        }
 
     suspend fun getOpenOrders(paymentStatus: String, startDate: String, endDate: String) =
-        getResult { apiService.getOpenOrders(paymentStatus,startDate,endDate) }
+        getResult { apiService.getOpenOrders(paymentStatus, startDate, endDate) }
 
     suspend fun getOnlineOrders(startDate: String, endDate: String, order_status: String) =
         getResult { apiService.getOnlineOrders(startDate, endDate, order_status) }
@@ -462,10 +478,19 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
         time: Int,
         order_id: Int,
         isaccepted: Boolean,
-        employee_id:Int,
-        terminalid:Int
+        employee_id: Int,
+        terminalid: Int
     ) =
-        getResult { apiService.setAcceptedAndDeclineOrders(order_id, isaccepted, time,employee_id,terminalid) }
+        getResult {
+            apiService.setAcceptedAndDeclineOrders(
+                order_id,
+                isaccepted,
+                time,
+                employee_id,
+                terminalid
+            )
+        }
+
     suspend fun updateOnlineOrder(
         order_id: Int,
         order_status: String
@@ -485,7 +510,7 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
         s: String,
         s1: String
     ) =
-        getResult { apiService.getCashInOut(startDate, endDate, terminalId,s,s1) }
+        getResult { apiService.getCashInOut(startDate, endDate, terminalId, s, s1) }
 
     suspend fun orderUpdateTip(orderId: Int, customerId: Double) =
         getResult { apiService.orderUpdateTip(orderId, customerId) }
@@ -495,9 +520,15 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
             apiService.updateKitchenFireStatus(id, isFired, items)
         }
 
-    suspend fun getTableStatus(tableId: Int, empId: Int, terminalId: Int, status: String,clearTable:Boolean) =
+    suspend fun getTableStatus(
+        tableId: Int,
+        empId: Int,
+        terminalId: Int,
+        status: String,
+        clearTable: Boolean
+    ) =
         getResult {
-            apiService.getTableStatus(tableId, empId, terminalId, status,clearTable)
+            apiService.getTableStatus(tableId, empId, terminalId, status, clearTable)
         }
 
     suspend fun mergeFloorTable(
@@ -543,6 +574,7 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
         getResult {
             apiService.getReportEOD(startDate, endDate, terminalId, employee_id, email)
         }
+
     suspend fun sendEmailTimeSheet(
         startDate: String,
         endDate: String,
@@ -571,13 +603,13 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
         }
 
     suspend fun orderCounts(startDate: String?, endDate: String?) =
-        getResult { apiService.orderCounts(startDate,endDate) }
+        getResult { apiService.orderCounts(startDate, endDate) }
 
     suspend fun inventoryCounts() =
         getResult { apiService.inventoryCounts() }
 
     suspend fun onlineOrderCounts(startDate: String?, endDate: String?) =
-        getResult { apiService.onlineOrderCounts(startDate,endDate) }
+        getResult { apiService.onlineOrderCounts(startDate, endDate) }
 
 
     suspend fun timeDetails() =

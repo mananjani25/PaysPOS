@@ -342,7 +342,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
         actualDiscount: Double,
         redeemLoyaltyInfo: RedeemLoyaltyInfo?
     ) {
-        Log.e(TAG,"actualAmount  ${actualAmount}")
+        Log.e(TAG, "actualAmount  ${actualAmount}")
         MethodUtils.setPriceTextView(binding.txtTotal, actualAmount)
         MethodUtils.setPriceTextView(binding.txtSubTotal, actualSubTotal)
         MethodUtils.setPriceTextView(binding.txtTax, actualTax)
@@ -526,7 +526,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
     }
 
     private fun setUpPaymentSummary() {
-        Log.e(TAG,"SetupSummaryTotal  ${totalPrice}")
+        Log.e(TAG, "SetupSummaryTotal  ${totalPrice}")
         MethodUtils.setPriceTextView(binding.txtTotal, totalPrice)
         MethodUtils.setPriceTextView(binding.txtSubTotal, subTotalPrice)
         MethodUtils.setPriceTextView(binding.txtTax, totalTax)
@@ -1028,8 +1028,9 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                 }
                 makePayment()
 
-            }9+
-            R.id.llCredit -> {
+            }
+            9 +
+                    R.id.llCredit -> {
                 paymentType = "Card"
                 setUpPaymentTypeWiseData("Card")
                 if (isSplitByNo) {
@@ -1137,7 +1138,8 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                 cashDiscountSurcharge,
                 true,
                 paymentType, cashDiscountType,
-                tipID
+                tipID,
+                true, offlineId = createOrder.data.order.offlineId
             )
         }
         val createRequest = CreateQueuePrinterRequestModel(

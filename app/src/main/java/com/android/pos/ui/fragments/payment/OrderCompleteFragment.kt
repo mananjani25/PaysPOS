@@ -4556,7 +4556,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         },
                         customerReceiptPrinters.ipAddress,
                         enabled,
-                        1000
+                        10000
                     )
                     //printer?.setStatusChangeEventCallback(this)
 
