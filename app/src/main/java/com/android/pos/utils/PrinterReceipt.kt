@@ -542,7 +542,7 @@ fun padLineCustomerItem(
         var tempPartOne = partOne.substring(columnsPerLine - 8, partOne.length)
         var tempPadding = 0
         if (((columnsPerLine - tempPartOne.length) - partTwo.length) < 0) {
-            tempPadding =  partTwo.length
+            tempPadding = partTwo.length
         } else {
             tempPadding = (columnsPerLine - tempPartOne.length) - partTwo.length
         }
@@ -700,6 +700,7 @@ fun addHorizontalLine(builder: Builder): Builder {
     for (i in 0 until 48) {
         str += "-"
     }
+    Log.e("strLine", "strLine  $str")
     builder.addText(str)
 
     return builder
@@ -892,6 +893,42 @@ fun addTipsList(
         ).toString()
 
         PrintSunmiUtils.orderTime(str)
+
+    }
+
+
+}
+
+fun addTipsListInner(
+    list: List<GetTipReponse.Data>,
+    totalAmt: Double,
+    font: String
+) {
+    for (i in 0 until list.size) {
+        val obj = list.get(i)
+
+
+        val tipName = obj.name + "(" + roundOffAmountString(obj.rate) + "%)"
+
+        val price = "(Tip $" + calculateTipAmt(
+            obj.rate,
+            totalAmt
+        ) + " Total $" + roundOffAmountString(
+            (totalAmt + calculateTipAmt(
+                obj.rate,
+                totalAmt
+            ))
+        ) + ")"
+
+        val str = padLine(
+            tipName, price, if (font == Constants.LARGE) {
+                23
+            } else {
+                48
+            }
+        ).toString()
+
+        PrintSunmiUtils.normalText(str)
 
     }
 
@@ -1483,7 +1520,6 @@ fun addWholeTbItemToGuest(
     }
 
 
-
     var finalAmt = MethodUtils.roundOffAmount((subTotal) / guestCount)
     builder.addText(
         padLineCustomerItem(
@@ -1982,6 +2018,43 @@ fun addOrderItemsTransaction(
                     if (font == Constants.LARGE) 23 else 48
                 )
                 PrintSunmiUtils.orderTime(modifier.toString())
+
+
+            }
+
+        }
+    }
+}
+
+fun addOrderItemsTransactionInner(
+    list: List<GetOrderDetailsResponse.Data.OrderItem>,
+    font: String,
+    showModifiers: Boolean
+) {
+    for (i in 0 until list.size) {
+        val obj = list.get(i)
+
+        val item = padLineCustomerItem(
+            obj.quantity.toString() + "x " + obj.itemName,
+            "$" + roundOffAmountString(totalPriceTransaction(obj)),
+            if (font == Constants.LARGE) 23 else 48
+        )
+
+        PrintSunmiUtils.normalText(item.toString())
+
+
+
+        if (obj.orderItemModifiers.isNotEmpty() && showModifiers) {
+            for (j in 0 until obj.orderItemModifiers.size) {
+                val modifierObj = obj.orderItemModifiers.get(j)
+
+
+                val modifier = padLineCustomerItem(
+                    "   " + modifierObj.name,
+                    "$" + roundOffAmountString(modifierObj.price.toDouble() * modifierObj.quantity),
+                    if (font == Constants.LARGE) 23 else 48
+                )
+                PrintSunmiUtils.normalText(modifier.toString())
 
 
             }

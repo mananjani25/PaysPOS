@@ -1133,7 +1133,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             }
 
 
-        } else {
+        }
+
+        else {
 
 
             var builder: Builder? = null
