@@ -12,6 +12,7 @@ import com.android.pos.R
 import com.android.pos.data.entities.TbItem
 import com.android.pos.data.entities.TbServiceCharge
 import com.android.pos.data.model.DineInModel
+import com.android.pos.data.remote.Constants
 import com.android.pos.databinding.ViewDineInHeaderBinding
 import com.android.pos.databinding.ViewDineInTableItemsBinding
 import com.android.pos.utils.MethodUtils
@@ -166,8 +167,6 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             }
 
 
-            Log.e("GuestPAid", "${list.get(position).isPaid}")
-
             guestAmt += list.get(0).guestDividedAmt
 
 
@@ -222,11 +221,30 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             var totalServiceCharge = 0.0
 
 
-            if (serviceChargeList?.isNotEmpty() == true) {
-                serviceChargeList?.forEach {
-                    if (it.isEnabled) {
-                        totalServiceCharge += (guestSubTotal * it.percentage) / 100
+            if (serviceChargeList.isNotEmpty() == true) {
+                var isApplied = false
+                serviceChargeList.forEach {
+                    if (it.order_type == Constants.SERVICECHARGE_DINEIN_ORDER) {
+                        if (isInRange(
+                                it.min_guest_count!!,
+                                it.max_guest_count!!,
+                                list.get(0).totalGuestCount
+                            )
+                        ) {
+                            isApplied =true
+                            totalServiceCharge += (guestSubTotal * it.percentage) / 100
+                            return@forEach
 
+                        }
+                    }
+
+                }
+                if (!isApplied) {
+                    serviceChargeList.forEach { service ->
+                        if (service.id == checkMaxGuestCountId()) {
+                            totalServiceCharge += (guestSubTotal * service.percentage) / 100
+                            return@forEach
+                        }
                     }
                 }
 
@@ -361,15 +379,18 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
                     Log.e("AAjeCje","orderDiscount  ${list[0].orderDiscount}")
                     Log.e("AAjeCje","guestDiscount  ${guestDiscount}")
+                    Log.e("AAjeCje","wholeTableDiscont  ${list[0].wholeTableDiscont}")
+                    Log.e("AAjeCjerer","guestSubTotal  ${guestSubTotal}")
+                    Log.e("AAjeCjerer","wholeTableSubTotal  ${list.get(0).wholeTableSubTotal}")
                     listner.onGuestPrint(
                         listItem,
                         guestName,
                         listItemWT,
-                        MethodUtils.roundOffAmountDouble(guestSubTotal + list.get(0).wholeTableSubTotal),
+                        MethodUtils.roundOffAmountDouble(guestSubTotal + list.get(0).wholeTableSubTotal - (list[0].orderDiscount / list[0].totalGuestCount)),
                         MethodUtils.roundOffAmountDouble(finalAmt),
                         MethodUtils.roundOffAmountDouble(totalTaxAmt + list.get(0).wholeTableTax),
                         MethodUtils.roundOffAmountDouble(totalServiceCharge + list.get(0).wholeTableSurTax),
-                        list[0].orderDiscount + guestDiscount
+                        (list[0].orderDiscount / list[0].totalGuestCount) + guestDiscount +list[0].wholeTableDiscont
                     )
                 }
 
@@ -425,6 +446,23 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             }
 
 
+        }
+
+        fun isInRange(minn: Int, maxx: Int, value: Int): Boolean {
+            return (minn <= value && value <= maxx)
+        }
+        fun checkMaxGuestCountId(): Int {
+            var maxValue = 0
+            var serviceChargeId = 0
+            serviceChargeList.forEach { serviceCharge ->
+                if (serviceCharge.order_type == Constants.SERVICECHARGE_DINEIN_ORDER) {
+                    if (serviceCharge.max_guest_count!! >= maxValue) {
+                        maxValue = serviceCharge.max_guest_count
+                        serviceChargeId = serviceCharge.id
+                    }
+                }
+            }
+            return serviceChargeId
         }
     }
 

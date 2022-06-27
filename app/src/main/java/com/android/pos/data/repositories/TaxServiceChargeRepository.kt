@@ -8,10 +8,12 @@ import com.android.pos.data.entities.TeamRole
 import com.android.pos.data.model.requestModel.*
 import com.android.pos.data.model.responseModel.GetCustomerReceiptSettingsResponse
 import com.android.pos.data.model.responseModel.GetKitchenReceiptSettingsResponse
+import com.android.pos.data.model.responseModel.ServiceChargeListResponse
 import com.android.pos.data.remote.ApiHelper
 import com.android.pos.di.RolePermission
 import com.android.pos.utils.performGetOperation
 import com.android.pos.utils.performGetOperationDatabase
+import com.android.pos.utils.statusUtils.Resource
 import java.util.*
 import javax.inject.Inject
 
@@ -28,7 +30,9 @@ class TaxServiceChargeRepository @Inject constructor(
         apiHelperNew.editLoyaltyPoint(loyaltyPointRequest)
 
 
-    fun getTempTaxList() = performGetOperationDatabase(databaseQuery = {appDatabase.taxDao().allTax})
+    fun getTempTaxList() =
+        performGetOperationDatabase(databaseQuery = { appDatabase.taxDao().allTax })
+
     fun getTaxList() =
         performGetOperation(
             databaseQuery = { appDatabase.taxDao().allTax },
@@ -74,6 +78,10 @@ class TaxServiceChargeRepository @Inject constructor(
             saveCallResult = { appDatabase.serviceChargeDao().addAllServiceCharge(it.data) })
 
 
+    suspend fun getServiceChargeWholeList(): Resource<ServiceChargeListResponse> {
+        return apiHelperNew.getServiceChargeWholeList()
+    }
+
     fun loyaltyPointList() =
         performGetOperation(
             databaseQuery = { appDatabase.loyaltyProgramsDao().all },
@@ -86,6 +94,9 @@ class TaxServiceChargeRepository @Inject constructor(
 
     suspend fun addServiceCharges(serviceChargeList: List<TbServiceCharge>) {
         appDatabase.serviceChargeDao().addServiceCharges(serviceChargeList)
+    }
+    suspend fun addServiceCharge(serviceChargeList: TbServiceCharge) {
+        appDatabase.serviceChargeDao().addServiceCharge(serviceChargeList)
     }
 
     suspend fun createServiceCharge(data: CreateServiceChargeRequestModel) =
@@ -110,6 +121,11 @@ class TaxServiceChargeRepository @Inject constructor(
         appDatabase.loyaltyProgramsDao().activeLoyaltyProgram(loyaltyId, active)
 
     suspend fun deleteServiceCharge(data: Int) = apiHelperNew.deleteServiceCharge(data)
+    suspend fun updateServiceChargeEnable(id: Int, enableServicecharge: Boolean) =
+        apiHelperNew.updateServiceChargeEnable(id, enableServicecharge)
+
+    suspend fun updateServiceChargeDineinEnable(id: Int, enableServicecharge: Boolean) =
+        apiHelperNew.updateServiceChargeDininEnable(id, enableServicecharge)
 
     suspend fun deleteLoyaltyPoint(data: Int) = apiHelperNew.deleteLoyaltyPoint(data)
 
@@ -126,8 +142,10 @@ class TaxServiceChargeRepository @Inject constructor(
         performGetOperation(
             databaseQuery = { appDatabase.teamRoleDao().allRoles },
             networkCall = { apiHelperNew.getTeamRoleList() },
-            saveCallResult = { appDatabase.teamRoleDao().addAllRoles(it.data.teamRoles)
-            rolePermission.findCurrentUserRoleAndSave(it.data.teamRoles)})
+            saveCallResult = {
+                appDatabase.teamRoleDao().addAllRoles(it.data.teamRoles)
+                rolePermission.findCurrentUserRoleAndSave(it.data.teamRoles)
+            })
 
 
     fun getTeamRoleListFromDatabase() =

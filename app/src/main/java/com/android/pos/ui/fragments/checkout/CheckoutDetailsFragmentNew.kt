@@ -720,14 +720,17 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 paymentAmount =
                     String.format("%.2f", paymentAmount + cashDiscountSurcharge).toDouble()
             }
+            paymentAmount += tipAmount
 
-
-            magtekModule.stopListner(false)
-
-            if (device == 0) {
-                magtekPaymentCall()
+            if (paymentAmount != 0.0) {
+                magtekModule.stopListner(false)
+                if (device == 0) {
+                    magtekPaymentCall()
+                } else {
+                    magtekProPaymentCall()
+                }
             } else {
-                magtekProPaymentCall()
+                errorDisplay("Payment Amount is zero.")
             }
 
             //  makePaymentCreditCard()
@@ -808,6 +811,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 paymentAmount =
                     String.format("%.2f", paymentAmount + cashDiscountSurcharge).toDouble()
             }
+            paymentAmount += tipAmount
+
 
             cardNumber = binding.edtCardNumber.rawText.toString().trim()
 
@@ -829,12 +834,16 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                     errorDisplay("Please enter valid CVV number")
                 }
                 else -> {
+                    if (paymentAmount != 0.0) {
+                        manualCardPaymentCall(
+                            cardNumber,
+                            cardExpDate.takeLast(2) + cardExpDate.take(2),
+                            cardCVV
+                        )
+                    } else {
+                        errorDisplay("Payment Amount is zero.")
+                    }
 
-                    manualCardPaymentCall(
-                        cardNumber,
-                        cardExpDate.takeLast(2) + cardExpDate.take(2),
-                        cardCVV
-                    )
                 }
             }
         }
@@ -1238,6 +1247,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
     }
 
     private fun makePaymentCreditCard() {
+        paymentAmount -= tipAmount
         paymentType = "Card"
         Log.e(TAG, "cartList:  ${Gson().toJson(cartList)}")
         Log.e(TAG, "cartListcartItems:  ${Gson().toJson(cartItems)}")
@@ -1415,13 +1425,26 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
 
             if (requestCancel) {
-                AlertUtils.showCustomAlert(
-                    requireContext(), message
-                )
+
+                if (message.equals("timeout", true)) {
+                    AlertUtils.showCustomAlert(
+                        requireContext(), "Timeout"
+                    )
+                } else {
+                    AlertUtils.showCustomAlert(
+                        requireContext(), message
+                    )
+                }
             } else {
-                AlertUtils.showCustomAlert(
-                    requireContext(), message
-                )
+                if (message.equals("timeout", true)) {
+                    AlertUtils.showCustomAlert(
+                        requireContext(), "Timeout"
+                    )
+                } else {
+                    AlertUtils.showCustomAlert(
+                        requireContext(), message
+                    )
+                }
             }
 
 
@@ -1539,6 +1562,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                                 Gson().toJson(response.body()!![0]),
                                 if (i == 3) cardNumber else ""
                             )
+
 
                             makePaymentCreditCard()
 

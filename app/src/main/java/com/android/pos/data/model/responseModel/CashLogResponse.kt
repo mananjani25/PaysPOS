@@ -21,7 +21,9 @@ data class CashLogResponse(
         @SerializedName("total_cash_out")
         val totalCashOut: Double,
         @SerializedName("total_left_amount_in_drawer")
-        val totalLeftAmountInDrawer: Double
+        val totalLeftAmountInDrawer: Double,
+        @SerializedName("pagination")
+        val pagination: GetTransactionListResponse.Data.Pagination
     ) {
         data class Cashe(
             @SerializedName("amount")

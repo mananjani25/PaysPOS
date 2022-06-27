@@ -18,6 +18,13 @@ data class CreateServiceChargeRequestModel(
         @SerializedName("name")
         var name: String = "",
         @SerializedName("percentage")
-        var percentage: Double = 0.00
-    ):Parcelable
+        var percentage: Double = 0.00,
+        @SerializedName("min_guest_count")
+        var min_guest_count: Int? = null,
+        @SerializedName("max_guest_count")
+        var max_guest_count: Int? = null,
+        @SerializedName("order_type")
+        var order_type: String = ""
+
+    ) : Parcelable
 }

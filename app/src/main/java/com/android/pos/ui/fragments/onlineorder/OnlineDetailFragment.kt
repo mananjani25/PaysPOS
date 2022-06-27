@@ -2,35 +2,44 @@ package com.android.pos.ui.fragments.onlineorder
 
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
+import android.content.BroadcastReceiver
+import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.os.bundleOf
+import androidx.core.text.trimmedLength
+import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.android.pos.R
-import com.android.pos.data.model.requestModel.RefundRequestModel
 import com.android.pos.data.model.requestModel.RefundRequestModelOnlineOrder
+import com.android.pos.data.model.responseModel.GetKitchenReceiptSettingsResponse
+import com.android.pos.data.model.responseModel.OnlineOrderStatusUpdateResponse
+import com.android.pos.data.model.responseModel.PrinterResponse
 import com.android.pos.data.remote.Constants
+import com.android.pos.data.remote.Constants.EMPLOYEE_NAME
 import com.android.pos.databinding.OnlineDetailFragmentBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.di.RolePermission
 import com.android.pos.ui.adapter.OnlineOrderAdapter
-import com.android.pos.ui.adapter.RefundItemListAdapter
-import com.android.pos.utils.AlertUtils
-import com.android.pos.utils.ProgressUtils
+import com.android.pos.utils.*
 import com.android.pos.utils.callback.OrderCallBack
 import com.android.pos.utils.extensions.alert
 import com.android.pos.utils.extensions.showAlert
+import com.android.pos.utils.printer.PrinterClass
 import com.android.pos.utils.statusUtils.Status
+import com.epson.eposprint.Builder
+import com.epson.eposprint.Print
+import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 import java.text.SimpleDateFormat
 import java.util.*
@@ -59,17 +68,40 @@ class OnlineDetailFragment(
     val myCalendar2 = Calendar.getInstance()
     val myCalendar3 = Calendar.getInstance()
     var order_status = "Pending"
+    private val TAG = "OnlineDetailFragment"
+    private var kitchenSettingModel = GetKitchenReceiptSettingsResponse.Data()
+
 
     @Inject
     lateinit var prefProvider: PrefProvider
 
     @Inject
     lateinit var rolePermission: RolePermission
+    var broadcastReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            var refresh = intent?.getBooleanExtra("refresh", false)
+            if (refresh == true) {
+                adapter.orderList.clear()
+                adapter.filterList.clear()
+                getOnlineOrders()
+            }
+
+        }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        requireActivity().unregisterReceiver(broadcastReceiver)
+    }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupAdapter()
         observeShowProgress()
+        requireActivity().registerReceiver(
+            broadcastReceiver,
+            IntentFilter(Constants.ONLINE_ORDER_REFRESH)
+        )
         when (param1) {
             "0" -> {
                 order_status = "Pending"
@@ -126,6 +158,8 @@ class OnlineDetailFragment(
                     Status.SUCCESS -> {
                         ProgressUtils.dismissProgressDialog()
                         resource.data?.let {
+                            Log.e(TAG, "getREsponseForOnline  ${Gson().toJson(it)}")
+                            getKitchenPrinters(it)
                             getOnlineOrders()
                         }
                     }
@@ -244,6 +278,7 @@ class OnlineDetailFragment(
         binding = OnlineDetailFragmentBinding.inflate(inflater, container, false)
         binding.viewModel = viewModel
         binding.lifecycleOwner = this
+        getKitchenReceiptSettings()
         startDatePickerObserver()
         endDatePickerObserver()
 
@@ -462,7 +497,7 @@ class OnlineDetailFragment(
 
     private fun setupAdapter() {
 
-        binding.rvOpenOrder?.addItemDecoration(
+        binding.rvOpenOrder.addItemDecoration(
             DividerItemDecoration(
                 context,
                 LinearLayoutManager.VERTICAL
@@ -576,4 +611,447 @@ class OnlineDetailFragment(
             }
         }
     }
+
+    private fun getKitchenReceiptSettings() {
+        viewModel.getKitchenReceiptSettings().observe(viewLifecycleOwner, {
+
+            if (it != null) {
+                kitchenSettingModel = it
+
+            }
+        })
+    }
+
+    private fun getKitchenPrinters(data: OnlineOrderStatusUpdateResponse) {
+        viewModel.getKitchenPrinterList().observe(viewLifecycleOwner) { it ->
+            when (it.status) {
+                Status.SUCCESS -> {
+                    it.data?.forEach {
+                        initKitchenPrinter(
+                            it,
+                            Constants.KITCHEN,
+                            data
+                        )
+
+                    }
+
+
+                }
+                Status.LOADING -> {
+                    ProgressUtils.showProgressDialog(requireActivity())
+                }
+                Status.ERROR -> {
+                    ProgressUtils.dismissProgressDialog()
+                    findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
+
+                }
+            }
+
+        }
+
+    }
+
+    private fun initKitchenPrinter(
+        data: PrinterResponse.Data.KitchenReceiptPrinters,
+        type: String,
+        orderData: OnlineOrderStatusUpdateResponse
+    ) {
+
+        PrinterClass.closePrinter()
+        if (PrinterClass.getPrinter() == null) {
+            //  printerDialog.show(requireContext())
+
+            var printer: Print? = Print(requireContext())
+
+
+            val enabled = Print.TRUE
+
+            try {
+
+                printer?.openPrinter(
+                    if (data.printer_type == Constants.BLUETOOTH) {
+                        Print.DEVTYPE_BLUETOOTH
+                    } else {
+                        Print.DEVTYPE_TCP
+                    },
+                    data.ipAddress,
+                    enabled,
+                    1000
+                )
+
+            } catch (e: Exception) {
+                //  printerDialog.dismiss()
+                Log.e(TAG, "PrinterException: " + e.message)
+                printer = null
+                return
+            }
+
+            if (printer != null) {
+                PrinterClass.setPrinter(printer)
+
+
+                generateKitchenReceipt(data, type, orderData)
+
+            }
+
+        } else {
+            Log.e(TAG, "PrinterIsNotNull:")
+        }
+
+    }
+
+    private fun generateKitchenReceipt(
+        customerReceiptPrinters: PrinterResponse.Data.KitchenReceiptPrinters,
+        type: String,
+        orderData: OnlineOrderStatusUpdateResponse
+    ) {
+        var builder: Builder? = null
+        try {
+            Log.e(TAG, "KitchenPrinterName ${customerReceiptPrinters.name}")
+            val pname = if (customerReceiptPrinters.name.substring(0, 6).toString()
+                    .lowercase() == "TM-m30".lowercase()
+            ) {
+                "TM-m30"
+            } else {
+                customerReceiptPrinters.name
+            }
+
+            var fontSizeH = 1
+            var fontSizeW = 1
+            when (kitchenSettingModel.fonts) {
+                Constants.SMALL -> {
+                    fontSizeH = 1
+                    fontSizeW = 1
+                }
+                Constants.MEDIUM -> {
+                    fontSizeH = 1
+                    fontSizeW = 2
+                }
+                Constants.LARGE -> {
+                    fontSizeH = 2
+                    fontSizeW = 2
+                }
+
+
+            }
+
+            builder = Builder(pname, PrinterClass.language, requireActivity())
+
+            if (kitchenSettingModel.showOrderType) {
+
+
+                builder.addFeedLine(0)
+                builder.addTextFont(Builder.FONT_E)
+                builder.addTextLang(Builder.LANG_EN)
+                builder.addTextSize(fontSizeH, fontSizeW)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.TRUE,
+                    Builder.COLOR_1
+                )
+                builder.addTextAlign(Builder.ALIGN_CENTER)
+
+                addBuilderText(builder,"Online Order")
+            }
+            var tmps = "Open Order".toString().trim()
+                .toString().lowercase()
+            Log.e(TAG, "LowerCAse ${tmps.trimmedLength()}")
+
+
+
+
+            builder.addFeedLine(2)
+            builder.addTextFont(Builder.FONT_E)
+            //  builder.addTextAlign(Builder.ALIGN_LEFT)
+            builder.addTextLang(Builder.LANG_EN)
+            builder.addTextSize(fontSizeH, fontSizeW)
+            builder.addTextStyle(
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.COLOR_1
+            )
+
+            builder.addText(
+                padLine(
+                    "OrderID:" + orderData?.data.id,
+                    "",
+                    33
+                )
+            )
+
+            builder.addTextLineSpace(30)
+            builder.addFeedUnit(30)
+            builder.addTextFont(Builder.FONT_E)
+            //  builder.addTextAlign(Builder.ALIGN_LEFT)
+            builder.addTextLang(Builder.LANG_EN)
+            builder.addTextSize(fontSizeH, fontSizeW)
+            builder.addTextStyle(
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.COLOR_1
+            )
+
+
+            builder.addText(
+                padLine(
+                    "ReceiptID:" + orderData.data.offlineId,
+                    "",
+                    33
+                )
+            )
+            if (kitchenSettingModel.showTeamMember) {
+
+                builder.addTextLineSpace(30)
+                builder.addFeedUnit(30)
+                builder.addTextFont(Builder.FONT_E)
+                //  builder.addTextAlign(Builder.ALIGN_LEFT)
+                builder.addTextLang(Builder.LANG_EN)
+                builder.addTextSize(fontSizeH, fontSizeW)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.COLOR_1
+                )
+                builder.addText(
+                    padLine(
+                        "Employee:" + prefProvider.getValue(EMPLOYEE_NAME, ""), "",
+                        33
+                    )
+                )
+
+            }
+            builder.addTextLineSpace(30)
+            builder.addFeedUnit(30)
+            builder.addTextFont(Builder.FONT_E)
+            //  builder.addTextAlign(Builder.ALIGN_LEFT)
+            builder.addTextLang(Builder.LANG_EN)
+            builder.addTextSize(fontSizeH, fontSizeW)
+            builder.addTextStyle(
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.COLOR_1
+            )
+
+            builder.addText(
+                padLine(
+                    Constants.getReceiptFormatDateFromUTCServer(
+                        requireContext(),
+                        orderData.data.createdAt
+                    ),
+                    "",
+                    33
+                )
+            )
+
+            builder.addFeedLine(1)
+
+            builder.addTextFont(Builder.FONT_B)
+            //builder.addTextLineSpace(20)
+            builder.addTextLang(Builder.LANG_EN)
+            builder.addTextSize(fontSizeH, fontSizeW)
+            builder.addTextStyle(
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.COLOR_1
+            )
+
+            addHorizontalKitchenLine(builder)
+
+
+            addOrdersForKitchenOnlineOrder(
+                builder,
+                orderData.data.orderItems,
+                fontSizeH,
+                fontSizeW
+            )
+
+
+            if (orderData?.data?.note.isNotEmpty() == true && kitchenSettingModel.showOrderNote) {
+                builder.addTextLineSpace(30)
+                builder.addFeedUnit(30)
+                builder.addFeedLine(1)
+                builder.addTextFont(Builder.FONT_E)
+                builder.addTextAlign(Builder.ALIGN_LEFT)
+                //builder.addTextLineSpace(20)
+                builder.addTextLang(Builder.LANG_EN)
+                builder.addTextSize(fontSizeH, fontSizeW)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.TRUE,
+                    Builder.COLOR_1
+                )
+                builder.addText("Order Note")
+
+                builder.addTextLineSpace(30)
+                builder.addFeedUnit(30)
+
+                builder.addTextFont(Builder.FONT_E)
+                builder.addTextAlign(Builder.ALIGN_CENTER)
+                builder.addTextLang(Builder.LANG_EN)
+                builder.addTextSize(fontSizeH, fontSizeW)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.COLOR_1
+                )
+
+
+                builder.addText(orderData?.data?.note.toString())
+            }
+
+
+            if (kitchenSettingModel.showCustomerAddress != false or kitchenSettingModel.showCustomerPhone != false or kitchenSettingModel.showCustomerName != false) {
+                if (orderData?.data?.customer != null) {
+
+                    builder.addTextLineSpace(30)
+                    builder.addFeedUnit(30)
+                    builder.addFeedLine(1)
+                    builder.addTextFont(Builder.FONT_E)
+                    //builder.addTextLineSpace(20)
+                    builder.addTextAlign(Builder.ALIGN_LEFT)
+                    builder.addTextLang(Builder.LANG_EN)
+                    builder.addTextSize(fontSizeH, fontSizeW)
+                    builder.addTextStyle(
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.TRUE,
+                        Builder.COLOR_1
+                    )
+                    builder.addText("Customer Details" + "\n")
+
+                    builder.addTextFont(Builder.FONT_B)
+                    //builder.addTextLineSpace(20)
+                    builder.addTextLang(Builder.LANG_EN)
+                    builder.addTextSize(fontSizeH, fontSizeW)
+                    builder.addTextStyle(
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.COLOR_1
+                    )
+                    addHorizontalKitchenLine(builder)
+
+                    if (kitchenSettingModel.showCustomerName) {
+
+                        builder.addTextLineSpace(30)
+                        builder.addFeedUnit(30)
+                        builder.addTextFont(Builder.FONT_E)
+                        builder.addTextAlign(Builder.ALIGN_LEFT)
+                        //builder.addTextLineSpace(20)
+                        builder.addTextLang(Builder.LANG_EN)
+                        builder.addTextSize(fontSizeH, fontSizeW)
+                        builder.addTextStyle(
+                            Builder.FALSE,
+                            Builder.FALSE,
+                            Builder.TRUE,
+                            Builder.COLOR_1
+                        )
+                        builder.addText(orderData?.data?.customer?.firstName + " " + orderData?.data?.customer?.lastName)
+
+                    }
+
+
+                    if (kitchenSettingModel.showCustomerPhone) {
+
+                        if (orderData?.data?.customer?.phones?.isNotEmpty() == true) {
+                            builder.addTextLineSpace(30)
+                            builder.addFeedUnit(30)
+                            builder.addTextFont(Builder.FONT_E)
+                            builder.addTextAlign(Builder.ALIGN_LEFT)
+                            //builder.addTextLineSpace(20)
+                            builder.addTextLang(Builder.LANG_EN)
+                            builder.addTextSize(fontSizeH, fontSizeW)
+                            builder.addTextStyle(
+                                Builder.FALSE,
+                                Builder.FALSE,
+                                Builder.TRUE,
+                                Builder.COLOR_1
+                            )
+                            builder.addText(orderData?.data?.customer?.phones?.get(orderData?.data?.customer?.phones.size - 1)?.phoneNumber)
+                        }
+
+                    }
+                    /* builder.addTextLineSpace(30)
+                 builder.addFeedUnit(30)
+                 builder.addTextFont(Builder.FONT_E)
+                 builder.addTextAlign(Builder.ALIGN_LEFT)
+                 //builder.addTextLineSpace(20)
+                 builder.addTextLang(Builder.LANG_EN)
+                 builder.addTextSize(1, 1)
+                 builder.addTextStyle(
+                     Builder.FALSE,
+                     Builder.FALSE,
+                     Builder.TRUE,
+                     Builder.COLOR_1
+                 )
+                 builder.addText(receiptModel?.order?.customer?.email)*/
+
+
+                    if (orderData?.data?.customer?.addresses?.isNotEmpty() == true) {
+
+                        builder.addTextLineSpace(30)
+                        builder.addFeedUnit(30)
+                        builder.addTextFont(Builder.FONT_E)
+                        builder.addTextAlign(Builder.ALIGN_LEFT)
+                        //builder.addTextLineSpace(20)
+                        builder.addTextLang(Builder.LANG_EN)
+                        builder.addTextSize(fontSizeH, fontSizeW)
+                        builder.addTextStyle(
+                            Builder.FALSE,
+                            Builder.FALSE,
+                            Builder.TRUE,
+                            Builder.COLOR_1
+                        )
+
+                        builder.addText(orderData?.data?.customer?.addresses.get(orderData?.data?.customer?.addresses.size - 1).fullAddress)
+                    }
+                }
+
+
+            }
+        }
+        catch (e: Exception)
+        {
+            // printerDialog.dismiss()
+            e.printStackTrace()
+        }
+
+        builder?.addFeedLine(2)
+
+        builder?.addCut(Builder.CUT_FEED)
+
+        val status = IntArray(1)
+        val battery = IntArray(1)
+
+
+        try {
+            PrinterClass.getPrinter()?.sendData(
+                builder,
+                PrinterClass.SEND_TIMEOUT, status, battery
+            )
+
+            //printerDialog.dismiss()
+            PrinterClass.closePrinter()
+
+            //PrinterClass.getPrinter()?.sendData(builder, 0, status, battery)
+        } catch (e: Exception) {
+//                printerDialog.dismiss()
+            PrinterClass.closePrinter()
+            e.printStackTrace()
+            Log.e(TAG, "PrinterError: " + e.localizedMessage)
+        }
+
+
+    }
+
+
+
 }

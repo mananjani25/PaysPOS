@@ -15,7 +15,10 @@ import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.DELETE
 import com.android.pos.data.remote.Constants.DINE_IN
 import com.android.pos.data.remote.Constants.DINE_IN_UPDATE
+import com.android.pos.data.remote.Constants.DINE_IN_SERVICECHARGE
 import com.android.pos.data.remote.Constants.ORDER_TYPE
+import com.android.pos.data.remote.Constants.SERVICECHARGE_DINEIN_ORDER
+import com.android.pos.data.remote.Constants.SERVICECHARGE_TAKEOUT_OPENORDER
 import com.android.pos.data.remote.Constants.TAKEOUT
 import com.android.pos.data.remote.Constants.TERMINAL_ID
 import com.android.pos.databinding.FragmentAddItemBinding
@@ -40,7 +43,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
     private lateinit var item: TbItem
     private var cartList: ArrayList<CartModel> = arrayListOf()
     private lateinit var binding: FragmentAddItemBinding
-    private var serviceChargesList: List<TbServiceCharge>? = null
+    private var serviceChargesList: ArrayList<TbServiceCharge>? = null
     private var serviceChargesObserve: Observer<Resource<List<TbServiceCharge>>>? = null
     private val viewModel by activityViewModels<DashBoardCategoryViewModel>()
     private val TAG = "AddItemFragment"
@@ -334,7 +337,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
                     }
                 }
             } else {
-                cartList.get(0).items?.forEach {
+                cartList[0].items?.forEach {
                     totalItemswithQuantity += it.itemQuantity
 
                 }
@@ -718,17 +721,35 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
 
     private fun getServiceCharges() {
 
-        serviceChargesObserve = Observer {
+        serviceChargesObserve = Observer { it ->
 
             if (it.status == Status.SUCCESS) {
-                Log.e(TAG, "getServiceCharge:  ${Gson().toJson(it.data)}")
-                serviceChargesList = it.data
-                viewModel.serviceChargesList = it.data ?: arrayListOf()
+                if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == DINE_IN) {
+                    Log.e(TAG, "getServiceCharge:  ${Gson().toJson(it.data)}")
+                    serviceChargesList = ArrayList()
+                    viewModel.serviceChargesList.clear()
+                    it.data?.forEach { service ->
+                        if (service.order_type == Constants.SERVICECHARGE_DINEIN_ORDER) {
+                            serviceChargesList?.add(service)
+                            viewModel.serviceChargesList.add(service)
+                        }
+                    }
+                } else {
+                    if (prefProvider.getValueboolean(SERVICECHARGE_TAKEOUT_OPENORDER, false)) {
+                        Log.e(TAG, "getServiceCharge:  ${Gson().toJson(it.data)}")
+                        serviceChargesList = ArrayList()
+                        viewModel.serviceChargesList.clear()
+                        it.data?.forEach { service ->
+                            if (service.order_type == SERVICECHARGE_TAKEOUT_OPENORDER) {
+                                serviceChargesList?.add(service)
+                                viewModel.serviceChargesList.add(service)
+                            }
+                        }
 
+                    }
+                }
             }
-
         }
-
         viewModel.serviceCharges.observe(requireActivity(), serviceChargesObserve!!)
     }
 

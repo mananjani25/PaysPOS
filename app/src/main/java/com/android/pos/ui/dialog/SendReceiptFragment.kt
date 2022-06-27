@@ -31,6 +31,7 @@ class SendReceiptFragment : DialogFragment() {
 
     private var emailAddress: String? = null
     private var isEod: Boolean = false
+    private var isFromTimeSheet: Boolean = false
     private lateinit var binding: DailogSendReceiptBinding
     var orderId: Int = 0
     var type: Int = 0
@@ -56,6 +57,7 @@ class SendReceiptFragment : DialogFragment() {
 
 
         isEod = requireArguments().getBoolean("EOD", false)
+        isFromTimeSheet = requireArguments().getBoolean("isFromTimeSheet", false)
         if (isEod) {
             emailAddress = requireArguments().getString("email")
             if (emailAddress != null)
@@ -64,7 +66,14 @@ class SendReceiptFragment : DialogFragment() {
 
         if (!isEod)
             orderId = requireArguments().getInt("orderId")
-        type = requireArguments().getInt("type")
+        type = requireArguments().getInt("type", 0)
+
+
+        if (isFromTimeSheet) {
+            emailAddress = requireArguments().getString("email")
+            if (emailAddress != null)
+                binding.edtEmail.setText(emailAddress)
+        }
 
         if (type == 1) {
             binding.edtPhoneNo.visible()
@@ -95,8 +104,7 @@ class SendReceiptFragment : DialogFragment() {
 
             MethodUtils.hideKeyboard(requireActivity())
 
-            if (isEod) {
-
+            if (isFromTimeSheet) {
                 if (binding.edtEmail.text.toString().trim().isEmpty()) {
                     it.showAlert(getString(R.string.email_validate))
                 } else {
@@ -104,18 +112,34 @@ class SendReceiptFragment : DialogFragment() {
                     val result = Bundle().apply {
                         putString("email", binding.edtEmail.text.toString().trim())
                     }
-                    setFragmentResult("request_key_eod", result)
+                    setFragmentResult("request_key_timesheet", result)
                     findNavController().navigateUp()
                     dismiss()
                 }
+            } else
+                if (isEod) {
 
-            } else {
+                    if (binding.edtEmail.text.toString().trim().isEmpty()) {
+                        it.showAlert(getString(R.string.email_validate))
+                    } else {
 
-                viewModelOrder.submit(
-                    if (type == 1) "Message" else "Email", binding.edtEmail.text.toString().trim(),
-                    binding.edtPhoneNo.text.toString().trim(), orderId
-                )
-            }
+                        val result = Bundle().apply {
+                            putString("email", binding.edtEmail.text.toString().trim())
+                        }
+                        setFragmentResult("request_key_eod", result)
+                        findNavController().navigateUp()
+                        dismiss()
+                    }
+
+                } else {
+
+                    viewModelOrder.submit(
+                        if (type == 1) "Message" else "Email",
+                        binding.edtEmail.text.toString().trim(),
+                        binding.edtPhoneNo.text.toString().trim(),
+                        orderId
+                    )
+                }
         }
         return binding.root
     }

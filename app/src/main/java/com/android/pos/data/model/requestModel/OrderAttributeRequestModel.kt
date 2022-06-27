@@ -38,7 +38,7 @@ class OrderAttributeRequestModel {
     var note: String = ""
 
     @SerializedName("offline_id")
-    var offlineId: String = ""
+    var offlineId: String? = null
 
     @SerializedName("open_order_type")
     var openOrderType: String = ""
@@ -484,7 +484,13 @@ data class OrderServiceChargesAttribute(
     @SerializedName("rate")
     var rate: Double = 0.0,
     @SerializedName("service_charge_id")
-    var serviceChargeId: Int = 0
+    var serviceChargeId: Int = 0,
+    @SerializedName("order_type")
+    var order_type: String? = null,
+    @SerializedName("min_guest_count")
+    var min_guest_count: Int? = null,
+    @SerializedName("max_guest_count")
+    var max_guest_count: Int? = null
 )
 
 @Parcelize
@@ -562,7 +568,7 @@ class PaymentAttributes : Parcelable {
     @SerializedName("loyalty_program_id")
     var loyalty_program_id: String = ""
 
-     @SerializedName("magensa_response")
+    @SerializedName("magensa_response")
     var magensa_response: String = ""
 
     @SerializedName("loyalty_amount")

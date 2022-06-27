@@ -51,7 +51,7 @@ class ReasonForRefundOnlineOrder : DialogFragment() {
     private val viewModel by activityViewModels<OnlineDetailViewModel>()
     private lateinit var binding: ReasonrefundonlineorderBinding
     private var refundAmount = 0.0
-
+    private var isfromTransaction:Boolean = false
     @Inject
     lateinit var apiModule1: ApiModule1
     private lateinit var refundData: RefundRequestModelOnlineOrder
@@ -68,6 +68,7 @@ class ReasonForRefundOnlineOrder : DialogFragment() {
         dialog?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         refundData = arguments?.getParcelable("refundData")!!
         refundAmount = arguments?.getDouble("refundAmount")!!
+        isfromTransaction = arguments?.getBoolean("isfromTransaction") == true
         magensa_response_data = arguments?.getString("magensa_response_data").toString()
         return binding.root
     }
@@ -75,6 +76,7 @@ class ReasonForRefundOnlineOrder : DialogFragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         observeShowProgress()
+
         navigateToOnlineOrder()
         binding.lifecycleOwner = this
         dialog?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN)
@@ -208,7 +210,7 @@ class ReasonForRefundOnlineOrder : DialogFragment() {
 
 
             } else {
-                AlertUtils.showCustomAlert(requireActivity(), "Please Enter Amount To Refund")
+                AlertUtils.showCustomAlert(requireActivity(), getString(R.string.msg_amount_refund))
             }
 
 
@@ -223,14 +225,27 @@ class ReasonForRefundOnlineOrder : DialogFragment() {
                     AlertUtils.showCustomAlertWithListenerWithOK(
                         it, createTaxResponse.message
                     ) { _, _ ->
-                        val result = Bundle().apply {
-                            refundData.paymentRefund?.orderId?.let { it1 -> putInt("order_id", it1) }
+                        if(isfromTransaction){
+                            val bundle = Bundle().apply {
+                                putInt("orderId", refundData.paymentRefund?.orderId!!)
+                                putBoolean("isFromOnlineOrderRefund",true)
+                                putInt("paymentId", refundData.paymentRefund?.paymentId!!)
+                            }
+
+                            findNavController().navigate(
+                                R.id.action_reasonForRefundDialogonline_to_transactionfragment, bundle
+                            )
+                        }else{
+                            val result = Bundle().apply {
+                                refundData.paymentRefund?.orderId?.let { it1 -> putInt("order_id", it1) }
+                            }
+                            requireActivity().supportFragmentManager.setFragmentResult(
+                                "request_for_rejectOrder",
+                                result
+                            )
+                          findNavController().navigateUp()
                         }
-                        requireActivity().supportFragmentManager.setFragmentResult(
-                            "request_for_rejectOrder",
-                            result
-                        )
-                        findNavController().navigateUp()
+
                     }
 
                 }

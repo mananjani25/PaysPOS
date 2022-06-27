@@ -7,6 +7,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
@@ -15,6 +16,9 @@ import com.android.pos.R
 import com.android.pos.data.model.responseModel.GetEmployeesTimeSheetResponse
 import com.android.pos.databinding.FragmentSingleTeamMemberTimeSheetBinding
 import com.android.pos.ui.adapter.SingleTeamMemberTimeSheetAdapter
+import com.android.pos.utils.extensions.liveSnackBar
+import com.android.pos.utils.statusUtils.Status
+import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.*
 
@@ -53,6 +57,7 @@ class SingleTeamMemberTimeSheetFragment : Fragment() {
 
         setUpRecyclerView()
         getEmployeesTimeSheetDetailsObserver()
+        setupSnackbar()
 
         binding.tvEmployeeName.text = employeeModel.teamName + " Time Sheet"
         binding.tvEmployeeId.text =
@@ -61,6 +66,26 @@ class SingleTeamMemberTimeSheetFragment : Fragment() {
         binding.includeView.edtSearch.visibility = View.GONE
         binding.includeView.txtPrint.visibility = View.GONE
 
+        binding.includeView.txtEmail.setOnClickListener {
+            viewModel.getEmployeeEmail(employeeModel.teamId)
+                .observe(viewLifecycleOwner) {
+
+                    if (it.status == Status.SUCCESS) {
+                        val bundle = Bundle()
+                        bundle.putBoolean("isFromTimeSheet", true)
+                        bundle.putInt("type", 2)
+                        bundle.putString("email", it.data?.email)
+                        findNavController().navigate(
+                            R.id.action_singleteamMemberTimeSheetFragment_to_sendReceiptFragment,
+                            bundle
+                        )
+                    }
+                }
+
+        }
+        setFragmentResultListener("request_key_timesheet") { _: String, bundle: Bundle ->
+            bundle.getString("email")?.let { viewModel.sendEmailTimeSheet(it, employeeModel.teamId.toString()) }
+        }
 
         binding.includeView.txtHome.setOnClickListener {
 
@@ -102,14 +127,20 @@ class SingleTeamMemberTimeSheetFragment : Fragment() {
 
         return binding.root
     }
+    private fun setupSnackbar() =
+        binding.root.liveSnackBar(this, viewModel.snackbarText, Snackbar.LENGTH_SHORT)
 
     private fun startDatePickerObserver() {
         viewModel.startDateSelection.observe(requireActivity(), { event ->
             event.getContentIfNotHandled()?.let {
 
                 DatePickerDialog(
-                    requireActivity(),android.R.style.Theme_Material_Light_Dialog, startDate, myCalendar
-                        .get(Calendar.YEAR), myCalendar.get(Calendar.MONTH),
+                    requireActivity(),
+                    android.R.style.Theme_Material_Light_Dialog,
+                    startDate,
+                    myCalendar
+                        .get(Calendar.YEAR),
+                    myCalendar.get(Calendar.MONTH),
                     myCalendar.get(Calendar.DAY_OF_MONTH)
 
                 ).show()
@@ -123,8 +154,12 @@ class SingleTeamMemberTimeSheetFragment : Fragment() {
             event.getContentIfNotHandled()?.let {
 
                 DatePickerDialog(
-                    requireActivity(),android.R.style.Theme_Material_Light_Dialog, endDate, myCalendar1
-                        .get(Calendar.YEAR), myCalendar1.get(Calendar.MONTH),
+                    requireActivity(),
+                    android.R.style.Theme_Material_Light_Dialog,
+                    endDate,
+                    myCalendar1
+                        .get(Calendar.YEAR),
+                    myCalendar1.get(Calendar.MONTH),
                     myCalendar1.get(Calendar.DAY_OF_MONTH)
 
                 ).show()

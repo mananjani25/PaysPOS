@@ -38,6 +38,7 @@
                 android:layout_height="wrap_content">
 
                 <ImageView
+                    android:id="@+id/img_round_table"
                     android:layout_width="@dimen/_8sdp"
                     android:layout_height="@dimen/_8sdp"
                     android:src="@drawable/ic_table" />
@@ -60,6 +61,7 @@
                 android:layout_height="wrap_content">
 
                 <ImageView
+                    android:id="@+id/img_round_chair"
                     android:layout_width="@dimen/_8sdp"
                     android:layout_height="@dimen/_8sdp"
                     android:src="@drawable/ic_chair" />

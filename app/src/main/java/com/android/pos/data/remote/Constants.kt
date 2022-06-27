@@ -24,6 +24,9 @@ object Constants {
 
     const val IS_UPDATE_ITEM = "isUpdateItem"
 
+    const val SERVICECHARGE_TAKEOUT_OPENORDER = "TakeOutAndParkOrder"
+    const val SERVICECHARGE_DINEIN_ORDER = "DineIn"
+
     //SharedPref Keys
     const val AUTH_TOKEN = "authToken"
     const val TERMINAL_ID = "terminalId"
@@ -124,6 +127,7 @@ object Constants {
     const val DELETE_ALL_QUEUE_PRINTER = "printer_queues/delete_all"
 
     const val UPDATE_PRINTER_STATUS = "printers/{id}/update_printer_status"
+    const val UPDATE_SERVICECHARGE = "locations/{id}/enable_service_charge"
     const val CREATE_QUEUE_PRINTER = "printer_queues"
 
 
@@ -148,6 +152,7 @@ object Constants {
     const val NOTES_ACTIVE = "dynamic_notes/{id}/active"
 
     const val SERVICE_CHARGE = "service_charges"
+    const val SERVICE_CHARGE_WHOLE = "service_charges/show_all_service_charges"
     const val SERVICE_CHARGE_UPDATE_DELETE = "service_charges/{id}"
     const val SERVICE_CHARGE_ACTIVE = "service_charges/{id}/active"
 
@@ -275,6 +280,7 @@ object Constants {
 
     const val REPORT_SUMMARY = "reports/report_summary"
     const val REPORT_EOD_SUMMARY = "reports/employee_eod_report"
+    const val EMAIL_REPORT_SUMMARY = "reports/email_timesheet"
     const val ORDER_HISTORY = "customers/{id}/customer_order_history"
 
     const val BUSINESS_NAME = "business_name"
@@ -568,6 +574,7 @@ object Constants {
     // broadcast
     const val SEND_CLOCKOUT_NOTIFICATION = "send_clockout_notification"
     const val ONLINE_ORDER_GET_NOTIFICATION = "online_order_get_notification"
+    const val ONLINE_ORDER_REFRESH = "online_order_refresh"
 
 
     // dinein

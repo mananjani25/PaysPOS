@@ -58,7 +58,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
 
     private val viewModel by activityViewModels<DashBoardCategoryViewModel>()
     private val viewModelPayment by activityViewModels<PaymentViewModel>()
-    private var serviceChargesList: List<TbServiceCharge>? = null
+    private var serviceChargesList: ArrayList<TbServiceCharge>? = null
     private var serviceChargesObserve: Observer<Resource<List<TbServiceCharge>>>? = null
     private var orderTypeObserver: Observer<Resource<List<TbOrderType>>>? = null
     private var dineInFloorTableModel: GetFloorPlanResponse.Data.FloorPlanTable? = null
@@ -188,19 +188,24 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
             val result = bundle.getParcelable<TbDiscount>("data")
             val value = bundle.getDouble("value")
             if (result != null && viewModel.totalPrice != 0.0) {
-                orderDiscount = result.percentage
+                try {
+                    orderDiscount = result.percentage
 
-                val discountApplyPrice = viewModel.totalPrice
-                val price = discountApplyPrice - orderDiscount
-
-                if (cartList.isNotEmpty()) {
-                    cartList[0].discountPrice = orderDiscount
-                    cartList[0].discountSelectdValue = value
-                    cartList[0].discountType = result.discountType
-                    if (result.id != -1) {
-                        cartList[0].discountId = result.id
+                    val discountApplyPrice = viewModel.totalPrice
+                    val price = discountApplyPrice - orderDiscount
+                    Log.d(TAG, "resultListener: " + cartList.size)
+                    if (viewModel.cartModel != null) {
+                        viewModel.cartModel!!.discountPrice = orderDiscount
+                        viewModel.cartModel!!.discountSelectdValue = value
+                        viewModel.cartModel!!.discountType = result.discountType
+                        if (result.id != -1) {
+                            viewModel.cartModel!!.discountId = result.id
+                        }
+                        viewModel.addCart(viewModel.cartModel!!)
                     }
-                    viewModel.addCart(cartList[0])
+                    Log.d(TAG, "resultListener: " + Gson().toJson(viewModel.cartModel!!))
+                } catch (e: Exception) {
+                    e.printStackTrace()
                 }
 
 
@@ -301,9 +306,8 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
         if (cartList.isNotEmpty()) {
             cartList[0].customer = result
             viewModel.addCart(cartList[0])
+            viewModel.setcheckedLoyaltyApply(false)
         }
-
-
     }
 
     private fun calculateDiscountPercentage(originalPrice: Double, percentage: Double): Double {
@@ -318,7 +322,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
 
             val mList = model.modifiers
             mList.forEach { items ->
-                totalPrice += items.price * items.itemQuantity
+                totalPrice += items.price
             }
 
             (model.price) + totalPrice
@@ -735,10 +739,43 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
     private fun getServiceCharges() {
 
         serviceChargesObserve = Observer {
-
             if (it.status == Status.SUCCESS) {
-                serviceChargesList = it.data
-                viewModel.serviceChargesList = it.data ?: arrayListOf()
+                if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == DINE_IN) {
+                    Log.e(TAG, "getServiceCharge:  ${Gson().toJson(it.data)}")
+                    serviceChargesList = ArrayList()
+                    viewModel.serviceChargesList.clear()
+                    it.data?.forEach { service ->
+                        if (service.order_type == Constants.SERVICECHARGE_DINEIN_ORDER) {
+                            serviceChargesList?.add(service)
+                            viewModel.serviceChargesList.add(service)
+                        }
+                    }
+                    Log.d(
+                        TAG,
+                        "getServiceCharges: finall " + Gson().toJson(viewModel.serviceChargesList)
+                    )
+                } else {
+                    if (prefProvider.getValueboolean(
+                            Constants.SERVICECHARGE_TAKEOUT_OPENORDER,
+                            false
+                        )
+                    ) {
+                        Log.e(TAG, "getServiceCharge:  ${Gson().toJson(it.data)}")
+                        serviceChargesList = ArrayList()
+                        viewModel.serviceChargesList.clear()
+                        it.data?.forEach { service ->
+                            if (service.order_type == Constants.SERVICECHARGE_TAKEOUT_OPENORDER) {
+                                serviceChargesList?.add(service)
+                                viewModel.serviceChargesList.add(service)
+                            }
+                        }
+                        Log.d(
+                            TAG,
+                            "getServiceCharges: finall " + Gson().toJson(viewModel.serviceChargesList)
+                        )
+
+                    }
+                }
             }
 
         }

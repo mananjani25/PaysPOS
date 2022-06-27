@@ -6,16 +6,25 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.android.pos.data.entities.TbServiceCharge
 import com.android.pos.data.model.responseModel.CreateServiceChargeResponse
+import com.android.pos.data.model.responseModel.ServiceChargeListResponse
+import com.android.pos.data.model.responseModel.ServiceChargeUpdate
+import com.android.pos.data.remote.Constants
 import com.android.pos.data.repositories.TaxServiceChargeRepository
+import com.android.pos.di.PrefProvider
 import com.android.pos.utils.Event
+import com.android.pos.utils.statusUtils.Resource
 import com.android.pos.utils.statusUtils.Status
+import com.squareup.okhttp.Response
 import dagger.hilt.android.lifecycle.HiltViewModel
+import hilt_aggregated_deps._com_android_pos_ui_dialog_IssueRefundDialog_GeneratedInjector
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class ServiceChargeListViewModel @Inject constructor(
-    private val taxServiceChargeRepository: TaxServiceChargeRepository
+    private val taxServiceChargeRepository: TaxServiceChargeRepository,
+    private val prefProvider: PrefProvider,
 ) : ViewModel() {
 
     private val _snackbarText = MutableLiveData<Event<Any?>>()
@@ -24,6 +33,14 @@ class ServiceChargeListViewModel @Inject constructor(
     private val _data = MutableLiveData<Event<CreateServiceChargeResponse?>>()
     val data: LiveData<Event<CreateServiceChargeResponse?>> = _data
 
+
+    private val _servicedata = MutableLiveData<Event<ServiceChargeListResponse.Data>>()
+    val servicedata: LiveData<Event<ServiceChargeListResponse.Data>> = _servicedata
+
+
+    private val _dataUpdate = MutableLiveData<Event<ServiceChargeUpdate?>>()
+    val dataupdate: LiveData<Event<ServiceChargeUpdate?>> = _dataUpdate
+
     private val _showProgress = MutableLiveData<Event<Boolean>>()
     val showProgress: LiveData<Event<Boolean>> = _showProgress
 
@@ -31,7 +48,39 @@ class ServiceChargeListViewModel @Inject constructor(
     val notifydata: LiveData<Event<CreateServiceChargeResponse.Data?>> = _notifydata
 
 
-    val getDiscountList = taxServiceChargeRepository.getServiceChargeList()
+
+     fun getServiceChargeWholeList() {
+        _showProgress.value = Event(true)
+        viewModelScope.launch {
+            val responsee =
+                taxServiceChargeRepository.getServiceChargeWholeList()
+            when (responsee.status) {
+                Status.SUCCESS -> {
+                    _showProgress.value = Event(false)
+                    responsee.data.let {
+                        if (it?.status == 200) {
+                            _servicedata.value = Event(it.data)
+                            _showProgress.value = Event(false)
+                        } else {
+                            _snackbarText.value = Event(responsee.message)
+                            _showProgress.value = Event(false)
+                        }
+                    }
+
+
+                }
+                Status.ERROR -> {
+                    _snackbarText.value = Event(responsee.message)
+                    _showProgress.value = Event(false)
+                }
+
+                Status.LOADING -> {
+                    _showProgress.value = Event(true)
+                }
+            }
+
+        }
+    }
 
     fun isSerChargeActive(serChargeItem: TbServiceCharge) {
 
@@ -129,17 +178,60 @@ class ServiceChargeListViewModel @Inject constructor(
 
     fun updateData(
         serviceChargeList: ArrayList<TbServiceCharge>,
-        data: CreateServiceChargeResponse.Data
     ) {
-
-        serviceChargeList.forEach {
-            if (data.id == it.id) {
-                it.isEnabled = data.isEnabled
-            } else
-                it.isEnabled = false
-        }
         viewModelScope.launch {
             taxServiceChargeRepository.addServiceCharges(serviceChargeList)
+        }
+    }
+
+
+    fun updateServiceCharge(
+        enableservice: Boolean,
+        isFromTakeout:Boolean,
+        locationId: Int
+    ) {
+        viewModelScope.launch {
+            _showProgress.value = Event(true)
+            viewModelScope.launch {
+                var resource:Resource<ServiceChargeUpdate>?=null
+                if(isFromTakeout){
+                    resource = taxServiceChargeRepository.updateServiceChargeEnable(locationId, enableservice)
+                }else{
+                    resource = taxServiceChargeRepository.updateServiceChargeDineinEnable(locationId, enableservice)
+                }
+                when (resource?.status) {
+                    Status.SUCCESS -> {
+                        _showProgress.value = Event(false)
+
+                        resource.data.let {
+                            if (it?.status == 200) {
+                                resource.data?.let { servicechargeupdate ->
+                                    prefProvider.setValueboolean(
+                                        Constants.SERVICECHARGE_TAKEOUT_OPENORDER,
+                                        servicechargeupdate.data.serviceChargeEnable
+                                    )
+                                    prefProvider.setValueboolean(Constants.SERVICECHARGE_DINEIN_ORDER,servicechargeupdate.data.enableDineInServiceCharge)
+                                    _dataUpdate.value = Event(servicechargeupdate)
+                                }
+                            } else {
+                                _snackbarText.value = Event(resource.message)
+                            }
+
+                        }
+
+
+                    }
+
+                    Status.ERROR -> {
+                        _snackbarText.value = Event(resource.message)
+                        _showProgress.value = Event(false)
+                    }
+
+                    Status.LOADING -> {
+                        _showProgress.value = Event(true)
+                    }
+                }
+            }
         }
     }
 }

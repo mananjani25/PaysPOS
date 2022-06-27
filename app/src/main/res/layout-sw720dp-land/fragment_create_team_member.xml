@@ -287,6 +287,7 @@
                             android:digits="@string/character_String"
                             android:inputType="textCapWords|textVisiblePassword"
                             android:padding="@dimen/_9sdp"
+                            android:visibility="gone"
                             android:textColorHint="@color/hint_color"
                             android:textSize="@dimen/_5mdpi" />
 
@@ -330,7 +331,7 @@
                         android:layout_gravity="center"
                         android:background="@drawable/background_square_border_grey"
                         android:digits="@string/disable_emoji_string"
-                        android:hint="Add Hourly rate"
+                        android:hint="Add Hourly Rate"
                         android:imeOptions="actionNext"
                         android:inputType="numberDecimal"
                         android:padding="@dimen/_9sdp"

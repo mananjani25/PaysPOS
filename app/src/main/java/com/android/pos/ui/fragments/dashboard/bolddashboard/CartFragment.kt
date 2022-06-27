@@ -317,8 +317,10 @@ class CartFragment(
 
     private fun setupLoyalytyPoints() {
         binding.checkloylaty.setOnCheckedChangeListener { _, p1 ->
-            viewModel.redeemLoyaltyInfo.needToApplyLoyalty = p1
+            viewModel.setcheckedLoyaltyApply(p1)
+//            viewModel.redeemLoyaltyInfo.needToApplyLoyalty = p1
             prefProvider.setValueboolean(Constants.LOYALTY_ADDED, p1)
+            prefProvider.setValueboolean(Constants.IS_UPDATE_ORDER_LOYALTY_APPLIED, p1)
             addObserver()
         }
 
@@ -331,6 +333,7 @@ class CartFragment(
         ) { requestKey: String, bundle: Bundle ->
             var data: TbCustomer = bundle.getParcelable<TbCustomer>("data") as TbCustomer
             viewModel.assignCustomer = data
+            viewModel.setcheckedLoyaltyApply(false)
             viewModel.selectedCustomer = data
         }
     }
@@ -355,6 +358,46 @@ class CartFragment(
 
         }
 
+    }
+
+    fun checkMaxGuestCountId(): Int {
+        var maxValue = 0
+        var serviceChargeId = 0
+        viewModel.serviceChargesList.forEach { serviceCharge ->
+            if (serviceCharge.order_type == Constants.SERVICECHARGE_DINEIN_ORDER) {
+                if (serviceCharge.max_guest_count!! >= maxValue) {
+                    maxValue = serviceCharge.max_guest_count
+                    serviceChargeId = serviceCharge.id
+                }
+            }
+        }
+        return serviceChargeId
+    }
+
+    fun getServiceChargeFromGuestCount(guestcount: Int): List<TbServiceCharge> {
+        var list: List<TbServiceCharge> = listOf()
+        var isApplied = false
+        viewModel.serviceChargesList.forEach {
+            if (it.order_type == Constants.SERVICECHARGE_DINEIN_ORDER) {
+                if (isInRange(it.min_guest_count!!, it.max_guest_count!!, guestcount)) {
+                    isApplied = true
+                    list = listOf(it)
+                }
+            }
+        }
+        if (!isApplied) {
+            viewModel.serviceChargesList.forEach { service ->
+                if (service.id == checkMaxGuestCountId()) {
+                    list = listOf(service)
+                    return@forEach
+                }
+            }
+        }
+        return list
+    }
+
+    fun isInRange(minn: Int, maxx: Int, value: Int): Boolean {
+        return (minn <= value && value <= maxx)
     }
 
     private fun getDineInCartList() {
@@ -415,7 +458,7 @@ class CartFragment(
                 orderType = prefProvider.getValue(Constants.ORDER_TYPE, "").toString()
                 orderTypeName = prefProvider.getValue(Constants.ORDER_TYPE_NAME, "").toString()
 
-                serviceCharge = serviceChargesList
+                serviceCharge = getServiceChargeFromGuestCount(numOfGuest)
 
             }
             cartlist.add(cartModel)
@@ -1353,8 +1396,8 @@ class CartFragment(
         binding.lblLoyaltyPoints.visibility = View.GONE
         displayCustomer()
         refreshItemCalculation()
-        prefProvider.setValueboolean(IS_UPDATE_ORDER_LOYALTY_APPLIED,false)
-        prefProvider.setValueboolean(LOYALTY_ADDED,false)
+        prefProvider.setValueboolean(IS_UPDATE_ORDER_LOYALTY_APPLIED, false)
+        prefProvider.setValueboolean(LOYALTY_ADDED, false)
     }
 
 
@@ -1374,7 +1417,7 @@ class CartFragment(
         binding.relPreoceedToFire.setOnClickListener {
             if (viewModel.restrictedAmount(binding.txtTotal)) {
                 //cartlist[0] = viewModel.generateCombinedItems(viewModel.cartModel!!)
-                Log.e(TAG, "destroyedListdestroyedList  ${Gson().toJson(viewModel.destroyedList)}")
+
                 if (cartlist.isNotEmpty()) {
                     if (prefProvider.getValueboolean(DINE_IN_UPDATE, false)) {
                         var itemCount = 0
@@ -1425,8 +1468,23 @@ class CartFragment(
 
         binding.txtAddCustomer.setOnClickListener {
             if (isFromPayment) {
-                viewModel.setIsFromAddCustomer(true)
-                findNavController().navigate(R.id.action_paymentBoldPosFragment_to_assignCustomerOrderFragment)
+                if (prefProvider.getValueboolean(
+                        Constants.LOYALTY_ADDED,
+                        false
+                    ) || prefProvider.getValueboolean(
+                        Constants.IS_UPDATE_ORDER_LOYALTY_APPLIED,
+                        false
+                    )
+                ) {
+                    AlertUtils.showCustomAlertWithListenerWithOK(
+                        requireActivity(),
+                        "Please You can change Customer From DashBoard while Loyalty Points Added."
+                    ) { _, _ ->
+                    }
+                } else {
+                    viewModel.setIsFromAddCustomer(true)
+                    findNavController().navigate(R.id.action_paymentBoldPosFragment_to_assignCustomerOrderFragment)
+                }
             } else {
                 if (isOrderUpdate) {
                     var bundle: Bundle = Bundle()
@@ -1734,7 +1792,7 @@ class CartFragment(
             tableNumber = dineInFloorTableModel?.tableNumber,
             chairCount = dineInFloorTableModel?.chairCount,
             floorPlanName = "",
-            totalGuestCount = dineInCartAdapter.getList().size + 1
+            totalGuestCount = dineInCartAdapter.getList().size - 1
 
 
         )

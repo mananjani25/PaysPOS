@@ -24,6 +24,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
+import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
 import androidx.work.Data
@@ -118,6 +119,12 @@ class MainActivity : BaseScannerActivity() {
             var count = intent?.getStringExtra("count")
             count?.toInt()
                 ?.let { DashboardCategoryBoldPOS.newInstance().onlineOrderBadgeDisplay(it) }
+            if (navController?.currentDestination?.id == R.id.onlineOrderFragment) {
+                var intent = Intent()
+                intent.putExtra("refresh", true)
+                intent.action = Constants.ONLINE_ORDER_REFRESH
+                sendBroadcast(intent)
+            }
         }
     }
 

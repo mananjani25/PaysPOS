@@ -7,12 +7,23 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.data.model.responseModel.CashLogResponse
 import com.android.pos.databinding.ViewCashLogBinding
+import com.android.pos.databinding.ViewPaginationBinding
+import com.android.pos.databinding.ViewTransactionItemBinding
 import com.android.pos.utils.TimeFormatUtils
 
 class CashLogAdapter(val context: Context?) :
-    RecyclerView.Adapter<CashLogAdapter.MyViewHolder>() {
+    RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     var orderList = ArrayList<CashLogResponse.Data.Cashe>()
+
+    private val TYPE_FOOTER = 1
+    private val TYPE_ITEM = 2
+
+    private var showLoader = false
+
+    fun showLoading(status: Boolean) {
+        showLoader = status
+    }
 
     inner class MyViewHolder(private val binding: ViewCashLogBinding) :
         RecyclerView.ViewHolder(binding.root) {
@@ -33,10 +44,10 @@ class CashLogAdapter(val context: Context?) :
                     item.createdAt,
                     context
                 )
-            binding.txtTime.text=TimeFormatUtils.convertCurrentTime(
+            binding.txtTime.text = TimeFormatUtils.convertCurrentTime(
                 item.createdAt, context
             )
-            binding.txtOrderId.text = "ORD"+item.orderId.toString()
+            binding.txtOrderId.text = "ORD" + item.orderId.toString()
 
             if (item.event.equals("IN", ignoreCase = true)) {
                 binding.txtEvent.text = "Cash IN"
@@ -47,26 +58,48 @@ class CashLogAdapter(val context: Context?) :
 
     }
 
-    override fun onCreateViewHolder(
-        parent: ViewGroup,
-        viewType: Int
-    ): MyViewHolder {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
+
         val inflater = LayoutInflater.from(parent.context)
-        val binding = ViewCashLogBinding.inflate(inflater, parent, false)
-        return MyViewHolder(binding)
+        return if (viewType == TYPE_ITEM) {
+            val binding = ViewCashLogBinding.inflate(inflater, parent, false)
+            MyViewHolder(binding)
+        } else {
+            val binding = ViewPaginationBinding.inflate(inflater, parent, false)
+            FooterViewHolder(binding)
+        }
+
     }
 
-    override fun onBindViewHolder(holder: MyViewHolder, position: Int) {
-        holder.bind(orderList.get(position))
+    inner class FooterViewHolder(paginationBinding: ViewPaginationBinding) :
+        RecyclerView.ViewHolder(paginationBinding.root) {
+
+    }
+
+
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        if (holder is MyViewHolder) {
+            holder.bind(orderList.get(position))
+        }
     }
 
     override fun getItemCount(): Int {
         return orderList.size
     }
 
+    override fun getItemViewType(position: Int): Int {
+        return if (showLoader) {
+            if (position == orderList.size - 1) TYPE_FOOTER else TYPE_ITEM
+        } else {
+            TYPE_ITEM
+        }
+    }
+
     fun add(orders: List<CashLogResponse.Data.Cashe>) {
-        orderList = orders as ArrayList<CashLogResponse.Data.Cashe>
+        orderList.addAll(orders)
         notifyDataSetChanged()
     }
+
+
 
 }

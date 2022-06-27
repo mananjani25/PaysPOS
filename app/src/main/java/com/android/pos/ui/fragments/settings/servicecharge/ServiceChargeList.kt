@@ -1,33 +1,31 @@
 package com.android.pos.ui.fragments.settings.servicecharge
 
-import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.widget.AppCompatTextView
 import androidx.appcompat.widget.PopupMenu
-import androidx.core.content.ContextCompat
+import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.R
 import com.android.pos.data.entities.TbServiceCharge
 import com.android.pos.databinding.ServiceChargeFragmentBinding
+import com.android.pos.di.PrefProvider
+import com.android.pos.ui.adapter.ServiceChargeDineinListAdapter
 import com.android.pos.ui.adapter.ServiceChargeListAdapter
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.ProgressUtils
-import com.android.pos.utils.SwipeHelper
-import com.android.pos.utils.callback.ItemCallback
 import com.android.pos.utils.extensions.*
-import com.android.pos.utils.statusUtils.Status
 import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
-import java.util.*
+import javax.inject.Inject
+import kotlin.collections.ArrayList
 
 @AndroidEntryPoint
-class ServiceChargeList : Fragment(), ItemCallback {
+class ServiceChargeList : Fragment(), ServiceChargeListAdapter.ItemCallback,
+    ServiceChargeDineinListAdapter.ItemCallback {
 
     private lateinit var binding: ServiceChargeFragmentBinding
 
@@ -35,7 +33,15 @@ class ServiceChargeList : Fragment(), ItemCallback {
     private lateinit var discountListUpdateDelete: ArrayList<TbServiceCharge>
     private val viewModel by viewModels<ServiceChargeListViewModel>()
     private lateinit var serviceChargeListadapter: ServiceChargeListAdapter
+    private lateinit var serviceChargeDineiinListadapter: ServiceChargeDineinListAdapter
     private lateinit var serviceChargeObject: TbServiceCharge
+    lateinit var dinein_servicechargelist: ArrayList<TbServiceCharge>
+    lateinit var takeout_servicechargelist: ArrayList<TbServiceCharge>
+    var service_charge_dineinEnable = false
+    var service_charge_takeoutEnable = false
+
+    @Inject
+    lateinit var prefProvider: PrefProvider
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -45,66 +51,126 @@ class ServiceChargeList : Fragment(), ItemCallback {
 
         binding = ServiceChargeFragmentBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = this
-
+        prefProvider = PrefProvider(requireContext())
         setUpRecyclerView()
-        getTaxListObserver()
-        setupSnackbar()
         observeShowProgress()
+        viewModel.getServiceChargeWholeList()
+        observeData()
         deleteServiceCharge()
-        notifyAdapter()
+        binding.txtAddnew.setOnClickListener {
+            findNavController().navigate(
+                R.id.action_settings_to_addServiceCharge,
+                bundleOf("isFrom" to "dinein")
+            )
+        }
 
+        binding.imgCheckBox.setOnClickListener {
+            service_charge_takeoutEnable = !service_charge_takeoutEnable
+            if (service_charge_takeoutEnable) {
+                binding.imgCheckBox.setImageResource(R.drawable.ic_check_box)
+            } else {
+                binding.imgCheckBox.setImageResource(R.drawable.ic_check_box_unchecked)
+            }
+            viewModel.updateServiceCharge(
+                service_charge_takeoutEnable,
+                true,
+                prefProvider.getLocationId()
+            )
+        }
+        binding.imgCheckBoxDinein.setOnClickListener {
+            service_charge_dineinEnable = !service_charge_dineinEnable
+            if (service_charge_dineinEnable) {
+                binding.imgCheckBoxDinein.setImageResource(R.drawable.ic_check_box)
+            } else {
+                binding.imgCheckBoxDinein.setImageResource(R.drawable.ic_check_box_unchecked)
+            }
+            viewModel.updateServiceCharge(
+                service_charge_dineinEnable,
+                false,
+                prefProvider.getLocationId()
+            )
+        }
         return binding.root
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        view.findViewById<AppCompatTextView>(R.id.txtAddServiceCharge).setOnClickListener {
-            findNavController().navigate(R.id.action_settings_to_addServiceCharge)
-        }
-    }
+    private fun observeData() {
+        viewModel.servicedata.observe(viewLifecycleOwner) { event ->
+            event.getContentIfNotHandled()?.let {
+                binding.linearFullview?.visible()
+                service_charge_dineinEnable = it.enableDineInServiceCharge
+                service_charge_takeoutEnable = it.serviceChargeEnable
+                if (service_charge_takeoutEnable) {
+                    binding.imgCheckBox.setImageResource(R.drawable.ic_check_box)
+                } else {
+                    binding.imgCheckBox.setImageResource(R.drawable.ic_check_box_unchecked)
+                }
+                if (service_charge_dineinEnable) {
+                    binding.imgCheckBoxDinein.setImageResource(R.drawable.ic_check_box)
+                } else {
+                    binding.imgCheckBoxDinein.setImageResource(R.drawable.ic_check_box_unchecked)
+                }
+                takeout_servicechargelist = arrayListOf()
+                dinein_servicechargelist = arrayListOf()
 
-    private fun setUpRecyclerView() {
-        serviceChargeListadapter = ServiceChargeListAdapter(viewModel)
-        binding.rvServiceCharge.adapter = serviceChargeListadapter
-        serviceChargeListadapter.setCallback(this)
-    }
-
-    private fun getTaxListObserver() {
-        viewModel.getDiscountList.observe(viewLifecycleOwner) {
-
-
-            it?.let { resource ->
-                when (resource.status) {
-                    Status.SUCCESS -> {
-                        ProgressUtils.dismissProgressDialog()
-                        binding.rvServiceCharge.visibility = View.VISIBLE
-                        resource.data?.let { taxList ->
-                            Collections.reverse(taxList)
-                            setTaxData(taxList)
+                if (it.serviceCharges.isNotEmpty()) {
+                    it.serviceCharges.forEach { service ->
+                        if (service.orderType == "TakeOutAndParkOrder") {
+                            var data: TbServiceCharge = TbServiceCharge(
+                                service.createdAt,
+                                service.id,
+                                service.isEnabled,
+                                service.locationId,
+                                service.minGuestCount,
+                                service.maxGuestCount,
+                                service.name,
+                                service.orderType,
+                                service.percentage,
+                                service.updatedAt
+                            )
+                            takeout_servicechargelist.add(data)
+                        } else if (service.orderType == "DineIn") {
+                            var data: TbServiceCharge = TbServiceCharge(
+                                service.createdAt,
+                                service.id,
+                                service.isEnabled,
+                                service.locationId,
+                                service.minGuestCount,
+                                service.maxGuestCount,
+                                service.name,
+                                service.orderType,
+                                service.percentage,
+                                service.updatedAt
+                            )
+                            dinein_servicechargelist.add(data)
                         }
                     }
-                    Status.ERROR -> {
-                        ProgressUtils.dismissProgressDialog()
-                        binding.rvServiceCharge.visibility = View.VISIBLE
-                        binding.root.showAlert(resource.message)
-                    }
-                    Status.LOADING -> {
-                        ProgressUtils.showProgressDialog(requireActivity())
-                        binding.rvServiceCharge.visibility = View.GONE
-                    }
+                    setTaxDatatakeout(takeout_servicechargelist)
+                    setTaxDataDinein(dinein_servicechargelist)
+                    var temp_arraylist: ArrayList<TbServiceCharge> = arrayListOf()
+                    temp_arraylist.addAll(takeout_servicechargelist)
+                    temp_arraylist.addAll(dinein_servicechargelist)
+                    viewModel.updateData(temp_arraylist)
+
                 }
             }
         }
     }
 
-    private fun notifyAdapter() {
-        viewModel.notifydata.observe(viewLifecycleOwner) { event ->
-            event.getContentIfNotHandled()?.let {
 
-                viewModel.updateData(serviceChargeListadapter.serviceChargeList, it)
-            }
-        }
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
     }
+
+    private fun setUpRecyclerView() {
+        serviceChargeListadapter = ServiceChargeListAdapter(viewModel)
+        binding.rvServiceChargeTakeoutopenorder.adapter = serviceChargeListadapter
+        serviceChargeListadapter.setCallback(this)
+
+        serviceChargeDineiinListadapter = ServiceChargeDineinListAdapter(viewModel)
+        binding.rvServiceChargeDineiin.adapter = serviceChargeDineiinListadapter
+        serviceChargeDineiinListadapter.setCallback(this)
+    }
+
 
     private fun observeShowProgress() {
 
@@ -120,14 +186,15 @@ class ServiceChargeList : Fragment(), ItemCallback {
 
     }
 
-    private fun setTaxData(taxList: List<TbServiceCharge>) {
-        discountListUpdateDelete = taxList as ArrayList<TbServiceCharge>
-        if (taxList.isEmpty()) {
-            binding.txtAddServiceCharge.visible()
-        } else {
-            binding.txtAddServiceCharge.gone()
-        }
+    private fun setTaxDatatakeout(taxList: List<TbServiceCharge>) {
         serviceChargeListadapter.apply {
+            addServiceCharge(taxList)
+            notifyDataSetChanged()
+        }
+    }
+
+    private fun setTaxDataDinein(taxList: List<TbServiceCharge>) {
+        serviceChargeDineiinListadapter.apply {
             addServiceCharge(taxList)
             notifyDataSetChanged()
         }
@@ -140,12 +207,12 @@ class ServiceChargeList : Fragment(), ItemCallback {
 
 
                 AlertUtils.showCustomAlert(requireActivity(), it.message)
-                discountListUpdateDelete.remove(serviceChargeObject)
-                serviceChargeListadapter.addServiceCharge(discountListUpdateDelete)
-                serviceChargeListadapter.notifyItemRemoved(position)
-                serviceChargeListadapter.notifyItemRangeChanged(
+                dinein_servicechargelist.remove(serviceChargeObject)
+                serviceChargeDineiinListadapter.addServiceCharge(dinein_servicechargelist)
+                serviceChargeDineiinListadapter.notifyItemRemoved(position)
+                serviceChargeDineiinListadapter.notifyItemRangeChanged(
                     position,
-                    discountListUpdateDelete.size
+                    dinein_servicechargelist.size
                 )
 
             }
@@ -156,15 +223,41 @@ class ServiceChargeList : Fragment(), ItemCallback {
     private fun setupSnackbar() =
         binding.root.liveSnackBar(this, viewModel.snackbarText, Snackbar.LENGTH_SHORT)
 
-    override fun onItemClickListener(view: View?, pos: Int) {
+    override fun onItemClickListener(view: View?, pos: Int, order_type: String?) {
         val popupMenu = view?.let { PopupMenu(requireContext(), it) }
         popupMenu?.menuInflater?.inflate(R.menu.edit_delete_menu, popupMenu.menu)
+        popupMenu?.menu?.findItem(R.id.menu_delete)?.isVisible = false
         popupMenu?.setOnMenuItemClickListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.menu_edit -> {
                     serviceChargeObject = serviceChargeListadapter.getItem(pos)
                     val bundle = Bundle()
                     bundle.putBoolean("isEdit", true)
+                    bundle.putParcelable("serviceChargeObject", serviceChargeObject)
+
+                    //     var bundle= bundleOf()
+                    findNavController().navigate(
+                        R.id.action_settings_to_addServiceCharge,
+                        bundle
+                    )
+                }
+
+            }
+            true
+        }
+        popupMenu?.show()
+    }
+
+    override fun onItemClickDineinListener(view: View?, pos: Int, order_type: String?) {
+        val popupMenu = view?.let { PopupMenu(requireContext(), it) }
+        popupMenu?.menuInflater?.inflate(R.menu.edit_delete_menu, popupMenu.menu)
+        popupMenu?.setOnMenuItemClickListener { menuItem ->
+            when (menuItem.itemId) {
+                R.id.menu_edit -> {
+                    serviceChargeObject = serviceChargeDineiinListadapter.getItem(pos)
+                    val bundle = Bundle()
+                    bundle.putBoolean("isEdit", true)
+                    bundle.putString("isFrom", "dinein")
                     bundle.putParcelable("serviceChargeObject", serviceChargeObject)
 
                     //     var bundle= bundleOf()
@@ -182,8 +275,8 @@ class ServiceChargeList : Fragment(), ItemCallback {
                     ) {
                         positiveButton(getString(R.string.tv_delete)) {
                             // Do positive stuff here
-                            serviceChargeObject = serviceChargeListadapter.getItem(pos)
-                            viewModel.delete(serviceChargeListadapter.getItem(pos).id)
+                            serviceChargeObject = serviceChargeDineiinListadapter.getItem(pos)
+                            viewModel.delete(serviceChargeDineiinListadapter.getItem(pos).id)
                         }
                         negativeButton(R.string.tv_cancel) {
                             // Do negative stuff here

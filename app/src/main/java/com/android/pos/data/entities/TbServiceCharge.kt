@@ -10,7 +10,7 @@ import kotlinx.parcelize.Parcelize
 @Entity(tableName = "TbServiceCharge")
 data class TbServiceCharge(
     @SerializedName("created_at")
-    val createdAt: String,
+    val createdAt: String?=null,
     @PrimaryKey
     @SerializedName("id")
     val id: Int,
@@ -18,12 +18,18 @@ data class TbServiceCharge(
     var isEnabled: Boolean = false,
     @SerializedName("location_id")
     val locationId: Int,
+    @SerializedName("min_guest_count")
+    val min_guest_count: Int? = null,
+    @SerializedName("max_guest_count")
+    val max_guest_count: Int? = null,
     @SerializedName("name")
     val name: String,
+    @SerializedName("order_type")
+    val order_type: String? = null,
     @SerializedName("percentage")
     val percentage: Double,
     @SerializedName("updated_at")
-    val updatedAt: String,
+    val updatedAt: String?=null,
     @SerializedName("is_active")
     var isActive: Boolean = false,
     var isChecked: Boolean = true,

@@ -1,5 +1,6 @@
 package com.android.pos.ui.adapter
 
+import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -7,9 +8,11 @@ import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.data.entities.TbServiceCharge
 import com.android.pos.databinding.ViewServiceChargeItemBinding
 import com.android.pos.ui.fragments.settings.servicecharge.ServiceChargeListViewModel
+import com.android.pos.utils.extensions.visible
 
-class ServiceChargeListAdapter(val viewModel: ServiceChargeListViewModel) :
-    RecyclerView.Adapter<ServiceChargeListAdapter.MyViewHolder>() {
+
+class ServiceChargeDineinListAdapter(val viewModel: ServiceChargeListViewModel) :
+    RecyclerView.Adapter<ServiceChargeDineinListAdapter.MyViewHolder>() {
 
     var serviceChargeList = ArrayList<TbServiceCharge>()
     private var mCallback: ItemCallback? = null
@@ -20,7 +23,7 @@ class ServiceChargeListAdapter(val viewModel: ServiceChargeListViewModel) :
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
-    ): ServiceChargeListAdapter.MyViewHolder {
+    ): ServiceChargeDineinListAdapter.MyViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         val binding = ViewServiceChargeItemBinding.inflate(inflater, parent, false)
 
@@ -28,12 +31,25 @@ class ServiceChargeListAdapter(val viewModel: ServiceChargeListViewModel) :
 
     }
 
-    override fun onBindViewHolder(holder: ServiceChargeListAdapter.MyViewHolder, position: Int) {
+    @SuppressLint("SetTextI18n")
+    override fun onBindViewHolder(
+        holder: ServiceChargeDineinListAdapter.MyViewHolder,
+        position: Int
+    ) {
         val itemBinding = holder.discountItemBinding
         itemBinding.serviceChargeModel = serviceChargeList[position]
         itemBinding.viewModel = viewModel
+        itemBinding.linearGuestcoount?.visible()
+        itemBinding.minGuest?.text =
+            "Min Guest (" + serviceChargeList[position].min_guest_count.toString() + ")"
+        itemBinding.maxGuest?.text =
+            "Max Guest (" + serviceChargeList[position].max_guest_count.toString() + ")"
         itemBinding.layoutMenu.imgOrderMenu.setOnClickListener {
-            mCallback?.onItemClickListener(it, position, serviceChargeList[position].order_type)
+            mCallback?.onItemClickDineinListener(
+                it,
+                position,
+                serviceChargeList[position].order_type
+            )
         }
         itemBinding.executePendingBindings()
     }
@@ -56,10 +72,15 @@ class ServiceChargeListAdapter(val viewModel: ServiceChargeListViewModel) :
     inner class MyViewHolder(val discountItemBinding: ViewServiceChargeItemBinding) :
         RecyclerView.ViewHolder(discountItemBinding.root) {
 
-    }
+        init {
 
+
+        }
+    }
 
     interface ItemCallback {
-        fun onItemClickListener(view: View?, pos: Int, order_type: String?)
+        fun onItemClickDineinListener(view: View?, pos: Int, order_type: String?)
     }
+
+
 }

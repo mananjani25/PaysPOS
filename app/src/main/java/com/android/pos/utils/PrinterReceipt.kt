@@ -14,6 +14,7 @@ import com.android.pos.data.entities.TbServiceCharge
 import com.android.pos.data.model.responseModel.*
 import com.android.pos.data.model.responseModel.report.KeyValue
 import com.android.pos.data.remote.Constants
+import com.android.pos.di.PrefProvider
 import com.epson.eposprint.Builder
 
 val TAG = "PrinterReceipt"
@@ -748,6 +749,78 @@ fun addOrdersForKitchenDineIn(
     return builder
 }
 
+fun addOrdersForKitchenOnlineOrder(
+    builder: Builder,
+    list: List<OnlineOrderResponseModel.Data.OrderItem>,
+    fontSizeH: Int = 1,
+    fontSizeW: Int = 1
+): Builder {
+    for (i in 0 until list.size) {
+        val obj = list.get(i)
+        builder.addTextLineSpace(30)
+        builder.addFeedUnit(30)
+        builder.addTextFont(Builder.FONT_C)
+        builder.addTextLang(Builder.LANG_EN)
+        builder.addTextAlign(Builder.ALIGN_LEFT)
+        builder.addTextSize(fontSizeH, fontSizeW)
+        builder.addTextStyle(
+            Builder.FALSE,
+            Builder.FALSE,
+            Builder.TRUE,
+            Builder.COLOR_1
+        )
+
+        builder.addText(obj.quantity.toString() + " " + obj.itemName)
+
+        if (obj.orderItemModifiers.isNotEmpty()) {
+            for (j in 0 until obj.orderItemModifiers.size) {
+                val modifierObj = obj.orderItemModifiers.get(j)
+                builder.addTextLineSpace(30)
+                builder.addFeedUnit(30)
+                builder.addTextFont(Builder.FONT_C)
+                //builder.addTextLineSpace(20)
+                builder.addTextAlign(Builder.ALIGN_LEFT)
+                builder.addTextLang(Builder.LANG_EN)
+                builder.addTextSize(fontSizeH, fontSizeW)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.TRUE,
+                    Builder.COLOR_2
+                )
+                //builder.addTextPosition(1)
+
+
+                builder.addText("  " + modifierObj.name)
+
+
+            }
+        }
+        if (obj.note.isNotEmpty()) {
+            builder.addTextLineSpace(30)
+            builder.addFeedUnit(30)
+            builder.addTextFont(Builder.FONT_C)
+            //builder.addTextLineSpace(20)
+            builder.addTextAlign(Builder.ALIGN_LEFT)
+            builder.addTextLang(Builder.LANG_EN)
+            builder.addTextSize(fontSizeH, fontSizeW)
+            builder.addTextStyle(
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.TRUE,
+                Builder.COLOR_1
+            )
+            builder.addText("  Note:" + obj.note)
+
+        }
+
+
+    }
+
+
+    return builder
+}
+
 fun addOrdersForKitchenCustomer(
     builder: Builder,
     list: List<CreateOrderResponse.Data.Order.OrderItem>,
@@ -993,7 +1066,8 @@ fun addWholeTbItemToGuest(
     font: String,
     showModifiers: Boolean,
     guestCount: Int,
-    serviceChargeList: ArrayList<TbServiceCharge>
+    serviceChargeList: ArrayList<TbServiceCharge>,
+    prefProvider: PrefProvider
 ): Builder {
 
     val obj = list
@@ -1055,9 +1129,24 @@ fun addWholeTbItemToGuest(
     }
 
     if (serviceChargeList?.isNotEmpty() == true) {
-        serviceChargeList?.forEach {
-            if (it.isEnabled) {
-                serviceCharge += (subTotal * it.percentage) / 100
+        if (prefProvider.getValueboolean(Constants.SERVICECHARGE_DINEIN_ORDER, false)) {
+            var isApplied = false
+            serviceChargeList.forEach {
+                if (it.order_type == Constants.SERVICECHARGE_DINEIN_ORDER) {
+                    if (isInRange(it.min_guest_count!!, it.max_guest_count!!, guestCount)) {
+                        isApplied = true
+                        serviceCharge += (subTotal * it.percentage) / 100
+                        return@forEach
+                    }
+                }
+            }
+            if (!isApplied) {
+                serviceChargeList.forEach { service ->
+                    if (service.id == checkMaxGuestCountId(serviceChargeList)) {
+                        serviceCharge += (subTotal * service.percentage) / 100
+                        return@forEach
+                    }
+                }
             }
         }
 
@@ -1119,6 +1208,25 @@ fun addWholeTbItemToGuest(
 
     return builder
 }
+
+fun isInRange(minn: Int, maxx: Int, value: Int): Boolean {
+    return (minn <= value && value <= maxx)
+}
+
+fun checkMaxGuestCountId(serviceChargeList: ArrayList<TbServiceCharge>): Int {
+    var maxValue = 0
+    var serviceChargeId = 0
+    serviceChargeList.forEach { serviceCharge ->
+        if (serviceCharge.order_type == Constants.SERVICECHARGE_DINEIN_ORDER) {
+            if (serviceCharge.max_guest_count!! >= maxValue) {
+                maxValue = serviceCharge.max_guest_count
+                serviceChargeId = serviceCharge.id
+            }
+        }
+    }
+    return serviceChargeId
+}
+
 
 fun addOrderItemForDineIn(
     builder: Builder,

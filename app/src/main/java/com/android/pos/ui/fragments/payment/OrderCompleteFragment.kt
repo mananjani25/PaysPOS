@@ -23,6 +23,7 @@ import com.android.pos.R
 import com.android.pos.data.entities.CartModel
 import com.android.pos.data.entities.RedeemLoyaltyInfo
 import com.android.pos.data.entities.TbItem
+import com.android.pos.data.entities.TbServiceCharge
 import com.android.pos.data.model.DineInModel
 import com.android.pos.data.model.GuestDataModel
 import com.android.pos.data.model.SplitBundleModel
@@ -46,6 +47,7 @@ import com.android.pos.data.remote.Constants.OPTION_TYPE
 import com.android.pos.data.remote.Constants.PAYMENT_ID
 import com.android.pos.data.remote.Constants.PRINT_DATA_DINE_IN
 import com.android.pos.data.remote.Constants.SAVE_SPLIT_BUNDLE
+import com.android.pos.data.remote.Constants.SERVICECHARGE_DINEIN_ORDER
 import com.android.pos.data.remote.Constants.SPLIT_DINEIN_CHECKOUT
 import com.android.pos.data.remote.Constants.SPLIT_DINEIN_MODEL
 import com.android.pos.data.remote.Constants.SPLIT_IS_GUESTPAY
@@ -294,6 +296,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         Log.e(TAG, "receiptModel:  ${Gson().toJson(receiptModel)}")
         setLabelData()
 
+        binding.edtEmail.setOnFocusChangeListener { v, hasFocus ->
+            if (hasFocus) {
+                binding.edtEmail.setHint("")
+            }
+        }
         if (!isDineIn) {
             if (isSpilt) {
                 // saveDataInPrefrences()
@@ -1043,11 +1050,28 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         finaldisLocal = orderDiscount + guestDiscount
 
 
-        dineInList.get(0).serviceChargeList?.forEach {
-            if (it.isEnabled) {
-                guestServiceCharge += (guestSubTotal * it.percentage) / 100
+        if (prefProvider.getValueboolean(SERVICECHARGE_DINEIN_ORDER, false)) {
+            var isApplied = false
+            dineInList.get(0).serviceChargeList?.forEach {
+                if (it.order_type == SERVICECHARGE_DINEIN_ORDER) {
+                    if (isInRange(it.min_guest_count!!, it.max_guest_count!!, guestCount)) {
+                        guestServiceCharge += (guestSubTotal * it.percentage) / 100
+                        isApplied = true
+                        return@forEach
+                    }
+                }
             }
+            if (!isApplied) {
+                dineInList.get(0).serviceChargeList?.forEach { service ->
+                    if (service.id == checkMaxGuestCountId(dineInList.get(0).serviceChargeList!!)) {
+                        guestServiceCharge += (guestSubTotal * service.percentage) / 100
+                        return@forEach
+                    }
+                }
+            }
+
         }
+
 
         var builder: Builder? = null
         try {
@@ -1453,7 +1477,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     customerSettingModel.fonts,
                     customerSettingModel.showModifiers,
                     dineInList.get(0).totalGuestCount,
-                    dineInList.get(0).serviceChargeList ?: arrayListOf()
+                    dineInList.get(0).serviceChargeList ?: arrayListOf(),
+                    prefProvider
                 )
             }
             builder.addFeedLine(1)
@@ -2166,6 +2191,24 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
     }
 
+    fun isInRange(minn: Int, maxx: Int, value: Int): Boolean {
+        return (minn <= value && value <= maxx)
+    }
+
+    fun checkMaxGuestCountId(serviceChargeList: ArrayList<TbServiceCharge>): Int {
+        var maxValue = 0
+        var serviceChargeId = 0
+        serviceChargeList.forEach { serviceCharge ->
+            if (serviceCharge.order_type == Constants.SERVICECHARGE_DINEIN_ORDER) {
+                if (serviceCharge.max_guest_count!! >= maxValue) {
+                    maxValue = serviceCharge.max_guest_count
+                    serviceChargeId = serviceCharge.id
+                }
+            }
+        }
+        return serviceChargeId
+    }
+
     private fun generateDineInPrint(
         customerReceiptPrinters: PrinterResponse.Data.CustomerReceiptPrinters,
         type: String,
@@ -2839,53 +2882,10 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             }
 
 
-            /*if (getDineInOrderDetails?.cash_discount_or_surcharge != null) {
-                builder.addTextLineSpace(30)
-                builder.addFeedUnit(30)
-                builder.addTextFont(Builder.FONT_E)
-                // builder.addTextAlign(Builder.ALIGN_LEFT)
-                builder.addTextLang(Builder.LANG_EN)
-                addCustomerTextSize(builder, customerSettingModel.fonts)
-                builder.addTextStyle(
-                    Builder.FALSE,
-                    Builder.FALSE,
-                    Builder.FALSE,
-                    Builder.COLOR_1
-                )
-
-                builder.addText(
-                    padLine(
-                        "Cash Discount",
-                        if (getDineInOrderDetails?.cash_discount_or_surcharge == 0.0) {
-                            "$" + getDineInOrderDetails?.cash_discount_or_surcharge?.let {
-                                MethodUtils.roundOffAmountString(
-                                    it
-                                )
-                            }
-                        } else {
-                            "-$" + getDineInOrderDetails?.cash_discount_or_surcharge?.let {
-                                MethodUtils.roundOffAmountString(
-                                    it
-                                )
-                            }
-                        },
-                        if (customerSettingModel.fonts == Constants.LARGE) {
-                            24
-                        } else {
-                            48
-                        }
-                    )
-                )
-            }*/
 
             builder.addTextLineSpace(30)
             builder.addFeedUnit(30)
 
-
-            Log.e(
-                TAG,
-                "getDineInOrderDetailsgetDineInOrderDetails  ${Gson().toJson(getDineInOrderDetails)}"
-            )
             builder.addTextLineSpace(30)
             builder.addFeedUnit(30)
 
@@ -2980,6 +2980,10 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             )
 
             //ADDCHANGE
+
+            if (remainingAmount == 0.0) {
+                changeAmtGlobal += tipAmount
+            }
             builder.addText(
                 padLine(
                     "Change Amount",
@@ -3517,7 +3521,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
     }
 
     private fun getKitchenPrinters() {
-        viewModel.getKitchenPrinterList().observe(viewLifecycleOwner, { it ->
+        viewModel.getKitchenPrinterList().observe(viewLifecycleOwner) { it ->
             when (it.status) {
                 Status.SUCCESS -> {
                     ProgressUtils.dismissProgressDialog()
@@ -3585,12 +3589,12 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 }
             }
 
-        })
+        }
 
     }
 
     private fun getCustomerPrinterForDineIn() {
-        viewModel.getCustomerPrinterList().observe(viewLifecycleOwner, {
+        viewModel.getCustomerPrinterList().observe(viewLifecycleOwner) {
             when (it.status) {
                 Status.SUCCESS -> {
                     ProgressUtils.dismissProgressDialog()
@@ -3612,12 +3616,12 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
             }
 
-        })
+        }
     }
 
     private fun getCustomerPrinters(autoPrintCheck: Boolean) {
 
-        viewModel.getCustomerPrinterList().observe(viewLifecycleOwner, {
+        viewModel.getCustomerPrinterList().observe(viewLifecycleOwner) {
             when (it.status) {
                 Status.SUCCESS -> {
                     ProgressUtils.dismissProgressDialog()
@@ -3672,7 +3676,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
             }
 
-        })
+        }
 
     }
 
@@ -5999,7 +6003,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
     private fun observeShowProgress() {
 
-        viewModel.showProgress.observe(viewLifecycleOwner, { event ->
+        viewModel.showProgress.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
                 if (it) {
                     ProgressUtils.showProgressDialog(requireActivity())
@@ -6007,9 +6011,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     ProgressUtils.dismissProgressDialog()
                 }
             }
-        })
+        }
 
-        viewModel.data.observe(viewLifecycleOwner, { event ->
+        viewModel.data.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let { baseResponse ->
                 activity?.let {
                     AlertUtils.showCustomAlertWithListenerWithOK(
@@ -6019,9 +6023,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     }
                 }
             }
-        })
+        }
 
-        viewModel.data1.observe(viewLifecycleOwner, { event ->
+        viewModel.data1.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let { baseResponse ->
                 binding.txtAddCustomer.visibility = View.GONE
                 activity?.let {
@@ -6032,7 +6036,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     }
                 }
             }
-        })
+        }
 
 
     }
