@@ -58,6 +58,9 @@ import com.epson.eposprint.Print
 import com.epson.eposprint.StatusChangeEventListener
 import com.epson.epsonio.*
 import com.google.gson.Gson
+import com.sunmi.externalprinterlibrary.api.ConnectCallback
+import com.sunmi.externalprinterlibrary.api.SunmiPrinter
+import com.sunmi.externalprinterlibrary.api.SunmiPrinterApi
 import dagger.hilt.android.AndroidEntryPoint
 import java.io.IOException
 import java.io.InputStream
@@ -141,28 +144,26 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
     }
 
 
-    private fun getOrderTypes() {
-        viewModel.orderTypes.observe(viewLifecycleOwner, {
-            when (it.status) {
-                Status.LOADING -> {
-                    ProgressUtils.showProgressDialog(requireActivity())
-                }
-                Status.ERROR -> {
-                    ProgressUtils.dismissProgressDialog()
-                }
-                Status.SUCCESS -> {
-                    ProgressUtils.dismissProgressDialog()
-                    if (it.data != null) {
-                        orderTypeList.clear()
-                        orderTypeList = arrayListOf()
-                        orderTypeList.addAll(it.data.toCollection(ArrayList()))
-
-                    }
-
-
-                }
+    private fun getOrderTypes() = viewModel.orderTypes.observe(viewLifecycleOwner) {
+        when (it.status) {
+            Status.LOADING -> {
+                ProgressUtils.showProgressDialog(requireActivity())
             }
-        })
+            Status.ERROR -> {
+                ProgressUtils.dismissProgressDialog()
+            }
+            Status.SUCCESS -> {
+                ProgressUtils.dismissProgressDialog()
+                if (it.data != null) {
+                    orderTypeList.clear()
+                    orderTypeList = arrayListOf()
+                    orderTypeList.addAll(it.data.toCollection(ArrayList()))
+
+                }
+
+
+            }
+        }
     }
 
     private fun getPrinterList() {
@@ -356,18 +357,18 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
     }
 
     private fun onDeleteObserve() {
-        viewModel.deletePrinter.observe(viewLifecycleOwner, {
+        viewModel.deletePrinter.observe(viewLifecycleOwner) {
             it.getContentIfNotHandled()?.let { data ->
                 Log.e(TAG, "deleteSuccess")
                 syncPrinterList()
 
             }
-        })
+        }
     }
 
     private fun syncPrinterList(saved: Boolean = false) {
         allPrinterlist.clear()
-        viewModel.printerList().observe(viewLifecycleOwner, {
+        viewModel.printerList().observe(viewLifecycleOwner) {
             when (it.status) {
 
                 Status.SUCCESS -> {
@@ -454,78 +455,6 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                         }
 
 
-                        /* if (data?.kitchenReceiptPrinters != null) {
-                             val kitchenData = data.kitchenReceiptPrinters
-                             kitchenAdapter.clearList()
-                             kitchenAdapter.setList(arrayListOf())
-                             if (kitchenData != null) {
-                                 for (i in kitchenData.indices) {
-                                     kitchenAdapter.addItem(
-                                         PrinterListModel(
-                                             id = kitchenData[i].id,
-                                             printerName = kitchenData[i].name,
-                                             connectionType = if (kitchenData[i].printer_type == BLUETOOTH) {
-                                                 BLUETOOTH
-                                             } else {
-                                                 WIFI
-                                             },
-                                             isActive = kitchenData[i].status,
-                                             type = kitchenData[i].receiptPrintType,
-                                             DeviceInfo(
-                                                 if (kitchenData[i].printer_type == BLUETOOTH) {
-                                                     DevType.BLUETOOTH
-                                                 } else {
-                                                     DevType.TCP
-                                                 },
-                                                 kitchenData[i].ipAddress,
-                                                 kitchenData[i].name,
-                                                 kitchenData[i].ipAddress,
-                                                 kitchenData[i].macAddress
-                                             ),
-                                             printerModel = kitchenData[i].orderTypes
-
-
-                                         )
-                                     )
-
-                                     allPrinterlist.add(
-                                         PrinterListModel(
-
-                                             id = kitchenData[i].id,
-                                             printerName = kitchenData[i].name,
-                                             connectionType = if (kitchenData[i].printer_type == BLUETOOTH) {
-                                                 BLUETOOTH
-                                             } else {
-                                                 WIFI
-                                             },
-                                             isActive = kitchenData[i].status,
-                                             type = kitchenData[i].receiptPrintType,
-                                             DeviceInfo(
-                                                 if (kitchenData[i].printer_type == BLUETOOTH) {
-                                                     DevType.BLUETOOTH
-                                                 } else {
-                                                     DevType.TCP
-                                                 },
-                                                 kitchenData[i].ipAddress,
-                                                 kitchenData[i].name,
-                                                 kitchenData[i].ipAddress,
-                                                 kitchenData[i].macAddress
-                                             ),
-                                             printerModel = kitchenData[i].orderTypes
-
-
-                                         )
-                                     )
-                                 }
-
-                             }
-
-                         } else {
-                             Log.e(TAG, "CustomerListCleared 2")
-                             kitchenAdapter.clearList()
-                         }
-                     */
-
                     } else {
                         Log.e(TAG, "ITNotNull  ")
                         kitchenAdapter.clearList()
@@ -569,9 +498,9 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                 }
             }
 
-        })
+        }
 
-        viewModel.getKitchenPrinters().observe(viewLifecycleOwner, {
+        viewModel.getKitchenPrinters().observe(viewLifecycleOwner) {
             when (it.status) {
 
                 Status.SUCCESS -> {
@@ -689,11 +618,12 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                 }
             }
 
-        })
+        }
 
 
     }
 
+    @SuppressLint("MissingPermission")
     private fun searchBluetooth() {
 
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
@@ -747,17 +677,6 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
         }
     }
 
-    private fun congigurePrinter() {
-
-        //init printer list control
-
-
-        //start find thread scheduler
-
-
-        //findStart()
-        //restartDiscovery()
-    }
 
     override fun onStop() {
         super.onStop()
@@ -799,26 +718,6 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
         }
     }
 
-    /*private val mDiscoveryListener =
-        DiscoveryListener { deviceInfo ->
-
-            val item = HashMap<String, String>()
-            item["PrinterName"] = deviceInfo.deviceName
-            item["Target"] = deviceInfo.target
-            Log.e(TAG, "Jsonitem:    ${Gson().toJson(item)}")
-
-            val model: PrinterListModel = PrinterListModel()
-            model.apply {
-                printerName = deviceInfo.deviceName
-                connectionType = WIFI
-
-            }
-
-            Log.e(TAG,"getModelmodel:  ${Gson().toJson(model)}")
-            customerAdapter.addItem(model)
-        }
-
-*/
     private val mDiscoveryListener =
         DiscoveryListener { deviceInfo ->
             requireActivity().runOnUiThread(Runnable {
@@ -1021,6 +920,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
     }
 
 
+    @SuppressLint("MissingPermission")
     @Throws(IOException::class)
     fun openBT() {
         try {
@@ -1040,6 +940,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
     }
 
     // this will find a bluetooth printer device
+    @SuppressLint("MissingPermission")
     fun findBT() {
         try {
             mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
@@ -1126,7 +1027,165 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
     }
 
     override fun onPrinterSelected(printerListModel: PrinterListModel) {
-        onInitPrinter(printerListModel)
+
+        if (printerListModel.printerName?.startsWith("CloudPrint", true) == true) {
+
+            printerListModel.deviceModel?.let { sunmiPrinterInit(it.ipAddress) }
+
+        } else if (printerListModel.printerName?.startsWith("InnerPrinter", true) == true) {
+
+
+            sunmiInnerPrinter(printerListModel.deviceModel?.ipAddress)
+
+        } else {
+            onInitPrinter(printerListModel)
+        }
+    }
+
+    private fun sunmiInnerPrinter(ipAddress: String?) {
+
+        SunmiPrintHelper.getInstance().initSunmiPrinterService(requireContext())
+        setService()
+
+
+    }
+
+    private fun setService() {
+        if (SunmiPrintHelper.getInstance().sunmiPrinter == SunmiPrintHelper.FoundSunmiPrinter) {
+
+            Log.e("SunmiPrintHelper", "FoundSunmiPrinter")
+
+            if (!BluetoothUtil.isBlueToothPrinter) {
+
+                Log.e("SunmiPrintHelper", "isBlueToothPrinter")
+
+                SunmiPrintHelper.getInstance().printText("Test Print", 24F, true, false, null)
+                SunmiPrintHelper.getInstance().printExample(requireContext())
+            } else {
+
+                Log.e("SunmiPrintHelper", "isBlueToothPrinter")
+
+
+                printByBluTooth("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
+            }
+
+        } else if (SunmiPrintHelper.getInstance().sunmiPrinter == SunmiPrintHelper.CheckSunmiPrinter) {
+            handler.postDelayed({ setService() }, 2000)
+            Log.e("SunmiPrintHelper", "CheckSunmiPrinter")
+        } else if (SunmiPrintHelper.getInstance().sunmiPrinter == SunmiPrintHelper.LostSunmiPrinter) {
+
+            Log.e("SunmiPrintHelper", "LostSunmiPrinter")
+        } else {
+            Log.e("SunmiPrintHelper", "ELSE")
+        }
+    }
+
+    private val mStrings = arrayOf(
+        "CP437",
+        "CP850",
+        "CP860",
+        "CP863",
+        "CP865",
+        "CP857",
+        "CP737",
+        "CP928",
+        "Windows-1252",
+        "CP866",
+        "CP852",
+        "CP858",
+        "CP874",
+        "Windows-775",
+        "CP855",
+        "CP862",
+        "CP864",
+        "GB18030",
+        "BIG5",
+        "KSC5601",
+        "utf-8"
+    )
+
+
+    private fun printByBluTooth(content: String) {
+        try {
+            if (true) {
+                BluetoothUtil.sendData(ESCUtil.boldOn())
+            } else {
+                BluetoothUtil.sendData(ESCUtil.boldOff())
+            }
+            if (true) {
+                BluetoothUtil.sendData(ESCUtil.underlineWithOneDotWidthOn())
+            } else {
+                BluetoothUtil.sendData(ESCUtil.underlineOff())
+            }
+
+            BluetoothUtil.sendData(content.toByteArray(charset("GB18030")))
+            BluetoothUtil.sendData(ESCUtil.nextLine(3))
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
+    }
+
+    private fun sunmiPrinterInit(ipAddress: String) {
+
+        SunmiPrinterApi.getInstance().setPrinter(SunmiPrinter.SunmiBlueToothPrinter, ipAddress)
+
+        connect()
+
+    }
+
+    fun connect() {
+        if (!SunmiPrinterApi.getInstance().isConnected) {
+            SunmiPrinterApi.getInstance()
+                .connectPrinter(requireContext(), object : ConnectCallback {
+
+                    override fun onFound() {
+                        println("onFound")
+                    }
+
+                    override fun onUnfound() {
+                        println("onUnfound")
+                    }
+
+                    override fun onConnect() {
+                        println("onConnect")
+                        test()
+                    }
+
+                    override fun onDisconnect() {
+                        println("onDisconnect")
+                    }
+
+                })
+        } else {
+            test()
+        }
+    }
+
+    fun test() {
+        if (SunmiPrinterApi.getInstance().isConnected) {
+            SunmiPrinterApi.getInstance().printerInit()
+            SunmiPrinterApi.getInstance().printText("")
+            SunmiPrinterApi.getInstance().lineWrap(2)
+            SunmiPrinterApi.getInstance().setAlignMode(1)
+            SunmiPrinterApi.getInstance().setFontZoom(2, 2)
+            SunmiPrinterApi.getInstance().printText("Test Print")
+            SunmiPrinterApi.getInstance().lineWrap(1)
+            val current = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                LocalDateTime.now()
+            } else {
+                TODO("VERSION.SDK_INT < O")
+            }
+            val formatter = DateTimeFormatter.ofPattern("MMM-dd-yyyy hh:mm:a")
+            val formatted = current.format(formatter)
+            SunmiPrinterApi.getInstance().setAlignMode(1)
+            SunmiPrinterApi.getInstance().setFontZoom(2, 2)
+            SunmiPrinterApi.getInstance()
+                .printText(getCurrentTimeFromTimeZone(requireContext(), formatted))
+            SunmiPrinterApi.getInstance().lineWrap(2)
+            SunmiPrinterApi.getInstance().cutPaper(2, 20)
+
+
+        }
     }
 
     override fun onPrinterActive(printerListModel: PrinterListModel, layoutPosition: Int) {
@@ -1778,6 +1837,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
         Log.e(TAG, "onBatteryLevelChange  ${p0}")
     }
 
+    @SuppressLint("MissingPermission")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (requestCode == 100 && resultCode == Activity.RESULT_OK) {
 

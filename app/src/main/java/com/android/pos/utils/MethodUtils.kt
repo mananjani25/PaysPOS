@@ -3,12 +3,14 @@ package com.android.pos.utils
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
+import android.os.Build
 import android.os.SystemClock
 import android.provider.Settings
 import android.text.TextUtils
 import android.util.Log
 import android.view.inputmethod.InputMethodManager
 import android.widget.TextView
+import androidx.annotation.RequiresApi
 import androidx.appcompat.widget.AppCompatEditText
 import androidx.appcompat.widget.AppCompatTextView
 import androidx.fragment.app.FragmentActivity
@@ -26,6 +28,8 @@ import okhttp3.RequestBody
 import java.io.File
 import java.text.ParseException
 import java.text.SimpleDateFormat
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import java.util.*
 import java.util.regex.Matcher
 import java.util.regex.Pattern
@@ -47,11 +51,13 @@ class MethodUtils {
                 Settings.Secure.ANDROID_ID
             )
         }
+
         fun hideSoftKeyboard(activity: Activity) {
-            if (activity.getCurrentFocus() == null){
+            if (activity.getCurrentFocus() == null) {
                 return
             }
-            val inputMethodManager = activity.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            val inputMethodManager =
+                activity.getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
             inputMethodManager.hideSoftInputFromWindow(activity.currentFocus!!.windowToken, 0)
         }
 
@@ -124,7 +130,7 @@ class MethodUtils {
             }
         }
 
-        fun showKeyboard(activity: Activity){
+        fun showKeyboard(activity: Activity) {
 
         }
 
@@ -489,6 +495,15 @@ class MethodUtils {
             } catch (e: java.lang.Exception) {
                 e.printStackTrace()
             }
+        }
+
+        @RequiresApi(Build.VERSION_CODES.O)
+        fun formatted(): String {
+
+            val current = LocalDateTime.now()
+            val formatter = DateTimeFormatter.ofPattern("MMM-dd-yyyy hh:mm:a")
+            return current.format(formatter)
+
         }
     }
 
