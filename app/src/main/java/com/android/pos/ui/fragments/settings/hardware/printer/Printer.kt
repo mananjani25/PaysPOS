@@ -45,9 +45,7 @@ import com.android.pos.utils.extensions.alert
 import com.android.pos.utils.extensions.visible
 import com.android.pos.utils.padLine
 import com.android.pos.utils.printer.PrinterClass
-import com.android.pos.utils.printer.PrinterClass.BLUETOOTH_TIMEOUT
 import com.android.pos.utils.printer.PrinterClass.SEND_TIMEOUT
-import com.android.pos.utils.printer.PrinterClass.TEST_PRINT_LAN_TIME
 import com.android.pos.utils.printer.PrinterClass.language
 import com.android.pos.utils.statusUtils.Status
 import com.epson.epos2.Epos2Exception
@@ -1376,7 +1374,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
         }
 
         val enabled = Print.FALSE
-        Log.e(TAG, "PrinterconnectionType:  ${printerListModel.connectionType}")
+        Log.e(TAG, "PrinterconnectionType:  ${Gson().toJson(printerListModel)}")
 
         if (printerListModel.connectionType == "") {
             findBT()
@@ -1385,11 +1383,8 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
             try {
                 printer?.openPrinter(
                     if (printerListModel.connectionType == BLUETOOTH) Print.DEVTYPE_BLUETOOTH else Print.DEVTYPE_TCP,
-                    printerListModel.deviceModel?.ipAddress,
-                    enabled,
-                    10000
+                    printerListModel.deviceModel?.ipAddress
                 )
-                printer?.setStatusChangeEventCallback(this)
 
 
             } catch (e: Exception) {
@@ -1787,277 +1782,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
             }
 
 
-            /* val bitmap = getBitmapFromVectorDrawable(requireContext(), R.drawable.ic_group)
-             Log.e(TAG, "BitmapWidth:  ${bitmap.width}")
 
-
-             builder.addTextAlign(Builder.ALIGN_CENTER)
-             builder.addImage(
-                 bitmap, 0, 0, Math.min(
-                     IMAGE_WIDTH_MAX, bitmap.width
-                 ), bitmap.height, Builder.COLOR_1, Builder.MODE_MONO,
-                 Builder.HALFTONE_DITHER, 1.0
-             )
-
-             builder.addFeedLine(2)
-
-             builder.addTextFont(Builder.FONT_A)
-             //builder.addTextLineSpace(20)
-             builder.addTextLang(Builder.LANG_EN)
-             builder.addTextSize(1, 2)
-             builder.addTextStyle(
-                 Builder.FALSE,
-                 Builder.FALSE,
-                 Builder.FALSE,
-                 Builder.COLOR_1
-             )
-             //builder.addTextPosition(1)
-             builder.addTextAlign(Builder.ALIGN_CENTER)
-
-             builder.addText("Food Cafe\n")
-
-
-
-             builder.addTextFont(Builder.FONT_C)
-             builder.addTextAlign(Builder.ALIGN_CENTER)
-             builder.addTextLang(Builder.LANG_EN)
-             builder.addTextSize(1, 2)
-             builder.addTextStyle(
-                 Builder.FALSE,
-                 Builder.FALSE,
-                 Builder.FALSE,
-                 Builder.COLOR_1
-             )
-
-             builder.addText("7450 DW 51 FH,AT,Suite 503\n\n")
-
-             builder.addTextFont(Builder.FONT_C)
-             builder.addTextAlign(Builder.ALIGN_CENTER)
-             builder.addTextLang(Builder.LANG_EN)
-             builder.addTextSize(1, 2)
-             builder.addTextStyle(
-                 Builder.FALSE,
-                 Builder.FALSE,
-                 Builder.FALSE,
-                 Builder.COLOR_1
-             )
-             builder.addText("(635)987-3354\n")
-
-             builder.addTextFont(Builder.FONT_A)
-             builder.addTextAlign(Builder.ALIGN_CENTER)
-             builder.addTextLang(Builder.LANG_EN)
-             builder.addTextSize(1, 2)
-             builder.addTextStyle(
-                 Builder.FALSE,
-                 Builder.FALSE,
-                 Builder.FALSE,
-                 Builder.COLOR_1
-             )
-
-             builder.addText("www.foodcourt.com\n\n")
-
-             builder.addTextFont(Builder.FONT_C)
-             //  builder.addTextAlign(Builder.ALIGN_LEFT)
-             builder.addTextLang(Builder.LANG_EN)
-             builder.addTextSize(1, 2)
-             builder.addTextStyle(
-                 Builder.FALSE,
-                 Builder.FALSE,
-                 Builder.FALSE,
-                 Builder.COLOR_1
-             )
-
-             builder.addText(padLine("OrderID:23564", "ReceiptID:REC54646", 46))
-             //  builder.addText("ABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZ")
-
-             builder.addFeedLine(2)
-             builder.addTextFont(Builder.FONT_C)
-             //  builder.addTextAlign(Builder.ALIGN_LEFT)
-             builder.addTextLang(Builder.LANG_EN)
-             builder.addTextSize(1, 2)
-             builder.addTextStyle(
-                 Builder.FALSE,
-                 Builder.FALSE,
-                 Builder.FALSE,
-                 Builder.COLOR_1
-             )
-
-             builder.addText(padLine("Employee: David Miller", "29-Apr-2021 07:15 PM", 46))
-
-             builder.addFeedLine(2)
-             //builder.addHLine(0,46,Builder.LINE_THIN_DOUBLE)
-
-             builder.addTextLineSpace(30)
-             builder.addFeedUnit(30)
-             builder.addTextFont(Builder.FONT_E)
-             // builder.addTextAlign(Builder.ALIGN_LEFT)
-             builder.addTextLang(Builder.LANG_EN)
-             builder.addTextSize(2, 2)
-             builder.addTextStyle(
-                 Builder.FALSE,
-                 Builder.FALSE,
-                 Builder.FALSE,
-                 Builder.COLOR_1
-             )
-
-             builder.addText(
-                 padLine(
-                     "ABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZ",
-                     "",
-                     48
-                 )
-             )*/
-
-            /* builder.addFeedLine(1)
-             builder.addTextFont(Builder.FONT_C)
-             builder.addTextAlign(Builder.ALIGN_LEFT)
-             builder.addTextLang(Builder.LANG_EN)
-             builder.addTextSize(1, 2)
-             builder.addTextStyle(
-                 Builder.FALSE,
-                 Builder.FALSE,
-                 Builder.FALSE,
-                 Builder.COLOR_1
-             )
-             builder.addTextPosition(4)
-             builder.addText(padLine("   Extra Spicy", "$1.99", 46))
-
-
-             builder.addFeedLine(1)
-             builder.addTextFont(Builder.FONT_C)
-             // builder.addTextAlign(Builder.ALIGN_LEFT)
-             builder.addTextLang(Builder.LANG_EN)
-             builder.addTextSize(1, 2)
-             builder.addTextStyle(
-                 Builder.FALSE,
-                 Builder.FALSE,
-                 Builder.FALSE,
-                 Builder.COLOR_1
-             )
-             builder.addTextPosition(3)
-             builder.addText(padLine(" Extra Spicy", "$1.99", 44))
-
-             builder.addFeedLine(2)
-
-             builder.addTextFont(Builder.FONT_D)
-             // builder.addTextAlign(Builder.ALIGN_LEFT)
-             builder.addTextLang(Builder.LANG_EN)
-             builder.addTextSize(1, 1)
-             builder.addTextStyle(
-                 Builder.FALSE,
-                 Builder.FALSE,
-                 Builder.FALSE,
-                 Builder.COLOR_1
-             )
-
-             builder.addText(padLine("Sub Total", "$9.99", 46))
-             builder.addFeedLine(2)
-
-             builder.addTextFont(Builder.FONT_C)
-             // builder.addTextAlign(Builder.ALIGN_LEFT)
-             builder.addTextLang(Builder.LANG_EN)
-             builder.addTextSize(1, 1)
-             builder.addTextStyle(
-                 Builder.FALSE,
-                 Builder.FALSE,
-                 Builder.FALSE,
-                 Builder.COLOR_1
-             )
-
-             builder.addText(padLine("Refund Amount", "$9.99", 46))
-
-             builder.addFeedLine(2)
-             builder.addTextFont(Builder.FONT_B)
-             // builder.addTextAlign(Builder.ALIGN_LEFT)
-             builder.addTextLang(Builder.LANG_EN)
-             builder.addTextSize(1, 1)
-             builder.addTextStyle(
-                 Builder.FALSE,
-                 Builder.FALSE,
-                 Builder.FALSE,
-                 Builder.COLOR_1
-             )
-
-             builder.addText(padLine("Service Charge", "$9.99", 46))
-
-
-             builder.addFeedLine(2)
-
-             builder.addTextFont(Builder.FONT_A)
-             // builder.addTextAlign(Builder.ALIGN_LEFT)
-             builder.addTextLang(Builder.LANG_EN)
-             builder.addTextSize(1, 1)
-             builder.addTextStyle(
-                 Builder.FALSE,
-                 Builder.FALSE,
-                 Builder.FALSE,
-                 Builder.COLOR_1
-             )
-
-             builder.addText(padLine("Total Price", "$9.99", 46))
-
-             builder.addFeedLine(2)
-
-             builder.addTextFont(Builder.FONT_E)
-             // builder.addTextAlign(Builder.ALIGN_LEFT)
-             builder.addTextLang(Builder.LANG_EN)
-             builder.addTextSize(1, 1)
-             builder.addTextStyle(
-                 Builder.FALSE,
-                 Builder.FALSE,
-                 Builder.FALSE,
-                 Builder.COLOR_1
-             )
-
-             builder.addText(padLine("Entertainment(4.00%)", "$9.99", 46))
-
-
-             builder.addFeedLine(2)
-
-             builder.addTextFont(Builder.FONT_A)
-             builder.addTextAlign(Builder.ALIGN_LEFT)
-             builder.addTextLang(Builder.LANG_EN)
-             builder.addTextSize(1, 2)
-             builder.addTextStyle(
-                 Builder.FALSE,
-                 Builder.FALSE,
-                 Builder.FALSE,
-                 Builder.COLOR_1
-             )
-
-             builder.addText("Cstomer Details")
-
-             builder.addFeedLine(2)
-
-             builder.addTextFont(Builder.FONT_A)
-             builder.addTextAlign(Builder.ALIGN_LEFT)
-             builder.addTextLang(Builder.LANG_EN)
-             builder.addTextSize(1, 2)
-             builder.addTextStyle(
-                 Builder.FALSE,
-                 Builder.FALSE,
-                 Builder.FALSE,
-                 Builder.COLOR_1
-             )
-
-             builder.addText("David Miller")
-
-             builder.addFeedLine(1)
-             builder.addTextFont(Builder.FONT_A)
-             builder.addTextAlign(Builder.ALIGN_LEFT)
-             builder.addTextLang(Builder.LANG_EN)
-             builder.addTextSize(1, 2)
-             builder.addTextStyle(
-                 Builder.FALSE,
-                 Builder.FALSE,
-                 Builder.FALSE,
-                 Builder.COLOR_1
-             )
-
-             builder.addText("7450 DW 51 FH AT,Suite 503")
-    */
-
-            //PrinterReceipt.padLine()
             builder.addFeedLine(2)
 
 
@@ -2070,7 +1795,8 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
             //send builder data(empty builder data)
             val status = IntArray(1)
-            val battery = IntArray(1)
+            status[0] = 0
+
 
             Log.e(TAG, "getPrinterCheck:  ${PrinterClass.getPrinter().toString()}")
 
@@ -2078,11 +1804,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
             try {
                 PrinterClass.getPrinter()?.sendData(
-                    builder, if (printerListModel.connectionType == BLUETOOTH) {
-                        BLUETOOTH_TIMEOUT
-                    } else {
-                        TEST_PRINT_LAN_TIME
-                    }, status, battery
+                    builder, 10000, status
                 )
                 //PrinterClass.getPrinter()?.sendData(builder, 0, status, battery)
             } catch (e: Exception) {

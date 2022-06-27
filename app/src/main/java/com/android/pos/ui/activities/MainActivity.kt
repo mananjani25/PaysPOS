@@ -27,8 +27,14 @@ import androidx.navigation.NavController
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
+import androidx.work.Data
+import androidx.work.ExistingPeriodicWorkPolicy
+import androidx.work.PeriodicWorkRequest
+import androidx.work.WorkManager
 import com.android.pos.BuildConfig
 import com.android.pos.R
+import com.android.pos.data.model.responseModel.GetKitchenReceiptSettingsResponse
+import com.android.pos.data.model.responseModel.PrinterResponse
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.UNIQUE_ID
 import com.android.pos.data.repositories.UserRepository
@@ -38,21 +44,28 @@ import com.android.pos.di.HostSelectionInterceptor
 import com.android.pos.di.PrefProvider
 import com.android.pos.di.RolePermission
 import com.android.pos.ui.fragments.dashboard.bolddashboard.DashboardCategoryBoldPOS
+import com.android.pos.ui.fragments.payment.OrderCompleteViewModel
 import com.android.pos.ui.fragments.settings.hardware.Hardware
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.FileUtils
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.extensions.alert
+import com.android.pos.utils.statusUtils.Status
+import com.android.pos.utils.workmanager.UploadWorker
 import com.google.firebase.analytics.FirebaseAnalytics
+import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 import java.io.File
 import java.io.IOException
+import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 
 @AndroidEntryPoint
 class MainActivity : BaseScannerActivity() {
 
+    private var customerPrinterList: List<PrinterResponse.Data.KitchenReceiptPrinters> =
+        emptyList()
     private var cameraUri: Uri? = null
     private var selectedFilePath: String? = ""
     private var builder: Dialog? = null
@@ -62,7 +75,8 @@ class MainActivity : BaseScannerActivity() {
     private val viewModel by viewModels<MainViewModel>()
     var activityResultCallBack: ActivityResultCallBack? = null
     private val TAG = "MainActivity"
-
+    private val viewModelPrinter by viewModels<OrderCompleteViewModel>()
+    private var customerSettingModel = GetKitchenReceiptSettingsResponse.Data()
 
     @set:Inject
     internal var prefProvider: PrefProvider? = null
@@ -78,6 +92,7 @@ class MainActivity : BaseScannerActivity() {
     private lateinit var mFirebaseAnalytics: FirebaseAnalytics
     var broadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
+            Log.e(TAG, "getDataFirebaseNot")
             var message = intent?.getStringExtra("message")
             var isAuto = intent?.getBooleanExtra("isAuto", false)
             if (isAuto == true) {
@@ -100,6 +115,7 @@ class MainActivity : BaseScannerActivity() {
     }
     var broadcastReceiveronlineOrder = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
+            Log.e(TAG, "GetOnlineOrderDataNoti")
             var count = intent?.getStringExtra("count")
             count?.toInt()
                 ?.let { DashboardCategoryBoldPOS.newInstance().onlineOrderBadgeDisplay(it) }
@@ -110,6 +126,40 @@ class MainActivity : BaseScannerActivity() {
                 sendBroadcast(intent)
             }
         }
+    }
+
+    private fun getCustomerReceiptSettings() {
+        viewModelPrinter.getKitchenReceiptSettings().observe(this) {
+            if (it != null) {
+                customerSettingModel = it
+
+
+            }
+
+        }
+
+    }
+
+    private fun getCustomerPrinters() {
+        viewModelPrinter.getKitchenPrinterList().observe(this, {
+            when (it.status) {
+                Status.SUCCESS -> {
+                    ProgressUtils.dismissProgressDialog()
+                    if (it.data != null) {
+                        customerPrinterList = it.data
+                    }
+
+                }
+                Status.ERROR -> {
+                    ProgressUtils.dismissProgressDialog()
+
+                }
+                Status.LOADING -> {
+                    ProgressUtils.showProgressDialog(this)
+                }
+
+            }
+        })
     }
 
     private fun clockoutFromSystem() {
@@ -142,6 +192,11 @@ class MainActivity : BaseScannerActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_HIDDEN)
+        val intentFilter = IntentFilter("PrinterQueue")
+        registerReceiver(wifiStateReceiver, intentFilter)
+        getCustomerReceiptSettings()
+
+        getCustomerPrinters()
 
 
         mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
@@ -285,6 +340,39 @@ class MainActivity : BaseScannerActivity() {
             this.negativeButton("Cancel") {
             }
 
+        }
+    }
+
+    private val wifiStateReceiver: BroadcastReceiver = object : BroadcastReceiver() {
+        @SuppressLint("RestrictedApi")
+        override fun onReceive(context: Context, intent: Intent) {
+            Log.e("Get DAta", "GetDAtaSARqwr")
+            Toast.makeText(applicationContext,"Printer Queue is Starts.",Toast.LENGTH_LONG).show()
+            val data = Data.Builder()
+                .putString("kitchenPrinterList", Gson().toJson(customerPrinterList))
+                .put("kitchenSettingData", Gson().toJson(customerSettingModel))
+                .put("location_id", prefProvider?.getValueInt(Constants.LOCATION_ID, 0))
+                .put("base_url", prefProvider?.getValue(Constants.BASE_URL_NEW, ""))
+                .build()
+
+            val uploadWorkRequest =
+                PeriodicWorkRequest.Builder(UploadWorker::class.java, 5, TimeUnit.SECONDS)
+                    .setInputData(data)
+                    .build()
+
+            val workManager = WorkManager.getInstance(applicationContext)
+            try {
+
+
+                workManager.enqueueUniquePeriodicWork(
+                    "demo",
+                    ExistingPeriodicWorkPolicy.REPLACE,
+                    uploadWorkRequest
+                )
+            } catch (e: java.lang.Exception) {
+                Log.e(TAG, "printerQueueLog  ${e.message.toString()}")
+                e.printStackTrace()
+            }
         }
     }
 

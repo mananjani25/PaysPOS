@@ -2,7 +2,6 @@ package com.android.pos.utils.printer
 
 import android.app.Activity
 import android.content.Context
-import com.android.pos.R
 import com.epson.epos2.Epos2Exception
 import com.epson.epos2.printer.Printer
 import com.epson.epos2.printer.PrinterStatusInfo

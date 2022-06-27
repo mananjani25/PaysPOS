@@ -138,7 +138,7 @@ open class PaymentViewModel @Inject constructor(
                                 }
 
                                 Log.e(TAG, "isOnlySave:  ${onlySave}")
-
+                                _queueStartSaveOrder.value = Event(createOrderResponse)
                                 if (onlySave) {
                                     _queueStart.value = Event(createOrderResponse)
 
@@ -1746,6 +1746,7 @@ open class PaymentViewModel @Inject constructor(
         createOrder: CreateOrderResponse
     ) {
         _showProgress.value = Event(true)
+        Log.e("CreateOrderRequest","createQueuePrinterModel  ${Gson().toJson(createQueuePrinterModel)}")
 
         viewModelScope.launch {
             val resource = posRepository.createQueuePrinter(createQueuePrinterModel)

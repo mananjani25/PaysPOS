@@ -333,6 +333,7 @@ class CartFragment(
         ) { requestKey: String, bundle: Bundle ->
             var data: TbCustomer = bundle.getParcelable<TbCustomer>("data") as TbCustomer
             viewModel.assignCustomer = data
+            viewModel.setcheckedLoyaltyApply(false)
             viewModel.selectedCustomer = data
         }
     }
@@ -1310,6 +1311,7 @@ class CartFragment(
                 updateActiveOrderFlagClear()
                 itemListner?.onCancelItemSelected()
                 if (prefProvider.getValue(ORDER_TYPE, "").toString() == Constants.DINE_IN) {
+                    prefProvider.setValue(Constants.DINE_IN_UPDATE_LIST, "")
                     prefProvider.setValueInt(Constants.DINE_INGUEST_SELECTED, 0)
                     viewModel.removeItemDineInList.clear()
 
@@ -1466,8 +1468,23 @@ class CartFragment(
 
         binding.txtAddCustomer.setOnClickListener {
             if (isFromPayment) {
-                viewModel.setIsFromAddCustomer(true)
-                findNavController().navigate(R.id.action_paymentBoldPosFragment_to_assignCustomerOrderFragment)
+                if (prefProvider.getValueboolean(
+                        Constants.LOYALTY_ADDED,
+                        false
+                    ) || prefProvider.getValueboolean(
+                        Constants.IS_UPDATE_ORDER_LOYALTY_APPLIED,
+                        false
+                    )
+                ) {
+                    AlertUtils.showCustomAlertWithListenerWithOK(
+                        requireActivity(),
+                        "Please You can change Customer From DashBoard while Loyalty Points Added."
+                    ) { _, _ ->
+                    }
+                } else {
+                    viewModel.setIsFromAddCustomer(true)
+                    findNavController().navigate(R.id.action_paymentBoldPosFragment_to_assignCustomerOrderFragment)
+                }
             } else {
                 if (isOrderUpdate) {
                     var bundle: Bundle = Bundle()
@@ -1775,7 +1792,7 @@ class CartFragment(
             tableNumber = dineInFloorTableModel?.tableNumber,
             chairCount = dineInFloorTableModel?.chairCount,
             floorPlanName = "",
-            totalGuestCount = dineInCartAdapter.getList().size + 1
+            totalGuestCount = dineInCartAdapter.getList().size - 1
 
 
         )

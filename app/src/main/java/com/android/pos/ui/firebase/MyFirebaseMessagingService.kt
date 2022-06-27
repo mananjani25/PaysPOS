@@ -26,12 +26,15 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
     lateinit var prefProvider: PrefProvider
 
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
-        Log.d(TAG, "From: ${remoteMessage.from}")
+        Log.e(TAG, "From: ${remoteMessage.from}")
+
+//        createNotification()
+
 //        remoteMessage.data["type"]
         prefProvider = PrefProvider(this)
         if (remoteMessage.data.isNotEmpty()) {
             type = remoteMessage.data["type"].toString()
-            Log.d(TAG, "onMessageReceived: type : $type")
+            Log.e(TAG, "onMessageReceived: type : $type")
             if (type == "Clock Out") {
                 var intent = Intent()
                 intent.putExtra("isAuto", false)
@@ -51,12 +54,34 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
                 intent.putExtra("count", remoteMessage.data["count"])
                 intent.action = ONLINE_ORDER_GET_NOTIFICATION
                 sendBroadcast(intent)
-                setSoundForOnlineOrder()
+                // setSoundForOnlineOrder()
+            } else {
+                var intent = Intent()
+                intent.putExtra("printer_queue", "rem")
+                intent.action = "PrinterQueue"
+                sendBroadcast(intent)
+
             }
-            Log.d(TAG, "Message data payload: ${remoteMessage.data}")
+
         }
 
     }
+
+    private fun createNotification() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val manager = getSystemService(Context.NOTIFICATION_SERVICE)
+                    as NotificationManager
+            val channelId = getString(R.string.default_notification_channel_id)
+            if(manager.getNotificationChannel(channelId)==null) {
+                val channel = NotificationChannel(channelId,
+                    getString(R.string.common_google_play_services_notification_channel_name),
+                    NotificationManager.IMPORTANCE_DEFAULT)
+                channel.description = ""
+                manager.createNotificationChannel(channel)
+            }
+        }
+    }
+
 
     private fun setSoundForOnlineOrder() {
         try {
@@ -69,12 +94,12 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
     }
 
     override fun onNewToken(token: String) {
-        Log.d(TAG, "Refreshed token: $token")
+        Log.e(TAG, "Refreshed token: $token")
         sendRegistrationToServer(token)
     }
 
     private fun sendRegistrationToServer(token: String?) {
-        Log.d(TAG, "sendRegistrationTokenToServer($token)")
+        Log.e(TAG, "sendRegistrationTokenToServer($token)")
     }
 
     private fun sendNotification(messageBody: String) {
@@ -114,5 +139,20 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
     companion object {
 
         private const val TAG = "MyFirebaseMsgService"
+    }
+
+    fun queuePrinterLogic(context: Context) {
+        /*  val data = Data.Builder()
+              .putString("kitchenPrinterList", Gson().toJson(kitchenPrinterList))
+              .put("kitchenSettingData", Gson().toJson(kitchenSettingModel))
+              .put("location_id", prefProvider.getValueInt(Constants.LOCATION_ID, 0))
+              .put("base_url", prefProvider.getValue(Constants.BASE_URL_NEW, ""))
+              .build()
+  */
+
+        /*val uploadWorkRequest =
+            OneTimeWorkRequest.Builder(UploadWorker::class.java).setInputData(data).build()*/
+
+
     }
 }

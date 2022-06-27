@@ -700,7 +700,6 @@ fun addHorizontalLine(builder: Builder): Builder {
     for (i in 0 until 48) {
         str += "-"
     }
-    Log.e("strLine", "strLine  $str")
     builder.addText(str)
 
     return builder
@@ -789,6 +788,78 @@ fun addTipsList(
 
 
     return builder
+}
+
+fun addOrdersForKitchenCustoemrPrinter(
+    builder: Builder,
+    list: ArrayList<TbItem>,
+    fontSizeH: Int = 1,
+    fontSizeW: Int = 1
+): Builder {
+    list.forEach { obj ->
+
+
+        builder.addTextLineSpace(30)
+        builder.addFeedUnit(30)
+        builder.addTextFont(Builder.FONT_E)
+        builder.addTextLang(Builder.LANG_EN)
+        builder.addTextAlign(Builder.ALIGN_LEFT)
+        builder.addTextSize(fontSizeH, fontSizeW)
+        builder.addTextStyle(
+            Builder.FALSE,
+            Builder.FALSE,
+            Builder.FALSE,
+            Builder.COLOR_1
+        )
+
+        builder.addText(obj.itemQuantity.toString() + " " + obj.name)
+
+        if (obj.modifiers.isNotEmpty()) {
+            for (j in 0 until obj.modifiers.size) {
+                val modifierObj = obj.modifiers.get(j)
+                builder.addTextLineSpace(30)
+                builder.addFeedUnit(30)
+                builder.addTextFont(Builder.FONT_E)
+                //builder.addTextLineSpace(20)
+                builder.addTextAlign(Builder.ALIGN_LEFT)
+                builder.addTextLang(Builder.LANG_EN)
+                builder.addTextSize(fontSizeH, fontSizeW)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.COLOR_2
+                )
+                //builder.addTextPosition(1)
+
+
+                builder.addText("  " + modifierObj.name)
+
+
+            }
+        }
+        if (obj.note.isNotEmpty()) {
+            builder.addTextLineSpace(30)
+            builder.addFeedUnit(30)
+            builder.addTextFont(Builder.FONT_E)
+            //builder.addTextLineSpace(20)
+            builder.addTextAlign(Builder.ALIGN_LEFT)
+            builder.addTextLang(Builder.LANG_EN)
+            builder.addTextSize(fontSizeH, fontSizeW)
+            builder.addTextStyle(
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.COLOR_1
+            )
+            builder.addText("  Note:" + obj.note)
+
+        }
+    }
+
+
+    return builder
+
 }
 
 fun addTipsList(
@@ -971,6 +1042,78 @@ fun addOrdersForKitchenOnlineOrder(
 
     return builder
 }
+
+fun addOrdersForKitchenCustomer(
+    builder: Builder,
+    list: List<CreateOrderResponse.Data.Order.OrderItem>,
+    fontSizeH: Int = 1,
+    fontSizeW: Int = 1
+): Builder {
+    for (i in 0 until list.size) {
+        val obj = list.get(i)
+        builder.addTextLineSpace(30)
+        builder.addFeedUnit(30)
+        builder.addTextFont(Builder.FONT_E)
+        builder.addTextLang(Builder.LANG_EN)
+        builder.addTextAlign(Builder.ALIGN_LEFT)
+        builder.addTextSize(fontSizeH, fontSizeW)
+        builder.addTextStyle(
+            Builder.FALSE,
+            Builder.FALSE,
+            Builder.FALSE,
+            Builder.COLOR_1
+        )
+
+        builder.addText(obj.quantity.toString() + " " + obj.itemName)
+
+        if (obj.orderItemModifiers.isNotEmpty()) {
+            for (j in 0 until obj.orderItemModifiers.size) {
+                val modifierObj = obj.orderItemModifiers.get(j)
+                builder.addTextLineSpace(30)
+                builder.addFeedUnit(30)
+                builder.addTextFont(Builder.FONT_E)
+                //builder.addTextLineSpace(20)
+                builder.addTextAlign(Builder.ALIGN_LEFT)
+                builder.addTextLang(Builder.LANG_EN)
+                builder.addTextSize(fontSizeH, fontSizeW)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.COLOR_2
+                )
+                //builder.addTextPosition(1)
+
+
+                builder.addText("  " + modifierObj.name)
+
+
+            }
+        }
+        if (obj.note.isNotEmpty()) {
+            builder.addTextLineSpace(30)
+            builder.addFeedUnit(30)
+            builder.addTextFont(Builder.FONT_E)
+            //builder.addTextLineSpace(20)
+            builder.addTextAlign(Builder.ALIGN_LEFT)
+            builder.addTextLang(Builder.LANG_EN)
+            builder.addTextSize(fontSizeH, fontSizeW)
+            builder.addTextStyle(
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.COLOR_1
+            )
+            builder.addText("  Note:" + obj.note)
+
+        }
+
+
+    }
+
+    return builder
+}
+
 
 fun addOrdersForKitchenDineIn(
 
@@ -1339,10 +1482,7 @@ fun addWholeTbItemToGuest(
 
     }
 
-    Log.e(TAG, "serviceCharge  ${serviceCharge}")
-    Log.e(TAG, "serviceWTTaxes  ${WTTaxes}")
-    Log.e("DineInWholeTableItems", "serviceSubTotal  ${subTotal}")
-    Log.e("DineInWholeTableItems", "dineinguestCount:  ${guestCount}")
+
 
     var finalAmt = MethodUtils.roundOffAmount((subTotal) / guestCount)
     builder.addText(

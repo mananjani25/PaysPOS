@@ -146,7 +146,8 @@ class DashBoardCategoryViewModel @Inject constructor(
     }
 
     fun setcheckedLoyaltyApply(isapply: Boolean) {
-        this.redeemLoyaltyInfo.needToApplyLoyalty = isapply
+        redeemLoyaltyInfo.needToApplyLoyalty = isapply
+        Log.d(TAG, "setcheckedLoyaltyApply: "+redeemLoyaltyInfo.needToApplyLoyalty)
     }
 
     fun setOrderTypeList(ordertypelist: ArrayList<TbOrderType>) {
@@ -1753,10 +1754,7 @@ class DashBoardCategoryViewModel @Inject constructor(
             orderServiceChargesAttributes(cartModel, subTotalPrice)
 
         orderAttributeRequestModel.guestsAttributes = getGuestsAttributes(cartModel)
-        Log.e(
-            TAG,
-            "guestsAttributesData:  ${Gson().toJson(orderAttributeRequestModel.guestsAttributes)}"
-        )
+
 
         orderAttributeRequestModel.orderItemsAttributes = dineInOrderItemAttributed(cartModel)
 
@@ -2600,14 +2598,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
 
                                 try {
-                                    Log.e(
-                                        TAG, "getURL  ${
-                                            prefProvider.getValue(
-                                                Constants.VENUE_LOGO_URL,
-                                                ""
-                                            )
-                                        }"
-                                    )
+
                                     if (it.data.logo != null) {
                                         if (it.data.logo.logoUrl.isNotEmpty() && !prefProvider.getValue(
                                                 Constants.VENUE_LOGO_URL,
