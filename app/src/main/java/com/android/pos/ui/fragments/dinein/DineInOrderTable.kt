@@ -526,7 +526,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             bundle.putInt(GUEST_POSITION, 0)
             prefProvider.setValue(Constants.ORDER_TYPE, Constants.DINE_IN)
 
-            findNavController().navigate(R.id.action_dineInOrderTable_to_checkoutDineIN, bundle)
+            if (findNavController().currentDestination?.id == R.id.dineInOrderTable)
+                findNavController().navigate(R.id.action_dineInOrderTable_to_checkoutDineIN, bundle)
 
 
         }
@@ -1942,7 +1943,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     dineInList.get(0).wholeTableSurTax =
                         serviceChargeWT / (baseResponse.guestAttributes.size - 1)
                     Log.e("WholeDiscount", "wholeTableDiscount  ${wholeTableDiscount}")
-                    dineInList.get(0).wholeTableDiscont = MethodUtils.roundOffAmountDouble(wholeTableDiscount / (baseResponse.guestAttributes.size - 1))
+                    dineInList.get(0).wholeTableDiscont =
+                        MethodUtils.roundOffAmountDouble(wholeTableDiscount / (baseResponse.guestAttributes.size - 1))
 
                     dineInList.get(0).orderDiscount = orderDiscount
                     dineInList.get(0).orderTotalAmount =
@@ -3473,76 +3475,75 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 }
             }
 
-        }
+        }else {
 
-        viewLifecycleOwner.lifecycleScope.launch {
-            delay(500)
-            PrinterClass.closePrinter()
-            if (PrinterClass.getPrinter() == null) {
-                var printer: Print? = Print(requireContext())
-                if (printer != null) {
+            viewLifecycleOwner.lifecycleScope.launch {
+                PrinterClass.closePrinter()
+                if (PrinterClass.getPrinter() == null) {
+                    var printer: Print? = Print(requireContext())
+                    if (printer != null) {
 //                printer.setStatusChangeEventCallback(this)
 //                printer.setBatteryStatusChangeEventCallback(this)
-                }
-
-                val enabled = Print.FALSE
-
-                try {
-                    var interval: Int = 1000
-                    if (customerReceiptPrinters.printer_type == Constants.BLUETOOTH) {
-                        interval = PrinterClass.BLUETOOTH_TIMEOUT
                     }
-                    printer?.openPrinter(
 
+                    val enabled = Print.FALSE
+
+                    try {
+                        var interval: Int = 1000
                         if (customerReceiptPrinters.printer_type == Constants.BLUETOOTH) {
-                            Print.DEVTYPE_BLUETOOTH
-                        } else {
-                            Print.DEVTYPE_TCP
-                        },
-                        customerReceiptPrinters.ipAddress,
-                        enabled,
-                        1000
-                    )
-                    //printer?.setStatusChangeEventCallback(this)
+                            interval = PrinterClass.BLUETOOTH_TIMEOUT
+                        }
+                        printer?.openPrinter(
 
-                } catch (e: Exception) {
-                    Log.e(TAG, "PrinterException: " + e.message)
-                    printer = null
-                    return@launch
-                }
-                try {
+                            if (customerReceiptPrinters.printer_type == Constants.BLUETOOTH) {
+                                Print.DEVTYPE_BLUETOOTH
+                            } else {
+                                Print.DEVTYPE_TCP
+                            },
+                            customerReceiptPrinters.ipAddress,
+                            enabled,
+                            1000
+                        )
+                        //printer?.setStatusChangeEventCallback(this)
 
-                    if (printer != null) {
-                        PrinterClass.setPrinter(printer)
-                        if (guestPrint && getOrderDetailsResponse?.guestAttributes?.size!! > 2) {
-                            generateGuestPrint(
-                                customerReceiptPrinters,
-                                type,
-                                paymentType,
-                                listGuestItem,
-                                guestName,
-                                listWTitems,
-                                subTotalGuest,
-                                total,
-                                taxGuest,
-                                serviceChargeGuest,
-                                divideDiscount,
-                            )
+                    } catch (e: Exception) {
+                        Log.e(TAG, "PrinterException: " + e.message)
+                        printer = null
+                        return@launch
+                    }
+                    try {
 
-                        } else {
-                            generatePrint(customerReceiptPrinters, type, "")
+                        if (printer != null) {
+                            PrinterClass.setPrinter(printer)
+                            if (guestPrint && getOrderDetailsResponse?.guestAttributes?.size!! > 2) {
+                                generateGuestPrint(
+                                    customerReceiptPrinters,
+                                    type,
+                                    paymentType,
+                                    listGuestItem,
+                                    guestName,
+                                    listWTitems,
+                                    subTotalGuest,
+                                    total,
+                                    taxGuest,
+                                    serviceChargeGuest,
+                                    divideDiscount,
+                                )
+
+                            } else {
+                                generatePrint(customerReceiptPrinters, type, "")
+                            }
+
                         }
 
+                    } catch (e: Exception) {
+                        e.printStackTrace()
                     }
-
-                } catch (e: Exception) {
-                    e.printStackTrace()
+                } else {
+                    Log.e(TAG, "PrinterIsNotNull:")
                 }
-            } else {
-                Log.e(TAG, "PrinterIsNotNull:")
             }
         }
-
     }
 
     private fun generateGuestPrint(
@@ -6478,6 +6479,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
             if (customerSettingModel.showQrCode) {
 
+                getOrderDetailsResponse?.digitalReceiptUrl?.let { Log.e("digitalReceiptUrl", it) }
+
                 getOrderDetailsResponse?.digitalReceiptUrl?.let { PrintSunmiUtils.qrCode(it) }
 
             }
@@ -6688,7 +6691,9 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             builder = Builder(pname, PrinterClass.language, requireActivity())
 
 
-            if (customerReceiptPrinters.name.substring(0,4).equals("TM-U",true) || customerReceiptPrinters.name.contains("U")) {
+            if (customerReceiptPrinters.name.substring(0, 4)
+                    .equals("TM-U", true) || customerReceiptPrinters.name.contains("U")
+            ) {
                 if (kitchenSettingModel.showOrderType) {
 
 
@@ -6868,9 +6873,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 }
 
 
-
-            }
-            else{
+            } else {
 
                 if (kitchenSettingModel.showOrderType) {
 
@@ -7067,7 +7070,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             val battery = IntArray(1)
 
             var timeOut = PrinterClass.SEND_TIMEOUT
-            if (customerReceiptPrinters.printer_type == Constants.BLUETOOTH){
+            if (customerReceiptPrinters.printer_type == Constants.BLUETOOTH) {
                 timeOut = PrinterClass.BLUETOOTH_TIMEOUT
             }
 

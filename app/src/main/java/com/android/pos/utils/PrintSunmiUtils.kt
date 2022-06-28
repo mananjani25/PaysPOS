@@ -448,7 +448,7 @@ class PrintSunmiUtils {
 
         fun qrCodeInner(value: String) {
             SunmiPrintHelper.getInstance().setAlign(1)
-            SunmiPrintHelper.getInstance().printQr(value,10,0)
+            SunmiPrintHelper.getInstance().printQr(value, 10, 0)
         }
 
         fun cutPaper() {
@@ -538,7 +538,7 @@ class PrintSunmiUtils {
         }
 
         fun normalTextCenter(value: String) {
-            SunmiPrintHelper.getInstance().setAlign(0)
+            SunmiPrintHelper.getInstance().setAlign(1)
             SunmiPrintHelper.getInstance().printText(value)
             SunmiPrintHelper.getInstance().lineWrap(1)
         }
@@ -583,7 +583,9 @@ class PrintSunmiUtils {
 
         fun additionalTipsInner() {
 
-            headerText("Additional Tips")
+            SunmiPrintHelper.getInstance().setAlign(0)
+            SunmiPrintHelper.getInstance().printText("Additional Tips", 40f, true, false, null)
+            SunmiPrintHelper.getInstance().lineWrap(1)
             addHorizontalInner()
 
         }

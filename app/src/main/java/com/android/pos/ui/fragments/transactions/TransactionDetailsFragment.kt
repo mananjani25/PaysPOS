@@ -584,7 +584,6 @@ class TransactionDetailsFragment : Fragment() {
 
             viewLifecycleOwner.lifecycleScope.launch {
                 Log.e(TAG, "getPrinter:  ${PrinterClass.getPrinter()}")
-                delay(100)
                 PrinterClass.closePrinter()
                 if (PrinterClass.getPrinter() == null) {
                     var printer: Print? = Print(requireContext())
@@ -2330,9 +2329,9 @@ class TransactionDetailsFragment : Fragment() {
                     BitmapFactory.decodeByteArray(decodedString, 0, decodedString.size)
 
                 val newBitmap = Bitmap.createScaledBitmap(bitmap!!, 210, 210, true)
-
+                SunmiPrintHelper.getInstance().setAlign(1)
                 SunmiPrintHelper.getInstance().printBitmap(newBitmap)
-                SunmiPrintHelper.getInstance().lineWrap(1)
+                SunmiPrintHelper.getInstance().lineWrap(2)
 
 
             }
@@ -2346,7 +2345,7 @@ class TransactionDetailsFragment : Fragment() {
             if (paymentDetailsResponse.data.order.venue_website.isNotEmpty()) {
                 PrintSunmiUtils.normalTextCenter(paymentDetailsResponse.data.order.venue_website)
             } else {
-                SunmiPrinterApi.getInstance().lineWrap(1)
+                SunmiPrintHelper.getInstance().lineWrap(1)
             }
 
             PrintSunmiUtils.headerText(paymentDetailsResponse.data.order.order_type.trim())
