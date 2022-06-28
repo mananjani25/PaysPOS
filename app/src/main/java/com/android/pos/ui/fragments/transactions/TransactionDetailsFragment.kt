@@ -7,6 +7,7 @@ import android.graphics.BitmapFactory
 import android.graphics.Point
 import android.os.Build
 import android.os.Bundle
+import android.os.SystemClock
 import android.util.Log
 import android.view.*
 import androidx.activity.OnBackPressedCallback
@@ -64,6 +65,7 @@ class TransactionDetailsFragment : Fragment() {
     private var customerSettingModel = GetCustomerReceiptSettingsResponse.Data()
     private lateinit var paymentDetailsResponse: GetPaymentOrderDetailsResponse
     private var orderId: Int = -1
+    var mLastClickTime: Long = 0
     private val TAG = "TransactionDetailsFr"
     private var tipsList: List<GetTipReponse.Data> = listOf()
     private var paymentId: Int = -1
@@ -220,6 +222,10 @@ class TransactionDetailsFragment : Fragment() {
 
         }
         binding.tvIssueRefund.setOnClickListener {
+            if (SystemClock.elapsedRealtime() - mLastClickTime < 1000){
+                return@setOnClickListener
+            }
+            mLastClickTime = SystemClock.elapsedRealtime();
             if (paymentDetailsResponse.data.order.order_type == "OnlineWebOrder") {
                 lateinit var refundData: RefundRequestModelOnlineOrder
                 var employeeIdtemp = prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
@@ -394,6 +400,7 @@ class TransactionDetailsFragment : Fragment() {
                     if (paymentDetailsResponse.data.order.order_items.isNotEmpty()) {
                         paymentDetailsResponse.data.order.order_items.forEach { orderItem ->
                             var totalPrice = orderItem.price * orderItem.quantity
+                            totalPrice -= orderItem.discountAmount
                             orderItem.orderItemModifiers.forEach { orderItemModifier ->
                                 totalPrice += orderItemModifier.price * orderItemModifier.quantity
                             }

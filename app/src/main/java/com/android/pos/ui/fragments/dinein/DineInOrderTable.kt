@@ -340,10 +340,16 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
                 var wholeDisDivide =
                     MethodUtils.roundOffAmountDouble(wholeTableDiscount / (getOrderDetailsResponse?.guestAttributes?.size!! - 1))
-                dividedOrderDiscount -= wholeDisDivide
-                subTotalDInin-=dividedOrderDiscount
+                if (wholeDisDivide > dividedOrderDiscount) {
+                    dividedOrderDiscount = wholeDisDivide - dividedOrderDiscount
+                } else {
+                    dividedOrderDiscount -= wholeDisDivide
+                }
+                totalDiscount -= wholeDisDivide
+                subTotalDInin -= dividedOrderDiscount
                 Log.e("dividedOrderDiscount", "dividedOrderDiscount  ${dividedOrderDiscount}")
                 Log.e("WRqwrfarf", "wholeDisDivide  ${wholeDisDivide}")
+                Log.e(TAG, "subtotal :: " + subTotalDInin)
             }
 
             Log.e("WholeTableDis", "wholeDis  ${wholeTableDiscount}")
@@ -380,6 +386,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
             Log.d(TAG, "onClick: listof Tax:  " + Gson().toJson(cartList?.taxlistDynamic))
 
+            var listreemaining: List<TaxData> = emptyList()
             listWT.forEach { wholetableitems ->
                 wholetableitems.taxes?.forEachIndexed { index, taxData ->
                     var modifierPrice: Double = 0.0
@@ -422,20 +429,40 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     var found = -1
                     totaltaxtemp /= (getOrderDetailsResponse?.guestAttributes?.size!! - 1)
                     var temp_remaining = totaltaxtemp * paidGuestAmount
+                    var temp_subtotal =
+                        totalPrice / (getOrderDetailsResponse?.guestAttributes?.size!! - 1)
                     cartList?.taxlistDynamic?.forEachIndexed { indexcart, cartTaxtData ->
                         if (cartTaxtData.taxType == taxData.taxType) {
                             found = indexcart
                         }
                     }
                     if (found != -1) {
+                        if (cartList?.taxlistDynamic?.get(found)?.taxType != "Percentage") {
+                            cartList?.taxlistDynamic?.get(found)?.subTotalAmount =
+                                cartList?.taxlistDynamic?.get(found)?.subTotalAmount!!.plus(
+                                    temp_subtotal
+                                )
+                        }
                         cartList?.taxlistDynamic?.get(found)?.totalTaxTypePrice =
                             cartList?.taxlistDynamic?.get(found)?.totalTaxTypePrice!!.minus(
                                 temp_remaining
                             )
+                    } else {
+                        var data = taxData
+                        data.subTotalAmount = temp_subtotal
+                        data.totalTaxTypePrice = temp_remaining
+                        listreemaining = listOf(data)
                     }
 
                 }
             }
+
+            listreemaining.forEach { remainingdata ->
+                cartList?.taxlistDynamic =
+                    concatenate(cartList?.taxlistDynamic!!, listOf(remainingdata))
+            }
+
+
             Log.d(TAG, "onClick: listof Tax: after  " + Gson().toJson(cartList?.taxlistDynamic))
             viewModelPayment.addCart(cartList!!)
             Log.e(TAG, "getcartListAfterAdd  ${Gson().toJson(cartList)}")
@@ -1540,6 +1567,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             cartList = taxBifurcationCalculation(item, cartList!!)
         }
 
+        var remaining_list: List<TaxData> = emptyList()
         Log.e(TAG, "getcartListbeforeAdd  ${Gson().toJson(cartList?.taxlistDynamic)}")
         listItemWT.forEach { wholetableitems ->
             wholetableitems.taxes?.forEachIndexed { index, taxData ->
@@ -1592,7 +1620,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 }
                 Log.d(TAG, "onClick: wholetable total tax $totaltaxtemp")
                 if (found != -1) {
-                    if(cartList?.taxlistDynamic?.get(found)?.taxType!="Percentage"){
+                    if (cartList?.taxlistDynamic?.get(found)?.taxType != "Percentage") {
                         cartList?.taxlistDynamic?.get(found)?.subTotalAmount =
                             cartList?.taxlistDynamic?.get(found)?.subTotalAmount!!.plus(
                                 temp_subtotal
@@ -1602,10 +1630,22 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                         cartList?.taxlistDynamic?.get(found)?.totalTaxTypePrice!!.plus(
                             temp_remaining
                         )
+                } else {
+                    var data = taxData
+                    data.subTotalAmount = temp_subtotal
+                    data.totalTaxTypePrice = temp_remaining
+                    remaining_list = listOf(data)
                 }
 
             }
         }
+        remaining_list.forEach { remainingdata ->
+            cartList?.taxlistDynamic =
+                concatenate(cartList?.taxlistDynamic!!, listOf(remainingdata))
+        }
+
+
+        Log.d(TAG, "getcartListAfterAdd: remaining : ${Gson().toJson(remaining_list)}")
         Log.e(TAG, "getcartListAfterAdd  ${Gson().toJson(cartList?.taxlistDynamic)}")
 
         viewModelPayment.addCart(cartList!!)
@@ -2091,7 +2131,10 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                                                             String.format("%.2f", 0.00)
                                                                 .toDouble()
                                                         } else {
-                                                            String.format("%.2f", tax.rate * oi.quantity)
+                                                            String.format(
+                                                                "%.2f",
+                                                                tax.rate * oi.quantity
+                                                            )
                                                                 .toDouble()
                                                         }
                                                     }
@@ -2214,7 +2257,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     dineInList.get(0).wholeTableSurTax =
                         serviceChargeWT / (baseResponse.guestAttributes.size - 1)
                     Log.e("WholeDiscount", "wholeTableDiscount  ${wholeTableDiscount}")
-                    dineInList.get(0).wholeTableDiscont = MethodUtils.roundOffAmountDouble(wholeTableDiscount / (baseResponse.guestAttributes.size - 1))
+                    dineInList.get(0).wholeTableDiscont =
+                        MethodUtils.roundOffAmountDouble(wholeTableDiscount / (baseResponse.guestAttributes.size - 1))
 
                     dineInList.get(0).orderDiscount = orderDiscount
                     dineInList.get(0).orderTotalAmount =
