@@ -394,6 +394,7 @@ class CartFragment(
         ) { requestKey: String, bundle: Bundle ->
             var data: TbCustomer = bundle.getParcelable<TbCustomer>("data") as TbCustomer
             viewModel.assignCustomer = data
+            viewModel.setcheckedLoyaltyApply(false)
             viewModel.selectedCustomer = data
         }
     }
@@ -1581,8 +1582,23 @@ class CartFragment(
 
         binding.txtAddCustomer.setOnClickListener {
             if (isFromPayment) {
-                viewModel.setIsFromAddCustomer(true)
-                findNavController().navigate(R.id.action_paymentBoldPosFragment_to_assignCustomerOrderFragment)
+                if (prefProvider.getValueboolean(
+                        Constants.LOYALTY_ADDED,
+                        false
+                    ) || prefProvider.getValueboolean(
+                        Constants.IS_UPDATE_ORDER_LOYALTY_APPLIED,
+                        false
+                    )
+                ) {
+                    AlertUtils.showCustomAlertWithListenerWithOK(
+                        requireActivity(),
+                        "Please You can change Customer From DashBoard while Loyalty Points Added."
+                    ) { _, _ ->
+                    }
+                } else {
+                    viewModel.setIsFromAddCustomer(true)
+                    findNavController().navigate(R.id.action_paymentBoldPosFragment_to_assignCustomerOrderFragment)
+                }
             } else {
                 if (isOrderUpdate) {
                     var bundle: Bundle = Bundle()

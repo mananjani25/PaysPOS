@@ -152,7 +152,8 @@ class DashBoardCategoryViewModel @Inject constructor(
     }
 
     fun setcheckedLoyaltyApply(isapply: Boolean) {
-        this.redeemLoyaltyInfo.needToApplyLoyalty = isapply
+        redeemLoyaltyInfo.needToApplyLoyalty = isapply
+        Log.d(TAG, "setcheckedLoyaltyApply: "+redeemLoyaltyInfo.needToApplyLoyalty)
     }
 
     fun setOrderTypeList(ordertypelist: ArrayList<TbOrderType>) {
