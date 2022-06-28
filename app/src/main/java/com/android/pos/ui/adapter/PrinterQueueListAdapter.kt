@@ -1,6 +1,5 @@
 package com.android.pos.ui.adapter
 
-import android.annotation.SuppressLint
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
@@ -29,7 +28,7 @@ class PrinterQueueListAdapter : RecyclerView.Adapter<PrinterQueueListAdapter.MyV
             binding.txtOfflineId.text = model.offlineId
             binding.txtOrderId.text = ""
             binding.txtOrderType.text = model.orderType
-            binding.txtTerminalName.text = model.terminalName
+            binding.txtTerminalName.text = model.orderID
             binding.txtTotalAmt.text = model.totalAmt?.let { MethodUtils.roundOffAmount(it) }
             binding.txtStatus.text = model.status
 

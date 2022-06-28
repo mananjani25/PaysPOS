@@ -1200,6 +1200,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
                     val createPrinter = CreatePrinterRequestModel(
                         name = printerListModel.printerName,
+                        terminalId = prefProvider.getValueInt(TERMINAL_ID,0),
                         macAddress = printerListModel.deviceModel?.macAddress,
                         modalName = printerListModel.deviceModel?.printerName,
                         terminalIds = listOf(prefProvider.getValueInt(TERMINAL_ID, 1)),
@@ -1228,6 +1229,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                     }
                     val createPrinter = CreatePrinterRequestModel(
                         name = printerListModel.printerName,
+                        terminalId = prefProvider.getValueInt(TERMINAL_ID,0),
                         macAddress = printerListModel.deviceModel?.macAddress,
                         modalName = printerListModel.deviceModel?.printerName,
                         terminalIds = listOf(prefProvider.getValueInt(TERMINAL_ID, 1)),
@@ -1262,6 +1264,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                     }
                     val createBothPrinter = CreatePrinterRequestModel(
                         name = printerListModel.printerName,
+                        terminalId = prefProvider.getValueInt(TERMINAL_ID,0),
                         macAddress = printerListModel.deviceModel?.macAddress,
                         modalName = printerListModel.deviceModel?.printerName,
                         terminalIds = listOf(prefProvider.getValueInt(TERMINAL_ID, 1)),

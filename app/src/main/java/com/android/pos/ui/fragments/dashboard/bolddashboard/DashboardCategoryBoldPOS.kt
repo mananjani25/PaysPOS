@@ -2149,7 +2149,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                     null,
                     0.0,
                     false,
-                    "Cash", cashDiscountType
+                    "Cash", cashDiscountType, isPrinterQueue = true, offlineId = createOrder.data.order.offlineId
                 )
             }
             val createRequest = CreateQueuePrinterRequestModel(

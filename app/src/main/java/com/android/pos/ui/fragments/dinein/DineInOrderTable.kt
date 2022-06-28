@@ -591,8 +591,14 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 newList
             )
 
+            Log.e("OrderFre", "APIDISc  ${getOrderDetailsResponse?.totalDiscount?.toDouble()}")
+            Log.e("OrderFre", "totalDiscount  ${totalDiscount}")
+            Log.e("OrderFre", "OrderDiscount  ${globalOrderDiscount}")
 
-            bundle.putDouble("totalDiscount", globalOrderDiscount)
+            bundle.putDouble(
+                "totalDiscount",
+                globalOrderDiscount
+            )
             bundle.putString("order_note", order_note)
             bundle.putParcelable("tableDetails", getOrderDetailsResponse?.floorPlanTable)
 
@@ -994,7 +1000,6 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 break
             }
         }
-        Log.e(TAG,"GuetItems  ${Gson().toJson(totalItem)}")
         if (totalItem.isNotEmpty()) {
             totalItem.forEach {
                 subTotal += it.price * it.itemQuantity
@@ -2088,6 +2093,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                         }
                     }
 
+                    Log.e(TAG, "notPayAnyAmount  ${notPayAnyAmount}")
                     if (notPayAnyAmount) {
                         binding.txtEditOrder.visibility = View.GONE
                     } else {

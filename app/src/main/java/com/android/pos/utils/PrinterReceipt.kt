@@ -791,6 +791,42 @@ fun addTipsList(
     return builder
 }
 
+fun addTipsList(
+    list: List<GetTipReponse.Data>,
+    totalAmt: Double,
+    font: String
+) {
+    for (i in 0 until list.size) {
+        val obj = list.get(i)
+
+
+        val tipName = obj.name + "(" + roundOffAmountString(obj.rate) + "%)"
+
+        val price = "(Tip $" + calculateTipAmt(
+            obj.rate,
+            totalAmt
+        ) + " Total $" + roundOffAmountString(
+            (totalAmt + calculateTipAmt(
+                obj.rate,
+                totalAmt
+            ))
+        ) + ")"
+
+        val str = padLine(
+            tipName, price, if (font == Constants.LARGE) {
+                23
+            } else {
+                48
+            }
+        ).toString()
+
+        PrintSunmiUtils.orderTime(str)
+
+    }
+
+
+}
+
 fun addOrdersForKitchenCustoemrPrinter(
     builder: Builder,
     list: ArrayList<TbItem>,
@@ -1078,6 +1114,34 @@ fun addOrdersForKitchenOnlineOrder(
 
 
     return builder
+}
+
+fun addOrdersForKitchenDineIn(
+
+    list: ArrayList<TbItem>
+) {
+
+    list.forEach { obj ->
+
+
+        PrintSunmiUtils.orderTime(obj.itemQuantity.toString() + " " + obj.name)
+
+        if (obj.modifiers.isNotEmpty()) {
+            for (j in 0 until obj.modifiers.size) {
+                val modifierObj = obj.modifiers.get(j)
+
+                PrintSunmiUtils.orderTime("  " + modifierObj.name)
+
+
+            }
+        }
+        if (obj.note.isNotEmpty()) {
+
+            PrintSunmiUtils.orderTime("  Note:" + obj.note)
+
+        }
+    }
+
 }
 
 fun addOrdersForKitchenCustomer(

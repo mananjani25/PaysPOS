@@ -81,8 +81,8 @@ class PrinterQueue : Fragment(), StatusChangeEventListener, BatteryStatusChangeE
 
         getKitchenReceiptSettings()
         observeShowProgress()
-        //deleteQueueItemObserver()
-        //deleteAllQueueObserver()
+        deleteQueueItemObserver()
+        deleteAllQueueObserver()
         getKitchenPrinters()
 
         return binding.root
@@ -92,7 +92,7 @@ class PrinterQueue : Fragment(), StatusChangeEventListener, BatteryStatusChangeE
         super.onViewCreated(view, savedInstanceState)
         setAdapter()
         onClick()
-        //  connectActionCable()
+        connectActionCable()
 
 
     }
@@ -101,7 +101,7 @@ class PrinterQueue : Fragment(), StatusChangeEventListener, BatteryStatusChangeE
     private fun connectActionCable() {
         // 1. Setup
         var requestURL = prefProvider.getValue(Constants.BASE_URL_NEW, "") + CREATE_QUEUE_PRINTER
-        val uri = URI("wss://possoft.io/cable")
+        val uri = URI("wss://hugepos.com/cable")
         consumer = ActionCable.createConsumer(uri)
 
         // 2. Create subscription
@@ -231,14 +231,14 @@ class PrinterQueue : Fragment(), StatusChangeEventListener, BatteryStatusChangeE
 
                 }
                 printerQueueModel.orderItems = itemAttribute
-                printerQueueModel.terminalName = ""
+                printerQueueModel.orderID = ""
                 printerQueueModel.orderType = obj.asJsonObject.get("open_order_type").asString
                 printerQueueModel.id = it.asJsonObject.get("id").asInt
                 printerQueueModel.offlineId = obj.asJsonObject.get("offline_id").asString
                 printerQueueModel.paymentType = "Cash"
                 printerQueueModel.status = PENDING
                 printerQueueModel.totalAmt = obj.asJsonObject.get("total_amount").asDouble
-                printerQueueModel.terminalName = ""
+                printerQueueModel.orderID = ""
                 //obj.asJsonObject.get("terminal_name")?.asString ?: ""
                 printerQueueModel.position = index
 
@@ -277,7 +277,7 @@ class PrinterQueue : Fragment(), StatusChangeEventListener, BatteryStatusChangeE
         if (printerQueuelist.size != 0) {
             for (i in 0 until printerQueuelist.size) {
 
-                // configurePrinter(printerQueuelist.get(i), i)
+                 configurePrinter(printerQueuelist.get(i), i)
             }
         }
         /*printerQueuelist.forEachIndexed { index, printerQueueModel ->
@@ -812,11 +812,19 @@ class PrinterQueue : Fragment(), StatusChangeEventListener, BatteryStatusChangeE
                 PrinterClass.closePrinter()
 
                 printerQueueModel.id?.let {
-                    viewModel.deleteQueuePrinter(
-                        it,
-                        printerQueueModel.position
-                    )
+                    val params = JsonObject()
+                    var deleteUrl = prefProvider?.getValue(Constants.BASE_URL_NEW, "") + Constants.CREATE_QUEUE_PRINTER + "/" + it
+                    Log.e(TAG, "DeleteUrl ${deleteUrl}")
+                    params.addProperty("url", deleteUrl)
+                    subscription?.perform("delete_order", params)
+
+                    /* viewModel.deleteQueuePrinter(
+                         it,
+                         printerQueueModel.position
+                     )*/
                 }
+
+
 
 
                 //PrinterClass.getPrinter()?.sendData(builder, 0, status, battery)
@@ -825,9 +833,9 @@ class PrinterQueue : Fragment(), StatusChangeEventListener, BatteryStatusChangeE
                 isPrintRunning = false
                 PrinterClass.closePrinter()
                 e.printStackTrace()
-                val params = JsonObject()
+                /*val params = JsonObject()
                 params.addProperty("id", prefProvider.getValueInt(LOCATION_ID, 0))
-                subscription?.perform("received", params)
+                subscription?.perform("received", params)*/
 
             }
 

@@ -1469,7 +1469,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                             )
                         )
 
-                    }
+                }
 
                     if (customerSettingModel.showPrintTime) {
 
@@ -1661,18 +1661,18 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     )
 
 
-                    builder.addText(
-                        padLine(
-                            "Tax",
-                            "$" + MethodUtils.roundOffAmountString(checkOutDineInModel?.totalTax),
-                            if (customerSettingModel.fonts == LARGE) {
-                                24
-                            } else {
-                                48
-                            }
-                        )
+                builder.addText(
+                    padLine(
+                        "Tax",
+                        "$" + MethodUtils.roundOffAmountString(checkOutDineInModel?.totalTax),
+                        if (customerSettingModel.fonts == Constants.LARGE) {
+                            24
+                        } else {
+                            48
+                        }
                     )
-                }
+                )
+            }
 
 
                 builder.addTextLineSpace(30)
@@ -4558,7 +4558,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         },
                         customerReceiptPrinters.ipAddress,
                         enabled,
-                        1000
+                        10000
                     )
                     //printer?.setStatusChangeEventCallback(this)
 
