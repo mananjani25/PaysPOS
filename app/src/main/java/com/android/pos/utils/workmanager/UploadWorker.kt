@@ -35,6 +35,7 @@ import java.time.format.DateTimeFormatter
 
 class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters) :
     CoroutineWorker(context, params) {
+    private var printerQueueData: Boolean = false
     private var globalPrinterQueue: JsonElement? = null
     private val TAG = UploadWorker::class.java.name
 
@@ -134,6 +135,14 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                         printerQueuelist.clear()
                         printerQueuelist = arrayListOf()
                         Log.e(TAG, "NoPrinterQueueData")
+                        if (!printerQueueData) {
+                            val params = JsonObject()
+                            params.addProperty("id", locationId)
+                            params.addProperty("url", requestURL)
+                            subscription?.perform("received", params)
+
+                            printerQueueData = true
+                        }
 
                         /* val params2 = JsonObject()
                          params2.addProperty("id", locationId)
@@ -553,6 +562,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
             consumer?.disconnect()
             PrinterClass.setPrinter(null)
             delay(4000)
+            isPrinterRunning = false
             connectActionCable()
 
             return
