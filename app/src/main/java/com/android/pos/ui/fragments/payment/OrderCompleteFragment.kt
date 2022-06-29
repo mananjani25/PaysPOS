@@ -39,6 +39,7 @@ import com.android.pos.data.remote.Constants.CASH_DISCOUNT_SURCHARGE
 import com.android.pos.data.remote.Constants.CUSTOMER
 import com.android.pos.data.remote.Constants.DINE_IN_ADAPTER_LIST
 import com.android.pos.data.remote.Constants.GUEST_POSITION
+import com.android.pos.data.remote.Constants.IS_PRINTER_QUEUE_ENABLE
 import com.android.pos.data.remote.Constants.IS_UPDATE_ORDER_LOYALTY_APPLIED
 import com.android.pos.data.remote.Constants.KITCHEN
 import com.android.pos.data.remote.Constants.LARGE
@@ -1467,7 +1468,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                             )
                         )
 
-                }
+                    }
 
                     if (customerSettingModel.showPrintTime) {
 
@@ -1659,18 +1660,18 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     )
 
 
-                builder.addText(
-                    padLine(
-                        "Tax",
-                        "$" + MethodUtils.roundOffAmountString(checkOutDineInModel?.totalTax),
-                        if (customerSettingModel.fonts == Constants.LARGE) {
-                            24
-                        } else {
-                            48
-                        }
+                    builder.addText(
+                        padLine(
+                            "Tax",
+                            "$" + MethodUtils.roundOffAmountString(checkOutDineInModel?.totalTax),
+                            if (customerSettingModel.fonts == Constants.LARGE) {
+                                24
+                            } else {
+                                48
+                            }
+                        )
                     )
-                )
-            }
+                }
 
 
                 builder.addTextLineSpace(30)
@@ -3318,8 +3319,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
 
 
-            builder.addTextLineSpace(30)
-            builder.addFeedUnit(30)
+                builder.addTextLineSpace(30)
+                builder.addFeedUnit(30)
 
                 builder.addTextFont(Builder.FONT_E)
                 // builder.addTextAlign(Builder.ALIGN_LEFT)
@@ -3411,22 +3412,22 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     Builder.COLOR_1
                 )
 
-            //ADDCHANGE
+                //ADDCHANGE
 
-            if (remainingAmount == 0.0) {
-                changeAmtGlobal += tipAmount
-            }
-            builder.addText(
-                padLine(
-                    "Change Amount",
-                    "$" + MethodUtils.roundOffAmountString(changeAmtGlobal),
-                    if (customerSettingModel.fonts == LARGE) {
-                        24
-                    } else {
-                        48
-                    }
+                if (remainingAmount == 0.0) {
+                    changeAmtGlobal += tipAmount
+                }
+                builder.addText(
+                    padLine(
+                        "Change Amount",
+                        "$" + MethodUtils.roundOffAmountString(changeAmtGlobal),
+                        if (customerSettingModel.fonts == LARGE) {
+                            24
+                        } else {
+                            48
+                        }
+                    )
                 )
-            )
 
                 if (isSpilt) {
                     builder.addTextLineSpace(30)
@@ -4156,10 +4157,10 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                 if (customerSettingModel.showTipLineForCash) {
 
-                    if (customerSettingModel.fonts == LARGE){
+                    if (customerSettingModel.fonts == LARGE) {
                         PrintSunmiUtils.tips("Tips      _____________")
                         SunmiPrinterApi.getInstance().lineWrap(1)
-                    }else{
+                    } else {
                         PrintSunmiUtils.tips("Tips                              _____________")
                     }
 
@@ -4377,37 +4378,39 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         }
 
 
-                        if (!requireArguments().getBoolean("isSpilt") && receiptModel?.order?.orderType?.lowercase() != "OpenOrder".lowercase()) {
-                            if (!requireArguments().getBoolean("isDineIn") && !requireArguments().getBoolean(
-                                    "isFromActiveOrder"
-                                )
-                            ) {
-                                if (kitchenPrinterList.isNotEmpty()) {
-                                    for (i in 0 until kitchenPrinterList.size) {
-                                        kitchenPrinterList[i].orderTypes.forEach {
+                        if (!prefProvider.getValueboolean(IS_PRINTER_QUEUE_ENABLE, false)) {
+                            if (!requireArguments().getBoolean("isSpilt") && receiptModel?.order?.orderType?.lowercase() != "OpenOrder".lowercase()) {
+                                if (!requireArguments().getBoolean("isDineIn") && !requireArguments().getBoolean(
+                                        "isFromActiveOrder"
+                                    )
+                                ) {
+                                    if (kitchenPrinterList.isNotEmpty()) {
+                                        for (i in 0 until kitchenPrinterList.size) {
+                                            kitchenPrinterList[i].orderTypes.forEach {
 
-                                            if (it.orderTypeId == receiptModel?.order?.orderTypeId
+                                                if (it.orderTypeId == receiptModel?.order?.orderTypeId
 
-                                            ) {
+                                                ) {
 
-                                                it.printerSettings.forEach {
-                                                    if (it.printType.lowercase()
-                                                            .equals(KITCHEN.lowercase()) && it.autoPrinting
-                                                    ) {
-                                                        initKitchenPrinter(
-                                                            kitchenPrinterList.get(i),
-                                                            KITCHEN
-                                                        )
+                                                    it.printerSettings.forEach {
+                                                        if (it.printType.lowercase()
+                                                                .equals(KITCHEN.lowercase()) && it.autoPrinting
+                                                        ) {
+                                                            initKitchenPrinter(
+                                                                kitchenPrinterList.get(i),
+                                                                KITCHEN
+                                                            )
 
+                                                        }
                                                     }
-                                                }
 
+                                                }
                                             }
                                         }
                                     }
+
+
                                 }
-
-
                             }
                         }
 
@@ -7644,17 +7647,17 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             if (receiptModel?.order?.totalTips == 0.0) {
 
 
-            if (customerSettingModel.showTipLineForCash) {
+                if (customerSettingModel.showTipLineForCash) {
 
-                if (customerSettingModel.fonts == LARGE){
-                    PrintSunmiUtils.tips("Tips      _____________")
-                    SunmiPrinterApi.getInstance().lineWrap(1)
-                }else{
-                    PrintSunmiUtils.tips("Tips                              _____________")
+                    if (customerSettingModel.fonts == LARGE) {
+                        PrintSunmiUtils.tips("Tips      _____________")
+                        SunmiPrinterApi.getInstance().lineWrap(1)
+                    } else {
+                        PrintSunmiUtils.tips("Tips                              _____________")
+                    }
+
+
                 }
-
-
-            }
 
 
             }

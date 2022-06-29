@@ -139,7 +139,9 @@ open class PaymentViewModel @Inject constructor(
                                 }
 
                                 Log.e(TAG, "isOnlySave:  ${onlySave}")
+                                Log.e(TAG,"IS_PRINTER_QUEUE_ENABLE  ${prefProvider.getValueboolean(IS_PRINTER_QUEUE_ENABLE,false)}")
                                 if (prefProvider.getValueboolean(IS_PRINTER_QUEUE_ENABLE,false)) {
+                                    Log.e(TAG,"QueueStart")
                                     _queueStartSaveOrder.value = Event(createOrderResponse)
                                 }
                                 if (onlySave ) {

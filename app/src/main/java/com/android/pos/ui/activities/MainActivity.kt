@@ -24,7 +24,6 @@ import androidx.databinding.DataBindingUtil
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
-import androidx.navigation.findNavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
 import androidx.work.Data
@@ -346,8 +345,6 @@ class MainActivity : BaseScannerActivity() {
     private val wifiStateReceiver: BroadcastReceiver = object : BroadcastReceiver() {
         @SuppressLint("RestrictedApi")
         override fun onReceive(context: Context, intent: Intent) {
-            Log.e("Get DAta", "GetDAtaSARqwr")
-            Toast.makeText(applicationContext,"Printer Queue is Starts.",Toast.LENGTH_LONG).show()
             val data = Data.Builder()
                 .putString("kitchenPrinterList", Gson().toJson(customerPrinterList))
                 .put("kitchenSettingData", Gson().toJson(customerSettingModel))

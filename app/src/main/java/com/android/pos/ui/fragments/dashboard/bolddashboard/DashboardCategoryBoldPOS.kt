@@ -23,6 +23,7 @@ import com.android.pos.data.model.responseModel.*
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.DINE_IN
 import com.android.pos.data.remote.Constants.EMPLOYEE_NAME
+import com.android.pos.data.remote.Constants.IS_PRINTER_QUEUE_ENABLE
 import com.android.pos.data.remote.Constants.LARGE
 import com.android.pos.data.remote.Constants.MEDIUM
 import com.android.pos.data.remote.Constants.ONLINE_ORDER_ENABLE
@@ -1114,7 +1115,11 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                 }
 
                 clearCustomer()
-                findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
+                if (prefProvider.getValueboolean(IS_PRINTER_QUEUE_ENABLE, false)) {
+                    findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
+                } else {
+                    getKitchenPrinters(it)
+                }
                 // getKitchenPrinters(it)
 
 
@@ -2149,7 +2154,10 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                     null,
                     0.0,
                     false,
-                    "Cash", cashDiscountType, isPrinterQueue = true, offlineId = createOrder.data.order.offlineId
+                    "Cash",
+                    cashDiscountType,
+                    isPrinterQueue = true,
+                    offlineId = createOrder.data.order.offlineId
                 )
             }
             val createRequest = CreateQueuePrinterRequestModel(
