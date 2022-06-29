@@ -3,6 +3,7 @@ package com.android.pos.utils
 import android.graphics.Bitmap
 import com.android.pos.data.model.responseModel.GetTipReponse
 import com.android.pos.data.remote.Constants
+import com.android.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper
 import com.sunmi.externalprinterlibrary.api.SunmiPrinterApi
 
 
@@ -57,6 +58,14 @@ class PrintSunmiUtils {
 
         }
 
+        fun printBusinessDetailsInner(value: String, value1: String, value2: String) {
+
+            headerText(value)
+            normalTextCenter(value1)
+            normalTextCenter(value2)
+
+        }
+
 
         fun venueWebsite(value: String) {
             SunmiPrinterApi.getInstance().setAlignMode(1)
@@ -64,6 +73,13 @@ class PrintSunmiUtils {
             setFontSize()
             SunmiPrinterApi.getInstance().printText(value)
             SunmiPrinterApi.getInstance().lineWrap(1)
+        }
+
+        fun venueWebsiteInner(value: String) {
+            SunmiPrintHelper.getInstance().setAlign(1)
+            SunmiPrintHelper.getInstance().printText(value)
+            SunmiPrintHelper.getInstance().lineWrap(1)
+
         }
 
         fun paymentType(value: String) {
@@ -82,6 +98,14 @@ class PrintSunmiUtils {
             SunmiPrinterApi.getInstance().lineWrap(1)
         }
 
+        fun orderIdInner(value: String) {
+
+            SunmiPrintHelper.getInstance().setAlign(0)
+            SunmiPrintHelper.getInstance().printText(value)
+            SunmiPrintHelper.getInstance().lineWrap(1)
+
+        }
+
         fun orderTime(value: String) {
             SunmiPrinterApi.getInstance().setAlignMode(0)
             SunmiPrinterApi.getInstance().enableBold(false)
@@ -96,7 +120,7 @@ class PrintSunmiUtils {
         fun addValue(value: String) {
             SunmiPrinterApi.getInstance().setAlignMode(1)
             SunmiPrinterApi.getInstance().enableBold(false)
-             setFontSize()
+            setFontSize()
             SunmiPrinterApi.getInstance().printText(
                 value
             )
@@ -112,12 +136,27 @@ class PrintSunmiUtils {
             SunmiPrinterApi.getInstance().lineWrap(1)
         }
 
+        fun employeeInner(value: String) {
+            SunmiPrinterApi.getInstance().setAlignMode(0)
+            SunmiPrinterApi.getInstance().enableBold(false)
+            setFontSize()
+            SunmiPrinterApi.getInstance().printText(value)
+            SunmiPrinterApi.getInstance().lineWrap(1)
+        }
+
         fun receiptID(value: String) {
             SunmiPrinterApi.getInstance().setAlignMode(0)
             SunmiPrinterApi.getInstance().enableBold(false)
             setFontSize()
             SunmiPrinterApi.getInstance().printText(value)
             SunmiPrinterApi.getInstance().lineWrap(1)
+        }
+
+        fun receiptIDInner(value: String) {
+            SunmiPrintHelper.getInstance().setAlign(0)
+            SunmiPrintHelper.getInstance().printText(value)
+            SunmiPrintHelper.getInstance().lineWrap(1)
+
         }
 
         fun printOrderType(value: String) {
@@ -130,14 +169,22 @@ class PrintSunmiUtils {
 
         }
 
-        fun addHorizontal() {
+        fun printOrderTypeInner(value: String) {
 
+            SunmiPrintHelper.getInstance().setAlign(1)
+            SunmiPrintHelper.getInstance().printText(value, 40f, true, false, null)
+            SunmiPrintHelper.getInstance().lineWrap(1)
+
+
+        }
+
+        fun addHorizontal() {
 
 
             val st = addHorizontalKitchenLineSunmi(fontSize)
             SunmiPrinterApi.getInstance().enableUnderline(true)
             SunmiPrinterApi.getInstance().enableBold(false)
-             setFontSize()
+            setFontSize()
             SunmiPrinterApi.getInstance().printText(st)
             SunmiPrinterApi.getInstance().lineWrap(1)
 
@@ -145,7 +192,7 @@ class PrintSunmiUtils {
 
         fun totalDiscount(value: String) {
             SunmiPrinterApi.getInstance().enableBold(false)
-             setFontSize()
+            setFontSize()
             SunmiPrinterApi.getInstance().printText(value)
             SunmiPrinterApi.getInstance().lineWrap(1)
 
@@ -153,7 +200,7 @@ class PrintSunmiUtils {
 
         fun subTotal(value: String) {
             SunmiPrinterApi.getInstance().enableBold(false)
-             setFontSize()
+            setFontSize()
             SunmiPrinterApi.getInstance().printText(value)
             SunmiPrinterApi.getInstance().lineWrap(1)
 
@@ -162,7 +209,7 @@ class PrintSunmiUtils {
 
         fun tax(value: String) {
             SunmiPrinterApi.getInstance().enableBold(false)
-             setFontSize()
+            setFontSize()
             SunmiPrinterApi.getInstance().printText(value)
             SunmiPrinterApi.getInstance().lineWrap(1)
 
@@ -261,9 +308,23 @@ class PrintSunmiUtils {
 
         }
 
+
         fun addTipList(tipsList: List<GetTipReponse.Data>, totalAmount: Double, fonts: String) {
 
             addTipsList(
+                tipsList,
+                totalAmount,
+                fonts
+            )
+        }
+
+        fun addTipListInner(
+            tipsList: List<GetTipReponse.Data>,
+            totalAmount: Double,
+            fonts: String
+        ) {
+
+            addTipsListInner(
                 tipsList,
                 totalAmount,
                 fonts
@@ -322,6 +383,13 @@ class PrintSunmiUtils {
 
         }
 
+        fun customerDetailsInner() {
+
+            headerText("Customer Details")
+            addHorizontalInner()
+
+        }
+
         fun customerName(value: String) {
 
             SunmiPrinterApi.getInstance().setAlignMode(0)
@@ -363,6 +431,12 @@ class PrintSunmiUtils {
             SunmiPrinterApi.getInstance().lineWrap(1)
         }
 
+        fun orderNoteInner(value: String) {
+
+            normalTextCenter("Order Note")
+            normalTextCenter(value)
+        }
+
         fun qrCode(value: String) {
             SunmiPrinterApi.getInstance().setAlignMode(1)
             value.let {
@@ -372,10 +446,21 @@ class PrintSunmiUtils {
             }
         }
 
+        fun qrCodeInner(value: String) {
+            SunmiPrintHelper.getInstance().setAlign(1)
+            SunmiPrintHelper.getInstance().printQr(value, 10, 0)
+        }
+
         fun cutPaper() {
 
             SunmiPrinterApi.getInstance().lineWrap(5)
             SunmiPrinterApi.getInstance().cutPaper(1, 1)
+        }
+
+        fun cutPaperInner() {
+
+            SunmiPrintHelper.getInstance().lineWrap(5)
+            SunmiPrintHelper.getInstance().cutpaper()
         }
 
         fun printTextCenter(value: String) {
@@ -424,6 +509,104 @@ class PrintSunmiUtils {
             }
         }
 
+
+        private fun setFontSizeInner(): Int {
+            return when (fontSize) {
+                Constants.SMALL -> {
+                    24
+                }
+                Constants.MEDIUM -> {
+                    30
+                }
+                Constants.LARGE -> {
+                    36
+                }
+                else -> 24
+            }
+        }
+
+        fun headerText(value: String) {
+            SunmiPrintHelper.getInstance().setAlign(1)
+            SunmiPrintHelper.getInstance().printText(value, 40f, true, false, null)
+            SunmiPrintHelper.getInstance().lineWrap(1)
+        }
+
+        fun normalText(value: String) {
+            SunmiPrintHelper.getInstance().setAlign(0)
+            SunmiPrintHelper.getInstance().printText(value)
+            SunmiPrintHelper.getInstance().lineWrap(1)
+        }
+
+        fun normalTextCenter(value: String) {
+            SunmiPrintHelper.getInstance().setAlign(1)
+            SunmiPrintHelper.getInstance().printText(value)
+            SunmiPrintHelper.getInstance().lineWrap(1)
+        }
+
+        fun boldText(value: String) {
+            SunmiPrintHelper.getInstance().setAlign(0)
+            SunmiPrintHelper.getInstance().printText(value, 24f, true, false, null)
+            SunmiPrintHelper.getInstance().lineWrap(1)
+        }
+
+        fun orderHeader(value: String) {
+            SunmiPrintHelper.getInstance().setAlign(0)
+            SunmiPrintHelper.getInstance().printText(value)
+            SunmiPrintHelper.getInstance().lineWrap(1)
+        }
+
+        fun addHorizontalInner() {
+            val st = addHorizontalKitchenLineSunmi(fontSize)
+            SunmiPrintHelper.getInstance().printText(st)
+        }
+
+        fun itemText(value: String) {
+            SunmiPrintHelper.getInstance().setAlign(0)
+            SunmiPrintHelper.getInstance().printText(value)
+            SunmiPrintHelper.getInstance().lineWrap(1)
+
+        }
+
+        fun orderCalculation1(value: String) {
+            SunmiPrintHelper.getInstance().setAlign(0)
+            SunmiPrintHelper.getInstance().printText(value)
+            SunmiPrintHelper.getInstance().lineWrap(1)
+
+        }
+
+        fun orderCalculation2(value: String) {
+            SunmiPrintHelper.getInstance().setAlign(0)
+            SunmiPrintHelper.getInstance().printText(value)
+            SunmiPrintHelper.getInstance().lineWrap(1)
+
+        }
+
+        fun additionalTipsInner() {
+
+            SunmiPrintHelper.getInstance().setAlign(0)
+            SunmiPrintHelper.getInstance().printText("Additional Tips", 40f, true, false, null)
+            SunmiPrintHelper.getInstance().lineWrap(1)
+            addHorizontalInner()
+
+        }
+
+        fun cardDetailsInner(cardName: String, cardType: String, cardNumber: String) {
+
+            for (i in 1..3) {
+
+                when (i) {
+                    1 -> {
+                        normalText(cardName)
+                    }
+                    2 -> {
+                        normalText(cardType)
+                    }
+                    3 -> {
+                        normalText(cardNumber)
+                    }
+                }
+            }
+        }
 
     }
 

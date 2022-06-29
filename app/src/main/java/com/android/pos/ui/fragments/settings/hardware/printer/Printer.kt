@@ -1080,30 +1080,6 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
         }
     }
 
-    private val mStrings = arrayOf(
-        "CP437",
-        "CP850",
-        "CP860",
-        "CP863",
-        "CP865",
-        "CP857",
-        "CP737",
-        "CP928",
-        "Windows-1252",
-        "CP866",
-        "CP852",
-        "CP858",
-        "CP874",
-        "Windows-775",
-        "CP855",
-        "CP862",
-        "CP864",
-        "GB18030",
-        "BIG5",
-        "KSC5601",
-        "utf-8"
-    )
-
 
     private fun printByBluTooth(content: String) {
         try {

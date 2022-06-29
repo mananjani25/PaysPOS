@@ -19,6 +19,7 @@ import androidx.core.text.trimmedLength
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.data.entities.CartModel
@@ -82,6 +83,8 @@ import com.sunmi.externalprinterlibrary.api.ConnectCallback
 import com.sunmi.externalprinterlibrary.api.SunmiPrinter
 import com.sunmi.externalprinterlibrary.api.SunmiPrinterApi
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import java.io.IOException
 import java.io.InputStream
 import java.net.HttpURLConnection
@@ -2580,6 +2583,10 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
             if (customerSettingModel.showQrCode) {
 
+
+                getDineInOrderDetails?.digitalReceiptUrl?.let { Log.e("digitalReceiptUrl1", it) }
+
+
                 getDineInOrderDetails?.digitalReceiptUrl?.let { PrintSunmiUtils.qrCode(it) }
             }
 
@@ -4222,8 +4229,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
             if (customerSettingModel.showQrCode) {
 
+                PrintSunmiUtils.qrCode(receiptModel?.order?.digital_receipt_url.toString())
 
-                getDineInOrderDetails?.digitalReceiptUrl?.let { PrintSunmiUtils.qrCode(it) }
+                // getDineInOrderDetails?.digitalReceiptUrl.toString().let { PrintSunmiUtils.qrCode(it) }
             }
 
             PrintSunmiUtils.cutPaper()
@@ -5999,7 +6007,12 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                         override fun onConnect() {
                             println("onConnect")
-                            generateKitchenReceiptSunmi(data, type)
+
+                            viewLifecycleOwner.lifecycleScope.launch {
+                                delay(200)
+                                generateKitchenReceiptSunmi(data, type)
+                            }
+
 
                         }
 
@@ -6009,7 +6022,10 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                     })
             } else {
-                generateKitchenReceiptSunmi(data, type)
+                viewLifecycleOwner.lifecycleScope.launch {
+                    delay(200)
+                    generateKitchenReceiptSunmi(data, type)
+                }
             }
 
         } else {
@@ -6794,6 +6810,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
     ) {
         try {
 
+
             PrintSunmiUtils.fontSize(kitchenSettingModel.fonts)
 
             if (kitchenSettingModel.showOrderType) {
@@ -6928,7 +6945,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
             PrintSunmiUtils.cutPaper()
 
-            SunmiPrinterApi.getInstance().disconnectPrinter(requireContext())
+            //  SunmiPrinterApi.getInstance().disconnectPrinter(requireContext())
 
         } catch (e: Exception) {
             // printerDialog.dismiss()
@@ -7789,6 +7806,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             }
 
             PrintSunmiUtils.cutPaper()
+            //  SunmiPrinterApi.getInstance().disconnectPrinter(requireContext())
+
+
             pd.dismiss()
 
         } catch (e: Exception) {
