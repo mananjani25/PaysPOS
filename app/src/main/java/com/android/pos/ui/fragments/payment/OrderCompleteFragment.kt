@@ -331,6 +331,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 binding.txtHome.visibility = View.GONE
 
 
+                Log.e("addSplitToDatabase","XXX")
                 val title = "Split "
                 viewModel.addSplitToDatabase(
                     title,
@@ -495,6 +496,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 //  binding.linearTopHeaderSplit.visibility = View.VISIBLE
                 binding.txtHome.visibility = View.GONE
                 var title = "Split "
+                Log.e("addSplitToDatabase","XXX XXX")
                 viewModel.addSplitToDatabase(
                     title,
                     (paidAmount + tipAmount) - splitChange,

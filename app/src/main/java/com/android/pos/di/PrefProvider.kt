@@ -169,6 +169,10 @@ class PrefProvider @Inject constructor(@ApplicationContext context: Context) {
 
     }
 
+    fun employeeId(): Int {
+      return   getValueInt(Constants.EMPLOYEE_ID, 0)
+    }
+
     fun setUniqueId(deviceId: String) {
         setValue(UNIQUE_ID, deviceId)
     }
