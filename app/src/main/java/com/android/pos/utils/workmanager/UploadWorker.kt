@@ -1107,13 +1107,13 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                 timeOut = if (customerReceiptPrinters.name.substring(0, 6).toString()
                         .lowercase() == "TM-m30".lowercase()
                 ) {
-                    1000
+                    10000
                 } else {
                     1
                 }
 
                 PrinterClass.getPrinter()?.sendData(
-                    builder, 1, status
+                    builder, timeOut, status
                 )
 
                 PrinterClass.closePrinter()

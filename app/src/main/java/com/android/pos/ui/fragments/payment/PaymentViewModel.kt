@@ -139,24 +139,36 @@ open class PaymentViewModel @Inject constructor(
                                 }
 
                                 Log.e(TAG, "isOnlySave:  ${onlySave}")
-                                Log.e(TAG,"IS_PRINTER_QUEUE_ENABLE  ${prefProvider.getValueboolean(IS_PRINTER_QUEUE_ENABLE,false)}")
-                                if (prefProvider.getValueboolean(IS_PRINTER_QUEUE_ENABLE,false)) {
-                                    Log.e(TAG,"QueueStart")
+                                Log.e(
+                                    TAG,
+                                    "IS_PRINTER_QUEUE_ENABLE  ${
+                                        prefProvider.getValueboolean(
+                                            IS_PRINTER_QUEUE_ENABLE,
+                                            false
+                                        )
+                                    }"
+                                )
+                                if (prefProvider.getValueboolean(IS_PRINTER_QUEUE_ENABLE, false)) {
+                                    Log.e(TAG, "QueueStart")
                                     _queueStartSaveOrder.value = Event(createOrderResponse)
                                 }
-                                if (onlySave ) {
+                                if (onlySave) {
+                                    Log.e("QueueCheck", "OnlySave")
 
                                     _queueStart.value = Event(createOrderResponse)
 
                                 } else {
                                     if (createOrderResponse.data.order.orderType != "Dine In" && response.data.order.payments[response.data.order.payments.size - 1].paymentType != "Card") {
                                         cashLogApi(createOrderResponse, "in")
+                                        Log.e("QueueCheck", "CashLogAPI")
                                     } else {
                                         _data.value = Event(createOrderResponse)
+                                        Log.e("QueueCheck", "CreateOrderData")
                                     }
 
-                                    if (createOrderResponse.data.order.orderType != "Dine In"){
+                                    if (createOrderResponse.data.order.orderType != "Dine In") {
                                         _queueStart.value = Event(createOrderResponse)
+                                        Log.e("QueueCheck", "QueueStart")
                                     }
                                 }
 
@@ -414,8 +426,8 @@ open class PaymentViewModel @Inject constructor(
         paymentType: String,
         cashdiscountType: String,
         tipID: Int? = null,
-        isPrinterQueue :Boolean = false,
-        offlineId:String = ""
+        isPrinterQueue: Boolean = false,
+        offlineId: String = ""
     ): OrderRequestModel {
 
         val orderAttributeRequestModel = OrderAttributeRequestModel()
@@ -475,7 +487,7 @@ open class PaymentViewModel @Inject constructor(
                 prefProvider.getValueInt(Constants.LOCATION_ID, -1).toString()
             )
 
-        if (isPrinterQueue){
+        if (isPrinterQueue) {
             orderAttributeRequestModel.offlineId = offlineId
         }
         Log.e(TAG, "openOrderType: " + cartModel.orderType)
@@ -1403,7 +1415,6 @@ open class PaymentViewModel @Inject constructor(
     }
 
 
-
     private fun orderServiceChargesAttributes(
         cartModel: CartModel,
         subTotalPrice: Double
@@ -1762,7 +1773,10 @@ open class PaymentViewModel @Inject constructor(
         createOrder: CreateOrderResponse
     ) {
         _showProgress.value = Event(true)
-        Log.e("CreateOrderRequest","createQueuePrinterModel  ${Gson().toJson(createQueuePrinterModel)}")
+        Log.e(
+            "CreateOrderRequest",
+            "createQueuePrinterModel  ${Gson().toJson(createQueuePrinterModel)}"
+        )
 
         viewModelScope.launch {
             val resource = posRepository.createQueuePrinter(createQueuePrinterModel)
