@@ -119,6 +119,8 @@ class RefundItemListAdapter(val viewModel: TransactionDetailsViewModel) :
                 "yash",
                 "bind: [" + absoluteAdapterPosition + "] orderDiscount : " + orderDiscount
             )
+
+
             loyaltyAmountPerItem = loyaltyAmount / itemCount
             Log.d(
                 "yash",
@@ -127,6 +129,8 @@ class RefundItemListAdapter(val viewModel: TransactionDetailsViewModel) :
 
             var totalItemPrice: Double = 0.0
             totalItemPrice = totalPrice(item)
+
+
 
             item.orderItemTaxes.forEach { tax ->
                 tax.taxTotalAmount.let {

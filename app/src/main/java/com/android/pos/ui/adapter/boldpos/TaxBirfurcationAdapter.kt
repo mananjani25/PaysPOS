@@ -29,8 +29,8 @@ class TaxBirfurcationAdapter(var isFrom: String) : RecyclerView.Adapter<Recycler
                 )
             }
 
-            if (stringBuffer.length > 15) {
-                var value = stringBuffer.toString().substring(0, 15).toString() + "..."
+            if (stringBuffer.length > 10) {
+                var value = stringBuffer.toString().substring(0, 10).toString() + "..."
                 binding.txtName.text = value
             } else {
                 binding.txtName.text = stringBuffer.toString()
@@ -74,8 +74,8 @@ class TaxBirfurcationAdapter(var isFrom: String) : RecyclerView.Adapter<Recycler
                     ) + " "
                 )
             }
-            if (stringBuffer.length > 15) {
-                var value = stringBuffer.toString().substring(0, 15).toString() + "..."
+            if (stringBuffer.length > 10) {
+                var value = stringBuffer.toString().substring(0, 10).toString() + "..."
                 binding.txtName.text = value
             } else {
                 binding.txtName.text = stringBuffer.toString()

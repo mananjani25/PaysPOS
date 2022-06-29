@@ -236,8 +236,15 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 orderId?.let { viewModel.apiCallOrderDetails(it) }
 
             } else {
-                orderId = floorPlanModel?.currentOrderDetails?.orderId
-                floorPlanModel?.currentOrderDetails?.orderId?.let { viewModel.apiCallOrderDetails(it) }
+                if (floorPlanModel?.currentOrderDetails != null) {
+                    orderId = floorPlanModel?.currentOrderDetails?.orderId
+                    floorPlanModel?.currentOrderDetails?.orderId?.let {
+                        viewModel.apiCallOrderDetails(
+                            it
+                        )
+                    }
+                }
+
                 // binding.txtTitle.setText("" + floorPlanModel?.tableName)
             }
 
@@ -437,16 +444,19 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                         }
                     }
                     if (found != -1) {
-                        if (cartList?.taxlistDynamic?.get(found)?.taxType != "Percentage") {
-                            cartList?.taxlistDynamic?.get(found)?.subTotalAmount =
-                                cartList?.taxlistDynamic?.get(found)?.subTotalAmount!!.plus(
-                                    temp_subtotal
+                        if (found <= cartList?.taxlistDynamic?.size!! - 1) {
+                            if (cartList?.taxlistDynamic?.get(found)?.taxType != "Percentage") {
+                                cartList?.taxlistDynamic?.get(found)?.subTotalAmount =
+                                    cartList?.taxlistDynamic?.get(found)?.subTotalAmount!!.plus(
+                                        temp_subtotal
+                                    )
+                            }
+                            cartList?.taxlistDynamic?.get(found)?.totalTaxTypePrice =
+                                cartList?.taxlistDynamic?.get(found)?.totalTaxTypePrice!!.minus(
+                                    temp_remaining
                                 )
                         }
-                        cartList?.taxlistDynamic?.get(found)?.totalTaxTypePrice =
-                            cartList?.taxlistDynamic?.get(found)?.totalTaxTypePrice!!.minus(
-                                temp_remaining
-                            )
+
                     } else {
                         var data = taxData
                         data.subTotalAmount = temp_subtotal
@@ -1620,16 +1630,18 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 }
                 Log.d(TAG, "onClick: wholetable total tax $totaltaxtemp")
                 if (found != -1) {
-                    if (cartList?.taxlistDynamic?.get(found)?.taxType != "Percentage") {
-                        cartList?.taxlistDynamic?.get(found)?.subTotalAmount =
-                            cartList?.taxlistDynamic?.get(found)?.subTotalAmount!!.plus(
-                                temp_subtotal
+                    if (found <= cartList?.taxlistDynamic?.size!! - 1) {
+                        if (cartList?.taxlistDynamic?.get(found)?.taxType != "Percentage") {
+                            cartList?.taxlistDynamic?.get(found)?.subTotalAmount =
+                                cartList?.taxlistDynamic?.get(found)?.subTotalAmount!!.plus(
+                                    temp_subtotal
+                                )
+                        }
+                        cartList?.taxlistDynamic?.get(found)?.totalTaxTypePrice =
+                            cartList?.taxlistDynamic?.get(found)?.totalTaxTypePrice!!.plus(
+                                temp_remaining
                             )
                     }
-                    cartList?.taxlistDynamic?.get(found)?.totalTaxTypePrice =
-                        cartList?.taxlistDynamic?.get(found)?.totalTaxTypePrice!!.plus(
-                            temp_remaining
-                        )
                 } else {
                     var data = taxData
                     data.subTotalAmount = temp_subtotal
@@ -5555,18 +5567,20 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
     }
 
     private fun observeUnMergeTable() {
-        viewModel.unMergeStatusUpdate.observe(viewLifecycleOwner, { event ->
+        viewModel.unMergeStatusUpdate.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let { status ->
 
                 AlertUtils.showCustomAlertWithListenerWithOK(
                     requireContext(), status.toString()
                 ) { _, _ ->
-                    findNavController().navigate(R.id.action_dineInOrderTable_to_dashboardCategoryNew)
+                    if (findNavController().currentDestination?.id == R.id.dineInOrderTable) {
+                        findNavController().navigate(R.id.action_dineInOrderTable_to_dashboardCategoryNew)
+                    }
                 }
 
 
             }
-        })
+        }
     }
 
     private fun observeQueueCreated() {

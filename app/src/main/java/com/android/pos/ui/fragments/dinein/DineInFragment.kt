@@ -231,7 +231,7 @@ class DineInFragment : Fragment() {
                                     arrayListOf()
                                 )
                             )
-                            if(findNavController().currentDestination?.id==R.id.dineInFragment){
+                            if (findNavController().currentDestination?.id == R.id.dineInFragment) {
                                 findNavController().navigate(
                                     R.id.action_dineInFragment_to_mergeTableDialog,
                                     bundle
@@ -545,8 +545,14 @@ class DineInFragment : Fragment() {
                             status =
                                 "This table is locked by " + dineInFloorTableModel.lock_by_name + "."
                         } else {
-                            status =
-                                "This table is locked by " + dineInFloorTableModel.currentOrderDetails.employeeName + "."
+                            if (dineInFloorTableModel.currentOrderDetails != null) {
+                                status =
+                                    "This table is locked by " + dineInFloorTableModel.currentOrderDetails.employeeName + "."
+                            } else {
+                                status =
+                                    "This table is locked by " + dineInFloorTableModel.lock_by_name + "."
+                            }
+
                         }
 
 
@@ -575,8 +581,14 @@ class DineInFragment : Fragment() {
                         status =
                             "This table is locked by " + dineInFloorTableModel.lock_by_name + "."
                     } else {
-                        status =
-                            "This table is locked by " + dineInFloorTableModel.currentOrderDetails.employeeName + "."
+                        if (dineInFloorTableModel.currentOrderDetails != null) {
+                            status =
+                                "This table is locked by " + dineInFloorTableModel.currentOrderDetails.employeeName + "."
+                        } else {
+                            status =
+                                "This table is locked by " + dineInFloorTableModel.lock_by_name + "."
+                        }
+
                     }
 
 
