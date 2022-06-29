@@ -1770,7 +1770,7 @@ open class PaymentViewModel @Inject constructor(
             when (resource.status) {
                 Status.SUCCESS -> {
                     _showProgress.value = Event(false)
-                    _data.value = Event(createOrder)
+                  //  _data.value = Event(createOrder)
                     _queueCreateSaveOrder.value = Event(true)
 
                     // _queuePrinter.value = Event(resource?.data?.message.toString())
