@@ -485,6 +485,16 @@ open class PaymentViewModel @Inject constructor(
                 orderAttributeRequestModel.cash_discount_or_surcharge = 0.0
             }
         }*/
+        cartModel.taxlistDynamic?.forEach { taxData ->
+            if (taxData.taxType == "Percentage") {
+                taxData.percentage_value =
+                    MethodUtils.roundOffAmountDouble(taxData.rate)
+            } else {
+                taxData.percentage_value =
+                    MethodUtils.roundOffAmountDouble((100 * taxData.totalTaxTypePrice) / taxData.subTotalAmount!!)
+            }
+        }
+        orderAttributeRequestModel.tax_bifurcation_data = Gson().toJson(cartModel.taxlistDynamic)
         orderAttributeRequestModel.offlineId =
             if (isUpdateOrder) orderOfflineId.toString() else MethodUtils.randomOfflineId(
                 prefProvider.getValueInt(Constants.LOCATION_ID, -1).toString()
@@ -630,7 +640,16 @@ open class PaymentViewModel @Inject constructor(
             MethodUtils.roundOffAmountDouble(totalServiceCharge)
         orderAttributeRequestModel.totalTaxAmount = MethodUtils.roundOffAmountDouble(totalTax)
         orderAttributeRequestModel.totalTips = MethodUtils.roundOffAmountDouble(tipAmount)
-
+        cartModel.taxlistDynamic?.forEach { taxData ->
+            if (taxData.taxType == "Percentage") {
+                taxData.percentage_value =
+                    MethodUtils.roundOffAmountDouble(taxData.rate)
+            } else {
+                taxData.percentage_value =
+                    MethodUtils.roundOffAmountDouble((100 * taxData.totalTaxTypePrice) / taxData.subTotalAmount!!)
+            }
+        }
+        orderAttributeRequestModel.tax_bifurcation_data = Gson().toJson(cartModel.taxlistDynamic)
         orderAttributeRequestModel.is_loyalty_applied = redeemLoyaltyInfo?.needToApplyLoyalty
         if (orderAttributeRequestModel.is_loyalty_applied == true) {
             orderAttributeRequestModel.loyalty_program_id =
@@ -752,7 +771,16 @@ open class PaymentViewModel @Inject constructor(
                 orderAttributeRequestModel.totalAmount = actual_CardAmount
             }
         }
-
+        cartModel.taxlistDynamic?.forEach { taxData ->
+            if (taxData.taxType == "Percentage") {
+                taxData.percentage_value =
+                    MethodUtils.roundOffAmountDouble(taxData.rate)
+            } else {
+                taxData.percentage_value =
+                    MethodUtils.roundOffAmountDouble((100 * taxData.totalTaxTypePrice) / taxData.subTotalAmount!!)
+            }
+        }
+        orderAttributeRequestModel.tax_bifurcation_data = Gson().toJson(cartModel.taxlistDynamic)
         orderAttributeRequestModel.magensaResponse = magensaResponse.toString()
 
         orderAttributeRequestModel.offlineId =

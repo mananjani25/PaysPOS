@@ -1,6 +1,6 @@
 package com.android.pos.ui.fragments.manualsales
 
-import android.annotation.SuppressLint
+import  android.annotation.SuppressLint
 import android.app.Dialog
 import android.graphics.Color
 import android.graphics.drawable.BitmapDrawable
@@ -33,6 +33,7 @@ import com.android.pos.databinding.FragmentManualSaleNewBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.di.RolePermission
 import com.android.pos.ui.adapter.ManualSaleCartAdapter
+import com.android.pos.ui.adapter.boldpos.TaxBirfurcationAdapter
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.AmountTextWatcher
@@ -62,6 +63,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
     private val viewModel by activityViewModels<DashBoardCategoryViewModel>()
     var amountToBepaid = 0.0
     var totalquantity = 0
+    var taxClickable = false
 
     @Inject
     lateinit var rolePermission: RolePermission
@@ -71,6 +73,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
     private var assignCustomer: TbCustomer? = null
     private var isPayClicked: Boolean = false
     var tabItemMOdel = TbItem()
+    private lateinit var taxBirfurcationAdapter: TaxBirfurcationAdapter
 
     @Inject
     lateinit var prefProvider: PrefProvider
@@ -107,6 +110,13 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
         }
     }
 
+    private fun setupTaxAdapter() {
+        taxBirfurcationAdapter = TaxBirfurcationAdapter("dashboard")
+        binding.rvTax.adapter = taxBirfurcationAdapter
+        var taxlist = arrayListOf<TaxData>()
+        taxBirfurcationAdapter.setList(taxlist)
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
@@ -129,6 +139,57 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
         listener()
         setUpToolbar()//created By Zeeshan
         callbackForDialog()
+        setupTaxAdapter()
+        binding.linearTaxDetail.setOnClickListener {
+            if (taxBirfurcationAdapter.taxlist.size > 0) {
+                if (!taxClickable) {
+                    Log.d(TAG, "onViewCreated: " + taxBirfurcationAdapter.taxlist.size)
+                    taxClickable = true
+                    if (taxBirfurcationAdapter.taxlist.size == 1) {
+                        if (viewModel.order_note.isNotEmpty()) {
+                            binding.linearBottomInfo.layoutParams.height =
+                                resources.getDimension(R.dimen._75sdp).toInt()
+                        } else {
+                            binding.linearBottomInfo.layoutParams.height =
+                                resources.getDimension(R.dimen._60sdp).toInt()
+                        }
+                    } else if (taxBirfurcationAdapter.taxlist.size == 2) {
+                        if (viewModel.order_note.isNotEmpty()) {
+                            binding.linearBottomInfo.layoutParams.height =
+                                resources.getDimension(R.dimen._85sdp).toInt()
+                        } else {
+                            binding.linearBottomInfo.layoutParams.height =
+                                resources.getDimension(R.dimen._75sdp).toInt()
+                        }
+                    } else {
+                        if (viewModel.order_note.isNotEmpty()) {
+                            binding.linearBottomInfo.layoutParams.height =
+                                resources.getDimension(R.dimen._110sdp).toInt()
+                        } else {
+                            binding.linearBottomInfo.layoutParams.height =
+                                resources.getDimension(R.dimen._100sdp).toInt()
+                        }
+
+                    }
+                    binding.imgDropdown.setImageResource(R.drawable.ic_solid_up_arrow)
+                    binding.relativeDynamicTax.visible()
+                } else {
+                    if (viewModel.order_note.isNotEmpty()) {
+                        binding.linearBottomInfo.layoutParams.height =
+                            resources.getDimension(R.dimen._60sdp).toInt()
+                    } else {
+                        binding.linearBottomInfo.layoutParams.height =
+                            resources.getDimension(R.dimen._50sdp).toInt()
+                    }
+                    taxClickable = false
+                    binding.imgDropdown.setImageResource(R.drawable.ic_arrow_drop_down)
+                    binding.relativeDynamicTax.gone()
+                }
+            }
+
+        }
+
+
 
 
         binding.footer.linearEmpnameRole.setOnClickListener {
@@ -145,6 +206,53 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
         binding.layoutMenu.txtProducts.setOnClickListener {
             findNavController().popBackStack()
         }
+    }
+
+    fun setTaxBifurcationData(taxlistData: ArrayList<TaxData>) {
+        if (taxlistData?.isNotEmpty()) {
+            Log.d(TAG, "addObserver: " + taxlistData.size)
+            setupTaxAdapter()
+            taxClickable = false
+            if (viewModel.order_note.isNotEmpty()) {
+                binding.linearBottomInfo.layoutParams.height =
+                    resources.getDimension(R.dimen._60sdp).toInt()
+            } else {
+                binding.linearBottomInfo.layoutParams.height =
+                    resources.getDimension(R.dimen._50sdp).toInt()
+            }
+            binding.imgDropdown.setImageResource(R.drawable.ic_arrow_drop_down)
+            binding.imgDropdown.visible()
+            taxBirfurcationAdapter.setList(taxlistData)
+            binding.relativeDynamicTax.gone()
+        } else {
+            if (viewModel.order_note.isNotEmpty()) {
+                binding.linearBottomInfo.layoutParams.height =
+                    resources.getDimension(R.dimen._60sdp).toInt()
+            } else {
+                binding.linearBottomInfo.layoutParams.height =
+                    resources.getDimension(R.dimen._50sdp).toInt()
+            }
+            binding.imgDropdown.setImageResource(R.drawable.ic_arrow_drop_down)
+            binding.imgDropdown.gone()
+            binding.relativeDynamicTax.gone()
+            taxClickable = false
+        }
+    }
+
+    fun reSetTaxBifurcationData() {
+        taxBirfurcationAdapter.clearList()
+        if (viewModel.order_note.isNotEmpty()) {
+            binding.linearBottomInfo.layoutParams.height =
+                resources.getDimension(R.dimen._60sdp).toInt()
+        } else {
+            binding.linearBottomInfo.layoutParams.height =
+                resources.getDimension(R.dimen._50sdp).toInt()
+        }
+
+        taxClickable = false
+        binding.imgDropdown.setImageResource(R.drawable.ic_arrow_drop_down)
+        binding.imgDropdown.gone()
+        binding.relativeDynamicTax.gone()
     }
 
     //created By Zeeshaan
@@ -236,31 +344,26 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                         cartList,
                         binding.txtTotalAmount, requireContext()
                     )
-
+                    setTaxBifurcationData(cartList!![0].taxlistDynamic as ArrayList<TaxData>)
                     setTextValue()
                     if (viewModel.order_note.isNotEmpty()) {
-                        binding.linearBottomInfo?.layoutParams?.height =
-                            resources.getDimension(R.dimen._60sdp).toInt()
                         binding.relativeOrderNotes?.visible()
                         binding.txtOrderNote!!.text = viewModel.order_note
 
                     } else {
                         binding.relativeOrderNotes?.gone()
-                        binding.linearBottomInfo?.layoutParams?.height =
-                            resources.getDimension(R.dimen._50sdp).toInt()
                     }
+
                 } else {
 
                     cartAdapter.clearList()
-
-
-
+                    reSetTaxBifurcationData()
 
                     viewModel.itemCalculation(
                         null,
                         binding.txtTotalAmount, requireContext()
                     )
-
+                    binding.relativeOrderNotes?.gone()
                     setTextValue()
 
                 }
@@ -284,7 +387,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
             viewModel.totalDiscount
         )
         //txtTotalAmount.text = binding.txtTotalAmount.text.toString()
-        binding.txtTotalTax.text = "$" + String.format(
+        binding.txtTax.text = "$" + String.format(
             "%.2f",
             viewModel.totalTax
         )
@@ -447,11 +550,46 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
 
                 if (cartList != null && cartList!!.isNotEmpty()) {
 
+//                    var mainlist = mainCartList[0].taxlistDynamic
+                    var manuallist = cartList!![0].taxlistDynamic
 
+
+                    mainCartList[0].taxlistDynamic?.forEachIndexed { index, taxData ->
+                        var found = -1
+                        manuallist?.forEachIndexed { indexmanual, manualtax ->
+                            if (taxData.id == manualtax.id) {
+                                found = indexmanual
+                            } else {
+                                mainCartList[0].taxlistDynamic = concatenate(
+                                    mainCartList[0].taxlistDynamic!!,
+                                    listOf(manualtax)
+                                )
+                            }
+                        }
+                        if (found != -1) {
+                            mainCartList[0].taxlistDynamic?.get(index)?.subTotalAmount =
+                                mainCartList[0].taxlistDynamic?.get(index)?.subTotalAmount!!.plus(
+                                    manuallist?.get(found)?.subTotalAmount!!
+                                )
+                            mainCartList[0].taxlistDynamic?.get(index)?.totalTaxTypePrice =
+                                mainCartList[0].taxlistDynamic?.get(index)?.totalTaxTypePrice!!.plus(
+                                    manuallist.get(found).totalTaxTypePrice
+                                )
+                        }
+                        var list: List<TaxData> = emptyList()
+                        manuallist?.forEachIndexed { i, tdata ->
+                            if (i != found) {
+                                list = listOf(tdata)
+                            }
+                        }
+                        Log.d(TAG, "onClick: " + Gson().toJson(list))
+                    }
+
+
+                    Log.d(TAG, "onClick:  tax : " + Gson().toJson(mainCartList[0].taxlistDynamic))
                     val manualItems = cartList!![0].items
                     val mainItems = mainCartList[0].items
                     val mergeItems = merge(mainItems!!, manualItems!!)
-
                     mainCartList[0].items = mergeItems
                     if (cartList!![0].discountPrice != 0.00)
                         mainCartList[0].discountPrice += cartList!![0].discountPrice
@@ -633,9 +771,10 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                                     binding.txtTotal.text = "$0.00"
                                     binding.tvDiscount.text = "-$0.00"
                                     binding.txtSubTotal.text = "$0.00"
-                                    binding.txtTotalTax.text = "$0.00"
+                                    binding.txtTax.text = "$0.00"
                                     binding.txtServiceCharge.text = "$0.00"
                                     clearCustomer()
+                                    reSetTaxBifurcationData()
 
                                 }
                                 negativeButton(R.string.tv_cancel) {
@@ -662,9 +801,6 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
 
                     }
                     R.id.menu_order_discount -> {
-
-
-
 
 
                         val bundle = Bundle()
@@ -739,6 +875,10 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
 
                     }
                 }
+                binding.imgDropdown.gone()
+                binding.linearBottomInfo.layoutParams.height =
+                    resources.getDimension(R.dimen._50sdp).toInt()
+                binding.relativeDynamicTax.gone()
                 hideClearCart()
             }
         }
@@ -820,6 +960,10 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
         }
     }
 
+    fun <T> concatenate(vararg lists: List<T>): List<T> {
+        return listOf(*lists).flatten()
+    }
+
     private fun onClickKeypad() {
         binding.llKeypad.manualKeypad.tvOne.setOnClickListener {
             calculateValue("1", false)
@@ -868,6 +1012,11 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                     .toString() != "$0.00") && (binding.llKeypad.txtAmount.text!!.trim()
                     .toString() != "0")
             ) {
+                binding.linearBottomInfo.layoutParams.height =
+                    resources.getDimension(R.dimen._50sdp).toInt()
+                taxClickable = false
+                binding.imgDropdown.setImageResource(R.drawable.ic_arrow_drop_down)
+                binding.relativeDynamicTax.gone()
                 addItemToCart(binding.llKeypad.txtAmount.text.toString(), true)
                 binding.llKeypad.txtAmount.setText("0.00")
             }
@@ -920,13 +1069,14 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
 
             if (cartAdapter.getList().isEmpty()) {
                 tabItemMOdel.customItemID = 1
+                binding.imgDropdown.visible()
             } else {
 
                 var id = cartAdapter.getItem(cartAdapter.getList().size - 1).customItemID
                 id++
 
                 tabItemMOdel.customItemID = id
-
+                binding.imgDropdown.visible()
             }
 
             tabItemMOdel.itemId = manualItemId
@@ -963,6 +1113,13 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
         setFragmentResultListener("request_key_item_rename") { resultKey: String, bundle: Bundle ->
             val data = bundle.getString("item_name")
             cartItemModel.name = data.toString()
+            cartList?.get(0)?.taxlistDynamic = arrayListOf()
+            cartList?.get(0)?.items?.forEach { items ->
+                items.taxes?.forEach { taxData ->
+                    taxData.subTotalAmount = 0.0
+                    taxData.totalTaxTypePrice = 0.0
+                }
+            }
             cartItemModel?.let {
                 viewModel.manualSalecartLogic(cartList, it, Constants.UPDATE)
             }
@@ -1002,7 +1159,13 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                 }
             } else {
                 cartItemModel.note = note.toString()
-
+                cartList?.get(0)?.taxlistDynamic = arrayListOf()
+                cartList?.get(0)?.items?.forEach { items ->
+                    items.taxes?.forEach { taxData ->
+                        taxData.subTotalAmount = 0.0
+                        taxData.totalTaxTypePrice = 0.0
+                    }
+                }
                 cartItemModel?.let {
                     viewModel.manualSalecartLogic(
                         cartList,
@@ -1028,6 +1191,13 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                     cartModel.isDiscountDefault = true
 
                     Log.e(TAG, "cartModelPArseMsd   ${Gson().toJson(cartModel)}")
+                    cartList?.get(0)?.taxlistDynamic = arrayListOf()
+                    cartList?.get(0)?.items?.forEach { items ->
+                        items.taxes?.forEach { taxData ->
+                            taxData.subTotalAmount = 0.0
+                            taxData.totalTaxTypePrice = 0.0
+                        }
+                    }
                     viewModel.manualSalecartLogic(cartList, cartModel, Constants.UPDATE)
 
                 } else if (result.discountType == "Amount") {
@@ -1036,6 +1206,13 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                         MethodUtils.roundOffAmountDouble(result.percentage * cartModel.itemQuantity)
                     cartModel.isDiscountDefault = false
                     cartModel.discountType = result.discountType
+                    cartList?.get(0)?.taxlistDynamic = arrayListOf()
+                    cartList?.get(0)?.items?.forEach { items ->
+                        items.taxes?.forEach { taxData ->
+                            taxData.subTotalAmount = 0.0
+                            taxData.totalTaxTypePrice = 0.0
+                        }
+                    }
                     viewModel.manualSalecartLogic(cartList, cartModel, Constants.UPDATE)
 
                 } else {
@@ -1043,6 +1220,13 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                     cartModel.discountPrice = 0.0
                     cartModel.discountType = ""
                     cartModel.isManualSales = true
+                    cartList?.get(0)?.taxlistDynamic = arrayListOf()
+                    cartList?.get(0)?.items?.forEach { items ->
+                        items.taxes?.forEach { taxData ->
+                            taxData.subTotalAmount = 0.0
+                            taxData.totalTaxTypePrice = 0.0
+                        }
+                    }
                     viewModel.manualSalecartLogic(cartList, cartModel, Constants.UPDATE)
 
 
@@ -1224,7 +1408,13 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
             Log.e(TAG, "Itemmodel: ${Gson().toJson(model)}")
 
             Log.e(TAG, "ItemPosition: $position")
-
+            cartList?.get(0)?.taxlistDynamic = arrayListOf()
+            cartList?.get(0)?.items?.forEach { items ->
+                items.taxes?.forEach { taxData ->
+                    taxData.subTotalAmount = 0.0
+                    taxData.totalTaxTypePrice = 0.0
+                }
+            }
             viewModel.manualSalecartLogic(cartList, model, Constants.UPDATE)
 
         }
@@ -1264,6 +1454,13 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                         model.discountId = result.id
                         model.discountType = result.discountType
                         model.isManualSales = true
+                        cartList?.get(0)?.taxlistDynamic = arrayListOf()
+                        cartList?.get(0)?.items?.forEach { items ->
+                            items.taxes?.forEach { taxData ->
+                                taxData.subTotalAmount = 0.0
+                                taxData.totalTaxTypePrice = 0.0
+                            }
+                        }
                         viewModel.manualSalecartLogic(cartList, model, Constants.UPDATE)
                         txtTitle.text = model.name + "  $" + String.format(
                             "%.2f",
@@ -1277,6 +1474,13 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                         model.discountType = result.discountType
                         model.isManualSales = true
 
+                        cartList?.get(0)?.taxlistDynamic = arrayListOf()
+                        cartList?.get(0)?.items?.forEach { items ->
+                            items.taxes?.forEach { taxData ->
+                                taxData.subTotalAmount = 0.0
+                                taxData.totalTaxTypePrice = 0.0
+                            }
+                        }
                         viewModel.manualSalecartLogic(cartList, model, Constants.UPDATE)
                         txtTitle.text = model.name + "  $" + String.format(
                             "%.2f",
@@ -1286,12 +1490,26 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                         model.discountPrice = 0.0
                         model.discountType = ""
                         model.isManualSales = true
+                        cartList?.get(0)?.taxlistDynamic = arrayListOf()
+                        cartList?.get(0)?.items?.forEach { items ->
+                            items.taxes?.forEach { taxData ->
+                                taxData.subTotalAmount = 0.0
+                                taxData.totalTaxTypePrice = 0.0
+                            }
+                        }
                         viewModel.manualSalecartLogic(cartList, model, Constants.UPDATE)
                     }
                 } else {
                     model.discountPrice = 0.0
                     model.discountType = ""
                     model.isManualSales = true
+                    cartList?.get(0)?.taxlistDynamic = arrayListOf()
+                    cartList?.get(0)?.items?.forEach { items ->
+                        items.taxes?.forEach { taxData ->
+                            taxData.subTotalAmount = 0.0
+                            taxData.totalTaxTypePrice = 0.0
+                        }
+                    }
                     viewModel.manualSalecartLogic(cartList, model, Constants.UPDATE)
 
 

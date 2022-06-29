@@ -7,6 +7,8 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.LinearLayout
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.R
 import com.android.pos.data.entities.TbItem
@@ -207,6 +209,8 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
             if (list[layoutPosition].title?.lowercase() == "Whole Table".lowercase() || list.get(0).totalGuestCount == 1) {
                 binding.txtPay.visibility = View.GONE
+                var layoutmanager: LinearLayout.LayoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,ViewGroup.LayoutParams.WRAP_CONTENT)
+                layoutmanager.setMargins(0,0,0,0)
 
             } else {
                 // binding.txtTotal.visibility = View.VISIBLE
@@ -231,10 +235,15 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                                 list.get(0).totalGuestCount
                             )
                         ) {
-                            isApplied =true
+                            isApplied = true
                             totalServiceCharge += (guestSubTotal * it.percentage) / 100
                             return@forEach
-
+                            Log.d(
+                                TAG,
+                                "calculateDineInServiceCharge: Dinein " + it.min_guest_count + "....." + it.max_guest_count + " in between " + list.get(
+                                    0
+                                ).totalGuestCount
+                            )
                         }
                     }
 
@@ -264,10 +273,10 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             var guestOrderDisShare = 0.0
             Log.e(TAG, "")
             if (list.get(0).orderDiscount > 0) {
-                 guestOrderDisShare =
-                    MethodUtils.roundOffAmountDouble(list[0].orderDiscount / (list[0].totalGuestCount ))
-              /*  guestOrderDisShare =
-                    (finalAmt * list.get(0).orderDiscount) / (list.get(0).orderTotalAmount + list.get(0).orderDiscount)*/
+                guestOrderDisShare =
+                    MethodUtils.roundOffAmountDouble(list[0].orderDiscount / (list[0].totalGuestCount))
+                /*  guestOrderDisShare =
+                      (finalAmt * list.get(0).orderDiscount) / (list.get(0).orderTotalAmount + list.get(0).orderDiscount)*/
 
                 Log.e("TODAY", "guestOrderDisShare  ${guestOrderDisShare}")
 
@@ -315,7 +324,8 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                         }
 
                     }
-
+                    Log.d(TAG, "bind: list of guest       " + Gson().toJson(listItem))
+                    Log.d(TAG, "bind: list of whole table " + Gson().toJson(listItemWT))
                     var guestName = ""
                     if (listItem.isNotEmpty()) {
                         if (list[bindingAdapterPosition].customer != null) {
@@ -338,7 +348,8 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                         MethodUtils.roundOffAmountDouble(totalServiceCharge),
                         guestOrderDisShare,
                         list[0].guestDividedAmt,
-                        listItemWT
+                        listItemWT,
+                        listItem
 
                     )
                 }
@@ -377,11 +388,8 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                 }
                 if (listItem.isNotEmpty() || listItemWT.isNotEmpty()) {
 
-                    Log.e("AAjeCje","orderDiscount  ${list[0].orderDiscount}")
-                    Log.e("AAjeCje","guestDiscount  ${guestDiscount}")
-                    Log.e("AAjeCje","wholeTableDiscont  ${list[0].wholeTableDiscont}")
-                    Log.e("AAjeCjerer","guestSubTotal  ${guestSubTotal}")
-                    Log.e("AAjeCjerer","wholeTableSubTotal  ${list.get(0).wholeTableSubTotal}")
+                    Log.e("AAjeCje", "orderDiscount  ${list[0].orderDiscount}")
+                    Log.e("AAjeCje", "guestDiscount  ${guestDiscount}")
                     listner.onGuestPrint(
                         listItem,
                         guestName,
@@ -451,6 +459,7 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
         fun isInRange(minn: Int, maxx: Int, value: Int): Boolean {
             return (minn <= value && value <= maxx)
         }
+
         fun checkMaxGuestCountId(): Int {
             var maxValue = 0
             var serviceChargeId = 0
@@ -704,7 +713,8 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             serviceCharge: Double,
             discount: Double,
             guestDividedAmt: Double,
-            listItemWT: ArrayList<TbItem>
+            listItemWT: ArrayList<TbItem>,
+            listItemGuestSelected: ArrayList<TbItem>
         )
 
         fun onSendItemToKitchen(item: TbItem)

@@ -164,8 +164,7 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
                         val applydis = discountAdapter.discountList[selectedListPos].percentage
                         binding.edtAmount.setText(
                             MethodUtils.roundOffAmountString(
-                                Math.round(applydis)
-                                    .toDouble()
+                                applydis
                             )
                         )
 

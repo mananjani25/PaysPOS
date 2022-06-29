@@ -745,13 +745,15 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
         serviceChargesObserve = Observer {
             if (it.status == Status.SUCCESS) {
                 if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == DINE_IN) {
-                    Log.e(TAG, "getServiceCharge:  ${Gson().toJson(it.data)}")
-                    serviceChargesList = ArrayList()
-                    viewModel.serviceChargesList.clear()
-                    it.data?.forEach { service ->
-                        if (service.order_type == Constants.SERVICECHARGE_DINEIN_ORDER) {
-                            serviceChargesList?.add(service)
-                            viewModel.serviceChargesList.add(service)
+                    if (prefProvider.getValueboolean(Constants.SERVICECHARGE_DINEIN_ORDER, false)) {
+                        Log.e(TAG, "getServiceCharge:  ${Gson().toJson(it.data)}")
+                        serviceChargesList = ArrayList()
+                        viewModel.serviceChargesList.clear()
+                        it.data?.forEach { service ->
+                            if (service.order_type == Constants.SERVICECHARGE_DINEIN_ORDER) {
+                                serviceChargesList?.add(service)
+                                viewModel.serviceChargesList.add(service)
+                            }
                         }
                     }
                     Log.d(

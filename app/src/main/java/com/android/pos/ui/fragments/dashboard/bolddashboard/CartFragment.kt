@@ -44,6 +44,7 @@ import com.android.pos.databinding.FragmentCartBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.adapter.DineInAdapter
 import com.android.pos.ui.adapter.boldpos.CartAdapter
+import com.android.pos.ui.adapter.boldpos.TaxBirfurcationAdapter
 import com.android.pos.ui.fragments.checkout.CheckoutDineInPaymentViewModel
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.android.pos.ui.fragments.payment.PaymentViewModel
@@ -62,6 +63,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
+import kotlin.collections.ArrayList
 
 
 @AndroidEntryPoint
@@ -101,6 +103,7 @@ class CartFragment(
     private var serviceChargesObserve: Observer<Resource<List<TbServiceCharge>>>? = null
     private lateinit var nameObserver: Observer<List<CartModel>>
     private lateinit var dineInCartAdapter: DineInAdapter
+    private lateinit var taxBirfurcationAdapter: TaxBirfurcationAdapter
     private var assignCustomer: TbCustomer? = null
     private var openORderType: String = ""
     private var orderFloorDetails: GetOrderDetailsResponse.Data.FloorPlanTable =
@@ -109,6 +112,7 @@ class CartFragment(
 
     private var dineInFloorTableModel: GetFloorPlanResponse.Data.FloorPlanTable? = null
 
+    var taxClickable = false
     var cashDiscountSurcharge = 0.0
 
     @Inject
@@ -221,7 +225,57 @@ class CartFragment(
         callback()
         setupLoyalytyPoints()
         addObserver()
+        setupTaxAdapter()
 
+
+        if (taxBirfurcationAdapter.taxlist.size == 0) {
+            binding.imgDropdown.gone()
+        } else {
+            binding.imgDropdown.visible()
+        }
+        binding.linearTaxDetail.setOnClickListener {
+            if (taxBirfurcationAdapter.taxlist.size > 0) {
+                if (!taxClickable) {
+                    Log.d(TAG, "onViewCreated: " + taxBirfurcationAdapter.taxlist.size)
+                    taxClickable = true
+                    if (taxBirfurcationAdapter.taxlist.size == 1) {
+                        if (viewModel.order_note.isNotEmpty()) {
+                            binding.liinearInfoLayout.layoutParams.height =
+                                resources.getDimension(R.dimen._70sdp).toInt()
+                        } else {
+                            binding.liinearInfoLayout.layoutParams.height =
+                                resources.getDimension(R.dimen._60sdp).toInt()
+                        }
+                    } else if (taxBirfurcationAdapter.taxlist.size == 2) {
+                        if (viewModel.order_note.isNotEmpty()) {
+                            binding.liinearInfoLayout.layoutParams.height =
+                                resources.getDimension(R.dimen._80sdp).toInt()
+                        } else {
+                            binding.liinearInfoLayout.layoutParams.height =
+                                resources.getDimension(R.dimen._70sdp).toInt()
+                        }
+                    } else {
+                        if (viewModel.order_note.isNotEmpty()) {
+                            binding.liinearInfoLayout.layoutParams.height =
+                                resources.getDimension(R.dimen._100sdp).toInt()
+                        } else {
+                            binding.liinearInfoLayout.layoutParams.height =
+                                resources.getDimension(R.dimen._95sdp).toInt()
+                        }
+
+                    }
+                    binding.imgDropdown.setImageResource(R.drawable.ic_solid_up_arrow)
+                    binding.relativeDynamicTax.visible()
+                } else {
+                    binding.liinearInfoLayout.layoutParams.height =
+                        resources.getDimension(R.dimen._50sdp).toInt()
+                    taxClickable = false
+                    binding.imgDropdown.setImageResource(R.drawable.ic_arrow_drop_down)
+                    binding.relativeDynamicTax.gone()
+                }
+            }
+
+        }
 
 
         if (prefProvider.getValueInt(Constants.CUSTOMER_ID, -1) != -1) {
@@ -277,6 +331,13 @@ class CartFragment(
 
         uiSave()
 
+    }
+
+    private fun setupTaxAdapter() {
+        taxBirfurcationAdapter = TaxBirfurcationAdapter("dashboard")
+        binding.rvTax.adapter = taxBirfurcationAdapter
+        var taxlist = arrayListOf<TaxData>()
+        taxBirfurcationAdapter.setList(taxlist)
     }
 
     private fun updateActiveOrderFlag() {
@@ -533,6 +594,49 @@ class CartFragment(
 
     }
 
+    fun setTaxBifurcationData(taxlistData: ArrayList<TaxData>) {
+        if (taxlistData?.isNotEmpty()) {
+            Log.d(TAG, "addObserver: " + taxlistData.size)
+            setupTaxAdapter()
+            taxClickable = false
+            if(viewModel.order_note.isNotEmpty()){
+                binding.liinearInfoLayout.layoutParams.height =
+                    resources.getDimension(R.dimen._70sdp).toInt()
+            }else{
+                binding.liinearInfoLayout.layoutParams.height =
+                    resources.getDimension(R.dimen._50sdp).toInt()
+            }
+            binding.imgDropdown.setImageResource(R.drawable.ic_arrow_drop_down)
+            binding.imgDropdown.visible()
+            taxBirfurcationAdapter.setList(taxlistData)
+            binding.relativeDynamicTax.gone()
+        }else{
+            if(viewModel.order_note.isNotEmpty()){
+                binding.liinearInfoLayout.layoutParams.height =
+                    resources.getDimension(R.dimen._60sdp).toInt()
+            }else{
+                binding.liinearInfoLayout.layoutParams.height =
+                    resources.getDimension(R.dimen._50sdp).toInt()
+            }
+            binding.imgDropdown.setImageResource(R.drawable.ic_arrow_drop_down)
+            binding.imgDropdown.gone()
+            binding.relativeDynamicTax.gone()
+            binding.liinearInfoLayout.layoutParams.height =
+                resources.getDimension(R.dimen._50sdp).toInt()
+            taxClickable = false
+        }
+    }
+
+    fun reSetTaxBifurcationData() {
+        taxBirfurcationAdapter.clearList()
+        binding.liinearInfoLayout.layoutParams.height =
+            resources.getDimension(R.dimen._50sdp).toInt()
+        taxClickable = false
+        binding.imgDropdown.setImageResource(R.drawable.ic_arrow_drop_down)
+        binding.imgDropdown.gone()
+        binding.relativeDynamicTax.gone()
+    }
+
     private fun addObserver() {
 
 
@@ -567,6 +671,8 @@ class CartFragment(
                         binding.linearButtonView.visible()
                         binding.relPreoceedToFire.gone()
                     }
+
+
                     binding.rvCartDineIn.gone()
                     binding.rvCartList.visible()
 
@@ -576,14 +682,15 @@ class CartFragment(
                     cartlist = it as ArrayList<CartModel>
 
                     viewModel.setCartModel(it)
+                    if (it[0].taxlistDynamic?.isNotEmpty() == true) {
+                        Log.d(TAG, "addObserver: " + it[0].taxlistDynamic?.size)
+                        setupTaxAdapter()
+                        taxBirfurcationAdapter.setList(it[0].taxlistDynamic as ArrayList<TaxData>)
+                    }
                     if (viewModel.order_note.isNotEmpty()) {
-                        binding.liinearInfoLayout.layoutParams.height =
-                            resources.getDimension(R.dimen._60sdp).toInt()
                         binding.relativeOrderNotes?.visibility = View.VISIBLE
                         binding.txtOrderNote?.text = viewModel.order_note
                     } else {
-                        binding.liinearInfoLayout.layoutParams.height =
-                            resources.getDimension(R.dimen._50sdp).toInt()
                         binding.relativeOrderNotes?.visibility = View.GONE
                     }
 
@@ -652,10 +759,13 @@ class CartFragment(
                     }
 
                     viewModel.itemCalculation(it, binding.txtTotal, requireContext())
+                    setTaxBifurcationData(it[0].taxlistDynamic as ArrayList<TaxData>)
 
 
                 } else {
+                    viewModel.clearListTax()
                     cartAdapter.clearList()
+                    reSetTaxBifurcationData()
                     binding.txtTotal.text = MethodUtils.roundOffAmount(0.0)
                     binding.txtSubTotal.text = MethodUtils.roundOffAmount(0.0)
                     binding.txtTax.text = MethodUtils.roundOffAmount(0.0)
@@ -756,6 +866,8 @@ class CartFragment(
                               binding.txtTotal,
                               requireContext()
                           )*/
+
+
                             viewModel.setCartModel(it)
                             if (prefProvider.getValueboolean(
                                     Constants.DINE_IN_UPDATE,
@@ -839,7 +951,7 @@ class CartFragment(
                             } else {
                                 binding.txtDineInProceed.setText("Proceed To Fire")
                             }
-
+                            setTaxBifurcationData(it[0].taxlistDynamic as ArrayList<TaxData>)
                             binding.txtSubTotal.text =
                                 MethodUtils.roundOffAmount(viewModel.subTotalPrice)
                             binding.txtTax.text = MethodUtils.roundOffAmount(viewModel.totalTax)
@@ -850,13 +962,9 @@ class CartFragment(
                             binding.txtNoncashAdj.text =
                                 MethodUtils.roundOffAmount(viewModel.cashdiscountAmount)
                             if (viewModel.order_note.isNotEmpty()) {
-                                binding.liinearInfoLayout.layoutParams.height =
-                                    resources.getDimension(R.dimen._50sdp).toInt()
                                 binding.relativeOrderNotes?.visibility = View.VISIBLE
                                 binding.txtOrderNote?.text = viewModel.order_note
                             } else {
-                                binding.liinearInfoLayout.layoutParams.height =
-                                    resources.getDimension(R.dimen._50sdp).toInt()
                                 binding.relativeOrderNotes?.visibility = View.GONE
                             }
 //                        var data: TbCustomer? = prefProvider.getCustomerData()
@@ -938,6 +1046,8 @@ class CartFragment(
                                 binding.relPreoceedToFire.visible()
                             }
                             dineInCartAdapter.clearList()
+                            viewModel.clearListTax()
+                            reSetTaxBifurcationData()
 //                        var data: TbCustomer? = prefProvider.getCustomerData()
 //                        if (data != null) {
 //                            if (viewModel.loyaltyPointCondition(data)) {
@@ -965,7 +1075,6 @@ class CartFragment(
                     } else {
                         binding.rvCartDineIn.gone()
                         binding.rvCartList.visible()
-
                         if (it.isNotEmpty()) {
                             viewModel.destroyedList.clear()
                             it[0].items?.filter { item -> item.isDestroy }?.let {
@@ -1017,6 +1126,7 @@ class CartFragment(
                                 requireContext()
                             )
                             viewModel.setCartModel(it)
+                            setTaxBifurcationData(it[0].taxlistDynamic as ArrayList<TaxData>)
                             if (viewModel.order_note.isNotEmpty()) {
                                 binding.relativeOrderNotes?.visibility = View.VISIBLE
                                 binding.txtOrderNote?.text = viewModel.order_note
@@ -1105,20 +1215,21 @@ class CartFragment(
                                     }
                                 }
                             } else {
-                                if (viewModel.order_note.isNotEmpty()) {
-                                    binding.liinearInfoLayout.layoutParams.height =
-                                        resources.getDimension(R.dimen._60sdp).toInt()
-                                } else {
-                                    binding.liinearInfoLayout.layoutParams.height =
-                                        resources.getDimension(R.dimen._50sdp).toInt()
-                                }
                                 binding.relativeLoylatyPoints.visibility = View.GONE
                                 binding.lblLoyaltyPoints.visibility = View.GONE
                             }
 
 
                         } else {
+                            binding.liinearInfoLayout.layoutParams.height =
+                                resources.getDimension(R.dimen._50sdp).toInt()
+                            taxClickable = false
+                            binding.imgDropdown.setImageResource(R.drawable.ic_arrow_drop_down)
+                            binding.relativeDynamicTax.gone()
+                            binding.imgDropdown.gone()
+                            viewModel.clearListTax()
                             cartAdapter.clearList()
+                            reSetTaxBifurcationData()
                             binding.relativeOrderNotes?.visibility = View.GONE
                             binding.txtTotal.text = MethodUtils.roundOffAmount(0.0)
                             binding.txtSubTotal.text = MethodUtils.roundOffAmount(0.0)
@@ -1308,6 +1419,8 @@ class CartFragment(
             positiveButton(getString(R.string.tv_delete)) {
                 // Do positive stuff here
 
+                taxBirfurcationAdapter.clearList()
+                viewModel.clearListTax()
                 updateActiveOrderFlagClear()
                 itemListner?.onCancelItemSelected()
                 if (prefProvider.getValue(ORDER_TYPE, "").toString() == Constants.DINE_IN) {
@@ -1338,6 +1451,8 @@ class CartFragment(
                     cartlist.clear()
                     isOrderUpdate = false
                     dineInCartAdapter.clearList()
+
+                    viewModel.clearListTax()
                     binding.rvCartDineIn.gone()
                     // prefProvider.setValue(DINE_IN_UPDATE_LIST, "")
 //                    uiSave()
@@ -1478,7 +1593,7 @@ class CartFragment(
                 ) {
                     AlertUtils.showCustomAlertWithListenerWithOK(
                         requireActivity(),
-                        "Please You can change Customer From DashBoard while Loyalty Points Added."
+                        "You can not change customer from checkout when loyalty points added Please go back and change customer."
                     ) { _, _ ->
                     }
                 } else {

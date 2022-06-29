@@ -296,6 +296,15 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
                     dineInList?.get(0)?.headerPosition = viewModel.dineInSelectedItemHeaderPos
                     dineInList?.get(0)?.selectedPosition = viewModel.dineInSelectedItemHeaderPos
                     Log.e(TAG, "getItem  ${Gson().toJson(item)}")
+                    cartList[0].taxlistDynamic = arrayListOf()
+                    cartList[0].dineInList?.forEach { dineInModel ->
+                        dineInModel.items.forEach { items ->
+                            items.taxes?.forEach { taxData ->
+                                taxData.subTotalAmount = 0.0
+                                taxData.totalTaxTypePrice = 0.0
+                            }
+                        }
+                    }
                     viewModel.cartLogic(
                         cartList,
                         item,
@@ -305,7 +314,13 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
                     )
                 } else {
 
-
+                    cartList[0].taxlistDynamic = arrayListOf()
+                    cartList[0].items?.forEach { items ->
+                        items.taxes?.forEach { taxData ->
+                            taxData.subTotalAmount = 0.0
+                            taxData.totalTaxTypePrice = 0.0
+                        }
+                    }
                     viewModel.cartLogic(cartList, item, Constants.UPDATE, false)
                 }
             } else {
@@ -391,7 +406,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
             makeItemEdited(item)
 
             if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == DINE_IN) {
-                    Log.e(TAG,"isEditedisEdited  ${item.isEdited}")
+                Log.e(TAG, "isEditedisEdited  ${item.isEdited}")
                 cartList[0].dineInList?.let { it1 ->
                     viewModel.cartLogic(
                         cartList, item, DELETE, false,
@@ -859,7 +874,11 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
         if (viewModel.openOrderUpdate == true) {
             //for open order and edit cart
             item.isEdited = true
-        } else if (isUpdateItem && prefProvider.getValueboolean(DINE_IN_UPDATE, false) && item.orderItemId != null && item.orderItemId != 0) {
+        } else if (isUpdateItem && prefProvider.getValueboolean(
+                DINE_IN_UPDATE,
+                false
+            ) && item.orderItemId != null && item.orderItemId != 0
+        ) {
             item.isEdited = true
         }
     }
