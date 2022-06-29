@@ -1113,6 +1113,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                 if (prefProvider.getValue(ORDER_TYPE, "").toString() != "") {
                     prefProvider.setValue(ORDER_TYPE, TAKEOUT)
                 }
+                Log.e(TAG,"QueueCreateAgain")
 
                 clearCustomer()
                 if (prefProvider.getValueboolean(IS_PRINTER_QUEUE_ENABLE, false)) {

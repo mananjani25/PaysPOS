@@ -63,6 +63,9 @@ open class PaymentViewModel @Inject constructor(
     private val _queueStart = MutableLiveData<Event<CreateOrderResponse?>>()
     val QueueStart: LiveData<Event<CreateOrderResponse?>> = _queueStart
 
+    private val _queueStartTakeOut = MutableLiveData<Event<CreateOrderResponse?>>()
+    val QueueStartTakeOut: LiveData<Event<CreateOrderResponse?>> = _queueStartTakeOut
+
     private val _data = MutableLiveData<Event<CreateOrderResponse?>>()
     val data: LiveData<Event<CreateOrderResponse?>> = _data
 
@@ -166,8 +169,8 @@ open class PaymentViewModel @Inject constructor(
                                         Log.e("QueueCheck", "CreateOrderData")
                                     }
 
-                                    if (createOrderResponse.data.order.orderType != "Dine In") {
-                                        _queueStart.value = Event(createOrderResponse)
+                                    if (createOrderResponse.data.order.orderType != "Dine In" ) {
+                                        _queueStartTakeOut.value = Event(createOrderResponse)
                                         Log.e("QueueCheck", "QueueStart")
                                     }
                                 }

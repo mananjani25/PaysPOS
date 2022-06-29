@@ -1615,7 +1615,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
     }
 
     private fun observeQueueStart() {
-        viewModel.QueueStart.observe(viewLifecycleOwner) { event ->
+        viewModel.QueueStartTakeOut.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
                 createQueuePrinter(it)
 
