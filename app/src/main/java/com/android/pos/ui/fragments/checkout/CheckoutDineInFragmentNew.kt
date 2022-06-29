@@ -1432,6 +1432,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
 
     private fun makePaymentCreditCard() {
         paymentAmount -= tipAmount
+        paymentAmount = MethodUtils.roundOffAmountDouble(paymentAmount)
         paymentType = "Card"
         Log.e(TAG, "cartList:  ${Gson().toJson(cartList)}")
         Log.e(TAG, "cartListcartItems:  ${Gson().toJson(cartItems)}")
