@@ -83,6 +83,7 @@ import com.sunmi.externalprinterlibrary.api.ConnectCallback
 import com.sunmi.externalprinterlibrary.api.SunmiPrinter
 import com.sunmi.externalprinterlibrary.api.SunmiPrinterApi
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.io.IOException
@@ -6037,27 +6038,26 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 //  printerDialog.show(requireContext())
 
                 var printer: Print? = Print(requireContext())
-                if (printer != null) {
-                    printer.setStatusChangeEventCallback(this)
-                    printer.setBatteryStatusChangeEventCallback(this)
-                }
 
 
                 val enabled = Print.TRUE
 
                 try {
 
-                    printer?.openPrinter(
-                        if (data.printer_type == BLUETOOTH) {
-                            Print.DEVTYPE_BLUETOOTH
-                        } else {
-                            Print.DEVTYPE_TCP
-                        },
-                        data.ipAddress,
-                        enabled,
-                        1000
-                    )
-                    printer?.setStatusChangeEventCallback(this)
+                    kotlinx.coroutines.GlobalScope.launch(Dispatchers.IO) {
+
+                        printer?.openPrinter(
+                            if (data.printer_type == BLUETOOTH) {
+                                Print.DEVTYPE_BLUETOOTH
+                            } else {
+                                Print.DEVTYPE_TCP
+                            },
+                            data.ipAddress,
+                            enabled,
+                            1000
+                        )
+
+                    }
 
                 } catch (e: Exception) {
                     //  printerDialog.dismiss()
