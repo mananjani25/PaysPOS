@@ -28,6 +28,8 @@ import com.android.pos.data.model.responseModel.GetTipReponse
 import com.android.pos.data.model.responseModel.PrinterResponse
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.KEY
+import com.android.pos.data.remote.Constants.SUNMI_INNER_PRINTER
+import com.android.pos.data.remote.Constants.SUNMI_PRINTER
 import com.android.pos.data.remote.Constants.getCurrentTimeFromTimeZone
 import com.android.pos.databinding.FragmentTransactionDetailsBinding
 import com.android.pos.di.PrefProvider
@@ -543,7 +545,7 @@ class TransactionDetailsFragment : Fragment() {
         type: String
     ) {
 
-        if (customerReceiptPrinters.name.startsWith("CloudPrint", true)) {
+        if (customerReceiptPrinters.name.startsWith(SUNMI_PRINTER, true)) {
 
             SunmiPrinterApi.getInstance()
                 .setPrinter(SunmiPrinter.SunmiBlueToothPrinter, customerReceiptPrinters.ipAddress)
@@ -575,7 +577,7 @@ class TransactionDetailsFragment : Fragment() {
                 generatePrintSunmi(customerReceiptPrinters, type)
             }
 
-        } else if (customerReceiptPrinters.name.startsWith("InnerPrinter", true)) {
+        } else if (customerReceiptPrinters.name.startsWith(SUNMI_INNER_PRINTER, true)) {
 
             SunmiPrintHelper.getInstance().initSunmiPrinterService(requireContext())
             setService()

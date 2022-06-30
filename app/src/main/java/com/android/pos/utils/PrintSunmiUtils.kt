@@ -1,6 +1,8 @@
 package com.android.pos.utils
 
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.util.Base64
 import com.android.pos.data.model.responseModel.GetTipReponse
 import com.android.pos.data.remote.Constants
 import com.android.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper
@@ -13,6 +15,8 @@ class PrintSunmiUtils {
     companion object {
 
         var fontSize = ""
+        var fontSizeInner = ""
+        var fontName = "test.ttf"
 
         fun printLogo(newBitmap: Bitmap?) {
 
@@ -494,6 +498,10 @@ class PrintSunmiUtils {
             this.fontSize = fonts
         }
 
+        fun fontSizeInner(fonts: String) {
+            this.fontSizeInner = fonts
+        }
+
         private fun setFontSize() {
             when (fontSize) {
                 Constants.SMALL -> {
@@ -510,81 +518,93 @@ class PrintSunmiUtils {
         }
 
 
-        private fun setFontSizeInner(): Int {
-            return when (fontSize) {
+        private fun setFontSizeInner(): Float {
+            return when (fontSizeInner) {
                 Constants.SMALL -> {
-                    24
+                    24f
                 }
                 Constants.MEDIUM -> {
-                    30
+                    30f
                 }
                 Constants.LARGE -> {
-                    36
+                    36f
                 }
-                else -> 24
+                else -> 24f
             }
+        }
+
+        private fun setFontSizeHeader(): Float {
+            return when (fontSizeInner) {
+                Constants.SMALL -> {
+                    40f
+                }
+                Constants.MEDIUM -> {
+                    42f
+                }
+                Constants.LARGE -> {
+                    45f
+                }
+                else -> 40f
+            }
+        }
+
+        fun printLogoInner(value: String) {
+
+            val decodedString: ByteArray = Base64.decode(
+                value,
+                Base64.DEFAULT
+            )
+            val bitmap: Bitmap =
+                BitmapFactory.decodeByteArray(decodedString, 0, decodedString.size)
+
+            val newBitmap = Bitmap.createScaledBitmap(bitmap!!, 210, 210, true)
+            SunmiPrintHelper.getInstance().setAlign(1)
+            SunmiPrintHelper.getInstance().printBitmap(newBitmap)
+            SunmiPrintHelper.getInstance().lineWrap(2)
         }
 
         fun headerText(value: String) {
             SunmiPrintHelper.getInstance().setAlign(1)
-            SunmiPrintHelper.getInstance().printText(value, 40f, true, false, null)
+            SunmiPrintHelper.getInstance()
+                .printText(value, setFontSizeHeader(), true, false, fontName)
             SunmiPrintHelper.getInstance().lineWrap(1)
         }
 
         fun normalText(value: String) {
             SunmiPrintHelper.getInstance().setAlign(0)
-            SunmiPrintHelper.getInstance().printText(value)
+            SunmiPrintHelper.getInstance()
+                .printText(value, setFontSizeInner(), false, false, fontName)
             SunmiPrintHelper.getInstance().lineWrap(1)
         }
 
         fun normalTextCenter(value: String) {
             SunmiPrintHelper.getInstance().setAlign(1)
-            SunmiPrintHelper.getInstance().printText(value)
+            SunmiPrintHelper.getInstance()
+                .printText(value, setFontSizeInner(), false, false, fontName)
             SunmiPrintHelper.getInstance().lineWrap(1)
         }
 
         fun boldText(value: String) {
             SunmiPrintHelper.getInstance().setAlign(0)
-            SunmiPrintHelper.getInstance().printText(value, 24f, true, false, null)
+            SunmiPrintHelper.getInstance()
+                .printText(value, setFontSizeInner(), true, false, fontName)
+
             SunmiPrintHelper.getInstance().lineWrap(1)
         }
 
-        fun orderHeader(value: String) {
-            SunmiPrintHelper.getInstance().setAlign(0)
-            SunmiPrintHelper.getInstance().printText(value)
-            SunmiPrintHelper.getInstance().lineWrap(1)
-        }
 
         fun addHorizontalInner() {
-            val st = addHorizontalKitchenLineSunmi(fontSize)
-            SunmiPrintHelper.getInstance().printText(st)
+            val st = addHorizontalKitchenLineSunmi(fontSizeInner)
+            SunmiPrintHelper.getInstance()
+                .printText(st, setFontSizeInner(), false, false, fontName)
         }
 
-        fun itemText(value: String) {
-            SunmiPrintHelper.getInstance().setAlign(0)
-            SunmiPrintHelper.getInstance().printText(value)
-            SunmiPrintHelper.getInstance().lineWrap(1)
-
-        }
-
-        fun orderCalculation1(value: String) {
-            SunmiPrintHelper.getInstance().setAlign(0)
-            SunmiPrintHelper.getInstance().printText(value)
-            SunmiPrintHelper.getInstance().lineWrap(1)
-
-        }
-
-        fun orderCalculation2(value: String) {
-            SunmiPrintHelper.getInstance().setAlign(0)
-            SunmiPrintHelper.getInstance().printText(value)
-            SunmiPrintHelper.getInstance().lineWrap(1)
-
-        }
 
         fun additionalTipsInner() {
 
             SunmiPrintHelper.getInstance().setAlign(0)
-            SunmiPrintHelper.getInstance().printText("Additional Tips", 40f, true, false, null)
+            SunmiPrintHelper.getInstance()
+                .printText("Additional Tips", setFontSizeHeader(), true, false, fontName)
             SunmiPrintHelper.getInstance().lineWrap(1)
             addHorizontalInner()
 
