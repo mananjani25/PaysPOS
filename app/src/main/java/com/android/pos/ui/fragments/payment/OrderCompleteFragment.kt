@@ -331,7 +331,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 binding.txtHome.visibility = View.GONE
 
 
-                Log.e("addSplitToDatabase","XXX")
+                Log.e("addSplitToDatabase", "XXX")
                 val title = "Split "
                 viewModel.addSplitToDatabase(
                     title,
@@ -496,7 +496,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 //  binding.linearTopHeaderSplit.visibility = View.VISIBLE
                 binding.txtHome.visibility = View.GONE
                 var title = "Split "
-                Log.e("addSplitToDatabase","XXX XXX")
+                Log.e("addSplitToDatabase", "XXX XXX")
                 viewModel.addSplitToDatabase(
                     title,
                     (paidAmount + tipAmount) - splitChange,
@@ -6779,6 +6779,13 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             var timeOut = PrinterClass.SEND_TIMEOUT
             if (customerReceiptPrinters.printer_type == BLUETOOTH) {
                 timeOut = BLUETOOTH_TIMEOUT
+            }
+
+            if (customerReceiptPrinters.name.substring(0, 6).toString()
+                    .lowercase() == "TM-m30".lowercase() && customerReceiptPrinters.printer_type != BLUETOOTH
+            ) {
+
+                timeOut = 1000
             }
 
             try {

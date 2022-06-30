@@ -74,7 +74,6 @@ import com.sunmi.externalprinterlibrary.api.ConnectCallback
 import com.sunmi.externalprinterlibrary.api.SunmiPrinter
 import com.sunmi.externalprinterlibrary.api.SunmiPrinterApi
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -2258,10 +2257,6 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                         }
                     }
 
-                    Log.e("TODO", "totalSubTotal ${totalSubTotal}")
-                    Log.e("TODO", "totalTaxAmount ${totalTaxAmount}")
-                    Log.e("TODO", "totalServiceChargeAmount ${totalServiceChargeAmount}")
-                    Log.e("TODO", "orderDiscount ${orderDiscount}")
 
                     var finalAmount =
                         totalSubTotal + totalTaxAmount + totalServiceChargeAmount - orderDiscount
@@ -6205,7 +6200,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 //                printer.setBatteryStatusChangeEventCallback(this)
                 }
 
-                val enabled = Print.TRUE
+                val enabled = Print.FALSE
 
                 try {
 
@@ -6661,6 +6656,13 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             var timeOut = PrinterClass.SEND_TIMEOUT
             if (customerReceiptPrinters.printer_type == Constants.BLUETOOTH) {
                 timeOut = PrinterClass.BLUETOOTH_TIMEOUT
+            }
+
+            if (customerReceiptPrinters.name.substring(0, 6).toString()
+                    .lowercase() == "TM-m30".lowercase() && customerReceiptPrinters.printer_type != Constants.BLUETOOTH
+            ) {
+
+                timeOut = 1000
             }
 
             try {
