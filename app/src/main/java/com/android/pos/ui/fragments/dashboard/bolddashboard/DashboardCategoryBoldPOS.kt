@@ -1190,38 +1190,6 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                                 }
 
 
-                                /*arrayItems.forEach { it1 ->
-
-                                createOrderResponse.data.order.orderItems.forEach {
-
-
-
-                                    if (it1.id == it.id) {
-                                        if (it1.quantity != it.quantity) {
-                                            if (it.quantity > it1.quantity) {
-                                                it.quantity = it.quantity - it1.quantity
-                                                if (!printOrderItems.contains(it)) {
-                                                    printOrderItems.add(it)
-                                                }
-                                            }
-
-                                        } else if (it1.quantity > it.quantity) {
-
-                                        }
-
-                                    } else if (!printOrderItems.contains(it)) {
-
-
-                                        printOrderItems.add(it)
-                                    }
-
-                                }
-
-
-                            }*/
-
-                                Log.e(TAG, "printOrderitems  ${Gson().toJson(printOrderItems)}")
-
                                 createOrderResponse.data.order.orderItems = arrayListOf()
 
                                 createOrderResponse.data.order.orderItems = printOrderItems
@@ -1934,6 +1902,12 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                 timeOut = PrinterClass.BLUETOOTH_TIMEOUT
             }
 
+            if (customerReceiptPrinters.name.substring(0, 6).toString()
+                    .lowercase() == "TM-m30".lowercase() && customerReceiptPrinters.printer_type != Constants.BLUETOOTH
+            ) {
+
+                timeOut = 1000
+            }
 
             try {
                 PrinterClass.getPrinter()?.sendData(
