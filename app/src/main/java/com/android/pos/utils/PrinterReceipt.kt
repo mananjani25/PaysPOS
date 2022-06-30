@@ -2127,6 +2127,53 @@ fun addOrderItems(
 
 }
 
+fun addOrderItemsInner(
+    list: List<CreateOrderResponse.Data.Order.OrderItem>,
+    showModifiers: Boolean,
+    font: String,
+) {
+    for (i in 0 until list.size) {
+        val obj = list[i]
+
+
+        val item = padLineCustomerItem(
+            obj.quantity.toString() + "x " + obj.itemName,
+            "$" + roundOffAmountString(totalPrice(obj)),
+            if (font == Constants.LARGE) 23 else 48
+        )
+
+        PrintSunmiUtils.normalText(item.toString())
+
+
+
+        if (obj.orderItemModifiers.isNotEmpty()) {
+            for (j in 0 until obj.orderItemModifiers.size) {
+                val modifierObj = obj.orderItemModifiers.get(j)
+
+                val modifier = padLineCustomerItem(
+                    "   " + modifierObj.name,
+                    "$" + roundOffAmountString(modifierObj.price.toDouble() * modifierObj.quantity),
+                    if (font == Constants.LARGE) 22 else 48
+                )
+
+                PrintSunmiUtils.normalText(modifier.toString())
+
+            }
+
+        }
+
+        if (obj.note.isNotEmpty()) {
+
+            PrintSunmiUtils.normalText("   Note: " + obj.note)
+
+        }
+
+
+    }
+
+
+}
+
 fun addOrderItemsTransaction(
     builder: Builder,
     list: List<GetOrderDetailsResponse.Data.OrderItem>,

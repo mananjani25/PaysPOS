@@ -2314,6 +2314,8 @@ class TransactionDetailsFragment : Fragment() {
     ) {
         try {
 
+            PrintSunmiUtils.fontSizeInner(customerSettingModel.fonts)
+
             SunmiPrintHelper.getInstance().initPrinter()
 
             if (customerSettingModel.showVenueLogo && prefProvider.getValue(

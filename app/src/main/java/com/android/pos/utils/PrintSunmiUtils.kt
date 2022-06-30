@@ -16,7 +16,7 @@ class PrintSunmiUtils {
 
         var fontSize = ""
         var fontSizeInner = ""
-        var fontName = "test.ttf"
+        var fontName = "test1.ttf"
 
         fun printLogo(newBitmap: Bitmap?) {
 
