@@ -78,20 +78,20 @@ class CategorySearchAdapter @Inject constructor(
 
         override fun performFiltering(charSequence: CharSequence): FilterResults {
             return run {
-                if (charSequence.isEmpty()) {
-                    suggestions = list
+                suggestions = if (charSequence.isEmpty()) {
+                    list
                 } else {
                     val fList = ArrayList<CategorySearchData>()
                     for (model in list) {
-                        if (model.title.lowercase(Locale.getDefault())
-                                .startsWith(charSequence.toString().lowercase(Locale.getDefault()))
+                        if (model.title.lowercase(Locale.getDefault()).trim()
+                                .startsWith(charSequence.toString().lowercase(Locale.getDefault()).trim())
                         ) {
 
                             fList.add(model)
                         }
 
                     }
-                    suggestions = fList
+                    fList
                 }
                 val filterResult = FilterResults()
                 filterResult.values = suggestions

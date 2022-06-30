@@ -217,6 +217,9 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     fun getItemByProductCode(productCode: String) = posRepository.getItemByProductCode(productCode)
 
+
+    fun getItemByCategoryId(id: Int) = posRepository.getItemByCategoryId(id)
+
     /*
         fun getCartList(orderType:String,employee_Id: Int) : List<CartModel>{
             viewModelcartList.clear()
