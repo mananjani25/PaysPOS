@@ -140,12 +140,15 @@ class MainActivity : BaseScannerActivity() {
     }
 
     private fun getCustomerPrinters() {
-        viewModelPrinter.getKitchenPrinterList().observe(this, {
+        viewModelPrinter.getKitchenPrinterList().observe(this) {
             when (it.status) {
                 Status.SUCCESS -> {
                     ProgressUtils.dismissProgressDialog()
                     if (it.data != null) {
+                        customerPrinterList = emptyList()
                         customerPrinterList = it.data
+
+                        Log.e("getCustomerPrinters", customerPrinterList.size.toString())
                     }
 
                 }
@@ -158,7 +161,7 @@ class MainActivity : BaseScannerActivity() {
                 }
 
             }
-        })
+        }
     }
 
     private fun clockoutFromSystem() {
@@ -345,6 +348,12 @@ class MainActivity : BaseScannerActivity() {
     private val wifiStateReceiver: BroadcastReceiver = object : BroadcastReceiver() {
         @SuppressLint("RestrictedApi")
         override fun onReceive(context: Context, intent: Intent) {
+//            Log.e(TAG,"customerPrinterList  ${Gson().toJson(customerPrinterList)}")
+            customerPrinterList.forEach {
+                println("customerPrinterList " + it.name)
+            }
+
+
             val data = Data.Builder()
                 .putString("kitchenPrinterList", Gson().toJson(customerPrinterList))
                 .put("kitchenSettingData", Gson().toJson(customerSettingModel))

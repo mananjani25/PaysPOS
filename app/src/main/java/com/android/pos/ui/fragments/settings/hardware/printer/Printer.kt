@@ -1352,8 +1352,6 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
             printer.setBatteryStatusChangeEventCallback(this)
         }
 
-        val enabled = Print.FALSE
-        Log.e(TAG, "PrinterconnectionType:  ${Gson().toJson(printerListModel)}")
 
         if (printerListModel.connectionType == "") {
             findBT()

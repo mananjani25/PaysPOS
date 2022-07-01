@@ -7753,6 +7753,13 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 timeOut = BLUETOOTH_TIMEOUT
             }
 
+            if (customerReceiptPrinters.name.substring(0, 6).toString()
+                    .lowercase() == "TM-m30".lowercase() && customerReceiptPrinters.printer_type != BLUETOOTH
+            ) {
+
+                timeOut = 1000
+            }
+
             try {
                 PrinterClass.getPrinter()?.sendData(
                     builder,
