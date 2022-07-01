@@ -2325,18 +2325,8 @@ class TransactionDetailsFragment : Fragment() {
                     .isNotEmpty()
             ) {
 
-                val decodedString: ByteArray = Base64.decode(
-                    prefProvider.getValue(Constants.VENUE_LOGO, ""),
-                    Base64.DEFAULT
-                )
-                val bitmap: Bitmap =
-                    BitmapFactory.decodeByteArray(decodedString, 0, decodedString.size)
 
-                val newBitmap = Bitmap.createScaledBitmap(bitmap!!, 210, 210, true)
-                SunmiPrintHelper.getInstance().setAlign(1)
-                SunmiPrintHelper.getInstance().printBitmap(newBitmap)
-                SunmiPrintHelper.getInstance().lineWrap(2)
-
+                PrintSunmiUtils.printLogoInner(prefProvider.getValue(Constants.VENUE_LOGO, ""))
 
             }
 
