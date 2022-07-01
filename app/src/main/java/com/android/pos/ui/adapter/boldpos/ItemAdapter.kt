@@ -4,7 +4,9 @@ import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
+import com.android.pos.R
 import com.android.pos.data.entities.TbItem
 import com.android.pos.databinding.ViewCategoryItemBoldBinding
 import com.android.pos.ui.adapter.CategoryItemAdapter1
@@ -44,6 +46,10 @@ class ItemAdapter(
             } else {
                 binding.txtCategoryName.isSelected = false
 
+            }
+            if (model.isSelectedItem) {
+                binding.txtCategoryName.setBackgroundColor(ContextCompat.getColor(context, R.color.txt_color_blue))
+                binding.txtCategoryName.setTextColor(ContextCompat.getColor(context,R.color.white))
             }
 
         }

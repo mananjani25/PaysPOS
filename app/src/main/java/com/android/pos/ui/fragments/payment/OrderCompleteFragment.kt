@@ -8286,7 +8286,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
     }
 
     fun connect() {
+
         if (!SunmiPrinterApi.getInstance().isConnected) {
+            pd.dismiss()
             SunmiPrinterApi.getInstance()
                 .connectPrinter(requireContext(), object : ConnectCallback {
 
