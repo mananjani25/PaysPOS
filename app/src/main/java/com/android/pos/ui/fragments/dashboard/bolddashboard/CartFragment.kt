@@ -1593,7 +1593,7 @@ class CartFragment(
                 ) {
                     AlertUtils.showCustomAlertWithListenerWithOK(
                         requireActivity(),
-                        "You can not change customer from checkout when loyalty points added Please go back and change customer."
+                        "You can not change customer from checkout when loyalty points added. Please go back and change customer."
                     ) { _, _ ->
                     }
                 } else {
