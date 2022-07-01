@@ -25,6 +25,7 @@ import com.android.pos.ui.adapter.boldpos.CategoryParentAdapter
 import com.android.pos.ui.adapter.boldpos.CategoryTabAdapter
 import com.android.pos.ui.adapter.boldpos.ItemAdapter
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
+import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.callback.ItemListner
 import com.android.pos.utils.statusUtils.Status
@@ -201,48 +202,103 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
         edtSearch?.setAdapter(searchAdapter)
         edtSearch?.setOnItemClickListener { parent, _, position, _ ->
             val model: CategorySearchData = parent.getItemAtPosition(position) as CategorySearchData
-            edtSearch?.setText(model.title)
+            edtSearch.setText(model.title)
+            edtSearch.setSelection(model.title.length)
+            MethodUtils.hideKeyboard(requireActivity())
             resetTabbySearch(model)
 
 
         }
     }
 
-
     private fun resetTabbySearch(model: CategorySearchData) {
         var tabPos = -1
         val tabList = categoryParentAdapter.getList()
-        for (i in 0 until tabList.get(0).list.size) {
-            if (tabList.get(0).list[i].id == model.categoryID) {
-                tabList.get(0).list[i].isSelected = true
-                tabPos = i
-            } else {
-                tabList.get(0).list.get(i).isSelected = false
+        Log.e(TAG, "tabList  ${Gson().toJson(tabList)}")
+
+        var posParent = -1
+
+        for (i in 0 until tabList.size) {
+            posParent++
+
+            tabList[i].list.forEachIndexed { index, it ->
+
+                if (it.id == model.categoryID) {
+                    Log.e(TAG, "indexCategory  ${index}")
+                    it.isSelected = true
+                    tabPos = index
+                    return@forEachIndexed
+
+
+                } else {
+                    it.isSelected = false
+                }
+
+            }
+
+            if (tabPos != -1) {
+                break
+
             }
 
         }
+        /*  tabList.forEach {
+              posParent++
 
-        categoryParentAdapter.list = tabList.toCollection(arrayListOf())
+              it.list.forEachIndexed { index, it ->
+
+                  if (it.id == model.categoryID) {
+                      Log.e(TAG, "indexCategory  ${index}")
+                      it.isSelected = true
+                      tabPos = index
+                      return@forEachIndexed
+
+
+                  } else {
+                      it.isSelected = false
+                  }
+
+              }
+              Log.e(TAG, "tabPosInside  ${tabPos}")
+              if (tabPos != -1) {
+
+                  return@forEach
+              }
+
+
+          }*/
+        Log.e(TAG, "selectedTabList  ${Gson().toJson(tabList)}")
+
+        categoryParentAdapter.addList(tabList.toCollection(arrayListOf()))
+        binding.rvCategoryParent.scrollToPosition(posParent)
         categoryParentAdapter.notifyDataSetChanged()
 
         var itemList: ArrayList<TbItem?> = arrayListOf()
-
-        categoryList1[tabPos].inventoryLists?.filter {
-            it!!.isHide
-        }?.let { it1 ->
-            itemList.addAll(it1)
+        Log.e(TAG, "tabPos  ${tabPos}")
+        Log.e(TAG, "posParent  ${posParent}")
+        if (posParent == 1) {
+            tabPos += 8
         }
-        itemAdapter.list.clear()
-        itemAdapter.list = itemList
-        for (i in itemList.indices) {
-            if (itemList[i]?.itemId == model.itemID) {
-                itemAdapter.setPos(i)
-                break
+
+        if (tabPos != -1) {
+
+            categoryList1[tabPos].inventoryLists?.filter {
+                it!!.isHide
+            }?.let { it1 ->
+                itemList.addAll(it1)
             }
+            itemAdapter.list.clear()
+            itemAdapter.list = itemList
+            for (i in itemList.indices) {
+                if (itemList[i]?.itemId == model.itemID) {
+                    itemAdapter.setPos(i)
+                    break
+                }
+            }
+
+            itemAdapter.notifyDataSetChanged()
+
         }
-
-        itemAdapter.notifyDataSetChanged()
-
 
         // (binding.rvTabLayout.adapter as CategoryTabAdapter1).list.clear()
         /* (binding.rvCategoryParent.adapter as CategoryParentAdapter).list = tabList
@@ -339,32 +395,21 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
     }
 
     override fun onCategorySelected(parentPosition: Int, childPosition: Int) {
-        Log.e(TAG, "category parentPosition ${parentPosition}")
-        Log.e(TAG, "category childPosition ${childPosition}")
-        val categoryList = categoryParentAdapter.getList()
-        Log.e(TAG, "categoryList:  ${Gson().toJson(categoryList)}")
-        var listItems: ArrayList<TbItem?> = arrayListOf()
-        listItems = itemAdapter.list.toCollection(arrayListOf())
-        listItems.clear()
-        listItems = arrayListOf()
 
         val categoryId =
-            categoryParentAdapter.getList().get(parentPosition).list.get(childPosition).id
-        Log.e(TAG, "selectedcategoryId:  ${categoryId}")
-        Log.e(TAG, "itemList1itemList1:  ${Gson().toJson(itemList1)}")
-        Log.e(TAG, "selectedInventory  ${Gson().toJson(categoryList1)}")
-        categoryList1[childPosition].inventoryLists?.filter {
-            it!!.isHide
-        }?.let { it1 ->
-            listItems.addAll(it1)
-        }
-        Log.e(TAG, " newlistItems: ${Gson().toJson(listItems)}")
-        if (listItems.isNotEmpty()) {
-            itemAdapter.setPos(-2)
-            itemAdapter.addList(listItems)
-        } else {
-            Log.e(TAG, "ItemAdapterEmpty")
-            itemAdapter.clearList()
+            categoryParentAdapter.getList()[parentPosition].list[childPosition].id
+
+        viewModel.getItemByCategoryId(categoryId).observe(viewLifecycleOwner) {
+
+            if (it.status == Status.SUCCESS) {
+                if (it.data != null && it.data.isNotEmpty()) {
+                    itemAdapter.setPos(-2)
+                    itemAdapter.addList(it.data.toCollection(arrayListOf()))
+                } else {
+                    itemAdapter.clearList()
+                }
+            }
+
         }
 
     }

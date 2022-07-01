@@ -31,7 +31,7 @@ interface DBItemDao {
     val unhideItem: LiveData<List<TbItem>>
 
     @Query("select * from TbItem where TbItem.categoryId  = :id and TbItem.name != 'Manual Item'")
-    fun getItemList(id: Int?): LiveData<List<TbItem?>>?
+    fun getItemList(id: Int): LiveData<List<TbItem>>
 
     @Query("SELECT * from TbItem where TbItem.itemId  = :id and TbItem.name != 'Manual Item' LIMIT 1")
     fun itemById(id: Int?): LiveData<TbItem>?

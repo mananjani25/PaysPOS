@@ -155,10 +155,13 @@ interface ApiService {
     suspend fun syncVenueData(): VenueDataResponse
 
     @GET(GET_PRINTERS)
-    suspend fun getPrinterList(): PrinterResponse
+    suspend fun getPrinterList(@Query("terminal_id") terminalId: Int): PrinterResponse
+
 
     @POST(GET_PRINTERS)
-    suspend fun createPrinter(@Body createPrinter: CreatePrinterRequestModel): PrinterResponse
+    suspend fun createPrinter(
+        @Body createPrinter: CreatePrinterRequestModel
+    ): PrinterResponse
 
     @DELETE(DELETE_UPDATE_PRINTER)
     suspend fun deletePrinter(
@@ -206,7 +209,7 @@ interface ApiService {
     ): BaseResponse
 
     @GET(SYNC_VENUE_DETAILS)
-    suspend fun syncVenueDetails(): VenueDetailsResponse
+    suspend fun syncVenueDetails(@Query("terminal_id") terminalId: Int): VenueDetailsResponse
 
     @GET(ONLINE_ORDER_NOTIFICATION_COUNT)
     suspend fun getCountOnlineOrdering(): OnlineOrderNotificationCount

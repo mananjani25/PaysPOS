@@ -2,6 +2,8 @@ package com.android.pos.ui.fragments.dashboard.bolddashboard
 
 import android.graphics.Typeface
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -17,10 +19,13 @@ import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.data.entities.*
 import com.android.pos.data.model.DineInModel
+import com.android.pos.data.model.requestModel.CreateQueuePrinterRequestModel
+import com.android.pos.data.model.requestModel.OrderAttributeRequestModel
 import com.android.pos.data.model.responseModel.*
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.DINE_IN
 import com.android.pos.data.remote.Constants.EMPLOYEE_NAME
+import com.android.pos.data.remote.Constants.IS_PRINTER_QUEUE_ENABLE
 import com.android.pos.data.remote.Constants.LARGE
 import com.android.pos.data.remote.Constants.MEDIUM
 import com.android.pos.data.remote.Constants.ONLINE_ORDER_ENABLE
@@ -28,12 +33,15 @@ import com.android.pos.data.remote.Constants.OPEN_ORDER_ITEMS
 import com.android.pos.data.remote.Constants.ORDER_TYPE
 import com.android.pos.data.remote.Constants.SMALL
 import com.android.pos.data.remote.Constants.SPLIT_ENABLE
+import com.android.pos.data.remote.Constants.SUNMI_INNER_PRINTER
 import com.android.pos.data.remote.Constants.TAKEOUT
 import com.android.pos.databinding.FragmentDashboardCategoryBoldPosBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.di.RolePermission
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.android.pos.ui.fragments.payment.PaymentViewModel
+import com.android.pos.ui.fragments.settings.hardware.printer.BluetoothUtil
+import com.android.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper
 import com.android.pos.utils.*
 import com.android.pos.utils.callback.ItemClickListner
 import com.android.pos.utils.callback.ItemListner
@@ -46,6 +54,9 @@ import com.epson.eposprint.Builder
 import com.epson.eposprint.Print
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.sunmi.externalprinterlibrary.api.ConnectCallback
+import com.sunmi.externalprinterlibrary.api.SunmiPrinter
+import com.sunmi.externalprinterlibrary.api.SunmiPrinterApi
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -123,7 +134,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
         addObserver()
         getServiceCharges()
         resultListener()
-
+        observeQueueCreate()
         dineInUpdateOrder()
         navigateDineInOrder()
         getLoyaltyPrograms()
@@ -489,13 +500,16 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                                     it, "Available"
                                 )
                             }
+                            prefProvider.setValue(Constants.DINE_IN_UPDATE_LIST, "")
                             findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_dineInFragment)
                         }
                     } else {
+                        prefProvider.setValue(Constants.DINE_IN_UPDATE_LIST, "")
                         findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_dineInFragment)
                     }
                 }
             } else {
+                prefProvider.setValue(Constants.DINE_IN_UPDATE_LIST, "")
                 findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_dineInFragment)
             }
 
@@ -737,13 +751,15 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
         serviceChargesObserve = Observer {
             if (it.status == Status.SUCCESS) {
                 if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == DINE_IN) {
-                    Log.e(TAG, "getServiceCharge:  ${Gson().toJson(it.data)}")
-                    serviceChargesList = ArrayList()
-                    viewModel.serviceChargesList.clear()
-                    it.data?.forEach { service ->
-                        if (service.order_type == Constants.SERVICECHARGE_DINEIN_ORDER) {
-                            serviceChargesList?.add(service)
-                            viewModel.serviceChargesList.add(service)
+                    if (prefProvider.getValueboolean(Constants.SERVICECHARGE_DINEIN_ORDER, false)) {
+                        Log.e(TAG, "getServiceCharge:  ${Gson().toJson(it.data)}")
+                        serviceChargesList = ArrayList()
+                        viewModel.serviceChargesList.clear()
+                        it.data?.forEach { service ->
+                            if (service.order_type == Constants.SERVICECHARGE_DINEIN_ORDER) {
+                                serviceChargesList?.add(service)
+                                viewModel.serviceChargesList.add(service)
+                            }
                         }
                     }
                     Log.d(
@@ -959,7 +975,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
     private fun dineInUpdateOrder() {
 
 
-        viewModel.updateOrder.observe(viewLifecycleOwner, { event ->
+        viewModel.updateOrder.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
 
 
@@ -973,15 +989,13 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                 clearCustomer()
 
 
-
-
                 findNavController().navigate(
                     R.id.action_dashboardCategoryBoldPOS_to_dineInOrderTable,
                     bundle
                 )
 
             }
-        })
+        }
 
     }
 
@@ -996,63 +1010,139 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
         createOrderResponse: CreateOrderResponse
     ) {
 
-        try {
-            PrinterClass.closePrinter()
-        } catch (e: Exception) {
-            e.printStackTrace()
-        }
-        /*if (PrinterClass.getPrinter() == null) {*/
-        var printer: Print? = Print(requireContext())
-        if (printer != null) {
-            /* printer.setStatusChangeEventCallback(this)
-             printer.setBatteryStatusChangeEventCallback(this)*/
-        }
 
-        val enabled = Print.TRUE
+        if (data.name.startsWith("CloudPrint", true)) {
 
-        try {
+            SunmiPrinterApi.getInstance()
+                .setPrinter(SunmiPrinter.SunmiBlueToothPrinter, data.ipAddress)
 
-            printer?.openPrinter(
-                if (data.printer_type == Constants.BLUETOOTH) {
-                    Print.DEVTYPE_BLUETOOTH
-                } else {
-                    Print.DEVTYPE_TCP
-                },
-                data.ipAddress,
-                enabled,
-                1000
-            )
-            //  printer?.setStatusChangeEventCallback(this)
+            if (!SunmiPrinterApi.getInstance().isConnected) {
+                SunmiPrinterApi.getInstance()
+                    .connectPrinter(requireContext(), object : ConnectCallback {
 
-        } catch (e: Exception) {
-            Log.e(TAG, "PrinterException: " + e.message)
-            printer = null
-            viewModel.downloadFinished(false)
-            if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
-                findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
+                        override fun onFound() {
+                            println("onFound")
+                        }
+
+                        override fun onUnfound() {
+                            println("onUnfound")
+
+                            viewModel.downloadFinished(false)
+                            if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
+                                findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
+                            }
+                        }
+
+                        override fun onConnect() {
+                            println("onConnect")
+                            generateKitchenReceiptSunmi(data, type, createOrderResponse.data)
+
+                        }
+
+                        override fun onDisconnect() {
+                            println("onDisconnect")
+                        }
+
+                    })
+            } else {
+                generateKitchenReceiptSunmi(data, type, createOrderResponse.data)
             }
 
-        }
+        } else if (data.name.startsWith(SUNMI_INNER_PRINTER, true)) {
 
 
-        if (printer != null) {
-            PrinterClass.setPrinter(printer)
+            SunmiPrintHelper.getInstance().initSunmiPrinterService(requireContext())
+            setService(createOrderResponse.data)
 
-            generateKitchenReceipt(data, type, createOrderResponse.data)
 
         } else {
-            Log.e(TAG, "PrinterIsNotNull:")
-            viewModel.downloadFinished(false)
-            if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
-                findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
+
+
+            try {
+                PrinterClass.closePrinter()
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
+            /*if (PrinterClass.getPrinter() == null) {*/
+            var printer: Print? = Print(requireContext())
+            if (printer != null) {
+                /* printer.setStatusChangeEventCallback(this)
+             printer.setBatteryStatusChangeEventCallback(this)*/
             }
 
+            val enabled = Print.TRUE
+
+            try {
+
+                printer?.openPrinter(
+                    if (data.printer_type == Constants.BLUETOOTH) {
+                        Print.DEVTYPE_BLUETOOTH
+                    } else {
+                        Print.DEVTYPE_TCP
+                    },
+                    data.ipAddress,
+                    enabled,
+                    1000
+                )
+                //  printer?.setStatusChangeEventCallback(this)
+
+            } catch (e: Exception) {
+                Log.e(TAG, "PrinterException: " + e.message)
+                printer = null
+                viewModel.downloadFinished(false)
+                if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
+                    findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
+                }
+
+            }
+
+
+            if (printer != null) {
+                PrinterClass.setPrinter(printer)
+
+                generateKitchenReceipt(data, type, createOrderResponse.data)
+
+            } else {
+                Log.e(TAG, "PrinterIsNotNull:")
+                viewModel.downloadFinished(false)
+                if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
+                    findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
+                }
+
+            }
         }
 
         /* } else {
 
          }
  */
+    }
+
+    private fun setService(data: CreateOrderResponse.Data) {
+        if (SunmiPrintHelper.getInstance().sunmiPrinter == SunmiPrintHelper.FoundSunmiPrinter) {
+
+            Log.e("SunmiPrintHelper1", "FoundSunmiPrinter")
+
+            if (!BluetoothUtil.isBlueToothPrinter) {
+
+                Log.e("SunmiPrintHelpe1r", "isBlueToothPrinter")
+
+                generateKitchenReceiptSunmiInner(data)
+
+
+            }
+
+        } else if (SunmiPrintHelper.getInstance().sunmiPrinter == SunmiPrintHelper.CheckSunmiPrinter) {
+            Handler(Looper.getMainLooper()).postDelayed({
+                setService(data)
+            }, 2000)
+            Log.e("SunmiPrintHelper", "CheckSunmiPrinter")
+        } else if (SunmiPrintHelper.getInstance().sunmiPrinter == SunmiPrintHelper.LostSunmiPrinter) {
+
+            Log.e("SunmiPrintHelper", "LostSunmiPrinter")
+        } else {
+            Log.e("SunmiPrintHelper", "ELSE")
+        }
     }
 
     private fun observeSaveOrder() {
@@ -1065,9 +1155,15 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                 if (prefProvider.getValue(ORDER_TYPE, "").toString() != "") {
                     prefProvider.setValue(ORDER_TYPE, TAKEOUT)
                 }
+                Log.e(TAG, "QueueCreateAgain")
 
                 clearCustomer()
-                getKitchenPrinters(it)
+                if (prefProvider.getValueboolean(IS_PRINTER_QUEUE_ENABLE, false)) {
+                    findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
+                } else {
+                    getKitchenPrinters(it)
+                }
+                // getKitchenPrinters(it)
 
 
             }
@@ -1135,38 +1231,6 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
 
                                 }
 
-
-                                /*arrayItems.forEach { it1 ->
-
-                                createOrderResponse.data.order.orderItems.forEach {
-
-
-
-                                    if (it1.id == it.id) {
-                                        if (it1.quantity != it.quantity) {
-                                            if (it.quantity > it1.quantity) {
-                                                it.quantity = it.quantity - it1.quantity
-                                                if (!printOrderItems.contains(it)) {
-                                                    printOrderItems.add(it)
-                                                }
-                                            }
-
-                                        } else if (it1.quantity > it.quantity) {
-
-                                        }
-
-                                    } else if (!printOrderItems.contains(it)) {
-
-
-                                        printOrderItems.add(it)
-                                    }
-
-                                }
-
-
-                            }*/
-
-                                Log.e(TAG, "printOrderitems  ${Gson().toJson(printOrderItems)}")
 
                                 createOrderResponse.data.order.orderItems = arrayListOf()
 
@@ -1247,14 +1311,37 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
 
             }
 
-            builder = Builder(pname, PrinterClass.language, requireActivity())
-            Log.e(TAG, "kitchenFonts:  ${kitchenSettingModel.fonts}")
-            Log.e(TAG, "kitfontSize:  ${fontSizeH}")
 
-            if (kitchenSettingModel.showOrderType) {
+            if (customerReceiptPrinters.name.substring(0, 4)
+                    .equals("TM-U", true) || customerReceiptPrinters.name.contains("U")
+            ) {
+
+                builder = Builder(pname, PrinterClass.language, requireActivity())
+                Log.e(TAG, "kitchenFonts:  ${kitchenSettingModel.fonts}")
+                Log.e(TAG, "kitfontSize:  ${fontSizeH}")
+
+                if (kitchenSettingModel.showOrderType) {
 
 
-                builder.addFeedLine(0)
+                    builder.addFeedLine(0)
+                    builder.addTextFont(Builder.FONT_E)
+                    builder.addTextLang(Builder.LANG_EN)
+                    builder.addTextSize(fontSizeH, fontSizeW)
+                    builder.addTextStyle(
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.TRUE,
+                        Builder.COLOR_1
+                    )
+                    builder.addTextAlign(Builder.ALIGN_CENTER)
+
+                    addBuilderText(builder, receiptModel?.order?.orderType.toString())
+                }
+
+                /* if (receiptModel?.order?.orderType.trim().lowercase() == "OpenOrder".trim()
+                     .lowercase()
+               ) {*/
+                builder.addFeedLine(1)
                 builder.addTextFont(Builder.FONT_E)
                 builder.addTextLang(Builder.LANG_EN)
                 builder.addTextSize(fontSizeH, fontSizeW)
@@ -1266,71 +1353,30 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                 )
                 builder.addTextAlign(Builder.ALIGN_CENTER)
 
-                addBuilderText(builder, receiptModel?.order?.orderType.toString())
-            }
+                addBuilderText(builder, receiptModel?.order?.deliveryType.toString())
 
-            /* if (receiptModel?.order?.orderType.trim().lowercase() == "OpenOrder".trim()
-                     .lowercase()
-               ) {*/
-            builder.addFeedLine(1)
-            builder.addTextFont(Builder.FONT_E)
-            builder.addTextLang(Builder.LANG_EN)
-            builder.addTextSize(fontSizeH, fontSizeW)
-            builder.addTextStyle(
-                Builder.FALSE,
-                Builder.FALSE,
-                Builder.TRUE,
-                Builder.COLOR_1
-            )
-            builder.addTextAlign(Builder.ALIGN_CENTER)
-
-            addBuilderText(builder, receiptModel?.order?.deliveryType.toString())
-
-            /*}*/
+                /*}*/
 
 
-            builder.addFeedLine(2)
-            builder.addTextFont(Builder.FONT_E)
-            //  builder.addTextAlign(Builder.ALIGN_LEFT)
-            builder.addTextLang(Builder.LANG_EN)
-            builder.addTextSize(fontSizeH, fontSizeW)
-            builder.addTextStyle(
-                Builder.FALSE,
-                Builder.FALSE,
-                Builder.FALSE,
-                Builder.COLOR_1
-            )
-
-            builder.addText(
-                padLine(
-                    "OrderID:" + receiptModel?.order?.id,
-                    "",
-                    33
+                builder.addFeedLine(2)
+                builder.addTextFont(Builder.FONT_E)
+                //  builder.addTextAlign(Builder.ALIGN_LEFT)
+                builder.addTextLang(Builder.LANG_EN)
+                builder.addTextSize(fontSizeH, fontSizeW)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.COLOR_1
                 )
-            )
 
-            builder.addTextLineSpace(30)
-            builder.addFeedUnit(30)
-            builder.addTextFont(Builder.FONT_E)
-            //  builder.addTextAlign(Builder.ALIGN_LEFT)
-            builder.addTextLang(Builder.LANG_EN)
-            builder.addTextSize(fontSizeH, fontSizeW)
-            builder.addTextStyle(
-                Builder.FALSE,
-                Builder.FALSE,
-                Builder.FALSE,
-                Builder.COLOR_1
-            )
-
-
-            builder.addText(
-                padLine(
-                    "ReceiptID:" + receiptModel?.order?.offlineId,
-                    "",
-                    33
+                builder.addText(
+                    padLine(
+                        "OrderID:" + receiptModel?.order?.id,
+                        "",
+                        33
+                    )
                 )
-            )
-            if (kitchenSettingModel.showTeamMember) {
 
                 builder.addTextLineSpace(30)
                 builder.addFeedUnit(30)
@@ -1344,107 +1390,92 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                     Builder.FALSE,
                     Builder.COLOR_1
                 )
+
+
                 builder.addText(
                     padLine(
-                        "Employee:" + receiptModel?.order?.employee?.name, "",
+                        "ReceiptID:" + receiptModel?.order?.offlineId,
+                        "",
+                        33
+                    )
+                )
+                if (kitchenSettingModel.showTeamMember) {
+
+                    builder.addTextLineSpace(30)
+                    builder.addFeedUnit(30)
+                    builder.addTextFont(Builder.FONT_E)
+                    //  builder.addTextAlign(Builder.ALIGN_LEFT)
+                    builder.addTextLang(Builder.LANG_EN)
+                    builder.addTextSize(fontSizeH, fontSizeW)
+                    builder.addTextStyle(
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.COLOR_1
+                    )
+                    builder.addText(
+                        padLine(
+                            "Employee:" + receiptModel?.order?.employee?.name, "",
+                            33
+                        )
+                    )
+
+                }
+                builder.addTextLineSpace(30)
+                builder.addFeedUnit(30)
+                builder.addTextFont(Builder.FONT_E)
+                //  builder.addTextAlign(Builder.ALIGN_LEFT)
+                builder.addTextLang(Builder.LANG_EN)
+                builder.addTextSize(fontSizeH, fontSizeW)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.COLOR_1
+                )
+
+                builder.addText(
+                    padLine(
+                        Constants.getReceiptFormatDateFromUTCServer(
+                            requireContext(),
+                            receiptModel?.order?.createdAt.toString()
+                        ),
+                        "",
                         33
                     )
                 )
 
-            }
-            builder.addTextLineSpace(30)
-            builder.addFeedUnit(30)
-            builder.addTextFont(Builder.FONT_E)
-            //  builder.addTextAlign(Builder.ALIGN_LEFT)
-            builder.addTextLang(Builder.LANG_EN)
-            builder.addTextSize(fontSizeH, fontSizeW)
-            builder.addTextStyle(
-                Builder.FALSE,
-                Builder.FALSE,
-                Builder.FALSE,
-                Builder.COLOR_1
-            )
-
-            builder.addText(
-                padLine(
-                    Constants.getReceiptFormatDateFromUTCServer(
-                        requireContext(),
-                        receiptModel?.order?.createdAt.toString()
-                    ),
-                    "",
-                    33
-                )
-            )
-
-            builder.addFeedLine(1)
-
-            builder.addTextFont(Builder.FONT_B)
-            //builder.addTextLineSpace(20)
-            builder.addTextLang(Builder.LANG_EN)
-            builder.addTextSize(fontSizeH, fontSizeW)
-            builder.addTextStyle(
-                Builder.FALSE,
-                Builder.FALSE,
-                Builder.FALSE,
-                Builder.COLOR_1
-            )
-
-            addHorizontalKitchenLine(builder)
-
-            receiptModel?.order?.orderItems?.let {
-                addOrdersForKitchen(
-                    builder,
-                    it,
-                    fontSizeH,
-                    fontSizeW
-                )
-            }
-
-            if (receiptModel?.order?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote) {
-                builder.addTextLineSpace(30)
-                builder.addFeedUnit(30)
                 builder.addFeedLine(1)
-                builder.addTextFont(Builder.FONT_E)
-                builder.addTextAlign(Builder.ALIGN_LEFT)
+
+                builder.addTextFont(Builder.FONT_B)
                 //builder.addTextLineSpace(20)
                 builder.addTextLang(Builder.LANG_EN)
                 builder.addTextSize(fontSizeH, fontSizeW)
                 builder.addTextStyle(
                     Builder.FALSE,
                     Builder.FALSE,
-                    Builder.TRUE,
-                    Builder.COLOR_1
-                )
-                builder.addText("Order Note")
-
-                builder.addTextLineSpace(30)
-                builder.addFeedUnit(30)
-
-                builder.addTextFont(Builder.FONT_E)
-                builder.addTextAlign(Builder.ALIGN_LEFT)
-                builder.addTextLang(Builder.LANG_EN)
-                builder.addTextSize(fontSizeH, fontSizeW)
-                builder.addTextStyle(
-                    Builder.FALSE,
-                    Builder.FALSE,
                     Builder.FALSE,
                     Builder.COLOR_1
                 )
 
+                addHorizontalKitchenLine(builder)
 
-                builder.addText(receiptModel?.order?.note.toString())
-            }
+                receiptModel?.order?.orderItems?.let {
+                    addOrdersForKitchen(
+                        builder!!,
+                        it,
+                        fontSizeH,
+                        fontSizeW
+                    )
+                }
 
-
-            if (kitchenSettingModel.showCustomerAddress != false or kitchenSettingModel.showCustomerPhone != false or kitchenSettingModel.showCustomerName) {
-                if (receiptModel?.order?.customer != null) {
-
+                if (receiptModel?.order?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote) {
                     builder.addTextLineSpace(30)
                     builder.addFeedUnit(30)
                     builder.addFeedLine(1)
                     builder.addTextFont(Builder.FONT_E)
-                    //builder.addTextLineSpace(20)
                     builder.addTextAlign(Builder.ALIGN_LEFT)
+                    //builder.addTextLineSpace(20)
                     builder.addTextLang(Builder.LANG_EN)
                     builder.addTextSize(fontSizeH, fontSizeW)
                     builder.addTextStyle(
@@ -1453,10 +1484,13 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                         Builder.TRUE,
                         Builder.COLOR_1
                     )
-                    builder.addText("Customer Details" + "\n")
+                    builder.addText("Order Note")
 
-                    builder.addTextFont(Builder.FONT_B)
-                    //builder.addTextLineSpace(20)
+                    builder.addTextLineSpace(30)
+                    builder.addFeedUnit(30)
+
+                    builder.addTextFont(Builder.FONT_E)
+                    builder.addTextAlign(Builder.ALIGN_LEFT)
                     builder.addTextLang(Builder.LANG_EN)
                     builder.addTextSize(fontSizeH, fontSizeW)
                     builder.addTextStyle(
@@ -1465,15 +1499,21 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                         Builder.FALSE,
                         Builder.COLOR_1
                     )
-                    addHorizontalKitchenLine(builder)
 
-                    if (kitchenSettingModel.showCustomerName) {
+
+                    builder.addText(receiptModel?.order?.note.toString())
+                }
+
+
+                if (kitchenSettingModel.showCustomerAddress != false or kitchenSettingModel.showCustomerPhone != false or kitchenSettingModel.showCustomerName) {
+                    if (receiptModel?.order?.customer != null) {
 
                         builder.addTextLineSpace(30)
                         builder.addFeedUnit(30)
+                        builder.addFeedLine(1)
                         builder.addTextFont(Builder.FONT_E)
-                        builder.addTextAlign(Builder.ALIGN_LEFT)
                         //builder.addTextLineSpace(20)
+                        builder.addTextAlign(Builder.ALIGN_LEFT)
                         builder.addTextLang(Builder.LANG_EN)
                         builder.addTextSize(fontSizeH, fontSizeW)
                         builder.addTextStyle(
@@ -1482,14 +1522,22 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                             Builder.TRUE,
                             Builder.COLOR_1
                         )
-                        builder.addText(receiptModel?.order?.customer?.firstName + " " + receiptModel?.order?.customer?.lastName)
+                        builder.addText("Customer Details" + "\n")
 
-                    }
+                        builder.addTextFont(Builder.FONT_B)
+                        //builder.addTextLineSpace(20)
+                        builder.addTextLang(Builder.LANG_EN)
+                        builder.addTextSize(fontSizeH, fontSizeW)
+                        builder.addTextStyle(
+                            Builder.FALSE,
+                            Builder.FALSE,
+                            Builder.FALSE,
+                            Builder.COLOR_1
+                        )
+                        addHorizontalKitchenLine(builder)
 
+                        if (kitchenSettingModel.showCustomerName) {
 
-                    if (kitchenSettingModel.showCustomerPhone) {
-
-                        if (receiptModel?.order?.customer?.phones?.isNotEmpty()) {
                             builder.addTextLineSpace(30)
                             builder.addFeedUnit(30)
                             builder.addTextFont(Builder.FONT_E)
@@ -1503,11 +1551,32 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                                 Builder.TRUE,
                                 Builder.COLOR_1
                             )
-                            builder.addText(receiptModel?.order?.customer?.phones?.get(0)?.phoneNumber)
+                            builder.addText(receiptModel?.order?.customer?.firstName + " " + receiptModel?.order?.customer?.lastName)
+
                         }
 
-                    }
-                    /* builder.addTextLineSpace(30)
+
+                        if (kitchenSettingModel.showCustomerPhone) {
+
+                            if (receiptModel?.order?.customer?.phones?.isNotEmpty()) {
+                                builder.addTextLineSpace(30)
+                                builder.addFeedUnit(30)
+                                builder.addTextFont(Builder.FONT_E)
+                                builder.addTextAlign(Builder.ALIGN_LEFT)
+                                //builder.addTextLineSpace(20)
+                                builder.addTextLang(Builder.LANG_EN)
+                                builder.addTextSize(fontSizeH, fontSizeW)
+                                builder.addTextStyle(
+                                    Builder.FALSE,
+                                    Builder.FALSE,
+                                    Builder.TRUE,
+                                    Builder.COLOR_1
+                                )
+                                builder.addText(receiptModel?.order?.customer?.phones?.get(0)?.phoneNumber)
+                            }
+
+                        }
+                        /* builder.addTextLineSpace(30)
                  builder.addFeedUnit(30)
                  builder.addTextFont(Builder.FONT_E)
                  builder.addTextAlign(Builder.ALIGN_LEFT)
@@ -1522,15 +1591,258 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                  )
                  builder.addText(receiptModel?.order?.customer?.email)*/
 
-                    if (kitchenSettingModel.showCustomerAddress) {
+                        if (kitchenSettingModel.showCustomerAddress) {
 
-                        if (receiptModel?.order?.orderType.trim().lowercase() == "Open Order".trim()
-                                .lowercase() && receiptModel?.order?.deliveryType.trim()
-                                .lowercase() == "Pickup".trim()
-                                .lowercase()
-                        ) {
+                            if (receiptModel?.order?.orderType.trim()
+                                    .lowercase() == "Open Order".trim()
+                                    .lowercase() && receiptModel?.order?.deliveryType.trim()
+                                    .lowercase() == "Pickup".trim()
+                                    .lowercase()
+                            ) {
 
-                        } else if (receiptModel.order?.customer?.addresses?.isNotEmpty()) {
+                            } else if (receiptModel.order?.customer?.addresses?.isNotEmpty()) {
+
+                                builder.addTextLineSpace(30)
+                                builder.addFeedUnit(30)
+                                builder.addTextFont(Builder.FONT_E)
+                                builder.addTextAlign(Builder.ALIGN_LEFT)
+                                //builder.addTextLineSpace(20)
+                                builder.addTextLang(Builder.LANG_EN)
+                                builder.addTextSize(fontSizeH, fontSizeW)
+                                builder.addTextStyle(
+                                    Builder.FALSE,
+                                    Builder.FALSE,
+                                    Builder.TRUE,
+                                    Builder.COLOR_1
+                                )
+
+                                builder.addText(receiptModel?.order?.customer?.addresses?.get(0)?.fullAddress)
+                            }
+                        }
+
+                    }
+                }
+            } else {
+
+                builder = Builder(pname, PrinterClass.language, requireActivity())
+                Log.e(TAG, "kitchenFonts:  ${kitchenSettingModel.fonts}")
+                Log.e(TAG, "kitfontSize:  ${fontSizeH}")
+
+                if (kitchenSettingModel.showOrderType) {
+
+
+                    builder.addFeedLine(0)
+                    builder.addTextFont(Builder.FONT_E)
+                    builder.addTextLang(Builder.LANG_EN)
+                    builder.addTextSize(fontSizeH, fontSizeW)
+                    builder.addTextStyle(
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.TRUE,
+                        Builder.COLOR_1
+                    )
+                    builder.addTextAlign(Builder.ALIGN_CENTER)
+
+                    addBuilderText(builder, receiptModel?.order?.orderType.toString())
+                }
+
+                /* if (receiptModel?.order?.orderType.trim().lowercase() == "OpenOrder".trim()
+                     .lowercase()
+               ) {*/
+                builder.addFeedLine(1)
+                builder.addTextFont(Builder.FONT_E)
+                builder.addTextLang(Builder.LANG_EN)
+                builder.addTextSize(fontSizeH, fontSizeW)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.TRUE,
+                    Builder.COLOR_1
+                )
+                builder.addTextAlign(Builder.ALIGN_CENTER)
+
+                addBuilderText(builder, receiptModel?.order?.deliveryType.toString())
+
+                /*}*/
+
+
+                builder.addFeedLine(2)
+                builder.addTextFont(Builder.FONT_E)
+                //  builder.addTextAlign(Builder.ALIGN_LEFT)
+                builder.addTextLang(Builder.LANG_EN)
+                builder.addTextSize(fontSizeH, fontSizeW)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.COLOR_1
+                )
+
+                builder.addText(
+                    padLine(
+                        "OrderID:" + receiptModel?.order?.id,
+                        "",
+                        if (kitchenSettingModel.fonts == LARGE) {
+                            24
+                        } else {
+                            48
+                        }
+                    )
+                )
+
+                builder.addTextLineSpace(30)
+                builder.addFeedUnit(30)
+                builder.addTextFont(Builder.FONT_E)
+                //  builder.addTextAlign(Builder.ALIGN_LEFT)
+                builder.addTextLang(Builder.LANG_EN)
+                builder.addTextSize(fontSizeH, fontSizeW)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.COLOR_1
+                )
+
+
+                builder.addText(
+                    padLine(
+                        "ReceiptID:" + receiptModel?.order?.offlineId,
+                        "",
+                        if (kitchenSettingModel.fonts == LARGE) {
+                            24
+                        } else {
+                            48
+                        }
+                    )
+                )
+                if (kitchenSettingModel.showTeamMember) {
+
+                    builder.addTextLineSpace(30)
+                    builder.addFeedUnit(30)
+                    builder.addTextFont(Builder.FONT_E)
+                    //  builder.addTextAlign(Builder.ALIGN_LEFT)
+                    builder.addTextLang(Builder.LANG_EN)
+                    builder.addTextSize(fontSizeH, fontSizeW)
+                    builder.addTextStyle(
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.COLOR_1
+                    )
+                    builder.addText(
+                        padLine(
+                            "Employee:" + receiptModel?.order?.employee?.name, "",
+                            if (kitchenSettingModel.fonts == LARGE) {
+                                24
+                            } else {
+                                48
+                            }
+                        )
+                    )
+
+                }
+                builder.addTextLineSpace(30)
+                builder.addFeedUnit(30)
+                builder.addTextFont(Builder.FONT_E)
+                //  builder.addTextAlign(Builder.ALIGN_LEFT)
+                builder.addTextLang(Builder.LANG_EN)
+                builder.addTextSize(fontSizeH, fontSizeW)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.COLOR_1
+                )
+
+                builder.addText(
+                    padLine(
+                        Constants.getReceiptFormatDateFromUTCServer(
+                            requireContext(),
+                            receiptModel?.order?.createdAt.toString()
+                        ),
+                        "",
+                        if (kitchenSettingModel.fonts == LARGE) {
+                            24
+                        } else {
+                            48
+                        }
+                    )
+                )
+
+                builder.addFeedLine(1)
+
+
+
+                addHorizontalLine(builder)
+
+                receiptModel?.order?.orderItems?.let {
+                    addOrdersForKitchenCustomer(
+                        builder,
+                        it,
+                        fontSizeH,
+                        fontSizeW
+                    )
+                }
+
+                if (receiptModel?.order?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote) {
+                    builder.addTextLineSpace(30)
+                    builder.addFeedUnit(30)
+                    builder.addFeedLine(1)
+                    builder.addTextFont(Builder.FONT_E)
+                    builder.addTextAlign(Builder.ALIGN_LEFT)
+                    //builder.addTextLineSpace(20)
+                    builder.addTextLang(Builder.LANG_EN)
+                    builder.addTextSize(fontSizeH, fontSizeW)
+                    builder.addTextStyle(
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.COLOR_1
+                    )
+                    builder.addText("Order Note")
+
+                    builder.addTextLineSpace(30)
+                    builder.addFeedUnit(30)
+
+                    builder.addTextFont(Builder.FONT_E)
+                    builder.addTextAlign(Builder.ALIGN_LEFT)
+                    builder.addTextLang(Builder.LANG_EN)
+                    builder.addTextSize(fontSizeH, fontSizeW)
+                    builder.addTextStyle(
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.COLOR_1
+                    )
+
+
+                    builder.addText(receiptModel?.order?.note.toString())
+                }
+
+
+                if (kitchenSettingModel.showCustomerAddress != false or kitchenSettingModel.showCustomerPhone != false or kitchenSettingModel.showCustomerName) {
+                    if (receiptModel?.order?.customer != null) {
+
+                        builder.addTextLineSpace(30)
+                        builder.addFeedUnit(30)
+                        builder.addFeedLine(1)
+                        builder.addTextFont(Builder.FONT_E)
+                        //builder.addTextLineSpace(20)
+                        builder.addTextAlign(Builder.ALIGN_LEFT)
+                        builder.addTextLang(Builder.LANG_EN)
+                        builder.addTextSize(fontSizeH, fontSizeW)
+                        builder.addTextStyle(
+                            Builder.FALSE,
+                            Builder.FALSE,
+                            Builder.FALSE,
+                            Builder.COLOR_1
+                        )
+                        builder.addText("Customer Details" + "\n")
+
+
+                        addHorizontalLine(builder)
+
+                        if (kitchenSettingModel.showCustomerName) {
 
                             builder.addTextLineSpace(30)
                             builder.addFeedUnit(30)
@@ -1542,44 +1854,424 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                             builder.addTextStyle(
                                 Builder.FALSE,
                                 Builder.FALSE,
-                                Builder.TRUE,
+                                Builder.FALSE,
                                 Builder.COLOR_1
                             )
+                            builder.addText(receiptModel?.order?.customer?.firstName + " " + receiptModel?.order?.customer?.lastName)
 
-                            builder.addText(receiptModel?.order?.customer?.addresses?.get(0)?.fullAddress)
+                        }
+
+
+                        if (kitchenSettingModel.showCustomerPhone) {
+
+                            if (receiptModel?.order?.customer?.phones?.isNotEmpty()) {
+                                builder.addTextLineSpace(30)
+                                builder.addFeedUnit(30)
+                                builder.addTextFont(Builder.FONT_E)
+                                builder.addTextAlign(Builder.ALIGN_LEFT)
+                                //builder.addTextLineSpace(20)
+                                builder.addTextLang(Builder.LANG_EN)
+                                builder.addTextSize(fontSizeH, fontSizeW)
+                                builder.addTextStyle(
+                                    Builder.FALSE,
+                                    Builder.FALSE,
+                                    Builder.FALSE,
+                                    Builder.COLOR_1
+                                )
+                                builder.addText(receiptModel?.order?.customer?.phones?.get(0)?.phoneNumber)
+                            }
+
+                        }
+                        /* builder.addTextLineSpace(30)
+                 builder.addFeedUnit(30)
+                 builder.addTextFont(Builder.FONT_E)
+                 builder.addTextAlign(Builder.ALIGN_LEFT)
+                 //builder.addTextLineSpace(20)
+                 builder.addTextLang(Builder.LANG_EN)
+                 builder.addTextSize(1, 1)
+                 builder.addTextStyle(
+                     Builder.FALSE,
+                     Builder.FALSE,
+                     Builder.TRUE,
+                     Builder.COLOR_1
+                 )
+                 builder.addText(receiptModel?.order?.customer?.email)*/
+
+                        if (kitchenSettingModel.showCustomerAddress) {
+
+                            if (receiptModel?.order?.orderType.trim()
+                                    .lowercase() == "Open Order".trim()
+                                    .lowercase() && receiptModel?.order?.deliveryType.trim()
+                                    .lowercase() == "Pickup".trim()
+                                    .lowercase()
+                            ) {
+
+                            } else if (receiptModel.order?.customer?.addresses?.isNotEmpty()) {
+
+                                builder.addTextLineSpace(30)
+                                builder.addFeedUnit(30)
+                                builder.addTextFont(Builder.FONT_E)
+                                builder.addTextAlign(Builder.ALIGN_LEFT)
+                                //builder.addTextLineSpace(20)
+                                builder.addTextLang(Builder.LANG_EN)
+                                builder.addTextSize(fontSizeH, fontSizeW)
+                                builder.addTextStyle(
+                                    Builder.FALSE,
+                                    Builder.FALSE,
+                                    Builder.TRUE,
+                                    Builder.COLOR_1
+                                )
+
+                                builder.addText(receiptModel?.order?.customer?.addresses?.get(0)?.fullAddress)
+                            }
+                        }
+
+                    }
+                }
+
+            }
+
+            builder?.addFeedLine(2)
+
+            builder?.addCut(Builder.CUT_FEED)
+
+            val status = IntArray(1)
+            status[0] = 0
+            val battery = IntArray(1)
+
+            var timeOut = PrinterClass.SEND_TIMEOUT
+            if (customerReceiptPrinters.printer_type == Constants.BLUETOOTH) {
+                timeOut = PrinterClass.BLUETOOTH_TIMEOUT
+            }
+
+            if (customerReceiptPrinters.name.substring(0, 6).toString()
+                    .lowercase() == "TM-m30".lowercase() && customerReceiptPrinters.printer_type != Constants.BLUETOOTH
+            ) {
+
+                timeOut = 1000
+            }
+
+            try {
+                PrinterClass.getPrinter()?.sendData(
+                    builder,
+                    timeOut, status
+                )
+
+                PrinterClass.closePrinter()
+                viewModel.downloadFinished(false)
+                if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
+                    findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
+                }
+
+                //PrinterClass.getPrinter()?.sendData(builder, 0, status, battery)
+            } catch (e: Exception) {
+                viewModel.downloadFinished(false)
+                if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
+                    findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
+                }
+                /*PrinterClass.closePrinter()
+                e.printStackTrace()
+                Log.e(TAG, "PrinterError: " + e.localizedMessage)
+               */
+            }
+
+
+        } catch (e: Exception) {
+            e.printStackTrace()
+            viewModel.downloadFinished(false)
+            if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
+                findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
+            }
+        }
+
+    }
+
+    private fun generateKitchenReceiptSunmi(
+        customerReceiptPrinters: PrinterResponse.Data.KitchenReceiptPrinters,
+        type: String,
+        receiptModel: CreateOrderResponse.Data
+    ) {
+        try {
+
+            if (kitchenSettingModel.showOrderType) {
+                PrintSunmiUtils.printOrderType(receiptModel?.order?.orderType.toString())
+            }
+            PrintSunmiUtils.printOrderType(receiptModel?.order?.deliveryType.toString())
+
+            PrintSunmiUtils.orderId(
+                padLine(
+                    "OrderID:" + receiptModel?.order?.id,
+                    "",
+                    if (kitchenSettingModel.fonts == LARGE) {
+                        23
+                    } else {
+                        48
+                    }
+                ).toString()
+            )
+
+            PrintSunmiUtils.receiptID(
+                padLine(
+                    "ReceiptID:" + receiptModel?.order?.offlineId,
+                    "",
+                    if (kitchenSettingModel.fonts == LARGE) {
+                        23
+                    } else {
+                        48
+                    }
+                ).toString()
+            )
+
+            if (kitchenSettingModel.showTeamMember) {
+
+                PrintSunmiUtils.employee(
+                    padLine(
+                        "Employee:" + receiptModel?.order?.employee?.name, "",
+                        if (kitchenSettingModel.fonts == LARGE) {
+                            23
+                        } else {
+                            48
+                        }
+                    ).toString()
+                )
+
+
+            }
+
+
+            PrintSunmiUtils.orderTime(
+                padLine(
+                    Constants.getReceiptFormatDateFromUTCServer(
+                        requireContext(),
+                        receiptModel?.order?.createdAt.toString()
+                    ),
+                    "",
+                    if (kitchenSettingModel.fonts == LARGE) {
+                        23
+                    } else {
+                        48
+                    }
+                ).toString()
+            )
+
+            PrintSunmiUtils.addHorizontal()
+
+            receiptModel?.order?.orderItems?.let {
+                addOrdersForKitchen(
+                    it
+                )
+            }
+
+            if (receiptModel?.order?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote) {
+
+                PrintSunmiUtils.orderNote(receiptModel?.order?.note.toString())
+
+            }
+
+
+            if (kitchenSettingModel.showCustomerAddress != false or kitchenSettingModel.showCustomerPhone != false or kitchenSettingModel.showCustomerName) {
+                if (receiptModel?.order?.customer != null) {
+
+                    PrintSunmiUtils.customerDetails()
+
+
+                    if (kitchenSettingModel.showCustomerName) {
+
+                        PrintSunmiUtils.customerName(receiptModel?.order?.customer?.firstName + " " + receiptModel?.order?.customer?.lastName)
+
+
+                    }
+
+
+                    if (kitchenSettingModel.showCustomerPhone) {
+
+                        if (receiptModel?.order?.customer?.phones?.isNotEmpty()) {
+
+
+                            receiptModel?.order?.customer?.phones?.get(0)?.phoneNumber?.let {
+                                PrintSunmiUtils.customerPhone(
+                                    it
+                                )
+                            }
+                        }
+
+                    }
+
+
+                    if (kitchenSettingModel.showCustomerAddress) {
+
+                        if (receiptModel?.order?.orderType.trim().lowercase() == "Open Order".trim()
+                                .lowercase() && receiptModel?.order?.deliveryType.trim()
+                                .lowercase() == "Pickup".trim()
+                                .lowercase()
+                        ) {
+
+                        } else if (receiptModel.order?.customer?.addresses?.isNotEmpty()) {
+
+
+                            receiptModel?.order?.customer?.addresses?.get(0)?.fullAddress?.let {
+                                PrintSunmiUtils.customerAddress(
+                                    it
+                                )
+                            }
                         }
                     }
 
                 }
             }
 
-            builder.addFeedLine(2)
+            PrintSunmiUtils.cutPaper()
 
-            builder.addCut(Builder.CUT_FEED)
-
-            val status = IntArray(1)
-            val battery = IntArray(1)
+            viewModel.downloadFinished(false)
+            findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
 
 
-            try {
-                PrinterClass.getPrinter()?.sendData(
-                    builder,
-                    PrinterClass.SEND_TIMEOUT, status, battery
+        } catch (e: Exception) {
+            e.printStackTrace()
+            viewModel.downloadFinished(false)
+            findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
+        }
+
+    }
+
+    private fun generateKitchenReceiptSunmiInner(
+
+        receiptModel: CreateOrderResponse.Data
+    ) {
+        try {
+
+            if (kitchenSettingModel.showOrderType) {
+
+                PrintSunmiUtils.headerText(receiptModel?.order?.orderType.toString())
+            }
+            PrintSunmiUtils.headerText(receiptModel?.order?.deliveryType.toString())
+
+            PrintSunmiUtils.normalText(
+                padLine(
+                    "OrderID:" + receiptModel?.order?.id,
+                    "",
+                    if (kitchenSettingModel.fonts == LARGE) {
+                        23
+                    } else {
+                        48
+                    }
+                ).toString()
+            )
+
+            PrintSunmiUtils.normalText(
+                padLine(
+                    "ReceiptID:" + receiptModel?.order?.offlineId,
+                    "",
+                    if (kitchenSettingModel.fonts == LARGE) {
+                        23
+                    } else {
+                        48
+                    }
+                ).toString()
+            )
+
+            if (kitchenSettingModel.showTeamMember) {
+
+                PrintSunmiUtils.normalText(
+                    padLine(
+                        "Employee:" + receiptModel?.order?.employee?.name, "",
+                        if (kitchenSettingModel.fonts == LARGE) {
+                            23
+                        } else {
+                            48
+                        }
+                    ).toString()
                 )
 
-                PrinterClass.closePrinter()
-                viewModel.downloadFinished(false)
-                findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
 
-                //PrinterClass.getPrinter()?.sendData(builder, 0, status, battery)
-            } catch (e: Exception) {
-                viewModel.downloadFinished(false)
-                findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
-                /*PrinterClass.closePrinter()
-                e.printStackTrace()
-                Log.e(TAG, "PrinterError: " + e.localizedMessage)
-               */
             }
+
+
+            PrintSunmiUtils.normalText(
+                padLine(
+                    Constants.getReceiptFormatDateFromUTCServer(
+                        requireContext(),
+                        receiptModel?.order?.createdAt.toString()
+                    ),
+                    "",
+                    if (kitchenSettingModel.fonts == LARGE) {
+                        23
+                    } else {
+                        48
+                    }
+                ).toString()
+            )
+
+            PrintSunmiUtils.addHorizontalInner()
+
+            receiptModel?.order?.orderItems?.let {
+                addOrdersForKitchenInner(
+                    it
+                )
+            }
+
+            if (receiptModel?.order?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote) {
+
+                PrintSunmiUtils.orderNoteInner(receiptModel?.order?.note.toString())
+
+            }
+
+
+            if (kitchenSettingModel.showCustomerAddress != false or kitchenSettingModel.showCustomerPhone != false or kitchenSettingModel.showCustomerName) {
+                if (receiptModel?.order?.customer != null) {
+
+                    PrintSunmiUtils.customerDetailsInner()
+
+
+                    if (kitchenSettingModel.showCustomerName) {
+
+                        PrintSunmiUtils.normalText(receiptModel?.order?.customer?.firstName + " " + receiptModel?.order?.customer?.lastName)
+
+
+                    }
+
+
+                    if (kitchenSettingModel.showCustomerPhone) {
+
+                        if (receiptModel?.order?.customer?.phones?.isNotEmpty()) {
+
+
+                            receiptModel?.order?.customer?.phones?.get(0)?.phoneNumber?.let {
+                                PrintSunmiUtils.normalText(
+                                    it
+                                )
+                            }
+                        }
+
+                    }
+
+
+                    if (kitchenSettingModel.showCustomerAddress) {
+
+                        if (receiptModel?.order?.orderType.trim().lowercase() == "Open Order".trim()
+                                .lowercase() && receiptModel?.order?.deliveryType.trim()
+                                .lowercase() == "Pickup".trim()
+                                .lowercase()
+                        ) {
+
+                        } else if (receiptModel.order?.customer?.addresses?.isNotEmpty()) {
+
+
+                            receiptModel?.order?.customer?.addresses?.get(0)?.fullAddress?.let {
+                                PrintSunmiUtils.normalText(
+                                    it
+                                )
+                            }
+                        }
+                    }
+
+                }
+            }
+
+            PrintSunmiUtils.cutPaperInner()
+
+            viewModel.downloadFinished(false)
+            findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
 
 
         } catch (e: Exception) {
@@ -1591,13 +2283,12 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
     }
 
     private fun getKitchenReceiptSettings() {
-        viewModel.getKitchenReceiptSettings().observe(viewLifecycleOwner, {
+        viewModel.getKitchenReceiptSettings().observe(viewLifecycleOwner) {
 
             if (it != null) {
                 kitchenSettingModel = it
-
             }
-        })
+        }
     }
 
     private fun printerProgress() {
@@ -1615,4 +2306,51 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
         }
     }
 
+    private fun observeQueueCreate() {
+        viewModelPayment.queueStartSaveOrder.observe(viewLifecycleOwner) { event ->
+            event.getContentIfNotHandled()?.let {
+                createQueuePrinter(it)
+            }
+        }
+    }
+
+    private fun createQueuePrinter(createOrder: CreateOrderResponse) {
+        val listPrinter: List<Int> = listOf()
+        if (cartList.isNotEmpty()) {
+            val orderRequest = cartList?.let {
+
+                viewModelPayment.createOrderRequest(
+                    it[0],
+                    viewModel.subTotalPrice,
+                    viewModel.totalPrice,
+                    viewModel.totalServiceCharge,
+                    viewModel.totalTax,
+                    prefProvider.getValue(Constants.ORDER_TYPE, "").toString(),
+                    "",
+                    "",
+                    false,
+                    viewModel.totalDiscount,
+                    0.0,
+                    0,
+                    null,
+                    0.0,
+                    false,
+                    "Cash",
+                    cashDiscountType,
+                    isPrinterQueue = true,
+                    offlineId = createOrder.data.order.offlineId
+                )
+            }
+            val createRequest = CreateQueuePrinterRequestModel(
+                location_id = prefProvider.getValueInt(Constants.LOCATION_ID, 0),
+                order_type = prefProvider.getValue(ORDER_TYPE, ""),
+                printer_id = listPrinter,
+                order_item_attributes = orderRequest?.order?.orderItemsAttributes ?: listOf(),
+                order_data = orderRequest?.order ?: OrderAttributeRequestModel(),
+                terminal_id = prefProvider.getValueInt(Constants.TERMINAL_ID, 0)
+
+            )
+            viewModelPayment.createQueuePrinter(createRequest, createOrder)
+        }
+    }
 }

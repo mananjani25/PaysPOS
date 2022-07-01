@@ -15,10 +15,8 @@ import com.android.pos.R
 import com.android.pos.data.entities.CartModel
 import com.android.pos.data.entities.RedeemLoyaltyInfo
 import com.android.pos.data.entities.TbItem
-import com.android.pos.data.model.requestModel.OrderRequestModel
-import com.android.pos.data.model.requestModel.PaymentAttributes
-import com.android.pos.data.model.requestModel.SpitByOrderPaymentModel
-import com.android.pos.data.model.requestModel.SpitByOrderRequestModel
+import com.android.pos.data.model.requestModel.*
+import com.android.pos.data.model.responseModel.CreateOrderResponse
 import com.android.pos.data.remote.Constants
 import com.android.pos.databinding.FragmentCheckoutDetailsNewBinding
 import com.android.pos.di.ApiModule1
@@ -157,6 +155,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         paymentClick()
         splitClick()
         observeShowProgress()
+        observeQueueCreate()
         observeData()
         callback()
     }
@@ -1248,6 +1247,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
     private fun makePaymentCreditCard() {
         paymentAmount -= tipAmount
+        paymentAmount = MethodUtils.roundOffAmountDouble(paymentAmount)
         paymentType = "Card"
         Log.e(TAG, "cartList:  ${Gson().toJson(cartList)}")
         Log.e(TAG, "cartListcartItems:  ${Gson().toJson(cartItems)}")
@@ -1791,6 +1791,55 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
     override fun OnDeviceList(mlist: MutableList<IDevice>?) {
         if (mlist != null) {
             setupList(mlist)
+        }
+    }
+
+    private fun observeQueueCreate() {
+        paymentviewModel.queueStartSaveOrder.observe(viewLifecycleOwner) { event ->
+            event.getContentIfNotHandled()?.let {
+                createQueuePrinter(it)
+            }
+        }
+    }
+
+    private fun createQueuePrinter(createOrder: CreateOrderResponse) {
+        val listPrinter: List<Int> = listOf()
+        Log.e(TAG,"cartListcartList  ${Gson().toJson(cartList)}")
+        if (cartList != null) {
+            val orderRequest = cartList?.let {
+
+                paymentviewModel.createOrderRequest(
+                    it,
+                    viewModel.subTotalPrice,
+                    viewModel.totalPrice,
+                    viewModel.totalServiceCharge,
+                    viewModel.totalTax,
+                    prefProvider.getValue(Constants.ORDER_TYPE, "").toString(),
+                    "",
+                    "",
+                    false,
+                    viewModel.totalDiscount,
+                    0.0,
+                    0,
+                    null,
+                    0.0,
+                    false,
+                    "Cash",
+                    cashDiscountType,
+                    isPrinterQueue = true,
+                    offlineId = createOrder.data.order.offlineId
+                )
+            }
+            val createRequest = CreateQueuePrinterRequestModel(
+                location_id = prefProvider.getValueInt(Constants.LOCATION_ID, 0),
+                order_type = prefProvider.getValue(Constants.ORDER_TYPE, ""),
+                printer_id = listPrinter,
+                order_item_attributes = orderRequest?.order?.orderItemsAttributes ?: listOf(),
+                order_data = orderRequest?.order ?: OrderAttributeRequestModel(),
+                terminal_id = prefProvider.getValueInt(Constants.TERMINAL_ID, 0)
+
+            )
+            paymentviewModel.createQueuePrinter(createRequest, createOrder)
         }
     }
 }

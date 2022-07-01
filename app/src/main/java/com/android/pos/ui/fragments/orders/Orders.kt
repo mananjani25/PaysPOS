@@ -23,6 +23,7 @@ import com.android.pos.data.remote.Constants.KEY
 import com.android.pos.databinding.FragmentInventoryBinding
 import com.android.pos.di.RolePermission
 import com.android.pos.ui.adapter.InventoryAdapter
+import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.statusUtils.Status
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -166,9 +167,11 @@ class Orders : Fragment() {
 
     private fun configureToolbar() {
         binding.commonToolbar.imgDrawer.setOnClickListener {
+            if (MethodUtils.isDoubleClick()) return@setOnClickListener
             findNavController().navigate(R.id.action_orders_to_menuposbold)
         }
         binding.commonToolbar.txtHome.setOnClickListener {
+            if (MethodUtils.isDoubleClick()) return@setOnClickListener
             findNavController().navigate(R.id.action_orders_to_dashboardCategoryNew)
         }
 

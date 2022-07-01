@@ -124,6 +124,7 @@ class LoginFragment : Fragment() {
 
     private fun firebaseToken() {
 
+        
         FirebaseMessaging.getInstance().token.addOnCompleteListener(OnCompleteListener { task ->
             if (!task.isSuccessful) {
                 Log.w("FirebaseMessaging", "Fetching FCM registration token failed", task.exception)

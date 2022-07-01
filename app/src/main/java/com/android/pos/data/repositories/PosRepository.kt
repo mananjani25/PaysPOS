@@ -14,6 +14,7 @@ import com.android.pos.data.model.requestModel.*
 import com.android.pos.data.model.responseModel.*
 import com.android.pos.data.remote.ApiHelper
 import com.android.pos.data.remote.Constants.DINE_IN
+import com.android.pos.data.remote.Constants.TERMINAL_ID
 import com.android.pos.di.PrefProvider
 import com.android.pos.utils.performGetOperation
 import com.android.pos.utils.performGetOperationDatabase
@@ -52,7 +53,7 @@ class PosRepository @Inject constructor(
         databaseQuery = {
             appDatabase.printerDao().customerPrintList
         },
-        networkCall = { apiHelperNew.getPrinterData() },
+        networkCall = { apiHelperNew.getPrinterData(prefProvider.getValueInt(TERMINAL_ID, 0)) },
         saveCallResult = {
             appDatabase.printerDao().addCustomerPrinterList(it.data.customerReceiptPrinters)
             it.data.kitchenReceiptPrinters?.let { it1 ->
@@ -111,7 +112,11 @@ class PosRepository @Inject constructor(
     /*fun syncVenueDetails() =
         performGetOperationNew(networkCall = { apiHelperNew.syncVenueDetails() })*/
 
-    suspend fun syncVenueDetails() = apiHelperNew.syncVenueDetails()
+    suspend fun syncVenueDetails() = apiHelperNew.syncVenueDetails(
+        prefProvider.getValueInt(
+            TERMINAL_ID, 0
+        )
+    )
 
     suspend fun getOnlineOrderNotificationCount() = apiHelperNew.getOnlineOrderCountNoti()
 
@@ -236,6 +241,11 @@ class PosRepository @Inject constructor(
     fun getItemByProductCode(productCode: String) =
         performGetOperationDatabase(databaseQuery = {
             appDatabase.itemDao().itemByProductCode(productCode)!!
+        })
+
+    fun getItemByCategoryId(id: Int) =
+        performGetOperationDatabase(databaseQuery = {
+            appDatabase.itemDao().getItemList(id)
         })
 
     fun modifierSetsList() =

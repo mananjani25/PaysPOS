@@ -21,7 +21,7 @@
                 android:layout_centerVertical="true"
                 android:layout_gravity="center"
                 android:background="?attr/selectableItemBackground"
-                android:padding="@dimen/_5sdp"
+                android:padding="@dimen/_8sdp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
@@ -60,13 +60,14 @@
                     style="@style/CustomFontBold"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_gravity="center"
                     android:background="?attr/selectableItemBackground"
+                    android:gravity="center"
                     android:paddingVertical="@dimen/_5sdp"
                     android:text="Unprinted Order"
-                    android:layout_gravity="center"
-                    android:gravity="center"
                     android:textColor="@color/txt_color_blue"
                     android:textSize="@dimen/_6mdpi"
+                    android:visibility="gone"
                     app:layout_constrainedWidth="true"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@+id/imgSync"
@@ -96,10 +97,10 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
+                    android:layout_marginHorizontal="@dimen/_10sdp"
                     android:background="?attr/selectableItemBackground"
                     android:gravity="center_vertical"
                     android:paddingVertical="@dimen/_5sdp"
-                    android:layout_marginHorizontal="@dimen/_10sdp"
                     android:text="@string/delete_all"
                     android:textColor="@color/txt_color_blue"
                     android:textSize="@dimen/_6mdpi"
@@ -134,24 +135,43 @@
             android:layout_height="1dp"
             android:background="@color/view" />
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:visibility="gone">
+
+            <Button
+                android:id="@+id/btnStartService"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Start" />
+
+            <Button
+                android:id="@+id/btnStopService"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/_10sdp"
+                android:text="Stop" />
+        </LinearLayout>
 
         <TextView
             android:id="@+id/txtTagLine"
             style="@style/CustomFontRegularStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginBottom="@dimen/_5sdp"
             android:paddingVertical="@dimen/_5sdp"
             android:text="@string/printer_queue_tag"
             android:textAlignment="center"
             android:textColor="@color/hint_color"
-            android:textSize="@dimen/_6mdpi"
-            android:layout_marginBottom="@dimen/_5sdp"
-            android:layout_gravity="center"/>
+            android:textSize="@dimen/_6mdpi" />
 
         <View
             android:layout_width="match_parent"
             android:layout_height="2dp"
-            android:background="@color/view"/>
+            android:background="@color/view" />
 
         <include
             android:id="@+id/includeHeader"
@@ -161,7 +181,7 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="2dp"
-            android:background="@color/view"/>
+            android:background="@color/view" />
 
 
         <androidx.recyclerview.widget.RecyclerView

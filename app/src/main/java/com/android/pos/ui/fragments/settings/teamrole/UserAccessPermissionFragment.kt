@@ -18,6 +18,7 @@ import com.android.pos.databinding.FragmentUserAccessPermissionBinding
 import com.android.pos.di.RolePermission
 import com.android.pos.ui.adapter.*
 import com.android.pos.utils.AlertUtils
+import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.extensions.liveSnackBar
 import com.android.pos.utils.extensions.showAlert
@@ -305,9 +306,9 @@ class UserAccessPermissionFragment : Fragment() {
 
     private fun showEmployeeListDialog() {
 
-        viewModel.showEmployeeListDialog.observe(viewLifecycleOwner, { event ->
+        viewModel.showEmployeeListDialog.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let { teamRole ->
-
+                if (MethodUtils.isDoubleClick()) return@observe
                 val bundle = Bundle()
                 bundle.putBoolean("isEdit", true)
                 bundle.putParcelable("teamRole", teamRole)
@@ -317,19 +318,19 @@ class UserAccessPermissionFragment : Fragment() {
                 )
 
             }
-        })
+        }
     }
 
-    private fun manageProgress(show: Boolean){
-        if(show){
+    private fun manageProgress(show: Boolean) {
+        if (show) {
             ProgressUtils.showProgressDialog(requireActivity())
-        }else if(deliverModuleResponse && deliverRolesResponse && deliverEmployeesResponse){
+        } else if (deliverModuleResponse && deliverRolesResponse && deliverEmployeesResponse) {
             //close progress after getting all responses
             ProgressUtils.dismissProgressDialog()
         }
     }
 
-    private fun setEditData(){
+    private fun setEditData() {
         //load result after getting all responses
         if (isEdit && deliverEmployeesResponse && deliverModuleResponse && deliverModuleResponse) {
             userPermissionObject =

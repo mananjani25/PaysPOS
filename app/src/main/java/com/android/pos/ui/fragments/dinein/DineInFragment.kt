@@ -31,6 +31,7 @@ import com.android.pos.di.PrefProvider
 import com.android.pos.di.RolePermission
 import com.android.pos.ui.adapter.DineInFloorNameListAdapter
 import com.android.pos.utils.AlertUtils
+import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.extensions.gone
 import com.android.pos.utils.extensions.showAlert
@@ -131,6 +132,7 @@ class DineInFragment : Fragment() {
             findNavController().navigate(R.id.action_dineInFragment_to_reportEODFragmeent)
         }
         binding.layoutHeader.txtMerge.setOnClickListener {
+            if (MethodUtils.isDoubleClick()) return@setOnClickListener
             loadFloorPlanDetails()
         }
         binding.layoutHeader.txthome.setOnClickListener {
@@ -229,10 +231,12 @@ class DineInFragment : Fragment() {
                                     arrayListOf()
                                 )
                             )
-                            findNavController().navigate(
-                                R.id.action_dineInFragment_to_mergeTableDialog,
-                                bundle
-                            )
+                            if (findNavController().currentDestination?.id == R.id.dineInFragment) {
+                                findNavController().navigate(
+                                    R.id.action_dineInFragment_to_mergeTableDialog,
+                                    bundle
+                                )
+                            }
 
                         } else {
                             AlertUtils.showCustomAlertWithListenerWithOK(
@@ -541,8 +545,14 @@ class DineInFragment : Fragment() {
                             status =
                                 "This table is locked by " + dineInFloorTableModel.lock_by_name + "."
                         } else {
-                            status =
-                                "This table is locked by " + dineInFloorTableModel.currentOrderDetails.employeeName + "."
+                            if (dineInFloorTableModel.currentOrderDetails != null) {
+                                status =
+                                    "This table is locked by " + dineInFloorTableModel.currentOrderDetails.employeeName + "."
+                            } else {
+                                status =
+                                    "This table is locked by " + dineInFloorTableModel.lock_by_name + "."
+                            }
+
                         }
 
 
@@ -571,8 +581,14 @@ class DineInFragment : Fragment() {
                         status =
                             "This table is locked by " + dineInFloorTableModel.lock_by_name + "."
                     } else {
-                        status =
-                            "This table is locked by " + dineInFloorTableModel.currentOrderDetails.employeeName + "."
+                        if (dineInFloorTableModel.currentOrderDetails != null) {
+                            status =
+                                "This table is locked by " + dineInFloorTableModel.currentOrderDetails.employeeName + "."
+                        } else {
+                            status =
+                                "This table is locked by " + dineInFloorTableModel.lock_by_name + "."
+                        }
+
                     }
 
 

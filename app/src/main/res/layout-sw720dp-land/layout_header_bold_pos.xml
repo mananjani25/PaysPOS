@@ -132,7 +132,7 @@
                 android:dropDownWidth="@dimen/_120sdp"
                 android:ellipsize="end"
                 android:fontFamily="@font/sf_pro_display_regular"
-                android:gravity="center"
+                android:gravity="start"
                 android:hint="Search by item"
                 android:imeOptions="actionDone"
                 android:inputType="text"

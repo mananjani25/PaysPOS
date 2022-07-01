@@ -29,8 +29,8 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
     suspend fun syncVenueData() =
         getResult { apiService.syncVenueData() }
 
-    suspend fun getPrinterData() =
-        getResult { apiService.getPrinterList() }
+    suspend fun getPrinterData(terminalId:Int) =
+        getResult { apiService.getPrinterList(terminalId) }
 
     suspend fun createPrinter(data: CreatePrinterRequestModel) = getResult {
         apiService.createPrinter(data)
@@ -57,8 +57,8 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
     suspend fun updateServiceChargeDininEnable(id: Int, enable_service_charge: Boolean) =
         getResult { apiService.updateServiceChargeDineinEnable(id, enable_service_charge) }
 
-    suspend fun syncVenueDetails() =
-        getResult { apiService.syncVenueDetails() }
+    suspend fun syncVenueDetails(terminalId:Int) =
+        getResult { apiService.syncVenueDetails(terminalId) }
 
 
     suspend fun updateTransactionLockScreen(lock_screen_after_each_transaction: Boolean) =

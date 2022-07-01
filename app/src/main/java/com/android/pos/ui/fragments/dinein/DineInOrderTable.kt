@@ -11,6 +11,7 @@ import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.ColorDrawable
 import android.os.Build
 import android.os.Bundle
+import android.util.Base64
 import android.util.Log
 import android.view.*
 import android.widget.CheckBox
@@ -22,6 +23,7 @@ import androidx.databinding.DataBindingUtil
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.RecyclerView
@@ -48,6 +50,7 @@ import com.android.pos.data.remote.Constants.IS_GUEST_PAYMNET
 import com.android.pos.data.remote.Constants.IS_PRINTER_QUEUE_ENABLE
 import com.android.pos.data.remote.Constants.LOCATION_ID
 import com.android.pos.data.remote.Constants.MERGEDANDOCCUPIED
+import com.android.pos.data.remote.Constants.ORDER_TYPE
 import com.android.pos.data.remote.Constants.ORDER_TYPE_ID
 import com.android.pos.data.remote.Constants.ORDER_TYPE_NAME
 import com.android.pos.data.remote.Constants.PRINT_DATA_DINE_IN
@@ -67,10 +70,15 @@ import com.epson.eposprint.Print
 import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
+import com.sunmi.externalprinterlibrary.api.ConnectCallback
+import com.sunmi.externalprinterlibrary.api.SunmiPrinter
+import com.sunmi.externalprinterlibrary.api.SunmiPrinterApi
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
+import java.util.stream.Collectors
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -145,7 +153,6 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         )
         binding.lifecycleOwner = this
         progressDialog()
-
         optionType = prefProvider.getValue(Constants.OPTION_TYPE, "")
         observeShowProgress()
         setupSnackbar()
@@ -171,64 +178,41 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
 
     private fun getCustomerList() {
-        viewModel.customer().observe(viewLifecycleOwner, {
+        viewModel.customer().observe(viewLifecycleOwner) {
             if (it.isNotEmpty()) {
                 allCustomerList = it.toCollection(arrayListOf())
             }
-        })
+        }
     }
 
     private fun getKitchenReceiptSettings() {
-        viewModel.getKitchenReceiptSettings().observe(viewLifecycleOwner, {
-
+        viewModel.getKitchenReceiptSettings().observe(viewLifecycleOwner) {
             if (it != null) {
                 kitchenSettingModel = it
                 getKitchenPrinters()
             }
-        })
+        }
     }
 
     private fun observeServiceCharge() {
         viewModel.getServiceChargeList.observe(viewLifecycleOwner) {
             if (it.data?.isNotEmpty() == true) {
                 if (it.status == Status.SUCCESS) {
-                    if (prefProvider.getValue(Constants.ORDER_TYPE, Constants.TAKEOUT) == DINE_IN) {
-                        if (prefProvider.getValueboolean(
-                                Constants.SERVICECHARGE_DINEIN_ORDER,
-                                false
-                            )
-                        ) {
-                            serviceChargeList = arrayListOf()
-                            it.data.forEach { service ->
-                                if (service.order_type == Constants.SERVICECHARGE_DINEIN_ORDER) {
-                                    serviceChargeList = it.data.toCollection(arrayListOf())
-                                    dineInTableAdapter.setSurchargeList(serviceChargeList)
-                                }
+                    if (prefProvider.getValueboolean(
+                            Constants.SERVICECHARGE_DINEIN_ORDER,
+                            false
+                        )
+                    ) {
+                        Log.e(TAG, "getServiceCharge:  ${Gson().toJson(it.data)}")
+                        serviceChargeList = arrayListOf()
+                        it.data.forEach { service ->
+                            if (service.order_type == Constants.SERVICECHARGE_DINEIN_ORDER) {
+                                serviceChargeList = it.data.toCollection(arrayListOf())
+                                dineInTableAdapter.setSurchargeList(serviceChargeList)
                             }
-                        }
-                    } else {
-                        if (prefProvider.getValueboolean(
-                                Constants.SERVICECHARGE_TAKEOUT_OPENORDER,
-                                false
-                            )
-                        ) {
-                            if (prefProvider.getValueboolean(
-                                    Constants.SERVICECHARGE_TAKEOUT_OPENORDER,
-                                    false
-                                )
-                            ) {
-                                serviceChargeList = arrayListOf()
-                                it.data?.forEach { service ->
-                                    if (service.order_type == Constants.SERVICECHARGE_TAKEOUT_OPENORDER) {
-                                        serviceChargeList = it.data.toCollection(arrayListOf())
-                                        dineInTableAdapter.setSurchargeList(serviceChargeList)
-                                    }
-                                }
-                            }
-
-
                         }
                     }
+
                 }
 
             }
@@ -257,8 +241,15 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 orderId?.let { viewModel.apiCallOrderDetails(it) }
 
             } else {
-                orderId = floorPlanModel?.currentOrderDetails?.orderId
-                floorPlanModel?.currentOrderDetails?.orderId?.let { viewModel.apiCallOrderDetails(it) }
+                if (floorPlanModel?.currentOrderDetails != null) {
+                    orderId = floorPlanModel?.currentOrderDetails?.orderId
+                    floorPlanModel?.currentOrderDetails?.orderId?.let {
+                        viewModel.apiCallOrderDetails(
+                            it
+                        )
+                    }
+                }
+
                 // binding.txtTitle.setText("" + floorPlanModel?.tableName)
             }
 
@@ -331,6 +322,24 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
         binding.btnPayNew.setOnClickListener {
             //new Calculation for total Discount
+            var listWT: ArrayList<TbItem> = arrayListOf()
+            var list = dineInTableAdapter.getList()
+
+            for (i in 0 until list.size) {
+                if (list.get(i).title.equals("Whole Table", true) && i + 1 <= list.size) {
+                    if (list[i + 1].isHeader == 1) {
+                        for (j in i + 1 until list.size) {
+                            if (list.get(j).isHeader == 1) {
+                                listWT.add(list.get(j).item!!)
+                            } else {
+                                break
+                            }
+                        }
+                    }
+                }
+            }
+            Log.e(TAG, "listWTItems ${Gson().toJson(listWT)}")
+
             var dividedOrderDiscount = 0.0
 
             if (paidGuestAmount > 0 && globalOrderDiscount > 0.0) {
@@ -343,9 +352,16 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
                 var wholeDisDivide =
                     MethodUtils.roundOffAmountDouble(wholeTableDiscount / (getOrderDetailsResponse?.guestAttributes?.size!! - 1))
-                dividedOrderDiscount -= wholeDisDivide
+                if (wholeDisDivide > dividedOrderDiscount) {
+                    dividedOrderDiscount = wholeDisDivide - dividedOrderDiscount
+                } else {
+                    dividedOrderDiscount -= wholeDisDivide
+                }
+                totalDiscount -= wholeDisDivide
+                subTotalDInin -= dividedOrderDiscount
                 Log.e("dividedOrderDiscount", "dividedOrderDiscount  ${dividedOrderDiscount}")
                 Log.e("WRqwrfarf", "wholeDisDivide  ${wholeDisDivide}")
+                Log.e(TAG, "subtotal :: " + subTotalDInin)
             }
 
             Log.e("WholeTableDis", "wholeDis  ${wholeTableDiscount}")
@@ -363,7 +379,108 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             cartList = getCartModel(adapterList.toCollection(arrayListOf()))
             cartList?.note = order_note
             Log.e(TAG, "getcartList  ${Gson().toJson(cartList)}")
+            cartList!!.taxlistDynamic = listOf()
+            var temp_itemsList: ArrayList<TbItem> = arrayListOf()
+            cartList?.dineInList?.forEach { dineModel ->
+                if (!dineModel.isPaid) {
+                    temp_itemsList.addAll(dineModel.items)
+                }
+            }
+
+
+            temp_itemsList.forEach { item ->
+                cartList = taxBifurcationCalculation(
+                    item,
+                    cartList!!
+                )
+            }
+
+
+            Log.d(TAG, "onClick: listof Tax:  " + Gson().toJson(cartList?.taxlistDynamic))
+
+            var listreemaining: List<TaxData> = emptyList()
+            listWT.forEach { wholetableitems ->
+                wholetableitems.taxes?.forEachIndexed { index, taxData ->
+                    var modifierPrice: Double = 0.0
+                    var totaltaxtemp: Double = 0.0
+                    val price =
+                        (wholetableitems.price * wholetableitems.itemQuantity) - (wholetableitems.discountPrice * wholetableitems.itemQuantity)
+
+                    wholetableitems.modifiers.forEach {
+                        modifierPrice += (it.price * it.itemQuantity)
+                    }
+
+                    val totalPrice =
+                        price + modifierPrice
+                    totaltaxtemp += if (taxData.taxType == "Percentage") {
+                        if (totalPrice < 0.0) {
+
+                            String.format("%.2f", 0.00)
+                                .toDouble()
+                        } else {
+                            val itemTaxPrice =
+                                (taxData.rate * totalPrice) / 100
+                            Log.e("itemTaxPrice", "" + itemTaxPrice)
+                            String.format("%.2f", itemTaxPrice)
+                                .toDouble()
+                        }
+
+                    } else {
+                        Log.d("yash", "taxCalculation: " + taxData.taxType)
+                        if (totalPrice <= 0.0) {
+                            String.format("%.2f", 0.00)
+                                .toDouble()
+                        } else {
+                            String.format("%.2f", taxData.rate * wholetableitems.itemQuantity)
+                                .toDouble()
+                        }
+
+                    }
+
+                    Log.d(TAG, "onClick: wholetable total tax $totaltaxtemp")
+                    var found = -1
+                    totaltaxtemp /= (getOrderDetailsResponse?.guestAttributes?.size!! - 1)
+                    var temp_remaining = totaltaxtemp * paidGuestAmount
+                    var temp_subtotal =
+                        totalPrice / (getOrderDetailsResponse?.guestAttributes?.size!! - 1)
+                    cartList?.taxlistDynamic?.forEachIndexed { indexcart, cartTaxtData ->
+                        if (cartTaxtData.taxType == taxData.taxType) {
+                            found = indexcart
+                        }
+                    }
+                    if (found != -1) {
+                        if (found <= cartList?.taxlistDynamic?.size!! - 1) {
+                            if (cartList?.taxlistDynamic?.get(found)?.taxType != "Percentage") {
+                                cartList?.taxlistDynamic?.get(found)?.subTotalAmount =
+                                    cartList?.taxlistDynamic?.get(found)?.subTotalAmount!!.plus(
+                                        temp_subtotal
+                                    )
+                            }
+                            cartList?.taxlistDynamic?.get(found)?.totalTaxTypePrice =
+                                cartList?.taxlistDynamic?.get(found)?.totalTaxTypePrice!!.minus(
+                                    temp_remaining
+                                )
+                        }
+
+                    } else {
+                        var data = taxData
+                        data.subTotalAmount = temp_subtotal
+                        data.totalTaxTypePrice = temp_remaining
+                        listreemaining = listOf(data)
+                    }
+
+                }
+            }
+
+            listreemaining.forEach { remainingdata ->
+                cartList?.taxlistDynamic =
+                    concatenate(cartList?.taxlistDynamic!!, listOf(remainingdata))
+            }
+
+
+            Log.d(TAG, "onClick: listof Tax: after  " + Gson().toJson(cartList?.taxlistDynamic))
             viewModelPayment.addCart(cartList!!)
+            Log.e(TAG, "getcartListAfterAdd  ${Gson().toJson(cartList)}")
 
             totalTax = 0.0
             var subTotal = 0.0
@@ -440,7 +557,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             } else {
                 divideCashDiscount = 0.0
             }
-
+            var dineInOrderModel = DineInPaymentUpdateModel()
+            dineInOrderModel.id = orderId
             var model = GuestPaymentRequest(
                 GuestPaymentAttributes().apply {
                     amount = MethodUtils.roundOffAmountDouble(toFinalAmt)
@@ -462,7 +580,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
 
                 },
-                DineInPaymentUpdateModel()
+                dineInOrderModel
             )
             Log.e(TAG, "getPassmodel  ${Gson().toJson(model)}")
             val bundle = Bundle()
@@ -520,7 +638,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             bundle.putInt(GUEST_POSITION, 0)
             prefProvider.setValue(Constants.ORDER_TYPE, Constants.DINE_IN)
 
-            findNavController().navigate(R.id.action_dineInOrderTable_to_checkoutDineIN, bundle)
+            if (findNavController().currentDestination?.id == R.id.dineInOrderTable)
+                findNavController().navigate(R.id.action_dineInOrderTable_to_checkoutDineIN, bundle)
 
 
         }
@@ -685,6 +804,129 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         binding.llInfo.setOnClickListener {
             showPopupWindow(it)
         }
+    }
+
+    private fun getTotalTaxBirfurcation(item: TbItem, itemtype: TaxData): Double {
+        var totaltaxtemp: Double = 0.0
+        var modifierPrice = 0.0
+        val price =
+            (item.price * item.itemQuantity) - (item.discountPrice * item.itemQuantity)
+
+        item.modifiers.forEach {
+            modifierPrice += (it.price * it.itemQuantity)
+        }
+
+        val totalPrice =
+            price + modifierPrice /*- (discountPrice * item.itemQuantity)*/
+
+
+        totaltaxtemp += if (itemtype.taxType == "Percentage") {
+            if (totalPrice < 0.0) {
+
+                String.format("%.2f", 0.00)
+                    .toDouble()
+            } else {
+                val itemTaxPrice =
+                    (itemtype.rate * totalPrice) / 100
+                Log.e("itemTaxPrice", "" + itemTaxPrice)
+                String.format("%.2f", itemTaxPrice)
+                    .toDouble()
+            }
+
+        } else {
+            Log.d("yash", "taxCalculation: " + itemtype.taxType)
+            if (totalPrice <= 0.0) {
+                String.format("%.2f", 0.00)
+                    .toDouble()
+            } else {
+                String.format("%.2f", itemtype.rate * item.itemQuantity)
+                    .toDouble()
+            }
+
+        }
+        return totaltaxtemp
+    }
+
+    private fun taxBifurcationCalculation(
+        item: TbItem,
+        cartModel: CartModel
+    ): CartModel {
+        item.taxes?.forEachIndexed { indextax, itemtype ->
+            if (itemtype.isActive) {
+                if (cartModel.taxlistDynamic?.isNotEmpty() == true) {
+                    var found = -1
+                    cartModel.taxlistDynamic!!.forEachIndexed { index, itemData ->
+                        if (itemtype.orderTaxId == itemData.orderTaxId) {
+                            found = index
+                        }
+                    }
+                    Log.d(TAG, "taxBifurcationCalculation: " + found)
+                    if (found == -1) {
+                        if (itemtype.taxType != "Percentage") {
+                            var modifierPrice: Double = 0.0
+                            val price =
+                                (item.price * item.itemQuantity) - (item.discountPrice * item.itemQuantity)
+
+                            item.modifiers.forEach {
+                                modifierPrice += (it.price * it.itemQuantity)
+                            }
+
+                            val totalPrice =
+                                price + modifierPrice
+
+                            itemtype.subTotalAmount = itemtype.subTotalAmount.plus(totalPrice)
+                        }
+                        itemtype.totalTaxTypePrice = getTotalTaxBirfurcation(item, itemtype)
+                        cartModel.taxlistDynamic =
+                            concatenate(cartModel.taxlistDynamic!!, listOf(itemtype))
+                    } else {
+                        if (itemtype.taxType != "Percentage") {
+                            var modifierPrice: Double = 0.0
+                            val price =
+                                (item.price * item.itemQuantity) - (item.discountPrice * item.itemQuantity)
+
+                            item.modifiers.forEach {
+                                modifierPrice += (it.price * it.itemQuantity)
+                            }
+                            val totalPrice =
+                                price + modifierPrice
+                            cartModel.taxlistDynamic!![found].subTotalAmount =
+                                cartModel.taxlistDynamic!![found].subTotalAmount?.plus(totalPrice)
+                        }
+
+                        cartModel.taxlistDynamic?.get(found)?.totalTaxTypePrice =
+                            cartModel.taxlistDynamic!![found].totalTaxTypePrice.plus(
+                                getTotalTaxBirfurcation(
+                                    item,
+                                    itemtype
+                                )
+                            )
+                    }
+                } else {
+                    if (itemtype.taxType != "Percentage") {
+                        var modifierPrice: Double = 0.0
+                        val price =
+                            (item.price * item.itemQuantity) - (item.discountPrice * item.itemQuantity)
+
+                        item.modifiers.forEach {
+                            modifierPrice += (it.price * it.itemQuantity)
+                        }
+
+                        val totalPrice =
+                            price + modifierPrice
+                        itemtype.subTotalAmount = itemtype.subTotalAmount?.plus(totalPrice)
+                    }
+                    itemtype.totalTaxTypePrice = getTotalTaxBirfurcation(item, itemtype)
+                    cartModel.taxlistDynamic = listOf(itemtype)
+                }
+            }
+
+        }
+        return cartModel
+    }
+
+    fun <T> concatenate(vararg lists: List<T>): List<T> {
+        return listOf(*lists).flatten()
     }
 
     @SuppressLint("SetTextI18n")
@@ -952,7 +1194,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         serviceChargeGuest: Double,
         divideDiscount2: Double,
         dividedGuestAmt: Double,
-        listItemWT: ArrayList<TbItem>
+        listItemWT: ArrayList<TbItem>,
+        listItemGuestSelected: ArrayList<TbItem>
     ) {
 
         //New Drag and Drop
@@ -1330,6 +1573,100 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         prefProvider.setValue(Constants.ORDER_TYPE, Constants.DINE_IN)
         bundle.putParcelable("dineinPaymentModel", dineinCartPaymentModel)
         cartList = getCartModel(adapterList.toCollection(arrayListOf()))
+
+        var temp_itemslist: ArrayList<TbItem> = arrayListOf()
+
+
+//        temp_itemslist.addAll(listItemWT)
+        temp_itemslist.addAll(listItemGuestSelected)
+        cartList?.taxlistDynamic = listOf()
+        temp_itemslist.forEach { item ->
+            cartList = taxBifurcationCalculation(item, cartList!!)
+        }
+
+        var remaining_list: List<TaxData> = emptyList()
+        Log.e(TAG, "getcartListbeforeAdd  ${Gson().toJson(cartList?.taxlistDynamic)}")
+        listItemWT.forEach { wholetableitems ->
+            wholetableitems.taxes?.forEachIndexed { index, taxData ->
+                var modifierPrice: Double = 0.0
+                var totaltaxtemp: Double = 0.0
+                val price =
+                    (wholetableitems.price * wholetableitems.itemQuantity) - (wholetableitems.discountPrice * wholetableitems.itemQuantity)
+
+                wholetableitems.modifiers.forEach {
+                    modifierPrice += (it.price * it.itemQuantity)
+                }
+
+                val totalPrice =
+                    price + modifierPrice
+                totaltaxtemp += if (taxData.taxType == "Percentage") {
+                    if (totalPrice < 0.0) {
+
+                        String.format("%.2f", 0.00)
+                            .toDouble()
+                    } else {
+                        val itemTaxPrice =
+                            (taxData.rate * totalPrice) / 100
+                        Log.e("itemTaxPrice", "" + itemTaxPrice)
+                        String.format("%.2f", itemTaxPrice)
+                            .toDouble()
+                    }
+
+                } else {
+                    Log.d("yash", "taxCalculation: " + taxData.taxType)
+                    if (totalPrice <= 0.0) {
+                        String.format("%.2f", 0.00)
+                            .toDouble()
+                    } else {
+                        String.format("%.2f", taxData.rate * wholetableitems.itemQuantity)
+                            .toDouble()
+                    }
+
+                }
+
+
+                var found = -1
+                totaltaxtemp /= (getOrderDetailsResponse?.guestAttributes?.size!! - 1)
+                var temp_remaining = totaltaxtemp
+                var temp_subtotal =
+                    totalPrice / (getOrderDetailsResponse?.guestAttributes?.size!! - 1)
+                cartList?.taxlistDynamic?.forEachIndexed { indexcart, cartTaxtData ->
+                    if (cartTaxtData.orderTaxId == taxData.orderTaxId) {
+                        found = indexcart
+                    }
+                }
+                Log.d(TAG, "onClick: wholetable total tax $totaltaxtemp")
+                if (found != -1) {
+                    if (found <= cartList?.taxlistDynamic?.size!! - 1) {
+                        if (cartList?.taxlistDynamic?.get(found)?.taxType != "Percentage") {
+                            cartList?.taxlistDynamic?.get(found)?.subTotalAmount =
+                                cartList?.taxlistDynamic?.get(found)?.subTotalAmount!!.plus(
+                                    temp_subtotal
+                                )
+                        }
+                        cartList?.taxlistDynamic?.get(found)?.totalTaxTypePrice =
+                            cartList?.taxlistDynamic?.get(found)?.totalTaxTypePrice!!.plus(
+                                temp_remaining
+                            )
+                    }
+                } else {
+                    var data = taxData
+                    data.subTotalAmount = temp_subtotal
+                    data.totalTaxTypePrice = temp_remaining
+                    remaining_list = listOf(data)
+                }
+
+            }
+        }
+        remaining_list.forEach { remainingdata ->
+            cartList?.taxlistDynamic =
+                concatenate(cartList?.taxlistDynamic!!, listOf(remainingdata))
+        }
+
+
+        Log.d(TAG, "getcartListAfterAdd: remaining : ${Gson().toJson(remaining_list)}")
+        Log.e(TAG, "getcartListAfterAdd  ${Gson().toJson(cartList?.taxlistDynamic)}")
+
         viewModelPayment.addCart(cartList!!)
         findNavController().navigate(
             R.id.action_dineInOrderTable_to_checkoutDineIN,
@@ -1790,32 +2127,35 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
                                         if (oi.orderItemTaxes.isNotEmpty()) {
                                             oi.orderItemTaxes.forEach { tax ->
+                                                var modifierPrice = 0.0
+                                                val price =
+                                                    (oi.price * oi.quantity)
+
+                                                oi.orderItemModifiers.forEach { mod ->
+                                                    modifierPrice += (mod.price * mod.quantity)
+                                                }
+
+                                                val totalPrice =
+                                                    price + modifierPrice - oi.discountAmount
+
                                                 if (!oi.isPaid) {
                                                     totalTaxWT += if (tax.taxType == "Percentage") {
-
-                                                        var modifierPrice = 0.0
-                                                        val price =
-                                                            (oi.price * oi.quantity)
-
-                                                        oi.orderItemModifiers.forEach { mod ->
-                                                            modifierPrice += (mod.price * mod.quantity)
-                                                        }
-
-                                                        val totalPrice =
-                                                            price + modifierPrice - oi.discountAmount
-
                                                         val itemTaxPrice =
                                                             (tax.rate * totalPrice) / 100
 
                                                         String.format("%.2f", itemTaxPrice)
                                                             .toDouble()
                                                     } else {
-
-                                                        String.format(
-                                                            "%.2f",
-                                                            oi.price * it.quantity
-                                                        )
-                                                            .toDouble()
+                                                        if (totalPrice <= 0.0) {
+                                                            String.format("%.2f", 0.00)
+                                                                .toDouble()
+                                                        } else {
+                                                            String.format(
+                                                                "%.2f",
+                                                                tax.rate * oi.quantity
+                                                            )
+                                                                .toDouble()
+                                                        }
                                                     }
 
                                                 }
@@ -1918,10 +2258,6 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                         }
                     }
 
-                    Log.e("TODO", "totalSubTotal ${totalSubTotal}")
-                    Log.e("TODO", "totalTaxAmount ${totalTaxAmount}")
-                    Log.e("TODO", "totalServiceChargeAmount ${totalServiceChargeAmount}")
-                    Log.e("TODO", "orderDiscount ${orderDiscount}")
 
                     var finalAmount =
                         totalSubTotal + totalTaxAmount + totalServiceChargeAmount - orderDiscount
@@ -1936,7 +2272,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     dineInList.get(0).wholeTableSurTax =
                         serviceChargeWT / (baseResponse.guestAttributes.size - 1)
                     Log.e("WholeDiscount", "wholeTableDiscount  ${wholeTableDiscount}")
-                    dineInList.get(0).wholeTableDiscont = MethodUtils.roundOffAmountDouble(wholeTableDiscount / (baseResponse.guestAttributes.size - 1))
+                    dineInList.get(0).wholeTableDiscont =
+                        MethodUtils.roundOffAmountDouble(wholeTableDiscount / (baseResponse.guestAttributes.size - 1))
 
                     dineInList.get(0).orderDiscount = orderDiscount
                     dineInList.get(0).orderTotalAmount =
@@ -2039,7 +2376,6 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                             var guestTax = totalTaxAmount - totalTaxWT
                             finalTaxAmt = (tempTax * unpaidCount) + guestTax
                             //finalTaxAmt = (subTotalWT / totalGuestCount) * unpaidCount + totalTaxAmt
-
                         }
 
                         var perGuestorderDis =
@@ -2105,749 +2441,6 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
     }
 
-
-    private fun navigateDineInOrder() {
-        viewModel.Basedata.observe(viewLifecycleOwner) { event ->
-            event.getContentIfNotHandled()?.let { baseResponse ->
-                if (baseResponse != null) {
-                    getOrderDetailsResponse = baseResponse
-                    subTotalWT = 0.0
-                    serviceCharge = 0.0
-                    totalDiscount = 0.0
-
-                    if (baseResponse.floorPlanTable.status == MERGEDANDOCCUPIED) {
-                        binding.imgMergeTable.visibility = View.VISIBLE
-                        binding.imgMergeTable.setImageDrawable(
-                            requireContext().resources.getDrawable(
-                                R.drawable.ic_unmerge
-                            )
-                        )
-                    } else {
-                        binding.imgMergeTable.visibility = View.GONE
-                    }
-
-                    if (baseResponse.floorPlanTable.status == MERGEDANDOCCUPIED) {
-
-                        var listTableMerge: ArrayList<String> = arrayListOf()
-                        listTableMerge.add(baseResponse.floorPlanTable.tableNumber.toString())
-                        baseResponse.floorPlanTable?.merged_child_table_details.forEach {
-                            listTableMerge.add(it.table_number.toString())
-
-                        }
-                        var txtMergedTbNo = android.text.TextUtils.join(",", listTableMerge)
-                        binding.txtTitle.text = "Table " + txtMergedTbNo
-
-                    } else {
-                        binding.txtTitle.text = baseResponse.floorPlanTable.tableName
-                    }
-
-
-                    getOrderDetailsResponse = baseResponse
-                    /*binding.txtTitle.text = baseResponse.*/
-                    var list: ArrayList<DineInModel> = arrayListOf()
-
-                    var wholeTableAmt = 0.0
-
-                    var paidAmt = 0.0
-                    var wholeTablePosition: Int = 0
-                    //New Drag and drop Code
-                    var totalPay = 0.0
-                    var itemsDiscount = 0.0
-                    var isPaidCount = 0.0
-                    var isUnpaidCount = 0.0
-                    var WholeTableAmount = 0.0
-                    val dineInList: ArrayList<DineInModel> = arrayListOf()
-
-                    for (i in 0 until baseResponse.guestAttributes.size) {
-                        val model = DineInModel()
-                        var totalGuestPrice = 0.0
-                        var guestItem = baseResponse.guestAttributes.get(i).guestItemAttributes
-                        //model.isPaid = listTbItem.get(0).isPaid
-
-                        model.title = baseResponse.guestAttributes.get(i).name
-                        model.isHeader = 0
-
-                        if (baseResponse?.guestAttributes?.get(i)?.customerId != null && baseResponse.guestAttributes.get(
-                                i
-                            ).customerId != 0
-                        ) {
-                            allCustomerList.forEach {
-                                if (it.id == baseResponse.guestAttributes.get(i).customerId) {
-                                    model.customer = it
-                                }
-                            }
-
-                        }
-
-
-                        var fullAmt = 0.0
-
-
-                        for (j in 0 until guestItem.size) {
-                            if (baseResponse.orderItems.isNotEmpty()) {
-                                baseResponse.orderItems.forEach { it ->
-                                    if (it.timestamp == guestItem[j].timestamp) {
-
-                                        model.isPaid = it.isPaid
-                                        if (!it.isPaid) {
-                                            totalGuestPrice += (it.price * it.quantity)
-                                            fullAmt += it.quantity * it.price
-                                            subTotalWT += (it.quantity * it.price)
-                                            discountsubTotalWT += it.discountAmount
-                                            itemsDiscount += it.discountAmount
-
-                                        }
-
-
-                                        if (it.orderItemModifiers.isNotEmpty()) {
-                                            it.orderItemModifiers.forEach { it1 ->
-                                                if (!it.isPaid) {
-                                                    totalGuestPrice += (it1.price * it1.quantity)
-                                                    fullAmt += it1.quantity * it1.price
-                                                    subTotalWT += it1.quantity * it1.price
-
-
-                                                }
-                                            }
-                                        }
-                                        if (it.orderItemTaxes.isNotEmpty()) {
-                                            it.orderItemTaxes.forEach { tax ->
-                                                if (!it.isPaid) {
-                                                    totalTaxAmt += tax.rate
-                                                    fullAmt += tax.rate
-
-                                                }
-
-                                            }
-                                        }
-
-
-                                    }
-
-                                    if (it.isPaid) {
-                                        notPayAnyAmount = true
-                                    } else {
-
-
-                                    }
-                                }
-
-                            }
-                        }
-
-                        serviceCharge = 0.0
-
-                        totalPay += fullAmt
-
-
-                        Log.e("NewsubTotalWT", "subTotalWT  ${subTotalWT}")
-                        Log.e("NewSubTotaldisubTotalWT", "${discountsubTotalWT}")
-                        var dividedAmt =
-                            (subTotalWT) / (baseResponse.guestAttributes.size - 1)
-                        model.guestDividedAmt = dividedAmt
-                        Log.d("one", "NewSubTotalDivided: " + dividedAmt)
-                        totalGuestPrice +=
-                            fullAmt / (baseResponse.guestAttributes.size - 1)
-
-                        model.totalGuestPrice = totalGuestPrice
-                        if (serviceChargeList.isNotEmpty()) {
-                            model.serviceChargeList = serviceChargeList
-                        }
-
-                        model.id = baseResponse.guestAttributes[i].id
-
-                        dineInList.add(model)
-
-
-
-                        for (j in 0 until guestItem.size) {
-                            baseResponse.orderItems.forEach {
-                                val itemDineIn: DineInModel = DineInModel()
-                                if (it.timestamp == guestItem[j].timestamp) {
-
-                                    val item = TbItem()
-                                    item.isPaid = it.isPaid
-                                    item.discountPrice = it.discountAmount
-                                    item.discountId = it.discountId
-                                    item.discountType = it.discountType.toString()
-
-                                    item.name = it.itemName
-                                    item.itemId = it.itemId
-                                    item.categoryId = it.categoryId
-                                    item.guestItemId = guestItem[j].id
-
-                                    var listTaxes: ArrayList<TaxData> = arrayListOf()
-                                    it.orderItemTaxes.forEach {
-                                        listTaxes.add(
-                                            TaxData(
-                                                createdAt = it.createdAt,
-                                                id = it.id,
-                                                locationId = prefProvider.getValueInt(
-                                                    LOCATION_ID,
-                                                    0
-                                                ),
-                                                name = it.name,
-                                                rate = it.rate,
-                                                taxType = it.taxType,
-                                                updatedAt = it.updatedAt,
-                                                isActive = true,
-                                                isDefault = it.isDefault,
-                                                isCustomAmount = false,
-                                                itemPricing = "",
-                                                itemIds = arrayListOf(),
-                                                orderTaxId = it.taxId
-                                            )
-                                        )
-                                    }
-
-
-
-                                    item.taxes = listTaxes
-
-
-
-                                    if (it.orderItemModifiers.isNotEmpty()) {
-                                        var modifiers: ArrayList<Modifier> = arrayListOf()
-                                        it.orderItemModifiers.forEach { mod ->
-                                            val model = Modifier()
-                                            model.id = mod.id
-                                            model.itemQuantity = mod.quantity
-                                            model.name = mod.name
-                                            model.orderModifierId = mod.orderItemId
-                                            model.price = mod.price
-
-
-                                            if (mod.orderItemTaxes.isNotEmpty()) {
-                                                model.orderItemTaxes = mod.orderItemTaxes
-                                            }
-
-                                            modifiers.add(model)
-
-
-                                        }
-                                        item.modifiers = modifiers
-
-                                    }
-                                    item.price = it.price
-                                    item.itemQuantity = it.quantity
-                                    item.orderItemId = it.id
-                                    item.note = it.note
-                                    item.isFired = guestItem.get(j).is_fired
-                                    item.timeStamp = it.timestamp
-
-
-
-
-                                    itemDineIn.isHeader = 1
-                                    itemDineIn.item = item
-                                    itemDineIn.empName =
-                                        baseResponse.floorPlanTable.lockByName.toString()
-
-                                    dineInList.add(itemDineIn)
-
-
-                                }
-
-                            }
-
-
-                        }
-                    }
-
-                    //paid and unpaid guest count
-                    totalGuestCount = baseResponse.guestAttributes.size - 1
-                    var totalGuestPaidCount = 0.0
-
-                    //Whole Table Calculation
-                    var WTSubTotal: Double = 0.0
-                    var WTSubTotalDiscountPrice: Double = 0.0
-                    var WTTaxes: Double = 0.0
-                    var WTServiceCharge: Double = 0.0
-
-
-
-
-                    for (i in 1 until dineInList.size) {
-
-                        if (dineInList.get(i).isHeader == 1) {
-                            dineInList.get(i).item?.let {
-                                if (!it.isPaid) {
-//                                    WTSubTotal += (it.itemQuantity * it.price) - it.discountPrice
-                                    WTSubTotal += (it.itemQuantity * it.price)
-                                    WTSubTotalDiscountPrice += it.discountPrice
-
-                                    if (it.modifiers.isNotEmpty()) {
-                                        it.modifiers.forEach {
-                                            WTSubTotal += it.itemQuantity * it.price
-                                        }
-
-                                    }
-                                    if (it.taxes?.isNotEmpty() == true) {
-                                        it.taxes?.forEach { tax ->
-                                            if (tax.isActive) {
-                                                WTTaxes += if (tax.taxType == "Percentage") {
-
-                                                    var modifierPrice = 0.0
-                                                    val price =
-                                                        (it.price * it.itemQuantity) - it.discountPrice
-
-                                                    it.modifiers.forEach {
-                                                        modifierPrice += (it.price * it.itemQuantity)
-                                                    }
-
-                                                    val totalPrice = price + modifierPrice
-
-                                                    val itemTaxPrice =
-                                                        (tax.rate * totalPrice) / 100
-                                                    Log.e("itemTaxPrice", "" + itemTaxPrice)
-                                                    String.format("%.2f", itemTaxPrice)
-                                                        .toDouble()
-                                                } else {
-
-                                                    String.format(
-                                                        "%.2f",
-                                                        tax.rate * it.itemQuantity
-                                                    )
-                                                        .toDouble()
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-
-
-                        } else {
-                            break
-
-                        }
-                    }
-                    if (serviceChargeList?.isNotEmpty() == true) {
-                        var isApplied = false
-                        serviceChargeList.forEach {
-                            if (prefProvider.getValueboolean(
-                                    Constants.SERVICECHARGE_DINEIN_ORDER,
-                                    false
-                                )
-                            ) {
-                                if (it.order_type == Constants.SERVICECHARGE_DINEIN_ORDER) {
-                                    if (isInRange(
-                                            it.min_guest_count!!,
-                                            it.max_guest_count!!,
-                                            baseResponse.guestAttributes.size - 1
-                                        )
-                                    ) {
-                                        isApplied = true
-                                        Log.d(
-                                            TAG,
-                                            "calculateDineInServiceCharge: DashBoard " + it.min_guest_count + "....." + it.max_guest_count + " in between " + baseResponse.guestAttributes.size.minus(
-                                                1
-                                            )
-                                        )
-                                        WTServiceCharge += ((WTSubTotal - WTSubTotalDiscountPrice) * it.percentage) / 100
-                                        return@forEach
-                                    }
-                                }
-                            }
-                        }
-                        if (!isApplied) {
-                            serviceChargeList.forEach { service ->
-                                if (service.id == checkMaxGuestCountId(serviceChargeList)) {
-                                    WTServiceCharge += ((WTSubTotal - WTSubTotalDiscountPrice) * service.percentage) / 100
-                                    return@forEach
-                                }
-                            }
-                        }
-
-                    }
-
-                    Log.e(TAG, "WTSubTotal:  ${WTSubTotal}")
-                    Log.e(TAG, "WTTaxes:  ${WTTaxes}")
-                    WTOnlyTax = WTTaxes
-                    WTServiceTax = WTServiceCharge
-                    Log.e(TAG, "WTServiceCharge:  ${WTServiceCharge}")
-
-                    Log.e(TAG, "totalDiscount:  ${baseResponse.totalDiscount}")
-                    Log.e(TAG, "itemsDiscount:  ${itemsDiscount}")
-
-
-
-
-
-                    dineInList.forEach {
-                        if (it.isHeader == 1 && !it.isPaid) {
-                            it.item?.let { it1 ->
-                                viewModel.taxCalculation(it1)
-                                totalDiscount = it1.discountPrice
-                            }
-
-                        }
-                    }
-                    totalDiscount = 0.0
-                    totalDiscount += baseResponse.totalDiscount
-                    var orderDiscount = 0.0
-                    if (baseResponse.totalDiscount >= itemsDiscount) {
-                        orderDiscount = baseResponse.totalDiscount - itemsDiscount
-                    }
-                    dineInList[0].orderDiscount =
-                        (orderDiscount / (baseResponse.guestAttributes.size - 1))
-
-
-                    dineInList.get(0).guestDividedAmt =
-                        MethodUtils.roundOffAmountDouble(((WTSubTotal - WTSubTotalDiscountPrice) + WTTaxes + WTServiceCharge) / (baseResponse.guestAttributes.size - 1))
-                    dineInList.get(0).totalGuestCount = baseResponse.guestAttributes.size - 1
-                    dineInList.get(0).wholeTableSubTotal =
-                        (WTSubTotal - WTSubTotalDiscountPrice) / dineInList.get(0).totalGuestCount
-                    dineInList.get(0).wholeTableTax = WTTaxes / dineInList.get(0).totalGuestCount
-                    dineInList.get(0).wholeTableSurTax =
-                        WTServiceCharge / dineInList.get(0).totalGuestCount
-
-                    WholeTableAmount = MethodUtils.roundOffAmountDouble(
-                        (WTSubTotal + WTTaxes + WTServiceCharge)
-                    )
-
-
-                    var fisrtTime: Boolean = false
-                    for (i in 1 until dineInList.size) {
-                        if (dineInList.get(i).isHeader == 1 && fisrtTime) {
-
-                            if (dineInList.get(i).item?.isPaid == false) {
-                                dineInList.get(i).item?.let {
-                                    totalAmtnew += (it.price * it.itemQuantity)
-                                    totalAmtnewDiscount += it.discountPrice
-//                                    totalAmtnew += (it.price * it.itemQuantity) - it.discountPrice
-                                    if (it.modifiers.isNotEmpty()) {
-                                        it.modifiers.forEach {
-                                            totalAmtnew += it.price * it.itemQuantity
-                                        }
-
-                                    }
-
-                                    if (it.taxes?.isNotEmpty() == true) {
-                                        it.taxes?.forEach {
-                                            totalAmtnew += it.rate
-                                        }
-
-                                    }
-
-                                    totalAmtnew += dineInList.get(0).guestDividedAmt
-
-                                }
-                            }
-
-                        } else if (dineInList.get(i).isHeader == 0) {
-                            fisrtTime = true
-                        }
-
-                    }
-                    if (dineInList.isNotEmpty()) {
-                        dineInTableAdapter.setList(dineInList)
-                        checkForAutoFire(true)
-
-
-                        //  binding.txtTotalAmountNew.setText("${MethodUtils.roundOffAmount(totalAmtnew)}")
-
-                        if (!notPayAnyAmount) {
-                            touchHelper.attachToRecyclerView(binding.rvItemList)
-                        }
-                    }
-
-
-
-
-                    if (list.isNotEmpty()) {
-                        baseResponse.guestAttributes.get(0).guestItemAttributes.forEach {
-                            wholeTableAmt += it.amount * it.quantity
-                        }
-
-                        var dividedAmt: Double =
-                            wholeTableAmt / (baseResponse.guestAttributes.size - 1)
-
-//                        list.get(0).guestDividedAmt = dividedAmt
-
-                        //  dineInTableAdapter.setList(list)
-                        cartList = getCartModel(list)
-
-
-                        totalAmount = 0.0
-                        for (i in 0 until list.size) {
-                            list.get(i).items.forEach { it ->
-                                if (list.get(i).isPaid) {
-                                    paidAmt += (it.itemQuantity * it.price) - it.discountPrice
-
-                                    if (it.modifiers.isNotEmpty()) {
-                                        it.modifiers.forEach {
-                                            paidAmt += it.price * it.itemQuantity
-                                        }
-                                    }
-
-                                }
-                                totalAmount += it.itemQuantity * it.price
-
-                                if (it.modifiers.isNotEmpty()) {
-                                    it.modifiers.forEach {
-                                        totalAmount += it.itemQuantity * it.price
-                                    }
-                                }
-
-
-                            }
-                            if (list.get(i).items.isNotEmpty()) {
-
-                                if (list.get(i).items.get(0).isPaid) {
-                                    paidAmt += dividedAmt
-                                }
-                            }
-
-                        }
-
-                    }
-
-                    totalAmount -= paidAmt
-
-                    if (totalAmount < 0) {
-                        totalAmount = 0.0
-                    }
-
-
-                    //     binding.txtTotalAmountNew.setText("${MethodUtils.roundOffAmount(totalAmount)}")
-                    totalPrice = MethodUtils.roundOffAmountDouble(totalAmount)
-
-
-                    var guestAmt = 0.0
-                    var isPaid = true
-                    var isAllFired = true
-                    var noItem = true
-                    var guestSubTotal = 0.0
-                    var totalTaxAmt: Double = 0.0
-                    var serviceChargeGu = 0.0
-                    var paidGuestCount = 0
-                    var isFirstHeader = false
-
-                    if (dineInList.isNotEmpty()) {
-
-                        for (i in 0 until dineInList.size) {
-                            if (dineInList.get(i).isHeader == 1 && isFirstHeader == false) {
-                                dineInList.get(i).item?.let {
-                                    if (!it.isPaid) {
-//                                        guestAmt += (it.itemQuantity * it.price) - it.discountPrice
-//                                        guestSubTotal += (it.itemQuantity * it.price) - it.discountPrice
-
-                                        guestAmt += (it.itemQuantity * it.price)
-                                        guestSubTotal += (it.itemQuantity * it.price)
-                                        if (it.modifiers.isNotEmpty()) {
-                                            it.modifiers.forEach { it ->
-                                                guestAmt += it.itemQuantity * it.price
-                                                guestSubTotal += it.itemQuantity * it.price
-
-                                            }
-                                        }
-
-                                        if (it.taxes?.isNotEmpty() == true) {
-
-                                            it.taxes?.forEach { tax ->
-                                                if (tax.isActive) {
-                                                    totalTaxAmt += if (tax.taxType == "Percentage") {
-
-                                                        var modifierPrice = 0.0
-                                                        val price =
-                                                            (it.price * it.itemQuantity) - it.discountPrice
-
-                                                        it.modifiers.forEach {
-                                                            modifierPrice += (it.price * it.itemQuantity)
-                                                        }
-
-                                                        val totalPrice = price + modifierPrice
-
-                                                        val itemTaxPrice =
-                                                            (tax.rate * totalPrice) / 100
-
-                                                        String.format("%.2f", itemTaxPrice)
-                                                            .toDouble()
-                                                    } else {
-
-                                                        String.format(
-                                                            "%.2f",
-                                                            tax.rate * it.itemQuantity
-                                                        )
-                                                            .toDouble()
-                                                    }
-                                                }
-                                                guestAmt += tax.rate
-                                            }
-
-
-                                        }
-
-
-                                    }
-                                    if (!it.isPaid) {
-                                        isPaid = it.isPaid
-                                    }
-
-                                    if (!it.isFired) {
-                                        isAllFired = false
-                                    }
-                                }
-                            } else if (dineInList.get(i).isHeader == 0) {
-                                if (i == 0) {
-                                    isFirstHeader = true
-                                } else {
-                                    isFirstHeader = false
-                                }
-                                if (i != 0 && dineInList.size > i + 1) {
-                                    if (dineInList.get(i + 1).item != null && dineInList.get(i + 1).item?.isPaid == true) {
-                                        paidGuestCount++
-                                    }
-                                }
-
-                            }
-
-
-                        }
-
-                        if (dineInList[0].serviceChargeList?.isNotEmpty() == true) {
-                            var isApplied = false
-                            dineInList[0].serviceChargeList?.forEach {
-                                if (prefProvider.getValueboolean(
-                                        Constants.SERVICECHARGE_DINEIN_ORDER,
-                                        false
-                                    )
-                                ) {
-                                    if (it.order_type == Constants.SERVICECHARGE_DINEIN_ORDER) {
-                                        if (isInRange(
-                                                it.min_guest_count!!,
-                                                it.max_guest_count!!,
-                                                baseResponse.guestAttributes.size - 1
-                                            )
-                                        ) {
-                                            isApplied = true
-                                            Log.d(
-                                                TAG,
-                                                "calculateDineInServiceCharge: DashBoard " + it.min_guest_count + "....." + it.max_guest_count + " in between " + baseResponse.guestAttributes.size.minus(
-                                                    1
-                                                )
-                                            )
-                                            serviceChargeGu += (guestSubTotal * it.percentage) / 100
-                                            return@forEach
-                                        }
-                                    }
-                                }
-                            }
-                            if (!isApplied) {
-                                dineInList[0].serviceChargeList?.forEach { service ->
-                                    if (service.id == checkMaxGuestCountId(dineInList[0].serviceChargeList!!)) {
-                                        serviceChargeGu += (guestSubTotal * service.percentage) / 100
-                                        return@forEach
-                                    }
-                                }
-                            }
-                        }
-                        guestSubTotal = guestSubTotal
-
-
-                        var divShare =
-                            WholeTableAmount / ((baseResponse.guestAttributes.size - 1))
-
-                        var totalG = baseResponse.guestAttributes.size - 1
-                        var unpaidCount = totalG - paidGuestCount
-
-
-                        var myShare = unpaidCount * divShare
-
-
-                        if (paidGuestCount > 0) {
-                            paidGuestAmount = paidGuestCount
-                            subTotalDInin =
-                                (WTSubTotal / totalG) * unpaidCount + guestSubTotal
-                        } else {
-                            subTotalDInin = WTSubTotal + guestSubTotal
-                        }
-
-                        subTotalDInin -= baseResponse.totalDiscount
-
-
-                        Log.d(TAG, "navigateDineInOrder: " + subTotalDInin)
-
-                        if (paidGuestCount > 0) {
-                            serviceCharge =
-                                (WTServiceCharge / totalG) * unpaidCount + serviceChargeGu
-                            myShare -= WTServiceCharge / totalG * unpaidCount
-                        } else {
-                            if (dineInList[0].serviceChargeList?.isNotEmpty() == true) {
-                                var isApplied = false
-                                dineInList[0].serviceChargeList?.forEach {
-                                    if (prefProvider.getValueboolean(
-                                            Constants.SERVICECHARGE_DINEIN_ORDER,
-                                            false
-                                        )
-                                    ) {
-                                        if (it.order_type == Constants.SERVICECHARGE_DINEIN_ORDER) {
-                                            if (isInRange(
-                                                    it.min_guest_count!!,
-                                                    it.max_guest_count!!,
-                                                    baseResponse.guestAttributes.size - 1
-                                                )
-                                            ) {
-                                                isApplied = true
-                                                Log.d(
-                                                    TAG,
-                                                    "calculateDineInServiceCharge: DashBoard " + it.min_guest_count + "....." + it.max_guest_count + " in between " + baseResponse.guestAttributes.size.minus(
-                                                        1
-                                                    )
-                                                )
-                                                serviceCharge += (subTotalDInin * it.percentage) / 100
-                                                return@forEach
-                                            }
-                                        }
-                                    }
-                                }
-                                if (!isApplied) {
-                                    dineInList[0].serviceChargeList?.forEach { service ->
-                                        if (service.id == checkMaxGuestCountId(dineInList[0].serviceChargeList!!)) {
-                                            serviceCharge += (subTotalDInin * service.percentage) / 100
-                                            return@forEach
-                                        }
-                                    }
-                                }
-                            }
-//                            serviceCharge = WTServiceCharge + serviceChargeGu
-                            myShare -= WTServiceCharge
-                        }
-                        Log.d("yash", "navigateDineInOrder: serviceCharge " + serviceCharge)
-
-                        if (paidGuestCount > 0) {
-                            finalTaxAmt = (WTTaxes / totalG) * unpaidCount + totalTaxAmt
-                            myShare -= WTTaxes / totalG * unpaidCount
-                        } else {
-                            finalTaxAmt = WTTaxes + totalTaxAmt
-                            myShare -= WTTaxes
-                        }
-                        Log.d("yash", "navigateDineInOrder: tax " + finalTaxAmt)
-                        Log.d(TAG, "navigateDineInOrder: " + finalTaxAmt)
-                        Log.d(TAG, "navigateDineInOrder: " + myShare)
-                        Log.d(TAG, "navigateDineInOrder: " + guestSubTotal)
-
-
-                        var finalAmt =
-                            guestSubTotal + serviceCharge + finalTaxAmt + myShare - totalDiscount
-
-                        Log.d(TAG, "navigateDineInOrder: " + finalAmt)
-                        viewModel.totalTaxAmount = totalAmount
-                        subTotalWT = guestSubTotal + myShare
-                        toFinalAmt = finalAmt
-
-                        binding.txtTotalAmountNew.text = MethodUtils.roundOffAmount(
-                            finalAmt
-                        )
-
-
-                    }
-
-                }
-            }
-        }
-    }
 
     fun getCartModel(list: ArrayList<DineInModel>): CartModel {
         var model = CartModel()
@@ -3341,7 +2934,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
     private fun getCustomerPrinters(paymentType: String) {
 
-        viewModel.getCustomerPrinterList().observe(viewLifecycleOwner, {
+        viewModel.getCustomerPrinterList().observe(viewLifecycleOwner) {
             when (it.status) {
                 Status.SUCCESS -> {
                     ProgressUtils.dismissProgressDialog()
@@ -3379,7 +2972,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
             }
 
-        })
+        }
 
     }
 
@@ -3398,45 +2991,56 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         divideDiscount: Double = 0.0
     ) {
 
-        PrinterClass.closePrinter()
-        if (PrinterClass.getPrinter() == null) {
-            var printer: Print? = Print(requireContext())
-            if (printer != null) {
-//                printer.setStatusChangeEventCallback(this)
-//                printer.setBatteryStatusChangeEventCallback(this)
-            }
 
-            val enabled = Print.FALSE
+        if (customerReceiptPrinters.name.startsWith("CloudPrint", true)) {
 
-            try {
-                var interval: Int = 1000
-                if (customerReceiptPrinters.printer_type == Constants.BLUETOOTH) {
-                    interval = PrinterClass.BLUETOOTH_TIMEOUT
-                }
-                printer?.openPrinter(
+            SunmiPrinterApi.getInstance()
+                .setPrinter(SunmiPrinter.SunmiBlueToothPrinter, customerReceiptPrinters.ipAddress)
 
-                    if (customerReceiptPrinters.printer_type == Constants.BLUETOOTH) {
-                        Print.DEVTYPE_BLUETOOTH
-                    } else {
-                        Print.DEVTYPE_TCP
-                    },
-                    customerReceiptPrinters.ipAddress,
-                    enabled,
-                    1000
-                )
-                //printer?.setStatusChangeEventCallback(this)
+            if (!SunmiPrinterApi.getInstance().isConnected) {
+                SunmiPrinterApi.getInstance()
+                    .connectPrinter(requireContext(), object : ConnectCallback {
 
-            } catch (e: Exception) {
-                Log.e(TAG, "PrinterException: " + e.message)
-                printer = null
-                return
-            }
-            try {
+                        override fun onFound() {
+                            println("onFound")
+                        }
 
-                if (printer != null) {
-                    PrinterClass.setPrinter(printer)
+                        override fun onUnfound() {
+                            println("onUnfound")
+                        }
+
+                        override fun onConnect() {
+                            println("onConnect")
+                            if (guestPrint && getOrderDetailsResponse?.guestAttributes?.size!! > 2) {
+                                generateGuestPrintSunmi(
+                                    customerReceiptPrinters,
+                                    type,
+                                    paymentType,
+                                    listGuestItem,
+                                    guestName,
+                                    listWTitems,
+                                    subTotalGuest,
+                                    total,
+                                    taxGuest,
+                                    serviceChargeGuest,
+                                    divideDiscount,
+                                )
+
+                            } else {
+                                generatePrintSunmi(customerReceiptPrinters, type, "")
+                            }
+
+                        }
+
+                        override fun onDisconnect() {
+                            println("onDisconnect")
+                        }
+
+                    })
+            } else {
+                if (SunmiPrinterApi.getInstance().isConnected) {
                     if (guestPrint && getOrderDetailsResponse?.guestAttributes?.size!! > 2) {
-                        generateGuestPrint(
+                        generateGuestPrintSunmi(
                             customerReceiptPrinters,
                             type,
                             paymentType,
@@ -3451,18 +3055,80 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                         )
 
                     } else {
-                        generatePrint(customerReceiptPrinters, type, "")
+                        generatePrintSunmi(customerReceiptPrinters, type, "")
+                    }
+                }
+            }
+
+        }else {
+
+            viewLifecycleOwner.lifecycleScope.launch {
+                PrinterClass.closePrinter()
+                if (PrinterClass.getPrinter() == null) {
+                    var printer: Print? = Print(requireContext())
+                    if (printer != null) {
+//                printer.setStatusChangeEventCallback(this)
+//                printer.setBatteryStatusChangeEventCallback(this)
                     }
 
+                    val enabled = Print.FALSE
+
+                    try {
+                        var interval: Int = 1000
+                        if (customerReceiptPrinters.printer_type == Constants.BLUETOOTH) {
+                            interval = PrinterClass.BLUETOOTH_TIMEOUT
+                        }
+                        printer?.openPrinter(
+
+                            if (customerReceiptPrinters.printer_type == Constants.BLUETOOTH) {
+                                Print.DEVTYPE_BLUETOOTH
+                            } else {
+                                Print.DEVTYPE_TCP
+                            },
+                            customerReceiptPrinters.ipAddress,
+                            enabled,
+                            1000
+                        )
+                        //printer?.setStatusChangeEventCallback(this)
+
+                    } catch (e: Exception) {
+                        Log.e(TAG, "PrinterException: " + e.message)
+                        printer = null
+                        return@launch
+                    }
+                    try {
+
+                        if (printer != null) {
+                            PrinterClass.setPrinter(printer)
+                            if (guestPrint && getOrderDetailsResponse?.guestAttributes?.size!! > 2) {
+                                generateGuestPrint(
+                                    customerReceiptPrinters,
+                                    type,
+                                    paymentType,
+                                    listGuestItem,
+                                    guestName,
+                                    listWTitems,
+                                    subTotalGuest,
+                                    total,
+                                    taxGuest,
+                                    serviceChargeGuest,
+                                    divideDiscount,
+                                )
+
+                            } else {
+                                generatePrint(customerReceiptPrinters, type, "")
+                            }
+
+                        }
+
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
+                } else {
+                    Log.e(TAG, "PrinterIsNotNull:")
                 }
-
-            } catch (e: Exception) {
-                e.printStackTrace()
             }
-        } else {
-            Log.e(TAG, "PrinterIsNotNull:")
         }
-
     }
 
     private fun generateGuestPrint(
@@ -3985,7 +3651,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             builder.addTextLineSpace(30)
             builder.addFeedUnit(30)
             builder.addTextFont(Builder.FONT_E)
-            // builder.addTextAlign(Builder.ALIGN_LEFT)
+            builder.addTextAlign(Builder.ALIGN_CENTER)
             builder.addTextLang(Builder.LANG_EN)
             addCustomerTextSize(builder, customerSettingModel.fonts)
             builder.addTextStyle(
@@ -4514,6 +4180,493 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 e.printStackTrace()
             }
 
+
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
+    }
+
+    private fun generateGuestPrintSunmi(
+        customerReceiptPrinters: PrinterResponse.Data.CustomerReceiptPrinters,
+        type: String,
+        paymentType: String,
+        listGuestItem: ArrayList<TbItem>,
+        guestName: String,
+        listWTitems: ArrayList<TbItem>,
+        subTotalGuest: Double = 0.0,
+        total: Double = 0.0,
+        taxGuest: Double = 0.0,
+        serviceChargeGuest: Double = 0.0,
+        divideDiscount: Double = 0.0
+    ) {
+        var guestSubTotal = 0.0
+        var guestTaxes = 0.0
+        var guestServiceCharge = 0.0
+        var guestDiscount = 0.0
+
+        val guestCount = dineInTableAdapter.getList().size - 1
+
+        listGuestItem.forEach {
+            guestSubTotal += (it.price * it.itemQuantity) - it.discountPrice
+
+            it.modifiers.forEach { mod ->
+                guestSubTotal += (mod.price * mod.itemQuantity)
+            }
+
+
+            it.taxes?.forEach { tax ->
+                if (tax.isActive) {
+                    Log.e(TAG, "getTaxP  ${Gson().toJson(tax)}")
+                    guestTaxes += if (tax.taxType == "Percentage") {
+
+                        var modifierPrice = 0.0
+                        val price =
+                            (it.price * it.itemQuantity) - it.discountPrice
+
+                        it.modifiers.forEach {
+                            modifierPrice += (it.price * it.itemQuantity)
+                        }
+
+                        val totalPrice = price + modifierPrice
+
+                        val itemTaxPrice =
+                            (tax.rate * totalPrice) / 100
+
+                        String.format("%.2f", itemTaxPrice)
+                            .toDouble()
+                    } else {
+
+                        String.format("%.2f", tax.rate * it.itemQuantity)
+                            .toDouble()
+                    }
+                }
+
+            }
+            guestDiscount += it.discountPrice
+
+        }
+
+        guestDiscount += MethodUtils.roundOffAmountDouble(
+            globalOrderDiscount / (getOrderDetailsResponse?.guestAttributes?.size?.minus(
+                1
+            ) ?: 1)
+        )
+
+        serviceChargeList.forEach {
+            if (it.isEnabled) {
+                guestServiceCharge += (guestSubTotal * it.percentage) / 100
+            }
+        }
+
+        try {
+
+            PrintSunmiUtils.fontSize(customerSettingModel.fonts)
+
+            if (customerSettingModel.showVenueLogo && prefProvider.getValue(
+                    Constants.VENUE_LOGO,
+                    ""
+                )
+                    .isNotEmpty()
+            ) {
+
+                printBusinessLogo()
+            }
+
+            if (paymentType.isNotEmpty()) {
+                PrintSunmiUtils.paymentType(paymentType)
+
+            }
+
+            PrintSunmiUtils.printBusinessDetails(
+                prefProvider.getValue(Constants.BUSINESS_NAME, ""),
+                prefProvider.getValue(Constants.BUSINESS_ADDRESS, ""),
+                prefProvider.getValue(Constants.BUSINESS_PHONE_NO, "")
+            )
+
+            getOrderDetailsResponse?.orderType?.let { PrintSunmiUtils.printOrderType(it) }
+
+            if (customerSettingModel.fonts == Constants.LARGE) {
+
+                if (customerSettingModel.showOrderIdTop) {
+
+                    PrintSunmiUtils.orderId("OrderID:" + getOrderDetailsResponse?.id)
+
+                }
+
+                PrintSunmiUtils.receiptID(
+                    "ReceiptID:" + if (getOrderDetailsResponse?.offlineId?.isEmpty() == true) {
+                        "ENTJKOIJH8745"
+                    } else {
+                        getOrderDetailsResponse?.offlineId
+                    }
+                )
+
+                if (customerSettingModel.showTeam) {
+
+                    PrintSunmiUtils.employee("Employee:" + getOrderDetailsResponse?.employee?.name)
+
+                }
+
+                if (customerSettingModel.showOrderTime) {
+
+                    PrintSunmiUtils.orderId(
+                        "Order Time:" + Constants.getReceiptFormatDateFromUTCServer(
+                            requireContext(),
+                            getOrderDetailsResponse?.createdAt.toString()
+                        )
+                    )
+
+                }
+
+                if (customerSettingModel.showPrintTime) {
+
+
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+
+                        val current = LocalDateTime.now()
+                        val formatter = DateTimeFormatter.ofPattern("MMM-dd-yyyy hh:mm:a")
+                        val formatted = current.format(formatter)
+
+                        PrintSunmiUtils.orderId(
+                            "Print Time:" + getCurrentTimeFromTimeZone(
+                                requireContext(),
+                                formatted
+                            )
+                        )
+                    }
+
+
+                }
+            } else {
+
+
+                PrintSunmiUtils.orderId(
+                    padLine(
+                        if (customerSettingModel.showOrderIdTop) {
+                            "OrderID:" + getOrderDetailsResponse?.id
+                        } else {
+                            ""
+                        },
+                        "ReceiptID:" + if (getOrderDetailsResponse?.offlineId?.isEmpty() == true) {
+                            "ENTJKOIJH8745"
+                        } else {
+                            getOrderDetailsResponse?.offlineId
+                        },
+                        if (customerSettingModel.fonts == Constants.LARGE) {
+                            23
+                        } else {
+                            48
+                        }
+                    ).toString()
+                )
+
+                if (customerSettingModel.showTeam) {
+
+
+                    PrintSunmiUtils.employee(
+                        padLine(
+                            if (customerSettingModel.showTeam) {
+                                "Employee:" + getOrderDetailsResponse?.employee?.name
+                            } else {
+                                ""
+                            },
+                            "",
+                            if (customerSettingModel.fonts == Constants.LARGE) {
+                                23
+                            } else {
+                                48
+                            }
+                        ).toString()
+                    )
+
+                }
+                if (customerSettingModel.showOrderTime) {
+
+
+                    PrintSunmiUtils.orderTime(
+                        padLine(
+                            if (customerSettingModel.showOrderTime) {
+                                "Order Time:" + Constants.getReceiptFormatDateFromUTCServer(
+                                    requireContext(),
+                                    getOrderDetailsResponse?.createdAt.toString()
+                                )
+                            } else {
+                                ""
+                            },
+                            "",
+                            if (customerSettingModel.fonts == Constants.LARGE) {
+                                23
+                            } else {
+                                48
+                            }
+                        ).toString()
+                    )
+
+                }
+
+                if (customerSettingModel.showPrintTime) {
+
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+
+
+                        val current = LocalDateTime.now()
+                        val formatter = DateTimeFormatter.ofPattern("MMM-dd-yyyy hh:mm:a")
+                        val formatted = current.format(formatter)
+
+                        PrintSunmiUtils.orderTime(
+                            padLine(
+                                if (customerSettingModel.showPrintTime) {
+                                    "Print Time:" + getCurrentTimeFromTimeZone(
+                                        requireContext(),
+                                        formatted
+                                    )
+                                } else {
+                                    ""
+                                },
+                                "",
+                                if (customerSettingModel.fonts == Constants.LARGE) {
+                                    23
+                                } else {
+                                    48
+                                }
+                            ).toString()
+                        )
+
+                    }
+                }
+            }
+
+
+            PrintSunmiUtils.addHorizontal()
+
+            for (i in 0 until listWTitems.size) {
+
+                var guestCount: Int =
+                    (getOrderDetailsResponse?.guestAttributes?.size?.minus(1)) ?: 1
+                if (guestCount < 1) {
+                    guestCount = 1
+                }
+
+
+                addWholeTbItemToGuest(
+                    listWTitems.get(i), customerSettingModel.fonts,
+                    customerSettingModel.showModifiers, guestCount, serviceChargeList
+                )
+            }
+
+            PrintSunmiUtils.printTextCenter(guestName)
+
+            listGuestItem.forEach {
+                addOrderItemForDineIn(
+                    it,
+                    customerSettingModel.fonts,
+                    customerSettingModel.showModifiers
+                )
+
+            }
+            SunmiPrinterApi.getInstance().lineWrap(2)
+
+            if (getOrderDetailsResponse?.totalDiscount != null) {
+
+                PrintSunmiUtils.totalDiscount(
+                    padLine(
+                        "Total Discount",
+
+                        if (guestDiscount == 0.0) {
+                            "$" + MethodUtils.roundOffAmountString(0.00)
+                        } else {
+
+                            "-$" + MethodUtils.roundOffAmountString(guestDiscount)
+
+                        },
+                        if (customerSettingModel.fonts == Constants.LARGE) {
+                            23
+                        } else {
+                            48
+                        }
+                    ).toString()
+                )
+
+            }
+
+
+            PrintSunmiUtils.subTotal(
+                padLine(
+                    "Sub Total",
+                    "$" + MethodUtils.roundOffAmountString(
+                        subTotalGuest
+                    ),
+                    if (customerSettingModel.fonts == Constants.LARGE) {
+                        23
+                    } else {
+                        48
+                    }
+                ).toString()
+            )
+
+
+            if (guestTaxes != null) {
+
+
+                PrintSunmiUtils.tax(
+                    padLine(
+                        "Tax",
+                        "$" + MethodUtils.roundOffAmountString(taxGuest),
+                        if (customerSettingModel.fonts == Constants.LARGE) {
+                            23
+                        } else {
+                            48
+                        }
+                    ).toString()
+                )
+            }
+
+            if (guestServiceCharge != null) {
+
+
+                PrintSunmiUtils.serviceCharge(
+                    padLine(
+                        "Service Charge",
+                        "$" + MethodUtils.roundOffAmountString(serviceChargeGuest),
+                        if (customerSettingModel.fonts == Constants.LARGE) {
+                            23
+                        } else {
+                            48
+                        }
+                    ).toString()
+                )
+            }
+
+            if (cashDiscountGlobal > 0) {
+                val cashDis =
+                    cashDiscountGlobal / (getOrderDetailsResponse?.guestAttributes?.size?.minus(
+                        1
+                    ) ?: 1)
+
+                PrintSunmiUtils.cashDiscount(
+                    padLine(
+                        "Cash Discount",
+
+                        "-$" + MethodUtils.roundOffAmountString(cashDis),
+                        if (customerSettingModel.fonts == Constants.LARGE) {
+                            23
+                        } else {
+                            48
+                        }
+                    ).toString()
+                )
+            }
+
+
+            SunmiPrinterApi.getInstance().lineWrap(1)
+
+            var totalAmt =
+                MethodUtils.roundOffAmountDouble(
+                    guestSubTotal + guestTaxes + guestServiceCharge + dineInTableAdapter.getList()
+                        .get(0).guestDividedAmt
+                )
+
+
+
+            PrintSunmiUtils.totalPrice(
+                padLine(
+                    "Total Price",
+                    "$" + MethodUtils.roundOffAmountString(total),
+                    if (customerSettingModel.fonts == Constants.LARGE) {
+                        23
+                    } else {
+                        48
+                    }
+                ).toString()
+            )
+
+
+
+            if (customerSettingModel.showRefundAmount) {
+
+                if (getOrderDetailsResponse?.payments?.isNotEmpty() == true) {
+
+                    PrintSunmiUtils.totalPrice(
+                        padLine(
+                            "Change Amount",
+                            "$" + MethodUtils.roundOffAmountString(
+                                (getOrderDetailsResponse?.payments?.get(
+                                    0
+                                )?.amount!! - getOrderDetailsResponse?.totalAmount!!)
+                            ),
+                            if (customerSettingModel.fonts == Constants.LARGE) {
+                                23
+                            } else {
+                                48
+                            }
+                        ).toString()
+                    )
+                }
+            }
+
+
+            if (customerSettingModel.showTipSuggestion) {
+
+                PrintSunmiUtils.additionalTips()
+                if (tipsList.isNotEmpty()) {
+                    PrintSunmiUtils.addTipList(
+                        tipsList,
+                        MethodUtils.roundOffAmountDouble(guestSubTotal + guestServiceCharge + guestTaxes),
+                        customerSettingModel.fonts
+                    )
+                }
+                SunmiPrinterApi.getInstance().lineWrap(1)
+            }
+
+            if (getOrderDetailsResponse?.payments?.isNotEmpty() == true) {
+
+                PrintSunmiUtils.transactionId(
+                    padLine(
+                        "Transaction ID",
+                        getOrderDetailsResponse?.payments?.get(0)?.transactionId,
+                        if (customerSettingModel.fonts == Constants.LARGE) {
+                            23
+                        } else {
+                            48
+                        }
+                    ).toString()
+                )
+            }
+
+            if (getOrderDetailsResponse?.payments?.isNotEmpty() == true) {
+
+
+                PrintSunmiUtils.transactionType(
+                    padLine(
+                        "Transaction Type",
+                        getOrderDetailsResponse?.payments?.get(0)?.paymentType,
+                        if (customerSettingModel.fonts == Constants.LARGE) {
+                            23
+                        } else {
+                            48
+                        }
+                    ).toString()
+                )
+            }
+
+
+            if (getOrderDetailsResponse?.note != null && getOrderDetailsResponse?.note != "" && customerSettingModel.showOrderNote) {
+
+                PrintSunmiUtils.orderNote(getOrderDetailsResponse?.note!!)
+                SunmiPrinterApi.getInstance().lineWrap(2)
+
+            }
+
+
+            if (customerSettingModel.showQrCode) {
+                PrintSunmiUtils.qrCode(getOrderDetailsResponse?.digitalReceiptUrl.toString())
+            }
+
+            SunmiPrinterApi.getInstance().lineWrap(5)
+            SunmiPrinterApi.getInstance().cutPaper(1, 1)
+
+            SunmiPrinterApi.getInstance().disconnectPrinter(requireContext())
 
         } catch (e: Exception) {
             e.printStackTrace()
@@ -5495,14 +5648,444 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         }
     }
 
-    private fun observeTipsList() {
-        viewModel.getTipsList().observe(viewLifecycleOwner, {
-            if (it.isNotEmpty()) {
-                tipsList = it
+
+    private fun generatePrintSunmi(
+        customerReceiptPrinters: PrinterResponse.Data.CustomerReceiptPrinters,
+        type: String,
+        paymentType: String
+    ) {
+
+        try {
+            PrintSunmiUtils.fontSize(customerSettingModel.fonts)
+            if (customerSettingModel.showVenueLogo && prefProvider.getValue(
+                    Constants.VENUE_LOGO,
+                    ""
+                )
+                    .isNotEmpty()
+            ) {
+                printBusinessLogo()
+            }
+
+            if (paymentType.isNotEmpty()) {
+                PrintSunmiUtils.paymentType(paymentType)
+
+            }
+
+            PrintSunmiUtils.paymentType("Unpaid")
+
+            PrintSunmiUtils.printBusinessDetails(
+                prefProvider.getValue(Constants.BUSINESS_NAME, ""),
+                prefProvider.getValue(Constants.BUSINESS_ADDRESS, ""),
+                prefProvider.getValue(Constants.BUSINESS_PHONE_NO, "")
+            )
+
+
+            getOrderDetailsResponse?.orderType?.let { PrintSunmiUtils.printOrderType(it) }
+
+
+            if (customerSettingModel.fonts == Constants.LARGE) {
+
+                if (customerSettingModel.showOrderIdTop) {
+
+                    PrintSunmiUtils.orderId("OrderID:" + getOrderDetailsResponse?.id)
+
+                }
+
+                PrintSunmiUtils.receiptID(
+                    "ReceiptID:" + if (getOrderDetailsResponse?.offlineId?.isEmpty() == true) {
+                        "ENTJKOIJH8745"
+                    } else {
+                        getOrderDetailsResponse?.offlineId
+                    }
+                )
+
+                if (customerSettingModel.showTeam) {
+
+                    PrintSunmiUtils.employee("Employee:" + getOrderDetailsResponse?.employee?.name)
+
+                }
+
+                if (customerSettingModel.showOrderTime) {
+
+
+                    PrintSunmiUtils.orderTime(
+                        "Order Time:" + Constants.getReceiptFormatDateFromUTCServer(
+                            requireContext(),
+                            getOrderDetailsResponse?.createdAt.toString()
+                        )
+                    )
+
+                }
+
+                if (customerSettingModel.showPrintTime) {
+
+
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+
+
+                        val current = LocalDateTime.now()
+                        val formatter = DateTimeFormatter.ofPattern("MMM-dd-yyyy hh:mm:a")
+                        val formatted = current.format(formatter)
+
+                        PrintSunmiUtils.orderTime(
+                            "Print Time:" + getCurrentTimeFromTimeZone(
+                                requireContext(),
+                                formatted
+                            )
+                        )
+                    }
+
+
+                }
+            } else {
+
+
+                PrintSunmiUtils.orderId(
+                    padLine(
+                        if (customerSettingModel.showOrderIdTop) {
+                            "OrderID:" + getOrderDetailsResponse?.id
+                        } else {
+                            ""
+                        },
+                        "ReceiptID:" + if (getOrderDetailsResponse?.offlineId?.isEmpty() == true) {
+                            "ENTJKOIJH8745"
+                        } else {
+                            getOrderDetailsResponse?.offlineId
+                        },
+                        if (customerSettingModel.fonts == Constants.LARGE) {
+                            23
+                        } else {
+                            48
+                        }
+                    ).toString()
+                )
+
+                if (customerSettingModel.showTeam) {
+
+                    PrintSunmiUtils.employee(
+                        padLine(
+                            if (customerSettingModel.showTeam) {
+                                "Employee:" + getOrderDetailsResponse?.employee?.name
+                            } else {
+                                ""
+                            },
+                            "",
+                            if (customerSettingModel.fonts == Constants.LARGE) {
+                                23
+                            } else {
+                                48
+                            }
+                        ).toString()
+                    )
+
+                }
+                if (customerSettingModel.showOrderTime) {
+
+                    PrintSunmiUtils.orderTime(
+                        padLine(
+                            if (customerSettingModel.showOrderTime) {
+                                "Order Time:" + Constants.getReceiptFormatDateFromUTCServer(
+                                    requireContext(),
+                                    getOrderDetailsResponse?.createdAt.toString()
+                                )
+                            } else {
+                                ""
+                            },
+                            "",
+                            if (customerSettingModel.fonts == Constants.LARGE) {
+                                23
+                            } else {
+                                48
+                            }
+                        ).toString()
+                    )
+
+                }
+
+                if (customerSettingModel.showPrintTime) {
+
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+
+
+                        val current = LocalDateTime.now()
+                        val formatter = DateTimeFormatter.ofPattern("MMM-dd-yyyy hh:mm:a")
+                        val formatted = current.format(formatter)
+
+                        PrintSunmiUtils.orderTime(
+                            padLine(
+                                if (customerSettingModel.showPrintTime) {
+                                    "Print Time:" + getCurrentTimeFromTimeZone(
+                                        requireContext(),
+                                        formatted
+                                    )
+                                } else {
+                                    ""
+                                },
+                                "",
+                                if (customerSettingModel.fonts == Constants.LARGE) {
+                                    23
+                                } else {
+                                    48
+                                }
+                            ).toString()
+                        )
+
+                    }
+                }
+            }
+
+            PrintSunmiUtils.addHorizontal()
+            SunmiPrinterApi.getInstance().lineWrap(1)
+
+            val dineInList = dineInTableAdapter.getList()
+            for (i in 0 until dineInList.size) {
+                if (dineInList[i].isHeader == 0) {
+
+                    if (i != (dineInList.size - 1) && dineInList[i + 1].isHeader == 1) {
+
+                        if (dineInList[i]?.customer == null) {
+
+                            dineInList[i]?.title?.let { PrintSunmiUtils.printTextCenter(it) }
+
+                        } else {
+
+                            PrintSunmiUtils.printTextCenter(
+                                dineInList[i]?.customer?.first_name + " " +
+                                        if (dineInList[i]?.customer?.last_name != null) {
+                                            dineInList[i].customer?.last_name
+                                        } else {
+                                            ""
+                                        }
+                            )
+                        }
+                    }
+
+
+                } else {
+                    dineInList.get(i).item?.let {
+                        addOrderItemForDineIn(
+                            it,
+                            customerSettingModel.fonts,
+                            customerSettingModel.showModifiers
+                        )
+                    }
+
+                    SunmiPrinterApi.getInstance().lineWrap(1)
+                }
+
+
             }
 
 
-        })
+
+            SunmiPrinterApi.getInstance().lineWrap(2)
+
+            if (getOrderDetailsResponse?.totalDiscount != null) {
+
+                PrintSunmiUtils.totalDiscount(
+                    padLine(
+                        "Total Discount",
+
+                        if (getOrderDetailsResponse?.totalDiscount == 0.0) {
+                            "$" + MethodUtils.roundOffAmountString(0.00)
+                        } else {
+                            getOrderDetailsResponse?.totalDiscount?.let {
+                                "-$" + MethodUtils.roundOffAmountString(it)
+                            }
+                        },
+                        if (customerSettingModel.fonts == Constants.LARGE) {
+                            23
+                        } else {
+                            48
+                        }
+                    ).toString()
+                )
+
+            }
+
+
+            PrintSunmiUtils.subTotal(
+                padLine(
+                    "Sub Total",
+                    "$" + MethodUtils.roundOffAmountString(subTotalDInin),
+                    if (customerSettingModel.fonts == Constants.LARGE) {
+                        23
+                    } else {
+                        48
+                    }
+                ).toString()
+            )
+
+
+            if (viewModel.totalTaxAmount != null) {
+
+
+                PrintSunmiUtils.tax(
+                    padLine(
+                        "Tax",
+                        "$" + MethodUtils.roundOffAmountString(finalTaxAmt),
+                        if (customerSettingModel.fonts == Constants.LARGE) {
+                            23
+                        } else {
+                            48
+                        }
+                    ).toString()
+                )
+            }
+
+            if (serviceCharge != null) {
+
+                PrintSunmiUtils.serviceCharge(
+                    padLine(
+                        "Service Charge",
+                        "$" + MethodUtils.roundOffAmountString(serviceCharge),
+                        if (customerSettingModel.fonts == Constants.LARGE) {
+                            23
+                        } else {
+                            48
+                        }
+                    ).toString()
+                )
+            }
+
+            if (getOrderDetailsResponse?.totalTips != 0.0) {
+
+
+                PrintSunmiUtils.tip(
+                    padLine(
+                        "Tips",
+                        "$" + getOrderDetailsResponse?.totalTips?.let {
+                            MethodUtils.roundOffAmountString(
+                                it
+                            )
+                        },
+                        if (customerSettingModel.fonts == Constants.LARGE) {
+                            23
+                        } else {
+                            48
+                        }
+                    ).toString()
+                )
+            }
+
+            val totalAmt =
+                MethodUtils.roundOffAmountDouble(subTotalDInin + serviceCharge + finalTaxAmt)
+
+
+
+            PrintSunmiUtils.totalPrice(
+                padLine(
+                    "Total Price",
+                    "$" + MethodUtils.roundOffAmountString(totalAmt),
+                    if (customerSettingModel.fonts == Constants.LARGE) {
+                        23
+                    } else {
+                        48
+                    }
+                ).toString()
+            )
+
+
+
+            if (customerSettingModel.showRefundAmount) {
+
+                if (getOrderDetailsResponse?.payments?.isNotEmpty() == true) {
+
+                    PrintSunmiUtils.totalPrice(
+                        padLine(
+                            "Change Amount",
+                            "$" + MethodUtils.roundOffAmountString(
+                                (getOrderDetailsResponse?.payments?.get(
+                                    0
+                                )?.amount!! - getOrderDetailsResponse?.totalAmount!!)
+                            ),
+                            if (customerSettingModel.fonts == Constants.LARGE) {
+                                23
+                            } else {
+                                48
+                            }
+                        ).toString()
+                    )
+                }
+            }
+
+            SunmiPrinterApi.getInstance().lineWrap(1)
+
+            if (customerSettingModel.showTipSuggestion) {
+
+                PrintSunmiUtils.additionalTips()
+                if (tipsList.isNotEmpty()) {
+                    PrintSunmiUtils.addTipList(
+                        tipsList,
+                        totalAmt,
+                        customerSettingModel.fonts
+                    )
+                }
+                SunmiPrinterApi.getInstance().lineWrap(1)
+
+            }
+
+            if (getOrderDetailsResponse?.payments?.isNotEmpty() == true) {
+
+                PrintSunmiUtils.transactionId(
+                    padLine(
+                        "Transaction ID",
+                        getOrderDetailsResponse?.payments?.get(0)?.transactionId,
+                        if (customerSettingModel.fonts == Constants.LARGE) {
+                            23
+                        } else {
+                            48
+                        }
+                    ).toString()
+                )
+            }
+
+            if (getOrderDetailsResponse?.payments?.isNotEmpty() == true) {
+
+
+                PrintSunmiUtils.transactionType(
+                    padLine(
+                        "Transaction Type",
+                        getOrderDetailsResponse?.payments?.get(0)?.paymentType,
+                        if (customerSettingModel.fonts == Constants.LARGE) {
+                            23
+                        } else {
+                            48
+                        }
+                    ).toString()
+                )
+            }
+
+
+            if (getOrderDetailsResponse?.note != null && getOrderDetailsResponse?.note != "" && customerSettingModel.showOrderNote) {
+                PrintSunmiUtils.orderNote(getOrderDetailsResponse?.note!!)
+            }
+
+
+            if (customerSettingModel.showQrCode) {
+
+                getOrderDetailsResponse?.digitalReceiptUrl?.let { Log.e("digitalReceiptUrl", it) }
+
+                getOrderDetailsResponse?.digitalReceiptUrl?.let { PrintSunmiUtils.qrCode(it) }
+
+            }
+
+            SunmiPrinterApi.getInstance().lineWrap(5)
+            SunmiPrinterApi.getInstance().cutPaper(1, 1)
+
+            SunmiPrinterApi.getInstance().disconnectPrinter(requireContext())
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
+    }
+
+    private fun observeTipsList() {
+        viewModel.getTipsList().observe(viewLifecycleOwner) {
+            if (it.isNotEmpty()) {
+                tipsList = it
+            }
+        }
     }
 
     private fun generateQRCode(qrcodeStaticUrl: String): Bitmap {
@@ -5544,16 +6127,12 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
     }
 
     private fun getKitchenPrinters() {
-        viewModel.getKitchenPrinterList().observe(viewLifecycleOwner, { it ->
+        viewModel.getKitchenPrinterList().observe(viewLifecycleOwner) { it ->
             when (it.status) {
                 Status.SUCCESS -> {
                     ProgressUtils.dismissProgressDialog()
                     if (it.data != null) {
                         kitchenPrinterList = it.data
-                        /* for (i in 0 until kitchenPrinterList.size) {
-
-                             initKitchenPrinter(kitchenPrinterList.get(i), Constants.KITCHEN)
-                         }*/
                     }
 
                 }
@@ -5566,7 +6145,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 }
             }
 
-        })
+        }
 
     }
 
@@ -5576,45 +6155,84 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         item: ArrayList<TbItem>
 
     ) {
-        PrinterClass.setPrinter(null)
-        if (PrinterClass.getPrinter() == null) {
-            var printer: Print? = Print(requireContext())
-            if (printer != null) {
-//                printer.setStatusChangeEventCallback(this)
-//                printer.setBatteryStatusChangeEventCallback(this)
-            }
 
-            val enabled = Print.TRUE
 
-            try {
+        if (data.name.startsWith("CloudPrint", true)) {
 
-                printer?.openPrinter(
-                    if (data.printer_type == Constants.BLUETOOTH) {
-                        Print.DEVTYPE_BLUETOOTH
-                    } else {
-                        Print.DEVTYPE_TCP
-                    },
-                    data.ipAddress,
-                    enabled,
-                    1000
-                )
-                // printer?.setStatusChangeEventCallback(this)
+            SunmiPrinterApi.getInstance()
+                .setPrinter(SunmiPrinter.SunmiBlueToothPrinter, data.ipAddress)
 
-            } catch (e: Exception) {
-                Log.e(TAG, "PrinterException: " + e.message)
-                printer = null
-                return
-            }
+            if (!SunmiPrinterApi.getInstance().isConnected) {
+                SunmiPrinterApi.getInstance()
+                    .connectPrinter(requireContext(), object : ConnectCallback {
 
-            if (printer != null) {
-                PrinterClass.setPrinter(printer)
+                        override fun onFound() {
+                            println("onFound")
+                        }
 
-                generateKitchenReceipt(data, type, item)
+                        override fun onUnfound() {
+                            println("onUnfound")
+                        }
 
+                        override fun onConnect() {
+                            println("onConnect")
+                            generateKitchenReceiptSunmi(data, type, item)
+
+                        }
+
+                        override fun onDisconnect() {
+                            println("onDisconnect")
+                        }
+
+                    })
+            } else {
+
+                if (SunmiPrinterApi.getInstance().isConnected)
+                    generateKitchenReceiptSunmi(data, type, item)
             }
 
         } else {
-            Log.e(TAG, "PrinterIsNotNull:")
+
+            PrinterClass.setPrinter(null)
+            if (PrinterClass.getPrinter() == null) {
+                var printer: Print? = Print(requireContext())
+                if (printer != null) {
+//                printer.setStatusChangeEventCallback(this)
+//                printer.setBatteryStatusChangeEventCallback(this)
+                }
+
+                val enabled = Print.FALSE
+
+                try {
+
+                    printer?.openPrinter(
+                        if (data.printer_type == Constants.BLUETOOTH) {
+                            Print.DEVTYPE_BLUETOOTH
+                        } else {
+                            Print.DEVTYPE_TCP
+                        },
+                        data.ipAddress,
+                        enabled,
+                        1000
+                    )
+                    // printer?.setStatusChangeEventCallback(this)
+
+                } catch (e: Exception) {
+                    Log.e(TAG, "PrinterException: " + e.message)
+                    printer = null
+                    return
+                }
+
+                if (printer != null) {
+                    PrinterClass.setPrinter(printer)
+
+                    generateKitchenReceipt(data, type, item)
+
+                }
+
+            } else {
+                Log.e(TAG, "PrinterIsNotNull:")
+            }
         }
 
     }
@@ -5657,85 +6275,62 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
             builder = Builder(pname, PrinterClass.language, requireActivity())
 
-            if (kitchenSettingModel.showOrderType) {
+
+            if (customerReceiptPrinters.name.substring(0, 4)
+                    .equals("TM-U", true) || customerReceiptPrinters.name.contains("U")
+            ) {
+                if (kitchenSettingModel.showOrderType) {
 
 
-                builder.addFeedLine(0)
+                    builder.addFeedLine(0)
+                    builder.addTextFont(Builder.FONT_E)
+                    builder.addTextLang(Builder.LANG_EN)
+                    builder.addTextSize(fontSizeH, fontSizeW)
+                    builder.addTextStyle(
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.TRUE,
+                        Builder.COLOR_1
+                    )
+                    builder.addTextAlign(Builder.ALIGN_CENTER)
+
+                    addBuilderText(builder, getOrderDetailsResponse?.orderType.toString())
+                }
+
+                builder.addFeedLine(2)
                 builder.addTextFont(Builder.FONT_E)
+                //  builder.addTextAlign(Builder.ALIGN_LEFT)
                 builder.addTextLang(Builder.LANG_EN)
                 builder.addTextSize(fontSizeH, fontSizeW)
                 builder.addTextStyle(
                     Builder.FALSE,
                     Builder.FALSE,
-                    Builder.TRUE,
+                    Builder.FALSE,
                     Builder.COLOR_1
                 )
-                builder.addTextAlign(Builder.ALIGN_CENTER)
-
-                addBuilderText(builder, getOrderDetailsResponse?.orderType.toString())
-            }
-
-            builder.addFeedLine(2)
-            builder.addTextFont(Builder.FONT_E)
-            //  builder.addTextAlign(Builder.ALIGN_LEFT)
-            builder.addTextLang(Builder.LANG_EN)
-            builder.addTextSize(fontSizeH, fontSizeW)
-            builder.addTextStyle(
-                Builder.FALSE,
-                Builder.FALSE,
-                Builder.FALSE,
-                Builder.COLOR_1
-            )
 
 
-            builder.addText(getOrderDetailsResponse?.floorPlanTable?.tableName + " (" + getOrderDetailsResponse?.floorPlanTable?.tableNumber + ")")
+                builder.addText(getOrderDetailsResponse?.floorPlanTable?.tableName + " (" + getOrderDetailsResponse?.floorPlanTable?.tableNumber + ")")
 
-            builder.addFeedLine(2)
-            builder.addTextFont(Builder.FONT_E)
-            //  builder.addTextAlign(Builder.ALIGN_LEFT)
-            builder.addTextLang(Builder.LANG_EN)
-            builder.addTextSize(fontSizeH, fontSizeW)
-            builder.addTextStyle(
-                Builder.FALSE,
-                Builder.FALSE,
-                Builder.FALSE,
-                Builder.COLOR_1
-            )
-
-            builder.addText(
-                padLine(
-                    "OrderID:" + getOrderDetailsResponse?.id,
-                    "",
-                    33
+                builder.addFeedLine(2)
+                builder.addTextFont(Builder.FONT_E)
+                //  builder.addTextAlign(Builder.ALIGN_LEFT)
+                builder.addTextLang(Builder.LANG_EN)
+                builder.addTextSize(fontSizeH, fontSizeW)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.COLOR_1
                 )
-            )
 
-            builder.addTextLineSpace(30)
-            builder.addFeedUnit(30)
-            builder.addTextFont(Builder.FONT_E)
-            //  builder.addTextAlign(Builder.ALIGN_LEFT)
-            builder.addTextLang(Builder.LANG_EN)
-            builder.addTextSize(fontSizeH, fontSizeW)
-            builder.addTextStyle(
-                Builder.FALSE,
-                Builder.FALSE,
-                Builder.FALSE,
-                Builder.COLOR_1
-            )
-
-
-            builder.addText(
-                padLine(
-                    "ReceiptID:" + if (getOrderDetailsResponse?.offlineId?.isEmpty() == true) {
-                        "ENTJKOIJH8745"
-                    } else {
-                        getOrderDetailsResponse?.offlineId
-                    },
-                    "",
-                    33
+                builder.addText(
+                    padLine(
+                        "OrderID:" + getOrderDetailsResponse?.id,
+                        "",
+                        33
+                    )
                 )
-            )
-            if (kitchenSettingModel.showTeamMember) {
 
                 builder.addTextLineSpace(30)
                 builder.addFeedUnit(30)
@@ -5749,79 +6344,143 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     Builder.FALSE,
                     Builder.COLOR_1
                 )
+
+
                 builder.addText(
                     padLine(
-                        "Employee:" + getOrderDetailsResponse?.employee?.name, "",
+                        "ReceiptID:" + if (getOrderDetailsResponse?.offlineId?.isEmpty() == true) {
+                            "ENTJKOIJH8745"
+                        } else {
+                            getOrderDetailsResponse?.offlineId
+                        },
+                        "",
+                        33
+                    )
+                )
+                if (kitchenSettingModel.showTeamMember) {
+
+                    builder.addTextLineSpace(30)
+                    builder.addFeedUnit(30)
+                    builder.addTextFont(Builder.FONT_E)
+                    //  builder.addTextAlign(Builder.ALIGN_LEFT)
+                    builder.addTextLang(Builder.LANG_EN)
+                    builder.addTextSize(fontSizeH, fontSizeW)
+                    builder.addTextStyle(
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.COLOR_1
+                    )
+                    builder.addText(
+                        padLine(
+                            "Employee:" + getOrderDetailsResponse?.employee?.name, "",
+                            33
+                        )
+                    )
+
+                }
+                builder.addTextLineSpace(30)
+                builder.addFeedUnit(30)
+                builder.addTextFont(Builder.FONT_E)
+                //  builder.addTextAlign(Builder.ALIGN_LEFT)
+                builder.addTextLang(Builder.LANG_EN)
+                builder.addTextSize(fontSizeH, fontSizeW)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.COLOR_1
+                )
+
+
+                builder.addText(
+                    padLine(
+                        Constants.getReceiptFormatDateFromUTCServer(
+                            requireContext(),
+                            getOrderDetailsResponse?.createdAt.toString()
+                        ),
+                        "",
                         33
                     )
                 )
 
-            }
-            builder.addTextLineSpace(30)
-            builder.addFeedUnit(30)
-            builder.addTextFont(Builder.FONT_E)
-            //  builder.addTextAlign(Builder.ALIGN_LEFT)
-            builder.addTextLang(Builder.LANG_EN)
-            builder.addTextSize(fontSizeH, fontSizeW)
-            builder.addTextStyle(
-                Builder.FALSE,
-                Builder.FALSE,
-                Builder.FALSE,
-                Builder.COLOR_1
-            )
-
-
-            builder.addText(
-                padLine(
-                    Constants.getReceiptFormatDateFromUTCServer(
-                        requireContext(),
-                        getOrderDetailsResponse?.createdAt.toString()
-                    ),
-                    "",
-                    33
-                )
-            )
-
-            builder.addFeedLine(1)
-
-            builder.addTextFont(Builder.FONT_B)
-            //builder.addTextLineSpace(20)
-            builder.addTextLang(Builder.LANG_EN)
-            builder.addTextSize(fontSizeH, fontSizeW)
-            builder.addTextStyle(
-                Builder.FALSE,
-                Builder.FALSE,
-                Builder.FALSE,
-                Builder.COLOR_1
-            )
-
-            addHorizontalKitchenLine(builder)
-
-
-            addOrdersForKitchenDineIn(builder, item, fontSizeH, fontSizeW)
-
-            if (getOrderDetailsResponse?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote) {
-                builder.addTextLineSpace(30)
-                builder.addFeedUnit(30)
                 builder.addFeedLine(1)
-                builder.addTextFont(Builder.FONT_E)
-                builder.addTextAlign(Builder.ALIGN_LEFT)
+
+                builder.addTextFont(Builder.FONT_B)
                 //builder.addTextLineSpace(20)
                 builder.addTextLang(Builder.LANG_EN)
                 builder.addTextSize(fontSizeH, fontSizeW)
                 builder.addTextStyle(
                     Builder.FALSE,
                     Builder.FALSE,
-                    Builder.TRUE,
+                    Builder.FALSE,
                     Builder.COLOR_1
                 )
-                builder.addText("Order Note")
 
-                builder.addTextLineSpace(30)
-                builder.addFeedUnit(30)
+                addHorizontalKitchenLine(builder)
 
+
+                addOrdersForKitchenDineIn(builder, item, fontSizeH, fontSizeW)
+
+                if (getOrderDetailsResponse?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote) {
+                    builder.addTextLineSpace(30)
+                    builder.addFeedUnit(30)
+                    builder.addFeedLine(1)
+                    builder.addTextFont(Builder.FONT_E)
+                    builder.addTextAlign(Builder.ALIGN_LEFT)
+                    //builder.addTextLineSpace(20)
+                    builder.addTextLang(Builder.LANG_EN)
+                    builder.addTextSize(fontSizeH, fontSizeW)
+                    builder.addTextStyle(
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.TRUE,
+                        Builder.COLOR_1
+                    )
+                    builder.addText("Order Note")
+
+                    builder.addTextLineSpace(30)
+                    builder.addFeedUnit(30)
+
+                    builder.addTextFont(Builder.FONT_E)
+                    builder.addTextAlign(Builder.ALIGN_LEFT)
+                    builder.addTextLang(Builder.LANG_EN)
+                    builder.addTextSize(fontSizeH, fontSizeW)
+                    builder.addTextStyle(
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.COLOR_1
+                    )
+
+
+                    builder.addText(getOrderDetailsResponse?.note.toString())
+                }
+
+
+            } else {
+
+                if (kitchenSettingModel.showOrderType) {
+
+
+                    builder.addFeedLine(0)
+                    builder.addTextFont(Builder.FONT_E)
+                    builder.addTextLang(Builder.LANG_EN)
+                    builder.addTextSize(fontSizeH, fontSizeW)
+                    builder.addTextStyle(
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.TRUE,
+                        Builder.COLOR_1
+                    )
+                    builder.addTextAlign(Builder.ALIGN_CENTER)
+
+                    addBuilderText(builder, getOrderDetailsResponse?.orderType.toString())
+                }
+
+                builder.addFeedLine(2)
                 builder.addTextFont(Builder.FONT_E)
-                builder.addTextAlign(Builder.ALIGN_LEFT)
+                //  builder.addTextAlign(Builder.ALIGN_LEFT)
                 builder.addTextLang(Builder.LANG_EN)
                 builder.addTextSize(fontSizeH, fontSizeW)
                 builder.addTextStyle(
@@ -5832,119 +6491,161 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 )
 
 
-                builder.addText(getOrderDetailsResponse?.note.toString())
-            }
+                builder.addText(getOrderDetailsResponse?.floorPlanTable?.tableName + " (" + getOrderDetailsResponse?.floorPlanTable?.tableNumber + ")")
+
+                builder.addFeedLine(2)
+                builder.addTextFont(Builder.FONT_E)
+                //  builder.addTextAlign(Builder.ALIGN_LEFT)
+                builder.addTextLang(Builder.LANG_EN)
+                builder.addTextSize(fontSizeH, fontSizeW)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.COLOR_1
+                )
+
+                builder.addText(
+                    padLine(
+                        "OrderID:" + getOrderDetailsResponse?.id,
+                        "",
+                        if (kitchenSettingModel.fonts == Constants.LARGE) {
+                            24
+                        } else {
+                            48
+                        }
+                    )
+                )
+
+                builder.addTextLineSpace(30)
+                builder.addFeedUnit(30)
+                builder.addTextFont(Builder.FONT_E)
+                //  builder.addTextAlign(Builder.ALIGN_LEFT)
+                builder.addTextLang(Builder.LANG_EN)
+                builder.addTextSize(fontSizeH, fontSizeW)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.COLOR_1
+                )
 
 
-            /*if (kitchenSettingModel.showCustomerAddress != false or kitchenSettingModel.showCustomerPhone != false or kitchenSettingModel.showCustomerName) {
-                if (receiptModel?.order?.customer != null) {
+                builder.addText(
+                    padLine(
+                        "ReceiptID:" + if (getOrderDetailsResponse?.offlineId?.isEmpty() == true) {
+                            "ENTJKOIJH8745"
+                        } else {
+                            getOrderDetailsResponse?.offlineId
+                        },
+                        "",
+                        if (kitchenSettingModel.fonts == Constants.LARGE) {
+                            24
+                        } else {
+                            48
+                        }
+                    )
+                )
+                if (kitchenSettingModel.showTeamMember) {
 
+                    builder.addTextLineSpace(30)
+                    builder.addFeedUnit(30)
+                    builder.addTextFont(Builder.FONT_E)
+                    //  builder.addTextAlign(Builder.ALIGN_LEFT)
+                    builder.addTextLang(Builder.LANG_EN)
+                    builder.addTextSize(fontSizeH, fontSizeW)
+                    builder.addTextStyle(
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.COLOR_1
+                    )
+                    builder.addText(
+                        padLine(
+                            "Employee:" + getOrderDetailsResponse?.employee?.name, "",
+                            if (kitchenSettingModel.fonts == Constants.LARGE) {
+                                24
+                            } else {
+                                48
+                            }
+                        )
+                    )
+
+                }
+                builder.addTextLineSpace(30)
+                builder.addFeedUnit(30)
+                builder.addTextFont(Builder.FONT_E)
+                //  builder.addTextAlign(Builder.ALIGN_LEFT)
+                builder.addTextLang(Builder.LANG_EN)
+                builder.addTextSize(fontSizeH, fontSizeW)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.COLOR_1
+                )
+
+
+                builder.addText(
+                    padLine(
+                        Constants.getReceiptFormatDateFromUTCServer(
+                            requireContext(),
+                            getOrderDetailsResponse?.createdAt.toString()
+                        ),
+                        "",
+                        if (kitchenSettingModel.fonts == Constants.LARGE) {
+                            24
+                        } else {
+                            48
+                        }
+                    )
+                )
+
+                builder.addFeedLine(1)
+
+
+                addHorizontalLine(builder)
+
+
+                addOrdersForKitchenCustoemrPrinter(builder, item, fontSizeH, fontSizeW)
+
+                if (getOrderDetailsResponse?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote) {
                     builder.addTextLineSpace(30)
                     builder.addFeedUnit(30)
                     builder.addFeedLine(1)
                     builder.addTextFont(Builder.FONT_E)
+                    builder.addTextAlign(Builder.ALIGN_LEFT)
                     //builder.addTextLineSpace(20)
+                    builder.addTextLang(Builder.LANG_EN)
+                    builder.addTextSize(fontSizeH, fontSizeW)
+                    builder.addTextStyle(
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.COLOR_1
+                    )
+                    builder.addText("Order Note")
+
+                    builder.addTextLineSpace(30)
+                    builder.addFeedUnit(30)
+
+                    builder.addTextFont(Builder.FONT_E)
                     builder.addTextAlign(Builder.ALIGN_LEFT)
                     builder.addTextLang(Builder.LANG_EN)
-                    builder.addTextSize(1, 1)
-                    builder.addTextStyle(
-                        Builder.FALSE,
-                        Builder.FALSE,
-                        Builder.TRUE,
-                        Builder.COLOR_1
-                    )
-                    builder.addText("Customer Details" + "\n")
-
-                    builder.addTextFont(Builder.FONT_B)
-                    //builder.addTextLineSpace(20)
-                    builder.addTextLang(Builder.LANG_EN)
-                    builder.addTextSize(1, 1)
+                    builder.addTextSize(fontSizeH, fontSizeW)
                     builder.addTextStyle(
                         Builder.FALSE,
                         Builder.FALSE,
                         Builder.FALSE,
                         Builder.COLOR_1
                     )
-                    addHorizontalKitchenLine(builder)
-
-                    if (kitchenSettingModel.showCustomerName) {
-
-                        builder.addTextLineSpace(30)
-                        builder.addFeedUnit(30)
-                        builder.addTextFont(Builder.FONT_E)
-                        builder.addTextAlign(Builder.ALIGN_LEFT)
-                        //builder.addTextLineSpace(20)
-                        builder.addTextLang(Builder.LANG_EN)
-                        builder.addTextSize(1, 1)
-                        builder.addTextStyle(
-                            Builder.FALSE,
-                            Builder.FALSE,
-                            Builder.TRUE,
-                            Builder.COLOR_1
-                        )
-                        builder.addText(receiptModel?.order?.customer?.firstName + " " + receiptModel?.order?.customer?.lastName)
-
-                    }
 
 
-                    if (kitchenSettingModel.showCustomerPhone) {
-
-                        if (receiptModel?.order?.customer?.phones?.isNotEmpty() == true) {
-                            builder.addTextLineSpace(30)
-                            builder.addFeedUnit(30)
-                            builder.addTextFont(Builder.FONT_E)
-                            builder.addTextAlign(Builder.ALIGN_LEFT)
-                            //builder.addTextLineSpace(20)
-                            builder.addTextLang(Builder.LANG_EN)
-                            builder.addTextSize(1, 1)
-                            builder.addTextStyle(
-                                Builder.FALSE,
-                                Builder.FALSE,
-                                Builder.TRUE,
-                                Builder.COLOR_1
-                            )
-                            builder.addText(receiptModel?.order?.customer?.phones?.get(0)?.phoneNumber)
-                        }
-
-                    }
-                    *//* builder.addTextLineSpace(30)
-                 builder.addFeedUnit(30)
-                 builder.addTextFont(Builder.FONT_E)
-                 builder.addTextAlign(Builder.ALIGN_LEFT)
-                 //builder.addTextLineSpace(20)
-                 builder.addTextLang(Builder.LANG_EN)
-                 builder.addTextSize(1, 1)
-                 builder.addTextStyle(
-                     Builder.FALSE,
-                     Builder.FALSE,
-                     Builder.TRUE,
-                     Builder.COLOR_1
-                 )
-                 builder.addText(receiptModel?.order?.customer?.email)*//*
-
-                    if (kitchenSettingModel.showCustomerAddress) {
-                        if (getOrderDetailsResponse?.customer?.addresses?.isNotEmpty() == true) {
-
-                            builder.addTextLineSpace(30)
-                            builder.addFeedUnit(30)
-                            builder.addTextFont(Builder.FONT_E)
-                            builder.addTextAlign(Builder.ALIGN_LEFT)
-                            //builder.addTextLineSpace(20)
-                            builder.addTextLang(Builder.LANG_EN)
-                            builder.addTextSize(1, 1)
-                            builder.addTextStyle(
-                                Builder.FALSE,
-                                Builder.FALSE,
-                                Builder.TRUE,
-                                Builder.COLOR_1
-                            )
-
-                            builder.addText(getOrderDetailsResponse?.customer?.addresses?.get(0)?.fullAddress)
-                        }
-                    }
-
+                    builder.addText(getOrderDetailsResponse?.note.toString())
                 }
-            }*/
+
+
+            }
 
             builder.addFeedLine(2)
 
@@ -5953,11 +6654,22 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             val status = IntArray(1)
             val battery = IntArray(1)
 
+            var timeOut = PrinterClass.SEND_TIMEOUT
+            if (customerReceiptPrinters.printer_type == Constants.BLUETOOTH) {
+                timeOut = PrinterClass.BLUETOOTH_TIMEOUT
+            }
+
+            if (customerReceiptPrinters.name.substring(0, 6).toString()
+                    .lowercase() == "TM-m30".lowercase() && customerReceiptPrinters.printer_type != Constants.BLUETOOTH
+            ) {
+
+                timeOut = 1000
+            }
 
             try {
                 PrinterClass.getPrinter()?.sendData(
                     builder,
-                    PrinterClass.SEND_TIMEOUT, status, battery
+                    timeOut, status, battery
                 )
 
                 PrinterClass.closePrinter()
@@ -5976,32 +6688,121 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
     }
 
+    private fun generateKitchenReceiptSunmi(
+        customerReceiptPrinters: PrinterResponse.Data.KitchenReceiptPrinters,
+        type: String,
+        item: ArrayList<TbItem>
+    ) {
+        try {
+
+            PrintSunmiUtils.fontSize(kitchenSettingModel.fonts)
+
+            if (kitchenSettingModel.showOrderType) {
+
+                PrintSunmiUtils.printOrderType(getOrderDetailsResponse?.orderType.toString())
+
+                SunmiPrinterApi.getInstance().lineWrap(1)
+            }
+
+
+            PrintSunmiUtils.addValue(getOrderDetailsResponse?.floorPlanTable?.tableName + " (" + getOrderDetailsResponse?.floorPlanTable?.tableNumber + ")")
+
+            SunmiPrinterApi.getInstance().lineWrap(1)
+            PrintSunmiUtils.orderId(
+                padLine(
+                    "OrderID:" + getOrderDetailsResponse?.id,
+                    "",
+                    if (kitchenSettingModel.fonts == Constants.LARGE) 23 else 48
+                ).toString()
+            )
+
+            SunmiPrinterApi.getInstance().lineWrap(1)
+            PrintSunmiUtils.receiptID(
+                padLine(
+                    "ReceiptID:" + if (getOrderDetailsResponse?.offlineId?.isEmpty() == true) {
+                        "ENTJKOIJH8745"
+                    } else {
+                        getOrderDetailsResponse?.offlineId
+                    },
+                    "",
+                    if (kitchenSettingModel.fonts == Constants.LARGE) 23 else 48
+                ).toString()
+            )
+
+            SunmiPrinterApi.getInstance().lineWrap(1)
+
+            if (kitchenSettingModel.showTeamMember) {
+
+
+                PrintSunmiUtils.employee(
+                    padLine(
+                        "Employee:" + getOrderDetailsResponse?.employee?.name, "",
+                        if (kitchenSettingModel.fonts == Constants.LARGE) 23 else 48
+                    ).toString()
+                )
+
+            }
+
+            SunmiPrinterApi.getInstance().lineWrap(1)
+
+            PrintSunmiUtils.orderTime(
+                padLine(
+                    Constants.getReceiptFormatDateFromUTCServer(
+                        requireContext(),
+                        getOrderDetailsResponse?.createdAt.toString()
+                    ),
+                    "",
+                    if (kitchenSettingModel.fonts == Constants.LARGE) 23 else 48
+                ).toString()
+            )
+
+            PrintSunmiUtils.addHorizontal()
+
+            SunmiPrinterApi.getInstance().lineWrap(1)
+
+            addOrdersForKitchenDineIn(item)
+
+            if (getOrderDetailsResponse?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote) {
+
+                PrintSunmiUtils.orderNote(getOrderDetailsResponse?.note.toString())
+            }
+
+
+            PrintSunmiUtils.cutPaper()
+
+
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+
+    }
+
     private fun observeUnMergeTable() {
-        viewModel.unMergeStatusUpdate.observe(viewLifecycleOwner, { event ->
+        viewModel.unMergeStatusUpdate.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let { status ->
 
                 AlertUtils.showCustomAlertWithListenerWithOK(
                     requireContext(), status.toString()
                 ) { _, _ ->
-                    findNavController().navigate(R.id.action_dineInOrderTable_to_dashboardCategoryNew)
+                    if (findNavController().currentDestination?.id == R.id.dineInOrderTable) {
+                        findNavController().navigate(R.id.action_dineInOrderTable_to_dashboardCategoryNew)
+                    }
                 }
 
 
             }
-        })
+        }
     }
 
     private fun observeQueueCreated() {
-        viewModel.queueCreateSuccess.observe(viewLifecycleOwner, { event ->
+        viewModel.queueCreateSuccess.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let { status ->
-
             }
-
-        })
+        }
     }
 
     private fun observeFireAll() {
-        viewModel.fireAllStatus.observe(viewLifecycleOwner, { event ->
+        viewModel.fireAllStatus.observe(viewLifecycleOwner) { event ->
             Log.e(TAG, "FireAllStatusObserved")
 
             if (prefProvider.getValueboolean(IS_PRINTER_QUEUE_ENABLE, false)) {
@@ -6083,7 +6884,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 viewModel.createQueuePrinter(createQueueRequest)
             }
 
-        })
+        }
     }
 
     private fun singleItemFireObserver() {
@@ -6189,47 +6990,57 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             }
 
             arrayItems.forEachIndexed { index, orderItem ->
-                if (itemIds.contains(getOrderDetailsResponse?.orderItems?.get(index)?.id)) {
-                    Log.e("InsideLoop", "Inside")
-                    if (getOrderDetailsResponse?.orderItems?.get(index)?.quantity != orderItem.quantity) {
-                        if (getOrderDetailsResponse?.orderItems?.get(index)?.quantity!! > arrayItems[index].quantity) {
-                            getOrderDetailsResponse?.orderItems?.get(index)?.quantity =
-                                getOrderDetailsResponse?.orderItems?.get(index)?.quantity!! - arrayItems[index].quantity
-                            if (!printOrderItems.contains(
-                                    getOrderDetailsResponse?.orderItems?.get(
-                                        index
+                if (getOrderDetailsResponse?.orderItems?.size!!.minus(1) >= index) {
+                    if (itemIds.contains(getOrderDetailsResponse?.orderItems?.get(index)?.id)) {
+                        Log.e("InsideLoop", "Inside")
+                        if (getOrderDetailsResponse?.orderItems?.get(index)?.quantity != orderItem.quantity) {
+                            if (getOrderDetailsResponse?.orderItems?.get(index)?.quantity!! > arrayItems[index].quantity) {
+                                getOrderDetailsResponse?.orderItems?.get(index)?.quantity =
+                                    getOrderDetailsResponse?.orderItems?.get(index)?.quantity!! - arrayItems[index].quantity
+                                if (!printOrderItems.contains(
+                                        getOrderDetailsResponse?.orderItems?.get(
+                                            index
+                                        )
                                     )
-                                )
-                            ) {
-                                printOrderItems.add(getOrderDetailsResponse?.orderItems?.get(index)!!)
-                                var tbItem: TbItem = TbItem()
-                                tbItem.name =
-                                    getOrderDetailsResponse?.orderItems?.get(index)?.itemName ?: ""
-                                tbItem.price =
-                                    getOrderDetailsResponse?.orderItems?.get(index)?.price ?: 0.0
-                                tbItem.itemQuantity =
-                                    getOrderDetailsResponse?.orderItems?.get(index)?.quantity ?: 0
-                                if (getOrderDetailsResponse?.orderItems?.get(index)?.orderItemModifiers?.isNotEmpty() == true) {
-                                    var modifierList: ArrayList<Modifier> = arrayListOf()
-                                    getOrderDetailsResponse?.orderItems?.get(index)?.orderItemModifiers?.forEach {
-                                        val modifiers = Modifier()
-                                        modifiers.price = it.price
-                                        modifiers.name = it.name
-                                        modifiers.itemQuantity = it.quantity
-                                        modifierList.add(modifiers)
+                                ) {
+                                    printOrderItems.add(
+                                        getOrderDetailsResponse?.orderItems?.get(
+                                            index
+                                        )!!
+                                    )
+                                    var tbItem: TbItem = TbItem()
+                                    tbItem.name =
+                                        getOrderDetailsResponse?.orderItems?.get(index)?.itemName
+                                            ?: ""
+                                    tbItem.price =
+                                        getOrderDetailsResponse?.orderItems?.get(index)?.price
+                                            ?: 0.0
+                                    tbItem.itemQuantity =
+                                        getOrderDetailsResponse?.orderItems?.get(index)?.quantity
+                                            ?: 0
+                                    if (getOrderDetailsResponse?.orderItems?.get(index)?.orderItemModifiers?.isNotEmpty() == true) {
+                                        var modifierList: ArrayList<Modifier> = arrayListOf()
+                                        getOrderDetailsResponse?.orderItems?.get(index)?.orderItemModifiers?.forEach {
+                                            val modifiers = Modifier()
+                                            modifiers.price = it.price
+                                            modifiers.name = it.name
+                                            modifiers.itemQuantity = it.quantity
+                                            modifierList.add(modifiers)
+                                        }
+                                        tbItem.modifiers = modifierList
                                     }
-                                    tbItem.modifiers = modifierList
-                                }
 
-                                listItem.add(tbItem)
+                                    listItem.add(tbItem)
+                                }
                             }
+
+                        } else {
+
                         }
 
-                    } else {
-
                     }
-
                 }
+
             }
 
             prefProvider.setValue(DINE_IN_UPDATE_LIST, "")
@@ -6302,6 +7113,19 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         }
     }
 
+    private fun printBusinessLogo() {
+        val decodedString: ByteArray = Base64.decode(
+            prefProvider.getValue(Constants.VENUE_LOGO, ""),
+            Base64.DEFAULT
+        )
+        val bitmap: Bitmap =
+            BitmapFactory.decodeByteArray(decodedString, 0, decodedString.size)
+
+        val newBitmap = Bitmap.createScaledBitmap(bitmap!!, 210, 210, true)
+
+        PrintSunmiUtils.printLogo(newBitmap)
+
+    }
 
 }
 
