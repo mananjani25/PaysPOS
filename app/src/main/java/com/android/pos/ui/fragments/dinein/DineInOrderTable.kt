@@ -341,7 +341,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             Log.e(TAG, "listWTItems ${Gson().toJson(listWT)}")
 
             var dividedOrderDiscount = 0.0
-
+            totalGuestCount = getOrderDetailsResponse?.guestAttributes?.size!! - 1
             if (paidGuestAmount > 0 && globalOrderDiscount > 0.0) {
                 Log.e("globalOrderDiscount", "globalOrderDiscount  ${globalOrderDiscount}")
                 var eachGuestDiscount =
@@ -552,7 +552,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                             toFinalAmt,
                             prefProvider,
                             requireContext()
-                        ) / totalGuestCount
+                        ) / (getOrderDetailsResponse?.guestAttributes?.size!! - 1)
                 }
             } else {
                 divideCashDiscount = 0.0
@@ -582,7 +582,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 },
                 dineInOrderModel
             )
-            Log.e(TAG, "getPassmodel  ${Gson().toJson(model)}")
+//            Log.e(TAG, "getPassmodel  ${Gson().toJson(model)}")
             val bundle = Bundle()
 //            viewModelPayment.totalPrice = MethodUtils.roundOffAmobtnPayuntDouble(toFinalAmt)
 //            viewModelPayment.subTotalPrice = MethodUtils.roundOffAmountDouble(subTotalDInin)
