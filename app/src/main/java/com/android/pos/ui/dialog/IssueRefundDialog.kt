@@ -298,7 +298,8 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
             if (paymentOrderDetailsResponse.data.cash_discount_type != null) paymentOrderDetailsResponse.data.cash_discount_type else "",
             paymentOrderDetailsResponse.data.payment_type,
             if (paymentOrderDetailsResponse.data.total_discount > totalItemDiscount) paymentOrderDetailsResponse.data.total_discount - totalItemDiscount else 0.0,
-            paymentOrderDetailsResponse.data.loyalty_amount
+            paymentOrderDetailsResponse.data.loyalty_amount,
+            paymentOrderDetailsResponse.data.tips
         )
 
 

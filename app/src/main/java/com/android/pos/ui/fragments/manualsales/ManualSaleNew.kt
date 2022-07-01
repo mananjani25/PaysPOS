@@ -5,6 +5,7 @@ import android.app.Dialog
 import android.graphics.Color
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.ColorDrawable
+import android.os.Build
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -44,6 +45,7 @@ import com.android.pos.utils.extensions.gone
 import com.android.pos.utils.extensions.visible
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
+import java.util.stream.Collectors
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -550,43 +552,12 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
 
                 if (cartList != null && cartList!!.isNotEmpty()) {
 
-//                    var mainlist = mainCartList[0].taxlistDynamic
-                    var manuallist = cartList!![0].taxlistDynamic
 
-
-                    mainCartList[0].taxlistDynamic?.forEachIndexed { index, taxData ->
-                        var found = -1
-                        manuallist?.forEachIndexed { indexmanual, manualtax ->
-                            if (taxData.id == manualtax.id) {
-                                found = indexmanual
-                            } else {
-                                mainCartList[0].taxlistDynamic = concatenate(
-                                    mainCartList[0].taxlistDynamic!!,
-                                    listOf(manualtax)
-                                )
-                            }
-                        }
-                        if (found != -1) {
-                            mainCartList[0].taxlistDynamic?.get(index)?.subTotalAmount =
-                                mainCartList[0].taxlistDynamic?.get(index)?.subTotalAmount!!.plus(
-                                    manuallist?.get(found)?.subTotalAmount!!
-                                )
-                            mainCartList[0].taxlistDynamic?.get(index)?.totalTaxTypePrice =
-                                mainCartList[0].taxlistDynamic?.get(index)?.totalTaxTypePrice!!.plus(
-                                    manuallist.get(found).totalTaxTypePrice
-                                )
-                        }
-                        var list: List<TaxData> = emptyList()
-                        manuallist?.forEachIndexed { i, tdata ->
-                            if (i != found) {
-                                list = listOf(tdata)
-                            }
-                        }
-                        Log.d(TAG, "onClick: " + Gson().toJson(list))
-                    }
-
-
-                    Log.d(TAG, "onClick:  tax : " + Gson().toJson(mainCartList[0].taxlistDynamic))
+                    mainCartList[0].taxlistDynamic = getTaxBifurcationList(
+                        cartList!![0].taxlistDynamic,
+                        mainCartList[0].taxlistDynamic
+                    )
+                    Log.d(TAG, "data list: " + Gson().toJson(mainCartList[0].taxlistDynamic))
                     val manualItems = cartList!![0].items
                     val mainItems = mainCartList[0].items
                     val mergeItems = merge(mainItems!!, manualItems!!)
@@ -958,6 +929,103 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
             }
 
         }
+    }
+
+    private fun getTaxBifurcationList(list1: List<TaxData>?, list2: List<TaxData>?): List<TaxData> {
+        var size1 = list1!!.size
+        var size2 = list2!!.size
+        var final_list: List<TaxData> = emptyList()
+        var listremaining: List<TaxData> = emptyList()
+        if (size1 > size2) {
+            final_list = list1
+            list1.forEachIndexed { index, taxData ->
+                var found = -1
+                list2.forEachIndexed { indexmanual, manualtax ->
+                    if (taxData.id == manualtax.id) {
+                        found = indexmanual
+                    }
+                }
+                if (found != -1) {
+                    final_list[index].subTotalAmount =
+                        final_list[index].subTotalAmount.plus(
+                            list2[found].subTotalAmount
+                        )
+                    final_list[index].totalTaxTypePrice =
+                        final_list[index].totalTaxTypePrice.plus(
+                            list2[found].totalTaxTypePrice
+                        )
+                } else {
+                    listremaining = listOf(taxData)
+                }
+            }
+            listremaining.forEach { remainingdata ->
+                if (remainingdata !in list1) {
+                    final_list =
+                        concatenate(final_list, listOf(remainingdata))
+                }
+
+            }
+        } else if (size2 > size1) {
+            final_list = list2
+            final_list.forEachIndexed { index, taxData ->
+                var found = -1
+                list1.forEachIndexed { indexmanual, manualtax ->
+                    if (taxData.id == manualtax.id) {
+                        found = indexmanual
+                    }
+                }
+                if (found != -1) {
+                    final_list[index].subTotalAmount =
+                        final_list[index].subTotalAmount.plus(
+                            list1[found].subTotalAmount
+                        )
+                    final_list[index].totalTaxTypePrice =
+                        final_list[index].totalTaxTypePrice.plus(
+                            list1[found].totalTaxTypePrice
+                        )
+                } else {
+                    listremaining = listOf(taxData)
+                }
+            }
+            listremaining.forEach { remainingdata ->
+                if (remainingdata !in list1) {
+                    final_list =
+                        concatenate(final_list, listOf(remainingdata))
+                }
+
+            }
+        } else {
+            final_list = list1
+            final_list.forEachIndexed { index, taxData ->
+                var found = -1
+                list2.forEachIndexed { indexmanual, manualtax ->
+                    if (taxData.id == manualtax.id) {
+                        found = indexmanual
+                    }
+                }
+                if (found != -1) {
+                    final_list[index].subTotalAmount =
+                        final_list[index].subTotalAmount.plus(
+                            list2[found].subTotalAmount
+                        )
+                    final_list[index].totalTaxTypePrice =
+                        final_list[index].totalTaxTypePrice.plus(
+                            list2[found].totalTaxTypePrice
+                        )
+                } else {
+                    listremaining = listOf(taxData)
+                }
+            }
+            listremaining.forEach { remainingdata ->
+                if (remainingdata !in list1) {
+                    final_list =
+                        concatenate(final_list, listOf(remainingdata))
+                }
+
+            }
+        }
+        Log.d(TAG, "getTaxBifurcationList: final list" + Gson().toJson(final_list))
+        return final_list
     }
 
     fun <T> concatenate(vararg lists: List<T>): List<T> {
