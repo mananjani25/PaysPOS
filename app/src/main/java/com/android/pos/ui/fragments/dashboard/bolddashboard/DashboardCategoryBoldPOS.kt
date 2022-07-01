@@ -2,6 +2,8 @@ package com.android.pos.ui.fragments.dashboard.bolddashboard
 
 import android.graphics.Typeface
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -31,12 +33,15 @@ import com.android.pos.data.remote.Constants.OPEN_ORDER_ITEMS
 import com.android.pos.data.remote.Constants.ORDER_TYPE
 import com.android.pos.data.remote.Constants.SMALL
 import com.android.pos.data.remote.Constants.SPLIT_ENABLE
+import com.android.pos.data.remote.Constants.SUNMI_INNER_PRINTER
 import com.android.pos.data.remote.Constants.TAKEOUT
 import com.android.pos.databinding.FragmentDashboardCategoryBoldPosBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.di.RolePermission
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.android.pos.ui.fragments.payment.PaymentViewModel
+import com.android.pos.ui.fragments.settings.hardware.printer.BluetoothUtil
+import com.android.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper
 import com.android.pos.utils.*
 import com.android.pos.utils.callback.ItemClickListner
 import com.android.pos.utils.callback.ItemListner
@@ -1042,6 +1047,13 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                 generateKitchenReceiptSunmi(data, type, createOrderResponse.data)
             }
 
+        } else if (data.name.startsWith(SUNMI_INNER_PRINTER, true)) {
+
+
+            SunmiPrintHelper.getInstance().initSunmiPrinterService(requireContext())
+            setService(createOrderResponse.data)
+
+
         } else {
 
 
@@ -1105,6 +1117,33 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
  */
     }
 
+    private fun setService(data: CreateOrderResponse.Data) {
+        if (SunmiPrintHelper.getInstance().sunmiPrinter == SunmiPrintHelper.FoundSunmiPrinter) {
+
+            Log.e("SunmiPrintHelper1", "FoundSunmiPrinter")
+
+            if (!BluetoothUtil.isBlueToothPrinter) {
+
+                Log.e("SunmiPrintHelpe1r", "isBlueToothPrinter")
+
+                generateKitchenReceiptSunmiInner(data)
+
+
+            }
+
+        } else if (SunmiPrintHelper.getInstance().sunmiPrinter == SunmiPrintHelper.CheckSunmiPrinter) {
+            Handler(Looper.getMainLooper()).postDelayed({
+                setService(data)
+            }, 2000)
+            Log.e("SunmiPrintHelper", "CheckSunmiPrinter")
+        } else if (SunmiPrintHelper.getInstance().sunmiPrinter == SunmiPrintHelper.LostSunmiPrinter) {
+
+            Log.e("SunmiPrintHelper", "LostSunmiPrinter")
+        } else {
+            Log.e("SunmiPrintHelper", "ELSE")
+        }
+    }
+
     private fun observeSaveOrder() {
 
         viewModelPayment.QueueStart.observe(viewLifecycleOwner) { event ->
@@ -1115,7 +1154,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                 if (prefProvider.getValue(ORDER_TYPE, "").toString() != "") {
                     prefProvider.setValue(ORDER_TYPE, TAKEOUT)
                 }
-                Log.e(TAG,"QueueCreateAgain")
+                Log.e(TAG, "QueueCreateAgain")
 
                 clearCustomer()
                 if (prefProvider.getValueboolean(IS_PRINTER_QUEUE_ENABLE, false)) {
@@ -1962,7 +2001,11 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                 padLine(
                     "OrderID:" + receiptModel?.order?.id,
                     "",
-                    48
+                    if (kitchenSettingModel.fonts == LARGE) {
+                        23
+                    } else {
+                        48
+                    }
                 ).toString()
             )
 
@@ -1970,7 +2013,11 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                 padLine(
                     "ReceiptID:" + receiptModel?.order?.offlineId,
                     "",
-                    48
+                    if (kitchenSettingModel.fonts == LARGE) {
+                        23
+                    } else {
+                        48
+                    }
                 ).toString()
             )
 
@@ -1979,7 +2026,11 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                 PrintSunmiUtils.employee(
                     padLine(
                         "Employee:" + receiptModel?.order?.employee?.name, "",
-                        48
+                        if (kitchenSettingModel.fonts == LARGE) {
+                            23
+                        } else {
+                            48
+                        }
                     ).toString()
                 )
 
@@ -1994,7 +2045,11 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                         receiptModel?.order?.createdAt.toString()
                     ),
                     "",
-                    48
+                    if (kitchenSettingModel.fonts == LARGE) {
+                        23
+                    } else {
+                        48
+                    }
                 ).toString()
             )
 
@@ -2065,6 +2120,154 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
             }
 
             PrintSunmiUtils.cutPaper()
+
+            viewModel.downloadFinished(false)
+            findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
+
+
+        } catch (e: Exception) {
+            e.printStackTrace()
+            viewModel.downloadFinished(false)
+            findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
+        }
+
+    }
+
+    private fun generateKitchenReceiptSunmiInner(
+
+        receiptModel: CreateOrderResponse.Data
+    ) {
+        try {
+
+            if (kitchenSettingModel.showOrderType) {
+
+                PrintSunmiUtils.headerText(receiptModel?.order?.orderType.toString())
+            }
+            PrintSunmiUtils.headerText(receiptModel?.order?.deliveryType.toString())
+
+            PrintSunmiUtils.normalText(
+                padLine(
+                    "OrderID:" + receiptModel?.order?.id,
+                    "",
+                    if (kitchenSettingModel.fonts == LARGE) {
+                        23
+                    } else {
+                        48
+                    }
+                ).toString()
+            )
+
+            PrintSunmiUtils.normalText(
+                padLine(
+                    "ReceiptID:" + receiptModel?.order?.offlineId,
+                    "",
+                    if (kitchenSettingModel.fonts == LARGE) {
+                        23
+                    } else {
+                        48
+                    }
+                ).toString()
+            )
+
+            if (kitchenSettingModel.showTeamMember) {
+
+                PrintSunmiUtils.normalText(
+                    padLine(
+                        "Employee:" + receiptModel?.order?.employee?.name, "",
+                        if (kitchenSettingModel.fonts == LARGE) {
+                            23
+                        } else {
+                            48
+                        }
+                    ).toString()
+                )
+
+
+            }
+
+
+            PrintSunmiUtils.normalText(
+                padLine(
+                    Constants.getReceiptFormatDateFromUTCServer(
+                        requireContext(),
+                        receiptModel?.order?.createdAt.toString()
+                    ),
+                    "",
+                    if (kitchenSettingModel.fonts == LARGE) {
+                        23
+                    } else {
+                        48
+                    }
+                ).toString()
+            )
+
+            PrintSunmiUtils.addHorizontalInner()
+
+            receiptModel?.order?.orderItems?.let {
+                addOrdersForKitchenInner(
+                    it
+                )
+            }
+
+            if (receiptModel?.order?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote) {
+
+                PrintSunmiUtils.orderNoteInner(receiptModel?.order?.note.toString())
+
+            }
+
+
+            if (kitchenSettingModel.showCustomerAddress != false or kitchenSettingModel.showCustomerPhone != false or kitchenSettingModel.showCustomerName) {
+                if (receiptModel?.order?.customer != null) {
+
+                    PrintSunmiUtils.customerDetailsInner()
+
+
+                    if (kitchenSettingModel.showCustomerName) {
+
+                        PrintSunmiUtils.normalText(receiptModel?.order?.customer?.firstName + " " + receiptModel?.order?.customer?.lastName)
+
+
+                    }
+
+
+                    if (kitchenSettingModel.showCustomerPhone) {
+
+                        if (receiptModel?.order?.customer?.phones?.isNotEmpty()) {
+
+
+                            receiptModel?.order?.customer?.phones?.get(0)?.phoneNumber?.let {
+                                PrintSunmiUtils.normalText(
+                                    it
+                                )
+                            }
+                        }
+
+                    }
+
+
+                    if (kitchenSettingModel.showCustomerAddress) {
+
+                        if (receiptModel?.order?.orderType.trim().lowercase() == "Open Order".trim()
+                                .lowercase() && receiptModel?.order?.deliveryType.trim()
+                                .lowercase() == "Pickup".trim()
+                                .lowercase()
+                        ) {
+
+                        } else if (receiptModel.order?.customer?.addresses?.isNotEmpty()) {
+
+
+                            receiptModel?.order?.customer?.addresses?.get(0)?.fullAddress?.let {
+                                PrintSunmiUtils.normalText(
+                                    it
+                                )
+                            }
+                        }
+                    }
+
+                }
+            }
+
+            PrintSunmiUtils.cutPaperInner()
 
             viewModel.downloadFinished(false)
             findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)

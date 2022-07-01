@@ -728,7 +728,7 @@ fun addHorizontalKitchenLineSunmi(fontSize: String): String {
     var int = 48
     when (fontSize) {
         Constants.LARGE -> {
-            int = 46
+            int = 23
         }
     }
 
@@ -1343,6 +1343,33 @@ fun addOrdersForKitchen(
 
 }
 
+fun addOrdersForKitchenInner(
+    list: List<CreateOrderResponse.Data.Order.OrderItem>
+) {
+    for (i in 0 until list.size) {
+        val obj = list.get(i)
+
+
+        PrintSunmiUtils.normalText(obj.quantity.toString() + " " + obj.itemName)
+
+        if (obj.orderItemModifiers.isNotEmpty()) {
+            for (j in 0 until obj.orderItemModifiers.size) {
+                val modifierObj = obj.orderItemModifiers.get(j)
+
+                PrintSunmiUtils.normalText("  " + modifierObj.name)
+
+
+            }
+        }
+        if (obj.note.isNotEmpty()) {
+            PrintSunmiUtils.normalText("  Note:" + obj.note)
+        }
+
+
+    }
+
+}
+
 fun addOrderItemOpenOrder(
     builder: Builder,
     list: List<OpenOrderResponse.Data.Order.OrderItem>,
@@ -1677,6 +1704,82 @@ fun addWholeTbItemToGuest(
 
 }
 
+
+fun addWholeTbItemToGuestInner(
+    list: TbItem,
+    font: String,
+    showModifiers: Boolean,
+    guestCount: Int,
+    serviceChargeList: ArrayList<TbServiceCharge>
+) {
+
+    val obj = list
+
+    var subTotal = (obj.price * obj.itemQuantity).toDouble()
+
+    if (obj.modifiers.isNotEmpty()) {
+        obj.modifiers.forEach {
+            subTotal += it.price * it.itemQuantity
+        }
+    }
+    var WTTaxes = 0.0
+    var serviceCharge = 0.0
+
+
+    obj.taxes?.forEach { tax ->
+        if (tax.isActive) {
+            WTTaxes += if (tax.taxType == "Percentage") {
+
+                var modifierPrice = 0.0
+                val price =
+                    (obj.price * obj.itemQuantity) - obj.discountPrice
+
+                obj.modifiers.forEach {
+                    modifierPrice += (it.price * it.itemQuantity)
+                }
+
+                val totalPrice = price + modifierPrice
+
+                val itemTaxPrice =
+                    (tax.rate * totalPrice) / 100
+                Log.e("itemTaxPrice", "" + itemTaxPrice)
+                String.format("%.2f", itemTaxPrice)
+                    .toDouble()
+            } else {
+
+                String.format(
+                    "%.2f",
+                    tax.rate * obj.itemQuantity
+                )
+                    .toDouble()
+            }
+        }
+
+
+    }
+
+    if (serviceChargeList.isNotEmpty()) {
+        serviceChargeList.forEach {
+            if (it.isEnabled) {
+                serviceCharge += (subTotal * it.percentage) / 100
+            }
+        }
+    }
+
+
+    val finalAmt = MethodUtils.roundOffAmount((subTotal) / guestCount)
+
+
+    PrintSunmiUtils.normalText(
+        padLineCustomerItem(
+            obj.itemQuantity.toString() + "x " + obj.name,
+            "" + finalAmt,
+            if (font == Constants.LARGE) 23 else 48
+        ).toString()
+    )
+
+}
+
 fun isInRange(minn: Int, maxx: Int, value: Int): Boolean {
     return (minn <= value && value <= maxx)
 }
@@ -1836,6 +1939,52 @@ fun addOrderItemForDineIn(
 
 }
 
+fun addOrderItemForDineInInner(
+    list: TbItem,
+    font: String,
+    showModifiers: Boolean
+) {
+
+
+    val obj = list
+
+
+    PrintSunmiUtils.normalText(
+        padLineCustomerItem(
+            obj.itemQuantity.toString() + "x " + obj.name,
+            "$" + roundOffAmountString(totalPriceDineInItem(obj)),
+            if (font == Constants.LARGE) 23 else 48
+        ).toString()
+    )
+
+
+
+    if (obj.modifiers.isNotEmpty() && showModifiers) {
+        for (j in 0 until obj.modifiers.size) {
+            val modifierObj = obj.modifiers.get(j)
+
+
+            PrintSunmiUtils.normalText(
+                padLineCustomerItem(
+                    "   " + modifierObj.name,
+                    "$" + roundOffAmountString(modifierObj.price.toDouble() * modifierObj.itemQuantity),
+                    if (font == Constants.LARGE) 23 else 48
+                ).toString()
+            )
+
+
+        }
+
+
+    }
+
+    if (obj.note.isNotEmpty()) {
+        PrintSunmiUtils.normalText("   Note: " + obj.note)
+    }
+
+
+}
+
 
 fun addOrderItems(
     builder: Builder,
@@ -1969,6 +2118,53 @@ fun addOrderItems(
         if (obj.note.isNotEmpty()) {
 
             PrintSunmiUtils.orderTime("   Note: " + obj.note)
+
+        }
+
+
+    }
+
+
+}
+
+fun addOrderItemsInner(
+    list: List<CreateOrderResponse.Data.Order.OrderItem>,
+    showModifiers: Boolean,
+    font: String,
+) {
+    for (i in 0 until list.size) {
+        val obj = list[i]
+
+
+        val item = padLineCustomerItem(
+            obj.quantity.toString() + "x " + obj.itemName,
+            "$" + roundOffAmountString(totalPrice(obj)),
+            if (font == Constants.LARGE) 23 else 48
+        )
+
+        PrintSunmiUtils.normalText(item.toString())
+
+
+
+        if (obj.orderItemModifiers.isNotEmpty()) {
+            for (j in 0 until obj.orderItemModifiers.size) {
+                val modifierObj = obj.orderItemModifiers.get(j)
+
+                val modifier = padLineCustomerItem(
+                    "   " + modifierObj.name,
+                    "$" + roundOffAmountString(modifierObj.price.toDouble() * modifierObj.quantity),
+                    if (font == Constants.LARGE) 22 else 48
+                )
+
+                PrintSunmiUtils.normalText(modifier.toString())
+
+            }
+
+        }
+
+        if (obj.note.isNotEmpty()) {
+
+            PrintSunmiUtils.normalText("   Note: " + obj.note)
 
         }
 
