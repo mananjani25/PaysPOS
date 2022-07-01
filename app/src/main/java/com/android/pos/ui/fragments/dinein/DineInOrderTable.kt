@@ -552,7 +552,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             } else {
                 divideCashDiscount = 0.0
             }
-
+            var dineInOrderModel = DineInPaymentUpdateModel()
+            dineInOrderModel.id = orderId
             var model = GuestPaymentRequest(
                 GuestPaymentAttributes().apply {
                     amount = MethodUtils.roundOffAmountDouble(toFinalAmt)
@@ -574,7 +575,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
 
                 },
-                DineInPaymentUpdateModel()
+                dineInOrderModel
             )
             Log.e(TAG, "getPassmodel  ${Gson().toJson(model)}")
             val bundle = Bundle()
