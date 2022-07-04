@@ -632,4 +632,8 @@ object Constants {
     const val SPLIT_IS_GUESTPAY = "split_is_guestpay"
     const val SPLIT_DINEIN_CHECKOUT = "split_dinein_checkout"
 
+
+    const val SUNMI_INNER_PRINTER = "InnerPrinter"
+    const val SUNMI_PRINTER = "CloudPrint"
+
 }

@@ -44,9 +44,9 @@ import com.android.pos.ui.adapter.PrinterListAdapter
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.ToastUtil
 import com.android.pos.utils.addHorizontalKitchenLine
+import com.android.pos.utils.*
 import com.android.pos.utils.extensions.alert
 import com.android.pos.utils.extensions.visible
-import com.android.pos.utils.padLine
 import com.android.pos.utils.printer.PrinterClass
 import com.android.pos.utils.printer.PrinterClass.SEND_TIMEOUT
 import com.android.pos.utils.printer.PrinterClass.language
@@ -1065,9 +1065,24 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
             if (!BluetoothUtil.isBlueToothPrinter) {
 
                 Log.e("SunmiPrintHelper", "isBlueToothPrinter")
+                SunmiPrintHelper.getInstance().initPrinter()
+                SunmiPrintHelper.getInstance().setAlign(1)
+                SunmiPrintHelper.getInstance().lineWrap(2)
+                SunmiPrintHelper.getInstance().printText("Test Print", 30F, true, false, null)
 
-                SunmiPrintHelper.getInstance().printText("Test Print", 24F, true, false, null)
-                SunmiPrintHelper.getInstance().printExample(requireContext())
+                SunmiPrintHelper.getInstance().setAlign(1)
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    SunmiPrintHelper.getInstance().printText(
+                        getCurrentTimeFromTimeZone(requireContext(), MethodUtils.formatted()),
+                        30F,
+                        true,
+                        false,
+                        null
+                    )
+                }
+                SunmiPrintHelper.getInstance().lineWrap(2)
+                PrintSunmiUtils.cutPaperInner()
+
             } else {
 
                 Log.e("SunmiPrintHelper", "isBlueToothPrinter")

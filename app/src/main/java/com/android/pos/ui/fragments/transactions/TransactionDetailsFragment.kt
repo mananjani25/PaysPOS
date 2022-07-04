@@ -28,6 +28,8 @@ import com.android.pos.data.model.responseModel.GetTipReponse
 import com.android.pos.data.model.responseModel.PrinterResponse
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.KEY
+import com.android.pos.data.remote.Constants.SUNMI_INNER_PRINTER
+import com.android.pos.data.remote.Constants.SUNMI_PRINTER
 import com.android.pos.data.remote.Constants.getCurrentTimeFromTimeZone
 import com.android.pos.databinding.FragmentTransactionDetailsBinding
 import com.android.pos.di.PrefProvider
@@ -543,7 +545,7 @@ class TransactionDetailsFragment : Fragment() {
         type: String
     ) {
 
-        if (customerReceiptPrinters.name.startsWith("CloudPrint", true)) {
+        if (customerReceiptPrinters.name.startsWith(SUNMI_PRINTER, true)) {
 
             SunmiPrinterApi.getInstance()
                 .setPrinter(SunmiPrinter.SunmiBlueToothPrinter, customerReceiptPrinters.ipAddress)
@@ -575,7 +577,7 @@ class TransactionDetailsFragment : Fragment() {
                 generatePrintSunmi(customerReceiptPrinters, type)
             }
 
-        } else if (customerReceiptPrinters.name.startsWith("InnerPrinter", true)) {
+        } else if (customerReceiptPrinters.name.startsWith(SUNMI_INNER_PRINTER, true)) {
 
             SunmiPrintHelper.getInstance().initSunmiPrinterService(requireContext())
             setService()
@@ -2312,6 +2314,8 @@ class TransactionDetailsFragment : Fragment() {
     ) {
         try {
 
+            PrintSunmiUtils.fontSizeInner(customerSettingModel.fonts)
+
             SunmiPrintHelper.getInstance().initPrinter()
 
             if (customerSettingModel.showVenueLogo && prefProvider.getValue(
@@ -2321,18 +2325,8 @@ class TransactionDetailsFragment : Fragment() {
                     .isNotEmpty()
             ) {
 
-                val decodedString: ByteArray = Base64.decode(
-                    prefProvider.getValue(Constants.VENUE_LOGO, ""),
-                    Base64.DEFAULT
-                )
-                val bitmap: Bitmap =
-                    BitmapFactory.decodeByteArray(decodedString, 0, decodedString.size)
 
-                val newBitmap = Bitmap.createScaledBitmap(bitmap!!, 210, 210, true)
-                SunmiPrintHelper.getInstance().setAlign(1)
-                SunmiPrintHelper.getInstance().printBitmap(newBitmap)
-                SunmiPrintHelper.getInstance().lineWrap(2)
-
+                PrintSunmiUtils.printLogoInner(prefProvider.getValue(Constants.VENUE_LOGO, ""))
 
             }
 
