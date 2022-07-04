@@ -18,6 +18,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -38,8 +39,10 @@ import com.android.pos.data.remote.Constants.WIFI
 import com.android.pos.data.remote.Constants.getCurrentTimeFromTimeZone
 import com.android.pos.databinding.FragmentPrinterBinding
 import com.android.pos.di.PrefProvider
+import com.android.pos.ui.activities.MainActivity
 import com.android.pos.ui.adapter.PrinterListAdapter
 import com.android.pos.utils.ProgressUtils
+import com.android.pos.utils.ToastUtil
 import com.android.pos.utils.addHorizontalKitchenLine
 import com.android.pos.utils.extensions.alert
 import com.android.pos.utils.extensions.visible
@@ -52,6 +55,9 @@ import com.epson.epos2.Epos2Exception
 import com.epson.epos2.discovery.Discovery
 import com.epson.epos2.discovery.DiscoveryListener
 import com.epson.epos2.discovery.FilterOption
+import com.epson.epos2.printer.Printer
+import com.epson.epos2.printer.PrinterStatusInfo
+import com.epson.epos2.printer.ReceiveListener
 import com.epson.eposprint.BatteryStatusChangeEventListener
 import com.epson.eposprint.Builder
 import com.epson.eposprint.Print
@@ -62,6 +68,7 @@ import com.sunmi.externalprinterlibrary.api.ConnectCallback
 import com.sunmi.externalprinterlibrary.api.SunmiPrinter
 import com.sunmi.externalprinterlibrary.api.SunmiPrinterApi
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 import java.io.IOException
 import java.io.InputStream
 import java.io.OutputStream
@@ -1200,7 +1207,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
                     val createPrinter = CreatePrinterRequestModel(
                         name = printerListModel.printerName,
-                        terminalId = prefProvider.getValueInt(TERMINAL_ID,0),
+                        terminalId = prefProvider.getValueInt(TERMINAL_ID, 0),
                         macAddress = printerListModel.deviceModel?.macAddress,
                         modalName = printerListModel.deviceModel?.printerName,
                         terminalIds = listOf(prefProvider.getValueInt(TERMINAL_ID, 1)),
@@ -1208,7 +1215,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                         locationId = prefProvider.getValueInt(LOCATION_ID, 1),
                         receiptPrintType = KITCHEN,
                         printer_type = printerListModel.connectionType,
-                        ip_address = printerListModel.deviceModel?.ipAddress,
+                        ip_address = if (printerListModel.connectionType == WIFI) "TCP:"+printerListModel.deviceModel?.ipAddress else "BT:"+printerListModel.deviceModel?.ipAddress,
                         printerSettingsAttributes = list
                     )
                     Log.e(TAG, "createPrinterRequestParam:  ${Gson().toJson(createPrinter)}")
@@ -1229,7 +1236,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                     }
                     val createPrinter = CreatePrinterRequestModel(
                         name = printerListModel.printerName,
-                        terminalId = prefProvider.getValueInt(TERMINAL_ID,0),
+                        terminalId = prefProvider.getValueInt(TERMINAL_ID, 0),
                         macAddress = printerListModel.deviceModel?.macAddress,
                         modalName = printerListModel.deviceModel?.printerName,
                         terminalIds = listOf(prefProvider.getValueInt(TERMINAL_ID, 1)),
@@ -1237,7 +1244,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                         locationId = prefProvider.getValueInt(LOCATION_ID, 1),
                         receiptPrintType = CUSTOMER,
                         printer_type = printerListModel.connectionType,
-                        ip_address = printerListModel.deviceModel?.ipAddress,
+                        ip_address = if (printerListModel.connectionType == WIFI) "TCP:"+printerListModel.deviceModel?.ipAddress else "BT:"+printerListModel.deviceModel?.ipAddress,
                         printerSettingsAttributes = list
                     )
 
@@ -1264,7 +1271,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                     }
                     val createBothPrinter = CreatePrinterRequestModel(
                         name = printerListModel.printerName,
-                        terminalId = prefProvider.getValueInt(TERMINAL_ID,0),
+                        terminalId = prefProvider.getValueInt(TERMINAL_ID, 0),
                         macAddress = printerListModel.deviceModel?.macAddress,
                         modalName = printerListModel.deviceModel?.printerName,
                         terminalIds = listOf(prefProvider.getValueInt(TERMINAL_ID, 1)),
@@ -1272,7 +1279,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                         locationId = prefProvider.getValueInt(LOCATION_ID, 1),
                         receiptPrintType = KITCHENANDCUSTOMER,
                         printer_type = printerListModel.connectionType,
-                        ip_address = printerListModel.deviceModel?.ipAddress,
+                        ip_address = if (printerListModel.connectionType == WIFI) "TCP:"+printerListModel.deviceModel?.ipAddress else "BT:"+printerListModel.deviceModel?.ipAddress,
                         printerSettingsAttributes = list
                     )
 
@@ -1339,7 +1346,150 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
     private fun onInitPrinter(printerListModel: PrinterListModel) {
         //open
-        initPrinter(printerListModel)
+        // initPrinter(printerListModel)
+
+        initNewPrinter(printerListModel)
+
+    }
+
+    private fun initNewPrinter(printerListModel: PrinterListModel) {
+        Log.e(TAG, "printerListModel:  ${Gson().toJson(printerListModel)}")
+        // Declare a global instance of Printer
+
+        (activity as MainActivity).runOnUiThread {
+            val mPrinter = Printer(
+                Printer.TM_U220,
+                Printer.MODEL_ANK, (activity as MainActivity).applicationContext
+            ) // Initialize the printer
+
+
+/*Add a listener to your printer*/
+
+            mPrinter.setReceiveEventListener { printer, i, printerStatusInfo, s ->
+
+                Log.e("PrinterDataCh","${Gson().toJson(printer)}   int: ${i}  printerInfo: ${Gson().toJson(printerStatusInfo)}  string: ${s}")
+            }
+
+            mPrinter.setReceiveEventListener(object : ReceiveListener {
+                override fun onPtrReceive(
+                    p0: Printer?,
+                    p1: Int,
+                    p2: PrinterStatusInfo?,
+                    p3: String?
+                ) {
+                    Log.e("getPrintReceive", "online ${Gson().toJson(p2)}  data${p3}")
+                    /*
+                    mPrinter.addFeedLine(2)
+
+
+
+                     mPrinter.addTextFont(Builder.FONT_C)
+                     mPrinter.addTextAlign(Builder.ALIGN_CENTER)
+                     mPrinter.addTextLang(Builder.LANG_EN)
+                     mPrinter.addTextSize(1, 2)
+                     mPrinter.addTextStyle(
+                         Builder.FALSE,
+                         Builder.FALSE,
+                         Builder.FALSE,
+                         Builder.COLOR_1
+                     )
+                     mPrinter.addText("Test Print")
+                     mPrinter.beginTransaction()
+                     mPrinter.sendData(Printer.PARAM_DEFAULT)
+                     mPrinter.endTransaction()
+                     mPrinter.disconnect()
+                     */
+                }
+
+            })
+
+
+            lifecycleScope.launch {
+             val result  =mPrinter.connect(
+                  printerListModel.deviceModel?.macAddress,
+                    Printer.PARAM_DEFAULT
+                )
+
+                mPrinter.addFeedLine(2)
+
+
+
+                mPrinter.addTextFont(Builder.FONT_C)
+                mPrinter.addTextAlign(Builder.ALIGN_CENTER)
+                mPrinter.addTextLang(Builder.LANG_EN)
+                mPrinter.addTextSize(1, 2)
+                mPrinter.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.COLOR_1
+                )
+                mPrinter.addText("Test Print")
+                mPrinter.addFeedLine(2)
+                mPrinter.addCut(Builder.CUT_FEED)
+                mPrinter.beginTransaction()
+                mPrinter.sendData(Printer.PARAM_DEFAULT)
+            }
+                //mPrinter.endTransaction()
+              //  mPrinter.disconnect()
+
+
+
+            var builder: Builder? = null
+            var method = ""
+
+            builder = Builder(
+                if (printerListModel.printerName?.substring(0, 6).toString()
+                        .lowercase() == "TM-m30".lowercase()
+                ) {
+                    "TM-m30"
+                } else {
+                    printerListModel.printerName
+                }, language, requireActivity()
+            )
+
+            builder.addFeedLine(2)
+
+
+
+            builder.addTextFont(Builder.FONT_C)
+            builder.addTextAlign(Builder.ALIGN_CENTER)
+            builder.addTextLang(Builder.LANG_EN)
+            builder.addTextSize(1, 2)
+            builder.addTextStyle(
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.COLOR_1
+            )
+            builder.addText("Test Print")
+
+        }
+
+        /* var printer = Printer(Printer.TM_M30, Printer.MODEL_ANK, requireContext())
+
+         var builder: Builder? = null
+         builder = Builder("TM-m30", language, requireActivity())
+
+         builder.addFeedLine(2)
+
+
+
+         printer.addTextFont(Builder.FONT_C)
+         printer.addTextAlign(Builder.ALIGN_CENTER)
+         printer.addTextLang(Builder.LANG_EN)
+         printer.addTextSize(1, 2)
+         printer.addTextStyle(
+             Builder.FALSE,
+             Builder.FALSE,
+             Builder.FALSE,
+             Builder.COLOR_1
+         )
+         printer.addText("Test Print")
+
+
+         printer.sendData(Printer.PARAM_DEFAULT)
+ */
 
     }
 
@@ -1347,9 +1497,18 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
         PrinterClass.setPrinter(null)
 
         var printer: Print? = Print(requireContext())
+
         if (printer != null) {
             printer.setStatusChangeEventCallback(this)
             printer.setBatteryStatusChangeEventCallback(this)
+            printer.setPowerOffEventCallback {
+                Log.e("PrinterStatus", "powerStatus " + it.toString())
+                ToastUtil.showNormalToast(requireContext(), "PowerOff " + it.toString())
+            }
+            printer.setOnlineEventCallback {
+                Log.e("PrinterStatus", "onlineEventCallback " + it.toString())
+                ToastUtil.showNormalToast(requireContext(), "onlineEventCallback " + it.toString())
+            }
         }
 
 
@@ -1674,7 +1833,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
             val status = IntArray(1)
             val battery = IntArray(1)
 
-            Log.e(TAG, "getPrinterCheck:  ${PrinterClass.getPrinter().toString()}")
+
 
 
 
@@ -1775,14 +1934,25 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
             status[0] = 0
 
 
+
             Log.e(TAG, "getPrinterCheck:  ${PrinterClass.getPrinter().toString()}")
 
 
 
             try {
+                PrinterClass.getPrinter()?.beginTransaction()
+                PrinterClass.getPrinter()
+                    ?.setStatusChangeEventCallback(object : StatusChangeEventListener {
+                        override fun onStatusChangeEvent(p0: String?, p1: Int) {
+                            Log.e("PrinterStatusCheck", "${p0.toString()}  Int${p1}")
+                        }
+
+                    })
+
                 PrinterClass.getPrinter()?.sendData(
                     builder, 10000, status
                 )
+                PrinterClass.getPrinter()?.endTransaction()
                 //PrinterClass.getPrinter()?.sendData(builder, 0, status, battery)
             } catch (e: Exception) {
                 PrinterClass.closePrinter()

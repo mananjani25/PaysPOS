@@ -83,7 +83,6 @@ import com.sunmi.externalprinterlibrary.api.ConnectCallback
 import com.sunmi.externalprinterlibrary.api.SunmiPrinter
 import com.sunmi.externalprinterlibrary.api.SunmiPrinterApi
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.io.IOException
@@ -6044,7 +6043,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                 try {
 
-                    kotlinx.coroutines.GlobalScope.launch(Dispatchers.IO) {
+
 
                         printer?.openPrinter(
                             if (data.printer_type == BLUETOOTH) {
@@ -6052,12 +6051,10 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                             } else {
                                 Print.DEVTYPE_TCP
                             },
-                            data.ipAddress,
-                            enabled,
-                            1000
+                            data.ipAddress
                         )
 
-                    }
+
 
                 } catch (e: Exception) {
                     //  printerDialog.dismiss()
@@ -6785,21 +6782,25 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     .lowercase() == "TM-m30".lowercase() && customerReceiptPrinters.printer_type != BLUETOOTH
             ) {
 
-                timeOut = 1000
+                timeOut = 10000
             }
 
             try {
+
+                PrinterClass.getPrinter()?.beginTransaction()
                 PrinterClass.getPrinter()?.sendData(
                     builder,
                     timeOut, status, battery
                 )
 
+                PrinterClass.getPrinter()?.endTransaction()
                 //printerDialog.dismiss()
                 PrinterClass.closePrinter()
 
                 //PrinterClass.getPrinter()?.sendData(builder, 0, status, battery)
             } catch (e: Exception) {
 //                printerDialog.dismiss()
+//                PrinterClass.getPrinter()?.endTransaction()
                 PrinterClass.closePrinter()
                 e.printStackTrace()
                 Log.e(TAG, "PrinterError: " + e.localizedMessage)
