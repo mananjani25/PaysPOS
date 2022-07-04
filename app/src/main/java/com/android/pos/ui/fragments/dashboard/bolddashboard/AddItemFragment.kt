@@ -188,9 +188,10 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
 
 
             item.itemQuantity = qty
-            item.isSelectedItem = true
-            viewModel.selectedItems(item.itemId, 1)
-
+            if(!item.isSelectedItem){
+                item.isSelectedItem = true
+                viewModel.selectedItems(item.itemId,1)
+            }
             var isPriceNull = true
 
             /*  item.variationsAttributes.forEach {

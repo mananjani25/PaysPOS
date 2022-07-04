@@ -1,5 +1,6 @@
 package com.android.pos.ui.adapter.boldpos
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -26,6 +27,7 @@ class ItemAdapter(
         RecyclerView.ViewHolder(binding.root) {
         val checkedTextView = binding.txtCategoryName
         var itename_price: StringBuffer = StringBuffer()
+        @SuppressLint("ResourceType")
         fun bind(model: TbItem?) {
             if (model?.name?.length!! > 30) {
                 itename_price.append(model?.name.substring(0, 30) + "...\n" + model?.price?.let { MethodUtils.roundOffAmount(it) })
@@ -50,6 +52,9 @@ class ItemAdapter(
             if (model.isSelectedItem) {
                 binding.txtCategoryName.setBackgroundColor(ContextCompat.getColor(context, R.color.txt_color_blue))
                 binding.txtCategoryName.setTextColor(ContextCompat.getColor(context,R.color.white))
+            }else{
+                binding.txtCategoryName.background = (ContextCompat.getDrawable(context, R.drawable.item_selector))
+                binding.txtCategoryName.setTextColor(ContextCompat.getColor(context,R.drawable.text_selector))
             }
 
         }

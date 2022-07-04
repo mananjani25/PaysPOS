@@ -604,8 +604,10 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
             val fragment = AddItemFragment.newInstance(item, this, cartList, false)
             loadCategoryFragment(fragment)
         } else {
-            item.isSelectedItem = true
-            viewModel.selectedItems(item.itemId,1)
+            if(!item.isSelectedItem){
+                item.isSelectedItem = true
+                viewModel.selectedItems(item.itemId,1)
+            }
             Log.e(TAG, "cartListItemAddSize: ${cartList.size}")
             if (cartList.isEmpty()) {
                 viewModel.createCart(cartList)
