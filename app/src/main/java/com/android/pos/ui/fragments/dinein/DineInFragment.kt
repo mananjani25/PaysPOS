@@ -21,6 +21,7 @@ import com.android.pos.R
 import com.android.pos.data.model.responseModel.GetFloorPlanResponse
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.AVAILABLE
+import com.android.pos.data.remote.Constants.DINEIN_FLOORPLAN_SHOW_TABLENAME
 import com.android.pos.data.remote.Constants.DINE_IN_STATUS
 import com.android.pos.data.remote.Constants.EMPLOYEE_ID
 import com.android.pos.data.remote.Constants.MERGED
@@ -36,6 +37,7 @@ import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.extensions.gone
 import com.android.pos.utils.extensions.showAlert
 import com.android.pos.utils.extensions.toDp
+import com.android.pos.utils.extensions.visible
 import com.android.pos.utils.statusUtils.Status
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
@@ -286,6 +288,9 @@ class DineInFragment : Fragment() {
                         val tvTableName: AppCompatTextView =
                             inflatedViewSquare.findViewById(R.id.tvTableName)
 
+                        val tvCustomerName: AppCompatTextView =
+                            inflatedViewSquare.findViewById(R.id.tv_customername)
+
                         val img_chair: ImageView =
                             inflatedViewSquare.findViewById(R.id.img_chair)
 
@@ -294,14 +299,12 @@ class DineInFragment : Fragment() {
                             inflatedViewSquare.findViewById(R.id.img_table)
 
                         tvTableName.text = "" + dineInFloorTablesList[i].tableName
-
                         val tvTableNumber: AppCompatTextView =
                             inflatedViewSquare.findViewById(R.id.tvTableNumber)
-
-
                         tvNoOFChairs.setTextColor(Color.WHITE)
                         tvTableName.setTextColor(Color.WHITE)
                         tvTableNumber.setTextColor(Color.WHITE)
+                        tvCustomerName.setTextColor(Color.WHITE)
                         if (dineInFloorTablesList[i].parentTable) {
                             var tableNo: String =
                                 dineInFloorTablesList[i].tableNumber.toString()
@@ -317,13 +320,39 @@ class DineInFragment : Fragment() {
                         } else {
                             tvTableNumber.text = "" + dineInFloorTablesList[i].tableNumber
                             tvNoOFChairs.text = "" + dineInFloorTablesList[i].chairCount
-
                         }
+                        tvCustomerName.text =
+                            dineInFloorTablesList[i].lock_by_name.toString().substringBefore(" ")
                         if (dineInFloorTablesList[i].status == MERGED || dineInFloorTablesList[i].status == MERGEDANDOCCUPIED) {
                             img_chair.gone()
                             img_table.gone()
                             tvNoOFChairs.gone()
                             tvTableName.gone()
+                            tvCustomerName.gone()
+                            tvTableNumber.visible()
+                        } else if (dineInFloorTablesList[i].status == OCCUPIED) {
+                            tvTableNumber.visible()
+                            tvCustomerName.visible()
+                            img_chair.gone()
+                            tvTableName.gone()
+                            tvNoOFChairs.gone()
+                            img_table.gone()
+                        } else if (dineInFloorTablesList[i].status == AVAILABLE) {
+                            if (prefProvider.getValueboolean(
+                                    DINEIN_FLOORPLAN_SHOW_TABLENAME,
+                                    false
+                                )
+                            ) {
+                                tvTableName.visible()
+                                tvTableNumber.gone()
+                            } else {
+                                tvTableName.gone()
+                                tvTableNumber.visible()
+                            }
+                            img_chair.visible()
+                            tvNoOFChairs.visible()
+                            img_table.gone()
+                            tvCustomerName.gone()
                         }
                         if (llMainParentSquare.parent != null) {
                             (llMainParentSquare.parent as ViewGroup).removeView(llMainParentSquare)
@@ -398,7 +427,8 @@ class DineInFragment : Fragment() {
 
                         val img_chair: ImageView =
                             inflatedViewRound.findViewById(R.id.img_round_chair)
-
+                        val tvCustomerName: AppCompatTextView =
+                            inflatedViewRound.findViewById(R.id.tv_customername)
 
                         val img_table: ImageView =
                             inflatedViewRound.findViewById(R.id.img_round_table)
@@ -429,7 +459,8 @@ class DineInFragment : Fragment() {
                             tvNoOFChairs.text = "" + dineInFloorTablesList[i].chairCount
 
                         }
-
+                        tvCustomerName.text =
+                            dineInFloorTablesList[i].lock_by_name.toString().substringBefore(" ")
                         if (llMainParentRound.parent != null) {
                             (llMainParentRound.parent as ViewGroup).removeView(llMainParentRound)
                         }
@@ -438,6 +469,31 @@ class DineInFragment : Fragment() {
                             img_table.gone()
                             tvNoOFChairs.gone()
                             tvTableName.gone()
+                            tvCustomerName.gone()
+                            tvTableNumber.visible()
+                        } else if (dineInFloorTablesList[i].status == OCCUPIED) {
+                            tvTableNumber.visible()
+                            tvCustomerName.visible()
+                            img_chair.gone()
+                            tvTableName.gone()
+                            tvNoOFChairs.gone()
+                            img_table.gone()
+                        } else if (dineInFloorTablesList[i].status == AVAILABLE) {
+                            if (prefProvider.getValueboolean(
+                                    DINEIN_FLOORPLAN_SHOW_TABLENAME,
+                                    false
+                                )
+                            ) {
+                                tvTableName.visible()
+                                tvTableNumber.gone()
+                            } else {
+                                tvTableName.gone()
+                                tvTableNumber.visible()
+                            }
+                            img_chair.visible()
+                            tvNoOFChairs.visible()
+                            img_table.gone()
+                            tvCustomerName.gone()
                         }
                         /*pass object in settag*/
                         inflatedViewRound.tag = dineInFloorTablesList[i]

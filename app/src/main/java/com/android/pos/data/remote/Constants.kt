@@ -27,6 +27,7 @@ object Constants {
     const val SERVICECHARGE_TAKEOUT_OPENORDER = "TakeOutAndParkOrder"
     const val SERVICECHARGE_DINEIN_ORDER = "DineIn"
     const val LOCK_SCREEN_TRANSACTION = "lock_screen_after_each_transaction"
+    const val DINEIN_FLOORPLAN_SHOW_TABLENAME = "dine_floorplan_show_tablename"
 
     //SharedPref Keys
     const val AUTH_TOKEN = "authToken"

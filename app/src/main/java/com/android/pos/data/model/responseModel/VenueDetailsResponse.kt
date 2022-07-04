@@ -97,6 +97,8 @@ data class VenueDetailsResponse(
         val enable_dine_in_service_charge: Boolean,
         @SerializedName("lock_screen_after_each_transaction")
         val lock_screen_after_each_transaction: Boolean,
+        @SerializedName("show_table_name")
+        val show_table_name: Boolean,
         @SerializedName("shift_report_configuration")
         val shift_report_configuration: ShiftRportConfiguration?,
         @SerializedName("time_zone_options")

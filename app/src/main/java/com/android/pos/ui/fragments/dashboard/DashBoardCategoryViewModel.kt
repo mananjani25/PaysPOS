@@ -32,6 +32,7 @@ import com.android.pos.data.remote.Constants.BUSINESS_WEBSITE
 import com.android.pos.data.remote.Constants.CASH_DISCOUNT_SURCHARGE_AMOUNT_TYPE
 import com.android.pos.data.remote.Constants.CASH_DISCOUNT_SURCHARGE_RATE
 import com.android.pos.data.remote.Constants.DELETE
+import com.android.pos.data.remote.Constants.DINEIN_FLOORPLAN_SHOW_TABLENAME
 import com.android.pos.data.remote.Constants.DINE_IN
 import com.android.pos.data.remote.Constants.DINE_IN_LIST_EDIT
 import com.android.pos.data.remote.Constants.DINE_IN_UPDATE
@@ -3088,6 +3089,10 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 prefProvider.setValueboolean(
                                     LOCK_SCREEN_TRANSACTION,
                                     it.data.lock_screen_after_each_transaction
+                                )
+                                prefProvider.setValueboolean(
+                                    DINEIN_FLOORPLAN_SHOW_TABLENAME,
+                                    it.data.show_table_name
                                 )
 
                                 posRepository.addCashDiscountsFromDb(it.data.cash_discounts)
