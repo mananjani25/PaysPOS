@@ -57,6 +57,7 @@ public class CustomerListViewModel @Inject constructor(
     fun deleteCart() {
         viewModelScope.launch {
             posRepository.deleteCart(prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0))
+            posRepository.deselectedItem(0)
         }
     }
     fun getData() {

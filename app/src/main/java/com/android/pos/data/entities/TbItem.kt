@@ -65,7 +65,7 @@ class TbItem : Parcelable {
     var guestItemId: Int? = null
     var isDestroy:Boolean = false
     var reorder:Boolean = false
-
+    var isSelectedItem:Boolean = false
     var manualSaleId: String = UUID.randomUUID().toString()
 
     fun convertToItem(item: Item, category: Category?): TbItem {
