@@ -144,6 +144,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
         getwebOrderingCountObserver()
         viewModel.getOnlineOrderCount()
         getOnlineOrderIsEnableOrNot()
+        prefProvider.setValueboolean(Constants.ORDER_COMPLETED, false)
         binding.lifecycleOwner = this
         return binding.root
     }

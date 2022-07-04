@@ -123,6 +123,9 @@ class PosRepository @Inject constructor(
     suspend fun syncInventory() = apiHelperNew.syncVenueData()
 
 
+    suspend fun updateTransactionLockScreen(lock_screen_after_each_transaction: Boolean) =
+        apiHelperNew.updateTransactionLockScreen(lock_screen_after_each_transaction)
+
     fun venueDataLocal() = performGetOperationDatabase(
         databaseQuery = { appDatabase.categoryDao().categoryWithInventory()!! },
     )
