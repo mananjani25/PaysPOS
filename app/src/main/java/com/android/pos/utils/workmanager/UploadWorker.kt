@@ -634,7 +634,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
 
             addBuilderText(builder, printerQueueModel.orderType)
 
-            if (printerQueueModel?.data?.order_type?.toString()?.lowercase() == "OpenOrder".trim()
+       /*     if (printerQueueModel?.data?.order_type?.toString()?.lowercase() == "OpenOrder".trim()
                     .toString().lowercase() || printerQueueModel?.data?.order_type?.toString()
                     ?.lowercase() == "Open Order".trim()
                     .toString().lowercase()
@@ -655,7 +655,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                     builder,
                     printerQueueModel.data.order_data.open_order_type.toString() ?: ""
                 )
-            }
+            }*/
 
             if (kitchenSettingModel.showOrderType) {
 
@@ -774,7 +774,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
                 )
             }
 
-            if (printerQueueModel?.data?.order_data?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote) {
+          /*  if (printerQueueModel?.data?.order_data?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote) {
                 builder.addTextLineSpace(30)
                 builder.addFeedUnit(30)
                 builder.addFeedLine(1)
@@ -807,7 +807,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
 
 
                 builder.addText(printerQueueModel.data.order_data.note)
-            }
+            }*/
 
             if (kitchenSettingModel.showCustomerAddress != false or kitchenSettingModel.showCustomerPhone != false or kitchenSettingModel.showCustomerName != false) {
                 if (printerQueueModel.customerName.isNotEmpty()) {

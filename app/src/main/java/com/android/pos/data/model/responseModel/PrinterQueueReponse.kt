@@ -2,12 +2,12 @@ package com.android.pos.data.model.responseModel
 
 import android.os.Parcelable
 import com.android.pos.data.model.requestModel.CreateServiceChargeRequestModel
-import com.android.pos.data.model.requestModel.OrderCancelRequest
 import com.android.pos.data.model.requestModel.PaymentAttributes
 import com.google.gson.annotations.SerializedName
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
+
 data class PrinterQueueReponse(
     @SerializedName("data") val data: List<Data>?=null,
     @SerializedName("type") val type: String="",
