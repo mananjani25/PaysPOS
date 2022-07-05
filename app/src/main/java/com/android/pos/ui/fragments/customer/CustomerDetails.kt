@@ -45,6 +45,7 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
     @Inject
     lateinit var prefProvider: PrefProvider
     lateinit var listOfTbItem: List<TbItem>
+    lateinit var listOfItemsId: ArrayList<Int>
 
     private val orderHistoryAdapter by lazy {
         OrderHistoryAdapter { view, order ->
@@ -162,6 +163,10 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
         viewModel.itemlist.observe(viewLifecycleOwner) { itemlist ->
             if (itemlist.data?.isNotEmpty() == true) {
                 listOfTbItem = itemlist.data as List<TbItem>
+                listOfItemsId = arrayListOf()
+                itemlist.data.forEach { it ->
+                    listOfItemsId.add(it.itemId)
+                }
             }
         }
         viewModel.showProgress.observe(viewLifecycleOwner) { event ->
@@ -196,10 +201,7 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
             prefProvider.setValue(Constants.ORDER_TYPE, Constants.TAKEOUT)
             Log.e("!_@_", "customer details ${order.orderType}")
             if (order.orderItems.size == 1) {
-                var data: TbItem? = null
-                data = listOfTbItem.find { it.itemId == order.orderItems[0].itemId }
-
-                if (data != null) {
+                if (listOfItemsId.contains(order.orderItems[0].itemId)) {
                     if (order.customer != null) {
                         prefProvider.setValue(
                             Constants.CUSTOMER_NAME,
@@ -252,8 +254,8 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
 
     private fun cartModel(order: GetOrderDetailsResponse.Data): CartModel {
         return CartModel().apply {
-            terminalId = order.terminalId
-            employeeID = order.employeeId
+            terminalId = prefProvider.getValueInt(Constants.TERMINAL_ID, 0)
+            employeeID = prefProvider.employeeId()
             locationId = order.locationId
             orderTypeId = order.orderTypeId
             orderType = Constants.TAKEOUT

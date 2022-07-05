@@ -1487,15 +1487,15 @@ class DashBoardCategoryViewModel @Inject constructor(
                     var taxList: ArrayList<TaxData> = arrayListOf()
                     cartModel.items?.forEach { item ->
                         if (!item.isDestroy) {
-                            totalCount += item.itemQuantity
-                            totalDiscount += item.discountPrice * item.itemQuantity
-                            subTotalPrice += (item.price * item.itemQuantity) - (item.discountPrice * item.itemQuantity)
+                        totalCount += item.itemQuantity
+                        totalDiscount += item.discountPrice * item.itemQuantity
+                        subTotalPrice += (item.price * item.itemQuantity) - (item.discountPrice * item.itemQuantity)
 
 
-                            taxCalculation(item, cartModel.discountPrice / itemCount!!)
+                        taxCalculation(item, cartModel.discountPrice / itemCount!!)
 
-                            item.modifiers.forEach {
-                                subTotalPrice += (it.price * it.itemQuantity)
+                        item.modifiers.forEach {
+                            subTotalPrice += (it.price * it.itemQuantity)
 
                             }
                         }

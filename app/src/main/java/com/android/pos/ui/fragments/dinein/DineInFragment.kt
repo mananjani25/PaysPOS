@@ -149,7 +149,15 @@ class DineInFragment : Fragment() {
             }
 
         }
+        setFragmentResultListener("request_key_table_selection") { requestKey: String, bundle: Bundle ->
+            var mergeStatus = bundle.getBoolean("merge_done")
+            if (mergeStatus) {
+                floorPlanSelectedPos =
+                    dineInFloorNameListAdapter.getSelectedPos()
+                loadFloorPlan()
+            }
 
+        }
 
     }
 
@@ -210,24 +218,13 @@ class DineInFragment : Fragment() {
     }
 
     private fun loadFloorPlanDetails() {
-        viewModel.getFloorPlanDetails.observe(viewLifecycleOwner) {
+        viewModel.getFloorPlanDetails().observe(viewLifecycleOwner) {
             it?.let { resource ->
                 when (resource.status) {
                     Status.SUCCESS -> {
                         ProgressUtils.dismissProgressDialog()
                         val bundle = Bundle()
                         if (resource.data?.status == 200) {
-                            setFragmentResultListener("request_key_table_selection") { requestKey: String, bundle: Bundle ->
-                                var mergeStatus = bundle.getBoolean("merge_done")
-                                if (mergeStatus) {
-                                    floorPlanSelectedPos =
-                                        dineInFloorNameListAdapter.getSelectedPos()
-                                    loadFloorPlan()
-                                }
-
-                            }
-                            //bundle.putParcelable("floorList", resource.data.data)
-
                             bundle.putParcelableArrayList(
                                 "floorList", it.data?.data?.toCollection(
                                     arrayListOf()
@@ -442,6 +439,7 @@ class DineInFragment : Fragment() {
                         tvNoOFChairs.setTextColor(Color.WHITE)
                         tvTableName.setTextColor(Color.WHITE)
                         tvTableNumber.setTextColor(Color.WHITE)
+                        tvCustomerName.setTextColor(Color.WHITE)
                         if (dineInFloorTablesList[i].parentTable) {
                             var tableNo: String =
                                 dineInFloorTablesList[i].tableNumber.toString()

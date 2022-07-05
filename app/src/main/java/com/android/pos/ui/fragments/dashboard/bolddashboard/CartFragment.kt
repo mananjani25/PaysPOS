@@ -599,10 +599,10 @@ class CartFragment(
             Log.d(TAG, "addObserver: " + taxlistData.size)
             setupTaxAdapter()
             taxClickable = false
-            if(viewModel.order_note.isNotEmpty()){
+            if (viewModel.order_note.isNotEmpty()) {
                 binding.liinearInfoLayout.layoutParams.height =
                     resources.getDimension(R.dimen._70sdp).toInt()
-            }else{
+            } else {
                 binding.liinearInfoLayout.layoutParams.height =
                     resources.getDimension(R.dimen._50sdp).toInt()
             }
@@ -610,11 +610,11 @@ class CartFragment(
             binding.imgDropdown.visible()
             taxBirfurcationAdapter.setList(taxlistData)
             binding.relativeDynamicTax.gone()
-        }else{
-            if(viewModel.order_note.isNotEmpty()){
+        } else {
+            if (viewModel.order_note.isNotEmpty()) {
                 binding.liinearInfoLayout.layoutParams.height =
                     resources.getDimension(R.dimen._60sdp).toInt()
-            }else{
+            } else {
                 binding.liinearInfoLayout.layoutParams.height =
                     resources.getDimension(R.dimen._50sdp).toInt()
             }
@@ -1106,12 +1106,9 @@ class CartFragment(
                             binding.rvCartList.removeAllViewsInLayout()
 
                             var filterItems = arrayListOf<TbItem>()
-                            it[0].items?.filter {
-                                !it.isDestroy
-                            }.let {
+                            it[0].items?.toCollection(arrayListOf())
+                                ?.let { it1 -> filterItems.addAll(it1) }
 
-                                filterItems.addAll(it!!.toCollection(arrayListOf()))
-                            }
 
                             cartAdapter.setList(filterItems)
                             /*it[0].items?.toCollection(arrayListOf())
