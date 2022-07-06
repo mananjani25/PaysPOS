@@ -144,6 +144,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
         getwebOrderingCountObserver()
         viewModel.getOnlineOrderCount()
         getOnlineOrderIsEnableOrNot()
+        prefProvider.setValueboolean(Constants.ORDER_COMPLETED, false)
         binding.lifecycleOwner = this
         return binding.root
     }
@@ -603,7 +604,10 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
             val fragment = AddItemFragment.newInstance(item, this, cartList, false)
             loadCategoryFragment(fragment)
         } else {
-
+            if(!item.isSelectedItem){
+                item.isSelectedItem = true
+                viewModel.selectedItems(item.itemId,1)
+            }
             Log.e(TAG, "cartListItemAddSize: ${cartList.size}")
             if (cartList.isEmpty()) {
                 viewModel.createCart(cartList)

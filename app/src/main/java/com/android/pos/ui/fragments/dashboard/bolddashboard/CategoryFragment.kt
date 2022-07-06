@@ -404,7 +404,12 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
             if (it.status == Status.SUCCESS) {
                 if (it.data != null && it.data.isNotEmpty()) {
                     itemAdapter.setPos(-2)
-                    itemAdapter.addList(it.data.toCollection(arrayListOf()))
+                    it.data.filter {
+                        it.isHide
+                    }.let { it1 ->
+                        itemAdapter.addList(it1.toCollection(arrayListOf()))
+                        Log.d(TAG, "onCategorySelected: size" + it1.size)
+                    }
                 } else {
                     itemAdapter.clearList()
                 }

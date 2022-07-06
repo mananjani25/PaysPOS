@@ -341,7 +341,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             Log.e(TAG, "listWTItems ${Gson().toJson(listWT)}")
 
             var dividedOrderDiscount = 0.0
-
+            totalGuestCount = getOrderDetailsResponse?.guestAttributes?.size!! - 1
             if (paidGuestAmount > 0 && globalOrderDiscount > 0.0) {
                 Log.e("globalOrderDiscount", "globalOrderDiscount  ${globalOrderDiscount}")
                 var eachGuestDiscount =
@@ -552,7 +552,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                             toFinalAmt,
                             prefProvider,
                             requireContext()
-                        ) / totalGuestCount
+                        ) / (getOrderDetailsResponse?.guestAttributes?.size!! - 1)
                 }
             } else {
                 divideCashDiscount = 0.0
@@ -582,7 +582,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 },
                 dineInOrderModel
             )
-            Log.e(TAG, "getPassmodel  ${Gson().toJson(model)}")
+//            Log.e(TAG, "getPassmodel  ${Gson().toJson(model)}")
             val bundle = Bundle()
 //            viewModelPayment.totalPrice = MethodUtils.roundOffAmobtnPayuntDouble(toFinalAmt)
 //            viewModelPayment.subTotalPrice = MethodUtils.roundOffAmountDouble(subTotalDInin)
@@ -673,6 +673,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     for (j in i + 1 until list.size) {
                         if (list[j].isHeader == 1) {
                             list[j].item?.let { it1 ->
+                                viewModelPayment.selectedItems(it1.itemId, 1)
                                 if (it1.discountPrice != 0.0) {
                                     it1.discountPrice =
                                         MethodUtils.roundOffAmountDouble(it1.discountPrice / it1.itemQuantity)
@@ -714,7 +715,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             )
             bundle.putString("order_note", order_note)
             bundle.putParcelable("tableDetails", getOrderDetailsResponse?.floorPlanTable)
-
+            viewModelPayment.deleteCart()
             orderId?.let { it1 -> bundle.putInt("orderId", it1) }
 
             prefProvider.setValueboolean(DINE_IN_UPDATE, true)
@@ -3060,7 +3061,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 }
             }
 
-        }else {
+        } else {
 
             viewLifecycleOwner.lifecycleScope.launch {
                 PrinterClass.closePrinter()

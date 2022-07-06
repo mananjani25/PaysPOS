@@ -19,6 +19,7 @@ import com.android.pos.R
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.AUTH_TOKEN
 import com.android.pos.data.remote.Constants.IS_CLOCKOUT
+import com.android.pos.data.remote.Constants.ORDER_COMPLETED
 import com.android.pos.databinding.FragmentLoginBinding
 import com.android.pos.di.ApiModule.BASE_URL
 import com.android.pos.di.HostSelectionInterceptor
@@ -64,7 +65,11 @@ class LoginFragment : Fragment() {
                 if (prefProvider?.getValueboolean("clockOutFromNoti", false) == true) {
                     findNavController().navigate(R.id.action_login_to_passcode, arguments)
                 } else {
-                    findNavController().navigate(R.id.action_login_to_dashboardCategoryBoldPOS)
+                    if (prefProvider?.getValueboolean(ORDER_COMPLETED, false)!!) {
+                        findNavController().navigate(R.id.action_login_to_passcode)
+                    } else {
+                        findNavController().navigate(R.id.action_login_to_dashboardCategoryBoldPOS)
+                    }
                 }
 
             }

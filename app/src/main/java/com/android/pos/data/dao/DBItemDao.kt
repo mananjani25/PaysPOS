@@ -60,6 +60,12 @@ interface DBItemDao {
     @Query("UPDATE TbItem SET isHide = 1 WHERE  TbItem.itemId = :id")
     suspend fun updateShowItem(id: Int): Int
 
+    @Query("UPDATE TbItem SET isSelectedItem = :isselected  WHERE  TbItem.itemId = :itemId")
+    suspend fun selectedItem(itemId: Int, isselected: Int): Int
+
+    @Query("UPDATE TbItem SET isSelectedItem = :isselected")
+    suspend fun deselectedItem(isselected: Int): Int
+
 
     @Query("UPDATE TbItem SET categoryId = :catId,categoryName = :catName  WHERE  TbItem.itemId = :itemId")
     suspend fun updateItem(catId: Int, catName: String, itemId: Int?): Int

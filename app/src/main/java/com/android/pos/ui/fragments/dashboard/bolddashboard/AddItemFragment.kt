@@ -188,8 +188,10 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
 
 
             item.itemQuantity = qty
-
-
+            if(!item.isSelectedItem){
+                item.isSelectedItem = true
+                viewModel.selectedItems(item.itemId,1)
+            }
             var isPriceNull = true
 
             /*  item.variationsAttributes.forEach {
@@ -402,8 +404,8 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
         }
 
         binding.txtRemoveItem.setOnClickListener {
-
             makeItemEdited(item)
+            viewModel.selectedItems(item.itemId, 0)
 
             if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == DINE_IN) {
                 Log.e(TAG, "isEditedisEdited  ${item.isEdited}")

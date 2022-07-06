@@ -123,6 +123,9 @@ class PosRepository @Inject constructor(
     suspend fun syncInventory() = apiHelperNew.syncVenueData()
 
 
+    suspend fun updateTransactionLockScreen(lock_screen_after_each_transaction: Boolean) =
+        apiHelperNew.updateTransactionLockScreen(lock_screen_after_each_transaction)
+
     fun venueDataLocal() = performGetOperationDatabase(
         databaseQuery = { appDatabase.categoryDao().categoryWithInventory()!! },
     )
@@ -571,7 +574,13 @@ class PosRepository @Inject constructor(
     suspend fun reOrderCategoryCall(id: Int, oldPos: Int, newPos: Int) =
         apiHelperNew.reOrderCategoryCall(id, oldPos, newPos)
 
+    suspend fun selectedItem(itemid: Int, isSelected: Int): Int {
+        return appDatabase.itemDao().selectedItem(itemid, isSelected)
+    }
 
+    suspend fun deselectedItem(isSelected: Int): Int {
+        return appDatabase.itemDao().deselectedItem(isSelected)
+    }
     suspend fun updateCategorySort(allCategories: ArrayList<TbCategory>) {
         appDatabase.categoryDao().addAll(allCategories)
     }
