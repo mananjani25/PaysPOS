@@ -59,8 +59,9 @@ class DineInViewModel @Inject constructor(
 
     // val getFloorPlan = posRepository.getFloorPlan(prefProvider.getValueInt(LOCATION_ID, 0))
 
-    val getFloorPlanDetails =
-        posRepository.getFloorPlanTableDetails()
+    fun getFloorPlanDetails(): LiveData<Resource<GetFloorPlanDetailResponse>> {
+        return posRepository.getFloorPlanTableDetails()
+    }
 
     fun mergeTable(
         parentTableId: Int,

@@ -51,6 +51,9 @@ public class CustomerListViewModel @Inject constructor(
     private val _orderHistory = MutableLiveData<Event<List<Orders>?>>()
     val orderHistory: LiveData<Event<List<Orders>?>> = _orderHistory
 
+
+    var itemlist = posRepository.getItemsList()
+
     fun customerList(data: LinkedHashMap<String, String>) =
         posRepository.customerListPagination(data)
 
@@ -60,6 +63,7 @@ public class CustomerListViewModel @Inject constructor(
             posRepository.deselectedItem(0)
         }
     }
+
     fun getData() {
         _showProgress.value = Event(true)
     }

@@ -44,6 +44,8 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
 
     @Inject
     lateinit var prefProvider: PrefProvider
+    lateinit var listOfTbItem: List<TbItem>
+    lateinit var listOfItemsId: ArrayList<Int>
 
     private val orderHistoryAdapter by lazy {
         OrderHistoryAdapter { view, order ->
@@ -156,7 +158,18 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
 
     private fun initObservers() {
         binding.root.liveSnackBar(this, viewModel.snackbarText, Snackbar.LENGTH_SHORT)
-        viewModel.showProgress.observe(viewLifecycleOwner, { event ->
+
+
+        viewModel.itemlist.observe(viewLifecycleOwner) { itemlist ->
+            if (itemlist.data?.isNotEmpty() == true) {
+                listOfTbItem = itemlist.data as List<TbItem>
+                listOfItemsId = arrayListOf()
+                itemlist.data.forEach { it ->
+                    listOfItemsId.add(it.itemId)
+                }
+            }
+        }
+        viewModel.showProgress.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
                 if (it) {
                     ProgressUtils.showProgressDialog(requireActivity())
@@ -164,7 +177,7 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
                     ProgressUtils.dismissProgressDialog()
                 }
             }
-        })
+        }
         viewModel.orderHistory.observe(viewLifecycleOwner, EventObserver { data ->
             if (data?.isNotEmpty() == true) {
                 binding.llOrderHistory.visible()
@@ -185,37 +198,68 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
         })
         viewModel.orderResponse.observe(viewLifecycleOwner, EventObserver { order ->
             //reorder
-            prefProvider.setValue(Constants.ORDER_TYPE, order.orderType)
+            prefProvider.setValue(Constants.ORDER_TYPE, Constants.TAKEOUT)
             Log.e("!_@_", "customer details ${order.orderType}")
-            if (order.customer != null) {
-                prefProvider.setValue(
-                    Constants.CUSTOMER_NAME,
-                    order.customer.firstName + " " + order.customer.lastName
+            if (order.orderItems.size == 1) {
+                if (listOfItemsId.contains(order.orderItems[0].itemId)) {
+                    if (order.customer != null) {
+                        prefProvider.setValue(
+                            Constants.CUSTOMER_NAME,
+                            order.customer.firstName + " " + order.customer.lastName
+                        )
+                        prefProvider.setValueInt(Constants.CUSTOMER_ID, order.customer.id)
+                        prefProvider.saveCustomerData(TbCustomer.customerMapping(order.customer))
+                    }
+
+                    dashboardViewModel.addCart(
+                        cartModel(order)
+                    )
+                    val bundle = Bundle()
+                    bundle.putBoolean("update", false)
+                    bundle.putBoolean("reorder", true)
+                    findNavController().navigate(
+                        R.id.action_customer_to_dashboardCategoryNew, bundle
+                    )
+                } else {
+                    AlertUtils.showCustomAlertWithListenerWithOK(
+                        requireActivity(), "Not Available Item in a Restaurant."
+                    ) { _, _ ->
+
+                    }
+                }
+            } else {
+                if (order.customer != null) {
+                    prefProvider.setValue(
+                        Constants.CUSTOMER_NAME,
+                        order.customer.firstName + " " + order.customer.lastName
+                    )
+                    prefProvider.setValueInt(Constants.CUSTOMER_ID, order.customer.id)
+                    prefProvider.saveCustomerData(TbCustomer.customerMapping(order.customer))
+                }
+
+                dashboardViewModel.addCart(
+                    cartModel(order)
                 )
-                prefProvider.setValueInt(Constants.CUSTOMER_ID, order.customer.id)
-                prefProvider.saveCustomerData(TbCustomer.customerMapping(order.customer))
+                val bundle = Bundle()
+                bundle.putBoolean("update", false)
+                bundle.putBoolean("reorder", true)
+                findNavController().navigate(
+                    R.id.action_customer_to_dashboardCategoryNew, bundle
+                )
             }
 
-            dashboardViewModel.addCart(
-                cartModel(order)
-            )
-            val bundle = Bundle()
-            bundle.putBoolean("update", false)
-            bundle.putBoolean("reorder", true)
-            findNavController().navigate(
-                R.id.action_customer_to_dashboardCategoryNew, bundle
-            )
+
         })
     }
 
     private fun cartModel(order: GetOrderDetailsResponse.Data): CartModel {
         return CartModel().apply {
-            terminalId = order.terminalId
-            employeeID = order.employeeId
+            terminalId = prefProvider.getValueInt(Constants.TERMINAL_ID, 0)
+            employeeID = prefProvider.employeeId()
             locationId = order.locationId
             orderTypeId = order.orderTypeId
-            orderType = order.orderType
-            orderTypeName = order.orderType
+            orderType = Constants.TAKEOUT
+            orderTypeName = Constants.TAKEOUT
             futureDeliveryDate = order.date.toString()
             isOpenOrder = false
             serviceCharge = serviceChargesList(order)
@@ -225,6 +269,7 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
             reorder = true
             var itemDiscount = 0.0
             items?.forEach {
+                it.isSelectedItem = true
                 itemDiscount += it.discountPrice
             }
             discountPrice = (order.totalDiscount - itemDiscount)

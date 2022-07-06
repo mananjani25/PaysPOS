@@ -599,10 +599,10 @@ class CartFragment(
             Log.d(TAG, "addObserver: " + taxlistData.size)
             setupTaxAdapter()
             taxClickable = false
-            if(viewModel.order_note.isNotEmpty()){
+            if (viewModel.order_note.isNotEmpty()) {
                 binding.liinearInfoLayout.layoutParams.height =
                     resources.getDimension(R.dimen._70sdp).toInt()
-            }else{
+            } else {
                 binding.liinearInfoLayout.layoutParams.height =
                     resources.getDimension(R.dimen._50sdp).toInt()
             }
@@ -610,11 +610,11 @@ class CartFragment(
             binding.imgDropdown.visible()
             taxBirfurcationAdapter.setList(taxlistData)
             binding.relativeDynamicTax.gone()
-        }else{
-            if(viewModel.order_note.isNotEmpty()){
+        } else {
+            if (viewModel.order_note.isNotEmpty()) {
                 binding.liinearInfoLayout.layoutParams.height =
                     resources.getDimension(R.dimen._60sdp).toInt()
-            }else{
+            } else {
                 binding.liinearInfoLayout.layoutParams.height =
                     resources.getDimension(R.dimen._50sdp).toInt()
             }

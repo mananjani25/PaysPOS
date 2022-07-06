@@ -27,6 +27,7 @@ object Constants {
     const val SERVICECHARGE_TAKEOUT_OPENORDER = "TakeOutAndParkOrder"
     const val SERVICECHARGE_DINEIN_ORDER = "DineIn"
     const val LOCK_SCREEN_TRANSACTION = "lock_screen_after_each_transaction"
+    const val DINEIN_FLOORPLAN_SHOW_TABLENAME = "dine_floorplan_show_tablename"
 
     //SharedPref Keys
     const val AUTH_TOKEN = "authToken"
@@ -295,6 +296,8 @@ object Constants {
     const val BUSINESS_WEBSITE = "business_website"
     const val IS_PRINTER_QUEUE_ENABLE = "is_printer_queue_enable"
     const val VENUE_LOGO = "venue_logo"
+    const val REPORT_START_TIME = "report_start_time"
+    const val REPORT_END_TIME = "report_end_time"
     const val VENUE_LOGO_URL = "venue_logo_url"
 
     const val CUSTOMER_ID = "customer_id"

@@ -32,6 +32,7 @@ import com.android.pos.data.remote.Constants.BUSINESS_WEBSITE
 import com.android.pos.data.remote.Constants.CASH_DISCOUNT_SURCHARGE_AMOUNT_TYPE
 import com.android.pos.data.remote.Constants.CASH_DISCOUNT_SURCHARGE_RATE
 import com.android.pos.data.remote.Constants.DELETE
+import com.android.pos.data.remote.Constants.DINEIN_FLOORPLAN_SHOW_TABLENAME
 import com.android.pos.data.remote.Constants.DINE_IN
 import com.android.pos.data.remote.Constants.DINE_IN_LIST_EDIT
 import com.android.pos.data.remote.Constants.DINE_IN_UPDATE
@@ -40,6 +41,8 @@ import com.android.pos.data.remote.Constants.IS_PRINTER_QUEUE_ENABLE
 import com.android.pos.data.remote.Constants.LOCK_SCREEN_TRANSACTION
 import com.android.pos.data.remote.Constants.ONLINE_ORDER_ENABLE
 import com.android.pos.data.remote.Constants.ORDER_TYPE
+import com.android.pos.data.remote.Constants.REPORT_END_TIME
+import com.android.pos.data.remote.Constants.REPORT_START_TIME
 import com.android.pos.data.remote.Constants.SERVICECHARGE_DINEIN_ORDER
 import com.android.pos.data.remote.Constants.SERVICECHARGE_TAKEOUT_OPENORDER
 import com.android.pos.data.remote.Constants.SYSTEM_TIMEZONE
@@ -488,6 +491,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                         dineIn.get(selectedHeader).items.forEachIndexed { pos, tbItem ->
                             if (item != null) {
+                                item.isDestroy = false
                                 if (tbItem.itemId == item.itemId && checkVariation(
                                         tbItem,
                                         item
@@ -516,6 +520,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                         model.itemQuantity = item.itemQuantity
                                         itemDiscountApply(model, item)
                                     }
+                                    model.isDestroy = false
                                     if (prefProvider.getValueboolean(
                                             Constants.DINE_IN_UPDATE,
                                             false
@@ -570,8 +575,14 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 } else {
                                     if (index != -1) {
                                         if (item != null) {
-                                            model.itemQuantity =
-                                                item.itemQuantity + model.itemQuantity
+                                            if (model.isDestroy) {
+                                                model.itemQuantity =
+                                                    item.itemQuantity
+                                                model.isDestroy = false
+                                            } else {
+                                                model.itemQuantity =
+                                                    item.itemQuantity + model.itemQuantity
+                                            }
                                             item.modifiers.forEach {
                                                 it.itemQuantity = model.itemQuantity
                                             }
@@ -678,6 +689,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 ) {
                                     item.isEdited = true
                                 }
+                                item.isDestroy = false
 
                                 dineInList.get(dineInList.get(0).selectedPosition).items.add(item)
                             }
@@ -816,7 +828,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                             it.itemQuantity = model.itemQuantity
                                         }
                                         model.modifiers = item.modifiers
-
+                                        model.isDestroy = false
                                         itemDiscountApply(model, item)
 
                                     }
@@ -824,8 +836,14 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 } else {
                                     if (index != -1) {
                                         if (item != null) {
-                                            model.itemQuantity =
-                                                item.itemQuantity + model.itemQuantity
+                                            if (model.isDestroy) {
+                                                model.itemQuantity =
+                                                    item.itemQuantity
+                                                model.isDestroy = false
+                                            } else {
+                                                model.itemQuantity =
+                                                    item.itemQuantity + model.itemQuantity
+                                            }
                                             item.modifiers.forEach {
                                                 it.itemQuantity = model.itemQuantity
                                             }
@@ -833,6 +851,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                             if (item.isEdited) {
                                                 model.isEdited = item.isEdited
                                             }
+
                                             //   itemDiscountApply(model, item)
                                         }
 
@@ -844,6 +863,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                                 model.isEdited = item.isEdited
                                             }
                                             itemDiscountApply(model, item)
+                                            model.isDestroy = false
                                         }
                                         list[index] = model
                                     }
@@ -853,6 +873,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                         } else {
                             Log.d(TAG, "cartLogic: " + index)
                             if (item != null) {
+                                item.isDestroy = false
                                 list.add(item)
                             }
                         }
@@ -1486,15 +1507,15 @@ class DashBoardCategoryViewModel @Inject constructor(
                     var taxList: ArrayList<TaxData> = arrayListOf()
                     cartModel.items?.forEach { item ->
                         if (!item.isDestroy) {
-                            totalCount += item.itemQuantity
-                            totalDiscount += item.discountPrice * item.itemQuantity
-                            subTotalPrice += (item.price * item.itemQuantity) - (item.discountPrice * item.itemQuantity)
+                        totalCount += item.itemQuantity
+                        totalDiscount += item.discountPrice * item.itemQuantity
+                        subTotalPrice += (item.price * item.itemQuantity) - (item.discountPrice * item.itemQuantity)
 
 
-                            taxCalculation(item, cartModel.discountPrice / itemCount!!)
+                        taxCalculation(item, cartModel.discountPrice / itemCount!!)
 
-                            item.modifiers.forEach {
-                                subTotalPrice += (it.price * it.itemQuantity)
+                        item.modifiers.forEach {
+                            subTotalPrice += (it.price * it.itemQuantity)
 
                             }
                         }
@@ -3076,6 +3097,8 @@ class DashBoardCategoryViewModel @Inject constructor(
                                     BUSINESS_WEBSITE,
                                     it.data.businessWebsite.toString()
                                 )
+                                prefProvider.setValue(REPORT_START_TIME, it.data.report_start_time)
+                                prefProvider.setValue(REPORT_END_TIME, it.data.report_end_time)
 
                                 prefProvider.setValueboolean(
                                     SERVICECHARGE_TAKEOUT_OPENORDER,
@@ -3088,6 +3111,10 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 prefProvider.setValueboolean(
                                     LOCK_SCREEN_TRANSACTION,
                                     it.data.lock_screen_after_each_transaction
+                                )
+                                prefProvider.setValueboolean(
+                                    DINEIN_FLOORPLAN_SHOW_TABLENAME,
+                                    it.data.show_table_name
                                 )
 
                                 posRepository.addCashDiscountsFromDb(it.data.cash_discounts)

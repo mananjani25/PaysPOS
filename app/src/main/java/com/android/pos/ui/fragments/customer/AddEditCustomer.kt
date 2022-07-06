@@ -564,7 +564,7 @@ class AddEditCustomer : Fragment() {
                     CreateCustomerRequestModel.Customer.Addresses(
                         id1,
                         binding.edtStreet?.text.toString(),
-                        binding.edtStreet?.text.toString(),
+                        "",
                         binding.edtCity?.text.toString(),
                         binding.edtState?.text.toString(),
                         binding.edtAddress?.selectedItem.toString(),
@@ -579,7 +579,7 @@ class AddEditCustomer : Fragment() {
                     CreateCustomerRequestModel.Customer.Addresses(
                         id2,
                         binding.edtStreetDel?.text.toString(),
-                        binding.edtStreetDel?.text.toString(),
+                        "",
                         binding.edtCityDel?.text.toString(),
                         binding.edtStateDel?.text.toString(),
                         binding.edtAddressDel?.selectedItem.toString(),
@@ -597,7 +597,7 @@ class AddEditCustomer : Fragment() {
                         CreateCustomerRequestModel.Customer.Addresses(
                             null,
                             binding.edtStreet?.text.toString(),
-                            binding.edtStreet?.text.toString(),
+                            "",
                             binding.edtCity?.text.toString(),
                             binding.edtState?.text.toString(),
                             binding.edtAddress?.selectedItem.toString(),
@@ -613,7 +613,7 @@ class AddEditCustomer : Fragment() {
                         CreateCustomerRequestModel.Customer.Addresses(
                             null,
                             binding.edtStreetDel?.text.toString(),
-                            binding.edtStreetDel?.text.toString(),
+                            "",
                             binding.edtCityDel?.text.toString(),
                             binding.edtStateDel?.text.toString(),
                             binding.edtAddressDel?.selectedItem.toString(),
