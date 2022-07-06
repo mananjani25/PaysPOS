@@ -27,6 +27,12 @@ object Constants {
     const val SERVICECHARGE_TAKEOUT_OPENORDER = "TakeOutAndParkOrder"
     const val SERVICECHARGE_DINEIN_ORDER = "DineIn"
 
+    const val PRINTER_QUEUE_DATA = "Printer_Queue_Data"
+    const val PRINTER_QUEUE_DATA_RECEIVED = "Printer_Queue_Data_Received"
+    const val DATA = "Data"
+    const val PRITNER_QUEUE_DATA_DELETE= "PRITNER_QUEUE_DATA_DELETE"
+
+
     //SharedPref Keys
     const val AUTH_TOKEN = "authToken"
     const val TERMINAL_ID = "terminalId"

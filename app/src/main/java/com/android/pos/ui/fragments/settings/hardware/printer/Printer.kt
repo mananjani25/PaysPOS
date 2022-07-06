@@ -185,8 +185,8 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
         try {
             Finder.start(requireContext(), DevType.TCP, "255.255.255.255")
 
-        } catch (e: EpsonIoException) {
-            Log.e(TAG, "PrinterFinderError  ${e.status}")
+        } catch (e: Exception) {
+            Log.e(TAG, "PrinterFinderError  ${e.message}")
 
         }
 
@@ -1394,6 +1394,8 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                     p3: String?
                 ) {
                     Log.e("getPrintReceive", "online ${Gson().toJson(p2)}  data${p3}")
+                    mPrinter.endTransaction()
+                    mPrinter.disconnect()
                     /*
                     mPrinter.addFeedLine(2)
 
@@ -1421,10 +1423,16 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
             runOnUiThread(Runnable {
 
-                mPrinter.connect(
-                    printerListModel.deviceModel?.ipAddress,
-                    Printer.PARAM_DEFAULT
-                )
+
+
+                try {
+                    mPrinter.connect(
+                        printerListModel.deviceModel?.ipAddress,
+                        Printer.PARAM_DEFAULT
+                    )
+                } catch (e: java.lang.Exception) {
+                    e.printStackTrace()
+                }
 
                 mPrinter.addFeedLine(2)
 

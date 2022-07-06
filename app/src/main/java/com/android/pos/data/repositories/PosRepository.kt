@@ -8,6 +8,7 @@ import com.android.pos.data.db.AppDatabase
 import com.android.pos.data.db.IDataManager
 import com.android.pos.data.entities.*
 import com.android.pos.data.entities.ModifierSet
+import com.android.pos.data.model.PrinterQueueModel
 import com.android.pos.data.model.ShiftRportConfiguration
 import com.android.pos.data.model.SplitDetailListModel
 import com.android.pos.data.model.requestModel.*
@@ -28,6 +29,17 @@ class PosRepository @Inject constructor(
     private val appDatabase: AppDatabase,
     private val apiHelperNew: ApiHelper
 ) : IDataManager {
+
+    fun getPrinterQueueData() = appDatabase.printerQueueDao().printerQueueList
+
+    suspend fun addPrinterQueueData(list: PrinterQueueModel) =
+        appDatabase.printerQueueDao().addPrinterQueueData(list)
+
+    fun checkQueueExist(id: Int) = performGetOperationDatabase {  appDatabase.printerQueueDao().checkQueueDataExist(id) }
+
+
+
+    suspend fun getPrinterQueueQueryData(id: Int) = appDatabase.printerQueueDao().getQueueData(id)
 
     fun getCustomerReceiptSettings() = appDatabase.customerSettingsDao().getCustomerSettings
 

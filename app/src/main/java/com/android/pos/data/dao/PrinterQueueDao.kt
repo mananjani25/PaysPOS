@@ -11,7 +11,14 @@ import com.android.pos.data.model.PrinterQueueModel
 interface PrinterQueueDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun addPrinterQueueData(model: List<PrinterQueueModel>)
+    suspend fun addPrinterQueueData(model: PrinterQueueModel)
+
+
+    @Query("select * from printerqueue where printerqueue.id =:id LIMIT 1")
+      fun checkQueueDataExist(id: Int) : LiveData<PrinterQueueModel>
+
+    @Query("UPDATE printerqueue SET printSuccessData =:list WHERE printerqueue.id =:id")
+    suspend fun updatePrinterQueue(list: List<Int>, id: Int)
 
 
     @Query("DELETE FROM PRINTERQUEUE")
@@ -23,6 +30,9 @@ interface PrinterQueueDao {
 
     @get:Query("select * from printerqueue")
     val printerQueueList: LiveData<List<PrinterQueueModel>>
+
+    @Query("select * from printerqueue where printerqueue.id =:id")
+    suspend fun getQueueData(id: Int): PrinterQueueModel
 
 
 }

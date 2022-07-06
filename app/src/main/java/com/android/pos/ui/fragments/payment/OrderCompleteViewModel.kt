@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.android.pos.R
 import com.android.pos.data.db.AppDatabase
+import com.android.pos.data.model.PrinterQueueModel
 import com.android.pos.data.model.SplitDetailListModel
 import com.android.pos.data.model.requestModel.CreateNoteRequest
 import com.android.pos.data.model.responseModel.BaseResponse
@@ -51,6 +52,13 @@ class OrderCompleteViewModel @Inject constructor(
     fun getCustomerReceiptSettings() = posRepository.getCustomerReceiptSettings()
 
     fun getKitchenReceiptSettings() = posRepository.getKitchenReceiptSettings()
+
+    fun getPrinterQueueData() = posRepository.getPrinterQueueData()
+
+    suspend fun addPrinterQueueData(queueData: PrinterQueueModel) =
+        posRepository.addPrinterQueueData(queueData)
+
+      fun checkQueueExist(id:Int) = posRepository.checkQueueExist(id)
 
 
     fun submit(type: String, email: String, phoneNumber: String, orderID: Int) {
@@ -168,7 +176,7 @@ class OrderCompleteViewModel @Inject constructor(
 
     fun deleteCart() {
         viewModelScope.launch {
-            posRepository.deleteCart(prefProvider.getValueInt(Constants.EMPLOYEE_ID,0))
+            posRepository.deleteCart(prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0))
         }
     }
 
@@ -181,14 +189,56 @@ class OrderCompleteViewModel @Inject constructor(
     val allSplitList = appDatabase.splitDao().allSplitList
 
 
-
-
     fun addSplitToDatabase(title: String, amount: Double, remainingAmt: Double) {
         val model =
             SplitDetailListModel(title = title, amount = amount, remainingAmt = remainingAmt)
         viewModelScope.launch {
             posRepository.addSplitAmount(model)
         }
+    }
+
+    suspend fun updateStatusPrinterQueue(listIds:List<Int>,id:Int) {
+        appDatabase.printerQueueDao().updatePrinterQueue(listIds,id)
+
+    }
+
+    fun checkDataisExistOrNot(printerQueueModel: PrinterQueueModel): Boolean {
+        var printerQueue: PrinterQueueModel? = null
+        viewModelScope.launch {
+            printerQueue = printerQueueModel.id?.let {
+                posRepository.getPrinterQueueQueryData(it)
+            }
+        }
+
+        if (printerQueue != null) {
+            if (printerQueueModel.printSuccessData.isNotEmpty()) {
+
+                for (i in 0 until printerQueue!!.printSuccessData?.size) {
+                    if (printerQueue!!.printSuccessData.contains(printerQueue!!.printSuccessData[i])) {
+                        return true
+                        break
+                    } else {
+                        return false
+                    }
+                }
+                printerQueueModel.printSuccessData.forEach {
+                    if (printerQueue!!.printSuccessData.contains(it)) {
+
+                        return false
+
+                    }
+
+                }
+            } else {
+
+                return false
+            }
+
+
+        } else {
+            return false
+        }
+        return false
     }
 
 

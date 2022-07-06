@@ -25,7 +25,7 @@ data class PrinterQueueModel(
     var customerName: String = "",
     var customerPhoneNo: String = "",
     var customerAddress: String = "",
-    var printSuccessData: List<PrinterReceivedSuccessModel> = emptyList()
+    var printSuccessData: List<Int> = emptyList()
 ) {
     data class PrinterReceivedSuccessModel(
         var printerId: Int,

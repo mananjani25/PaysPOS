@@ -16,6 +16,7 @@ import com.android.pos.data.model.responseModel.report.KeyValue
 import com.android.pos.data.remote.Constants
 import com.android.pos.utils.MethodUtils.Companion.roundOffAmountString
 import com.android.pos.di.PrefProvider
+import com.epson.epos2.printer.Printer
 import com.epson.eposprint.Builder
 import com.sunmi.externalprinterlibrary.api.SunmiPrinterApi
 
@@ -706,6 +707,17 @@ fun addHorizontalLine(builder: Builder): Builder {
     return builder
 }
 
+fun addHorizontalLineNew(printer:Printer):Printer{
+    var str: String = ""
+    for (i in 0 until 48) {
+        str += "-"
+    }
+    Log.e("strLine", "strLine  $str")
+    printer.addText(str)
+
+    return printer
+}
+
 fun orderSalesDetails(builder: Builder): Builder {
     return builder
 }
@@ -1193,6 +1205,74 @@ fun addOrdersForKitchenCustomer(
         }
         if (obj.note.isNotEmpty()) {
             builder.addTextLineSpace(30)
+            builder.addFeedUnit(30)
+            builder.addTextFont(Builder.FONT_E)
+            //builder.addTextLineSpace(20)
+            builder.addTextAlign(Builder.ALIGN_LEFT)
+            builder.addTextLang(Builder.LANG_EN)
+            builder.addTextSize(fontSizeH, fontSizeW)
+            builder.addTextStyle(
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.COLOR_1
+            )
+            builder.addText("  Note:" + obj.note)
+
+        }
+
+
+    }
+
+    return builder
+}
+
+fun addOrdersForKitchenCustomerNewPrinter(
+    builder: Printer,
+    list: List<CreateOrderResponse.Data.Order.OrderItem>,
+    fontSizeH: Int = 1,
+    fontSizeW: Int = 1
+): Printer {
+    for (i in 0 until list.size) {
+        val obj = list.get(i)
+        builder.addFeedUnit(30)
+        builder.addTextFont(Builder.FONT_E)
+        builder.addTextLang(Builder.LANG_EN)
+        builder.addTextAlign(Builder.ALIGN_LEFT)
+        builder.addTextSize(fontSizeH, fontSizeW)
+        builder.addTextStyle(
+            Builder.FALSE,
+            Builder.FALSE,
+            Builder.FALSE,
+            Builder.COLOR_1
+        )
+
+        builder.addText(obj.quantity.toString() + " " + obj.itemName)
+
+        if (obj.orderItemModifiers.isNotEmpty()) {
+            for (j in 0 until obj.orderItemModifiers.size) {
+                val modifierObj = obj.orderItemModifiers.get(j)
+                builder.addFeedUnit(30)
+                builder.addTextFont(Builder.FONT_E)
+                //builder.addTextLineSpace(20)
+                builder.addTextAlign(Builder.ALIGN_LEFT)
+                builder.addTextLang(Builder.LANG_EN)
+                builder.addTextSize(fontSizeH, fontSizeW)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.COLOR_2
+                )
+                //builder.addTextPosition(1)
+
+
+                builder.addText("  " + modifierObj.name)
+
+
+            }
+        }
+        if (obj.note.isNotEmpty()) {
             builder.addFeedUnit(30)
             builder.addTextFont(Builder.FONT_E)
             //builder.addTextLineSpace(20)
