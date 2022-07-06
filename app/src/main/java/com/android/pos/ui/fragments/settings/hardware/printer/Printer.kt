@@ -39,11 +39,9 @@ import com.android.pos.data.remote.Constants.getCurrentTimeFromTimeZone
 import com.android.pos.databinding.FragmentPrinterBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.adapter.PrinterListAdapter
-import com.android.pos.utils.ProgressUtils
-import com.android.pos.utils.addHorizontalKitchenLine
+import com.android.pos.utils.*
 import com.android.pos.utils.extensions.alert
 import com.android.pos.utils.extensions.visible
-import com.android.pos.utils.padLine
 import com.android.pos.utils.printer.PrinterClass
 import com.android.pos.utils.printer.PrinterClass.SEND_TIMEOUT
 import com.android.pos.utils.printer.PrinterClass.language
@@ -1058,9 +1056,88 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
             if (!BluetoothUtil.isBlueToothPrinter) {
 
                 Log.e("SunmiPrintHelper", "isBlueToothPrinter")
+                SunmiPrintHelper.getInstance().initPrinter()
+                SunmiPrintHelper.getInstance().setAlign(1)
+                SunmiPrintHelper.getInstance().lineWrap(2)
+                SunmiPrintHelper.getInstance()
+                    .printText("Test Print", 30F, true, false, "test1.ttf")
 
-                SunmiPrintHelper.getInstance().printText("Test Print", 24F, true, false, null)
-                SunmiPrintHelper.getInstance().printExample(requireContext())
+
+                SunmiPrintHelper.getInstance().lineWrap(1)
+                SunmiPrintHelper.getInstance()
+                    .printText(
+                        "ABCDEFGHIKLMNOPQRSTVXYZABCDEFGHIKLMNOPQRSTVXYZ",
+                        24F,
+                        true,
+                        false,
+                        "test1.ttf"
+                    )
+
+                SunmiPrintHelper.getInstance().lineWrap(1)
+                SunmiPrintHelper.getInstance()
+                    .printText(
+                        "ABCDEFGHIKLMNOPQRSTVXYZABCDEFGHIKLMNOPQRSTVXYZ",
+                        30F,
+                        true,
+                        false,
+                        "test1.ttf"
+                    )
+
+                SunmiPrintHelper.getInstance().lineWrap(1)
+                SunmiPrintHelper.getInstance()
+                    .printText(
+                        "ABCDEFGHIKLMNOPQRSTVXYZABCDEFGHIKLMNOPQRSTVXYZ",
+                        36F,
+                        true,
+                        false,
+                        "test1.ttf"
+                    )
+
+
+                SunmiPrintHelper.getInstance().lineWrap(3)
+                SunmiPrintHelper.getInstance()
+                    .printText(
+                        "ABCDEFGHIKLMNOPQRSTVXYZABCDEFGHIKLMNOPQRSTVXYZ",
+                        24F,
+                        false,
+                        false,
+                        "test1.ttf"
+                    )
+
+                SunmiPrintHelper.getInstance().lineWrap(1)
+                SunmiPrintHelper.getInstance()
+                    .printText(
+                        "ABCDEFGHIKLMNOPQRSTVXYZABCDEFGHIKLMNOPQRSTVXYZ",
+                        30F,
+                        false,
+                        false,
+                        "test1.ttf"
+                    )
+
+                SunmiPrintHelper.getInstance().lineWrap(1)
+                SunmiPrintHelper.getInstance()
+                    .printText(
+                        "ABCDEFGHIKLMNOPQRSTVXYZABCDEFGHIKLMNOPQRSTVXYZ",
+                        36F,
+                        false,
+                        false,
+                        "test1.ttf"
+                    )
+
+
+                SunmiPrintHelper.getInstance().setAlign(1)
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    SunmiPrintHelper.getInstance().printText(
+                        getCurrentTimeFromTimeZone(requireContext(), MethodUtils.formatted()),
+                        30F,
+                        true,
+                        false,
+                        null
+                    )
+                }
+                SunmiPrintHelper.getInstance().lineWrap(2)
+                PrintSunmiUtils.cutPaperInner()
+
             } else {
 
                 Log.e("SunmiPrintHelper", "isBlueToothPrinter")
@@ -1200,7 +1277,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
                     val createPrinter = CreatePrinterRequestModel(
                         name = printerListModel.printerName,
-                        terminalId = prefProvider.getValueInt(TERMINAL_ID,0),
+                        terminalId = prefProvider.getValueInt(TERMINAL_ID, 0),
                         macAddress = printerListModel.deviceModel?.macAddress,
                         modalName = printerListModel.deviceModel?.printerName,
                         terminalIds = listOf(prefProvider.getValueInt(TERMINAL_ID, 1)),
@@ -1229,7 +1306,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                     }
                     val createPrinter = CreatePrinterRequestModel(
                         name = printerListModel.printerName,
-                        terminalId = prefProvider.getValueInt(TERMINAL_ID,0),
+                        terminalId = prefProvider.getValueInt(TERMINAL_ID, 0),
                         macAddress = printerListModel.deviceModel?.macAddress,
                         modalName = printerListModel.deviceModel?.printerName,
                         terminalIds = listOf(prefProvider.getValueInt(TERMINAL_ID, 1)),
@@ -1264,7 +1341,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                     }
                     val createBothPrinter = CreatePrinterRequestModel(
                         name = printerListModel.printerName,
-                        terminalId = prefProvider.getValueInt(TERMINAL_ID,0),
+                        terminalId = prefProvider.getValueInt(TERMINAL_ID, 0),
                         macAddress = printerListModel.deviceModel?.macAddress,
                         modalName = printerListModel.deviceModel?.printerName,
                         terminalIds = listOf(prefProvider.getValueInt(TERMINAL_ID, 1)),

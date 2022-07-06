@@ -48,7 +48,7 @@ object ApiModule {
         prefProvider: PrefProvider,
         hostSelectionInterceptor: HostSelectionInterceptor,
 
-    ): ApiService =
+        ): ApiService =
         Retrofit.Builder()
             .baseUrl(prefProvider.getValue(BASE_URL_NEW, BASE_URL))
             .client(

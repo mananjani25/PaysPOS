@@ -463,7 +463,7 @@ open class PaymentViewModel @Inject constructor(
         orderAttributeRequestModel.note = cartModel.note
         if (paymentType == "Cash") {
             if (cashdiscountType == "SurCharge") {
-                orderAttributeRequestModel.cash_discount_type = ""
+                orderAttributeRequestModel.cash_discount_type = cashdiscountType
                 orderAttributeRequestModel.cash_discount_or_surcharge = 0.0
                 orderAttributeRequestModel.totalAmount = actual_Total
             } else if (cashdiscountType == "CashDiscount") {
@@ -1515,7 +1515,7 @@ open class PaymentViewModel @Inject constructor(
                 if (cashdiscountType == "SurCharge") {
                     cash_discount_or_surcharge = 0.0
                     total_cash_discount = 0.0
-                    cash_discount_type = ""
+                    cash_discount_type = cashdiscountType
                 } else if (cashdiscountType == "CashDiscount") {
                     cash_discount_or_surcharge = finalcashdiscount
                     total_cash_discount = finalcashdiscount

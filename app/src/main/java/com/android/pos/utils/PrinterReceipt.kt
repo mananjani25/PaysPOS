@@ -73,6 +73,13 @@ fun addPaymentDetailsHeader() {
 
 }
 
+fun addPaymentDetailsHeaderInner() {
+
+    PrintSunmiUtils.normalText("Details" + repeat(" ", 20) + "Refund" + repeat(" ", 9) + "Amount")
+
+
+}
+
 fun addPaymentDetailsThreeData(builder: Builder, keyValue: java.util.ArrayList<KeyValue>): Builder {
     builder.addTextLineSpace(30)
     builder.addFeedUnit(30)
@@ -147,6 +154,37 @@ fun addPaymentDetailsThreeData(keyValue: java.util.ArrayList<KeyValue>) {
 
 }
 
+fun addPaymentDetailsThreeDataInner(keyValue: java.util.ArrayList<KeyValue>) {
+
+    var title = ""
+    var refund = ""
+    var amount = ""
+
+
+    keyValue.forEach {
+
+
+        if (it.key.toString().toLowerCase().contains("Refund".toLowerCase())) {
+            refund = "$" + it.value
+        } else {
+            title = it.key.toString()
+            amount = MethodUtils.roundOffAmount(it.value.toString().toDouble())
+        }
+    }
+
+    var fPart = title + repeat(" ", 27 - title.length) + refund
+    var spaceLastPart = 48 - fPart.length
+    var spaceLast = 0
+    if (spaceLastPart > 1 && amount.length < spaceLastPart) {
+        spaceLast = spaceLastPart - amount.length
+    }
+
+    fPart += repeat(" ", spaceLast) + amount
+
+    PrintSunmiUtils.normalText(fPart)
+
+}
+
 fun employeeGuestDetailsData(builder: Builder, keyValue: KeyValue): Builder {
     builder.addTextLineSpace(30)
     builder.addFeedUnit(30)
@@ -195,6 +233,24 @@ fun employeeGuestDetailsData(keyValue: KeyValue) {
 
 }
 
+fun employeeGuestDetailsDataInner(keyValue: KeyValue) {
+
+    var sPart = if (keyValue.key?.contains("Served", true) == true) {
+        keyValue.value.toString()
+    } else {
+        MethodUtils.roundOffAmount(keyValue.value?.toDouble() ?: 0.0)
+    }
+    PrintSunmiUtils.normalText(
+        padLine(
+            keyValue.key,
+            sPart,
+            48
+        ).toString()
+    )
+
+
+}
+
 fun addPaymentDetailsTwoData(builder: Builder, keyValue: KeyValue): Builder {
     builder.addTextLineSpace(30)
     builder.addFeedUnit(30)
@@ -222,6 +278,21 @@ fun addPaymentDetailsTwoData(builder: Builder, keyValue: KeyValue): Builder {
 fun addPaymentDetailsTwoData(keyValue: KeyValue) {
 
     PrintSunmiUtils.orderTime(
+        padLine(
+            keyValue.key,
+            MethodUtils.roundOffAmount(keyValue.value.toString().toDouble() ?: 0.0),
+            48
+        ).toString()
+    )
+
+
+}
+
+
+
+fun addPaymentDetailsTwoDataInner(keyValue: KeyValue) {
+
+    PrintSunmiUtils.normalText(
         padLine(
             keyValue.key,
             MethodUtils.roundOffAmount(keyValue.value.toString().toDouble() ?: 0.0),
@@ -279,6 +350,23 @@ fun addRefundVoidsMultiple(keyValue: java.util.ArrayList<KeyValue>) {
 
 }
 
+fun addRefundVoidsMultipleInner(keyValue: java.util.ArrayList<KeyValue>) {
+
+    keyValue.forEach {
+        if (!it.key?.trim().equals("Item Count".trim(), true)) {
+            PrintSunmiUtils.normalText(
+                padLine(
+                    it.key,
+                    MethodUtils.roundOffAmount(it.value.toString().toDouble() ?: 0.0),
+                    48
+                ).toString()
+            )
+        }
+    }
+
+
+}
+
 fun addSixHeaderForOrderSaleDetails(builder: Builder): Builder {
 
 
@@ -302,6 +390,10 @@ fun addSixHeaderForOrderSaleDetails(builder: Builder): Builder {
 
 fun addSixHeaderForOrderSaleDetailsSunmi() {
     PrintSunmiUtils.orderTime("OrderId    Tip      SC     PayType     Amount   ")
+}
+
+fun addSixHeaderForOrderSaleDetailsSunmiInner() {
+    PrintSunmiUtils.normalText("OrderId    Tip      SC     PayType     Amount   ")
 }
 
 fun addCreditTipAuditHeader(builder: Builder): Builder {
@@ -341,6 +433,19 @@ fun addCreditTipAuditHeader() {
 
 }
 
+
+fun addCreditTipAuditHeaderInner() {
+
+    PrintSunmiUtils.normalText(
+        "PaymentId" + repeat(" ", 4) + "SubTotal" + repeat(" ", 6) + "Tip" + repeat(
+            " ",
+            8
+        ) + "Total"
+    )
+
+
+}
+
 fun addCreditTipAuditData(
     builder: Builder,
     fPArt: String,
@@ -392,6 +497,25 @@ fun addCreditTipAuditData(
 
 }
 
+
+fun addCreditTipAuditDataInner(
+    fPArt: String,
+    sPart: String,
+    TPArt: String,
+    lPart: String
+) {
+
+
+    var pOne = TPArt + repeat(" ", 13 - TPArt.length) + fPArt
+
+    pOne += repeat(" ", 27 - pOne.length) + sPart
+    pOne += repeat(" ", 38 - pOne.length) + lPart
+
+
+    PrintSunmiUtils.normalText(pOne)
+
+}
+
 fun addCreditCardBreakDown(builder: Builder): Builder {
     builder.addTextLineSpace(30)
     builder.addFeedUnit(30)
@@ -415,6 +539,13 @@ fun addCreditCardBreakDown() {
 
 
     PrintSunmiUtils.orderTime("CardName" + repeat(" ", 20) + "Tip" + repeat(" ", 11) + "Amount")
+
+}
+
+fun addCreditCardBreakDownInner() {
+
+
+    PrintSunmiUtils.normalText("CardName" + repeat(" ", 20) + "Tip" + repeat(" ", 11) + "Amount")
 
 }
 
@@ -468,6 +599,26 @@ fun addCreditCardBreakDownData(
     pOne += repeat(" ", spaceLast) + amount
 
     PrintSunmiUtils.orderTime(pOne)
+
+}
+
+fun addCreditCardBreakDownDataInner(
+    creditCardBreakdown: EodReportResponse.Data.CreditCardBreakdown
+) {
+
+    var pOne = creditCardBreakdown.key + repeat(
+        " ",
+        28 - creditCardBreakdown.key.length
+    ) + MethodUtils.roundOffAmount(creditCardBreakdown.tips)
+    var lastPart = 48 - pOne.length
+    var amount = MethodUtils.roundOffAmount(creditCardBreakdown.value)
+    var spaceLast = 0
+    if (lastPart > 1 && amount.length < lastPart) {
+        spaceLast = lastPart - amount.length
+    }
+    pOne += repeat(" ", spaceLast) + amount
+
+    PrintSunmiUtils.normalText(pOne)
 
 }
 
@@ -513,6 +664,18 @@ fun addItemsInOrderSalesDetails(
     PrintSunmiUtils.orderTime(data)
 }
 
+fun addItemsInOrderSalesDetailsInner(
+    details: EodReportResponse.Data.OrderSalesDetails.Details
+) {
+
+    var data = details.orderId
+    data += repeat(" ", 10 - details.orderId.length) + MethodUtils.roundOffAmount(details.tip)
+    data += repeat(" ", 18 - data.length) + MethodUtils.roundOffAmount(details.serviceCharge)
+    data += repeat(" ", 27 - data.length) + details.payType
+    data += repeat(" ", 39 - data.length) + MethodUtils.roundOffAmount(details.amount)
+
+    PrintSunmiUtils.normalText(data)
+}
 
 fun padLineCustomerItem(
     @Nullable partOne: String?,
@@ -1510,6 +1673,58 @@ fun addOrderItemOpenOrderSunmi(
         if (obj.note.isNotEmpty()) {
 
             PrintSunmiUtils.orderTime("   Note: " + obj.note)
+
+        }
+    }
+
+
+}
+
+fun addOrderItemOpenOrderSunmiInner(
+    list: List<OpenOrderResponse.Data.Order.OrderItem>,
+    font: String,
+    showModifiers: Boolean
+) {
+    for (i in 0 until list.size) {
+        val obj = list.get(i)
+
+        PrintSunmiUtils.normalText(
+            padLineCustomerItem(
+                obj.quantity.toString() + "x " + obj.itemName,
+                "$" + roundOffAmountString(totalPriceOpenOrder(obj)),
+                if (font == Constants.LARGE) {
+                    23
+                } else {
+                    48
+                }
+            ).toString()
+        )
+
+
+
+        if (obj.orderItemModifiers.isNotEmpty() && showModifiers) {
+            for (j in 0 until obj.orderItemModifiers.size) {
+                val modifierObj = obj.orderItemModifiers.get(j)
+
+                PrintSunmiUtils.normalText(
+                    padLineCustomerItem(
+                        "   " + modifierObj.name,
+                        "$" + roundOffAmountString(modifierObj.price.toDouble() * modifierObj.quantity),
+                        if (font == Constants.LARGE) {
+                            23
+                        } else {
+                            48
+                        }
+                    ).toString()
+                )
+
+            }
+
+        }
+
+        if (obj.note.isNotEmpty()) {
+
+            PrintSunmiUtils.normalText("   Note: " + obj.note)
 
         }
     }

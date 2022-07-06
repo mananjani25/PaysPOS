@@ -3,8 +3,12 @@ package com.android.pos.utils
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.util.Base64
+import android.util.Log
 import com.android.pos.data.model.responseModel.GetTipReponse
 import com.android.pos.data.remote.Constants
+import com.android.pos.data.remote.Constants.LARGE
+import com.android.pos.data.remote.Constants.MEDIUM
+import com.android.pos.data.remote.Constants.SMALL
 import com.android.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper
 import com.sunmi.externalprinterlibrary.api.SunmiPrinterApi
 
@@ -15,7 +19,7 @@ class PrintSunmiUtils {
     companion object {
 
         var fontSize = ""
-        var fontSizeInner = ""
+        var fontSizeInner = SMALL
         var fontName = "test1.ttf"
 
         fun printLogo(newBitmap: Bitmap?) {
@@ -495,22 +499,23 @@ class PrintSunmiUtils {
         }
 
         fun fontSize(fonts: String) {
-            this.fontSize = fonts
+            fontSize = fonts
         }
 
         fun fontSizeInner(fonts: String) {
-            this.fontSizeInner = fonts
+            Log.e("fontSizeInner", fonts)
+            fontSizeInner = fonts
         }
 
         private fun setFontSize() {
             when (fontSize) {
-                Constants.SMALL -> {
+                SMALL -> {
                     SunmiPrinterApi.getInstance().setFontZoom(1, 1)
                 }
-                Constants.MEDIUM -> {
+                MEDIUM -> {
                     SunmiPrinterApi.getInstance().setFontZoom(1, 2)
                 }
-                Constants.LARGE -> {
+                LARGE -> {
                     SunmiPrinterApi.getInstance().setFontZoom(2, 2)
                 }
                 else -> SunmiPrinterApi.getInstance().setFontZoom(1, 1)
@@ -520,13 +525,13 @@ class PrintSunmiUtils {
 
         private fun setFontSizeInner(): Float {
             return when (fontSizeInner) {
-                Constants.SMALL -> {
+                SMALL -> {
                     24f
                 }
-                Constants.MEDIUM -> {
+                MEDIUM -> {
                     30f
                 }
-                Constants.LARGE -> {
+                LARGE -> {
                     36f
                 }
                 else -> 24f
@@ -535,13 +540,13 @@ class PrintSunmiUtils {
 
         private fun setFontSizeHeader(): Float {
             return when (fontSizeInner) {
-                Constants.SMALL -> {
+                SMALL -> {
                     40f
                 }
-                Constants.MEDIUM -> {
+                MEDIUM -> {
                     42f
                 }
-                Constants.LARGE -> {
+                LARGE -> {
                     45f
                 }
                 else -> 40f
@@ -572,8 +577,12 @@ class PrintSunmiUtils {
 
         fun normalText(value: String) {
             SunmiPrintHelper.getInstance().setAlign(0)
-            SunmiPrintHelper.getInstance()
-                .printText(value, setFontSizeInner(), false, false, fontName)
+            if (fontSizeInner == LARGE) {
+                SunmiPrintHelper.getInstance()
+                    .printText(value, 36f, false, false, fontName)
+            } else
+                SunmiPrintHelper.getInstance()
+                    .printText(value, setFontSizeInner(), false, false, fontName)
             SunmiPrintHelper.getInstance().lineWrap(1)
         }
 
@@ -625,6 +634,22 @@ class PrintSunmiUtils {
                         normalText(cardNumber)
                     }
                 }
+            }
+        }
+
+        fun lineChar(): Int {
+
+            return when (fontSizeInner) {
+                SMALL -> {
+                    48
+                }
+                MEDIUM -> {
+                    38
+                }
+                LARGE -> {
+                    32
+                }
+                else -> 48
             }
         }
 
