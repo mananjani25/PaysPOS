@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.android.pos.data.model.requestModel.RefundRequestModelOnlineOrder
 import com.android.pos.data.model.responseModel.*
+import com.android.pos.data.remote.Constants
 import com.android.pos.data.repositories.PosRepository
 import com.android.pos.di.PrefProvider
 import com.android.pos.utils.Event
@@ -139,15 +140,28 @@ class OnlineDetailViewModel @Inject constructor(
              Locale.getDefault()
          ).format(Date(System.currentTimeMillis() - 60000 * 30))*/
 
+
         if (paramStartDate != null && paramEndDate != null) {
             startDate.value = paramStartDate.toString()
             endDate.value = paramEndDate.toString()
         } else {
-            startDate.value = sdf.format(myCalendar.time) + " " + "12:00 AM"
-            endDate.value = sdf.format(myCalendar.time) + " " + SimpleDateFormat(
-                "hh:mm a",
-                Locale.getDefault()
-            ).format(Date(System.currentTimeMillis() + 60000))
+            var startTime = prefProvider.getValue(Constants.REPORT_START_TIME, "")
+            var endTime = prefProvider.getValue(
+                Constants.REPORT_END_TIME, ""
+            )
+            if (startTime.isNotEmpty()) {
+                startDate.value = sdf.format(myCalendar.time) + " " + startTime
+            } else {
+                startDate.value = sdf.format(myCalendar.time) + " " + "12:00 AM"
+            }
+            if (endTime.isNotEmpty()) {
+                endDate.value = sdf.format(myCalendar.time) + " " + endTime
+            } else {
+                endDate.value = sdf.format(myCalendar.time) + " " + SimpleDateFormat(
+                    "hh:mm a",
+                    Locale.getDefault()
+                ).format(Date(System.currentTimeMillis() + 60000))
+            }
         }
     }
 }

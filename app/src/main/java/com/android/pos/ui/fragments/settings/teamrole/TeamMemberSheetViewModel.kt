@@ -66,11 +66,14 @@ class TeamMemberSheetViewModel @Inject constructor(
     fun setCurrentDate(myCalendar: Calendar) {
         val myFormat = "MM/dd/yyyy" //In which you need put here
         val sdf = SimpleDateFormat(myFormat, Locale.getDefault())
+        myCalendar.add(Calendar.DATE,-6)
         startDate.value = sdf.format(myCalendar.time) + " " + SimpleDateFormat(
             "hh:mm a",
             Locale.getDefault()
-        ).format(Date(System.currentTimeMillis() - 60000 * 30))
-        endDate.value = sdf.format(myCalendar.time) + " " + SimpleDateFormat(
+        ).format(Date())
+
+
+        endDate.value = sdf.format(Date()) + " " + SimpleDateFormat(
             "hh:mm a",
             Locale.getDefault()
         ).format(Date())

@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.android.pos.data.db.AppDatabase
 import com.android.pos.data.model.responseModel.report.Data
 import com.android.pos.data.model.responseModel.report.Terminal
+import com.android.pos.data.remote.Constants
 import com.android.pos.data.repositories.PosRepository
 import com.android.pos.data.repositories.TaxServiceChargeRepository
 import com.android.pos.data.repositories.TipDiscountRepository
@@ -21,7 +22,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ReportViewModel @Inject constructor(
-    private val posRepository: PosRepository
+    private val posRepository: PosRepository,
+    private val prefProvider: PrefProvider
 ) : ViewModel() {
 
     private val _showProgress = MutableLiveData<Event<Boolean>>()
@@ -53,13 +55,21 @@ class ReportViewModel @Inject constructor(
         val myFormat = "MM/dd/yyyy" //In which you need put here
         val sdf = SimpleDateFormat(myFormat, Locale.getDefault())
 
-
-        startDate.value = sdf.format(myCalendar.time) + " " + "12:00 AM"
-        endDate.value = sdf.format(myCalendar.time) + " " + SimpleDateFormat(
-            "hh:mm a",
-            Locale.getDefault()
-        ).format(Date(System.currentTimeMillis() + 300000))
-
+        var startTime = prefProvider.getValue(Constants.REPORT_START_TIME, "")
+        var endTime = prefProvider.getValue(Constants.REPORT_END_TIME, "")
+        if (startTime.isNotEmpty()) {
+            startDate.value = sdf.format(myCalendar.time) + " " + startTime
+        } else {
+            startDate.value = sdf.format(myCalendar.time) + " " + "12:00 AM"
+        }
+        if (endTime.isNotEmpty()) {
+            endDate.value = sdf.format(myCalendar.time) + " " + endTime
+        } else {
+            endDate.value = sdf.format(myCalendar.time) + " " + SimpleDateFormat(
+                "hh:mm a",
+                Locale.getDefault()
+            ).format(Date(System.currentTimeMillis() + 300000))
+        }
     }
     fun datePicker(selectPicker: Boolean) {
         selectPicker1 = selectPicker

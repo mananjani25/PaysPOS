@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.android.pos.data.model.responseModel.BaseResponse
 import com.android.pos.data.model.responseModel.GetTransactionListResponse
+import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.LOCATION_ID
 import com.android.pos.data.repositories.PosRepository
 import com.android.pos.data.repositories.TaxServiceChargeRepository
@@ -78,16 +79,29 @@ class TransactionViewModel @Inject constructor(
     fun setCurrentDate(myCalendar: Calendar) {
         val myFormat = "MM/dd/yyyy" //In which you need put here
         val sdf = SimpleDateFormat(myFormat, Locale.getDefault())
-       /* startDate.value = sdf.format(myCalendar.time) + " " + SimpleDateFormat(
-            "hh:mm a",
-            Locale.getDefault()
-        ).format(Date(System.currentTimeMillis() - 60000 * 30))*/
+        /* startDate.value = sdf.format(myCalendar.time) + " " + SimpleDateFormat(
+             "hh:mm a",
+             Locale.getDefault()
+         ).format(Date(System.currentTimeMillis() - 60000 * 30))*/
 
-        startDate.value = sdf.format(myCalendar.time) + " " + "12:00 AM"
-        endDate.value = sdf.format(myCalendar.time) + " " + SimpleDateFormat(
-            "hh:mm a",
-            Locale.getDefault()
-        ).format(Date(System.currentTimeMillis() + 300000))
+        var startTime = prefProvider.getValue(Constants.REPORT_START_TIME, "")
+        var endTime = prefProvider.getValue(
+            Constants.REPORT_END_TIME, ""
+        )
+        if (startTime.isNotEmpty()) {
+            startDate.value = sdf.format(myCalendar.time) + " " + startTime
+        } else {
+            startDate.value = sdf.format(myCalendar.time) + " " + "12:00 AM"
+        }
+        if (endTime.isNotEmpty()) {
+            endDate.value = sdf.format(myCalendar.time) + " " + endTime
+        } else {
+            endDate.value = sdf.format(myCalendar.time) + " " + SimpleDateFormat(
+                "hh:mm a",
+                Locale.getDefault()
+            ).format(Date(System.currentTimeMillis() + 300000))
+        }
+
 
     }
 

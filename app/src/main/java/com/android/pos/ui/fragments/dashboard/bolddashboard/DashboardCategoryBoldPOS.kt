@@ -142,8 +142,6 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
         checkDineInEditOrder()
         printerProgress()
         getwebOrderingCountObserver()
-        viewModel.getOnlineOrderCount()
-        getOnlineOrderIsEnableOrNot()
         prefProvider.setValueboolean(Constants.ORDER_COMPLETED, false)
         binding.lifecycleOwner = this
         return binding.root
@@ -433,7 +431,8 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
         binding.layoutHeader.txtUserName.text =
             prefProvider.getValue(EMPLOYEE_NAME, "")
 
-
+        viewModel.getOnlineOrderCount()
+        getOnlineOrderIsEnableOrNot()
     }
 
 
@@ -656,6 +655,15 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
     }
 
     private fun addObserver() {
+        viewModel.showProgress.observe(viewLifecycleOwner) { event ->
+            event.getContentIfNotHandled()?.let {
+                if (it) {
+                    ProgressUtils.showProgressDialog(requireActivity())
+                } else {
+                    ProgressUtils.dismissProgressDialog()
+                }
+            }
+        }
         viewModel.callCashDiscount.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
                 if (it) {

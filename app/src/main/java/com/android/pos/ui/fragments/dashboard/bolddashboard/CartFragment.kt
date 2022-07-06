@@ -1106,9 +1106,12 @@ class CartFragment(
                             binding.rvCartList.removeAllViewsInLayout()
 
                             var filterItems = arrayListOf<TbItem>()
-                            it[0].items?.toCollection(arrayListOf())
-                                ?.let { it1 -> filterItems.addAll(it1) }
+                            it[0].items?.filter {
+                                !it.isDestroy
+                            }.let {
 
+                                filterItems.addAll(it!!.toCollection(arrayListOf()))
+                            }
 
                             cartAdapter.setList(filterItems)
                             /*it[0].items?.toCollection(arrayListOf())
