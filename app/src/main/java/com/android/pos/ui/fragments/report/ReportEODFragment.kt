@@ -53,6 +53,7 @@ import com.sunmi.externalprinterlibrary.api.ConnectCallback
 import com.sunmi.externalprinterlibrary.api.SunmiPrinter
 import com.sunmi.externalprinterlibrary.api.SunmiPrinterApi
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.time.LocalDateTime
@@ -276,7 +277,10 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
         } else if (customerReceiptPrinters.name.startsWith(SUNMI_INNER_PRINTER, true)) {
 
             SunmiPrintHelper.getInstance().initSunmiPrinterService(requireContext())
-            setService(customerReceiptPrinters)
+            viewLifecycleOwner.lifecycleScope.launch {
+                delay(100)
+                setService(customerReceiptPrinters)
+            }
 
 
         } else {
@@ -2097,7 +2101,16 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
             SunmiPrintHelper.getInstance().lineWrap(1)
 
             PrintSunmiUtils.headerText("Employee End of Day Report")
-            PrintSunmiUtils.printTextCenter("Employee : " + binding.spTerminals.selectedItem.toString())
+            if (binding.spTerminals.selectedItem.toString().isNotEmpty()) {
+                PrintSunmiUtils.printTextCenter("Employee : " + binding.spTerminals.selectedItem.toString())
+            } else {
+                PrintSunmiUtils.printTextCenter(
+                    "Employee : " + prefProvider?.getValue(
+                        Constants.EMPLOYEE_NAME,
+                        ""
+                    )
+                )
+            }
             PrintSunmiUtils.addHorizontalInner()
             SunmiPrintHelper.getInstance().lineWrap(1)
 

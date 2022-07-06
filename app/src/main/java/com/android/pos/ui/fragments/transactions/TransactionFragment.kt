@@ -976,7 +976,7 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
     private fun magtekCall(refundAmount: Double) {
         if (singleTransaction?.orderDetails?.orderType == "OnlineWebOrder") {
             val model = Gson().fromJson(
-                singleTransaction?.orderDetails?.magensaResponse,
+                singleTransaction?.magensaResponse,
                 MagtekOnlineOrderRefundResponse::class.java
             )
             val jsonArray: JsonArray?
@@ -1103,7 +1103,7 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
             }
         } else {
             val model = Gson().fromJson(
-                singleTransaction?.orderDetails?.magensaResponse,
+                singleTransaction?.magensaResponse,
                 PaymentResponse.PaymentResponseItem::class.java
             )
 
