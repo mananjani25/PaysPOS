@@ -2102,9 +2102,9 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
             PrintSunmiUtils.headerText("Employee End of Day Report")
             if (binding.spTerminals.selectedItem.toString().isNotEmpty()) {
-                PrintSunmiUtils.printTextCenter("Employee : " + binding.spTerminals.selectedItem.toString())
+                PrintSunmiUtils.normalTextCenter("Employee : " + binding.spTerminals.selectedItem.toString())
             } else {
-                PrintSunmiUtils.printTextCenter(
+                PrintSunmiUtils.normalTextCenter(
                     "Employee : " + prefProvider?.getValue(
                         Constants.EMPLOYEE_NAME,
                         ""

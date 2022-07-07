@@ -9036,7 +9036,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
 
                 }
-            } else {
+            }
+            else {
 
 
                 PrintSunmiUtils.normalText("ReceiptID:" + receiptModel?.order?.offlineId?.trim())
@@ -9260,7 +9261,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             var totalfamount = 0.0
 
             if (receiptModel?.order?.totalAmount != null) {
-                SunmiPrinterApi.getInstance().lineWrap(1)
+                SunmiPrintHelper.getInstance().lineWrap(1)
 
                 if (paymentType == "Cash") {
 
