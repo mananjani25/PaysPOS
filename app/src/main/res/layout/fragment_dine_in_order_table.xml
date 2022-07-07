@@ -21,9 +21,10 @@
                 android:layout_width="wrap_content"
                 android:layout_height="@dimen/_23sdp"
                 android:layout_alignParentEnd="true"
-                android:paddingHorizontal="@dimen/_12sdp"
                 android:layout_centerVertical="true"
                 android:background="@drawable/button_action_hover"
+                android:gravity="center_vertical"
+                android:paddingHorizontal="@dimen/_12sdp"
                 android:paddingVertical="@dimen/_5sdp"
                 android:text="Home"
                 android:textAllCaps="true"
@@ -96,7 +97,7 @@
             android:id="@+id/linearHeaderNew"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/btnColorDark"
+            android:background="@color/btnColor"
             android:orientation="horizontal"
             android:paddingVertical="@dimen/_3sdp"
             android:weightSum="5"
@@ -214,6 +215,23 @@
                 android:text="@string/tv_home"
                 android:textColor="@color/white"
                 android:textSize="@dimen/_6ssp" />
+
+            <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/txt_addguest"
+                style="@style/CustomFontBold"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/_2sdp"
+                android:layout_marginEnd="@dimen/_2sdp"
+                android:layout_weight="1"
+                android:background="@drawable/dine_in_footer_selector"
+                android:gravity="center"
+                android:minWidth="@dimen/_120sdp"
+                android:padding="@dimen/_8sdp"
+                android:text="Add Guest"
+                android:textColor="@color/white"
+                android:textSize="@dimen/_6ssp" />
+
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/txtFireAll"

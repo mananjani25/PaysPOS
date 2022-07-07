@@ -6,6 +6,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.android.pos.data.db.AppDatabase
+import com.android.pos.data.entities.CartModel
 import com.android.pos.data.entities.CashDiscountModel
 import com.android.pos.data.entities.TbCustomer
 import com.android.pos.data.entities.TbItem
@@ -14,16 +15,19 @@ import com.android.pos.data.model.responseModel.BaseResponse
 import com.android.pos.data.model.responseModel.CreateOrderResponse
 import com.android.pos.data.model.responseModel.GetOrderDetailsResponse
 import com.android.pos.data.model.responseModel.PrinterResponse
+import com.android.pos.data.remote.Constants
 import com.android.pos.data.repositories.PosRepository
 import com.android.pos.data.repositories.TaxServiceChargeRepository
 import com.android.pos.data.repositories.TipDiscountRepository
 import com.android.pos.di.PrefProvider
 import com.android.pos.utils.Event
 import com.android.pos.utils.MethodUtils
+import com.android.pos.utils.TimeFormatUtils
 import com.android.pos.utils.statusUtils.Resource
 import com.android.pos.utils.statusUtils.Status
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
+import java.util.ArrayList
 import javax.inject.Inject
 
 @HiltViewModel
@@ -38,6 +42,9 @@ class DineInOrderTableViewModel @Inject constructor(
 
     private val _showProgress = MutableLiveData<Event<Boolean>>()
     val showProgress: LiveData<Event<Boolean>> = _showProgress
+    private val _updateOrder = MutableLiveData<Event<Any?>>()
+    val updateOrder: LiveData<Event<Any?>> = _updateOrder
+
 
     private val _snackbarText = MutableLiveData<Event<Any?>>()
     val snackbarText: LiveData<Event<Any?>> = _snackbarText
@@ -217,6 +224,7 @@ class DineInOrderTableViewModel @Inject constructor(
             when (resource.status) {
                 Status.SUCCESS -> {
                     _showProgress.value = Event(false)
+                    _updateOrder.value = Event("Guest Added.")
 
                 }
                 Status.ERROR -> {
@@ -332,7 +340,122 @@ class DineInOrderTableViewModel @Inject constructor(
 
 
     }
+    fun updateOrderRequest(cartModel: CartModel): OrderRequestModel {
+        val orderModel: OrderAttributeRequestModel = OrderAttributeRequestModel()
+        Log.e(TAG, "getCartmodelId  ${cartModel.orderId}")
+        orderModel.apply {
+            guestsAttributes = getGuestsAttributes(cartModel)
+        }
+        return OrderRequestModel(false, orderModel)
 
+
+    }
+    private fun getGuestsAttributes(cartModel: CartModel): List<GuestsAttributes> {
+        val orderItemsAttributeList: ArrayList<GuestsAttributes> = arrayListOf()
+        cartModel.dineInList?.forEach { it ->
+            val model = GuestsAttributes()
+            model.name = it.title.toString()
+            if (it.id != 0) {
+                model.id = it.id
+            }
+            if (it.items.isNotEmpty()) {
+                var listItems: ArrayList<GuestItemsAttributes> = arrayListOf()
+                var subTotal = 0.0
+                var totalTax = 0.0
+                var totalTips = 0.0
+                var totalDiscount = 0.0
+                var totalAmount = 0.0
+                it.items.forEach { tb ->
+
+
+                    listItems.add(
+                        GuestItemsAttributes(
+                            id = tb.guestItemId,
+                            orderItemId = tb.orderItemId,
+                            quantity = tb.itemQuantity,
+                            itemId = tb.itemId,
+                            amount = tb.price,
+                            timestamp = tb.timeStamp,
+                            guestId = it.id?.let { it }
+
+                        )
+
+                    )
+
+
+
+                    subTotal += tb.price
+                    tb.taxes?.forEach {
+                        totalTax += it.rate
+                    }
+                    totalDiscount += tb.discountPrice
+
+                }
+                totalAmount = (subTotal + totalTax) - totalDiscount
+                model.totalAmount = totalAmount
+                model.totalTax = totalTax
+                model.totalTips = totalTips
+                if (it.id != null && it.id != 0) {
+                    model.id = it.id
+                }
+
+
+
+                model.guestItemsAttributes = listItems
+            }
+
+
+            if (it.customer != null) {
+                model.customerId = it.customer?.id
+                var addressList: ArrayList<CustomerAttributes.AddressesAttribute> =
+                    arrayListOf()
+                var phoneList: ArrayList<CustomerAttributes.PhonesAttribute> = arrayListOf()
+                for (i in 0.until(it.customer?.addresses?.size!!)) {
+
+                    var address = CustomerAttributes.AddressesAttribute()
+                    address.address1 = it.customer?.addresses?.get(i)?.address1.toString()
+                    address.address2 = it.customer?.addresses?.get(i)?.address2.toString()
+                    address.addressableId = it.customer?.addresses?.get(i)?.id
+                    address.city = it.customer?.addresses?.get(i)?.city.toString()
+                    address.country = it.customer?.addresses?.get(i)?.country.toString()
+                    /*address.latitude = it.customer?.addresses?.get(i)?.latitude!!.toDouble()
+                    address.longitude = it.customer?.addresses?.get(i)?.longitude!!.toDouble()*/
+                    address.latitude = 0.0
+                    address.longitude = 0.0
+                    address.state = it.customer?.addresses?.get(i)?.state.toString()
+                    addressList.add(address)
+                }
+                for (i in 0 until it.customer?.phones?.size!!) {
+                    val phoneModel = CustomerAttributes.PhonesAttribute()
+                    phoneModel.id = it.customer?.phones?.get(i)?.id
+                    phoneModel.customerId = it.customer?.id
+                    phoneModel.phoneNumber =
+                        it.customer?.phones?.get(i)?.phone_number.toString()
+                    phoneList.add(phoneModel)
+                }
+                val customerModel = CustomerAttributes()
+                /*  customerModel.addressesAttributes = addressList
+                  customerModel.birthDate = it.customer?.birth_date.toString()
+                  customerModel.firstName = it.customer?.first_name.toString()
+                  customerModel.lastName = it.customer?.last_name.toString()*/
+                customerModel.id = it.customer?.id
+                /* customerModel.companyName = it.customer?.company.toString()
+                 customerModel.phonesAttributes = phoneList
+                 customerModel.locationId = prefProvider.getValueInt(LOCATION_ID, 1)
+    */
+                //  model.customerAttributes = customerModel
+
+            } else {
+                model.customerId = 0
+            }
+            orderItemsAttributeList.add(model)
+
+
+        }
+
+        return orderItemsAttributeList
+
+    }
     private suspend fun cashLogApi(createOrderResponse: CreateOrderResponse, event: String) {
 
 

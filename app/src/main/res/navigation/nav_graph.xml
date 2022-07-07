@@ -1119,6 +1119,10 @@
         android:name="com.android.pos.ui.dialog.AddOnlineTimeDialog"
         android:label="AddOnlineTimeDialog" />
     <dialog
+        android:id="@+id/addGuestCountDialog"
+        android:name="com.android.pos.ui.dialog.AddGuestDailog"
+        android:label="AddGuestDailog" />
+    <dialog
         android:id="@+id/issueRefundFragment"
         android:name="com.android.pos.ui.dialog.IssueRefundDialog"
         android:label="IssueRefundFragment">
@@ -1240,6 +1244,10 @@
             app:destination="@id/dashboardCategoryBoldPOS"
             app:popUpTo="@id/dashboardCategoryBoldPOS"
             app:popUpToInclusive="true" />
+        <action
+            android:id="@+id/action_dineInOrderTable_to_addguestcount"
+            app:destination="@id/addGuestCountDialog"
+            app:enterAnim="@anim/nav_default_enter_anim" />
         <action
             android:id="@+id/action_dineInOrderTable_to_dineInFragment"
             app:destination="@id/dineInFragment"
@@ -1477,6 +1485,10 @@
         <action
             android:id="@+id/action_dashboardCategoryBoldPOS_to_passcode"
             app:destination="@id/passcode"
+            app:enterAnim="@anim/nav_default_enter_anim" />
+        <action
+            android:id="@+id/action_dashboardCategoryBoldPOS_to_addguestcount"
+            app:destination="@id/addGuestCountDialog"
             app:enterAnim="@anim/nav_default_enter_anim" />
         <action
             android:id="@+id/action_dashboardCategoryBoldPOS_to_reportEODFragment"

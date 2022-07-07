@@ -12,6 +12,10 @@
         android:title="@string/remove_customer"
         tools:ignore="HardcodedText" />
     <item
+        android:id="@+id/menu_add_guest"
+        android:title="@string/add_guest"
+        tools:ignore="HardcodedText" />
+    <item
         android:id="@+id/menu_order_note"
         android:title="@string/add_note"
         tools:ignore="HardcodedText" />

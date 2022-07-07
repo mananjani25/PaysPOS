@@ -217,6 +217,23 @@
                 android:textSize="@dimen/_6ssp" />
 
             <androidx.appcompat.widget.AppCompatTextView
+                android:id="@+id/txt_addguest"
+                style="@style/CustomFontBold"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="@dimen/_2sdp"
+                android:layout_marginEnd="@dimen/_2sdp"
+                android:layout_weight="1"
+                android:background="@drawable/dine_in_footer_selector"
+                android:gravity="center"
+                android:minWidth="@dimen/_120sdp"
+                android:padding="@dimen/_8sdp"
+                android:text="Add Guest"
+                android:textColor="@color/white"
+                android:textSize="@dimen/_6ssp" />
+
+
+            <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/txtFireAll"
                 style="@style/CustomFontBold"
                 android:layout_width="0dp"

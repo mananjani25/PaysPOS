@@ -80,7 +80,7 @@
 
     <string name="tip_name_validate">Please enter Tip Name</string>
     <string name="tip_rate_validate">Please enter valid Tip Rate</string>
-    
+
     <string name="minguest_valiidation">Please enter Minimum Guest Number</string>
     <string name="maxguest_valiidation">Please enter Maximum Guest Number</string>
 
@@ -819,6 +819,7 @@
     <string name="toast_4">Bluetooth device not detected. Please open Bluetooth!</string>
     <string name="toast_5">Not Found InnterPrinter!</string>
     <string name="toast_6">Bluetooth connect failed!</string>
+    <string name="add_guest">Add Guest</string>
 
 </resources>
 

@@ -28,6 +28,7 @@ import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.statusUtils.Resource
+import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -40,7 +41,8 @@ class DineInGuestFragment : Fragment(), GuestListAdapter.GuestListner {
     private val TAG = "DineInGuestFragment"
     private val viewModelDash by activityViewModels<DashBoardCategoryViewModel>()
     private var guestCount: Int = 0
-    private var serviceChargesObserve: androidx.lifecycle.Observer<Resource<List<TbServiceCharge>>>? = null
+    private var serviceChargesObserve: androidx.lifecycle.Observer<Resource<List<TbServiceCharge>>>? =
+        null
 
     @Inject
     lateinit var prefProvider: PrefProvider
@@ -67,11 +69,10 @@ class DineInGuestFragment : Fragment(), GuestListAdapter.GuestListner {
             event.getContentIfNotHandled()?.let { status ->
                 prefProvider.setValue(ORDER_TYPE, DINE_IN)
                 prefProvider.setValue(ORDER_TYPE_NAME, DINE_IN)
-                val bundle = bundleOf(
-                    "isFromDineIn" to true,
-                    "numberOfGuest" to guestCount,
-                    "floorplan" to dineInFloorTableModel
-                )
+                var bundle: Bundle = Bundle()
+                bundle.putParcelable("floorplan", dineInFloorTableModel)
+                bundle.putInt("numberOfGuest", guestCount)
+                bundle.putBoolean("isFromDineIn", true)
                 prefProvider.setValueInt(DINE_IN_TABLE_ID, dineInFloorTableModel.id)
                 prefProvider.setValueboolean(Constants.DINE_IN_STATUS, true)
                 if (findNavController().currentDestination?.id == R.id.dineInGuestFragment) {
@@ -123,18 +124,17 @@ class DineInGuestFragment : Fragment(), GuestListAdapter.GuestListner {
     override fun onGuestSelected(numberOfGuest: Int) {
         guestCount = numberOfGuest
 
-        Log.e(TAG,"DineMergeStatus  ${dineInFloorTableModel.status}")
+        Log.e(TAG, "DineMergeStatus  ${dineInFloorTableModel.status}")
 
-        if(dineInFloorTableModel.status== AVAILABLE){
+        if (dineInFloorTableModel.status == AVAILABLE) {
             viewModelDash.deleteCart()
             prefProvider.setValue(Constants.CUSTOMER_NAME, "")
             prefProvider.setValue(Constants.PREF_CUSTOMER, "")
             prefProvider.setValueInt(Constants.CUSTOMER_ID, -1)
         }
-        if (dineInFloorTableModel.status == MERGED){
+        if (dineInFloorTableModel.status == MERGED) {
             viewModel.getTableStatus(dineInFloorTableModel.id, MERGED)
-        }
-        else{
+        } else {
             viewModel.getTableStatus(dineInFloorTableModel.id, OCCUPIED)
         }
 
