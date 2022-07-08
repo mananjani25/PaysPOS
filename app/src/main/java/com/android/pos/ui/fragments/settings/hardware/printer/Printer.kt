@@ -1424,13 +1424,18 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
             runOnUiThread(Runnable {
 
 
-
                 try {
                     mPrinter.connect(
                         printerListModel.deviceModel?.ipAddress,
                         Printer.PARAM_DEFAULT
                     )
                 } catch (e: java.lang.Exception) {
+                    try {
+                        mPrinter.disconnect()
+                    } catch (e: java.lang.Exception) {
+                        e.printStackTrace()
+                    }
+                    Log.e(TAG, "PrinterConnectFailed")
                     e.printStackTrace()
                 }
 
@@ -1451,8 +1456,11 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                 mPrinter.addText("Test Print")
                 mPrinter.addFeedLine(2)
                 mPrinter.addCut(Builder.CUT_FEED)
-                mPrinter.beginTransaction()
-                mPrinter.sendData(Printer.PARAM_DEFAULT)
+
+                    mPrinter.beginTransaction()
+                    mPrinter.sendData(Printer.PARAM_DEFAULT)
+
+
 
 
             })

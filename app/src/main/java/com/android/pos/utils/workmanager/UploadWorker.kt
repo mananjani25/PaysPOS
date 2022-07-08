@@ -83,6 +83,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
 
 
 
+                Log.e(TAG,"onActionCableStarts")
                 connectActionCable()
 
             }
@@ -104,7 +105,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
         consumer = ActionCable.createConsumer(uri)
 
         // 2. Create subscription
-        val appearanceChannel = Channel("KitchenChannel")
+        val appearanceChannel = Channel("printer_queue_channel")
         // appearanceChannel.addParam("id",prefProvider.getValueInt(LOCATION_ID,0))
         subscription = consumer?.subscriptions?.create(appearanceChannel)
 
