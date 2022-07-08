@@ -3474,7 +3474,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 }
             }
 
-        } else if (customerReceiptPrinters.name.startsWith(SUNMI_PRINTER, true)) {
+        } else if (customerReceiptPrinters.name.startsWith(SUNMI_INNER_PRINTER, true)) {
 
 
             SunmiPrintHelper.getInstance().initSunmiPrinterService(requireContext())
