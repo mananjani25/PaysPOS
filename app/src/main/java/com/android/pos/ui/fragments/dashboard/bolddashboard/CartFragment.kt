@@ -1470,6 +1470,7 @@ class CartFragment(
 
                 taxBirfurcationAdapter.clearList()
                 viewModel.clearListTax()
+                prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
                 updateActiveOrderFlagClear()
                 itemListner?.onCancelItemSelected()
                 if (prefProvider.getValue(ORDER_TYPE, "").toString() == Constants.DINE_IN) {
