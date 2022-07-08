@@ -6,6 +6,9 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.util.Base64
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -16,6 +19,7 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
@@ -28,11 +32,15 @@ import com.android.pos.data.model.responseModel.report.KeyValue
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.MEDIUM
 import com.android.pos.data.remote.Constants.SMALL
+import com.android.pos.data.remote.Constants.SUNMI_INNER_PRINTER
+import com.android.pos.data.remote.Constants.SUNMI_PRINTER
 import com.android.pos.databinding.FragmentReportEodBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.adapter.*
 import com.android.pos.ui.adapter.boldpos.SalesPerCategorySummary
 import com.android.pos.ui.fragments.loginscreen.ClockInOwnerViewModel
+import com.android.pos.ui.fragments.settings.hardware.printer.BluetoothUtil
+import com.android.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper
 import com.android.pos.utils.*
 import com.android.pos.utils.extensions.*
 import com.android.pos.utils.printer.PrinterClass
@@ -41,7 +49,12 @@ import com.epson.eposprint.Builder
 import com.epson.eposprint.Print
 import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
+import com.sunmi.externalprinterlibrary.api.ConnectCallback
+import com.sunmi.externalprinterlibrary.api.SunmiPrinter
+import com.sunmi.externalprinterlibrary.api.SunmiPrinterApi
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -200,7 +213,7 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
     }
 
     private fun eodReportSettings() {
-        viewModel.getEODReportSettings().observe(viewLifecycleOwner, {
+        viewModel.getEODReportSettings().observe(viewLifecycleOwner) {
             when (it.status) {
                 Status.SUCCESS -> {
                     eodReportConfiguration = it.data
@@ -216,7 +229,7 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
                     ProgressUtils.showProgressDialog(requireActivity())
                 }
             }
-        })
+        }
     }
 
     private fun generateEODReport() {
@@ -227,39 +240,124 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
     }
 
     private fun initPrinter(customerReceiptPrinters: PrinterResponse.Data.CustomerReceiptPrinters) {
-        PrinterClass.closePrinter()
-        if (PrinterClass.getPrinter() == null) {
-            var printer: Print? = Print(requireContext())
-            val enable = Print.FALSE
-
-            try {
-                printer?.openPrinter(
-                    if (customerReceiptPrinters.printer_type == Constants.BLUETOOTH) {
-                        Print.DEVTYPE_BLUETOOTH
-                    } else {
-                        Print.DEVTYPE_TCP
-                    },
-                    customerReceiptPrinters.ipAddress,
-                    enable,
-                    1000
-                )
 
 
-            } catch (e: Exception) {
-                Log.e(TAG, "PrinterException: " + e.message)
-                printer = null
-                return
+        if (customerReceiptPrinters.name.startsWith(SUNMI_PRINTER, true)) {
+
+            SunmiPrinterApi.getInstance()
+                .setPrinter(SunmiPrinter.SunmiBlueToothPrinter, customerReceiptPrinters.ipAddress)
+
+            if (!SunmiPrinterApi.getInstance().isConnected) {
+                SunmiPrinterApi.getInstance()
+                    .connectPrinter(requireContext(), object : ConnectCallback {
+
+                        override fun onFound() {
+                            println("onFound")
+                        }
+
+                        override fun onUnfound() {
+                            println("onUnfound")
+                        }
+
+                        override fun onConnect() {
+                            println("onConnect")
+                            createReportFormatEODSunmi(customerReceiptPrinters)
+
+                        }
+
+                        override fun onDisconnect() {
+                            println("onDisconnect")
+                        }
+
+                    })
+            } else {
+                createReportFormatEODSunmi(customerReceiptPrinters)
             }
-            try {
-                if (printer != null) {
-                    PrinterClass.setPrinter(printer)
-                    createReportFormatEOD(customerReceiptPrinters)
-                }
 
-            } catch (e: Exception) {
-                e.printStackTrace()
+        } else if (customerReceiptPrinters.name.startsWith(SUNMI_INNER_PRINTER, true)) {
+
+            SunmiPrintHelper.getInstance().initSunmiPrinterService(requireContext())
+            viewLifecycleOwner.lifecycleScope.launch {
+                delay(100)
+                setService(customerReceiptPrinters)
+            }
+
+
+        } else {
+
+
+            viewLifecycleOwner.lifecycleScope.launch {
+                PrinterClass.closePrinter()
+                if (PrinterClass.getPrinter() == null) {
+                    var printer: Print? = Print(requireContext())
+                    val enable = Print.FALSE
+
+                    try {
+                        printer?.openPrinter(
+                            if (customerReceiptPrinters.printer_type == Constants.BLUETOOTH) {
+                                Print.DEVTYPE_BLUETOOTH
+                            } else {
+                                Print.DEVTYPE_TCP
+                            },
+                            customerReceiptPrinters.ipAddress,
+                            enable,
+                            1000
+                        )
+
+
+                    } catch (e: Exception) {
+                        Log.e(TAG, "PrinterException: " + e.message)
+                        printer = null
+                        return@launch
+                    }
+                    try {
+                        if (printer != null) {
+                            PrinterClass.setPrinter(printer)
+                            createReportFormatEOD(customerReceiptPrinters)
+                        }
+
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
+                }
             }
         }
+    }
+
+    private fun setService(customerReceiptPrinters: PrinterResponse.Data.CustomerReceiptPrinters) {
+        if (SunmiPrintHelper.getInstance().sunmiPrinter == SunmiPrintHelper.FoundSunmiPrinter) {
+
+            Log.e("SunmiPrintHelper", "FoundSunmiPrinter")
+
+            if (!BluetoothUtil.isBlueToothPrinter) {
+                createReportFormatEODSunmiInner(customerReceiptPrinters)
+            }
+
+        } else if (SunmiPrintHelper.getInstance().sunmiPrinter == SunmiPrintHelper.CheckSunmiPrinter) {
+            Handler(Looper.getMainLooper()).postDelayed(
+                { setService(customerReceiptPrinters) },
+                2000
+            )
+            Log.e("SunmiPrintHelper", "CheckSunmiPrinter")
+        } else if (SunmiPrintHelper.getInstance().sunmiPrinter == SunmiPrintHelper.LostSunmiPrinter) {
+
+            Log.e("SunmiPrintHelper", "LostSunmiPrinter")
+        } else {
+            Log.e("SunmiPrintHelper", "ELSE")
+        }
+    }
+
+    private fun printBusinessLogo() {
+        val decodedString: ByteArray = Base64.decode(
+            prefProvider?.getValue(Constants.VENUE_LOGO, "") ?: "",
+            Base64.DEFAULT
+        )
+        val bitmap: Bitmap =
+            BitmapFactory.decodeByteArray(decodedString, 0, decodedString.size)
+
+        val newBitmap = Bitmap.createScaledBitmap(bitmap!!, 210, 210, true)
+
+        PrintSunmiUtils.printLogo(newBitmap)
 
     }
 
@@ -430,7 +528,7 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
                 Builder.FALSE,
                 Builder.COLOR_1
             )
-            builder.addText("Employee Report:"+eodReportData?.reportTime)
+            builder.addText("Employee Report:" + eodReportData?.reportTime)
             if (eodReportData?.orderSalesDetails?.data?.isNotEmpty() == true && eodReportConfiguration?.orderSalesDetails == true) {
                 builder.addFeedLine(2)
                 builder.addTextSize(2, 2)
@@ -1262,7 +1360,7 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
                     var FPArt = ""
                     var SPart = ""
                     var LPart = ""
-                    var TPArt= ""
+                    var TPArt = ""
 
                     it.forEach {
 
@@ -1273,13 +1371,12 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
                             SPart = MethodUtils.roundOffAmount(it.value?.toDouble() ?: 0.0)
                         } else if (it.key?.contains("Total", true) == true) {
                             LPart = MethodUtils.roundOffAmount(it.value?.toDouble() ?: 0.0)
-                        }
-                        else if (it.key?.contains("Payment Id",true) == true){
+                        } else if (it.key?.contains("Payment Id", true) == true) {
                             TPArt = it.value.toString()
                         }
 
                     }
-                    addCreditTipAuditData(builder, FPArt, SPart,TPArt, LPart)
+                    addCreditTipAuditData(builder, FPArt, SPart, TPArt, LPart)
                 }
 
 
@@ -1536,15 +1633,908 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
         }
     }
 
+    private fun createReportFormatEODSunmi(customerReceiptPrinters: PrinterResponse.Data.CustomerReceiptPrinters) {
+        try {
+
+
+            if (prefProvider?.getValue(
+                    Constants.VENUE_LOGO,
+                    ""
+                )?.isNotEmpty() == true
+            ) {
+                printBusinessLogo()
+            }
+
+            PrintSunmiUtils.printBusinessDetails(
+                prefProvider?.getValue(Constants.BUSINESS_NAME, "").toString(),
+                prefProvider?.getValue(Constants.BUSINESS_ADDRESS, "").toString(),
+                prefProvider?.getValue(Constants.BUSINESS_PHONE_NO, "").toString()
+            )
+            SunmiPrinterApi.getInstance().lineWrap(1)
+
+            PrintSunmiUtils.addLable("Employee End of Day Report")
+
+            SunmiPrinterApi.getInstance().setAlignMode(1)
+            SunmiPrinterApi.getInstance().enableBold(false)
+            SunmiPrinterApi.getInstance().setFontZoom(1, 1)
+            SunmiPrinterApi.getInstance()
+                .printText("Employee : " + binding.spTerminals.selectedItem.toString())
+            SunmiPrinterApi.getInstance().lineWrap(1)
+
+            PrintSunmiUtils.addHorizontal()
+            SunmiPrinterApi.getInstance().lineWrap(1)
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                val current = LocalDateTime.now()
+                val formatter = DateTimeFormatter.ofPattern("MMM-dd-yyyy hh:mm:a")
+                val formatted = current.format(formatter)
+
+                PrintSunmiUtils.orderTime("Print Time:$formatted")
+            }
+            SunmiPrinterApi.getInstance().lineWrap(1)
+
+            PrintSunmiUtils.orderTime("Employee Report:" + eodReportData?.reportTime)
+            SunmiPrinterApi.getInstance().lineWrap(1)
+
+            if (eodReportData?.orderSalesDetails?.data?.isNotEmpty() == true && eodReportConfiguration?.orderSalesDetails == true) {
+
+                PrintSunmiUtils.addLable("ORDER SALES DETAILS")
+
+                addSixHeaderForOrderSaleDetailsSunmi()
+
+                PrintSunmiUtils.addHorizontal()
+
+
+                eodReportData?.orderSalesDetails?.data?.forEach {
+                    addItemsInOrderSalesDetails(it)
+                }
+
+                SunmiPrinterApi.getInstance().lineWrap(1)
+            }
+
+            if (eodReportData?.salesSummary?.isNotEmpty() == true && eodReportConfiguration?.salesSummary == true) {
+
+                PrintSunmiUtils.addLable("SALES SUMMARY")
+                SunmiPrinterApi.getInstance().lineWrap(1)
+
+
+                eodReportData?.salesSummary?.forEach {
+
+                    PrintSunmiUtils.orderTime(
+                        padLine(
+                            it.key,
+                            MethodUtils.roundOffAmount(it.value.toString().toDouble()),
+                            48
+                        ).toString()
+                    )
+                }
+                SunmiPrinterApi.getInstance().lineWrap(1)
+
+            }
+
+            if (eodReportData?.salesAndTaxesSummary?.isNotEmpty() == true && eodReportConfiguration?.salesAndTaxSummary == true) {
+
+                PrintSunmiUtils.addLable("SALES AND TAXES SUMMARY")
+
+                PrintSunmiUtils.orderTime(padLine("Category(Quantity)", "Amount", 48).toString())
+
+                PrintSunmiUtils.addHorizontal()
+
+
+                eodReportData?.salesAndTaxesSummary?.forEach {
+
+                    PrintSunmiUtils.orderTime(
+                        padLine(
+                            it.key,
+                            MethodUtils.roundOffAmount(it.value.toString().toDouble()),
+                            48
+                        ).toString()
+                    )
+                }
+                SunmiPrinterApi.getInstance().lineWrap(1)
+            }
+
+            if (eodReportData?.paymentDetails?.isNotEmpty() == true && eodReportConfiguration?.paymentDetails == true) {
+
+                PrintSunmiUtils.addLable("PAYMENT DETAILS")
+
+                addPaymentDetailsHeader()
+
+                PrintSunmiUtils.addHorizontal()
+
+
+                eodReportData?.paymentDetails?.forEach {
+
+                    if (it.size == 2) {
+
+
+                        addPaymentDetailsThreeData(it)
+
+                    } else if (it.size == 1) {
+                        it.forEach {
+                            addPaymentDetailsTwoData(it)
+                        }
+                    }
+                }
+
+                SunmiPrinterApi.getInstance().lineWrap(1)
+            }
+
+            if (eodReportData?.tipDetails?.isNotEmpty() == true && eodReportConfiguration?.tipsDetails == true) {
+
+                PrintSunmiUtils.addLable("TIPS DETAILS")
+
+
+                addPaymentDetailsHeader()
+
+                PrintSunmiUtils.addHorizontal()
+
+                eodReportData?.tipDetails?.forEach {
+
+                    if (it.size == 2) {
+                        addPaymentDetailsThreeData(it)
+
+                    } else if (it.size == 1) {
+                        it.forEach {
+                            addPaymentDetailsTwoData(it)
+                        }
+                    }
+                }
+                SunmiPrinterApi.getInstance().lineWrap(1)
+
+            }
+
+            if (eodReportData?.taxDetails?.isNotEmpty() == true && eodReportConfiguration?.taxDetails == true) {
+
+                PrintSunmiUtils.addLable("TAX DETAILS")
+
+
+                eodReportData?.taxDetails?.forEach {
+
+
+                    PrintSunmiUtils.orderTime(
+                        padLine(
+                            it.key,
+                            MethodUtils.roundOffAmount(it.value.toString().toDouble()),
+                            48
+                        ).toString()
+                    )
+                }
+                SunmiPrinterApi.getInstance().lineWrap(1)
+            }
+
+            if (eodReportData?.refundAndVoidDetails?.isNotEmpty() == true && eodReportConfiguration?.refundOrVoids == true) {
+
+                PrintSunmiUtils.addLable("REFUNDS/VOIDS")
+
+
+                PrintSunmiUtils.orderTime(
+                    padLine(
+                        "Order Id(Employee Name)",
+                        "Amount",
+                        48
+                    ).toString()
+                )
+
+                PrintSunmiUtils.addHorizontal()
+
+                eodReportData?.refundAndVoidDetails?.forEach {
+
+                    if (it.size > 1) {
+                        addRefundVoidsMultiple(it)
+                    } else if (it.size == 1) {
+                        it.forEach {
+                            addPaymentDetailsTwoData(it)
+                        }
+
+                    }
+                }
+                SunmiPrinterApi.getInstance().lineWrap(1)
+            }
+
+
+            if (eodReportData?.refundDetails?.isNotEmpty() == true && eodReportConfiguration?.refundDetails == true) {
+
+                PrintSunmiUtils.addLable("REFUND DETAILS")
+
+
+                eodReportData?.refundDetails?.forEach {
+
+
+                    PrintSunmiUtils.orderTime(
+                        padLine(
+                            it.key,
+                            MethodUtils.roundOffAmount(it.value.toString().toDouble()),
+                            48
+                        ).toString()
+                    )
+                }
+                SunmiPrinterApi.getInstance().lineWrap(1)
+            }
+
+            if (eodReportData?.discountDetails?.isNotEmpty() == true && eodReportConfiguration?.discountDetails == true) {
+
+                PrintSunmiUtils.addLable("DISCOUNT DETAILS")
+
+
+                eodReportData?.discountDetails?.forEach {
+
+                    PrintSunmiUtils.orderTime(
+                        padLine(
+                            it.key,
+                            MethodUtils.roundOffAmount(it.value.toString().toDouble()),
+                            48
+                        ).toString()
+                    )
+                }
+                SunmiPrinterApi.getInstance().lineWrap(1)
+            }
+
+            if (eodReportData?.totalCreditPaymentDetails?.isNotEmpty() == true && eodReportConfiguration?.totalCreditPayments == true) {
+
+                PrintSunmiUtils.addLable("TOTAL CREDIT PAYMENT")
+
+
+                eodReportData?.totalCreditPaymentDetails?.forEach {
+
+
+                    PrintSunmiUtils.orderTime(
+                        padLine(
+                            it.key,
+                            MethodUtils.roundOffAmount(it.value.toString().toDouble()),
+                            48
+                        ).toString()
+                    )
+                }
+                SunmiPrinterApi.getInstance().lineWrap(1)
+
+            }
+            if (eodReportData?.totalCashPayments?.isNotEmpty() == true && eodReportConfiguration?.totalCashPayments == true) {
+
+                PrintSunmiUtils.addLable("TOTAL CASH PAYMENT")
+
+
+                eodReportData?.totalCashPayments?.forEach {
+
+                    PrintSunmiUtils.orderTime(
+                        padLine(
+                            it.key,
+                            MethodUtils.roundOffAmount(it.value.toString().toDouble()),
+                            48
+                        ).toString()
+                    )
+                }
+                SunmiPrinterApi.getInstance().lineWrap(1)
+            }
+            if (eodReportData?.totalPayments?.isNotEmpty() == true && eodReportConfiguration?.totalPayments == true) {
+
+                PrintSunmiUtils.addLable("TOTAL PAYMENTS")
+
+                eodReportData?.totalPayments?.forEach {
+
+
+                    PrintSunmiUtils.orderTime(
+                        padLine(
+                            it.key,
+                            MethodUtils.roundOffAmount(it.value.toString().toDouble()),
+                            48
+                        ).toString()
+                    )
+                }
+                SunmiPrinterApi.getInstance().lineWrap(1)
+            }
+
+            if (eodReportData?.creditCardBreakdown?.isNotEmpty() == true && eodReportConfiguration?.creditCardBreakdown == true) {
+
+                PrintSunmiUtils.addLable("CREDIT CARD BREAKDOWN")
+
+
+                addCreditCardBreakDown()
+
+                PrintSunmiUtils.addHorizontal()
+
+                eodReportData?.creditCardBreakdown?.forEach {
+
+                    addCreditCardBreakDownData(it)
+                }
+                SunmiPrinterApi.getInstance().lineWrap(1)
+
+            }
+
+            if (eodReportData?.serviceChargeDetails?.isNotEmpty() == true && eodReportConfiguration?.serviceChargeDetails == true) {
+
+                PrintSunmiUtils.addLable("SERVICE CHARGE DETAILS")
+
+                eodReportData?.serviceChargeDetails?.forEach {
+
+                    it.forEach {
+                        addPaymentDetailsTwoData(it)
+                    }
+                }
+
+                SunmiPrinterApi.getInstance().lineWrap(1)
+            }
+            if (eodReportData?.creditTipAudit?.isNotEmpty() == true && eodReportConfiguration?.creditTipAudit == true) {
+
+                PrintSunmiUtils.addLable("CREDIT TIP AUDIT")
+                addCreditTipAuditHeader()
+                PrintSunmiUtils.addHorizontal()
+
+                eodReportData?.creditTipAudit?.forEach {
+                    var FPArt = ""
+                    var SPart = ""
+                    var LPart = ""
+                    var TPArt = ""
+
+                    it.forEach {
+
+
+                        if (it.key?.contains("Subtotal", true) == true) {
+                            FPArt = MethodUtils.roundOffAmount(it.value?.toDouble() ?: 0.0)
+                        } else if (it.key?.contains("Tip", true) == true) {
+                            SPart = MethodUtils.roundOffAmount(it.value?.toDouble() ?: 0.0)
+                        } else if (it.key?.contains("Total", true) == true) {
+                            LPart = MethodUtils.roundOffAmount(it.value?.toDouble() ?: 0.0)
+                        } else if (it.key?.contains("Payment Id", true) == true) {
+                            TPArt = it.value.toString()
+                        }
+
+                    }
+                    addCreditTipAuditData(FPArt, SPart, TPArt, LPart)
+                }
+
+                SunmiPrinterApi.getInstance().lineWrap(1)
+            }
+            if (eodReportData?.employeeGuestDetails?.isNotEmpty() == true && eodReportConfiguration?.employeeGuestReport == true) {
+
+                PrintSunmiUtils.addLable("EMPLOYEE GUEST DETAILS")
+
+                eodReportData?.employeeGuestDetails?.forEach {
+                    it.forEach {
+                        employeeGuestDetailsData(it)
+                    }
+
+                }
+
+                SunmiPrinterApi.getInstance().lineWrap(1)
+            }
+            if (eodReportData?.salesPerCategorySummary?.isNotEmpty() == true && eodReportConfiguration?.cashCreditPerSalesCategorySummary == true) {
+
+                PrintSunmiUtils.addLable("SALES PER CATEGORY SUMMARY\n(MIXED-PAYMENT ORDER ITEMS NOT INCLUDED)")
+
+                eodReportData?.salesPerCategorySummary?.forEachIndexed { index, arrayList ->
+                    if (index == 0) {
+
+                        PrintSunmiUtils.addValue("Cash Sales")
+                        PrintSunmiUtils.addHorizontal()
+                        SunmiPrinterApi.getInstance().lineWrap(1)
+                        arrayList.forEach {
+                            addPaymentDetailsTwoData(it)
+                        }
+                        SunmiPrinterApi.getInstance().lineWrap(1)
+
+                        PrintSunmiUtils.addHorizontal()
+
+                    } else if (index == 1) {
+
+                        PrintSunmiUtils.addValue("Credit/Non Cash Sales")
+                        PrintSunmiUtils.addHorizontal()
+                        SunmiPrinterApi.getInstance().lineWrap(1)
+
+                        arrayList.forEach {
+                            addPaymentDetailsTwoData(it)
+                        }
+
+                    }
+
+
+                }
+                SunmiPrinterApi.getInstance().lineWrap(1)
+
+            }
+            if (eodReportData?.cashLogDetails?.isNotEmpty() == true && eodReportConfiguration?.cashLogDetails == true) {
+
+                PrintSunmiUtils.addLable("CASH LOG DETAILS")
+
+                eodReportData?.cashLogDetails?.forEach {
+
+                    addPaymentDetailsTwoData(it)
+
+
+                }
+
+                SunmiPrinterApi.getInstance().lineWrap(1)
+            }
+            if (eodReportData?.otherDetails?.isNotEmpty() == true && eodReportConfiguration?.otherDetails == true) {
+
+                PrintSunmiUtils.addLable("OTHER DETAILS")
+
+                eodReportData?.otherDetails?.forEach {
+
+                    addPaymentDetailsTwoData(it)
+
+
+                }
+
+            }
+
+
+            SunmiPrinterApi.getInstance().lineWrap(2)
+
+
+
+            PrintSunmiUtils.orderTime("EMPLOYEE x " + repeat("_", 36))
+            SunmiPrinterApi.getInstance().lineWrap(1)
+
+            PrintSunmiUtils.orderTime("CASH RECEIVED BY" + repeat("_", 31))
+
+            SunmiPrinterApi.getInstance().lineWrap(5)
+            SunmiPrinterApi.getInstance().cutPaper(1, 1)
+
+        } catch (e: java.lang.Exception) {
+            e.printStackTrace()
+        }
+    }
+
+    private fun createReportFormatEODSunmiInner(customerReceiptPrinters: PrinterResponse.Data.CustomerReceiptPrinters) {
+        try {
+
+
+            if (prefProvider?.getValue(
+                    Constants.VENUE_LOGO,
+                    ""
+                )?.isNotEmpty() == true
+            ) {
+                PrintSunmiUtils.printLogoInner(
+                    prefProvider?.getValue(
+                        Constants.VENUE_LOGO,
+                        ""
+                    )!!
+                )
+            }
+
+            PrintSunmiUtils.printBusinessDetailsInner(
+                prefProvider?.getValue(Constants.BUSINESS_NAME, "").toString(),
+                prefProvider?.getValue(Constants.BUSINESS_ADDRESS, "").toString(),
+                prefProvider?.getValue(Constants.BUSINESS_PHONE_NO, "").toString()
+            )
+            SunmiPrintHelper.getInstance().lineWrap(1)
+
+            PrintSunmiUtils.headerText("Employee End of Day Report")
+            if (binding.spTerminals.selectedItem.toString().isNotEmpty()) {
+                PrintSunmiUtils.printTextCenter("Employee : " + binding.spTerminals.selectedItem.toString())
+            } else {
+                PrintSunmiUtils.printTextCenter(
+                    "Employee : " + prefProvider?.getValue(
+                        Constants.EMPLOYEE_NAME,
+                        ""
+                    )
+                )
+            }
+            PrintSunmiUtils.addHorizontalInner()
+            SunmiPrintHelper.getInstance().lineWrap(1)
+
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                PrintSunmiUtils.normalText("Print Time:${MethodUtils.formatted()}")
+            }
+            SunmiPrintHelper.getInstance().lineWrap(1)
+
+            PrintSunmiUtils.normalText("Employee Report:" + eodReportData?.reportTime)
+            SunmiPrintHelper.getInstance().lineWrap(1)
+
+            if (eodReportData?.orderSalesDetails?.data?.isNotEmpty() == true && eodReportConfiguration?.orderSalesDetails == true) {
+
+                PrintSunmiUtils.headerText("ORDER SALES DETAILS")
+
+                addSixHeaderForOrderSaleDetailsSunmiInner()
+
+                PrintSunmiUtils.addHorizontalInner()
+
+
+                eodReportData?.orderSalesDetails?.data?.forEach {
+                    addItemsInOrderSalesDetailsInner(it)
+                }
+
+                SunmiPrintHelper.getInstance().lineWrap(1)
+            }
+
+            if (eodReportData?.salesSummary?.isNotEmpty() == true && eodReportConfiguration?.salesSummary == true) {
+
+                PrintSunmiUtils.headerText("SALES SUMMARY")
+                SunmiPrintHelper.getInstance().lineWrap(1)
+
+
+                eodReportData?.salesSummary?.forEach {
+
+                    PrintSunmiUtils.normalText(
+                        padLine(
+                            it.key,
+                            MethodUtils.roundOffAmount(it.value.toString().toDouble()),
+                            48
+                        ).toString()
+                    )
+                }
+                SunmiPrintHelper.getInstance().lineWrap(1)
+
+            }
+
+            if (eodReportData?.salesAndTaxesSummary?.isNotEmpty() == true && eodReportConfiguration?.salesAndTaxSummary == true) {
+
+                PrintSunmiUtils.headerText("SALES AND TAXES SUMMARY")
+
+                PrintSunmiUtils.normalText(padLine("Category(Quantity)", "Amount", 48).toString())
+
+                PrintSunmiUtils.addHorizontalInner()
+
+
+                eodReportData?.salesAndTaxesSummary?.forEach {
+
+                    PrintSunmiUtils.normalText(
+                        padLine(
+                            it.key,
+                            MethodUtils.roundOffAmount(it.value.toString().toDouble()),
+                            48
+                        ).toString()
+                    )
+                }
+                SunmiPrintHelper.getInstance().lineWrap(1)
+            }
+
+            if (eodReportData?.paymentDetails?.isNotEmpty() == true && eodReportConfiguration?.paymentDetails == true) {
+
+                PrintSunmiUtils.headerText("PAYMENT DETAILS")
+
+                addPaymentDetailsHeaderInner()
+
+                PrintSunmiUtils.addHorizontalInner()
+
+
+                eodReportData?.paymentDetails?.forEach {
+
+                    if (it.size == 2) {
+
+
+                        addPaymentDetailsThreeDataInner(it)
+
+                    } else if (it.size == 1) {
+                        it.forEach {
+                            addPaymentDetailsTwoDataInner(it)
+                        }
+                    }
+                }
+
+                SunmiPrintHelper.getInstance().lineWrap(1)
+            }
+
+            if (eodReportData?.tipDetails?.isNotEmpty() == true && eodReportConfiguration?.tipsDetails == true) {
+
+                PrintSunmiUtils.headerText("TIPS DETAILS")
+
+
+                addPaymentDetailsHeaderInner()
+
+                PrintSunmiUtils.addHorizontalInner()
+
+                eodReportData?.tipDetails?.forEach {
+
+                    if (it.size == 2) {
+                        addPaymentDetailsThreeDataInner(it)
+
+                    } else if (it.size == 1) {
+                        it.forEach {
+                            addPaymentDetailsTwoDataInner(it)
+                        }
+                    }
+                }
+                SunmiPrintHelper.getInstance().lineWrap(1)
+
+            }
+
+            if (eodReportData?.taxDetails?.isNotEmpty() == true && eodReportConfiguration?.taxDetails == true) {
+
+                PrintSunmiUtils.headerText("TAX DETAILS")
+
+
+                eodReportData?.taxDetails?.forEach {
+
+
+                    PrintSunmiUtils.normalText(
+                        padLine(
+                            it.key,
+                            MethodUtils.roundOffAmount(it.value.toString().toDouble()),
+                            48
+                        ).toString()
+                    )
+                }
+                SunmiPrintHelper.getInstance().lineWrap(1)
+            }
+
+            if (eodReportData?.refundAndVoidDetails?.isNotEmpty() == true && eodReportConfiguration?.refundOrVoids == true) {
+
+                PrintSunmiUtils.headerText("REFUNDS/VOIDS")
+
+
+                PrintSunmiUtils.normalText(
+                    padLine(
+                        "Order Id(Employee Name)",
+                        "Amount",
+                        48
+                    ).toString()
+                )
+
+                PrintSunmiUtils.addHorizontalInner()
+
+                eodReportData?.refundAndVoidDetails?.forEach {
+
+                    if (it.size > 1) {
+                        addRefundVoidsMultipleInner(it)
+                    } else if (it.size == 1) {
+                        it.forEach {
+                            addPaymentDetailsTwoDataInner(it)
+                        }
+
+                    }
+                }
+                SunmiPrintHelper.getInstance().lineWrap(1)
+            }
+
+
+            if (eodReportData?.refundDetails?.isNotEmpty() == true && eodReportConfiguration?.refundDetails == true) {
+
+                PrintSunmiUtils.headerText("REFUND DETAILS")
+
+
+                eodReportData?.refundDetails?.forEach {
+
+
+                    PrintSunmiUtils.normalText(
+                        padLine(
+                            it.key,
+                            MethodUtils.roundOffAmount(it.value.toString().toDouble()),
+                            48
+                        ).toString()
+                    )
+                }
+                SunmiPrintHelper.getInstance().lineWrap(1)
+            }
+
+            if (eodReportData?.discountDetails?.isNotEmpty() == true && eodReportConfiguration?.discountDetails == true) {
+
+                PrintSunmiUtils.headerText("DISCOUNT DETAILS")
+
+
+                eodReportData?.discountDetails?.forEach {
+
+                    PrintSunmiUtils.normalText(
+                        padLine(
+                            it.key,
+                            MethodUtils.roundOffAmount(it.value.toString().toDouble()),
+                            48
+                        ).toString()
+                    )
+                }
+                SunmiPrintHelper.getInstance().lineWrap(1)
+            }
+
+            if (eodReportData?.totalCreditPaymentDetails?.isNotEmpty() == true && eodReportConfiguration?.totalCreditPayments == true) {
+
+                PrintSunmiUtils.headerText("TOTAL CREDIT PAYMENT")
+
+
+                eodReportData?.totalCreditPaymentDetails?.forEach {
+
+
+                    PrintSunmiUtils.normalText(
+                        padLine(
+                            it.key,
+                            MethodUtils.roundOffAmount(it.value.toString().toDouble()),
+                            48
+                        ).toString()
+                    )
+                }
+                SunmiPrintHelper.getInstance().lineWrap(1)
+
+            }
+            if (eodReportData?.totalCashPayments?.isNotEmpty() == true && eodReportConfiguration?.totalCashPayments == true) {
+
+                PrintSunmiUtils.headerText("TOTAL CASH PAYMENT")
+
+
+                eodReportData?.totalCashPayments?.forEach {
+
+                    PrintSunmiUtils.normalText(
+                        padLine(
+                            it.key,
+                            MethodUtils.roundOffAmount(it.value.toString().toDouble()),
+                            48
+                        ).toString()
+                    )
+                }
+                SunmiPrintHelper.getInstance().lineWrap(1)
+            }
+            if (eodReportData?.totalPayments?.isNotEmpty() == true && eodReportConfiguration?.totalPayments == true) {
+
+                PrintSunmiUtils.headerText("TOTAL PAYMENTS")
+
+                eodReportData?.totalPayments?.forEach {
+
+
+                    PrintSunmiUtils.normalText(
+                        padLine(
+                            it.key,
+                            MethodUtils.roundOffAmount(it.value.toString().toDouble()),
+                            48
+                        ).toString()
+                    )
+                }
+                SunmiPrintHelper.getInstance().lineWrap(1)
+            }
+
+            if (eodReportData?.creditCardBreakdown?.isNotEmpty() == true && eodReportConfiguration?.creditCardBreakdown == true) {
+
+                PrintSunmiUtils.headerText("CREDIT CARD BREAKDOWN")
+
+
+                addCreditCardBreakDownInner()
+
+                PrintSunmiUtils.addHorizontalInner()
+
+                eodReportData?.creditCardBreakdown?.forEach {
+
+                    addCreditCardBreakDownDataInner(it)
+                }
+                SunmiPrintHelper.getInstance().lineWrap(1)
+
+            }
+
+            if (eodReportData?.serviceChargeDetails?.isNotEmpty() == true && eodReportConfiguration?.serviceChargeDetails == true) {
+
+                PrintSunmiUtils.headerText("SERVICE CHARGE DETAILS")
+
+                eodReportData?.serviceChargeDetails?.forEach {
+
+                    it.forEach {
+                        addPaymentDetailsTwoDataInner(it)
+                    }
+                }
+
+                SunmiPrintHelper.getInstance().lineWrap(1)
+            }
+            if (eodReportData?.creditTipAudit?.isNotEmpty() == true && eodReportConfiguration?.creditTipAudit == true) {
+
+                PrintSunmiUtils.headerText("CREDIT TIP AUDIT")
+                addCreditTipAuditHeaderInner()
+                PrintSunmiUtils.addHorizontalInner()
+
+                eodReportData?.creditTipAudit?.forEach { it ->
+                    var FPArt = ""
+                    var SPart = ""
+                    var LPart = ""
+                    var TPArt = ""
+
+                    it.forEach {
+
+
+                        when {
+                            it.key?.contains("Subtotal", true) == true -> {
+                                FPArt = MethodUtils.roundOffAmount(it.value?.toDouble() ?: 0.0)
+                            }
+                            it.key?.contains("Tip", true) == true -> {
+                                SPart = MethodUtils.roundOffAmount(it.value?.toDouble() ?: 0.0)
+                            }
+                            it.key?.contains("Total", true) == true -> {
+                                LPart = MethodUtils.roundOffAmount(it.value?.toDouble() ?: 0.0)
+                            }
+                            it.key?.contains("Payment Id", true) == true -> {
+                                TPArt = it.value.toString()
+                            }
+                        }
+
+                    }
+                    addCreditTipAuditDataInner(FPArt, SPart, TPArt, LPart)
+                }
+
+                SunmiPrintHelper.getInstance().lineWrap(1)
+            }
+            if (eodReportData?.employeeGuestDetails?.isNotEmpty() == true && eodReportConfiguration?.employeeGuestReport == true) {
+
+                PrintSunmiUtils.headerText("EMPLOYEE GUEST DETAILS")
+
+                eodReportData?.employeeGuestDetails?.forEach {
+                    it.forEach {
+                        employeeGuestDetailsDataInner(it)
+                    }
+
+                }
+
+                SunmiPrintHelper.getInstance().lineWrap(1)
+            }
+            if (eodReportData?.salesPerCategorySummary?.isNotEmpty() == true && eodReportConfiguration?.cashCreditPerSalesCategorySummary == true) {
+
+                PrintSunmiUtils.headerText("SALES PER CATEGORY SUMMARY\n(MIXED-PAYMENT ORDER ITEMS NOT INCLUDED)")
+
+                eodReportData?.salesPerCategorySummary?.forEachIndexed { index, arrayList ->
+                    if (index == 0) {
+
+                        PrintSunmiUtils.normalTextCenter("Cash Sales")
+                        PrintSunmiUtils.addHorizontalInner()
+                        SunmiPrintHelper.getInstance().lineWrap(1)
+                        arrayList.forEach {
+                            addPaymentDetailsTwoDataInner(it)
+                        }
+                        SunmiPrintHelper.getInstance().lineWrap(1)
+
+                        PrintSunmiUtils.addHorizontalInner()
+
+                    } else if (index == 1) {
+
+                        PrintSunmiUtils.normalTextCenter("Credit/Non Cash Sales")
+                        PrintSunmiUtils.addHorizontalInner()
+                        SunmiPrintHelper.getInstance().lineWrap(1)
+
+                        arrayList.forEach {
+                            addPaymentDetailsTwoDataInner(it)
+                        }
+
+                    }
+
+
+                }
+                SunmiPrintHelper.getInstance().lineWrap(1)
+
+            }
+            if (eodReportData?.cashLogDetails?.isNotEmpty() == true && eodReportConfiguration?.cashLogDetails == true) {
+
+                PrintSunmiUtils.headerText("CASH LOG DETAILS")
+
+                eodReportData?.cashLogDetails?.forEach {
+
+                    addPaymentDetailsTwoDataInner(it)
+
+
+                }
+
+                SunmiPrintHelper.getInstance().lineWrap(1)
+            }
+            if (eodReportData?.otherDetails?.isNotEmpty() == true && eodReportConfiguration?.otherDetails == true) {
+
+                PrintSunmiUtils.headerText("OTHER DETAILS")
+
+                eodReportData?.otherDetails?.forEach {
+
+                    addPaymentDetailsTwoDataInner(it)
+
+
+                }
+
+            }
+
+
+            SunmiPrintHelper.getInstance().lineWrap(2)
+
+
+
+            PrintSunmiUtils.normalText("EMPLOYEE x " + repeat("_", 36))
+            SunmiPrintHelper.getInstance().lineWrap(1)
+
+            PrintSunmiUtils.normalText("CASH RECEIVED BY" + repeat("_", 31))
+
+            PrintSunmiUtils.cutPaperInner()
+
+        } catch (e: java.lang.Exception) {
+            e.printStackTrace()
+        }
+    }
+
     private fun customerPrinters() {
-        viewModel.getCustomerPrinterList().observe(viewLifecycleOwner, {
+        viewModel.getCustomerPrinterList().observe(
+            viewLifecycleOwner
+        ) {
             when (it.status) {
                 Status.SUCCESS -> {
                     ProgressUtils.dismissProgressDialog()
                     if (it.data != null) {
                         customerList = it.data
-
-
                     }
 
                 }
@@ -1559,7 +2549,6 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
             }
 
         }
-        )
     }
 
     private fun loadSettings() {

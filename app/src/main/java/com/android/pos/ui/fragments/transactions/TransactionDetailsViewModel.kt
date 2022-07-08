@@ -14,6 +14,7 @@ import com.android.pos.data.model.responseModel.OnlineOrderStatusUpdateResponse
 import com.android.pos.data.model.responseModel.PrinterResponse
 import com.android.pos.data.repositories.PosRepository
 import com.android.pos.data.repositories.TaxServiceChargeRepository
+import com.android.pos.di.PrefProvider
 import com.android.pos.utils.Event
 import com.android.pos.utils.statusUtils.Resource
 import com.android.pos.utils.statusUtils.Status
@@ -24,7 +25,8 @@ import javax.inject.Inject
 @HiltViewModel
 class TransactionDetailsViewModel @Inject constructor(
     private val posRepository: PosRepository,
-    private val taxServiceChargeRepository: TaxServiceChargeRepository
+    private val taxServiceChargeRepository: TaxServiceChargeRepository,
+    private val prefProvider: PrefProvider
 ) : ViewModel() {
 
     private val _snackbarText = MutableLiveData<Event<Any?>>()
@@ -53,7 +55,6 @@ class TransactionDetailsViewModel @Inject constructor(
     }
 
     val endDate = MutableLiveData<String>()
-
 
 
     fun apiCallOrderDetails(orderId: Int) {
@@ -88,14 +89,15 @@ class TransactionDetailsViewModel @Inject constructor(
             }
         }
     }
+
     fun acceptedAndDeclineOrder(
         time: Int,
         order_id: Int,
         isaccepted: Boolean,
-        employee_id:Int,
-        terminalid:Int
+        employee_id: Int,
+        terminalid: Int
     ): LiveData<Resource<OnlineOrderStatusUpdateResponse>> =
-        posRepository.acceptedAndDeclineOrders(time, order_id,isaccepted,employee_id,terminalid)
+        posRepository.acceptedAndDeclineOrders(time, order_id, isaccepted, employee_id, terminalid)
 
 
     fun getCashDiscountDetails(active: Int): LiveData<CashDiscountModel>? {
@@ -112,6 +114,10 @@ class TransactionDetailsViewModel @Inject constructor(
 
         refundData.paymentRefund?.reasonForRefund = refundReason
         refundData.paymentRefund?.amount = refundAmount
+
+        if (refundData.paymentRefund?.employeeId != prefProvider.employeeId()) {
+            refundData.paymentRefund?.employeeId = prefProvider.employeeId()
+        }
 
         _showProgress.value = Event(true)
 

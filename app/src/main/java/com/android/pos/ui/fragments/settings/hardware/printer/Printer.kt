@@ -39,15 +39,11 @@ import com.android.pos.data.remote.Constants.getCurrentTimeFromTimeZone
 import com.android.pos.databinding.FragmentPrinterBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.adapter.PrinterListAdapter
-import com.android.pos.utils.ProgressUtils
-import com.android.pos.utils.addHorizontalKitchenLine
+import com.android.pos.utils.*
 import com.android.pos.utils.extensions.alert
 import com.android.pos.utils.extensions.visible
-import com.android.pos.utils.padLine
 import com.android.pos.utils.printer.PrinterClass
-import com.android.pos.utils.printer.PrinterClass.BLUETOOTH_TIMEOUT
 import com.android.pos.utils.printer.PrinterClass.SEND_TIMEOUT
-import com.android.pos.utils.printer.PrinterClass.TEST_PRINT_LAN_TIME
 import com.android.pos.utils.printer.PrinterClass.language
 import com.android.pos.utils.statusUtils.Status
 import com.epson.epos2.Epos2Exception
@@ -60,6 +56,9 @@ import com.epson.eposprint.Print
 import com.epson.eposprint.StatusChangeEventListener
 import com.epson.epsonio.*
 import com.google.gson.Gson
+import com.sunmi.externalprinterlibrary.api.ConnectCallback
+import com.sunmi.externalprinterlibrary.api.SunmiPrinter
+import com.sunmi.externalprinterlibrary.api.SunmiPrinterApi
 import dagger.hilt.android.AndroidEntryPoint
 import java.io.IOException
 import java.io.InputStream
@@ -73,7 +72,6 @@ import java.util.concurrent.ScheduledExecutorService
 import java.util.concurrent.ScheduledFuture
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
-import kotlin.collections.ArrayList
 
 
 //Original New
@@ -139,33 +137,31 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
     private fun setUpHeader() {
         binding.header.imgSync.visible()
-        binding.header.txtTitle.text=getString(R.string.printers)
-        binding.header.txtSave.text=getString(R.string.tv_home)
+        binding.header.txtTitle.text = getString(R.string.printers)
+        binding.header.txtSave.text = getString(R.string.tv_home)
     }
 
 
-    private fun getOrderTypes() {
-        viewModel.orderTypes.observe(viewLifecycleOwner, {
-            when (it.status) {
-                Status.LOADING -> {
-                    ProgressUtils.showProgressDialog(requireActivity())
-                }
-                Status.ERROR -> {
-                    ProgressUtils.dismissProgressDialog()
-                }
-                Status.SUCCESS -> {
-                    ProgressUtils.dismissProgressDialog()
-                    if (it.data != null) {
-                        orderTypeList.clear()
-                        orderTypeList = arrayListOf()
-                        orderTypeList.addAll(it.data.toCollection(ArrayList()))
-
-                    }
-
-
-                }
+    private fun getOrderTypes() = viewModel.orderTypes.observe(viewLifecycleOwner) {
+        when (it.status) {
+            Status.LOADING -> {
+                ProgressUtils.showProgressDialog(requireActivity())
             }
-        })
+            Status.ERROR -> {
+                ProgressUtils.dismissProgressDialog()
+            }
+            Status.SUCCESS -> {
+                ProgressUtils.dismissProgressDialog()
+                if (it.data != null) {
+                    orderTypeList.clear()
+                    orderTypeList = arrayListOf()
+                    orderTypeList.addAll(it.data.toCollection(ArrayList()))
+
+                }
+
+
+            }
+        }
     }
 
     private fun getPrinterList() {
@@ -359,18 +355,18 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
     }
 
     private fun onDeleteObserve() {
-        viewModel.deletePrinter.observe(viewLifecycleOwner, {
+        viewModel.deletePrinter.observe(viewLifecycleOwner) {
             it.getContentIfNotHandled()?.let { data ->
                 Log.e(TAG, "deleteSuccess")
                 syncPrinterList()
 
             }
-        })
+        }
     }
 
     private fun syncPrinterList(saved: Boolean = false) {
         allPrinterlist.clear()
-        viewModel.printerList().observe(viewLifecycleOwner, {
+        viewModel.printerList().observe(viewLifecycleOwner) {
             when (it.status) {
 
                 Status.SUCCESS -> {
@@ -457,78 +453,6 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                         }
 
 
-                        /* if (data?.kitchenReceiptPrinters != null) {
-                             val kitchenData = data.kitchenReceiptPrinters
-                             kitchenAdapter.clearList()
-                             kitchenAdapter.setList(arrayListOf())
-                             if (kitchenData != null) {
-                                 for (i in kitchenData.indices) {
-                                     kitchenAdapter.addItem(
-                                         PrinterListModel(
-                                             id = kitchenData[i].id,
-                                             printerName = kitchenData[i].name,
-                                             connectionType = if (kitchenData[i].printer_type == BLUETOOTH) {
-                                                 BLUETOOTH
-                                             } else {
-                                                 WIFI
-                                             },
-                                             isActive = kitchenData[i].status,
-                                             type = kitchenData[i].receiptPrintType,
-                                             DeviceInfo(
-                                                 if (kitchenData[i].printer_type == BLUETOOTH) {
-                                                     DevType.BLUETOOTH
-                                                 } else {
-                                                     DevType.TCP
-                                                 },
-                                                 kitchenData[i].ipAddress,
-                                                 kitchenData[i].name,
-                                                 kitchenData[i].ipAddress,
-                                                 kitchenData[i].macAddress
-                                             ),
-                                             printerModel = kitchenData[i].orderTypes
-
-
-                                         )
-                                     )
-
-                                     allPrinterlist.add(
-                                         PrinterListModel(
-
-                                             id = kitchenData[i].id,
-                                             printerName = kitchenData[i].name,
-                                             connectionType = if (kitchenData[i].printer_type == BLUETOOTH) {
-                                                 BLUETOOTH
-                                             } else {
-                                                 WIFI
-                                             },
-                                             isActive = kitchenData[i].status,
-                                             type = kitchenData[i].receiptPrintType,
-                                             DeviceInfo(
-                                                 if (kitchenData[i].printer_type == BLUETOOTH) {
-                                                     DevType.BLUETOOTH
-                                                 } else {
-                                                     DevType.TCP
-                                                 },
-                                                 kitchenData[i].ipAddress,
-                                                 kitchenData[i].name,
-                                                 kitchenData[i].ipAddress,
-                                                 kitchenData[i].macAddress
-                                             ),
-                                             printerModel = kitchenData[i].orderTypes
-
-
-                                         )
-                                     )
-                                 }
-
-                             }
-
-                         } else {
-                             Log.e(TAG, "CustomerListCleared 2")
-                             kitchenAdapter.clearList()
-                         }
-                     */
-
                     } else {
                         Log.e(TAG, "ITNotNull  ")
                         kitchenAdapter.clearList()
@@ -572,9 +496,9 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                 }
             }
 
-        })
+        }
 
-        viewModel.getKitchenPrinters().observe(viewLifecycleOwner, {
+        viewModel.getKitchenPrinters().observe(viewLifecycleOwner) {
             when (it.status) {
 
                 Status.SUCCESS -> {
@@ -692,11 +616,12 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                 }
             }
 
-        })
+        }
 
 
     }
 
+    @SuppressLint("MissingPermission")
     private fun searchBluetooth() {
 
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
@@ -750,17 +675,6 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
         }
     }
 
-    private fun congigurePrinter() {
-
-        //init printer list control
-
-
-        //start find thread scheduler
-
-
-        //findStart()
-        //restartDiscovery()
-    }
 
     override fun onStop() {
         super.onStop()
@@ -802,26 +716,6 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
         }
     }
 
-    /*private val mDiscoveryListener =
-        DiscoveryListener { deviceInfo ->
-
-            val item = HashMap<String, String>()
-            item["PrinterName"] = deviceInfo.deviceName
-            item["Target"] = deviceInfo.target
-            Log.e(TAG, "Jsonitem:    ${Gson().toJson(item)}")
-
-            val model: PrinterListModel = PrinterListModel()
-            model.apply {
-                printerName = deviceInfo.deviceName
-                connectionType = WIFI
-
-            }
-
-            Log.e(TAG,"getModelmodel:  ${Gson().toJson(model)}")
-            customerAdapter.addItem(model)
-        }
-
-*/
     private val mDiscoveryListener =
         DiscoveryListener { deviceInfo ->
             requireActivity().runOnUiThread(Runnable {
@@ -1024,6 +918,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
     }
 
 
+    @SuppressLint("MissingPermission")
     @Throws(IOException::class)
     fun openBT() {
         try {
@@ -1043,6 +938,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
     }
 
     // this will find a bluetooth printer device
+    @SuppressLint("MissingPermission")
     fun findBT() {
         try {
             mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter()
@@ -1129,7 +1025,220 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
     }
 
     override fun onPrinterSelected(printerListModel: PrinterListModel) {
-        onInitPrinter(printerListModel)
+
+        if (printerListModel.printerName?.startsWith("CloudPrint", true) == true) {
+
+            printerListModel.deviceModel?.let { sunmiPrinterInit(it.ipAddress) }
+
+        } else if (printerListModel.printerName?.startsWith("InnerPrinter", true) == true) {
+
+
+            sunmiInnerPrinter(printerListModel.deviceModel?.ipAddress)
+
+        } else {
+            onInitPrinter(printerListModel)
+        }
+    }
+
+    private fun sunmiInnerPrinter(ipAddress: String?) {
+
+        SunmiPrintHelper.getInstance().initSunmiPrinterService(requireContext())
+        setService()
+
+
+    }
+
+    private fun setService() {
+        if (SunmiPrintHelper.getInstance().sunmiPrinter == SunmiPrintHelper.FoundSunmiPrinter) {
+
+            Log.e("SunmiPrintHelper", "FoundSunmiPrinter")
+
+            if (!BluetoothUtil.isBlueToothPrinter) {
+
+                Log.e("SunmiPrintHelper", "isBlueToothPrinter")
+                SunmiPrintHelper.getInstance().initPrinter()
+                SunmiPrintHelper.getInstance().setAlign(1)
+                SunmiPrintHelper.getInstance().lineWrap(2)
+                SunmiPrintHelper.getInstance()
+                    .printText("Test Print", 30F, true, false, "test1.ttf")
+
+
+                SunmiPrintHelper.getInstance().lineWrap(1)
+                SunmiPrintHelper.getInstance()
+                    .printText(
+                        "ABCDEFGHIKLMNOPQRSTVXYZABCDEFGHIKLMNOPQRSTVXYZ",
+                        24F,
+                        true,
+                        false,
+                        "test1.ttf"
+                    )
+
+                SunmiPrintHelper.getInstance().lineWrap(1)
+                SunmiPrintHelper.getInstance()
+                    .printText(
+                        "ABCDEFGHIKLMNOPQRSTVXYZABCDEFGHIKLMNOPQRSTVXYZ",
+                        30F,
+                        true,
+                        false,
+                        "test1.ttf"
+                    )
+
+                SunmiPrintHelper.getInstance().lineWrap(1)
+                SunmiPrintHelper.getInstance()
+                    .printText(
+                        "ABCDEFGHIKLMNOPQRSTVXYZABCDEFGHIKLMNOPQRSTVXYZ",
+                        36F,
+                        true,
+                        false,
+                        "test1.ttf"
+                    )
+
+
+                SunmiPrintHelper.getInstance().lineWrap(3)
+                SunmiPrintHelper.getInstance()
+                    .printText(
+                        "ABCDEFGHIKLMNOPQRSTVXYZABCDEFGHIKLMNOPQRSTVXYZ",
+                        24F,
+                        false,
+                        false,
+                        "test1.ttf"
+                    )
+
+                SunmiPrintHelper.getInstance().lineWrap(1)
+                SunmiPrintHelper.getInstance()
+                    .printText(
+                        "ABCDEFGHIKLMNOPQRSTVXYZABCDEFGHIKLMNOPQRSTVXYZ",
+                        30F,
+                        false,
+                        false,
+                        "test1.ttf"
+                    )
+
+                SunmiPrintHelper.getInstance().lineWrap(1)
+                SunmiPrintHelper.getInstance()
+                    .printText(
+                        "ABCDEFGHIKLMNOPQRSTVXYZABCDEFGHIKLMNOPQRSTVXYZ",
+                        36F,
+                        false,
+                        false,
+                        "test1.ttf"
+                    )
+
+
+                SunmiPrintHelper.getInstance().setAlign(1)
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    SunmiPrintHelper.getInstance().printText(
+                        getCurrentTimeFromTimeZone(requireContext(), MethodUtils.formatted()),
+                        30F,
+                        true,
+                        false,
+                        null
+                    )
+                }
+                SunmiPrintHelper.getInstance().lineWrap(2)
+                PrintSunmiUtils.cutPaperInner()
+
+            } else {
+
+                Log.e("SunmiPrintHelper", "isBlueToothPrinter")
+
+
+                printByBluTooth("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
+            }
+
+        } else if (SunmiPrintHelper.getInstance().sunmiPrinter == SunmiPrintHelper.CheckSunmiPrinter) {
+            handler.postDelayed({ setService() }, 2000)
+            Log.e("SunmiPrintHelper", "CheckSunmiPrinter")
+        } else if (SunmiPrintHelper.getInstance().sunmiPrinter == SunmiPrintHelper.LostSunmiPrinter) {
+
+            Log.e("SunmiPrintHelper", "LostSunmiPrinter")
+        } else {
+            Log.e("SunmiPrintHelper", "ELSE")
+        }
+    }
+
+
+    private fun printByBluTooth(content: String) {
+        try {
+            if (true) {
+                BluetoothUtil.sendData(ESCUtil.boldOn())
+            } else {
+                BluetoothUtil.sendData(ESCUtil.boldOff())
+            }
+            if (true) {
+                BluetoothUtil.sendData(ESCUtil.underlineWithOneDotWidthOn())
+            } else {
+                BluetoothUtil.sendData(ESCUtil.underlineOff())
+            }
+
+            BluetoothUtil.sendData(content.toByteArray(charset("GB18030")))
+            BluetoothUtil.sendData(ESCUtil.nextLine(3))
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
+    }
+
+    private fun sunmiPrinterInit(ipAddress: String) {
+
+        SunmiPrinterApi.getInstance().setPrinter(SunmiPrinter.SunmiBlueToothPrinter, ipAddress)
+
+        connect()
+
+    }
+
+    fun connect() {
+        if (!SunmiPrinterApi.getInstance().isConnected) {
+            SunmiPrinterApi.getInstance()
+                .connectPrinter(requireContext(), object : ConnectCallback {
+
+                    override fun onFound() {
+                        println("onFound")
+                    }
+
+                    override fun onUnfound() {
+                        println("onUnfound")
+                    }
+
+                    override fun onConnect() {
+                        println("onConnect")
+                        test()
+                    }
+
+                    override fun onDisconnect() {
+                        println("onDisconnect")
+                    }
+
+                })
+        } else {
+            test()
+        }
+    }
+
+    fun test() {
+        if (SunmiPrinterApi.getInstance().isConnected) {
+            SunmiPrinterApi.getInstance().printerInit()
+            SunmiPrinterApi.getInstance().printText("")
+            SunmiPrinterApi.getInstance().lineWrap(2)
+            SunmiPrinterApi.getInstance().setAlignMode(1)
+            SunmiPrinterApi.getInstance().setFontZoom(2, 2)
+            SunmiPrinterApi.getInstance().printText("Test Print")
+            SunmiPrinterApi.getInstance().lineWrap(1)
+            val current = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                LocalDateTime.now()
+            } else {
+                TODO("VERSION.SDK_INT < O")
+            }
+            val formatter = DateTimeFormatter.ofPattern("MMM-dd-yyyy hh:mm:a")
+            val formatted = current.format(formatter)
+            SunmiPrinterApi.getInstance().setAlignMode(1)
+            SunmiPrinterApi.getInstance().setFontZoom(2, 2)
+            SunmiPrinterApi.getInstance()
+                .printText(getCurrentTimeFromTimeZone(requireContext(), formatted))
+            SunmiPrinterApi.getInstance().lineWrap(2)
+            SunmiPrinterApi.getInstance().cutPaper(2, 20)
+
+
+        }
     }
 
     override fun onPrinterActive(printerListModel: PrinterListModel, layoutPosition: Int) {
@@ -1168,6 +1277,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
                     val createPrinter = CreatePrinterRequestModel(
                         name = printerListModel.printerName,
+                        terminalId = prefProvider.getValueInt(TERMINAL_ID, 0),
                         macAddress = printerListModel.deviceModel?.macAddress,
                         modalName = printerListModel.deviceModel?.printerName,
                         terminalIds = listOf(prefProvider.getValueInt(TERMINAL_ID, 1)),
@@ -1196,6 +1306,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                     }
                     val createPrinter = CreatePrinterRequestModel(
                         name = printerListModel.printerName,
+                        terminalId = prefProvider.getValueInt(TERMINAL_ID, 0),
                         macAddress = printerListModel.deviceModel?.macAddress,
                         modalName = printerListModel.deviceModel?.printerName,
                         terminalIds = listOf(prefProvider.getValueInt(TERMINAL_ID, 1)),
@@ -1230,6 +1341,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                     }
                     val createBothPrinter = CreatePrinterRequestModel(
                         name = printerListModel.printerName,
+                        terminalId = prefProvider.getValueInt(TERMINAL_ID, 0),
                         macAddress = printerListModel.deviceModel?.macAddress,
                         modalName = printerListModel.deviceModel?.printerName,
                         terminalIds = listOf(prefProvider.getValueInt(TERMINAL_ID, 1)),
@@ -1317,8 +1429,6 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
             printer.setBatteryStatusChangeEventCallback(this)
         }
 
-        val enabled = Print.FALSE
-        Log.e(TAG, "PrinterconnectionType:  ${printerListModel.connectionType}")
 
         if (printerListModel.connectionType == "") {
             findBT()
@@ -1327,11 +1437,8 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
             try {
                 printer?.openPrinter(
                     if (printerListModel.connectionType == BLUETOOTH) Print.DEVTYPE_BLUETOOTH else Print.DEVTYPE_TCP,
-                    printerListModel.deviceModel?.ipAddress,
-                    enabled,
-                    10000
+                    printerListModel.deviceModel?.ipAddress
                 )
-                printer?.setStatusChangeEventCallback(this)
 
 
             } catch (e: Exception) {
@@ -1725,281 +1832,11 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                 val current = LocalDateTime.now()
                 val formatter = DateTimeFormatter.ofPattern("MMM-dd-yyyy hh:mm:a")
                 val formatted = current.format(formatter)
-                builder.addText(getCurrentTimeFromTimeZone(requireContext(),formatted))
+                builder.addText(getCurrentTimeFromTimeZone(requireContext(), formatted))
             }
 
 
-            /* val bitmap = getBitmapFromVectorDrawable(requireContext(), R.drawable.ic_group)
-             Log.e(TAG, "BitmapWidth:  ${bitmap.width}")
 
-
-             builder.addTextAlign(Builder.ALIGN_CENTER)
-             builder.addImage(
-                 bitmap, 0, 0, Math.min(
-                     IMAGE_WIDTH_MAX, bitmap.width
-                 ), bitmap.height, Builder.COLOR_1, Builder.MODE_MONO,
-                 Builder.HALFTONE_DITHER, 1.0
-             )
-
-             builder.addFeedLine(2)
-
-             builder.addTextFont(Builder.FONT_A)
-             //builder.addTextLineSpace(20)
-             builder.addTextLang(Builder.LANG_EN)
-             builder.addTextSize(1, 2)
-             builder.addTextStyle(
-                 Builder.FALSE,
-                 Builder.FALSE,
-                 Builder.FALSE,
-                 Builder.COLOR_1
-             )
-             //builder.addTextPosition(1)
-             builder.addTextAlign(Builder.ALIGN_CENTER)
-
-             builder.addText("Food Cafe\n")
-
-
-
-             builder.addTextFont(Builder.FONT_C)
-             builder.addTextAlign(Builder.ALIGN_CENTER)
-             builder.addTextLang(Builder.LANG_EN)
-             builder.addTextSize(1, 2)
-             builder.addTextStyle(
-                 Builder.FALSE,
-                 Builder.FALSE,
-                 Builder.FALSE,
-                 Builder.COLOR_1
-             )
-
-             builder.addText("7450 DW 51 FH,AT,Suite 503\n\n")
-
-             builder.addTextFont(Builder.FONT_C)
-             builder.addTextAlign(Builder.ALIGN_CENTER)
-             builder.addTextLang(Builder.LANG_EN)
-             builder.addTextSize(1, 2)
-             builder.addTextStyle(
-                 Builder.FALSE,
-                 Builder.FALSE,
-                 Builder.FALSE,
-                 Builder.COLOR_1
-             )
-             builder.addText("(635)987-3354\n")
-
-             builder.addTextFont(Builder.FONT_A)
-             builder.addTextAlign(Builder.ALIGN_CENTER)
-             builder.addTextLang(Builder.LANG_EN)
-             builder.addTextSize(1, 2)
-             builder.addTextStyle(
-                 Builder.FALSE,
-                 Builder.FALSE,
-                 Builder.FALSE,
-                 Builder.COLOR_1
-             )
-
-             builder.addText("www.foodcourt.com\n\n")
-
-             builder.addTextFont(Builder.FONT_C)
-             //  builder.addTextAlign(Builder.ALIGN_LEFT)
-             builder.addTextLang(Builder.LANG_EN)
-             builder.addTextSize(1, 2)
-             builder.addTextStyle(
-                 Builder.FALSE,
-                 Builder.FALSE,
-                 Builder.FALSE,
-                 Builder.COLOR_1
-             )
-
-             builder.addText(padLine("OrderID:23564", "ReceiptID:REC54646", 46))
-             //  builder.addText("ABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZ")
-
-             builder.addFeedLine(2)
-             builder.addTextFont(Builder.FONT_C)
-             //  builder.addTextAlign(Builder.ALIGN_LEFT)
-             builder.addTextLang(Builder.LANG_EN)
-             builder.addTextSize(1, 2)
-             builder.addTextStyle(
-                 Builder.FALSE,
-                 Builder.FALSE,
-                 Builder.FALSE,
-                 Builder.COLOR_1
-             )
-
-             builder.addText(padLine("Employee: David Miller", "29-Apr-2021 07:15 PM", 46))
-
-             builder.addFeedLine(2)
-             //builder.addHLine(0,46,Builder.LINE_THIN_DOUBLE)
-
-             builder.addTextLineSpace(30)
-             builder.addFeedUnit(30)
-             builder.addTextFont(Builder.FONT_E)
-             // builder.addTextAlign(Builder.ALIGN_LEFT)
-             builder.addTextLang(Builder.LANG_EN)
-             builder.addTextSize(2, 2)
-             builder.addTextStyle(
-                 Builder.FALSE,
-                 Builder.FALSE,
-                 Builder.FALSE,
-                 Builder.COLOR_1
-             )
-
-             builder.addText(
-                 padLine(
-                     "ABCDEFGHIJKLMNOPQRSTUVWXYZABCDEFGHIJKLMNOPQRSTUVWXYZ",
-                     "",
-                     48
-                 )
-             )*/
-
-            /* builder.addFeedLine(1)
-             builder.addTextFont(Builder.FONT_C)
-             builder.addTextAlign(Builder.ALIGN_LEFT)
-             builder.addTextLang(Builder.LANG_EN)
-             builder.addTextSize(1, 2)
-             builder.addTextStyle(
-                 Builder.FALSE,
-                 Builder.FALSE,
-                 Builder.FALSE,
-                 Builder.COLOR_1
-             )
-             builder.addTextPosition(4)
-             builder.addText(padLine("   Extra Spicy", "$1.99", 46))
-
-
-             builder.addFeedLine(1)
-             builder.addTextFont(Builder.FONT_C)
-             // builder.addTextAlign(Builder.ALIGN_LEFT)
-             builder.addTextLang(Builder.LANG_EN)
-             builder.addTextSize(1, 2)
-             builder.addTextStyle(
-                 Builder.FALSE,
-                 Builder.FALSE,
-                 Builder.FALSE,
-                 Builder.COLOR_1
-             )
-             builder.addTextPosition(3)
-             builder.addText(padLine(" Extra Spicy", "$1.99", 44))
-
-             builder.addFeedLine(2)
-
-             builder.addTextFont(Builder.FONT_D)
-             // builder.addTextAlign(Builder.ALIGN_LEFT)
-             builder.addTextLang(Builder.LANG_EN)
-             builder.addTextSize(1, 1)
-             builder.addTextStyle(
-                 Builder.FALSE,
-                 Builder.FALSE,
-                 Builder.FALSE,
-                 Builder.COLOR_1
-             )
-
-             builder.addText(padLine("Sub Total", "$9.99", 46))
-             builder.addFeedLine(2)
-
-             builder.addTextFont(Builder.FONT_C)
-             // builder.addTextAlign(Builder.ALIGN_LEFT)
-             builder.addTextLang(Builder.LANG_EN)
-             builder.addTextSize(1, 1)
-             builder.addTextStyle(
-                 Builder.FALSE,
-                 Builder.FALSE,
-                 Builder.FALSE,
-                 Builder.COLOR_1
-             )
-
-             builder.addText(padLine("Refund Amount", "$9.99", 46))
-
-             builder.addFeedLine(2)
-             builder.addTextFont(Builder.FONT_B)
-             // builder.addTextAlign(Builder.ALIGN_LEFT)
-             builder.addTextLang(Builder.LANG_EN)
-             builder.addTextSize(1, 1)
-             builder.addTextStyle(
-                 Builder.FALSE,
-                 Builder.FALSE,
-                 Builder.FALSE,
-                 Builder.COLOR_1
-             )
-
-             builder.addText(padLine("Service Charge", "$9.99", 46))
-
-
-             builder.addFeedLine(2)
-
-             builder.addTextFont(Builder.FONT_A)
-             // builder.addTextAlign(Builder.ALIGN_LEFT)
-             builder.addTextLang(Builder.LANG_EN)
-             builder.addTextSize(1, 1)
-             builder.addTextStyle(
-                 Builder.FALSE,
-                 Builder.FALSE,
-                 Builder.FALSE,
-                 Builder.COLOR_1
-             )
-
-             builder.addText(padLine("Total Price", "$9.99", 46))
-
-             builder.addFeedLine(2)
-
-             builder.addTextFont(Builder.FONT_E)
-             // builder.addTextAlign(Builder.ALIGN_LEFT)
-             builder.addTextLang(Builder.LANG_EN)
-             builder.addTextSize(1, 1)
-             builder.addTextStyle(
-                 Builder.FALSE,
-                 Builder.FALSE,
-                 Builder.FALSE,
-                 Builder.COLOR_1
-             )
-
-             builder.addText(padLine("Entertainment(4.00%)", "$9.99", 46))
-
-
-             builder.addFeedLine(2)
-
-             builder.addTextFont(Builder.FONT_A)
-             builder.addTextAlign(Builder.ALIGN_LEFT)
-             builder.addTextLang(Builder.LANG_EN)
-             builder.addTextSize(1, 2)
-             builder.addTextStyle(
-                 Builder.FALSE,
-                 Builder.FALSE,
-                 Builder.FALSE,
-                 Builder.COLOR_1
-             )
-
-             builder.addText("Cstomer Details")
-
-             builder.addFeedLine(2)
-
-             builder.addTextFont(Builder.FONT_A)
-             builder.addTextAlign(Builder.ALIGN_LEFT)
-             builder.addTextLang(Builder.LANG_EN)
-             builder.addTextSize(1, 2)
-             builder.addTextStyle(
-                 Builder.FALSE,
-                 Builder.FALSE,
-                 Builder.FALSE,
-                 Builder.COLOR_1
-             )
-
-             builder.addText("David Miller")
-
-             builder.addFeedLine(1)
-             builder.addTextFont(Builder.FONT_A)
-             builder.addTextAlign(Builder.ALIGN_LEFT)
-             builder.addTextLang(Builder.LANG_EN)
-             builder.addTextSize(1, 2)
-             builder.addTextStyle(
-                 Builder.FALSE,
-                 Builder.FALSE,
-                 Builder.FALSE,
-                 Builder.COLOR_1
-             )
-
-             builder.addText("7450 DW 51 FH AT,Suite 503")
-    */
-
-            //PrinterReceipt.padLine()
             builder.addFeedLine(2)
 
 
@@ -2012,7 +1849,8 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
             //send builder data(empty builder data)
             val status = IntArray(1)
-            val battery = IntArray(1)
+            status[0] = 0
+
 
             Log.e(TAG, "getPrinterCheck:  ${PrinterClass.getPrinter().toString()}")
 
@@ -2020,11 +1858,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
             try {
                 PrinterClass.getPrinter()?.sendData(
-                    builder, if (printerListModel.connectionType == BLUETOOTH) {
-                        BLUETOOTH_TIMEOUT
-                    } else {
-                        TEST_PRINT_LAN_TIME
-                    }, status, battery
+                    builder, 10000, status
                 )
                 //PrinterClass.getPrinter()?.sendData(builder, 0, status, battery)
             } catch (e: Exception) {
@@ -2057,6 +1891,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
         Log.e(TAG, "onBatteryLevelChange  ${p0}")
     }
 
+    @SuppressLint("MissingPermission")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (requestCode == 100 && resultCode == Activity.RESULT_OK) {
 

@@ -93,6 +93,7 @@ class TeamMemberTimeSheetFragment : Fragment(), AdapterView.OnItemSelectedListen
         navigate()
 
         binding.includeView.txtEmail.setOnClickListener {
+            if (MethodUtils.isDoubleClick()) return@setOnClickListener
             val bundle = Bundle()
             bundle.putBoolean("isFromTimeSheet", true)
             bundle.putString("email", "")

@@ -52,6 +52,7 @@ import com.android.pos.data.remote.Constants.ITEMS
 import com.android.pos.data.remote.Constants.ITEM_UPDATE_DELETE
 import com.android.pos.data.remote.Constants.KITCHEN_RECEIPT_SETTINGS
 import com.android.pos.data.remote.Constants.KITCHEN_RECEIPT_UPDATE_SEETINGS
+import com.android.pos.data.remote.Constants.LOCK_SCREEN_TRANSACTION
 import com.android.pos.data.remote.Constants.LOGIN_TERMINAL
 import com.android.pos.data.remote.Constants.LOGOUT
 import com.android.pos.data.remote.Constants.LOYALTY_POINT
@@ -106,6 +107,7 @@ import com.android.pos.data.remote.Constants.TIPS_ACTIVE
 import com.android.pos.data.remote.Constants.TIPS_UPDATE_DELETE
 import com.android.pos.data.remote.Constants.TRANSACTION_LIST
 import com.android.pos.data.remote.Constants.UNMERGE_TABLE
+import com.android.pos.data.remote.Constants.UPDATE_LOCK_SCREEN_PERMISSION
 import com.android.pos.data.remote.Constants.UPDATE_ONLINE_ORDER
 import com.android.pos.data.remote.Constants.UPDATE_PRINTER_STATUS
 import com.android.pos.data.remote.Constants.UPDATE_SERVICECHARGE
@@ -153,10 +155,13 @@ interface ApiService {
     suspend fun syncVenueData(): VenueDataResponse
 
     @GET(GET_PRINTERS)
-    suspend fun getPrinterList(): PrinterResponse
+    suspend fun getPrinterList(@Query("terminal_id") terminalId: Int): PrinterResponse
+
 
     @POST(GET_PRINTERS)
-    suspend fun createPrinter(@Body createPrinter: CreatePrinterRequestModel): PrinterResponse
+    suspend fun createPrinter(
+        @Body createPrinter: CreatePrinterRequestModel
+    ): PrinterResponse
 
     @DELETE(DELETE_UPDATE_PRINTER)
     suspend fun deletePrinter(
@@ -197,8 +202,14 @@ interface ApiService {
         @Query("enable_dine_in_service_charge") service_charge_enable: Boolean,
     ): ServiceChargeUpdate
 
+
+    @PUT(UPDATE_LOCK_SCREEN_PERMISSION)
+    suspend fun updateLockScreenTransaction(
+        @Query("lock_screen_after_each_transaction") lock_screen_after_each_transaction: Boolean,
+    ): BaseResponse
+
     @GET(SYNC_VENUE_DETAILS)
-    suspend fun syncVenueDetails(): VenueDetailsResponse
+    suspend fun syncVenueDetails(@Query("terminal_id") terminalId: Int): VenueDetailsResponse
 
     @GET(ONLINE_ORDER_NOTIFICATION_COUNT)
     suspend fun getCountOnlineOrdering(): OnlineOrderNotificationCount

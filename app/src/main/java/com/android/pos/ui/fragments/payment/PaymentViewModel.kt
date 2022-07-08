@@ -12,6 +12,7 @@ import com.android.pos.data.model.responseModel.BaseResponse
 import com.android.pos.data.model.responseModel.CreateOrderResponse
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.DINE_IN
+import com.android.pos.data.remote.Constants.IS_PRINTER_QUEUE_ENABLE
 import com.android.pos.data.remote.Constants.PAYMENT_ID
 import com.android.pos.data.remote.Constants.TAKEOUT
 import com.android.pos.data.repositories.PosRepository
@@ -61,6 +62,9 @@ open class PaymentViewModel @Inject constructor(
 
     private val _queueStart = MutableLiveData<Event<CreateOrderResponse?>>()
     val QueueStart: LiveData<Event<CreateOrderResponse?>> = _queueStart
+
+    private val _queueStartTakeOut = MutableLiveData<Event<CreateOrderResponse?>>()
+    val QueueStartTakeOut: LiveData<Event<CreateOrderResponse?>> = _queueStartTakeOut
 
     private val _data = MutableLiveData<Event<CreateOrderResponse?>>()
     val data: LiveData<Event<CreateOrderResponse?>> = _data
@@ -135,18 +139,40 @@ open class PaymentViewModel @Inject constructor(
                                             0
                                         )
                                     )
+                                    posRepository.deselectedItem(0)
                                 }
 
                                 Log.e(TAG, "isOnlySave:  ${onlySave}")
-
+                                Log.e(
+                                    TAG,
+                                    "IS_PRINTER_QUEUE_ENABLE  ${
+                                        prefProvider.getValueboolean(
+                                            IS_PRINTER_QUEUE_ENABLE,
+                                            false
+                                        )
+                                    }"
+                                )
+                                if (prefProvider.getValueboolean(IS_PRINTER_QUEUE_ENABLE, false)) {
+                                    Log.e(TAG, "QueueStart")
+                                    _queueStartSaveOrder.value = Event(createOrderResponse)
+                                }
                                 if (onlySave) {
+                                    Log.e("QueueCheck", "OnlySave")
+
                                     _queueStart.value = Event(createOrderResponse)
 
                                 } else {
                                     if (createOrderResponse.data.order.orderType != "Dine In" && response.data.order.payments[response.data.order.payments.size - 1].paymentType != "Card") {
                                         cashLogApi(createOrderResponse, "in")
+                                        Log.e("QueueCheck", "CashLogAPI")
                                     } else {
                                         _data.value = Event(createOrderResponse)
+                                        Log.e("QueueCheck", "CreateOrderData")
+                                    }
+
+                                    if (createOrderResponse.data.order.orderType != "Dine In" ) {
+                                        _queueStartTakeOut.value = Event(createOrderResponse)
+                                        Log.e("QueueCheck", "QueueStart")
                                     }
                                 }
 
@@ -221,6 +247,7 @@ open class PaymentViewModel @Inject constructor(
                                         0
                                     )
                                 )
+                                posRepository.deselectedItem(0)
                             }
                             resource.data?.let { createOrderResponse ->
                                 if (createOrderResponse.data.order.payments.isNotEmpty()) {
@@ -403,7 +430,9 @@ open class PaymentViewModel @Inject constructor(
         needToAddPaymentAttributes: Boolean?,
         paymentType: String,
         cashdiscountType: String,
-        tipID: Int? = null
+        tipID: Int? = null,
+        isPrinterQueue: Boolean = false,
+        offlineId: String = ""
     ): OrderRequestModel {
 
         val orderAttributeRequestModel = OrderAttributeRequestModel()
@@ -436,7 +465,7 @@ open class PaymentViewModel @Inject constructor(
         orderAttributeRequestModel.note = cartModel.note
         if (paymentType == "Cash") {
             if (cashdiscountType == "SurCharge") {
-                orderAttributeRequestModel.cash_discount_type = ""
+                orderAttributeRequestModel.cash_discount_type = cashdiscountType
                 orderAttributeRequestModel.cash_discount_or_surcharge = 0.0
                 orderAttributeRequestModel.totalAmount = actual_Total
             } else if (cashdiscountType == "CashDiscount") {
@@ -458,10 +487,24 @@ open class PaymentViewModel @Inject constructor(
                 orderAttributeRequestModel.cash_discount_or_surcharge = 0.0
             }
         }*/
+        cartModel.taxlistDynamic?.forEach { taxData ->
+            if (taxData.taxType == "Percentage") {
+                taxData.percentage_value =
+                    MethodUtils.roundOffAmountDouble(taxData.rate)
+            } else {
+                taxData.percentage_value =
+                    MethodUtils.roundOffAmountDouble((100 * taxData.totalTaxTypePrice) / taxData.subTotalAmount!!)
+            }
+        }
+        orderAttributeRequestModel.tax_bifurcation_data = Gson().toJson(cartModel.taxlistDynamic)
         orderAttributeRequestModel.offlineId =
             if (isUpdateOrder) orderOfflineId.toString() else MethodUtils.randomOfflineId(
                 prefProvider.getValueInt(Constants.LOCATION_ID, -1).toString()
             )
+
+        if (isPrinterQueue) {
+            orderAttributeRequestModel.offlineId = offlineId
+        }
         Log.e(TAG, "openOrderType: " + cartModel.orderType)
         orderAttributeRequestModel.paymentStatus = if (isPaid) 1 else 0
         orderAttributeRequestModel.serviceChargeEnabled = true
@@ -599,7 +642,16 @@ open class PaymentViewModel @Inject constructor(
             MethodUtils.roundOffAmountDouble(totalServiceCharge)
         orderAttributeRequestModel.totalTaxAmount = MethodUtils.roundOffAmountDouble(totalTax)
         orderAttributeRequestModel.totalTips = MethodUtils.roundOffAmountDouble(tipAmount)
-
+        cartModel.taxlistDynamic?.forEach { taxData ->
+            if (taxData.taxType == "Percentage") {
+                taxData.percentage_value =
+                    MethodUtils.roundOffAmountDouble(taxData.rate)
+            } else {
+                taxData.percentage_value =
+                    MethodUtils.roundOffAmountDouble((100 * taxData.totalTaxTypePrice) / taxData.subTotalAmount!!)
+            }
+        }
+        orderAttributeRequestModel.tax_bifurcation_data = Gson().toJson(cartModel.taxlistDynamic)
         orderAttributeRequestModel.is_loyalty_applied = redeemLoyaltyInfo?.needToApplyLoyalty
         if (orderAttributeRequestModel.is_loyalty_applied == true) {
             orderAttributeRequestModel.loyalty_program_id =
@@ -721,7 +773,16 @@ open class PaymentViewModel @Inject constructor(
                 orderAttributeRequestModel.totalAmount = actual_CardAmount
             }
         }
-
+        cartModel.taxlistDynamic?.forEach { taxData ->
+            if (taxData.taxType == "Percentage") {
+                taxData.percentage_value =
+                    MethodUtils.roundOffAmountDouble(taxData.rate)
+            } else {
+                taxData.percentage_value =
+                    MethodUtils.roundOffAmountDouble((100 * taxData.totalTaxTypePrice) / taxData.subTotalAmount!!)
+            }
+        }
+        orderAttributeRequestModel.tax_bifurcation_data = Gson().toJson(cartModel.taxlistDynamic)
         orderAttributeRequestModel.magensaResponse = magensaResponse.toString()
 
         orderAttributeRequestModel.offlineId =
@@ -1387,7 +1448,6 @@ open class PaymentViewModel @Inject constructor(
     }
 
 
-
     private fun orderServiceChargesAttributes(
         cartModel: CartModel,
         subTotalPrice: Double
@@ -1457,7 +1517,7 @@ open class PaymentViewModel @Inject constructor(
                 if (cashdiscountType == "SurCharge") {
                     cash_discount_or_surcharge = 0.0
                     total_cash_discount = 0.0
-                    cash_discount_type = ""
+                    cash_discount_type = cashdiscountType
                 } else if (cashdiscountType == "CashDiscount") {
                     cash_discount_or_surcharge = finalcashdiscount
                     total_cash_discount = finalcashdiscount
@@ -1702,6 +1762,7 @@ open class PaymentViewModel @Inject constructor(
                                             0
                                         )
                                     )
+                                    posRepository.deselectedItem(0)
                                 }
 
                                 if (onlySave) {
@@ -1746,6 +1807,10 @@ open class PaymentViewModel @Inject constructor(
         createOrder: CreateOrderResponse
     ) {
         _showProgress.value = Event(true)
+        Log.e(
+            "CreateOrderRequest",
+            "createQueuePrinterModel  ${Gson().toJson(createQueuePrinterModel)}"
+        )
 
         viewModelScope.launch {
             val resource = posRepository.createQueuePrinter(createQueuePrinterModel)
@@ -1753,7 +1818,7 @@ open class PaymentViewModel @Inject constructor(
             when (resource.status) {
                 Status.SUCCESS -> {
                     _showProgress.value = Event(false)
-                    _data.value = Event(createOrder)
+                  //  _data.value = Event(createOrder)
                     _queueCreateSaveOrder.value = Event(true)
 
                     // _queuePrinter.value = Event(resource?.data?.message.toString())

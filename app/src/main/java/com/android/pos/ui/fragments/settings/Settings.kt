@@ -28,6 +28,7 @@ import com.android.pos.databinding.FragmentSettingsBinding
 import com.android.pos.di.RolePermission
 import com.android.pos.ui.activities.MainActivity
 import com.android.pos.ui.adapter.BusinessSettingAdapter
+import com.android.pos.ui.fragments.settings.Security.Security
 import com.android.pos.ui.fragments.settings.business.BusinessDetailsFragment
 import com.android.pos.ui.fragments.settings.discount.DiscountList
 import com.android.pos.ui.fragments.settings.hardware.Hardware

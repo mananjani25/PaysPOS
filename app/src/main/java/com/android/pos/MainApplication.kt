@@ -25,7 +25,7 @@ class MainApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         FirebaseApp.initializeApp(this)
-        TestFairy.begin(this, "SDK-MBmS90Sl"); // vishal.j.patel+904@bacancy.com/10Ce70901@
+        TestFairy.begin(this, "SDK-pRyI0xxm"); // vishal.j.patel+905@bacancy.com/10Ce70901@
         instance = this
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
 
@@ -137,7 +137,7 @@ class MainApplication : Application() {
      */
     private fun createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val id = getString(R.string.virtual_tether_notification_channel_id)
+            val id = getString(R.string.default_notification_channel_id)
             val name: CharSequence = getString(R.string.virtual_tether_notification_channel_name)
             val description = getString(R.string.virtual_tether_notification_channel_description)
             val importance = NotificationManager.IMPORTANCE_HIGH

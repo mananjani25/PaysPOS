@@ -73,7 +73,9 @@ data class GetTransactionListResponse(
             @SerializedName("employee_role_name")
             val employeeRoleName: String,
             @SerializedName("refunded_amount")
-            val refundedAmount: Double
+            val refundedAmount: Double,
+            @SerializedName("magensa_response")
+            val magensaResponse: String?
 
         ) {
             data class Customer(

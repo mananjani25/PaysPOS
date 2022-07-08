@@ -298,7 +298,8 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
             if (paymentOrderDetailsResponse.data.cash_discount_type != null) paymentOrderDetailsResponse.data.cash_discount_type else "",
             paymentOrderDetailsResponse.data.payment_type,
             if (paymentOrderDetailsResponse.data.total_discount > totalItemDiscount) paymentOrderDetailsResponse.data.total_discount - totalItemDiscount else 0.0,
-            paymentOrderDetailsResponse.data.loyalty_amount
+            paymentOrderDetailsResponse.data.loyalty_amount,
+            paymentOrderDetailsResponse.data.tips
         )
 
 
@@ -352,12 +353,34 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
                 count++
                 totalItemPrice += it.totalPrice - it.discountAmount
 
-                it.orderItemTaxes.forEach { tax ->
-                    totalTax = tax.taxTotalAmount
-                }
-
                 it.orderItemModifiers.forEach { modifiers ->
                     totalItemPrice += (modifiers.price * modifiers.quantity)
+                }
+
+                it.orderItemTaxes.forEach { tax ->
+                    totalTax += if (tax.taxType == "Percentage") {
+                        if (totalItemPrice < 0.0) {
+
+                            String.format("%.2f", 0.00)
+                                .toDouble()
+                        } else {
+                            val itemTaxPrice =
+                                (tax.rate * totalItemPrice) / 100
+                            Log.e("itemTaxPrice", "" + itemTaxPrice)
+                            String.format("%.2f", itemTaxPrice)
+                                .toDouble()
+                        }
+
+                    } else {
+                        Log.d("yash", "taxCalculation: " + tax.taxType)
+                        if (totalItemPrice <= 0.0) {
+                            String.format("%.2f", 0.00)
+                                .toDouble()
+                        } else {
+                            String.format("%.2f", tax.rate * it.quantity)
+                                .toDouble()
+                        }
+                    }
                 }
 
 

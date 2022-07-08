@@ -4223,7 +4223,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
     private fun queuePrinterObserver() {
         viewModelPayment.QueueCreateSaveOrder.observe(requireActivity()) {
             it.getContentIfNotHandled()?.let {
-                binding.layoutCart.txtSave.text = getString(R.string.save)
+               /* binding.layoutCart.txtSave.text = getString(R.string.save)
                 viewModel.deleteCart()
                 if (prefProvider.getValue(ORDER_TYPE, "").toString() != "") {
                     prefProvider.setValue(ORDER_TYPE, "")
@@ -4234,7 +4234,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                 hideOrderType()
                 //getKitchenPrinters(it)
                 clearUpdateFlag()
-                findNavController().navigate(R.id.action_dashboardCategoryNew_to_orders)
+                findNavController().navigate(R.id.action_dashboardCategoryNew_to_orders)*/
 
 
             }

@@ -13,6 +13,7 @@ import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.data.entities.*
 import com.android.pos.data.model.responseModel.GetOrderDetailsResponse
+import com.android.pos.data.model.responseModel.OpenOrderResponse
 import com.android.pos.data.model.responseModel.orderhistory.Orders
 import com.android.pos.data.remote.Constants
 import com.android.pos.databinding.FragmentCustomerDetailsBinding
@@ -43,6 +44,8 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
 
     @Inject
     lateinit var prefProvider: PrefProvider
+    lateinit var listOfTbItem: List<TbItem>
+    lateinit var listOfItemsId: ArrayList<Int>
 
     private val orderHistoryAdapter by lazy {
         OrderHistoryAdapter { view, order ->
@@ -135,11 +138,11 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
                 "${AlertUtils.usNumberFormat(customerModel.phones[0].phone_number)}"
         }
         if (customerModel.addresses.isNotEmpty()) {
-            var address:StringBuffer = StringBuffer()
+            var address: StringBuffer = StringBuffer()
             var pos = 0
 
             customerModel.addresses.forEach { addresstemp ->
-                address.append(addresstemp.type_of_address + " : " + addresstemp.full_address+"\n")
+                address.append(addresstemp.type_of_address + " : " + addresstemp.full_address + "\n")
             }
             address.also {
                 binding.txtAddress.text = it
@@ -155,7 +158,18 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
 
     private fun initObservers() {
         binding.root.liveSnackBar(this, viewModel.snackbarText, Snackbar.LENGTH_SHORT)
-        viewModel.showProgress.observe(viewLifecycleOwner, { event ->
+
+
+        viewModel.itemlist.observe(viewLifecycleOwner) { itemlist ->
+            if (itemlist.data?.isNotEmpty() == true) {
+                listOfTbItem = itemlist.data as List<TbItem>
+                listOfItemsId = arrayListOf()
+                itemlist.data.forEach { it ->
+                    listOfItemsId.add(it.itemId)
+                }
+            }
+        }
+        viewModel.showProgress.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
                 if (it) {
                     ProgressUtils.showProgressDialog(requireActivity())
@@ -163,7 +177,7 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
                     ProgressUtils.dismissProgressDialog()
                 }
             }
-        })
+        }
         viewModel.orderHistory.observe(viewLifecycleOwner, EventObserver { data ->
             if (data?.isNotEmpty() == true) {
                 binding.llOrderHistory.visible()
@@ -184,37 +198,68 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
         })
         viewModel.orderResponse.observe(viewLifecycleOwner, EventObserver { order ->
             //reorder
-            prefProvider.setValue(Constants.ORDER_TYPE, order.orderType)
+            prefProvider.setValue(Constants.ORDER_TYPE, Constants.TAKEOUT)
             Log.e("!_@_", "customer details ${order.orderType}")
-            if (order.customer != null) {
-                prefProvider.setValue(
-                    Constants.CUSTOMER_NAME,
-                    order.customer.firstName + " " + order.customer.lastName
+            if (order.orderItems.size == 1) {
+                if (listOfItemsId.contains(order.orderItems[0].itemId)) {
+                    if (order.customer != null) {
+                        prefProvider.setValue(
+                            Constants.CUSTOMER_NAME,
+                            order.customer.firstName + " " + order.customer.lastName
+                        )
+                        prefProvider.setValueInt(Constants.CUSTOMER_ID, order.customer.id)
+                        prefProvider.saveCustomerData(TbCustomer.customerMapping(order.customer))
+                    }
+
+                    dashboardViewModel.addCart(
+                        cartModel(order)
+                    )
+                    val bundle = Bundle()
+                    bundle.putBoolean("update", false)
+                    bundle.putBoolean("reorder", true)
+                    findNavController().navigate(
+                        R.id.action_customer_to_dashboardCategoryNew, bundle
+                    )
+                } else {
+                    AlertUtils.showCustomAlertWithListenerWithOK(
+                        requireActivity(), "Not Available Item in a Restaurant."
+                    ) { _, _ ->
+
+                    }
+                }
+            } else {
+                if (order.customer != null) {
+                    prefProvider.setValue(
+                        Constants.CUSTOMER_NAME,
+                        order.customer.firstName + " " + order.customer.lastName
+                    )
+                    prefProvider.setValueInt(Constants.CUSTOMER_ID, order.customer.id)
+                    prefProvider.saveCustomerData(TbCustomer.customerMapping(order.customer))
+                }
+
+                dashboardViewModel.addCart(
+                    cartModel(order)
                 )
-                prefProvider.setValueInt(Constants.CUSTOMER_ID, order.customer.id)
-                prefProvider.saveCustomerData(TbCustomer.customerMapping(order.customer))
+                val bundle = Bundle()
+                bundle.putBoolean("update", false)
+                bundle.putBoolean("reorder", true)
+                findNavController().navigate(
+                    R.id.action_customer_to_dashboardCategoryNew, bundle
+                )
             }
 
-            dashboardViewModel.addCart(
-                cartModel(order)
-            )
-            val bundle = Bundle()
-            bundle.putBoolean("update", false)
-            bundle.putBoolean("reorder", true)
-            findNavController().navigate(
-                R.id.action_customer_to_dashboardCategoryNew, bundle
-            )
+
         })
     }
 
     private fun cartModel(order: GetOrderDetailsResponse.Data): CartModel {
         return CartModel().apply {
-            terminalId = order.terminalId
-            employeeID = order.employeeId
+            terminalId = prefProvider.getValueInt(Constants.TERMINAL_ID, 0)
+            employeeID = prefProvider.employeeId()
             locationId = order.locationId
             orderTypeId = order.orderTypeId
-            orderType = order.orderType
-            orderTypeName = order.orderType
+            orderType = Constants.TAKEOUT
+            orderTypeName = Constants.TAKEOUT
             futureDeliveryDate = order.date.toString()
             isOpenOrder = false
             serviceCharge = serviceChargesList(order)
@@ -224,10 +269,138 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
             reorder = true
             var itemDiscount = 0.0
             items?.forEach {
+                it.isSelectedItem = true
                 itemDiscount += it.discountPrice
             }
             discountPrice = (order.totalDiscount - itemDiscount)
+            taxlistDynamic = getTaxBirfucationList(order.orderItems)
         }
+    }
+
+    private fun getTaxBirfucationList(orderItems: List<GetOrderDetailsResponse.Data.OrderItem>): ArrayList<TaxData> {
+        var taxListDynamic: ArrayList<TaxData> = arrayListOf()
+        if (orderItems.isNotEmpty()) {
+            orderItems.forEach { orderItem ->
+                var totalPrice = orderItem.price * orderItem.quantity
+                orderItem.orderItemModifiers.forEach { orderItemModifier ->
+                    totalPrice += orderItemModifier.price * orderItemModifier.quantity
+                }
+                Log.d(TAG, "navigate: itemPrice : $totalPrice")
+                var totaltaxtemp = 0.0
+                orderItem.orderItemTaxes.forEach { orderItemTaxe ->
+                    if (taxListDynamic?.isNotEmpty() == true) {
+                        var found = -1
+                        taxListDynamic.forEachIndexed { index, taxData ->
+                            if (taxData.orderTaxId == orderItemTaxe.taxId) {
+                                found = index
+                                return@forEachIndexed
+                            }
+                        }
+                        if (found == -1) {
+                            var taxData: TaxData = TaxData(
+                                orderItemTaxe.createdAt,
+                                orderItemTaxe.taxId,
+                                0,
+                                orderItemTaxe.name,
+                                orderItemTaxe.rate,
+                                orderItemTaxe.taxType,
+                                orderItemTaxe.updatedAt,
+                                true,
+                                orderItemTaxe.isDefault,
+                                false,
+                                "",
+                                listOf(orderItemTaxe.orderItemId),
+                                orderItemTaxe.taxId,
+                                false,
+                                getTaxFromTotalPrice(
+                                    orderItemTaxe,
+                                    totalPrice,
+                                    orderItem
+                                ),
+                                totalPrice
+                            )
+                            taxListDynamic?.add(taxData)
+                        } else {
+                            taxListDynamic!![found].totalTaxTypePrice =
+                                taxListDynamic!![found].totalTaxTypePrice + getTaxFromTotalPrice(
+                                    orderItemTaxe,
+                                    totalPrice,
+                                    orderItem
+                                )
+                            taxListDynamic!![found].subTotalAmount =
+                                taxListDynamic!![found].subTotalAmount + totalPrice
+                        }
+                        Log.d(TAG, "found : " + found)
+                    } else {
+                        var taxData: TaxData = TaxData(
+                            orderItemTaxe.createdAt,
+                            orderItemTaxe.taxId,
+                            0,
+                            orderItemTaxe.name,
+                            orderItemTaxe.rate,
+                            orderItemTaxe.taxType,
+                            orderItemTaxe.updatedAt,
+                            true,
+                            orderItemTaxe.isDefault,
+                            false,
+                            "",
+                            listOf(orderItemTaxe.orderItemId),
+                            orderItemTaxe.taxId,
+                            false,
+                            getTaxFromTotalPrice(
+                                orderItemTaxe,
+                                totalPrice,
+                                orderItem
+                            ),
+                            totalPrice
+                        )
+                        taxListDynamic.add(taxData)
+                    }
+
+
+                    Log.d(TAG, "navigate: " + totaltaxtemp)
+                }
+
+            }
+
+            Log.d(TAG, "navigate: list " + Gson().toJson(taxListDynamic))
+        }
+        return taxListDynamic
+    }
+
+
+    fun getTaxFromTotalPrice(
+        orderItemTaxe: GetOrderDetailsResponse.Data.OrderItem.OrderItemTaxe,
+        totalPrice: Double,
+        item: GetOrderDetailsResponse.Data.OrderItem
+    ): Double {
+        var totaltaxtemp = 0.0
+
+
+        totaltaxtemp += if (orderItemTaxe.taxType == "Percentage") {
+            if (totalPrice < 0.0) {
+
+                String.format("%.2f", 0.00)
+                    .toDouble()
+            } else {
+                val itemTaxPrice =
+                    (orderItemTaxe.rate * totalPrice) / 100
+                Log.e("itemTaxPrice", "" + itemTaxPrice)
+                String.format("%.2f", itemTaxPrice)
+                    .toDouble()
+            }
+
+        } else {
+            Log.d("yash", "taxCalculation: " + orderItemTaxe.taxType)
+            if (totalPrice <= 0.0) {
+                String.format("%.2f", 0.00)
+                    .toDouble()
+            } else {
+                String.format("%.2f", orderItemTaxe.rate * item.quantity)
+                    .toDouble()
+            }
+        }
+        return totaltaxtemp
     }
 
     private fun serviceChargesList(order: GetOrderDetailsResponse.Data): List<TbServiceCharge> {
@@ -337,7 +510,7 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
             try {
                 inventoryModelList.add(items)
             } catch (e: Exception) {
-                Log.d(TAG, "inventoryList: "+e.printStackTrace())
+                Log.d(TAG, "inventoryList: " + e.printStackTrace())
             }
 
         }

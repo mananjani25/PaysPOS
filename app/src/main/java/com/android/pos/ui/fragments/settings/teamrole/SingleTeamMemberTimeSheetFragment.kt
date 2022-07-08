@@ -16,6 +16,7 @@ import com.android.pos.R
 import com.android.pos.data.model.responseModel.GetEmployeesTimeSheetResponse
 import com.android.pos.databinding.FragmentSingleTeamMemberTimeSheetBinding
 import com.android.pos.ui.adapter.SingleTeamMemberTimeSheetAdapter
+import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.extensions.liveSnackBar
 import com.android.pos.utils.statusUtils.Status
 import com.google.android.material.snackbar.Snackbar
@@ -67,6 +68,7 @@ class SingleTeamMemberTimeSheetFragment : Fragment() {
         binding.includeView.txtPrint.visibility = View.GONE
 
         binding.includeView.txtEmail.setOnClickListener {
+            if (MethodUtils.isDoubleClick()) return@setOnClickListener
             viewModel.getEmployeeEmail(employeeModel.teamId)
                 .observe(viewLifecycleOwner) {
 

@@ -950,6 +950,11 @@
             app:popUpTo="@id/orderCompleteFragment"
             app:popUpToInclusive="true" />
         <action
+            android:id="@+id/action_orderCompleteFragment_to_passcode"
+            app:destination="@id/passcode"
+            app:popUpTo="@id/orderCompleteFragment"
+            app:popUpToInclusive="true" />
+        <action
             android:id="@+id/action_orderCompleteFragment_to_assignCustomerOrderFragment"
             app:destination="@id/assignCustomerOrderFragment" />
         <action

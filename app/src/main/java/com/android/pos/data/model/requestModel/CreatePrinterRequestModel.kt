@@ -4,6 +4,7 @@ import com.google.gson.annotations.SerializedName
 
 data class CreatePrinterRequestModel(
     @SerializedName("id") var id: Int? = null,
+    @SerializedName("terminal_id")var terminalId:Int?=null,
     @SerializedName("name") var name: String? = null,
     @SerializedName("mac_address") var macAddress: String? = null,
     @SerializedName("modal_name") var modalName: String? = null,

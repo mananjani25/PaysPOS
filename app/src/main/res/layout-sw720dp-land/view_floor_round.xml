@@ -77,7 +77,20 @@
                     android:textColor="@color/black"
                     android:textSize="@dimen/_5mdpi" />
             </LinearLayout>
-
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tv_customername"
+                    style="@style/CustomFontBold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text=""
+                    android:visibility="gone"
+                    android:layout_gravity="center"
+                    android:textColor="@color/black"
+                    android:textSize="@dimen/_5mdpi" />
+            </LinearLayout>
         </LinearLayout>
     </LinearLayout>
 

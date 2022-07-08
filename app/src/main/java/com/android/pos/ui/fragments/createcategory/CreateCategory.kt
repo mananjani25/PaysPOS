@@ -20,6 +20,7 @@ import com.android.pos.data.remote.Constants.KEY
 import com.android.pos.databinding.CreateCategoryActivityBinding
 import com.android.pos.ui.adapter.CategoryListItemAdapter
 import com.android.pos.utils.AlertUtils
+import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.extensions.liveSnackBar
 import com.android.pos.utils.statusUtils.Status
@@ -112,6 +113,7 @@ class CreateCategory : Fragment() {
             onSubmitBack()
         }
         binding.ilImage.relImage.setOnClickListener {
+            if (MethodUtils.isDoubleClick()) return@setOnClickListener
             openDialog()
         }
     }

@@ -11,6 +11,7 @@ import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.databinding.FragmentForgotPasswordBinding
 import com.android.pos.utils.AlertUtils
+import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.extensions.liveSnackBar
 import com.google.android.material.snackbar.Snackbar
@@ -40,7 +41,10 @@ class ForgotPasswordFragment : Fragment() {
         setupSnackbar()
         observeShowProgress()
         navigate()
-
+        binding.tvSubmit.setOnClickListener {
+            if (MethodUtils.isDoubleClick()) return@setOnClickListener
+            viewModel.submit()
+        }
         return binding.root
     }
 
@@ -67,9 +71,8 @@ class ForgotPasswordFragment : Fragment() {
 
     private fun navigate() {
 
-        viewModel.data.observe(viewLifecycleOwner, { event ->
+        viewModel.data.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
-
 
                 AlertUtils.showCustomAlertWithListenerWithOK(
                     requireContext(), it
@@ -79,7 +82,7 @@ class ForgotPasswordFragment : Fragment() {
 
 
             }
-        })
+        }
 
     }
 
