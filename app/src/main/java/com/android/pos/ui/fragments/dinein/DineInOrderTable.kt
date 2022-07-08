@@ -828,10 +828,11 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
         val adapterList = dineInTableAdapter.getList()
         cartList = getCartModel(adapterList.toCollection(arrayListOf()))
+        Log.d(TAG, "addGuestToOrder: "+Gson().toJson(cartList))
         var existing_count = cartList?.dineInList!!.size - 1
         var existinglist: ArrayList<DineInModel> = arrayListOf()
         existinglist.addAll(cartList?.dineInList!!.toMutableList())
-        Log.d(TAG, "addGuestToOrder: " + existinglist.size)
+        Log.d(TAG, "addGuestToOrder size: " + existinglist.size)
         val dineInList: java.util.ArrayList<DineInModel> = arrayListOf()
         if (existinglist.isNotEmpty()) {
             for (i in 1..count) {
@@ -851,9 +852,10 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
         existinglist.addAll(dineInList)
         cartList?.dineInList = existinglist.toList()
+        Log.d(TAG, "addGuestToOrder size: " + cartList!!.dineInList?.size)
         Log.d(TAG, "addGuestToOrder: " + Gson().toJson(cartList?.dineInList))
         val request = viewModel.updateOrderRequest(cartList!!)
-//        orderId?.let { viewModel.updateOrder(it, request) }
+        orderId?.let { viewModel.updateOrder(it, request) }
     }
 
     private fun getTotalTaxBirfurcation(item: TbItem, itemtype: TaxData): Double {
@@ -2490,8 +2492,130 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         }
 
     }
+    fun getTaxFromTotalPrice(
+        orderItemTaxe: TaxData,
+        totalPrice: Double,
+        item: TbItem
+    ): Double {
+        var totaltaxtemp = 0.0
 
 
+        totaltaxtemp += if (orderItemTaxe.taxType == "Percentage") {
+            if (totalPrice < 0.0) {
+
+                String.format("%.2f", 0.00)
+                    .toDouble()
+            } else {
+                val itemTaxPrice =
+                    (orderItemTaxe.rate * totalPrice) / 100
+                Log.e("itemTaxPrice", "" + itemTaxPrice)
+                String.format("%.2f", itemTaxPrice)
+                    .toDouble()
+            }
+
+        } else {
+            Log.d("yash", "taxCalculation: " + orderItemTaxe.taxType)
+            if (totalPrice <= 0.0) {
+                String.format("%.2f", 0.00)
+                    .toDouble()
+            } else {
+                String.format("%.2f", orderItemTaxe.rate * item.quantity)
+                    .toDouble()
+            }
+        }
+        return totaltaxtemp
+    }
+
+    private fun getTaxBirfucationList(orderItems: List<TbItem>): ArrayList<TaxData> {
+        var taxListDynamic: ArrayList<TaxData> = arrayListOf()
+        if (orderItems.isNotEmpty()) {
+            orderItems.forEach { orderItem ->
+                var totalPrice = orderItem.price * orderItem.quantity
+                orderItem.modifiers.forEach { orderItemModifier ->
+                    totalPrice += orderItemModifier.price * orderItemModifier.itemQuantity
+                }
+                Log.d(TAG, "navigate: itemPrice : $totalPrice")
+                var totaltaxtemp = 0.0
+                orderItem.taxes!!.forEach { orderItemTaxe ->
+                    if (taxListDynamic?.isNotEmpty() == true) {
+                        var found = -1
+                        taxListDynamic.forEachIndexed { index, taxData ->
+                            if (taxData.orderTaxId == orderItemTaxe.orderTaxId) {
+                                found = index
+                                return@forEachIndexed
+                            }
+                        }
+                        if (found == -1) {
+                            var taxData: TaxData = TaxData(
+                                orderItemTaxe.createdAt,
+                                orderItemTaxe.orderTaxId!!,
+                                0,
+                                orderItemTaxe.name,
+                                orderItemTaxe.rate,
+                                orderItemTaxe.taxType,
+                                orderItemTaxe.updatedAt,
+                                true,
+                                orderItemTaxe.isDefault,
+                                false,
+                                "",
+                                orderItemTaxe.itemIds,
+                                orderItemTaxe.orderTaxId,
+                                false,
+                                getTaxFromTotalPrice(
+                                    orderItemTaxe,
+                                    totalPrice,
+                                    orderItem
+                                ),
+                                totalPrice
+                            )
+                            taxListDynamic?.add(taxData)
+                        } else {
+                            taxListDynamic!![found].totalTaxTypePrice =
+                                taxListDynamic!![found].totalTaxTypePrice + getTaxFromTotalPrice(
+                                    orderItemTaxe,
+                                    totalPrice,
+                                    orderItem
+                                )
+                            taxListDynamic!![found].subTotalAmount =
+                                taxListDynamic!![found].subTotalAmount + totalPrice
+                        }
+                        Log.d(TAG, "found : " + found)
+                    } else {
+                        var taxData: TaxData = TaxData(
+                            orderItemTaxe.createdAt,
+                            orderItemTaxe.orderTaxId!!,
+                            0,
+                            orderItemTaxe.name,
+                            orderItemTaxe.rate,
+                            orderItemTaxe.taxType,
+                            orderItemTaxe.updatedAt,
+                            true,
+                            orderItemTaxe.isDefault,
+                            false,
+                            "",
+                            orderItemTaxe.itemIds,
+                            orderItemTaxe.orderTaxId,
+                            false,
+                            getTaxFromTotalPrice(
+                                orderItemTaxe,
+                                totalPrice,
+                                orderItem
+                            ),
+                            totalPrice
+                        )
+                        taxListDynamic.add(taxData)
+                    }
+
+
+                    Log.d(TAG, "navigate: " + totaltaxtemp)
+                }
+
+            }
+
+            Log.d(TAG, "navigate: list " + Gson().toJson(taxListDynamic))
+        }
+        return taxListDynamic
+    }
     fun getCartModel(list: ArrayList<DineInModel>): CartModel {
         var model = CartModel()
         var listItem: ArrayList<TbItem> = arrayListOf()
@@ -2542,10 +2666,11 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         model.dineInList = newDineInList
         model.items = listItem
         model.discountPrice = list[0].orderDiscount
-        model.serviceCharge = serviceChargeList
+        model.serviceCharge = list[0].serviceChargeList
         model.employeeID = prefProvider.getValueInt(EMPLOYEE_ID, 0)
         model.locationId = prefProvider.getValueInt(LOCATION_ID, 0)
         model.terminalId = prefProvider.getValueInt(TERMINAL_ID, 0)
+        model.taxlistDynamic = getTaxBirfucationList(listItem)
 
 
         return model

@@ -27,7 +27,7 @@ import com.android.pos.utils.statusUtils.Resource
 import com.android.pos.utils.statusUtils.Status
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
-import java.util.ArrayList
+import java.util.*
 import javax.inject.Inject
 
 @HiltViewModel
@@ -340,9 +340,50 @@ class DineInOrderTableViewModel @Inject constructor(
 
 
     }
+    fun randomOfflineId(): String {
+
+        val locationId = prefProvider.getValueInt(Constants.LOCATION_ID, -1).toString()
+        val timestamp = System.currentTimeMillis().toString()
+        val ss = locationId + timestamp.takeLast(4)
+        val reqLent = 12 - ss.length
+        val Alphabet = getSaltString(reqLent)
+        val timeStampFinal = Alphabet + ss
+        Log.e("timeStampFinal", timeStampFinal)
+
+        return timeStampFinal
+    }
+    protected open fun getSaltString(reqLent: Int): String? {
+        val SALTCHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"
+        val salt = StringBuilder()
+        val rnd = Random()
+        while (salt.length < reqLent) { // length of the random string.
+            val index = (rnd.nextFloat() * SALTCHARS.length).toInt()
+            salt.append(SALTCHARS[index])
+        }
+        return salt.toString()
+    }
     fun updateOrderRequest(cartModel: CartModel): OrderRequestModel {
         val orderModel: OrderAttributeRequestModel = OrderAttributeRequestModel()
-        Log.e(TAG, "getCartmodelId  ${cartModel.orderId}")
+        orderModel.apply {
+            date = TimeFormatUtils.getCurrentDate()
+            employeeId = prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
+            locationId = prefProvider.getValueInt(Constants.LOCATION_ID, 1)
+            terminalId = prefProvider.getValueInt(Constants.TERMINAL_ID, 0)
+            note = ""
+            openOrderType = "DineIn"
+            orderTypeId = 2
+            paymentStatus = 1
+            subTotal = 0.0
+            totalAmount = 0.0
+            totalDiscount = 0.0
+            totalServiceCharges = 0.0
+            totalTaxAmount = 0.0
+            totalTips = 0.0
+            cash_discount_or_surcharge = 0.0
+            cash_discount_type = ""
+            offlineId = randomOfflineId()
+        }
+            Log.e(TAG, "getCartmodelId  ${cartModel.orderId}")
         orderModel.apply {
             guestsAttributes = getGuestsAttributes(cartModel)
         }
