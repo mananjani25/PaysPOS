@@ -4708,6 +4708,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             PrintSunmiUtils.fontSizeInner(customerSettingModel.fonts)
             SunmiPrintHelper.getInstance().initPrinter()
 
+            if (customerSettingModel.showOrderIdTop) {
+                PrintSunmiUtils.headerText("OrderID:" + getDineInOrderDetails?.id)
+                SunmiPrintHelper.getInstance().lineWrap(1)
+            }
+
             if (customerSettingModel.showVenueLogo && prefProvider.getValue(VENUE_LOGO, "")
                     .isNotEmpty()
             ) {
@@ -4732,9 +4737,6 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
             if (customerSettingModel.fonts == LARGE) {
 
-                if (customerSettingModel.showOrderIdTop) {
-                    PrintSunmiUtils.normalText("OrderID:" + getDineInOrderDetails?.id)
-                }
 
                 PrintSunmiUtils.normalText(
                     "ReceiptID:" + if (getDineInOrderDetails?.offlineId?.isEmpty() == true) {
@@ -4779,25 +4781,13 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             } else {
 
 
-                val str = padLine(
-                    if (customerSettingModel.showOrderIdTop) {
-                        "OrderID:" + getDineInOrderDetails?.id
-                    } else {
-                        ""
-                    },
+                PrintSunmiUtils.normalText(
                     "ReceiptID:" + if (getDineInOrderDetails?.offlineId?.isEmpty() == true) {
                         "ENTJKOIJH8745"
                     } else {
                         getDineInOrderDetails?.offlineId
-                    },
-                    if (customerSettingModel.fonts == LARGE) {
-                        23
-                    } else {
-                        48
                     }
-                ).toString().trim()
-
-                PrintSunmiUtils.normalText(str)
+                )
 
                 if (customerSettingModel.showTeam) {
 
@@ -5513,14 +5503,18 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
         pd.show()
 
-        if (customerReceiptPrinters.name.startsWith("CloudPrint", true)) {
+        if (customerReceiptPrinters.name.startsWith(SUNMI_PRINTER, true)) {
 
             customerReceiptPrinters.ipAddress?.let { sunmiPrinterInit(it) }
 
-        } else if (customerReceiptPrinters.name.startsWith("CloudPrint", true)) {
+        } else if (customerReceiptPrinters.name.startsWith(SUNMI_INNER_PRINTER, true)) {
 
             SunmiPrintHelper.getInstance().initSunmiPrinterService(requireContext())
-            setService1()
+            viewLifecycleOwner.lifecycleScope.launch {
+                delay(100)
+                setService1()
+            }
+
 
         } else {
 
@@ -7013,7 +7007,10 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         } else if (data.name.startsWith(SUNMI_INNER_PRINTER, true)) {
 
             SunmiPrintHelper.getInstance().initSunmiPrinterService(requireContext())
-            setService2()
+            viewLifecycleOwner.lifecycleScope.launch {
+                delay(200)
+                setService2()
+            }
 
         } else {
 
@@ -8966,6 +8963,13 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
             SunmiPrintHelper.getInstance().initPrinter()
 
+
+            if (customerSettingModel.showOrderIdTop) {
+
+                PrintSunmiUtils.headerText("OrderID:" + receiptModel?.order?.id)
+                SunmiPrintHelper.getInstance().lineWrap(1)
+            }
+
             Log.e(TAG, "getVanueLogo:  ${prefProvider.getValue(VENUE_LOGO, "")}")
             if (customerSettingModel.showVenueLogo && prefProvider.getValue(VENUE_LOGO, "")
                     .isNotEmpty()
@@ -9003,11 +9007,6 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
             if (customerSettingModel.fonts == LARGE) {
 
-                if (customerSettingModel.showOrderIdTop) {
-
-                    PrintSunmiUtils.normalText("OrderID:" + receiptModel?.order?.id)
-
-                }
 
                 PrintSunmiUtils.normalText("ReceiptID:" + receiptModel?.order?.offlineId)
 
@@ -9044,20 +9043,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
 
                 }
-            } else {
+            }
+            else {
 
 
-                val str = padLine(
-                    if (customerSettingModel.showOrderIdTop) {
-                        "OrderID:" + receiptModel?.order?.id
-                    } else {
-                        ""
-                    },
-                    "ReceiptID:" + receiptModel?.order?.offlineId?.trim(),
-                    if (customerSettingModel.fonts == LARGE) 23 else 48
-                ).toString().trim()
-
-                PrintSunmiUtils.normalText(str)
+                PrintSunmiUtils.normalText("ReceiptID:" + receiptModel?.order?.offlineId?.trim())
 
                 if (customerSettingModel.showTeam) {
 
@@ -9278,7 +9268,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             var totalfamount = 0.0
 
             if (receiptModel?.order?.totalAmount != null) {
-                SunmiPrinterApi.getInstance().lineWrap(1)
+                SunmiPrintHelper.getInstance().lineWrap(1)
 
                 if (paymentType == "Cash") {
 
@@ -9674,7 +9664,6 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 Log.e("SunmiPrintHelpe1r", "isBlueToothPrinter")
 
                 generateKitchenReceiptSunmiInner()
-
 
 
             }

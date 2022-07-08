@@ -2494,6 +2494,10 @@ class TransactionDetailsFragment : Fragment() {
 
             SunmiPrintHelper.getInstance().initPrinter()
 
+            if (customerSettingModel.showOrderIdTop) {
+                PrintSunmiUtils.headerText("OrderID:" + paymentDetailsResponse.data.order.id)
+            }
+
             if (customerSettingModel.showVenueLogo && prefProvider.getValue(
                     Constants.VENUE_LOGO,
                     ""
@@ -2523,9 +2527,7 @@ class TransactionDetailsFragment : Fragment() {
 
             if (customerSettingModel.fonts == Constants.LARGE) {
 
-                if (customerSettingModel.showOrderIdTop) {
-                    PrintSunmiUtils.normalText("OrderID:" + paymentDetailsResponse.data.order.id)
-                }
+
 
                 PrintSunmiUtils.normalText("ReceiptID:" + paymentDetailsResponse.data.order.offline_id)
 
@@ -2560,19 +2562,7 @@ class TransactionDetailsFragment : Fragment() {
                 }
             } else {
 
-                val str = padLine(
-                    if (customerSettingModel.showOrderIdTop) {
-                        "OrderID:" + paymentDetailsResponse?.data.order.id
-                    } else {
-                        ""
-                    },
-                    "ReceiptID:" + paymentDetailsResponse?.data.order.offline_id,
-
-                    PrintSunmiUtils.lineChar()
-
-                ).toString().trim()
-
-                PrintSunmiUtils.normalText(str.trim())
+                PrintSunmiUtils.normalText("ReceiptID:" + paymentDetailsResponse?.data.order.offline_id)
 
                 if (customerSettingModel.showTeam) {
 
