@@ -289,7 +289,6 @@ fun addPaymentDetailsTwoData(keyValue: KeyValue) {
 }
 
 
-
 fun addPaymentDetailsTwoDataInner(keyValue: KeyValue) {
 
     PrintSunmiUtils.normalText(
@@ -1280,6 +1279,34 @@ fun addOrdersForKitchenOnlineOrder(
 }
 
 fun addOrdersForKitchenDineIn(
+
+    list: ArrayList<TbItem>
+) {
+
+    list.forEach { obj ->
+
+
+        PrintSunmiUtils.orderTime(obj.itemQuantity.toString() + " " + obj.name)
+
+        if (obj.modifiers.isNotEmpty()) {
+            for (j in 0 until obj.modifiers.size) {
+                val modifierObj = obj.modifiers.get(j)
+
+                PrintSunmiUtils.orderTime("  " + modifierObj.name)
+
+
+            }
+        }
+        if (obj.note.isNotEmpty()) {
+
+            PrintSunmiUtils.orderTime("  Note:" + obj.note)
+
+        }
+    }
+
+}
+
+fun addOrdersForKitchenDineInInner(
 
     list: ArrayList<TbItem>
 ) {

@@ -19,6 +19,7 @@ import android.view.*
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -52,6 +53,8 @@ import com.sunmi.externalprinterlibrary.api.ConnectCallback
 import com.sunmi.externalprinterlibrary.api.SunmiPrinter
 import com.sunmi.externalprinterlibrary.api.SunmiPrinterApi
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -995,7 +998,10 @@ class ActiveOrderFragment(
         } else if (customerReceiptPrinters.name.startsWith(SUNMI_INNER_PRINTER, true)) {
 
             SunmiPrintHelper.getInstance().initSunmiPrinterService(requireContext())
-            setService(customerReceiptPrinters, type, order, printType)
+            viewLifecycleOwner.lifecycleScope.launch {
+                delay(100)
+                setService(customerReceiptPrinters, type, order, printType)
+            }
 
 
         } else {
@@ -2671,6 +2677,13 @@ class ActiveOrderFragment(
 
             PrintSunmiUtils.fontSizeInner(customerSettingModel.fonts)
 
+            SunmiPrintHelper.getInstance().initPrinter()
+            if (customerSettingModel.showOrderIdTop) {
+                PrintSunmiUtils.headerText("OrderID:" + receiptModel?.id)
+                SunmiPrintHelper.getInstance().lineWrap(1)
+            }
+
+
             if (customerSettingModel.showVenueLogo && prefProvider.getValue(
                     Constants.VENUE_LOGO,
                     ""
@@ -2715,9 +2728,6 @@ class ActiveOrderFragment(
 
             if (customerSettingModel.fonts == Constants.LARGE) {
 
-                if (customerSettingModel.showOrderIdTop) {
-                    PrintSunmiUtils.normalText("OrderID:" + receiptModel?.id)
-                }
 
                 PrintSunmiUtils.normalText("ReceiptID:" + receiptModel?.offlineId)
 
@@ -2757,22 +2767,7 @@ class ActiveOrderFragment(
                 }
             } else {
 
-
-                val str = padLine(
-                    if (customerSettingModel.showOrderIdTop) {
-                        "OrderID:" + receiptModel?.id
-                    } else {
-                        ""
-                    },
-                    "ReceiptID:" + receiptModel?.offlineId,
-                    if (customerSettingModel.fonts == Constants.LARGE) {
-                        23
-                    } else {
-                        48
-                    }
-                ).toString().trim()
-
-                PrintSunmiUtils.normalText(str)
+                PrintSunmiUtils.normalText("ReceiptID:" + receiptModel?.offlineId)
                 if (customerSettingModel.showTeam) {
 
 
