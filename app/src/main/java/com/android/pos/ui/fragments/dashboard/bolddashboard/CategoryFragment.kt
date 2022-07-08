@@ -158,13 +158,16 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
                             searchCategory()
 
 
-                            itemAdapter.addList(itemList1)
                             if (list.isNotEmpty()) {
                                 if (prefProvider.getValueInt(Constants.CAT_ID_SELECTED, 0) == 0) {
+                                    Log.e(TAG, "GOTZERO")
+                                    itemAdapter.addList(itemList1)
                                     binding.rvCategoryParent.scrollToPosition(0)
+
                                 } else {
                                     changePositionOfCate()
                                 }
+
 
                             }
 
@@ -188,7 +191,7 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
     private fun changePositionOfCate() {
         var tabPos = -1
         val tabList = categoryParentAdapter.getList()
-        Log.e(TAG, "tabList  ${Gson().toJson(tabList)}")
+        Log.e(TAG, "tabListGET  ${Gson().toJson(tabList)}")
 
         var posParent = -1
 
@@ -205,7 +208,7 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
                     Log.e(TAG, "indexCategory  ${index}")
                     it.isSelected = true
                     tabPos = index
-                    prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
+                    //prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
                     return@forEachIndexed
 
 
@@ -223,8 +226,8 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
         }
         Log.e(TAG, "selectedTabList  ${Gson().toJson(tabList)}")
         var itemList: ArrayList<TbItem?> = arrayListOf()
-        Log.e(TAG, "tabPos  ${tabPos}")
-        Log.e(TAG, "posParent  ${posParent}")
+        Log.e(TAG, "tabPosGET  ${tabPos}")
+        Log.e(TAG, "posParentGET  ${posParent}")
         if (posParent == 1) {
             tabPos += 8
         }
@@ -236,11 +239,7 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
                 itemList.addAll(it1)
             }
 
-            itemAdapter.list.clear()
-            itemAdapter.list = itemList
-
-
-            itemAdapter.notifyDataSetChanged()
+            itemAdapter.addList(itemList)
 
         }
 
@@ -429,7 +428,9 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
 
                 categoryParentAdapter.list.forEachIndexed { index1, it ->
                     it.list.forEachIndexed { index, categoryTabModel ->
-                        if (index1 == categoryParentAdapter.selectedParentPos && index == categoryParentAdapter.selectedCategoryPos) {
+                        Log.e(TAG,"categoryId ${categoryTabModel.id}")
+                        Log.e(TAG,"selectedLastID ${prefProvider.getValueInt(Constants.CAT_ID_SELECTED,0)}")
+                        if (categoryTabModel.id == prefProvider.getValueInt(Constants.CAT_ID_SELECTED,0)) {
                             categoryTabModel.isSelected = true
                         } else {
                             categoryTabModel.isSelected = false
@@ -437,6 +438,7 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
                     }
                 }
                 categoryParentAdapter.notifyDataSetChanged()
+
 
                 super.onScrollStateChanged(recyclerView, newState)
             }
@@ -474,15 +476,28 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
         val categoryId =
             categoryParentAdapter.getList()[parentPosition].list[childPosition].id
 
+        prefProvider.setValueInt(Constants.CAT_ID_SELECTED, categoryId)
+
         viewModel.getItemByCategoryId(categoryId).observe(viewLifecycleOwner) {
 
             if (it.status == Status.SUCCESS) {
                 if (it.data != null && it.data.isNotEmpty()) {
+                    Log.e(TAG, "CategorySelectedata")
                     itemAdapter.setPos(-2)
                     it.data.filter {
                         it.isHide
                     }.let { it1 ->
-                        itemAdapter.addList(it1.toCollection(arrayListOf()))
+                        if (prefProvider.getValueInt(Constants.CAT_ID_SELECTED, 0) == 0) {
+                            Log.e(TAG, "GOTZERO")
+                            itemAdapter.addList(it.data.toCollection(arrayListOf()))
+                            binding.rvCategoryParent.scrollToPosition(0)
+
+                        } else {
+                            changePositionOfCate()
+                        }
+
+
+                        //itemAdapter.addList(it1.toCollection(arrayListOf()))
                         Log.d(TAG, "onCategorySelected: size" + it1.size)
                     }
                 } else {
@@ -493,6 +508,7 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
         }
 
     }
+
 
     override fun onPositionChanged(position: Int) {
         Log.e(TAG, "onPOSChanged ${position}")
