@@ -607,6 +607,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                 item.isSelectedItem = true
                 viewModel.selectedItems(item.itemId,1)
             }
+            prefProvider.setValueInt(Constants.CAT_ID_SELECTED,item.categoryId)
             Log.e(TAG, "cartListItemAddSize: ${cartList.size}")
             if (cartList.isEmpty()) {
                 viewModel.createCart(cartList)
@@ -822,6 +823,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
 
     override fun onItemUpdate(item: TbItem) {
         Log.e(TAG, "dashboardPosItem:  ${Gson().toJson(item)}")
+        prefProvider.setValueInt(Constants.CAT_ID_SELECTED,item.categoryId)
         val frag: Fragment = AddItemFragment.newInstance(item, this, cartList, true)
         loadCategoryFragment(frag)
     }

@@ -26,7 +26,7 @@ import com.android.pos.data.typeconvert.*
         GetCustomerReceiptSettingsResponse.Data::class, LoyaltyProgramsModel::class, SplitDetailListModel::class,
         CashDiscountModel::class, TbCountryList::class, TbCardReader::class, VenueDetailsResponse.Data.CancelOrderReason::class,
         DineInCartModel::class,ShiftRportConfiguration::class,TbBusinessDetails::class,TbTimeZones::class],
-    version = 2
+    version = 1
 )
 @TypeConverters(
     TypeConvertersIds::class,

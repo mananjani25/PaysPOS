@@ -192,6 +192,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
                 item.isSelectedItem = true
                 viewModel.selectedItems(item.itemId,1)
             }
+            prefProvider.setValueInt(Constants.CAT_ID_SELECTED,item.categoryId)
             var isPriceNull = true
 
             /*  item.variationsAttributes.forEach {
