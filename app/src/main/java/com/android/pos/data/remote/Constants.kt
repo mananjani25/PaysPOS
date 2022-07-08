@@ -35,6 +35,7 @@ object Constants {
     const val ONLINE_ORDER_ENABLE = "ONLINE_ORDER_ENABLE"
     const val BASE_URL_NEW = "baseUrlNew"
     const val PASSCODE = "passcode"
+    const val CAT_ID_SELECTED = "cate_id_selected"
     const val LOCATION_ID = "locationId"
     const val EMAIL = "email"
     const val USERNAME = "userName"

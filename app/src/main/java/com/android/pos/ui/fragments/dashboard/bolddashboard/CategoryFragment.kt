@@ -17,7 +17,9 @@ import com.android.pos.data.entities.TbItem
 import com.android.pos.data.model.CategoryParentModel
 import com.android.pos.data.model.CategorySearchData
 import com.android.pos.data.model.CategoryTabModel
+import com.android.pos.data.remote.Constants
 import com.android.pos.databinding.FragmentCategoryBinding
+import com.android.pos.di.PrefProvider
 import com.android.pos.ui.adapter.CategoryItemAdapter1
 import com.android.pos.ui.adapter.CategorySearchAdapter
 import com.android.pos.ui.adapter.CategoryTabAdapter1
@@ -31,6 +33,7 @@ import com.android.pos.utils.callback.ItemListner
 import com.android.pos.utils.statusUtils.Status
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteTextView?) : Fragment(),
@@ -49,6 +52,9 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
     var list: ArrayList<CategoryParentModel> = arrayListOf()
     lateinit var itemListner: ItemListner
     private val TAG = "CategoryFragment"
+
+    @Inject
+    lateinit var prefProvider: PrefProvider
 
     companion object {
         fun newInstance(callback: ItemListner): CategoryFragment {
@@ -154,7 +160,11 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
 
                             itemAdapter.addList(itemList1)
                             if (list.isNotEmpty()) {
-                                binding.rvCategoryParent.scrollToPosition(0)
+                                if (prefProvider.getValueInt(Constants.CAT_ID_SELECTED, 0) == 0) {
+                                    binding.rvCategoryParent.scrollToPosition(0)
+                                } else {
+                                    changePositionOfCate()
+                                }
 
                             }
 
@@ -171,6 +181,67 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
                 Status.LOADING -> ProgressUtils.showProgressDialog(requireActivity())
 
             }
+        }
+
+    }
+
+    private fun changePositionOfCate() {
+        var tabPos = -1
+        val tabList = categoryParentAdapter.getList()
+        Log.e(TAG, "tabList  ${Gson().toJson(tabList)}")
+
+        var posParent = -1
+
+        Log.d(
+            TAG,
+            "changePositionOfCate: " + prefProvider.getValueInt(Constants.CAT_ID_SELECTED, 0)
+        )
+        for (i in 0 until tabList.size) {
+            posParent++
+
+            tabList[i].list.forEachIndexed { index, it ->
+
+                if (it.id == prefProvider.getValueInt(Constants.CAT_ID_SELECTED, 0)) {
+                    Log.e(TAG, "indexCategory  ${index}")
+                    it.isSelected = true
+                    tabPos = index
+                    prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
+                    return@forEachIndexed
+
+
+                } else {
+                    it.isSelected = false
+                }
+
+            }
+
+            if (tabPos != -1) {
+                break
+
+            }
+
+        }
+        Log.e(TAG, "selectedTabList  ${Gson().toJson(tabList)}")
+        var itemList: ArrayList<TbItem?> = arrayListOf()
+        Log.e(TAG, "tabPos  ${tabPos}")
+        Log.e(TAG, "posParent  ${posParent}")
+        if (posParent == 1) {
+            tabPos += 8
+        }
+
+        if (tabPos != -1) {
+            categoryList1[tabPos].inventoryLists?.filter {
+                it!!.isHide
+            }?.let { it1 ->
+                itemList.addAll(it1)
+            }
+
+            itemAdapter.list.clear()
+            itemAdapter.list = itemList
+
+
+            itemAdapter.notifyDataSetChanged()
+
         }
 
     }
@@ -242,6 +313,10 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
             }
 
         }
+        categoryParentAdapter.addList(tabList.toCollection(arrayListOf()))
+        binding.rvCategoryParent.scrollToPosition(posParent)
+        categoryParentAdapter.notifyDataSetChanged()
+
         /*  tabList.forEach {
               posParent++
 
