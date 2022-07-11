@@ -1014,7 +1014,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
     private fun observeShowProgress() {
 
-        viewModel.showProgress.observe(viewLifecycleOwner, { event ->
+        viewModel.showProgress.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
                 Log.e(TAG, "ShowProgress ${it}")
                 if (it) {
@@ -1028,19 +1028,14 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     }
                 }
             }
-        })
+        }
 
-        viewModel.msgText.observe(viewLifecycleOwner, { event ->
+        viewModel.msgText.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
                 AlertUtils.showCustomAlert(requireContext(), it)
-
-
                 dineInTableAdapter.updateStatus(clickedPos, isFireAll)
-
-
-                // orderId?.let { it1 -> viewModel.apiCallOrderDetails(it1) }
             }
-        })
+        }
 
 
     }
@@ -1050,145 +1045,6 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
     }
 
-    /* override fun onGuestPay(dineInModel: DineInModel, position: Int) {
-         Log.e(TAG, "dineInModelPay:  ${Gson().toJson(dineInModel)}")
-
-
-         val total = dineInModel.items
-         var subTotal = 0.0
-         var totalTax = 0.0
-         if (total.isNotEmpty()) {
-             total.forEach {
-                 subTotal += it.price * it.itemQuantity
-                 it.taxes?.forEach { tax ->
-                     totalTax += tax.rate
-                 }
-             }
-             subTotal += dineInTableAdapter.getList().get(0).guestDividedAmt
-
-             var total = subTotal + totalTax
-             Log.e(TAG, "total:  ${total}")
-
-             var model = GuestPaymentRequest(
-                 PaymentAttributes().apply {
-                     amount = total
-                     cardName = ""
-                     cardNumber = ""
-                     cardType = ""
-                     cashDiscount = 0.0
-                     cashDiscountFee = 0.0
-                     employeeId = prefProvider.getValueInt(EMPLOYEE_ID, 0)
-                     taxAmount = totalTax
-                     subTotalPrice = subTotal
-                     offlineId = randomOfflineId()
-                     payableType = "GuestTab"
-                     paymentType = "Cash"
-                     transactionId = randomOfflineId()
-                     terminalId = prefProvider.getValueInt(TERMINAL_ID, 0)
-
-                 }
-             )
-
-             // dineInModel.id?.let { viewModel.payByGuest(it, model) }
-
-             Log.e(TAG, "DineTablecartList:  ${Gson().toJson(cartList)}")
-             Log.e(TAG, "DineTabletotalPrice:   ${totalPrice}")
-             Log.e(TAG, "DineTabletotalTax: ${totalTax}")
-
-             val bundle = Bundle()
-             bundle.putInt("id", dineInModel.id!!)
-             bundle.putParcelable("cartList", cartList)
-             bundle.putDouble("totalPrice", total)
-             bundle.putDouble("subTotalPrice", subTotal)
-             bundle.putDouble("totalTax", totalTax)
-             bundle.putParcelable("model", model)
-             bundle.putParcelable("floorPlan", floorPlanModel)
-
-             val list = dineInTableAdapter.getList()
-
-             var wholeTableAmt = 0.0
-             for (i in 0 until list.size) {
-                 list.get(i).items.forEach {
-                     wholeTableAmt += it.price * it.itemQuantity
-                     if (it.modifiers.isNotEmpty()) {
-                         it.modifiers.forEach {
-                             wholeTableAmt += it.price * it.itemQuantity
-                         }
-                     }
-
-                 }
-
-             }
-
-
-             var totalPaid = 0.0
-
-             var wtAmt: Double = 0.0
-             list.get(0).items.forEach {
-                 wtAmt += it.price * it.itemQuantity
-                 if (it.modifiers.isNotEmpty()) {
-                     it.modifiers.forEach {
-                         wtAmt += it.price * it.itemQuantity
-                     }
-                 }
-             }
-
-
-             Log.e(TAG, " ComplexResponse  ${Gson().toJson(list)}")
-
-             var dividedAmt: Double =
-                 wtAmt / (list.size - 1)
-             Log.e(TAG, "NEwdividedAmt ${dividedAmt}")
-             for (i in 0 until list.size) {
-                 list.get(i).items.forEach {
-                     if (it.isPaid) {
-                         totalPaid += it.price * it.itemQuantity
-                         if (it.modifiers.isNotEmpty()) {
-                             it.modifiers.forEach {
-
-                                 totalPaid += it.price * it.itemQuantity
-                             }
-                         }
-
-                         Log.e(TAG, "totalPaidNew:  ${totalPaid}")
-                     }
-
-                     Log.e(TAG, "isPaidAmt ${list.get(i).isPaid}")
-
-
-                 }
-                 if (list.get(i).isPaid) {
-                     totalPaid += dividedAmt
-                 }
-             }
-
-             totalPaid = totalPaid
-             wholeTableAmt = wholeTableAmt
-             total = total
-
-             Log.e(TAG, "totalPaid  ${totalPaid}")
-             Log.e(TAG, "wholeTableAmtGetD  ${wholeTableAmt}")
-
-             Log.e(TAG, "itemPayment:  ${total}")
-
-             if ((wholeTableAmt - totalPaid) == total) {
-                 bundle.putBoolean("isLastPayment", true)
-             } else {
-                 bundle.putBoolean("isLastPayment", false)
-             }
-
-             findNavController().navigate(
-                 R.id.action_dineInOrderTable_to_payByGuestDialog,
-                 bundle
-             )
-             *//* val list = dineInTableAdapter.getList()
-             list[position].isPaid = true
-             dineInTableAdapter.setList(list.toCollection(arrayListOf()))
- *//*
-
-        }
-
-    }*/
 
     override fun onGuestPay(
         dineInModel: DineInModel,
@@ -2898,43 +2754,31 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         })
 
     private fun getCustomerReceiptSettings() {
-        viewModel.getCustomerReceiptSettings().observe(viewLifecycleOwner, {
+        viewModel.getCustomerReceiptSettings().observe(viewLifecycleOwner) {
             if (it != null) {
                 customerSettingModel = it
-
-
             }
-
-        })
+        }
 
     }
 
     private fun getCustomerPrinterList() {
-        viewModel.getCustomerPrinterList().observe(viewLifecycleOwner, {
+        viewModel.getCustomerPrinterList().observe(viewLifecycleOwner) {
             when (it.status) {
                 Status.SUCCESS -> {
                     ProgressUtils.dismissProgressDialog()
                     if (it.data != null) {
                         customerList = it.data
-
-
                     }
-
-
                 }
                 Status.ERROR -> {
-
                     ProgressUtils.dismissProgressDialog()
-
                 }
                 Status.LOADING -> {
                     ProgressUtils.showProgressDialog(requireActivity())
-
                 }
-
             }
-
-        })
+        }
     }
 
     private fun getCustomerPrinters(paymentType: String) {
@@ -2997,7 +2841,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
     ) {
 
 
-        if (customerReceiptPrinters.name.startsWith("CloudPrint", true)) {
+        if (customerReceiptPrinters.name.startsWith(SUNMI_PRINTER, true)) {
 
             SunmiPrinterApi.getInstance()
                 .setPrinter(SunmiPrinter.SunmiBlueToothPrinter, customerReceiptPrinters.ipAddress)
@@ -3065,7 +2909,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 }
             }
 
-        } else if (customerReceiptPrinters.name.startsWith(SUNMI_INNER_PRINTER, true)) {
+        }
+        else if (customerReceiptPrinters.name.startsWith(SUNMI_INNER_PRINTER, true)) {
 
 
             SunmiPrintHelper.getInstance().initSunmiPrinterService(requireContext())
