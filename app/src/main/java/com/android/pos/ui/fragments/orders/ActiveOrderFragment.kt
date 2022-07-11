@@ -2719,7 +2719,7 @@ class ActiveOrderFragment(
                 || receiptModel?.orderType?.lowercase() == Constants.OPEN_ORDER.lowercase()
             ) {
 
-                PrintSunmiUtils.headerText(receiptModel?.deliveryType)
+             //   PrintSunmiUtils.headerText(receiptModel?.deliveryType)
 
             }
 

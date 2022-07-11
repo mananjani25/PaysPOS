@@ -6023,6 +6023,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
         try {
             PrintSunmiUtils.fontSize(customerSettingModel.fonts)
+
+
             if (customerSettingModel.showVenueLogo && prefProvider.getValue(
                     Constants.VENUE_LOGO,
                     ""

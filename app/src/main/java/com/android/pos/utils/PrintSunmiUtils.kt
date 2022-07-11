@@ -456,7 +456,7 @@ class PrintSunmiUtils {
 
         fun qrCodeInner(value: String) {
             SunmiPrintHelper.getInstance().setAlign(1)
-            SunmiPrintHelper.getInstance().printQr(value, 10, 0)
+            SunmiPrintHelper.getInstance().printQr(value, 7, 0)
         }
 
         fun cutPaper() {
