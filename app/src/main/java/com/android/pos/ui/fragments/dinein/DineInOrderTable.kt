@@ -169,6 +169,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         observeQueueCreated()
 
         observeTipsList()
+        observeAddGuest()
 
         navigateDineInOrderNew()
         observeUnMergeTable()
@@ -180,15 +181,14 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             addGuestToOrder(count)
         }
         return binding.root
+    }
+
+    private fun observeAddGuest() {
         viewModel.updateOrder.observe(viewLifecycleOwner) { event ->
-            event.getContentIfNotHandled()?.let {
-                AlertUtils.showCustomAlertWithListenerWithOK(
-                    requireActivity(), it.toString()
-                ) { _, _ ->
-                    findNavController().navigate(
-                        R.id.dineInOrderTable
-                    )
-                }
+            AlertUtils.showCustomAlertWithListenerWithOK(
+                requireContext(), event.getContentIfNotHandled().toString()
+            ) { _, _ ->
+                orderId?.let { viewModel.apiCallOrderDetails(it) }
             }
         }
     }
@@ -832,7 +832,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
         val adapterList = dineInTableAdapter.getList()
         cartList = getCartModel(adapterList.toCollection(arrayListOf()))
-        Log.d(TAG, "addGuestToOrder: "+Gson().toJson(cartList))
+        Log.d(TAG, "addGuestToOrder: " + Gson().toJson(cartList))
         var existing_count = cartList?.dineInList!!.size - 1
         var existinglist: ArrayList<DineInModel> = arrayListOf()
         existinglist.addAll(cartList?.dineInList!!.toMutableList())
@@ -2481,8 +2481,10 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
                     Log.e(TAG, "notPayAnyAmount  ${notPayAnyAmount}")
                     if (notPayAnyAmount) {
+                        binding.txtAddguest.visibility = View.GONE
                         binding.txtEditOrder.visibility = View.GONE
                     } else {
+                        binding.txtAddguest.visibility = View.VISIBLE
                         binding.txtEditOrder.visibility = View.VISIBLE
                     }
 
@@ -2496,6 +2498,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         }
 
     }
+
     fun getTaxFromTotalPrice(
         orderItemTaxe: TaxData,
         totalPrice: Double,
@@ -2620,6 +2623,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         }
         return taxListDynamic
     }
+
     fun getCartModel(list: ArrayList<DineInModel>): CartModel {
         var model = CartModel()
         var listItem: ArrayList<TbItem> = arrayListOf()

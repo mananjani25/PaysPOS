@@ -1382,26 +1382,21 @@ class CartFragment(
     }
 
     fun addGuestToOrder(count: Int) {
-        numOfGuest += count
+        Log.d(TAG, "addGuestToOrder: " + Gson().toJson(cartlist[0].dineInList))
+        var existing_count = cartlist[0].dineInList!!.size - 1
+        var existinglist: ArrayList<DineInModel> = arrayListOf()
+        existinglist.addAll(cartlist[0].dineInList!!.toMutableList())
+        Log.d(TAG, "addGuestToOrder size: " + existinglist.size)
         val dineInList: java.util.ArrayList<DineInModel> = arrayListOf()
-        if (cartlist[0].dineInList?.isNotEmpty() == true) {
-            dineInList.add(
-                DineInModel(
-                    0,
-                    true,
-                    0,
-                    "Whole Table",
-                    floorPlanTable = orderFloorDetails
-                )
-            )
-            for (i in 1..numOfGuest) {
+        if (existinglist.isNotEmpty()) {
+            for (i in 1..count) {
                 dineInList.add(
                     DineInModel(
                         0,
                         false,
                         0,
-                        "Guest $i",
-                        floorPlanTable = orderFloorDetails
+                        "Guest ${existing_count.plus(i)}",
+                        floorPlanTable = cartlist[0].dineInList!![0].floorPlanTable
 
                     )
                 )
@@ -1409,14 +1404,9 @@ class CartFragment(
 
         }
 
-
-        viewModel.cartLogic(
-            cartlist,
-            null,
-            Constants.ADD,
-            false,
-            dineInList = dineInList
-        )
+        existinglist.addAll(dineInList)
+        cartlist[0].dineInList = existinglist.toList()
+        viewModel.addGuestFromDashBoard(cartlist)
     }
 
     override fun onItemDelete(position: Int, itemPosition: Int, data: TbItem) {
