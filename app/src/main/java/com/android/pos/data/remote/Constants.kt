@@ -26,6 +26,8 @@ object Constants {
 
     const val SERVICECHARGE_TAKEOUT_OPENORDER = "TakeOutAndParkOrder"
     const val SERVICECHARGE_DINEIN_ORDER = "DineIn"
+    const val LOCK_SCREEN_TRANSACTION = "lock_screen_after_each_transaction"
+    const val DINEIN_FLOORPLAN_SHOW_TABLENAME = "dine_floorplan_show_tablename"
 
     const val PRINTER_QUEUE_DATA = "Printer_Queue_Data"
     const val PRINTER_QUEUE_DATA_RECEIVED = "Printer_Queue_Data_Received"
@@ -39,6 +41,7 @@ object Constants {
     const val ONLINE_ORDER_ENABLE = "ONLINE_ORDER_ENABLE"
     const val BASE_URL_NEW = "baseUrlNew"
     const val PASSCODE = "passcode"
+    const val CAT_ID_SELECTED = "cate_id_selected"
     const val LOCATION_ID = "locationId"
     const val EMAIL = "email"
     const val USERNAME = "userName"
@@ -195,6 +198,7 @@ object Constants {
     const val HORIZONTAL = "horizontal"
 
     const val KEY = "key"
+    const val ORDER_COMPLETED = "order_completed"
     const val MANUALSALE = "ManualSale"
     const val CUSTOMERDETAILS = "customer_details"
     const val CREATECATEGORY = "create_category"
@@ -264,6 +268,9 @@ object Constants {
     const val ORDER_COUNTS = "orders/open_orders_show_count"
     const val ONLINE_ORDER_COUNTS = "online_ordering_orders/web_orders_count"
     const val ONLINE_ORDER_NOTIFICATION_COUNT = "locations/web_ordering_count"
+    const val UPDATE_LOCK_SCREEN_PERMISSION = "locations/update_lock_screen_permission"
+
+
 
     const val ACTIVE_ORDER = "active_order"
     const val UPCOMING_ORDER = "upcoming_order"
@@ -296,6 +303,8 @@ object Constants {
     const val BUSINESS_WEBSITE = "business_website"
     const val IS_PRINTER_QUEUE_ENABLE = "is_printer_queue_enable"
     const val VENUE_LOGO = "venue_logo"
+    const val REPORT_START_TIME = "report_start_time"
+    const val REPORT_END_TIME = "report_end_time"
     const val VENUE_LOGO_URL = "venue_logo_url"
 
     const val CUSTOMER_ID = "customer_id"

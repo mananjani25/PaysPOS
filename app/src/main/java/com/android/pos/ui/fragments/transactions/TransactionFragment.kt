@@ -26,9 +26,12 @@ import com.android.pos.data.model.responseModel.MagtekOnlineOrderRefundResponse
 import com.android.pos.data.model.responseModel.VenueDetailsResponse
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.KEY
+import com.android.pos.data.remote.Constants.REPORT_END_TIME
+import com.android.pos.data.remote.Constants.REPORT_START_TIME
 import com.android.pos.data.remote.Constants.TRANSACTION_DETAIL
 import com.android.pos.databinding.FragmentTransactionBinding
 import com.android.pos.di.ApiModule1
+import com.android.pos.di.PrefProvider
 import com.android.pos.ui.activities.MainActivity
 import com.android.pos.ui.adapter.TransactionAdapter
 import com.android.pos.ui.fragments.magtek.MagtekRequestUtils
@@ -82,6 +85,9 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
 
     @Inject
     lateinit var magtekRequestUtils: MagtekRequestUtils
+
+    @Inject
+    lateinit var prefProvider: PrefProvider
 
     @Inject
     lateinit var apiModule1: ApiModule1
@@ -351,7 +357,10 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModel.setCurrentDate(myCalendar)
+        prefProvider = PrefProvider(requireActivity())
+        viewModel.setCurrentDate(
+            myCalendar
+        )
     }
 
     fun timeCalculateForStartEndTime(hour: Int, minute: Int, isStart: String): String {
@@ -976,7 +985,7 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
     private fun magtekCall(refundAmount: Double) {
         if (singleTransaction?.orderDetails?.orderType == "OnlineWebOrder") {
             val model = Gson().fromJson(
-                singleTransaction?.orderDetails?.magensaResponse,
+                singleTransaction?.magensaResponse,
                 MagtekOnlineOrderRefundResponse::class.java
             )
             val jsonArray: JsonArray?
@@ -1103,7 +1112,7 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
             }
         } else {
             val model = Gson().fromJson(
-                singleTransaction?.orderDetails?.magensaResponse,
+                singleTransaction?.magensaResponse,
                 PaymentResponse.PaymentResponseItem::class.java
             )
 

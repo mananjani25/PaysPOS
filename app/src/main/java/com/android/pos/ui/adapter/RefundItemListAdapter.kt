@@ -27,7 +27,7 @@ class RefundItemListAdapter(val viewModel: TransactionDetailsViewModel) :
     var totalDiscount: Double = 0.0
     var loyaltyAmount: Double = 0.0
     var serviceChargeList: List<TbServiceCharge> = arrayListOf()
-
+    var tipValue: Double = 0.0
     var rate_or_amount = ""
 
     fun setSelectedItemList(
@@ -57,7 +57,8 @@ class RefundItemListAdapter(val viewModel: TransactionDetailsViewModel) :
         cashDiscountType: String,
         paymentType: String,
         totalDiscount: Double,
-        loyaltyAmount: Double?
+        loyaltyAmount: Double?,
+        tipAmount: Double?
     ) {
         this.cash_discount_or_surcharge = cash_discount_or_surcharge
         this.totalDiscount = totalDiscount
@@ -70,6 +71,7 @@ class RefundItemListAdapter(val viewModel: TransactionDetailsViewModel) :
             clear()
             addAll(noteList)
         }
+        this.tipValue = tipAmount!!
         this.serviceChargeList =
             serviceCharge as List<TbServiceCharge>
         notifyDataSetChanged()
@@ -119,6 +121,8 @@ class RefundItemListAdapter(val viewModel: TransactionDetailsViewModel) :
                 "yash",
                 "bind: [" + absoluteAdapterPosition + "] orderDiscount : " + orderDiscount
             )
+
+
             loyaltyAmountPerItem = loyaltyAmount / itemCount
             Log.d(
                 "yash",
@@ -127,6 +131,8 @@ class RefundItemListAdapter(val viewModel: TransactionDetailsViewModel) :
 
             var totalItemPrice: Double = 0.0
             totalItemPrice = totalPrice(item)
+
+
 
             item.orderItemTaxes.forEach { tax ->
                 tax.taxTotalAmount.let {
@@ -146,7 +152,14 @@ class RefundItemListAdapter(val viewModel: TransactionDetailsViewModel) :
                 "bind: [$absoluteAdapterPosition] totalServiceCharge : $totalServiceCharge"
             )
 
-            totalItemPrice += (totalTax + totalServiceCharge) - orderDiscount - loyaltyAmountPerItem
+
+
+            var tip_divided = tipValue / itemCount
+            if (paymentType == "Card") {
+                totalItemPrice += (totalTax + totalServiceCharge + tip_divided) - orderDiscount - loyaltyAmountPerItem
+            } else {
+                totalItemPrice += (totalTax + totalServiceCharge) - orderDiscount - loyaltyAmountPerItem
+            }
 
 
             Log.d(

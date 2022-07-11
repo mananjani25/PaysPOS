@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingVertical="@dimen/_1sdp"
+        android:paddingStart="@dimen/_3sdp">
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/txt_name"
+            style="@style/CustomFontMediumStyle"
+            android:layout_width="0dp"
+            android:layout_weight="4"
+            android:singleLine="true"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textIsSelectable="false"
+            android:longClickable="false"
+            android:clickable="false"
+            android:layout_height="wrap_content"
+            android:text="@string/service_charge"
+            android:inputType="textCapWords"
+            android:textColor="@color/hint_color"
+            android:textSize="@dimen/_5sdp" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/txt_value"
+            style="@style/CustomFontSemiBold"
+            android:layout_width="0dp"
+            android:layout_weight="3"
+            android:layout_height="wrap_content"
+            android:text="@string/_0_00"
+            android:textIsSelectable="false"
+            android:longClickable="false"
+            android:clickable="false"
+            android:layout_gravity="end"
+            android:gravity="end"
+            android:textColor="@color/txtColor"
+            android:textSize="@dimen/_5sdp" />
+
+        <androidx.appcompat.widget.AppCompatTextView
+            android:id="@+id/txt_amount"
+            style="@style/CustomFontSemiBold"
+            android:layout_width="0dp"
+            android:layout_weight="3"
+            android:textIsSelectable="false"
+            android:longClickable="false"
+            android:clickable="false"
+            android:layout_height="wrap_content"
+            android:gravity="end"
+            android:text="@string/_0_00"
+            android:textColor="@color/txtColor"
+            android:textSize="@dimen/_5sdp" />
+    </LinearLayout>
+</layout>

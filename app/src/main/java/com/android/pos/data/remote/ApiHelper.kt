@@ -60,6 +60,11 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
     suspend fun syncVenueDetails(terminalId:Int) =
         getResult { apiService.syncVenueDetails(terminalId) }
 
+
+    suspend fun updateTransactionLockScreen(lock_screen_after_each_transaction: Boolean) =
+        getResult { apiService.updateLockScreenTransaction(lock_screen_after_each_transaction) }
+
+
     suspend fun getOnlineOrderCountNoti() =
         getResult { apiService.getCountOnlineOrdering() }
 

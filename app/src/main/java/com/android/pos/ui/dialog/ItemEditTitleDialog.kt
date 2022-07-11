@@ -30,6 +30,7 @@ import com.android.pos.ui.activities.MainActivity
 import com.android.pos.ui.adapter.ChooseColorsAdapter
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.FileUtils.handleImageOnKitkat
+import com.android.pos.utils.MethodUtils
 import com.bumptech.glide.Glide
 import com.bumptech.glide.Priority
 import com.bumptech.glide.load.DataSource
@@ -84,10 +85,12 @@ class ItemEditTitleDialog : DialogFragment() {
         }
 
         binding.tvChoosePhoto.setOnClickListener {
+            if (MethodUtils.isDoubleClick()) return@setOnClickListener
             selectOption = "2"
             requestPermissionDialog(selectOption)
         }
         binding.includeLayout.llTapToEdit.setOnClickListener {
+            if (MethodUtils.isDoubleClick()) return@setOnClickListener
             selectOption = "2"
             requestPermissionDialog(selectOption)
         }

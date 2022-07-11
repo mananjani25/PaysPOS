@@ -31,7 +31,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:layout_weight="0.8"
+                    android:layout_weight="0.7"
                     android:gravity="center"
                     android:layout_marginStart="@dimen/_1sdp">
 
@@ -41,16 +41,17 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
+                        android:layout_marginLeft="@dimen/_1sdp"
                         android:button="@drawable/dine_in_fire_selector"
                         android:checked="false"
                         android:gravity="center" />
                 </LinearLayout>
 
                 <LinearLayout
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_gravity="center_vertical"
-                    android:layout_weight="1.9">
+                    android:layout_weight="2">
 
                     <TextView
                         android:id="@+id/txtTableName"

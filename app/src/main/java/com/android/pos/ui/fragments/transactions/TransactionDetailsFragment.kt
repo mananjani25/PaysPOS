@@ -10,6 +10,7 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.Base64
+import android.os.SystemClock
 import android.util.Log
 import android.view.*
 import androidx.activity.OnBackPressedCallback
@@ -20,10 +21,12 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
+import com.android.pos.data.entities.TaxData
 import com.android.pos.data.entities.TbServiceCharge
 import com.android.pos.data.model.GetPaymentOrderDetailsResponse
 import com.android.pos.data.model.requestModel.RefundRequestModelOnlineOrder
 import com.android.pos.data.model.responseModel.GetCustomerReceiptSettingsResponse
+import com.android.pos.data.model.responseModel.GetOrderDetailsResponse
 import com.android.pos.data.model.responseModel.GetTipReponse
 import com.android.pos.data.model.responseModel.PrinterResponse
 import com.android.pos.data.remote.Constants
@@ -34,13 +37,16 @@ import com.android.pos.data.remote.Constants.getCurrentTimeFromTimeZone
 import com.android.pos.databinding.FragmentTransactionDetailsBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.adapter.OrderDetailsItemListAdapter
+import com.android.pos.ui.adapter.boldpos.TaxBirfurcationAdapter
 import com.android.pos.ui.fragments.settings.hardware.printer.BluetoothUtil
 import com.android.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper
 import com.android.pos.utils.*
 import com.android.pos.utils.TimeFormatUtils.convertCurrentDate
 import com.android.pos.utils.TimeFormatUtils.convertCurrentTime
+import com.android.pos.utils.extensions.gone
 import com.android.pos.utils.extensions.liveSnackBar
 import com.android.pos.utils.extensions.showAlert
+import com.android.pos.utils.extensions.visible
 import com.android.pos.utils.printer.PrinterClass
 import com.android.pos.utils.statusUtils.Status
 import com.epson.eposprint.Builder
@@ -64,18 +70,22 @@ class TransactionDetailsFragment : Fragment() {
     private val viewModel by viewModels<TransactionDetailsViewModel>()
 
     private lateinit var orderDetailsItemAdapter: OrderDetailsItemListAdapter
+    private lateinit var taxBirfurcationAdapter: TaxBirfurcationAdapter
     private var orderIDglobal = 0
+    var taxClickable = false
 
     //    private lateinit var orderDetailsResponse: GetOrderDetailsResponse
     private var customerSettingModel = GetCustomerReceiptSettingsResponse.Data()
     private lateinit var paymentDetailsResponse: GetPaymentOrderDetailsResponse
     private var orderId: Int = -1
+    var mLastClickTime: Long = 0
     private val TAG = "TransactionDetailsFr"
     private var tipsList: List<GetTipReponse.Data> = listOf()
     private var paymentId: Int = -1
     private var isFromTrans: Boolean = false
     private var isFromOnlineOrderRefund: Boolean = false
     private var serviceChargesList: ArrayList<TbServiceCharge>? = arrayListOf()
+    private var taxlistbirfurcation: ArrayList<TaxData>? = arrayListOf()
     private var isSplitPayment = false
 
 
@@ -126,8 +136,14 @@ class TransactionDetailsFragment : Fragment() {
                     Constants.TAKEOUT
                 ) == Constants.DINE_IN
             ) {
-                serviceChargesList = arrayListOf()
-                serviceChargesList = it.data as ArrayList<TbServiceCharge>?
+                if (prefProvider.getValueboolean(
+                        Constants.SERVICECHARGE_DINEIN_ORDER,
+                        false
+                    )
+                ) {
+                    serviceChargesList = arrayListOf()
+                    serviceChargesList = it.data as ArrayList<TbServiceCharge>?
+                }
             } else {
                 if (prefProvider.getValueboolean(
                         Constants.SERVICECHARGE_TAKEOUT_OPENORDER,
@@ -153,6 +169,9 @@ class TransactionDetailsFragment : Fragment() {
     private fun setUpRecyclerView() {
         orderDetailsItemAdapter = OrderDetailsItemListAdapter()
         binding.rvOrderItems.adapter = orderDetailsItemAdapter
+
+        taxBirfurcationAdapter = TaxBirfurcationAdapter("transaction")
+        binding.rvTax.adapter = taxBirfurcationAdapter
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -200,8 +219,26 @@ class TransactionDetailsFragment : Fragment() {
             //getCustomerPrinters()
 
         }
+        binding.linearTaxDetail.setOnClickListener {
+            if (taxBirfurcationAdapter.taxlist.size > 0) {
+                if (!taxClickable) {
+                    Log.d(TAG, "onViewCreated: " + taxBirfurcationAdapter.taxlist.size)
+                    taxClickable = true
+                    binding.imgDropdown.setImageResource(R.drawable.ic_solid_up_arrow)
+                    binding.relativeDynamicTax.visible()
+                } else {
+                    taxClickable = false
+                    binding.imgDropdown.setImageResource(R.drawable.ic_arrow_drop_down)
+                    binding.relativeDynamicTax.gone()
+                }
+            }
 
+        }
         binding.tvIssueRefund.setOnClickListener {
+            if (SystemClock.elapsedRealtime() - mLastClickTime < 1000){
+                return@setOnClickListener
+            }
+            mLastClickTime = SystemClock.elapsedRealtime();
             if (paymentDetailsResponse.data.order.order_type == "OnlineWebOrder") {
                 lateinit var refundData: RefundRequestModelOnlineOrder
                 var employeeIdtemp = prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
@@ -369,6 +406,107 @@ class TransactionDetailsFragment : Fragment() {
                         paymentDetailsResponse.data.order.total_discount
                     )
                 }
+                if (!isSplitPayment) {
+                    if (paymentDetailsResponse.data.tax_amount != 0.0) {
+                        binding.imgDropdown.visible()
+                    }
+                    if (paymentDetailsResponse.data.order.order_items.isNotEmpty()) {
+                        paymentDetailsResponse.data.order.order_items.forEach { orderItem ->
+                            var totalPrice = orderItem.price * orderItem.quantity
+                            totalPrice -= orderItem.discountAmount
+                            orderItem.orderItemModifiers.forEach { orderItemModifier ->
+                                totalPrice += orderItemModifier.price * orderItemModifier.quantity
+                            }
+                            Log.d(TAG, "navigate: itemPrice : $totalPrice")
+                            var totaltaxtemp = 0.0
+                            orderItem.orderItemTaxes.forEach { orderItemTaxe ->
+                                if (taxlistbirfurcation?.isNotEmpty() == true) {
+                                    var found = -1
+                                    taxlistbirfurcation?.forEachIndexed { index, taxData ->
+                                        if (taxData.orderTaxId == orderItemTaxe.taxId) {
+                                            found = index
+                                            return@forEachIndexed
+                                        }
+                                    }
+                                    if (found == -1) {
+                                        var taxData: TaxData = TaxData(
+                                            orderItemTaxe.createdAt,
+                                            orderItemTaxe.id,
+                                            0,
+                                            orderItemTaxe.name,
+                                            orderItemTaxe.rate,
+                                            orderItemTaxe.taxType,
+                                            orderItemTaxe.updatedAt,
+                                            true,
+                                            orderItemTaxe.isDefault,
+                                            false,
+                                            "",
+                                            listOf(orderItemTaxe.orderItemId),
+                                            orderItemTaxe.taxId,
+                                            false,
+                                            getTaxFromTotalPrice(
+                                                orderItemTaxe,
+                                                totalPrice,
+                                                orderItem
+                                            ),
+                                            totalPrice
+                                        )
+                                        taxlistbirfurcation?.add(taxData)
+                                    } else {
+                                        taxlistbirfurcation!![found].totalTaxTypePrice =
+                                            taxlistbirfurcation!![found].totalTaxTypePrice + getTaxFromTotalPrice(
+                                                orderItemTaxe,
+                                                totalPrice,
+                                                orderItem
+                                            )
+                                        taxlistbirfurcation!![found].subTotalAmount =
+                                            taxlistbirfurcation!![found].subTotalAmount + totalPrice
+                                    }
+                                    Log.d(TAG, "found : " + found)
+                                } else {
+                                    var taxData: TaxData = TaxData(
+                                        orderItemTaxe.createdAt,
+                                        orderItemTaxe.id,
+                                        0,
+                                        orderItemTaxe.name,
+                                        orderItemTaxe.rate,
+                                        orderItemTaxe.taxType,
+                                        orderItemTaxe.updatedAt,
+                                        true,
+                                        orderItemTaxe.isDefault,
+                                        false,
+                                        "",
+                                        listOf(orderItemTaxe.orderItemId),
+                                        orderItemTaxe.taxId,
+                                        false,
+                                        getTaxFromTotalPrice(
+                                            orderItemTaxe,
+                                            totalPrice,
+                                            orderItem
+                                        ),
+                                        totalPrice
+                                    )
+                                    taxlistbirfurcation?.add(taxData)
+                                }
+
+
+                                Log.d(TAG, "navigate: " + totaltaxtemp)
+                            }
+
+                        }
+
+                        taxBirfurcationAdapter.setList(taxlistbirfurcation!!)
+                        Log.d(TAG, "navigate: list " + Gson().toJson(taxlistbirfurcation))
+                    }
+                } else {
+                    binding.relativeDynamicTax.gone()
+                    binding.imgDropdown.gone()
+                    binding.linearPaymentinfo.layoutParams.height =
+                        resources.getDimension(R.dimen._78sdp).toInt()
+                    binding.linearSummary.layoutParams.height =
+                        resources.getDimension(R.dimen._85sdp).toInt()
+                }
+
 
                 if (paymentDetailsResponse.data.is_loyalty_applied == true) {
                     binding.llLoyalty.visibility = View.VISIBLE
@@ -482,6 +620,40 @@ class TransactionDetailsFragment : Fragment() {
         }
     }
 
+    fun getTaxFromTotalPrice(
+        orderItemTaxe: GetOrderDetailsResponse.Data.OrderItem.OrderItemTaxe,
+        totalPrice: Double,
+        item: GetOrderDetailsResponse.Data.OrderItem
+    ): Double {
+        var totaltaxtemp = 0.0
+
+
+        totaltaxtemp += if (orderItemTaxe.taxType == "Percentage") {
+            if (totalPrice < 0.0) {
+
+                String.format("%.2f", 0.00)
+                    .toDouble()
+            } else {
+                val itemTaxPrice =
+                    (orderItemTaxe.rate * totalPrice) / 100
+                Log.e("itemTaxPrice", "" + itemTaxPrice)
+                String.format("%.2f", itemTaxPrice)
+                    .toDouble()
+            }
+
+        } else {
+            Log.d("yash", "taxCalculation: " + orderItemTaxe.taxType)
+            if (totalPrice <= 0.0) {
+                String.format("%.2f", 0.00)
+                    .toDouble()
+            } else {
+                String.format("%.2f", orderItemTaxe.rate * item.quantity)
+                    .toDouble()
+            }
+        }
+        return totaltaxtemp
+    }
+
     private fun observeShowProgress() {
 
         viewModel.showProgress.observe(viewLifecycleOwner) { event ->
@@ -580,7 +752,11 @@ class TransactionDetailsFragment : Fragment() {
         } else if (customerReceiptPrinters.name.startsWith(SUNMI_INNER_PRINTER, true)) {
 
             SunmiPrintHelper.getInstance().initSunmiPrinterService(requireContext())
-            setService()
+            viewLifecycleOwner.lifecycleScope.launch {
+                delay(100)
+                setService()
+            }
+
 
         } else {
 
@@ -2318,6 +2494,10 @@ class TransactionDetailsFragment : Fragment() {
 
             SunmiPrintHelper.getInstance().initPrinter()
 
+            if (customerSettingModel.showOrderIdTop) {
+                PrintSunmiUtils.headerText("OrderID:" + paymentDetailsResponse.data.order.id)
+            }
+
             if (customerSettingModel.showVenueLogo && prefProvider.getValue(
                     Constants.VENUE_LOGO,
                     ""
@@ -2347,9 +2527,7 @@ class TransactionDetailsFragment : Fragment() {
 
             if (customerSettingModel.fonts == Constants.LARGE) {
 
-                if (customerSettingModel.showOrderIdTop) {
-                    PrintSunmiUtils.normalText("OrderID:" + paymentDetailsResponse.data.order.id)
-                }
+
 
                 PrintSunmiUtils.normalText("ReceiptID:" + paymentDetailsResponse.data.order.offline_id)
 
@@ -2384,17 +2562,7 @@ class TransactionDetailsFragment : Fragment() {
                 }
             } else {
 
-                val str = padLine(
-                    if (customerSettingModel.showOrderIdTop) {
-                        "OrderID:" + paymentDetailsResponse?.data.order.id
-                    } else {
-                        ""
-                    },
-                    "ReceiptID:" + paymentDetailsResponse?.data.order.offline_id,
-                    if (customerSettingModel.fonts == Constants.LARGE) 23 else 48
-                ).toString().trim()
-
-                PrintSunmiUtils.normalText(str.trim())
+                PrintSunmiUtils.normalText("ReceiptID:" + paymentDetailsResponse?.data.order.offline_id)
 
                 if (customerSettingModel.showTeam) {
 
@@ -2405,7 +2573,7 @@ class TransactionDetailsFragment : Fragment() {
                         } else {
                             ""
                         },
-                        "", if (customerSettingModel.fonts == Constants.LARGE) 23 else 48
+                        "", PrintSunmiUtils.lineChar()
                     ).toString()
 
                     PrintSunmiUtils.normalText(empName)
@@ -2423,7 +2591,7 @@ class TransactionDetailsFragment : Fragment() {
                         } else {
                             ""
                         },
-                        "", if (customerSettingModel.fonts == Constants.LARGE) 23 else 48
+                        "", PrintSunmiUtils.lineChar()
                     ).toString()
 
                     PrintSunmiUtils.normalText(orderTime)
@@ -2443,7 +2611,7 @@ class TransactionDetailsFragment : Fragment() {
                             } else {
                                 ""
                             },
-                            "", if (customerSettingModel.fonts == Constants.LARGE) 23 else 48
+                            "", PrintSunmiUtils.lineChar()
                         ).toString()
 
                         PrintSunmiUtils.normalText(printTime)
@@ -2476,7 +2644,7 @@ class TransactionDetailsFragment : Fragment() {
                         "-$" + MethodUtils.roundOffAmountString(paymentDetailsResponse?.data.total_discount)
                     } else {
                         "-$" + MethodUtils.roundOffAmountString(paymentDetailsResponse?.data.order.total_discount)
-                    }, if (customerSettingModel.fonts == Constants.LARGE) 23 else 48
+                    }, PrintSunmiUtils.lineChar()
                 ).toString()
                 PrintSunmiUtils.normalText(str1)
 
@@ -2485,7 +2653,7 @@ class TransactionDetailsFragment : Fragment() {
             val sub = padLine(
                 "Sub Total",
                 "$" + MethodUtils.roundOffAmountString(paymentDetailsResponse.data.sub_total),
-                if (customerSettingModel.fonts == Constants.LARGE) 23 else 48
+                PrintSunmiUtils.lineChar()
             ).toString()
 
             PrintSunmiUtils.normalText(sub)
@@ -2499,7 +2667,7 @@ class TransactionDetailsFragment : Fragment() {
                     padLine(
                         "Tax",
                         "$" + MethodUtils.roundOffAmountString(paymentDetailsResponse.data.tax_amount),
-                        if (customerSettingModel.fonts == Constants.LARGE) 23 else 48
+                        PrintSunmiUtils.lineChar()
                     ).toString()
                 )
             }
@@ -2510,7 +2678,7 @@ class TransactionDetailsFragment : Fragment() {
                     padLine(
                         "Service Charge",
                         "$" + MethodUtils.roundOffAmountString(paymentDetailsResponse.data.service_charge_amount),
-                        if (customerSettingModel.fonts == Constants.LARGE) 23 else 48
+                        PrintSunmiUtils.lineChar()
                     ).toString()
                 )
             }
@@ -2524,7 +2692,7 @@ class TransactionDetailsFragment : Fragment() {
                             MethodUtils.roundOffAmountString(
                                 it
                             )
-                        }, if (customerSettingModel.fonts == Constants.LARGE) 23 else 48
+                        }, PrintSunmiUtils.lineChar()
                     ).toString()
                 )
             }
@@ -2542,7 +2710,7 @@ class TransactionDetailsFragment : Fragment() {
                                 "$" + MethodUtils.roundOffAmountString(paymentDetailsResponse.data?.cash_discount_or_surcharge)
                             } else {
                                 "$" + MethodUtils.roundOffAmountString(paymentDetailsResponse.data.order?.cash_discount_or_surcharge)
-                            }, if (customerSettingModel.fonts == Constants.LARGE) 23 else 48
+                            }, PrintSunmiUtils.lineChar()
                         ).toString()
 
                     PrintSunmiUtils.normalText(surCharge)
@@ -2557,7 +2725,7 @@ class TransactionDetailsFragment : Fragment() {
                             "-$" + MethodUtils.roundOffAmountString(paymentDetailsResponse.data?.cash_discount_or_surcharge)
                         } else {
                             "$" + MethodUtils.roundOffAmountString(paymentDetailsResponse.data.order?.cash_discount_or_surcharge)
-                        }, if (customerSettingModel.fonts == Constants.LARGE) 23 else 48
+                        }, PrintSunmiUtils.lineChar()
                     ).toString()
 
 
@@ -2577,7 +2745,7 @@ class TransactionDetailsFragment : Fragment() {
                             MethodUtils.roundOffAmountString(
                                 it.toDouble()
                             )
-                        }, if (customerSettingModel.fonts == Constants.LARGE) 23 else 48
+                        }, PrintSunmiUtils.lineChar()
                     ).toString()
                     PrintSunmiUtils.normalText(loyaltyAmount)
 
@@ -2588,7 +2756,7 @@ class TransactionDetailsFragment : Fragment() {
                     val loyaltyPoint = padLine(
                         "Used Loyalty Points",
                         paymentDetailsResponse?.data?.used_reward_points.toString(),
-                        if (customerSettingModel.fonts == Constants.LARGE) 23 else 48
+                        PrintSunmiUtils.lineChar()
                     ).toString()
 
                     PrintSunmiUtils.normalText(loyaltyPoint)
@@ -2604,7 +2772,7 @@ class TransactionDetailsFragment : Fragment() {
                 padLine(
                     "Total Price",
                     "$" + MethodUtils.roundOffAmountString(totalAmt),
-                    if (customerSettingModel.fonts == Constants.LARGE) 23 else 48
+                    PrintSunmiUtils.lineChar()
                 ).toString()
             )
 
@@ -2615,7 +2783,7 @@ class TransactionDetailsFragment : Fragment() {
                     padLine(
                         "Refund Amount",
                         "$" + MethodUtils.roundOffAmountString(paymentDetailsResponse?.data?.order?.refund_detail?.refunded_amount),
-                        if (customerSettingModel.fonts == Constants.LARGE) 23 else 48
+                        PrintSunmiUtils.lineChar()
                     ).toString()
                 )
                 SunmiPrintHelper.getInstance().lineWrap(1)
@@ -2654,7 +2822,7 @@ class TransactionDetailsFragment : Fragment() {
             val tranId = padLine(
                 "Transaction ID",
                 "" + paymentDetailsResponse.data.id,
-                if (customerSettingModel.fonts == Constants.LARGE) 23 else 48
+                PrintSunmiUtils.lineChar()
             ).toString()
 
             PrintSunmiUtils.normalText(tranId)
@@ -2665,7 +2833,7 @@ class TransactionDetailsFragment : Fragment() {
 
                 val tranType = padLine(
                     "Transaction Type",
-                    "Card", if (customerSettingModel.fonts == Constants.LARGE) 23 else 48
+                    "Card", PrintSunmiUtils.lineChar()
                 ).toString()
 
                 PrintSunmiUtils.normalText(tranType)
@@ -2683,7 +2851,7 @@ class TransactionDetailsFragment : Fragment() {
                 PrintSunmiUtils.normalText(
                     padLine(
                         "Transaction Type",
-                        "Cash", if (customerSettingModel.fonts == Constants.LARGE) 23 else 48
+                        "Cash", PrintSunmiUtils.lineChar()
                     ).toString()
                 )
 

@@ -32,13 +32,17 @@ import com.android.pos.data.remote.Constants.BUSINESS_WEBSITE
 import com.android.pos.data.remote.Constants.CASH_DISCOUNT_SURCHARGE_AMOUNT_TYPE
 import com.android.pos.data.remote.Constants.CASH_DISCOUNT_SURCHARGE_RATE
 import com.android.pos.data.remote.Constants.DELETE
+import com.android.pos.data.remote.Constants.DINEIN_FLOORPLAN_SHOW_TABLENAME
 import com.android.pos.data.remote.Constants.DINE_IN
 import com.android.pos.data.remote.Constants.DINE_IN_LIST_EDIT
 import com.android.pos.data.remote.Constants.DINE_IN_UPDATE
 import com.android.pos.data.remote.Constants.EMPLOYEE_ID
 import com.android.pos.data.remote.Constants.IS_PRINTER_QUEUE_ENABLE
+import com.android.pos.data.remote.Constants.LOCK_SCREEN_TRANSACTION
 import com.android.pos.data.remote.Constants.ONLINE_ORDER_ENABLE
 import com.android.pos.data.remote.Constants.ORDER_TYPE
+import com.android.pos.data.remote.Constants.REPORT_END_TIME
+import com.android.pos.data.remote.Constants.REPORT_START_TIME
 import com.android.pos.data.remote.Constants.SERVICECHARGE_DINEIN_ORDER
 import com.android.pos.data.remote.Constants.SERVICECHARGE_TAKEOUT_OPENORDER
 import com.android.pos.data.remote.Constants.SYSTEM_TIMEZONE
@@ -110,6 +114,7 @@ class DashBoardCategoryViewModel @Inject constructor(
     var activeLoyaltyProgram: LoyaltyProgramsModel? = null
     var redeemLoyaltyInfo: RedeemLoyaltyInfo = RedeemLoyaltyInfo()
     var paymentType: String = "cash"
+    var taxDynamicList: ArrayList<TaxData> = arrayListOf()
     var destroyedList: ArrayList<TbItem> = arrayListOf()
     var removeItemDineInList: ArrayList<TbItem> = arrayListOf()
     var ordertypelist: ArrayList<TbOrderType> = arrayListOf()
@@ -145,9 +150,14 @@ class DashBoardCategoryViewModel @Inject constructor(
         return posRepository.orderTypesDb()
     }
 
+    fun clearListTax() {
+        taxDynamicList = arrayListOf()
+        taxDynamicList.clear()
+    }
+
     fun setcheckedLoyaltyApply(isapply: Boolean) {
         redeemLoyaltyInfo.needToApplyLoyalty = isapply
-        Log.d(TAG, "setcheckedLoyaltyApply: "+redeemLoyaltyInfo.needToApplyLoyalty)
+        Log.d(TAG, "setcheckedLoyaltyApply: " + redeemLoyaltyInfo.needToApplyLoyalty)
     }
 
     fun setOrderTypeList(ordertypelist: ArrayList<TbOrderType>) {
@@ -161,6 +171,7 @@ class DashBoardCategoryViewModel @Inject constructor(
     fun setCartModel(cartList: List<CartModel>) {
         this.cartModel = generateCombinedItems(cartList[0])
     }
+
 
     val serviceCharges = posRepository.serviceChargeList()
     val getOrderTypes = posRepository.getOrderTypes()
@@ -209,6 +220,9 @@ class DashBoardCategoryViewModel @Inject constructor(
     fun getItemsbyId(itemId: Int) = posRepository.getItemsbyId(itemId)
 
     fun getItemByProductCode(productCode: String) = posRepository.getItemByProductCode(productCode)
+
+
+    fun getItemByCategoryId(id: Int) = posRepository.getItemByCategoryId(id)
 
     /*
         fun getCartList(orderType:String,employee_Id: Int) : List<CartModel>{
@@ -291,9 +305,17 @@ class DashBoardCategoryViewModel @Inject constructor(
     }
 
     fun deleteCart() {
+        prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
         viewModelScope.launch {
             posRepository.deleteCart(prefProvider.getValueInt(EMPLOYEE_ID, 0))
+            posRepository.deselectedItem(0)
             destroyedList.clear()
+        }
+    }
+
+    fun selectedItems(itemid: Int, isSelected: Int) {
+        viewModelScope.launch {
+            posRepository.selectedItem(itemid, isSelected)
         }
     }
 
@@ -305,6 +327,7 @@ class DashBoardCategoryViewModel @Inject constructor(
             totalDiscount = 0.0
             totalServiceCharge = 0.0
             totalCount = 0
+            order_note = ""
             posRepository.deleteManualSaleCart(prefProvider.getValueInt(EMPLOYEE_ID, 0))
 
         }
@@ -335,8 +358,14 @@ class DashBoardCategoryViewModel @Inject constructor(
     fun manualSalecartLogic(cartList: List<CartModel>?, item: TbItem, type: String) {
 
         if (cartList != null && cartList.isEmpty()) {
-
-            val model = addCartModel(item, true)
+            var model = addCartModel(item, true)
+            if (type == UPDATE) {
+                cartModel?.items?.forEach { items ->
+                    model = taxBifurcationCalculation(items, model, type, false)
+                }
+            } else {
+                model = taxBifurcationCalculation(item, model, type, false)
+            }
             addCart(model)
         } else {
             val list = cartList?.get(0)?.items?.toMutableList()
@@ -380,7 +409,18 @@ class DashBoardCategoryViewModel @Inject constructor(
                     }
                 }
 
-                val cartModel = cartList[0]
+                var cartModel = cartList[0]
+                if (type == UPDATE) {
+                    cartModel.items?.forEach { itemData ->
+                        cartModel = taxBifurcationCalculation(
+                            itemData,
+                            cartModel,
+                            type, false
+                        )
+                    }
+                } else {
+                    cartModel = taxBifurcationCalculation(item!!, cartModel, type, false)
+                }
                 cartModel.items = list
                 addCart(cartModel)
 
@@ -393,10 +433,12 @@ class DashBoardCategoryViewModel @Inject constructor(
                 if (type == DELETE) {
                     deleteCart()
                 } else {
-                    val cartModel = cartList?.get(0)
+                    var cartModel = cartList?.get(0)
+                    cartModel = taxBifurcationCalculation(item!!, cartModel!!, type, false)
                     cartModel?.items = listOf(item)
                     if (cartModel != null) {
-                        addCart(cartModel)
+
+                        addCart(cartModel!!)
                     }
                 }
 
@@ -415,15 +457,31 @@ class DashBoardCategoryViewModel @Inject constructor(
 
         if (cartList != null && cartList.isEmpty()) {
             // empty cart hoy to new cart create kare
-            val cartModel = item?.let { addCartModel(it, isManualSales) }
+            var cartModel = item?.let { addCartModel(it, isManualSales) }
+            if (item != null) {
+                if (type == UPDATE) {
+                    cartModel?.items?.forEach { items ->
+                        cartModel = taxBifurcationCalculation(items, cartModel!!, type, false)
+                    }
+                } else {
+                    cartModel = taxBifurcationCalculation(item, cartModel!!, type, false)
+                }
+            } else if (dineInList.isNotEmpty()) {
+                dineInList.forEach { dineInModel ->
+                    dineInModel.items.forEach { itemData ->
+                        cartModel = taxBifurcationCalculation(itemData, cartModel!!, type, false)
+                    }
+
+                }
+            }
             if (cartModel != null) {
-                addCart(cartModel)
+                addCart(cartModel!!)
             }
 
 
         } else {
             if (cartList?.get(0)?.orderType == DINE_IN) {
-                val cartModel = cartList[0]
+                var cartModel = cartList[0]
                 order_note = cartList[0].note
                 cartModel.dineInList = dineInList
                 if (type == ADD || type == UPDATE) {
@@ -434,6 +492,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                         dineIn.get(selectedHeader).items.forEachIndexed { pos, tbItem ->
                             if (item != null) {
+                                item.isDestroy = false
                                 if (tbItem.itemId == item.itemId && checkVariation(
                                         tbItem,
                                         item
@@ -462,6 +521,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                         model.itemQuantity = item.itemQuantity
                                         itemDiscountApply(model, item)
                                     }
+                                    model.isDestroy = false
                                     if (prefProvider.getValueboolean(
                                             Constants.DINE_IN_UPDATE,
                                             false
@@ -478,12 +538,52 @@ class DashBoardCategoryViewModel @Inject constructor(
                                         dineInList.get(0).floorPlanTable
 
                                     cartModel.dineInList = dineIn
+                                    if (item != null) {
+                                        if (type == UPDATE) {
+                                            dineInList.forEach { dineInModel ->
+                                                dineInModel.items.forEach { itemData ->
+                                                    cartModel = taxBifurcationCalculation(
+                                                        itemData,
+                                                        cartModel,
+                                                        type, false
+                                                    )
+                                                }
+
+                                            }
+                                        } else {
+                                            cartModel =
+                                                taxBifurcationCalculation(
+                                                    item,
+                                                    cartModel,
+                                                    type,
+                                                    false
+                                                )
+                                        }
+                                    } else if (dineInList.isNotEmpty()) {
+                                        dineInList.forEach { dineInModel ->
+                                            dineInModel.items.forEach { itemData ->
+                                                cartModel = taxBifurcationCalculation(
+                                                    itemData,
+                                                    cartModel,
+                                                    type,
+                                                    false
+                                                )
+                                            }
+
+                                        }
+                                    }
                                     addCart(cartModel)
                                 } else {
                                     if (index != -1) {
                                         if (item != null) {
-                                            model.itemQuantity =
-                                                item.itemQuantity + model.itemQuantity
+                                            if (model.isDestroy) {
+                                                model.itemQuantity =
+                                                    item.itemQuantity
+                                                model.isDestroy = false
+                                            } else {
+                                                model.itemQuantity =
+                                                    item.itemQuantity + model.itemQuantity
+                                            }
                                             item.modifiers.forEach {
                                                 it.itemQuantity = model.itemQuantity
                                             }
@@ -504,9 +604,74 @@ class DashBoardCategoryViewModel @Inject constructor(
                                         dineIn.get(0).floorPlanTable =
                                             dineInList.get(0).floorPlanTable
                                         cartModel.dineInList = dineIn
+                                        if (item != null) {
+                                            if (type == UPDATE) {
+                                                dineInList.forEach { dineInModel ->
+                                                    dineInModel.items.forEach { itemData ->
+                                                        cartModel = taxBifurcationCalculation(
+                                                            itemData,
+                                                            cartModel,
+                                                            type, false
+                                                        )
+                                                    }
+
+                                                }
+                                            } else {
+                                                cartModel =
+                                                    taxBifurcationCalculation(
+                                                        item!!,
+                                                        cartModel,
+                                                        type, false
+                                                    )
+                                            }
+                                        } else if (dineInList.isNotEmpty()) {
+                                            dineInList.forEach { dineInModel ->
+                                                dineInModel.items.forEach { itemData ->
+                                                    cartModel = taxBifurcationCalculation(
+                                                        itemData,
+                                                        cartModel,
+                                                        type, false
+                                                    )
+                                                }
+
+                                            }
+                                        }
                                         addCart(cartModel)
                                     } else {
                                         cartModel.dineInList = dineInList
+                                        if (item != null) {
+                                            if (type == UPDATE) {
+                                                dineInList.forEach { dineInModel ->
+                                                    dineInModel.items.forEach { itemData ->
+                                                        cartModel = taxBifurcationCalculation(
+                                                            itemData,
+                                                            cartModel,
+                                                            type, false
+                                                        )
+                                                    }
+
+                                                }
+                                            } else {
+                                                cartModel =
+                                                    taxBifurcationCalculation(
+                                                        item!!,
+                                                        cartModel,
+                                                        type, false
+                                                    )
+                                            }
+
+                                        } else if (dineInList.isNotEmpty()) {
+                                            dineInList.forEach { dineInModel ->
+                                                dineInModel.items.forEach { itemData ->
+                                                    cartModel = taxBifurcationCalculation(
+                                                        itemData,
+                                                        cartModel,
+                                                        type, false
+                                                    )
+                                                }
+
+                                            }
+                                        }
                                         addCart(cartModel)
 
                                     }
@@ -525,11 +690,40 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 ) {
                                     item.isEdited = true
                                 }
+                                item.isDestroy = false
 
                                 dineInList.get(dineInList.get(0).selectedPosition).items.add(item)
                             }
                             cartModel.dineInList = dineInList
+                            if (item != null) {
+                                if (type == UPDATE) {
+                                    dineInList.forEach { dineInModel ->
+                                        dineInModel.items.forEach { itemData ->
+                                            cartModel = taxBifurcationCalculation(
+                                                itemData,
+                                                cartModel,
+                                                type, false
+                                            )
+                                        }
 
+                                    }
+                                } else {
+                                    cartModel =
+                                        taxBifurcationCalculation(item!!, cartModel, type, false)
+                                }
+                            } else if (dineInList.isNotEmpty()) {
+                                dineInList.forEach { dineInModel ->
+                                    dineInModel.items.forEach { itemData ->
+                                        cartModel = taxBifurcationCalculation(
+                                            itemData,
+                                            cartModel,
+                                            type,
+                                            true,
+                                        )
+                                    }
+
+                                }
+                            }
                             addCart(cartModel)
                         }
 
@@ -566,6 +760,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                     }
 
                     cartModel.dineInList = dine
+                    cartModel = taxBifurcationCalculation(item!!, cartModel, type, false)
                     addCart(cartModel)
 
 
@@ -578,6 +773,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                     cartModel.orderTypeName = DINE_IN
                     cartModel.orderType = DINE_IN
                     cartModel.dineInList = dineInList
+                    cartModel = taxBifurcationCalculation(item!!, cartModel, type, false)
                     addCart(cartModel)
 
                 }
@@ -589,6 +785,8 @@ class DashBoardCategoryViewModel @Inject constructor(
                 if (list != null && list.isNotEmpty()) {
 
                     if (type == ADD || type == UPDATE) {
+
+
                         var index = -1
 
                         for (i in list.indices) {
@@ -631,7 +829,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                             it.itemQuantity = model.itemQuantity
                                         }
                                         model.modifiers = item.modifiers
-
+                                        model.isDestroy = false
                                         itemDiscountApply(model, item)
 
                                     }
@@ -639,8 +837,14 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 } else {
                                     if (index != -1) {
                                         if (item != null) {
-                                            model.itemQuantity =
-                                                item.itemQuantity + model.itemQuantity
+                                            if (model.isDestroy) {
+                                                model.itemQuantity =
+                                                    item.itemQuantity
+                                                model.isDestroy = false
+                                            } else {
+                                                model.itemQuantity =
+                                                    item.itemQuantity + model.itemQuantity
+                                            }
                                             item.modifiers.forEach {
                                                 it.itemQuantity = model.itemQuantity
                                             }
@@ -648,6 +852,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                             if (item.isEdited) {
                                                 model.isEdited = item.isEdited
                                             }
+
                                             //   itemDiscountApply(model, item)
                                         }
 
@@ -659,6 +864,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                                 model.isEdited = item.isEdited
                                             }
                                             itemDiscountApply(model, item)
+                                            model.isDestroy = false
                                         }
                                         list[index] = model
                                     }
@@ -668,6 +874,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                         } else {
                             Log.d(TAG, "cartLogic: " + index)
                             if (item != null) {
+                                item.isDestroy = false
                                 list.add(item)
                             }
                         }
@@ -710,7 +917,18 @@ class DashBoardCategoryViewModel @Inject constructor(
                         }
                     }
 
-                    val cartModel = cartList[0]
+                    var cartModel = cartList[0]
+                    if (type == UPDATE) {
+                        cartModel.items?.forEach { itemData ->
+                            cartModel = taxBifurcationCalculation(
+                                itemData,
+                                cartModel,
+                                type, false
+                            )
+                        }
+                    } else {
+                        cartModel = taxBifurcationCalculation(item!!, cartModel, type, false)
+                    }
                     cartModel.items = list
                     addCart(cartModel)
                     if (list.isEmpty()) {
@@ -724,11 +942,12 @@ class DashBoardCategoryViewModel @Inject constructor(
                     } else {
 
                         Log.e(TAG, "AddedListNull")
-                        val cartModel = cartList?.get(0)
+                        var cartModel = cartList?.get(0)
+                        cartModel = taxBifurcationCalculation(item!!, cartModel!!, type, false)
                         if (item != null)
                             cartModel?.items = listOf(item)
                         if (cartModel != null) {
-                            addCart(cartModel)
+                            addCart(cartModel!!)
                         }
                     }
 
@@ -1286,23 +1505,24 @@ class DashBoardCategoryViewModel @Inject constructor(
                     totalServiceCharge = 0.0
 
                     val itemCount = cartModel.items?.size
+                    var taxList: ArrayList<TaxData> = arrayListOf()
                     cartModel.items?.forEach { item ->
                         if (!item.isDestroy) {
-                            totalCount += item.itemQuantity
-                            totalDiscount += item.discountPrice * item.itemQuantity
-                            subTotalPrice += (item.price * item.itemQuantity) - (item.discountPrice * item.itemQuantity)
+                        totalCount += item.itemQuantity
+                        totalDiscount += item.discountPrice * item.itemQuantity
+                        subTotalPrice += (item.price * item.itemQuantity) - (item.discountPrice * item.itemQuantity)
 
 
-                            taxCalculation(item, cartModel.discountPrice / itemCount!!)
+                        taxCalculation(item, cartModel.discountPrice / itemCount!!)
 
-
-                            item.modifiers.forEach {
-                                subTotalPrice += (it.price * it.itemQuantity)
+                        item.modifiers.forEach {
+                            subTotalPrice += (it.price * it.itemQuantity)
 
                             }
                         }
                     }
-
+//                    taxDynamicList = cartModel.taxlistDynamic!!.toCollection(ArrayList())
+                    Log.d(TAG, "itemCalculationCartModel: " + taxDynamicList)
                     serviceChargeCalculationModel(cartModel)
 
                     subTotalPrice -= cartModel.discountPrice
@@ -1372,6 +1592,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
 
     }
+
 
     fun loyaltyPointCondition(customer: TbCustomer?): Boolean {
         return (customer?.enroll_to_loyalty == true && activeLoyaltyProgram != null && activeLoyaltyProgram?.rewardPoint ?: 0 <= customer.final_reward ?: 0)
@@ -1517,6 +1738,217 @@ class DashBoardCategoryViewModel @Inject constructor(
             }
 
         }
+    }
+
+
+    private fun getTotalTaxBirfurcation(item: TbItem, itemtype: TaxData, type: String): Double {
+        var totaltaxtemp: Double = 0.0
+        var modifierPrice = 0.0
+        val price =
+            (item.price * item.itemQuantity) - (item.discountPrice * item.itemQuantity)
+
+        item.modifiers.forEach {
+            modifierPrice += (it.price * it.itemQuantity)
+        }
+
+        val totalPrice =
+            price + modifierPrice /*- (discountPrice * item.itemQuantity)*/
+
+
+        totaltaxtemp += if (itemtype.taxType == "Percentage") {
+            if (totalPrice < 0.0) {
+
+                String.format("%.2f", 0.00)
+                    .toDouble()
+            } else {
+                val itemTaxPrice =
+                    (itemtype.rate * totalPrice) / 100
+                Log.e("itemTaxPrice", "" + itemTaxPrice)
+                String.format("%.2f", itemTaxPrice)
+                    .toDouble()
+            }
+
+        } else {
+            Log.d("yash", "taxCalculation: " + itemtype.taxType)
+            if (totalPrice <= 0.0) {
+                String.format("%.2f", 0.00)
+                    .toDouble()
+            } else {
+                String.format("%.2f", itemtype.rate * item.itemQuantity)
+                    .toDouble()
+            }
+
+        }
+        return totaltaxtemp
+    }
+
+    private fun taxBifurcationCalculation(
+        item: TbItem,
+        cartModel: CartModel,
+        type: String,
+        orderTaxID: Boolean
+    ): CartModel {
+        item.taxes?.forEachIndexed { indextax, itemtype ->
+            if (itemtype.isActive) {
+                if (cartModel.taxlistDynamic?.isNotEmpty() == true) {
+                    var found = -1
+                    cartModel.taxlistDynamic!!.forEachIndexed { index, itemData ->
+                        if (orderTaxID) {
+                            if (itemtype.orderTaxId == itemData.orderTaxId) {
+                                found = index
+                            }
+                        } else {
+                            if (itemtype.id == itemData.id) {
+                                found = index
+                            }
+                        }
+
+                    }
+                    Log.d(TAG, "taxBifurcationCalculation: " + found)
+                    if (found == -1) {
+                        if (itemtype.taxType != "Percentage") {
+                            var modifierPrice: Double = 0.0
+                            val price =
+                                (item.price * item.itemQuantity) - (item.discountPrice * item.itemQuantity)
+
+                            item.modifiers.forEach {
+                                modifierPrice += (it.price * it.itemQuantity)
+                            }
+
+                            val totalPrice =
+                                price + modifierPrice
+                            itemtype.subTotalAmount = itemtype.subTotalAmount?.plus(totalPrice)
+                        } else {
+                            itemtype.subTotalAmount = 0.0
+                        }
+                        itemtype.totalTaxTypePrice = getTotalTaxBirfurcation(item, itemtype, type)
+                        cartModel.taxlistDynamic =
+                            concatenate(cartModel.taxlistDynamic!!, listOf(itemtype))
+                    } else {
+                        if (itemtype.taxType != "Percentage") {
+                            var modifierPrice: Double = 0.0
+                            val price =
+                                (item.price * item.itemQuantity) - (item.discountPrice * item.itemQuantity)
+
+                            item.modifiers.forEach {
+                                modifierPrice += (it.price * it.itemQuantity)
+                            }
+                            val totalPrice =
+                                price + modifierPrice
+                            if (type == DELETE) {
+                                if (found <= cartModel.taxlistDynamic?.size!! - 1) {
+                                    cartModel.taxlistDynamic!![found].subTotalAmount =
+                                        cartModel.taxlistDynamic!![found].subTotalAmount.minus(
+                                            totalPrice
+                                        )
+                                }
+                            } else {
+                                if (found <= cartModel.taxlistDynamic?.size!! - 1) {
+                                    cartModel.taxlistDynamic!![found].subTotalAmount =
+                                        cartModel.taxlistDynamic!![found].subTotalAmount.plus(
+                                            totalPrice
+                                        )
+                                }
+                            }
+
+                        } else {
+                            if (found <= cartModel.taxlistDynamic?.size!! - 1) {
+                                cartModel.taxlistDynamic!![found].subTotalAmount = 0.0
+                            }
+                        }
+                        if (type == ADD || type == UPDATE) {
+                            if (found <= cartModel.taxlistDynamic?.size!! - 1) {
+                                cartModel.taxlistDynamic?.get(found)?.totalTaxTypePrice =
+                                    cartModel.taxlistDynamic!![found].totalTaxTypePrice.plus(
+                                        getTotalTaxBirfurcation(
+                                            item,
+                                            itemtype,
+                                            type
+                                        )
+                                    )
+                            }
+                        } else if (type == DELETE) {
+                            if (found <= cartModel.taxlistDynamic?.size!! - 1) {
+                                cartModel.taxlistDynamic?.get(found)?.totalTaxTypePrice =
+                                    cartModel.taxlistDynamic?.get(found)?.totalTaxTypePrice?.minus(
+                                        getTotalTaxBirfurcation(
+                                            item,
+                                            itemtype,
+                                            type
+                                        )
+                                    )!!
+                            }
+                            if (found <= cartModel.taxlistDynamic?.size!! - 1) {
+                                if (cartModel.taxlistDynamic?.get(found)?.totalTaxTypePrice == 0.0) {
+                                    var temp_arraylist: ArrayList<TaxData> =
+                                        cartModel.taxlistDynamic!!.toCollection(
+                                            arrayListOf()
+                                        )
+                                    temp_arraylist.removeAt(found)
+                                    cartModel.taxlistDynamic = temp_arraylist.toList()
+                                    Log.d(
+                                        TAG,
+                                        "taxBifurcationCalculation: delete : " + Gson().toJson(
+                                            cartModel.taxlistDynamic
+                                        )
+                                    )
+                                }
+                            }
+                            if (cartModel.taxlistDynamic!!.isNotEmpty()) {
+                                if (found <= cartModel.taxlistDynamic?.size!! - 1) {
+                                    if (cartModel.taxlistDynamic?.get(found)?.taxType != "Percentage") {
+                                        if (cartModel.taxlistDynamic?.get(found)?.subTotalAmount == 0.0) {
+                                            var temp_arraylist: ArrayList<TaxData> =
+                                                cartModel.taxlistDynamic!!.toCollection(
+                                                    arrayListOf()
+                                                )
+                                            temp_arraylist.removeAt(found)
+                                            cartModel.taxlistDynamic = temp_arraylist.toList()
+                                            Log.d(
+                                                TAG,
+                                                "taxBifurcationCalculation: delete : " + Gson().toJson(
+                                                    cartModel.taxlistDynamic
+                                                )
+                                            )
+                                        }
+                                    }
+                                }
+
+                            }
+
+
+                        }
+
+                    }
+                } else {
+                    if (itemtype.taxType != "Percentage") {
+                        var modifierPrice: Double = 0.0
+                        val price =
+                            (item.price * item.itemQuantity) - (item.discountPrice * item.itemQuantity)
+
+                        item.modifiers.forEach {
+                            modifierPrice += (it.price * it.itemQuantity)
+                        }
+
+                        val totalPrice =
+                            price + modifierPrice
+                        itemtype.subTotalAmount = itemtype.subTotalAmount?.plus(totalPrice)
+                    }
+                    itemtype.totalTaxTypePrice = getTotalTaxBirfurcation(item, itemtype, type)
+                    cartModel.taxlistDynamic = listOf(itemtype)
+                }
+            }
+
+        }
+        Log.d(
+            TAG,
+            "taxBifurcationCalculation: final list " + Gson().toJson(cartModel.taxlistDynamic)
+        )
+        return cartModel
+    }
+
+    fun <T> concatenate(vararg lists: List<T>): List<T> {
+        return listOf(*lists).flatten()
     }
 
     private fun taxCalculation(item: TbItem, discountPrice: Double) {
@@ -1733,7 +2165,16 @@ class DashBoardCategoryViewModel @Inject constructor(
             MethodUtils.roundOffAmountDouble(totalServiceCharge)
         orderAttributeRequestModel.totalTaxAmount = MethodUtils.roundOffAmountDouble(totalTax)
         orderAttributeRequestModel.totalTips = MethodUtils.roundOffAmountDouble(tipAmount)
-
+        cartModel.taxlistDynamic?.forEach { taxData ->
+            if (taxData.taxType == "Percentage") {
+                taxData.percentage_value =
+                    MethodUtils.roundOffAmountDouble(taxData.rate)
+            } else {
+                taxData.percentage_value =
+                    MethodUtils.roundOffAmountDouble((100 * taxData.totalTaxTypePrice) / taxData.subTotalAmount!!)
+            }
+        }
+        orderAttributeRequestModel.tax_bifurcation_data = Gson().toJson(cartModel.taxlistDynamic)
 
         val customerId = prefProvider.getValueInt(Constants.CUSTOMER_ID, -1)
         if (customerId != -1) {
@@ -2379,10 +2820,14 @@ class DashBoardCategoryViewModel @Inject constructor(
     fun updateOrder(cartModel: CartModel): OrderRequestModel {
         val orderModel: OrderAttributeRequestModel = OrderAttributeRequestModel()
         var ttotalDiscount = totalDiscount
-        Log.e(TAG,"getCartmodelId  ${cartModel.orderId}")
+        Log.e(TAG, "getCartmodelId  ${cartModel.orderId}")
         orderModel.apply {
             date = TimeFormatUtils.getCurrentDate()
-            id = if (cartModel.orderId != null && cartModel.orderId != 0){ cartModel.orderId}else{null}
+            id = if (cartModel.orderId != null && cartModel.orderId != 0) {
+                cartModel.orderId
+            } else {
+                null
+            }
 
             employeeId = prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
             locationId = prefProvider.getValueInt(Constants.LOCATION_ID, 1)
@@ -2653,6 +3098,8 @@ class DashBoardCategoryViewModel @Inject constructor(
                                     BUSINESS_WEBSITE,
                                     it.data.businessWebsite.toString()
                                 )
+                                prefProvider.setValue(REPORT_START_TIME, it.data.report_start_time)
+                                prefProvider.setValue(REPORT_END_TIME, it.data.report_end_time)
 
                                 prefProvider.setValueboolean(
                                     SERVICECHARGE_TAKEOUT_OPENORDER,
@@ -2662,6 +3109,15 @@ class DashBoardCategoryViewModel @Inject constructor(
                                     SERVICECHARGE_DINEIN_ORDER,
                                     it.data.enable_dine_in_service_charge
                                 )
+                                prefProvider.setValueboolean(
+                                    LOCK_SCREEN_TRANSACTION,
+                                    it.data.lock_screen_after_each_transaction
+                                )
+                                prefProvider.setValueboolean(
+                                    DINEIN_FLOORPLAN_SHOW_TABLENAME,
+                                    it.data.show_table_name
+                                )
+
                                 posRepository.addCashDiscountsFromDb(it.data.cash_discounts)
                                 taxServiceChargeRepository.deleteTaxFromDb()
                                 taxServiceChargeRepository.addAllTaxDatabase(it.data.taxes)

@@ -31,7 +31,7 @@ interface DBItemDao {
     val unhideItem: LiveData<List<TbItem>>
 
     @Query("select * from TbItem where TbItem.categoryId  = :id and TbItem.name != 'Manual Item'")
-    fun getItemList(id: Int?): LiveData<List<TbItem?>>?
+    fun getItemList(id: Int): LiveData<List<TbItem>>
 
     @Query("SELECT * from TbItem where TbItem.itemId  = :id and TbItem.name != 'Manual Item' LIMIT 1")
     fun itemById(id: Int?): LiveData<TbItem>?
@@ -59,6 +59,12 @@ interface DBItemDao {
 
     @Query("UPDATE TbItem SET isHide = 1 WHERE  TbItem.itemId = :id")
     suspend fun updateShowItem(id: Int): Int
+
+    @Query("UPDATE TbItem SET isSelectedItem = :isselected  WHERE  TbItem.itemId = :itemId")
+    suspend fun selectedItem(itemId: Int, isselected: Int): Int
+
+    @Query("UPDATE TbItem SET isSelectedItem = :isselected")
+    suspend fun deselectedItem(isselected: Int): Int
 
 
     @Query("UPDATE TbItem SET categoryId = :catId,categoryName = :catName  WHERE  TbItem.itemId = :itemId")

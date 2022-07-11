@@ -637,6 +637,22 @@ class PrintSunmiUtils {
             }
         }
 
+        fun lineChar(): Int {
+
+            return when (fontSizeInner) {
+                SMALL -> {
+                    48
+                }
+                MEDIUM -> {
+                    38
+                }
+                LARGE -> {
+                    32
+                }
+                else -> 48
+            }
+        }
+
     }
 
 

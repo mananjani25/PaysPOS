@@ -142,8 +142,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
         checkDineInEditOrder()
         printerProgress()
         getwebOrderingCountObserver()
-        viewModel.getOnlineOrderCount()
-        getOnlineOrderIsEnableOrNot()
+        prefProvider.setValueboolean(Constants.ORDER_COMPLETED, false)
         binding.lifecycleOwner = this
         return binding.root
     }
@@ -432,7 +431,8 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
         binding.layoutHeader.txtUserName.text =
             prefProvider.getValue(EMPLOYEE_NAME, "")
 
-
+        viewModel.getOnlineOrderCount()
+        getOnlineOrderIsEnableOrNot()
     }
 
 
@@ -603,7 +603,11 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
             val fragment = AddItemFragment.newInstance(item, this, cartList, false)
             loadCategoryFragment(fragment)
         } else {
-
+            if(!item.isSelectedItem){
+                item.isSelectedItem = true
+                viewModel.selectedItems(item.itemId,1)
+            }
+            prefProvider.setValueInt(Constants.CAT_ID_SELECTED,item.categoryId)
             Log.e(TAG, "cartListItemAddSize: ${cartList.size}")
             if (cartList.isEmpty()) {
                 viewModel.createCart(cartList)
@@ -652,6 +656,15 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
     }
 
     private fun addObserver() {
+        viewModel.showProgress.observe(viewLifecycleOwner) { event ->
+            event.getContentIfNotHandled()?.let {
+                if (it) {
+                    ProgressUtils.showProgressDialog(requireActivity())
+                } else {
+                    ProgressUtils.dismissProgressDialog()
+                }
+            }
+        }
         viewModel.callCashDiscount.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
                 if (it) {
@@ -750,13 +763,15 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
         serviceChargesObserve = Observer {
             if (it.status == Status.SUCCESS) {
                 if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == DINE_IN) {
-                    Log.e(TAG, "getServiceCharge:  ${Gson().toJson(it.data)}")
-                    serviceChargesList = ArrayList()
-                    viewModel.serviceChargesList.clear()
-                    it.data?.forEach { service ->
-                        if (service.order_type == Constants.SERVICECHARGE_DINEIN_ORDER) {
-                            serviceChargesList?.add(service)
-                            viewModel.serviceChargesList.add(service)
+                    if (prefProvider.getValueboolean(Constants.SERVICECHARGE_DINEIN_ORDER, false)) {
+                        Log.e(TAG, "getServiceCharge:  ${Gson().toJson(it.data)}")
+                        serviceChargesList = ArrayList()
+                        viewModel.serviceChargesList.clear()
+                        it.data?.forEach { service ->
+                            if (service.order_type == Constants.SERVICECHARGE_DINEIN_ORDER) {
+                                serviceChargesList?.add(service)
+                                viewModel.serviceChargesList.add(service)
+                            }
                         }
                     }
                     Log.d(
@@ -808,6 +823,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
 
     override fun onItemUpdate(item: TbItem) {
         Log.e(TAG, "dashboardPosItem:  ${Gson().toJson(item)}")
+        prefProvider.setValueInt(Constants.CAT_ID_SELECTED,item.categoryId)
         val frag: Fragment = AddItemFragment.newInstance(item, this, cartList, true)
         loadCategoryFragment(frag)
     }
