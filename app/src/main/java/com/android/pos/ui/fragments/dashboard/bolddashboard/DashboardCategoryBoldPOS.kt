@@ -596,6 +596,13 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
 
     override fun onItemSelected(item: TbItem) {
 
+        if (cartList.isEmpty() && viewModel.cartModel != null) {
+            cartList = arrayListOf()
+            viewModel.createCart(cartList)
+            cartList[0] = viewModel.cartModel!!
+        }
+
+
         if (item.modifier_set_ids.isNotEmpty() || item.variationsAttributes.isNotEmpty()) {
             /*  if (item.variationsAttributes.isNotEmpty()) {
                   item.variationsAttributes.get(0).isChecked = true
@@ -603,11 +610,11 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
             val fragment = AddItemFragment.newInstance(item, this, cartList, false)
             loadCategoryFragment(fragment)
         } else {
-            if(!item.isSelectedItem){
+            if (!item.isSelectedItem) {
                 item.isSelectedItem = true
-                viewModel.selectedItems(item.itemId,1)
+                viewModel.selectedItems(item.itemId, 1)
             }
-            prefProvider.setValueInt(Constants.CAT_ID_SELECTED,item.categoryId)
+            prefProvider.setValueInt(Constants.CAT_ID_SELECTED, item.categoryId)
             Log.e(TAG, "cartListItemAddSize: ${cartList.size}")
             if (cartList.isEmpty()) {
                 viewModel.createCart(cartList)
@@ -823,7 +830,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
 
     override fun onItemUpdate(item: TbItem) {
         Log.e(TAG, "dashboardPosItem:  ${Gson().toJson(item)}")
-        prefProvider.setValueInt(Constants.CAT_ID_SELECTED,item.categoryId)
+        prefProvider.setValueInt(Constants.CAT_ID_SELECTED, item.categoryId)
         val frag: Fragment = AddItemFragment.newInstance(item, this, cartList, true)
         loadCategoryFragment(frag)
     }

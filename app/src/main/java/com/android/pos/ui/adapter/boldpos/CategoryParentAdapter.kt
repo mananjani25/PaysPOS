@@ -30,10 +30,9 @@ class CategoryParentAdapter(
                     model.list,
                     object : CategoryTabAdapter1.TabListner {
                         override fun onTabSelected(pos: Int) {
-                            Log.e(TAG,"getCatPOS  ${pos}")
+                            Log.e(TAG, "getCatPOS  ${pos}")
                             selectedParentPos = bindingAdapterPosition
                             selectedCategoryPos = pos
-
                             listner.onCategorySelected(bindingAdapterPosition, pos)
                         }
 
