@@ -70,7 +70,8 @@ class PrintSunmiUtils {
 
             headerText(value)
             normalTextCenter(value1)
-            normalTextCenter(value2)
+            if (value2.isNotEmpty())
+            normalTextCenter(MethodUtils.getUSFormatNumber(value2))
 
         }
 
@@ -456,7 +457,7 @@ class PrintSunmiUtils {
 
         fun qrCodeInner(value: String) {
             SunmiPrintHelper.getInstance().setAlign(1)
-            SunmiPrintHelper.getInstance().printQr(value, 7, 0)
+            SunmiPrintHelper.getInstance().printQr(value, 6, 0)
         }
 
         fun cutPaper() {

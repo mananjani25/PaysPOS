@@ -8992,9 +8992,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 //            receiptModel?.order?.venue_website?.let { SunmiPrinterApi.getInstance().printText(it) }
 //            SunmiPrinterApi.getInstance().lineWrap(1)
 
-
+            SunmiPrintHelper.getInstance().lineWrap(1)
             receiptModel?.order?.orderType?.trim()?.let { PrintSunmiUtils.headerText(it) }
-
+            SunmiPrintHelper.getInstance().lineWrap(1)
 
             if (receiptModel?.order?.orderType?.lowercase() == OPEN_ORDER.lowercase()
                 || receiptModel?.order?.orderType?.lowercase() == OPEN_ORDER.lowercase()
@@ -9406,7 +9406,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 ).toString()
 
                 PrintSunmiUtils.boldText(str7)
-                SunmiPrintHelper.getInstance().lineWrap(2)
+                SunmiPrintHelper.getInstance().lineWrap(1)
 
             }
 
@@ -9420,7 +9420,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 ).toString()
 
                 PrintSunmiUtils.boldText(str7)
-                SunmiPrintHelper.getInstance().lineWrap(2)
+                SunmiPrintHelper.getInstance().lineWrap(1)
 
             }
 
