@@ -338,7 +338,7 @@ class ActiveOrderFragment(
                 var itemDiscountTotal: Double = 0.0
                 var itemPassDis: Double = 0.0
                 order.orderItems.forEach {
-                    dashboardViewModel.selectedItems(it.itemId,1)
+                    dashboardViewModel.selectedItems(it.itemId, 1)
                     if (it.discountAmount != 0.0) {
                         itemDiscountTotal += MethodUtils.roundOffAmountDouble(it.discountAmount)
                     }
@@ -2711,17 +2711,17 @@ class ActiveOrderFragment(
                 prefProvider.getValue(BUSINESS_ADDRESS, ""),
                 prefProvider.getValue(Constants.BUSINESS_PHONE_NO, "")
             )
-
+            SunmiPrintHelper.getInstance().lineWrap(1)
             PrintSunmiUtils.headerText(receiptModel?.orderType.trim())
 
 
             if (receiptModel?.orderType?.lowercase() == Constants.OPEN_ORDER.lowercase()
                 || receiptModel?.orderType?.lowercase() == Constants.OPEN_ORDER.lowercase()
             ) {
-
                 PrintSunmiUtils.headerText(receiptModel?.deliveryType)
 
             }
+            SunmiPrintHelper.getInstance().lineWrap(1)
 
 
 
