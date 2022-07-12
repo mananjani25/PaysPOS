@@ -117,7 +117,10 @@ class Categories(val clickedPosition: Int) : Fragment(),ItemCallback {
 
         viewModel.data.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
-
+                val intent = Intent()
+                intent.action = "inventory"
+                intent.putExtra("position", clickedPosition)
+                requireContext().sendBroadcast(intent)
 //                if (!isreOrder)
                     AlertUtils.showCustomAlert(requireActivity(), it.message)
 

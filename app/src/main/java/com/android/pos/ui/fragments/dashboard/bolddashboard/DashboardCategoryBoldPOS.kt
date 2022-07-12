@@ -142,6 +142,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
         checkDineInEditOrder()
         printerProgress()
         getwebOrderingCountObserver()
+        getDineInData()
         prefProvider.setValueboolean(Constants.ORDER_COMPLETED, false)
         binding.lifecycleOwner = this
         return binding.root
@@ -713,6 +714,25 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                                 cashDiscountType = ""
                             }
                         }
+                    Log.d(TAG, "addObserver: "+Gson().toJson(viewModel.cartModel))
+                    Log.d(TAG, "addObserver: "+Gson().toJson(cartList))
+                    if(cartList.isNotEmpty()){
+                        if (cartList[0] != null) {
+                            if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == DINE_IN) {
+                                cartList[0].dineInList?.forEach { dineInModel ->
+                                    dineInModel.items.forEach { items ->
+                                        items.isSelectedItem = true
+                                        viewModel.selectedItems(items.itemId, 1)
+                                    }
+                                }
+                            } else {
+                                cartList[0].items?.forEach { items ->
+                                    items.isSelectedItem = true
+                                    viewModel.selectedItems(items.itemId, 1)
+                                }
+                            }
+                        }
+                    }
 
                 }
             }
@@ -821,7 +841,6 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                     ordertypelist = it.data.toCollection(arrayListOf())
                     viewModel.setOrderTypeList(ordertypelist)
                 }
-                getDineInData()
             }
 
         }
@@ -944,7 +963,11 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
             var dineInList = arguments?.getParcelableArrayList<DineInModel>("dine_in_list")
 
             if (dineInList?.isNotEmpty() == true) {
-
+                dineInList.forEach { it->
+                    it.items.forEach {items->
+                        viewModel.selectedItems(items.itemId,1)
+                    }
+                }
                 if (cartList.isEmpty()) {
                     var orderTypeIdN = 0
                     ordertypelist.forEach {
