@@ -140,9 +140,9 @@ class AddGuestDailog : DialogFragment() {
             binding.edtAmount.append(number)
             if (binding.edtAmount.text!!.length >= 2) {
                 var value = binding.edtAmount.text.toString().toInt()
-                if (value > 10) {
+                if (value > 15) {
                     binding.edtAmount.text!!.clear()
-                    binding.edtAmount.append("10")
+                    binding.edtAmount.append("15")
                 }
             }
         }

@@ -224,7 +224,7 @@ class DineInOrderTableViewModel @Inject constructor(
             when (resource.status) {
                 Status.SUCCESS -> {
                     _showProgress.value = Event(false)
-                    _updateOrder.value = Event("Guest Added.")
+                    _updateOrder.value = Event("Guest added successfully.")
 
                 }
                 Status.ERROR -> {

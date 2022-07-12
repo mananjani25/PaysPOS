@@ -1393,7 +1393,7 @@ class CartFragment(
         Log.d(TAG, "addGuestToOrder: " + Gson().toJson(cartlist[0].dineInList))
         var existing_count = cartlist[0].dineInList!!.size - 1
         var total_count = existing_count + count
-        if (total_count <= 10) {
+        if (total_count <= 15) {
             var existinglist: ArrayList<DineInModel> = arrayListOf()
             existinglist.addAll(cartlist[0].dineInList!!.toMutableList())
             Log.d(TAG, "addGuestToOrder size: " + existinglist.size)
@@ -1418,7 +1418,7 @@ class CartFragment(
             viewModel.addGuestFromDashBoard(cartlist)
         } else {
             AlertUtils.showCustomAlertWithListenerWithOK(
-                requireContext(), "You can't add more than 10 Guest in an order."
+                requireContext(), "You can't add more than 15 Guest in an order."
             ) { _, _ ->
             }
         }

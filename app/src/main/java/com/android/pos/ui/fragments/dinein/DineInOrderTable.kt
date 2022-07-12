@@ -835,7 +835,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         Log.d(TAG, "addGuestToOrder: " + Gson().toJson(cartList))
         var existing_count = cartList?.dineInList!!.size - 1
         var total_count = existing_count+count
-        if(total_count<=10)  {
+        if(total_count<=15)  {
             var existinglist: ArrayList<DineInModel> = arrayListOf()
             existinglist.addAll(cartList?.dineInList!!.toMutableList())
             Log.d(TAG, "addGuestToOrder size: " + existinglist.size)
@@ -863,7 +863,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             orderId?.let { viewModel.updateOrder(it, request) }
         }else{
             AlertUtils.showCustomAlertWithListenerWithOK(
-                requireContext(), "You can't add more than 10 Guest in an order."
+                requireContext(), "You can't add more than 15 Guest in an order."
             ) { _, _ ->
             }
         }
