@@ -60,7 +60,7 @@ class ItemAdapter(
         }
 
         init {
-            binding.txtCategoryName.setOnClickListener {
+            binding.root.setOnClickListener {
                 if (lastChecked != null) {
                     lastChecked?.isSelected = false
                 }

@@ -19,6 +19,7 @@ import android.view.*
 import androidx.activity.OnBackPressedCallback
 import androidx.core.text.trimmedLength
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
@@ -71,6 +72,7 @@ import com.android.pos.data.remote.Constants.getReceiptFormatDateFromUTCServer
 import com.android.pos.databinding.FragmentOrderCompletBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.adapter.SplitListAdapter
+import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.android.pos.ui.fragments.settings.hardware.printer.BluetoothUtil
 import com.android.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper
 import com.android.pos.utils.*
@@ -131,6 +133,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
     private var isLastPayment: Boolean = false
     private var isDineIn: Boolean = false
     private var kitchenPrinterList: List<PrinterResponse.Data.KitchenReceiptPrinters> = listOf()
+    private val viewModelDashBoard by activityViewModels<DashBoardCategoryViewModel>()
     private var orderID: Int = 0
     var paymentType: String = ""
     private var type: String = ""
@@ -653,6 +656,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             prefProvider.setValue(Constants.CUSTOMER_NAME, "")
             prefProvider.setValue(Constants.PREF_CUSTOMER, "")
             prefProvider.setValueInt(Constants.CUSTOMER_ID, -1)
+            viewModelDashBoard.cartModel = null
             viewModel.deleteCart()
         }
 
@@ -7759,9 +7763,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
             }
 
-            builder?.addFeedLine(2)
+            builder.addFeedLine(2)
 
-            builder?.addCut(Builder.CUT_FEED)
+            builder.addCut(Builder.CUT_FEED)
 
             val status = IntArray(1)
             val battery = IntArray(1)
@@ -7771,12 +7775,22 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 timeOut = BLUETOOTH_TIMEOUT
             }
 
+            if (customerReceiptPrinters.name.substring(0, 6).toString()
+                    .lowercase() == "TM-m30".lowercase() && customerReceiptPrinters.printer_type != Constants.BLUETOOTH
+            ) {
+
+                timeOut = 1000
+            }
+
             try {
                 PrinterClass.getPrinter()?.sendData(
                     builder,
                     timeOut, status, battery
                 )
 
+                Handler(Looper.getMainLooper()).postDelayed(Runnable {
+
+                },1000)
                 //printerDialog.dismiss()
                 PrinterClass.closePrinter()
 
