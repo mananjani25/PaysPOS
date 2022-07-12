@@ -551,6 +551,13 @@ class CartFragment(
                 dineInCartAdapter.setListner(this)
                 //dineInCartAdapter.setList(dineInList)
 
+                dineInList.forEach { it->
+                    it.items.forEach {items->
+                        if(!items.isSelectedItem){
+                            viewModel.selectedItems(items.itemId,1)
+                        }
+                    }
+                }
 
                 if (cartlist.isEmpty()) {
                     val cartModel = CartModel().apply {

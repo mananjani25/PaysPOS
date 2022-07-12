@@ -694,7 +694,6 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     for (j in i + 1 until list.size) {
                         if (list[j].isHeader == 1) {
                             list[j].item?.let { it1 ->
-                                viewModelPayment.selectedItems(it1.itemId, 1)
                                 if (it1.discountPrice != 0.0) {
                                     it1.discountPrice =
                                         MethodUtils.roundOffAmountDouble(it1.discountPrice / it1.itemQuantity)
@@ -708,6 +707,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                         }
 
                     }
+
                     model.items = listTbItem
                     newList.add(model)
 
@@ -3087,8 +3087,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 }
             }
 
-        }
-        else if (customerReceiptPrinters.name.startsWith(SUNMI_INNER_PRINTER, true)) {
+        } else if (customerReceiptPrinters.name.startsWith(SUNMI_INNER_PRINTER, true)) {
 
 
             SunmiPrintHelper.getInstance().initSunmiPrinterService(requireContext())

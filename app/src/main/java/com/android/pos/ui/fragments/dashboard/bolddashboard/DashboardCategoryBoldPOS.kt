@@ -953,6 +953,11 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                         }
                     }
 
+                    dineInList.forEach { it->
+                        it.items.forEach {items->
+                         viewModel.selectedItems(items.itemId,1)
+                        }
+                    }
                     val cartModel = CartModel().apply {
                         terminalId = prefProvider.getValueInt(Constants.TERMINAL_ID, -1)
                         employeeID = prefProvider.getValueInt(Constants.EMPLOYEE_ID, -1)
