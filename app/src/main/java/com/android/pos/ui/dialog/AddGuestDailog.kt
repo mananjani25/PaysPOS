@@ -104,7 +104,7 @@ class AddGuestDailog : DialogFragment() {
         binding.txtSave.setOnClickListener {
             var finalstring = binding.edtAmount.text.toString()
             if (finalstring.isEmpty()) {
-                AlertUtils.showCustomAlert(requireContext(), "Please enter Guest Count.")
+                AlertUtils.showCustomAlert(requireContext(), "Please enter Guest count.")
             } else {
                 val result = Bundle().apply {
                     putInt("count", finalstring.toInt())
@@ -138,11 +138,11 @@ class AddGuestDailog : DialogFragment() {
             binding.edtAmount?.setText(removeLastCharacter(binding?.edtAmount!!.text.toString()))
         } else {
             binding.edtAmount.append(number)
-            if (binding.edtAmount.text!!.length == 3) {
+            if (binding.edtAmount.text!!.length >= 2) {
                 var value = binding.edtAmount.text.toString().toInt()
-                if (value > 100) {
+                if (value > 10) {
                     binding.edtAmount.text!!.clear()
-                    binding.edtAmount.append("100")
+                    binding.edtAmount.append("10")
                 }
             }
         }

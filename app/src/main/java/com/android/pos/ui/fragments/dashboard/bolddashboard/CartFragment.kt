@@ -477,7 +477,8 @@ class CartFragment(
         numOfGuest = updateBundle!!.get("numberOfGuest") as Int
 
 
-        dineInFloorTableModel = updateBundle?.get("floorplan") as GetFloorPlanResponse.Data.FloorPlanTable
+        dineInFloorTableModel =
+            updateBundle?.get("floorplan") as GetFloorPlanResponse.Data.FloorPlanTable
         var orderDEtails: GetOrderDetailsResponse.Data.FloorPlanTable? = null
         if (updateBundle!!.get("tableDetails") != null) {
             orderDEtails =
@@ -551,10 +552,10 @@ class CartFragment(
                 dineInCartAdapter.setListner(this)
                 //dineInCartAdapter.setList(dineInList)
 
-                dineInList.forEach { it->
-                    it.items.forEach {items->
-                        if(!items.isSelectedItem){
-                            viewModel.selectedItems(items.itemId,1)
+                dineInList.forEach { it ->
+                    it.items.forEach { items ->
+                        if (!items.isSelectedItem) {
+                            viewModel.selectedItems(items.itemId, 1)
                         }
                     }
                 }
@@ -1391,29 +1392,36 @@ class CartFragment(
     fun addGuestToOrder(count: Int) {
         Log.d(TAG, "addGuestToOrder: " + Gson().toJson(cartlist[0].dineInList))
         var existing_count = cartlist[0].dineInList!!.size - 1
-        var existinglist: ArrayList<DineInModel> = arrayListOf()
-        existinglist.addAll(cartlist[0].dineInList!!.toMutableList())
-        Log.d(TAG, "addGuestToOrder size: " + existinglist.size)
-        val dineInList: java.util.ArrayList<DineInModel> = arrayListOf()
-        if (existinglist.isNotEmpty()) {
-            for (i in 1..count) {
-                dineInList.add(
-                    DineInModel(
-                        0,
-                        false,
-                        0,
-                        "Guest ${existing_count.plus(i)}",
-                        floorPlanTable = cartlist[0].dineInList!![0].floorPlanTable
+        var total_count = existing_count + count
+        if (total_count <= 10) {
+            var existinglist: ArrayList<DineInModel> = arrayListOf()
+            existinglist.addAll(cartlist[0].dineInList!!.toMutableList())
+            Log.d(TAG, "addGuestToOrder size: " + existinglist.size)
+            val dineInList: java.util.ArrayList<DineInModel> = arrayListOf()
+            if (existinglist.isNotEmpty()) {
+                for (i in 1..count) {
+                    dineInList.add(
+                        DineInModel(
+                            0,
+                            false,
+                            0,
+                            "Guest ${existing_count.plus(i)}",
+                            floorPlanTable = cartlist[0].dineInList!![0].floorPlanTable
 
+                        )
                     )
-                )
+                }
+
             }
-
+            existinglist.addAll(dineInList)
+            cartlist[0].dineInList = existinglist.toList()
+            viewModel.addGuestFromDashBoard(cartlist)
+        } else {
+            AlertUtils.showCustomAlertWithListenerWithOK(
+                requireContext(), "You can't add more than 10 Guest in an order."
+            ) { _, _ ->
+            }
         }
-
-        existinglist.addAll(dineInList)
-        cartlist[0].dineInList = existinglist.toList()
-        viewModel.addGuestFromDashBoard(cartlist)
     }
 
     override fun onItemDelete(position: Int, itemPosition: Int, data: TbItem) {
@@ -1613,7 +1621,7 @@ class CartFragment(
 
 
 
-                             cartlist[0].orderId?.let { viewModel.updateOrderCall(it, request) }
+                            cartlist[0].orderId?.let { viewModel.updateOrderCall(it, request) }
 
 
                         }
