@@ -3,10 +3,32 @@ package com.android.pos.ui.adapter
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.android.pos.data.model.responseModel.PrinterResponse
 import com.android.pos.databinding.ViewPrinterCategoryBinding
 
-class CategoryPrinterAdapter() : RecyclerView.Adapter<CategoryPrinterAdapter.MyViewHolder>() {
-    inner class MyViewHolder(val itemView:ViewPrinterCategoryBinding):RecyclerView.ViewHolder(itemView.root)
+class CategoryPrinterAdapter(var list: ArrayList<PrinterResponse.Data.PrinterCategories>) :
+    RecyclerView.Adapter<CategoryPrinterAdapter.MyViewHolder>() {
+    inner class MyViewHolder(private val binding: ViewPrinterCategoryBinding) :
+        RecyclerView.ViewHolder(binding.root) {
+        fun onBind(model: PrinterResponse.Data.PrinterCategories) {
+            binding.txtCategoryName.setText(model.name)
+
+
+        }
+
+        init {
+
+            binding.chCategory.setOnCheckedChangeListener { compoundButton, b ->
+                if (compoundButton.isPressed) {
+
+                    list[bindingAdapterPosition].printerEnable = b
+
+
+                }
+            }
+        }
+    }
+
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
@@ -19,12 +41,27 @@ class CategoryPrinterAdapter() : RecyclerView.Adapter<CategoryPrinterAdapter.MyV
     }
 
     override fun onBindViewHolder(holder: CategoryPrinterAdapter.MyViewHolder, position: Int) {
+        holder.onBind(list[position])
+
 
     }
 
     override fun getItemCount(): Int {
-        return 0
+        return list.size
 
 
+    }
+
+    fun addList(listData: ArrayList<PrinterResponse.Data.PrinterCategories>) {
+        this.list.clear()
+        this.list = arrayListOf()
+        this.list.addAll(listData)
+        notifyDataSetChanged()
+
+
+    }
+
+    fun getList(): List<PrinterResponse.Data.PrinterCategories> {
+        return this.list
     }
 }

@@ -415,7 +415,8 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                                                 customerData[i].macAddress
                                             ),
                                             printerModel = customerData[i].orderTypes,
-                                            currentPrinterType = CUSTOMER
+                                            currentPrinterType = CUSTOMER,
+                                            printerCategories = customerData[i].printerCategories
 
 
                                         )
@@ -443,7 +444,8 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                                                 customerData[i].ipAddress,
                                                 customerData[i].macAddress
                                             ),
-                                            printerModel = customerData[i].orderTypes
+                                            printerModel = customerData[i].orderTypes,
+                                            printerCategories = customerData[i].printerCategories
 
 
                                         )
@@ -544,7 +546,8 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                                                 kitchenData[i].macAddress
                                             ),
                                             printerModel = kitchenData[i].orderTypes,
-                                            currentPrinterType = KITCHEN
+                                            currentPrinterType = KITCHEN,
+                                            printerCategories = kitchenData[i].printerCategories
 
 
                                         )
@@ -573,7 +576,8 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                                                 kitchenData[i].ipAddress,
                                                 kitchenData[i].macAddress
                                             ),
-                                            printerModel = kitchenData[i].orderTypes
+                                            printerModel = kitchenData[i].orderTypes,
+                                            printerCategories = kitchenData[i].printerCategories
 
 
                                         )
@@ -1384,6 +1388,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
 
     override fun onEditSelected(printerListModel: PrinterListModel) {
+        Log.e(TAG, "printerListModel:  ${Gson().toJson(printerListModel)}")
 
         val bundle = Bundle()
         bundle.putParcelable("printerSetting", printerListModel)
@@ -1521,10 +1526,18 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                 mPrinter.addFeedLine(2)
                 mPrinter.addCut(Builder.CUT_FEED)
 
+                try {
                     mPrinter.beginTransaction()
                     mPrinter.sendData(Printer.PARAM_DEFAULT)
+                } catch (e: Exception) {
+                    try {
+                        mPrinter.disconnect()
 
-
+                    } catch (e: java.lang.Exception) {
+                        e.printStackTrace()
+                    }
+                    e.printStackTrace()
+                }
 
 
             })

@@ -4,6 +4,7 @@
     <item android:drawable="@color/txt_color_blue" android:state_pressed="true" />
     <item android:drawable="@color/txt_color_blue" android:state_focused="true" />
 
+    <item android:state_selected="true" android:drawable="@color/txt_color_blue"/>
     <item android:drawable="@color/drawerItemSelected" />
 
 </selector>

@@ -23,6 +23,7 @@ import com.android.pos.data.remote.Constants.createRequestModelForUpdatePrinter
 import com.android.pos.data.remote.Constants.createRequestModelForUpdatePritnerType
 import com.android.pos.databinding.FragmentEditPrinterBinding
 import com.android.pos.di.PrefProvider
+import com.android.pos.ui.adapter.CategoryPrinterAdapter
 import com.android.pos.ui.adapter.EditPrinterListAdapter
 import com.android.pos.ui.fragments.settings.hardware.printer.PrinterViewModel
 import com.android.pos.utils.AlertUtils
@@ -37,6 +38,7 @@ class EditPrinter : Fragment() {
     private var oldOrderTypes: List<PrinterResponse.Data.OrderTypes> = arrayListOf()
     lateinit var binding: FragmentEditPrinterBinding
     private lateinit var adapter: EditPrinterListAdapter
+    private lateinit var categoryAdapter: CategoryPrinterAdapter
     private var printerModel: PrinterListModel? = null
     private val viewModel by viewModels<PrinterViewModel>()
     private lateinit var arrayAdapter: ArrayAdapter<String>
@@ -54,6 +56,7 @@ class EditPrinter : Fragment() {
     ): View? {
         binding = FragmentEditPrinterBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = this
+        categoryAdapter = CategoryPrinterAdapter(arrayListOf())
         arrayAdapter =
             ArrayAdapter(binding.root.context, android.R.layout.simple_spinner_item, list)
         arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
@@ -76,9 +79,11 @@ class EditPrinter : Fragment() {
 
 
         binding.rvPrinterList.adapter = adapter
+        binding.rvCategoriesList?.adapter = categoryAdapter
         printerModel = arguments?.getParcelable("printerSetting")
         setSpinnnerAdapter()
         Log.e(TAG, "SettingprinterModel:  ${Gson().toJson(printerModel)}")
+        setCategoryAdapter()
         if (printerModel != null) {
             setPrinterData()
         }
@@ -86,6 +91,19 @@ class EditPrinter : Fragment() {
 
 
         onClick()
+
+    }
+
+    private fun setCategoryAdapter() {
+        if (printerModel != null) {
+
+            var listCategories = printerModel?.printerCategories?.filter {
+                it.categoryActive == true
+            }
+            Log.e(TAG, "listCategoriesSize  ${listCategories?.size}")
+            categoryAdapter.addList(listCategories?.toCollection(arrayListOf()) ?: arrayListOf())
+
+        }
 
     }
 
