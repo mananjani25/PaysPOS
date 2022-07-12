@@ -147,13 +147,15 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
 
                             }
 
+                            categoryParentAdapter.addList(list)
+
                             categoryList1[0].inventoryLists?.filter {
                                 it!!.isHide
                             }?.let { it1 ->
                                 itemList1.addAll(it1)
                             }
 
-                            categoryParentAdapter.addList(list)
+
 
                             searchCategory()
 
@@ -166,6 +168,7 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
 
                                 } else {
                                     changePositionOfCate()
+
                                 }
 
 
@@ -232,7 +235,9 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
             tabPos += 8
         }
 
-        binding.rvCategoryParent.smoothScrollToPosition(posParent)
+        if (posParent != 0) {
+            binding.rvCategoryParent.smoothScrollToPosition(posParent)
+        }
         if (tabPos != -1) {
             categoryList1[tabPos].inventoryLists?.filter {
                 it!!.isHide
@@ -429,9 +434,21 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
 
                 categoryParentAdapter.list.forEachIndexed { index1, it ->
                     it.list.forEachIndexed { index, categoryTabModel ->
-                        Log.e(TAG,"categoryId ${categoryTabModel.id}")
-                        Log.e(TAG,"selectedLastID ${prefProvider.getValueInt(Constants.CAT_ID_SELECTED,0)}")
-                        if (categoryTabModel.id == prefProvider.getValueInt(Constants.CAT_ID_SELECTED,0)) {
+                        Log.e(TAG, "categoryId ${categoryTabModel.id}")
+                        Log.e(
+                            TAG,
+                            "selectedLastID ${
+                                prefProvider.getValueInt(
+                                    Constants.CAT_ID_SELECTED,
+                                    0
+                                )
+                            }"
+                        )
+                        if (categoryTabModel.id == prefProvider.getValueInt(
+                                Constants.CAT_ID_SELECTED,
+                                0
+                            )
+                        ) {
                             categoryTabModel.isSelected = true
                         } else {
                             categoryTabModel.isSelected = false
