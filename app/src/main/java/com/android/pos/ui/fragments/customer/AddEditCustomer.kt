@@ -252,18 +252,22 @@ class AddEditCustomer : Fragment() {
                 } else {
                     binding.edtAddress?.setSelection(1)
                 }
-                if (editModel.addresses[1] != null) {
-                    binding.edtStreetDel?.setText(editModel.addresses[1].address1)
-                    binding.edtSuiteDel?.setText(editModel.addresses[1].address2)
-                    binding.edtCityDel?.setText(editModel.addresses[1].city)
-                    binding.edtStateDel?.setText(editModel.addresses[1].state)
-                    binding.edtZipDel?.setText(editModel.addresses[1].postcode)
-                    if (editModel.addresses[1].country == "United States") {
-                        binding.edtAddressDel?.setSelection(0)
-                    } else {
-                        binding.edtAddressDel?.setSelection(1)
+
+                if (editModel.addresses.size == 2) {
+                    if (editModel.addresses[1] != null) {
+                        binding.edtStreetDel?.setText(editModel.addresses[1].address1)
+                        binding.edtSuiteDel?.setText(editModel.addresses[1].address2)
+                        binding.edtCityDel?.setText(editModel.addresses[1].city)
+                        binding.edtStateDel?.setText(editModel.addresses[1].state)
+                        binding.edtZipDel?.setText(editModel.addresses[1].postcode)
+                        if (editModel.addresses[1].country == "United States") {
+                            binding.edtAddressDel?.setSelection(0)
+                        } else {
+                            binding.edtAddressDel?.setSelection(1)
+                        }
                     }
                 }
+
 
             }
 
@@ -553,8 +557,9 @@ class AddEditCustomer : Fragment() {
                 var id1: Int? = null
                 var id2: Int? = null
 
-                if (viewModel.listAddress.size > 0) {
+                if(viewModel.listAddress.size==1){
                     id1 = viewModel.listAddress[0].id!!
+                }else if(viewModel.listAddress.size==2){
                     id2 = viewModel.listAddress[1].id!!
                 }
                 listAddress = arrayListOf()

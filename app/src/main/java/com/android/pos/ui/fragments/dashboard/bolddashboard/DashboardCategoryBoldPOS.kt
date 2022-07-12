@@ -142,6 +142,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
         checkDineInEditOrder()
         printerProgress()
         getwebOrderingCountObserver()
+        getDineInData()
         prefProvider.setValueboolean(Constants.ORDER_COMPLETED, false)
         binding.lifecycleOwner = this
         return binding.root
@@ -603,11 +604,11 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
             val fragment = AddItemFragment.newInstance(item, this, cartList, false)
             loadCategoryFragment(fragment)
         } else {
-            if(!item.isSelectedItem){
+            if (!item.isSelectedItem) {
                 item.isSelectedItem = true
-                viewModel.selectedItems(item.itemId,1)
+                viewModel.selectedItems(item.itemId, 1)
             }
-            prefProvider.setValueInt(Constants.CAT_ID_SELECTED,item.categoryId)
+            prefProvider.setValueInt(Constants.CAT_ID_SELECTED, item.categoryId)
             Log.e(TAG, "cartListItemAddSize: ${cartList.size}")
             if (cartList.isEmpty()) {
                 viewModel.createCart(cartList)
@@ -706,6 +707,25 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                                 cashDiscountType = ""
                             }
                         }
+                    Log.d(TAG, "addObserver: "+Gson().toJson(viewModel.cartModel))
+                    Log.d(TAG, "addObserver: "+Gson().toJson(cartList))
+                    if(cartList.isNotEmpty()){
+                        if (cartList[0] != null) {
+                            if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == DINE_IN) {
+                                cartList[0].dineInList?.forEach { dineInModel ->
+                                    dineInModel.items.forEach { items ->
+                                        items.isSelectedItem = true
+                                        viewModel.selectedItems(items.itemId, 1)
+                                    }
+                                }
+                            } else {
+                                cartList[0].items?.forEach { items ->
+                                    items.isSelectedItem = true
+                                    viewModel.selectedItems(items.itemId, 1)
+                                }
+                            }
+                        }
+                    }
 
                 }
             }
@@ -814,7 +834,6 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                     ordertypelist = it.data.toCollection(arrayListOf())
                     viewModel.setOrderTypeList(ordertypelist)
                 }
-                getDineInData()
             }
 
         }
@@ -823,7 +842,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
 
     override fun onItemUpdate(item: TbItem) {
         Log.e(TAG, "dashboardPosItem:  ${Gson().toJson(item)}")
-        prefProvider.setValueInt(Constants.CAT_ID_SELECTED,item.categoryId)
+        prefProvider.setValueInt(Constants.CAT_ID_SELECTED, item.categoryId)
         val frag: Fragment = AddItemFragment.newInstance(item, this, cartList, true)
         loadCategoryFragment(frag)
     }
@@ -937,7 +956,11 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
             var dineInList = arguments?.getParcelableArrayList<DineInModel>("dine_in_list")
 
             if (dineInList?.isNotEmpty() == true) {
-
+                dineInList.forEach { it->
+                    it.items.forEach {items->
+                        viewModel.selectedItems(items.itemId,1)
+                    }
+                }
                 if (cartList.isEmpty()) {
                     var orderTypeIdN = 0
                     ordertypelist.forEach {

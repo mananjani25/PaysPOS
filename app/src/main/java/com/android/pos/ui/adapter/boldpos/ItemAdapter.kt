@@ -2,6 +2,7 @@ package com.android.pos.ui.adapter.boldpos
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import android.widget.TextView
@@ -11,14 +12,15 @@ import com.android.pos.R
 import com.android.pos.data.entities.TbItem
 import com.android.pos.databinding.ViewCategoryItemBoldBinding
 import com.android.pos.ui.adapter.CategoryItemAdapter1
+import com.android.pos.ui.adapter.ItemListAdapter
 import com.android.pos.utils.MethodUtils
+import com.android.pos.utils.callback.ItemListner
 import com.android.pos.utils.extensions.gone
 
 class ItemAdapter(
     val context: Context,
     var list: ArrayList<TbItem?>,
-
-    val listener: CategoryItemAdapter1.CategoryItemList,
+    val listener: ItemListner,
     var lastChecked: TextView? = null
 ) : RecyclerView.Adapter<ItemAdapter.MyViewHolder>() {
     private var mpos: Int = -2
@@ -27,12 +29,17 @@ class ItemAdapter(
         RecyclerView.ViewHolder(binding.root) {
         val checkedTextView = binding.txtCategoryName
         var itename_price: StringBuffer = StringBuffer()
+
         @SuppressLint("ResourceType")
-        fun bind(model: TbItem?) {
+        fun bind(model: TbItem?, position: Int) {
             if (model?.name?.length!! > 30) {
-                itename_price.append(model?.name.substring(0, 30) + "...\n" + model?.price?.let { MethodUtils.roundOffAmount(it) })
+                itename_price.append(
+                    model?.name.substring(
+                        0,
+                        30
+                    ) + "...\n" + model?.price?.let { MethodUtils.roundOffAmount(it) })
                 binding.txtCategoryName.text = itename_price
-            }else{
+            } else {
                 binding.txtCategoryName.text =
                     "" + model?.name + "\n\n" + model?.price?.let { MethodUtils.roundOffAmount(it) }
             }
@@ -50,24 +57,57 @@ class ItemAdapter(
 
             }
             if (model.isSelectedItem) {
-                binding.txtCategoryName.setBackgroundColor(ContextCompat.getColor(context, R.color.txt_color_blue))
-                binding.txtCategoryName.setTextColor(ContextCompat.getColor(context,R.color.white))
-            }else{
-                binding.txtCategoryName.background = (ContextCompat.getDrawable(context, R.drawable.item_selector))
-                binding.txtCategoryName.setTextColor(ContextCompat.getColor(context,R.drawable.text_selector))
+                binding.txtCategoryName.setBackgroundColor(
+                    ContextCompat.getColor(
+                        context,
+                        R.color.txt_color_blue
+                    )
+                )
+                binding.txtCategoryName.setTextColor(ContextCompat.getColor(context, R.color.white))
+            } else {
+                binding.txtCategoryName.background =
+                    (ContextCompat.getDrawable(context, R.drawable.item_selector))
+                binding.txtCategoryName.setTextColor(
+                    ContextCompat.getColor(
+                        context,
+                        R.drawable.text_selector
+                    )
+                )
             }
 
-        }
-
-        init {
-            binding.txtCategoryName.setOnClickListener {
+            binding.root.setOnClickListener {
+                try {
+                    list[position]?.let {
+                        Log.e("ITemAdapter", "onClickposition  ${position}")
+                        listener.onItemSelected(it)
+                    }
+                    if (list[position]?.modifier_set_ids?.isEmpty() == true && list[position]?.variationsAttributes?.isEmpty() == true) {
+                        binding.txtCategoryName.setBackgroundColor(
+                            ContextCompat.getColor(
+                                context,
+                                R.color.txt_color_blue
+                            )
+                        )
+                        binding.txtCategoryName.setTextColor(
+                            ContextCompat.getColor(
+                                context,
+                                R.color.white
+                            )
+                        )
+                    }
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                }
                 if (lastChecked != null) {
                     lastChecked?.isSelected = false
                 }
                 lastChecked = checkedTextView
-                list[bindingAdapterPosition]?.let { listener.onClick(it) }
+
+
             }
         }
+
+
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemAdapter.MyViewHolder {
@@ -77,7 +117,7 @@ class ItemAdapter(
     }
 
     override fun onBindViewHolder(holder: ItemAdapter.MyViewHolder, position: Int) {
-        holder.bind(list.get(position))
+        holder.bind(list.get(position), position)
 
     }
 

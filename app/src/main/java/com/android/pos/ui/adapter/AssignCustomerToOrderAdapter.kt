@@ -16,6 +16,7 @@ import com.android.pos.data.entities.TbCustomer
 import com.android.pos.databinding.ViewCustomerAssignOrderBinding
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.callback.ItemCallback
+import com.android.pos.utils.extensions.gone
 import java.util.*
 import kotlin.collections.ArrayList
 
@@ -57,17 +58,17 @@ class AssignCustomerToOrderAdapter :
                 binding.txtAddress1.visibility = View.GONE
             } else {
                 binding.txtAddress1.visibility = View.VISIBLE
-
-                item.addresses.forEach {
-                    if (it.full_address.isNotEmpty()) {
-                        binding.txtAddress1.text = it.full_address
-                        binding.txtAddress1.visibility = View.VISIBLE
-                    } else {
-                        binding.txtAddress1.text = it.full_address
-                        binding.txtAddress1.visibility = View.GONE
+                for (i in 0..item.addresses.size) {
+                    if (item.addresses[i].full_address.isNotEmpty()) {
+                        binding.txtAddress1.text = item.addresses[i].full_address
+                        break
                     }
                 }
             }
+
+
+
+
 
             if (builder.isNotEmpty()) {
                 binding.txtPhone.visibility = View.VISIBLE
