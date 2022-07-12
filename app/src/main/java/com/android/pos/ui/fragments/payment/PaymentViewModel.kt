@@ -496,7 +496,12 @@ open class PaymentViewModel @Inject constructor(
                     MethodUtils.roundOffAmountDouble((100 * taxData.totalTaxTypePrice) / taxData.subTotalAmount!!)
             }
         }
-        orderAttributeRequestModel.tax_bifurcation_data = Gson().toJson(cartModel.taxlistDynamic)
+        try {
+            orderAttributeRequestModel.tax_bifurcation_data =
+                Gson().toJson(cartModel.taxlistDynamic)
+        }catch (e:Exception){
+            e.printStackTrace()
+        }
         orderAttributeRequestModel.offlineId =
             if (isUpdateOrder) orderOfflineId.toString() else MethodUtils.randomOfflineId(
                 prefProvider.getValueInt(Constants.LOCATION_ID, -1).toString()
@@ -651,7 +656,14 @@ open class PaymentViewModel @Inject constructor(
                     MethodUtils.roundOffAmountDouble((100 * taxData.totalTaxTypePrice) / taxData.subTotalAmount!!)
             }
         }
-        orderAttributeRequestModel.tax_bifurcation_data = Gson().toJson(cartModel.taxlistDynamic)
+        if (cartModel.taxlistDynamic?.isNotEmpty() == true) {
+            try {
+                orderAttributeRequestModel.tax_bifurcation_data =
+                    Gson().toJson(cartModel.taxlistDynamic)
+            }catch (e:java.lang.Exception){
+                e.printStackTrace()
+            }
+        }
         orderAttributeRequestModel.is_loyalty_applied = redeemLoyaltyInfo?.needToApplyLoyalty
         if (orderAttributeRequestModel.is_loyalty_applied == true) {
             orderAttributeRequestModel.loyalty_program_id =
