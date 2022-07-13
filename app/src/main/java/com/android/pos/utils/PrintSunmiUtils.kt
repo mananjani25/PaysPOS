@@ -71,7 +71,7 @@ class PrintSunmiUtils {
             headerText(value)
             normalTextCenter(value1)
             if (value2.isNotEmpty())
-            normalTextCenter(MethodUtils.getUSFormatNumber(value2))
+                normalTextCenter(MethodUtils.getUSFormatNumber(value2))
 
         }
 
@@ -446,6 +446,12 @@ class PrintSunmiUtils {
             normalTextCenter(value)
         }
 
+        fun orderNoteInnerLarge(value: String) {
+
+            normalTextCenterLarge("Order Note")
+            normalTextCenterLarge(value)
+        }
+
         fun qrCode(value: String) {
             SunmiPrinterApi.getInstance().setAlignMode(1)
             value.let {
@@ -587,6 +593,24 @@ class PrintSunmiUtils {
             SunmiPrintHelper.getInstance().lineWrap(1)
         }
 
+        fun normalTextDineInItem(value: String) {
+            SunmiPrintHelper.getInstance().setAlign(0)
+            if (fontSizeInner == LARGE) {
+                SunmiPrintHelper.getInstance()
+                    .printText(value, 36f, false, false, fontName)
+            } else
+                SunmiPrintHelper.getInstance()
+                    .printText(value, setFontSizeInner(), false, false, fontName)
+           // SunmiPrintHelper.getInstance().lineWrap(1)
+        }
+
+        fun normalTextLarge(value: String) {
+            SunmiPrintHelper.getInstance().setAlign(0)
+            SunmiPrintHelper.getInstance()
+                .printText(value, 36f, false, false, fontName)
+            SunmiPrintHelper.getInstance().lineWrap(1)
+        }
+
         fun normalTextCenter(value: String) {
             SunmiPrintHelper.getInstance().setAlign(1)
             SunmiPrintHelper.getInstance()
@@ -594,6 +618,12 @@ class PrintSunmiUtils {
             SunmiPrintHelper.getInstance().lineWrap(1)
         }
 
+        fun normalTextCenterLarge(value: String) {
+            SunmiPrintHelper.getInstance().setAlign(1)
+            SunmiPrintHelper.getInstance()
+                .printText(value, 36f, false, false, fontName)
+            SunmiPrintHelper.getInstance().lineWrap(1)
+        }
         fun boldText(value: String) {
             SunmiPrintHelper.getInstance().setAlign(0)
             SunmiPrintHelper.getInstance()
