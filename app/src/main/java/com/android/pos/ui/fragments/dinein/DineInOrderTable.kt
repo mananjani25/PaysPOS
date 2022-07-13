@@ -7693,7 +7693,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
     ) {
         try {
 
-            PrintSunmiUtils.fontSizeInner(kitchenSettingModel.fonts)
+            PrintSunmiUtils.fontSizeInner(Constants.LARGE)
 
             SunmiPrintHelper.getInstance().initPrinter()
 
@@ -7720,7 +7720,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                         getOrderDetailsResponse?.offlineId
                     },
                     "",
-                    if (kitchenSettingModel.fonts == Constants.LARGE) 23 else 48
+                    if (kitchenSettingModel.fonts == Constants.LARGE) 23 else 23
                 ).toString()
             )
 
@@ -7732,7 +7732,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 PrintSunmiUtils.normalText(
                     padLine(
                         "Employee:" + getOrderDetailsResponse?.employee?.name, "",
-                        if (kitchenSettingModel.fonts == Constants.LARGE) 23 else 48
+                        if (kitchenSettingModel.fonts == Constants.LARGE) 23 else 23
                     ).toString()
                 )
 
@@ -7747,7 +7747,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                         getOrderDetailsResponse?.createdAt.toString()
                     ),
                     "",
-                    if (kitchenSettingModel.fonts == Constants.LARGE) 23 else 48
+                    if (kitchenSettingModel.fonts == Constants.LARGE) 23 else 23
                 ).toString()
             )
 
