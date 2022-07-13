@@ -3123,7 +3123,12 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         } else if (customerReceiptPrinters.name.startsWith(SUNMI_INNER_PRINTER, true)) {
 
             SunmiPrintHelper.getInstance().initSunmiPrinterService(requireContext())
-            setService()
+
+            viewLifecycleOwner.lifecycleScope.launch {
+                delay(200)
+                setService()
+            }
+
 
         } else {
             var builder: Builder? = null
@@ -4714,6 +4719,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
     private fun printDineInTable1Inner() {
         try {
+            Log.e("printDineReciept","Staring....")
             PrintSunmiUtils.fontSizeInner(customerSettingModel.fonts)
             SunmiPrintHelper.getInstance().initPrinter()
 
@@ -5142,6 +5148,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 }
 
             }
+            Log.e("printDineReciept","Staring 1....")
 
             SunmiPrintHelper.getInstance().lineWrap(1)
 
@@ -5201,11 +5208,12 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                 // getDineInOrderDetails?.digitalReceiptUrl.toString().let { PrintSunmiUtils.qrCode(it) }
             }
-
+            Log.e("printDineReciept","Staring 2....")
             PrintSunmiUtils.cutPaperInner()
 
         } catch (e: Exception) {
             e.printStackTrace()
+            Log.e("printDineReciept","Staring error....")
         }
     }
 
@@ -7966,7 +7974,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
     ) {
         try {
-            PrintSunmiUtils.fontSizeInner(kitchenSettingModel.fonts)
+            PrintSunmiUtils.fontSizeInner(LARGE)
             SunmiPrintHelper.getInstance().initPrinter()
 
             if (kitchenSettingModel.showOrderType) {
@@ -7989,14 +7997,14 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 padLine(
                     "OrderID:" + receiptModel?.order?.id,
                     "",
-                    if (kitchenSettingModel.fonts == LARGE) 23 else 48
+                    if (kitchenSettingModel.fonts == LARGE) 23 else 23
                 ).toString()
             )
             PrintSunmiUtils.normalText(
                 padLine(
                     "ReceiptID:" + receiptModel?.order?.offlineId,
                     "",
-                    if (kitchenSettingModel.fonts == LARGE) 23 else 48
+                    if (kitchenSettingModel.fonts == LARGE) 23 else 23
                 ).toString()
             )
 
@@ -8005,7 +8013,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 PrintSunmiUtils.normalText(
                     padLine(
                         "Employee:" + receiptModel?.order?.employee?.name, "",
-                        if (kitchenSettingModel.fonts == LARGE) 23 else 48
+                        if (kitchenSettingModel.fonts == LARGE) 23 else 23
                     ).toString()
                 )
 
@@ -8018,7 +8026,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         receiptModel?.order?.createdAt.toString()
                     ),
                     "",
-                    if (kitchenSettingModel.fonts == LARGE) 23 else 48
+                    if (kitchenSettingModel.fonts == LARGE) 23 else 23
                 ).toString()
             )
 
