@@ -453,9 +453,16 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                             )
                         } else {
                             remainingValue = if (cashDiscountType == "CashDiscount") {
-                                wholePrice - (paymentAmount + cashDiscountSurcharge)
+                                wholePrice - String.format(
+                                    "%.2f",
+                                    paymentAmount + cashDiscountSurcharge
+                                ).toDouble()
                             } else {
                                 wholePrice - paymentAmount
+                            }
+
+                            if (remainingValue <= 0.0) {
+                                remainingValue = 0.0
                             }
                             bundle.putDouble(
                                 "remainingAmount",

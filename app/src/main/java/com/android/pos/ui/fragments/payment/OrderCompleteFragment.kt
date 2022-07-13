@@ -40,6 +40,7 @@ import com.android.pos.data.remote.Constants.BUSINESS_ADDRESS
 import com.android.pos.data.remote.Constants.BUSINESS_NAME
 import com.android.pos.data.remote.Constants.BUSINESS_PHONE_NO
 import com.android.pos.data.remote.Constants.CASH_DISCOUNT_SURCHARGE
+import com.android.pos.data.remote.Constants.CAT_ID_SELECTED
 import com.android.pos.data.remote.Constants.CUSTOMER
 import com.android.pos.data.remote.Constants.DINE_IN_ADAPTER_LIST
 import com.android.pos.data.remote.Constants.GUEST_POSITION
@@ -7790,7 +7791,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                 Handler(Looper.getMainLooper()).postDelayed(Runnable {
 
-                },1000)
+                }, 1000)
                 //printerDialog.dismiss()
                 PrinterClass.closePrinter()
 
@@ -8171,6 +8172,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
 
     fun removeCustomer() {
+        prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
         prefProvider.setValue(Constants.CUSTOMER_NAME, "")
         prefProvider.setValueInt(Constants.CUSTOMER_ID, -1)
         prefProvider.setValue("PaidAmount", "")
