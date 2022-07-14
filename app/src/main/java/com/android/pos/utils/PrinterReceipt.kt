@@ -1314,20 +1314,20 @@ fun addOrdersForKitchenDineInInner(
     list.forEach { obj ->
 
 
-        PrintSunmiUtils.normalText(obj.itemQuantity.toString() + " " + obj.name)
+        PrintSunmiUtils.normalTextLarge(obj.itemQuantity.toString() + " " + obj.name)
 
         if (obj.modifiers.isNotEmpty()) {
             for (j in 0 until obj.modifiers.size) {
                 val modifierObj = obj.modifiers.get(j)
 
-                PrintSunmiUtils.normalText("  " + modifierObj.name)
+                PrintSunmiUtils.normalTextLarge("  " + modifierObj.name)
 
 
             }
         }
         if (obj.note.isNotEmpty()) {
 
-            PrintSunmiUtils.normalText("  Note:" + obj.note)
+            PrintSunmiUtils.normalTextLarge("  Note:" + obj.note)
 
         }
     }
@@ -1540,19 +1540,19 @@ fun addOrdersForKitchenInner(
         val obj = list.get(i)
 
 
-        PrintSunmiUtils.normalText(obj.quantity.toString() + " " + obj.itemName)
+        PrintSunmiUtils.normalTextLarge(obj.quantity.toString() + " " + obj.itemName)
 
         if (obj.orderItemModifiers.isNotEmpty()) {
             for (j in 0 until obj.orderItemModifiers.size) {
                 val modifierObj = obj.orderItemModifiers.get(j)
 
-                PrintSunmiUtils.normalText("  " + modifierObj.name)
+                PrintSunmiUtils.normalTextLarge("  " + modifierObj.name)
 
 
             }
         }
         if (obj.note.isNotEmpty()) {
-            PrintSunmiUtils.normalText("  Note:" + obj.note)
+            PrintSunmiUtils.normalTextLarge("  Note:" + obj.note)
         }
 
 
@@ -2191,7 +2191,7 @@ fun addOrderItemForDineInInner(
     val obj = list
 
 
-    PrintSunmiUtils.normalText(
+    PrintSunmiUtils.normalTextDineInItem(
         padLineCustomerItem(
             obj.itemQuantity.toString() + "x " + obj.name,
             "$" + roundOffAmountString(totalPriceDineInItem(obj)),

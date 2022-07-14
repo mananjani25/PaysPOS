@@ -4719,7 +4719,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
     private fun printDineInTable1Inner() {
         try {
-            Log.e("printDineReciept","Staring....")
+            Log.e("printDineReciept", "Staring....")
             PrintSunmiUtils.fontSizeInner(customerSettingModel.fonts)
             SunmiPrintHelper.getInstance().initPrinter()
 
@@ -5148,7 +5148,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 }
 
             }
-            Log.e("printDineReciept","Staring 1....")
+            Log.e("printDineReciept", "Staring 1....")
 
             SunmiPrintHelper.getInstance().lineWrap(1)
 
@@ -5208,12 +5208,12 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                 // getDineInOrderDetails?.digitalReceiptUrl.toString().let { PrintSunmiUtils.qrCode(it) }
             }
-            Log.e("printDineReciept","Staring 2....")
+            Log.e("printDineReciept", "Staring 2....")
             PrintSunmiUtils.cutPaperInner()
 
         } catch (e: Exception) {
             e.printStackTrace()
-            Log.e("printDineReciept","Staring error....")
+            Log.e("printDineReciept", "Staring error....")
         }
     }
 
@@ -7974,62 +7974,27 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
     ) {
         try {
-            PrintSunmiUtils.fontSizeInner(LARGE)
+            // PrintSunmiUtils.fontSizeInner(LARGE)
             SunmiPrintHelper.getInstance().initPrinter()
+
+            PrintSunmiUtils.headerText("OrderID:" + receiptModel?.order?.id)
+            SunmiPrintHelper.getInstance().lineWrap(1)
 
             if (kitchenSettingModel.showOrderType) {
                 PrintSunmiUtils.headerText(receiptModel?.order?.orderType.toString())
                 SunmiPrintHelper.getInstance().lineWrap(1)
             }
 
-            if (receiptModel?.order?.orderType.toString().lowercase() == "OpenOrder".trim()
-                    .toString().lowercase() || receiptModel?.order?.orderType.toString()
-                    .lowercase() == "Open Order".trim()
-                    .toString().lowercase()
-            ) {
-
-//                PrintSunmiUtils.headerText(receiptModel?.order?.deliveryType.toString())
-//                SunmiPrintHelper.getInstance().lineWrap(1)
-            }
-
-
-            PrintSunmiUtils.normalText(
-                padLine(
-                    "OrderID:" + receiptModel?.order?.id,
-                    "",
-                    if (kitchenSettingModel.fonts == LARGE) 23 else 23
-                ).toString()
-            )
-            PrintSunmiUtils.normalText(
-                padLine(
-                    "ReceiptID:" + receiptModel?.order?.offlineId,
-                    "",
-                    if (kitchenSettingModel.fonts == LARGE) 23 else 23
-                ).toString()
-            )
-
             if (kitchenSettingModel.showTeamMember) {
-
-                PrintSunmiUtils.normalText(
-                    padLine(
-                        "Employee:" + receiptModel?.order?.employee?.name, "",
-                        if (kitchenSettingModel.fonts == LARGE) 23 else 23
-                    ).toString()
-                )
-
-
+                PrintSunmiUtils.normalTextLarge("Employee:" + receiptModel?.order?.employee?.name)
             }
-            PrintSunmiUtils.normalText(
-                padLine(
-                    getReceiptFormatDateFromUTCServer(
-                        requireContext(),
-                        receiptModel?.order?.createdAt.toString()
-                    ),
-                    "",
-                    if (kitchenSettingModel.fonts == LARGE) 23 else 23
-                ).toString()
+            PrintSunmiUtils.normalTextLarge(
+                getReceiptFormatDateFromUTCServer(
+                    requireContext(),
+                    receiptModel?.order?.createdAt.toString()
+                )
             )
-
+            SunmiPrintHelper.getInstance().lineWrap(1)
 
 
             PrintSunmiUtils.addHorizontalInner()
@@ -8044,7 +8009,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             SunmiPrintHelper.getInstance().lineWrap(1)
             if (receiptModel?.order?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote) {
 
-                PrintSunmiUtils.orderNoteInner(receiptModel?.order?.note.toString())
+                PrintSunmiUtils.orderNoteInnerLarge(receiptModel?.order?.note.toString())
 
             }
 
@@ -8057,7 +8022,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                     if (kitchenSettingModel.showCustomerName) {
 
-                        PrintSunmiUtils.normalText(receiptModel?.order?.customer?.firstName + " " + receiptModel?.order?.customer?.lastName)
+                        PrintSunmiUtils.normalTextLarge(receiptModel?.order?.customer?.firstName + " " + receiptModel?.order?.customer?.lastName)
 
                     }
 
@@ -8067,7 +8032,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         if (receiptModel?.order?.customer?.phones?.isNotEmpty() == true) {
 
                             receiptModel?.order?.customer?.phones?.get(0)?.phoneNumber?.let {
-                                PrintSunmiUtils.normalText(
+                                PrintSunmiUtils.normalTextLarge(
                                     it
                                 )
                             }
@@ -8089,7 +8054,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
 
                                 receiptModel?.order?.customer?.addresses?.get(0)?.fullAddress?.let {
-                                    PrintSunmiUtils.normalText(
+                                    PrintSunmiUtils.normalTextLarge(
                                         it
                                     )
                                 }
