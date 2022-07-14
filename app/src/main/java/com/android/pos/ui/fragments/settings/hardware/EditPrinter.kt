@@ -281,6 +281,16 @@ class EditPrinter : Fragment() {
             Log.e(TAG, "gettype:  ${type}")
             Log.e(TAG, "getPrinertype:  ${printerModel?.type}")
 
+            val listCategories = categoryAdapter.getList()
+            var listIds = ArrayList<Int>()
+            listCategories.forEach {
+                if (it.printerEnable && it.categoryActive){
+
+                    listIds.add(it.id)
+                }
+            }
+            Log.e(TAG,"listIdslistIds  ${Gson().toJson(listIds)}")
+
             if (type != printerModel?.type) {
                 var tempList = adapter.getList()
 
@@ -302,6 +312,7 @@ class EditPrinter : Fragment() {
                 model.locationId = prefProvider.getValueInt(LOCATION_ID, 1)
                 model.terminalIds = listOf(prefProvider.getValueInt(TERMINAL_ID, 0))
                 model.name = binding.txtPrinterName.text.toString()
+                model.categoryIds = listIds
 
                 viewModel.updatePrinter(
                     printerModel?.id!!, model
@@ -318,6 +329,7 @@ class EditPrinter : Fragment() {
                 model.locationId = prefProvider.getValueInt(LOCATION_ID, 1)
                 model.terminalIds = listOf(prefProvider.getValueInt(TERMINAL_ID, 0))
                 model.name = binding.txtPrinterName.text.toString()
+                model.categoryIds = listIds
 
                 viewModel.updatePrinter(
                     printerModel?.id!!, model
