@@ -9,7 +9,10 @@ import android.graphics.Color
 import android.graphics.Point
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.ColorDrawable
-import android.os.*
+import android.os.Build
+import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Base64
 import android.util.Log
 import android.view.*
@@ -49,7 +52,6 @@ import com.android.pos.data.remote.Constants.IS_GUEST_PAYMNET
 import com.android.pos.data.remote.Constants.IS_PRINTER_QUEUE_ENABLE
 import com.android.pos.data.remote.Constants.LOCATION_ID
 import com.android.pos.data.remote.Constants.MERGEDANDOCCUPIED
-import com.android.pos.data.remote.Constants.ORDER_TYPE
 import com.android.pos.data.remote.Constants.ORDER_TYPE_ID
 import com.android.pos.data.remote.Constants.ORDER_TYPE_NAME
 import com.android.pos.data.remote.Constants.PRINT_DATA_DINE_IN
@@ -82,7 +84,6 @@ import kotlinx.coroutines.launch
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
-import java.util.stream.Collectors
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -7459,6 +7460,9 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     timeOut, status, battery
                 )
 
+                Handler(Looper.getMainLooper()).postDelayed(Runnable {
+
+                }, 1000)
                 PrinterClass.closePrinter()
 
                 //PrinterClass.getPrinter()?.sendData(builder, 0, status, battery)
