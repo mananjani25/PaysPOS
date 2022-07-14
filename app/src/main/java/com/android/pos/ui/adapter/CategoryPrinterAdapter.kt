@@ -12,6 +12,7 @@ class CategoryPrinterAdapter(var list: ArrayList<PrinterResponse.Data.PrinterCat
         RecyclerView.ViewHolder(binding.root) {
         fun onBind(model: PrinterResponse.Data.PrinterCategories) {
             binding.txtCategoryName.setText(model.name)
+            binding.chCategory.isChecked = model.printerEnable
 
 
         }

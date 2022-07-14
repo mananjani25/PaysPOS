@@ -20,8 +20,8 @@ data class CreatePrinterRequestModel(
     @SerializedName("category_ids") var categoryIds: List<Int>? = null,
     @SerializedName("receipt_print_type") var receiptPrintType: String? = null,
     @SerializedName("printer_type") var printer_type: String? = null,
-    @SerializedName("printer_settings_attributes") var printerSettingsAttributes: List<PrinterSettingsAttributes>? = null,
-    @SerializedName("category_ids")  var listCatIds:ArrayList<Int>?=null
+    @SerializedName("printer_settings_attributes") var printerSettingsAttributes: List<PrinterSettingsAttributes>? = null
+   // @SerializedName("category_ids")  var listCatIds:List<Int>?=null
 
 ) {
     data class PrinterSettingsAttributes(

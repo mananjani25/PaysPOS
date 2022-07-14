@@ -1296,8 +1296,9 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                         printer_type = printerListModel.connectionType,
                         ip_address = if (printerListModel.connectionType == WIFI) "TCP:" + printerListModel.deviceModel?.ipAddress else "BT:" + printerListModel.deviceModel?.ipAddress,
                         printerSettingsAttributes = list
+
                     )
-                    Log.e(TAG, "createPrinterRequestParam:  ${Gson().toJson(createPrinter)}")
+
                     viewModel.createPrinter(createPrinter)
                     availableNetworkAdapter.removeItemAt(layoutPosition)
                     syncPrinterList()
@@ -1325,6 +1326,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                         printer_type = printerListModel.connectionType,
                         ip_address = if (printerListModel.connectionType == WIFI) "TCP:" + printerListModel.deviceModel?.ipAddress else "BT:" + printerListModel.deviceModel?.ipAddress,
                         printerSettingsAttributes = list
+
                     )
 
                     viewModel.createPrinter(createPrinter)
