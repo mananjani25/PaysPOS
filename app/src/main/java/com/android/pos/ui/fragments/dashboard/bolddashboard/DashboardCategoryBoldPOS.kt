@@ -1363,10 +1363,29 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                 Log.e(TAG, "kitchenFonts:  ${kitchenSettingModel.fonts}")
                 Log.e(TAG, "kitfontSize:  ${fontSizeH}")
 
+
+                builder.addFeedLine(1)
+                builder.addTextFont(Builder.FONT_E)
+                builder.addTextAlign(Builder.ALIGN_CENTER)
+                builder.addTextLang(Builder.LANG_EN)
+                builder.addTextSize(2, 2)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.TRUE,
+                    Builder.COLOR_1
+                )
+
+                builder.addText(
+                    "OrderID:" + receiptModel?.order?.id
+                )
+
+                builder.addTextLineSpace(30)
+                builder.addFeedUnit(30)
+                builder.addFeedLine(1)
                 if (kitchenSettingModel.showOrderType) {
 
 
-                    builder.addFeedLine(0)
                     builder.addTextFont(Builder.FONT_E)
                     builder.addTextLang(Builder.LANG_EN)
                     builder.addTextSize(fontSizeH, fontSizeW)
@@ -1401,47 +1420,27 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                 /*}*/
 
 
-                builder.addFeedLine(2)
-                builder.addTextFont(Builder.FONT_E)
-                //  builder.addTextAlign(Builder.ALIGN_LEFT)
-                builder.addTextLang(Builder.LANG_EN)
-                builder.addTextSize(fontSizeH, fontSizeW)
-                builder.addTextStyle(
-                    Builder.FALSE,
-                    Builder.FALSE,
-                    Builder.FALSE,
-                    Builder.COLOR_1
-                )
-
-                builder.addText(
-                    padLine(
-                        "OrderID:" + receiptModel?.order?.id,
-                        "",
-                        33
-                    )
-                )
-
-                builder.addTextLineSpace(30)
-                builder.addFeedUnit(30)
-                builder.addTextFont(Builder.FONT_E)
-                //  builder.addTextAlign(Builder.ALIGN_LEFT)
-                builder.addTextLang(Builder.LANG_EN)
-                builder.addTextSize(fontSizeH, fontSizeW)
-                builder.addTextStyle(
-                    Builder.FALSE,
-                    Builder.FALSE,
-                    Builder.FALSE,
-                    Builder.COLOR_1
-                )
-
-
-                builder.addText(
-                    padLine(
-                        "ReceiptID:" + receiptModel?.order?.offlineId,
-                        "",
-                        33
-                    )
-                )
+//                builder.addTextLineSpace(30)
+//                builder.addFeedUnit(30)
+//                builder.addTextFont(Builder.FONT_E)
+//                //  builder.addTextAlign(Builder.ALIGN_LEFT)
+//                builder.addTextLang(Builder.LANG_EN)
+//                builder.addTextSize(fontSizeH, fontSizeW)
+//                builder.addTextStyle(
+//                    Builder.FALSE,
+//                    Builder.FALSE,
+//                    Builder.FALSE,
+//                    Builder.COLOR_1
+//                )
+//
+//
+//                builder.addText(
+//                    padLine(
+//                        "ReceiptID:" + receiptModel?.order?.offlineId,
+//                        "",
+//                        33
+//                    )
+//                )
                 if (kitchenSettingModel.showTeamMember) {
 
                     builder.addTextLineSpace(30)
@@ -1671,6 +1670,24 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                 Log.e(TAG, "kitchenFonts:  ${kitchenSettingModel.fonts}")
                 Log.e(TAG, "kitfontSize:  ${fontSizeH}")
 
+
+                builder.addTextFont(Builder.FONT_E)
+                builder.addTextAlign(Builder.ALIGN_CENTER)
+                builder.addTextLang(Builder.LANG_EN)
+                builder.addTextSize(2, 2)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.TRUE,
+                    Builder.COLOR_1
+                )
+
+                builder.addText(
+                    "OrderID:" + receiptModel?.order?.id
+                )
+                builder.addTextLineSpace(30)
+                builder.addFeedUnit(30)
+                builder.addFeedLine(1)
                 if (kitchenSettingModel.showOrderType) {
 
 
@@ -1709,55 +1726,31 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                 /*}*/
 
 
-                builder.addFeedLine(2)
-                builder.addTextFont(Builder.FONT_E)
-                //  builder.addTextAlign(Builder.ALIGN_LEFT)
-                builder.addTextLang(Builder.LANG_EN)
-                builder.addTextSize(fontSizeH, fontSizeW)
-                builder.addTextStyle(
-                    Builder.FALSE,
-                    Builder.FALSE,
-                    Builder.FALSE,
-                    Builder.COLOR_1
-                )
-
-                builder.addText(
-                    padLine(
-                        "OrderID:" + receiptModel?.order?.id,
-                        "",
-                        if (kitchenSettingModel.fonts == LARGE) {
-                            24
-                        } else {
-                            48
-                        }
-                    )
-                )
-
-                builder.addTextLineSpace(30)
-                builder.addFeedUnit(30)
-                builder.addTextFont(Builder.FONT_E)
-                //  builder.addTextAlign(Builder.ALIGN_LEFT)
-                builder.addTextLang(Builder.LANG_EN)
-                builder.addTextSize(fontSizeH, fontSizeW)
-                builder.addTextStyle(
-                    Builder.FALSE,
-                    Builder.FALSE,
-                    Builder.FALSE,
-                    Builder.COLOR_1
-                )
-
-
-                builder.addText(
-                    padLine(
-                        "ReceiptID:" + receiptModel?.order?.offlineId,
-                        "",
-                        if (kitchenSettingModel.fonts == LARGE) {
-                            24
-                        } else {
-                            48
-                        }
-                    )
-                )
+//                builder.addTextLineSpace(30)
+//                builder.addFeedUnit(30)
+//                builder.addTextFont(Builder.FONT_E)
+//                //  builder.addTextAlign(Builder.ALIGN_LEFT)
+//                builder.addTextLang(Builder.LANG_EN)
+//                builder.addTextSize(fontSizeH, fontSizeW)
+//                builder.addTextStyle(
+//                    Builder.FALSE,
+//                    Builder.FALSE,
+//                    Builder.FALSE,
+//                    Builder.COLOR_1
+//                )
+//
+//
+//                builder.addText(
+//                    padLine(
+//                        "ReceiptID:" + receiptModel?.order?.offlineId,
+//                        "",
+//                        if (kitchenSettingModel.fonts == LARGE) {
+//                            24
+//                        } else {
+//                            48
+//                        }
+//                    )
+//                )
                 if (kitchenSettingModel.showTeamMember) {
 
                     builder.addTextLineSpace(30)
@@ -2036,34 +2029,17 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
     ) {
         try {
 
+            PrintSunmiUtils.fontSize(kitchenSettingModel.fonts)
+            SunmiPrinterApi.getInstance().printerInit()
+
+            PrintSunmiUtils.orderIdLarge("OrderID:" + receiptModel?.order?.id)
+            SunmiPrinterApi.getInstance().lineWrap(1)
+
             if (kitchenSettingModel.showOrderType) {
                 PrintSunmiUtils.printOrderType(receiptModel?.order?.orderType.toString())
             }
             PrintSunmiUtils.printOrderType(receiptModel?.order?.deliveryType.toString())
 
-            PrintSunmiUtils.orderId(
-                padLine(
-                    "OrderID:" + receiptModel?.order?.id,
-                    "",
-                    if (kitchenSettingModel.fonts == LARGE) {
-                        23
-                    } else {
-                        48
-                    }
-                ).toString()
-            )
-
-            PrintSunmiUtils.receiptID(
-                padLine(
-                    "ReceiptID:" + receiptModel?.order?.offlineId,
-                    "",
-                    if (kitchenSettingModel.fonts == LARGE) {
-                        23
-                    } else {
-                        48
-                    }
-                ).toString()
-            )
 
             if (kitchenSettingModel.showTeamMember) {
 
