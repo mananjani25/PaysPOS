@@ -1005,66 +1005,74 @@ fun addOrdersForKitchenCustoemrPrinter(
     builder: Builder,
     list: ArrayList<TbItem>,
     fontSizeH: Int = 1,
-    fontSizeW: Int = 1
+    fontSizeW: Int = 1,
+    printerCat: ArrayList<PrinterResponse.Data.PrinterCategories>? = null
 ): Builder {
+
     list.forEach { obj ->
+        printerCat?.forEach {
+            Log.e(TAG, "printerListCat ${it.id}")
+            Log.e(TAG, "printerCategoryID ${obj.categoryId}")
+            if (it.id == obj.categoryId && it.printerEnable && it.categoryActive) {
 
 
-        builder.addTextLineSpace(30)
-        builder.addFeedUnit(30)
-        builder.addTextFont(Builder.FONT_E)
-        builder.addTextLang(Builder.LANG_EN)
-        builder.addTextAlign(Builder.ALIGN_LEFT)
-        builder.addTextSize(fontSizeH, fontSizeW)
-        builder.addTextStyle(
-            Builder.FALSE,
-            Builder.FALSE,
-            Builder.FALSE,
-            Builder.COLOR_1
-        )
-
-        builder.addText(obj.itemQuantity.toString() + " " + obj.name)
-
-        if (obj.modifiers.isNotEmpty()) {
-            for (j in 0 until obj.modifiers.size) {
-                val modifierObj = obj.modifiers.get(j)
                 builder.addTextLineSpace(30)
                 builder.addFeedUnit(30)
                 builder.addTextFont(Builder.FONT_E)
-                //builder.addTextLineSpace(20)
-                builder.addTextAlign(Builder.ALIGN_LEFT)
                 builder.addTextLang(Builder.LANG_EN)
+                builder.addTextAlign(Builder.ALIGN_LEFT)
                 builder.addTextSize(fontSizeH, fontSizeW)
                 builder.addTextStyle(
                     Builder.FALSE,
                     Builder.FALSE,
                     Builder.FALSE,
-                    Builder.COLOR_2
+                    Builder.COLOR_1
                 )
-                //builder.addTextPosition(1)
+
+                builder.addText(obj.itemQuantity.toString() + " " + obj.name)
+
+                if (obj.modifiers.isNotEmpty()) {
+                    for (j in 0 until obj.modifiers.size) {
+                        val modifierObj = obj.modifiers.get(j)
+                        builder.addTextLineSpace(30)
+                        builder.addFeedUnit(30)
+                        builder.addTextFont(Builder.FONT_E)
+                        //builder.addTextLineSpace(20)
+                        builder.addTextAlign(Builder.ALIGN_LEFT)
+                        builder.addTextLang(Builder.LANG_EN)
+                        builder.addTextSize(fontSizeH, fontSizeW)
+                        builder.addTextStyle(
+                            Builder.FALSE,
+                            Builder.FALSE,
+                            Builder.FALSE,
+                            Builder.COLOR_2
+                        )
+                        //builder.addTextPosition(1)
 
 
-                builder.addText("  " + modifierObj.name)
+                        builder.addText("  " + modifierObj.name)
 
 
+                    }
+                }
+                if (obj.note.isNotEmpty()) {
+                    builder.addTextLineSpace(30)
+                    builder.addFeedUnit(30)
+                    builder.addTextFont(Builder.FONT_E)
+                    //builder.addTextLineSpace(20)
+                    builder.addTextAlign(Builder.ALIGN_LEFT)
+                    builder.addTextLang(Builder.LANG_EN)
+                    builder.addTextSize(fontSizeH, fontSizeW)
+                    builder.addTextStyle(
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.COLOR_1
+                    )
+                    builder.addText("  Note:" + obj.note)
+
+                }
             }
-        }
-        if (obj.note.isNotEmpty()) {
-            builder.addTextLineSpace(30)
-            builder.addFeedUnit(30)
-            builder.addTextFont(Builder.FONT_E)
-            //builder.addTextLineSpace(20)
-            builder.addTextAlign(Builder.ALIGN_LEFT)
-            builder.addTextLang(Builder.LANG_EN)
-            builder.addTextSize(fontSizeH, fontSizeW)
-            builder.addTextStyle(
-                Builder.FALSE,
-                Builder.FALSE,
-                Builder.FALSE,
-                Builder.COLOR_1
-            )
-            builder.addText("  Note:" + obj.note)
-
         }
     }
 
@@ -1149,68 +1157,73 @@ fun addOrdersForKitchenDineIn(
     builder: Builder,
     list: ArrayList<TbItem>,
     fontSizeH: Int = 1,
-    fontSizeW: Int = 1
+    fontSizeW: Int = 1,
+    printerCat: ArrayList<PrinterResponse.Data.PrinterCategories>? = null
 ): Builder {
 
-
     list.forEach { obj ->
+        printerCat?.forEach {
+            Log.e(TAG, "printerCatID  ${it.id}")
+            Log.e(TAG, "printerMainCatId ${obj.categoryId}")
+            if (it.id == obj.categoryId && it.printerEnable && it.categoryActive) {
 
-
-        builder.addTextLineSpace(30)
-        builder.addFeedUnit(30)
-        builder.addTextFont(Builder.FONT_C)
-        builder.addTextLang(Builder.LANG_EN)
-        builder.addTextAlign(Builder.ALIGN_LEFT)
-        builder.addTextSize(fontSizeH, fontSizeW)
-        builder.addTextStyle(
-            Builder.FALSE,
-            Builder.FALSE,
-            Builder.TRUE,
-            Builder.COLOR_1
-        )
-
-        builder.addText(obj.itemQuantity.toString() + " " + obj.name)
-
-        if (obj.modifiers.isNotEmpty()) {
-            for (j in 0 until obj.modifiers.size) {
-                val modifierObj = obj.modifiers.get(j)
                 builder.addTextLineSpace(30)
                 builder.addFeedUnit(30)
                 builder.addTextFont(Builder.FONT_C)
-                //builder.addTextLineSpace(20)
-                builder.addTextAlign(Builder.ALIGN_LEFT)
                 builder.addTextLang(Builder.LANG_EN)
+                builder.addTextAlign(Builder.ALIGN_LEFT)
                 builder.addTextSize(fontSizeH, fontSizeW)
                 builder.addTextStyle(
                     Builder.FALSE,
                     Builder.FALSE,
                     Builder.TRUE,
-                    Builder.COLOR_2
+                    Builder.COLOR_1
                 )
-                //builder.addTextPosition(1)
+
+                builder.addText(obj.itemQuantity.toString() + " " + obj.name)
+
+                if (obj.modifiers.isNotEmpty()) {
+                    for (j in 0 until obj.modifiers.size) {
+                        val modifierObj = obj.modifiers.get(j)
+                        builder.addTextLineSpace(30)
+                        builder.addFeedUnit(30)
+                        builder.addTextFont(Builder.FONT_C)
+                        //builder.addTextLineSpace(20)
+                        builder.addTextAlign(Builder.ALIGN_LEFT)
+                        builder.addTextLang(Builder.LANG_EN)
+                        builder.addTextSize(fontSizeH, fontSizeW)
+                        builder.addTextStyle(
+                            Builder.FALSE,
+                            Builder.FALSE,
+                            Builder.TRUE,
+                            Builder.COLOR_2
+                        )
+                        //builder.addTextPosition(1)
 
 
-                builder.addText("  " + modifierObj.name)
+                        builder.addText("  " + modifierObj.name)
 
 
+                    }
+                }
+                if (obj.note.isNotEmpty()) {
+                    builder.addTextLineSpace(30)
+                    builder.addFeedUnit(30)
+                    builder.addTextFont(Builder.FONT_C)
+                    //builder.addTextLineSpace(20)
+                    builder.addTextAlign(Builder.ALIGN_LEFT)
+                    builder.addTextLang(Builder.LANG_EN)
+                    builder.addTextSize(fontSizeH, fontSizeW)
+                    builder.addTextStyle(
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.TRUE,
+                        Builder.COLOR_1
+                    )
+                    builder.addText("  Note:" + obj.note)
+
+                }
             }
-        }
-        if (obj.note.isNotEmpty()) {
-            builder.addTextLineSpace(30)
-            builder.addFeedUnit(30)
-            builder.addTextFont(Builder.FONT_C)
-            //builder.addTextLineSpace(20)
-            builder.addTextAlign(Builder.ALIGN_LEFT)
-            builder.addTextLang(Builder.LANG_EN)
-            builder.addTextSize(fontSizeH, fontSizeW)
-            builder.addTextStyle(
-                Builder.FALSE,
-                Builder.FALSE,
-                Builder.TRUE,
-                Builder.COLOR_1
-            )
-            builder.addText("  Note:" + obj.note)
-
         }
     }
 
@@ -1350,65 +1363,73 @@ fun addOrdersForKitchenCustomer(
     builder: Builder,
     list: List<CreateOrderResponse.Data.Order.OrderItem>,
     fontSizeH: Int = 1,
-    fontSizeW: Int = 1
+    fontSizeW: Int = 1,
+    printerCat: ArrayList<PrinterResponse.Data.PrinterCategories>? = null
 ): Builder {
     for (i in 0 until list.size) {
-        val obj = list.get(i)
-        builder.addTextLineSpace(30)
-        builder.addFeedUnit(30)
-        builder.addTextFont(Builder.FONT_E)
-        builder.addTextLang(Builder.LANG_EN)
-        builder.addTextAlign(Builder.ALIGN_LEFT)
-        builder.addTextSize(fontSizeH, fontSizeW)
-        builder.addTextStyle(
-            Builder.FALSE,
-            Builder.FALSE,
-            Builder.FALSE,
-            Builder.COLOR_1
-        )
 
-        builder.addText(obj.quantity.toString() + " " + obj.itemName)
+        printerCat?.forEach {
+            if (it?.id == list[i].categoryId) {
+                if (it.categoryActive && it.printerEnable) {
+                    val obj = list.get(i)
+                    builder.addTextLineSpace(30)
+                    builder.addFeedUnit(30)
+                    builder.addTextFont(Builder.FONT_E)
+                    builder.addTextLang(Builder.LANG_EN)
+                    builder.addTextAlign(Builder.ALIGN_LEFT)
+                    builder.addTextSize(fontSizeH, fontSizeW)
+                    builder.addTextStyle(
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.COLOR_1
+                    )
 
-        if (obj.orderItemModifiers.isNotEmpty()) {
-            for (j in 0 until obj.orderItemModifiers.size) {
-                val modifierObj = obj.orderItemModifiers.get(j)
-                builder.addTextLineSpace(30)
-                builder.addFeedUnit(30)
-                builder.addTextFont(Builder.FONT_E)
-                //builder.addTextLineSpace(20)
-                builder.addTextAlign(Builder.ALIGN_LEFT)
-                builder.addTextLang(Builder.LANG_EN)
-                builder.addTextSize(fontSizeH, fontSizeW)
-                builder.addTextStyle(
-                    Builder.FALSE,
-                    Builder.FALSE,
-                    Builder.FALSE,
-                    Builder.COLOR_2
-                )
-                //builder.addTextPosition(1)
+                    builder.addText(obj.quantity.toString() + " " + obj.itemName)
+
+                    if (obj.orderItemModifiers.isNotEmpty()) {
+                        for (j in 0 until obj.orderItemModifiers.size) {
+                            val modifierObj = obj.orderItemModifiers.get(j)
+                            builder.addTextLineSpace(30)
+                            builder.addFeedUnit(30)
+                            builder.addTextFont(Builder.FONT_E)
+                            //builder.addTextLineSpace(20)
+                            builder.addTextAlign(Builder.ALIGN_LEFT)
+                            builder.addTextLang(Builder.LANG_EN)
+                            builder.addTextSize(fontSizeH, fontSizeW)
+                            builder.addTextStyle(
+                                Builder.FALSE,
+                                Builder.FALSE,
+                                Builder.FALSE,
+                                Builder.COLOR_2
+                            )
+                            //builder.addTextPosition(1)
 
 
-                builder.addText("  " + modifierObj.name)
+                            builder.addText("  " + modifierObj.name)
 
 
+                        }
+                    }
+                    if (obj.note.isNotEmpty()) {
+                        builder.addTextLineSpace(30)
+                        builder.addFeedUnit(30)
+                        builder.addTextFont(Builder.FONT_E)
+                        //builder.addTextLineSpace(20)
+                        builder.addTextAlign(Builder.ALIGN_LEFT)
+                        builder.addTextLang(Builder.LANG_EN)
+                        builder.addTextSize(fontSizeH, fontSizeW)
+                        builder.addTextStyle(
+                            Builder.FALSE,
+                            Builder.FALSE,
+                            Builder.FALSE,
+                            Builder.COLOR_1
+                        )
+                        builder.addText("  Note:" + obj.note)
+
+                    }
+                }
             }
-        }
-        if (obj.note.isNotEmpty()) {
-            builder.addTextLineSpace(30)
-            builder.addFeedUnit(30)
-            builder.addTextFont(Builder.FONT_E)
-            //builder.addTextLineSpace(20)
-            builder.addTextAlign(Builder.ALIGN_LEFT)
-            builder.addTextLang(Builder.LANG_EN)
-            builder.addTextSize(fontSizeH, fontSizeW)
-            builder.addTextStyle(
-                Builder.FALSE,
-                Builder.FALSE,
-                Builder.FALSE,
-                Builder.COLOR_1
-            )
-            builder.addText("  Note:" + obj.note)
-
         }
 
 
@@ -1525,7 +1546,7 @@ fun addOrdersForKitchen(
     Log.e(TAG, "printerItemList:   ${Gson().toJson(list)}")
     for (i in 0 until list.size) {
         printerCat?.forEach {
-            if (it?.id == list[i].id) {
+            if (it?.id == list[i].categoryId) {
                 if (it.categoryActive && it.printerEnable) {
 
                     val obj = list.get(i)
@@ -1599,9 +1620,11 @@ fun addOrdersForKitchen(
 }
 
 fun addOrdersForKitchen(
-    list: List<CreateOrderResponse.Data.Order.OrderItem>
+    list: List<CreateOrderResponse.Data.Order.OrderItem>,
+    printerCat: ArrayList<PrinterResponse.Data.PrinterCategories>? = null
 ) {
     for (i in 0 until list.size) {
+
         val obj = list.get(i)
 
 

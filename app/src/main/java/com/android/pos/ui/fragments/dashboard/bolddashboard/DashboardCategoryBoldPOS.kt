@@ -1113,7 +1113,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
              printer.setBatteryStatusChangeEventCallback(this)*/
             }
 
-            val enabled = Print.TRUE
+            val enabled = Print.FALSE
 
             try {
 
@@ -1508,7 +1508,8 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                         builder!!,
                         it,
                         fontSizeH,
-                        fontSizeW
+                        fontSizeW,
+                        customerReceiptPrinters.printerCategories.toCollection(arrayListOf())
                     )
                 }
 
@@ -1823,7 +1824,8 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                         builder,
                         it,
                         fontSizeH,
-                        fontSizeW
+                        fontSizeW,
+                        customerReceiptPrinters?.printerCategories.toCollection(arrayListOf())
                     )
                 }
 

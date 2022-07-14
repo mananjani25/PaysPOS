@@ -65,4 +65,11 @@ class CategoryPrinterAdapter(var list: ArrayList<PrinterResponse.Data.PrinterCat
     fun getList(): List<PrinterResponse.Data.PrinterCategories> {
         return this.list
     }
+
+    fun selectAll(boolean: Boolean) {
+        this.list.forEach {
+            it.printerEnable = boolean
+        }
+        notifyDataSetChanged()
+    }
 }

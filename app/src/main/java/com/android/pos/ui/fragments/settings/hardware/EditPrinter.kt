@@ -28,6 +28,8 @@ import com.android.pos.ui.adapter.EditPrinterListAdapter
 import com.android.pos.ui.fragments.settings.hardware.printer.PrinterViewModel
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.ProgressUtils
+import com.android.pos.utils.extensions.gone
+import com.android.pos.utils.extensions.visible
 import com.android.pos.utils.statusUtils.Status
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
@@ -82,16 +84,46 @@ class EditPrinter : Fragment() {
         binding.rvCategoriesList?.adapter = categoryAdapter
         printerModel = arguments?.getParcelable("printerSetting")
         setSpinnnerAdapter()
-        Log.e(TAG, "SettingprinterModel:  ${Gson().toJson(printerModel)}")
+
         setCategoryAdapter()
         if (printerModel != null) {
             setPrinterData()
         }
         type = printerModel?.type ?: ""
 
+        if (printerModel?.type?.equals(CUSTOMER, false) == true) {
+            binding.txtSelectCatPrint?.gone()
+            binding.viewLineCat?.gone()
+            binding.rvCategoriesList?.gone()
+            binding.linearSelectAllCat?.gone()
+        } else {
+            binding.txtSelectCatPrint?.visible()
+            binding.viewLineCat?.visible()
+            binding.rvCategoriesList?.visible()
+            binding.linearSelectAllCat?.visible()
+
+        }
+
 
         onClick()
+        onChecked()
+        printerModel?.printerCategories?.forEach {
 
+        }
+
+    }
+
+    private fun onChecked() {
+        binding.chCategory?.setOnCheckedChangeListener { compoundButton, b ->
+            if (compoundButton.isPressed) {
+                if (b) {
+                    categoryAdapter.selectAll(true)
+                } else {
+
+                    categoryAdapter.selectAll(false)
+                }
+            }
+        }
     }
 
     private fun setCategoryAdapter() {
@@ -100,7 +132,15 @@ class EditPrinter : Fragment() {
             var listCategories = printerModel?.printerCategories?.filter {
                 it.categoryActive == true
             }
-            Log.e(TAG, "listCategoriesSize  ${listCategories?.size}")
+
+            var printerEnableData = listCategories?.filter {
+                it.printerEnable == false
+            }
+            if (printerEnableData?.isEmpty() == true) {
+                binding.chCategory?.isChecked = true
+            } else {
+                binding.chCategory?.isChecked = false
+            }
             categoryAdapter.addList(listCategories?.toCollection(arrayListOf()) ?: arrayListOf())
 
         }
@@ -284,12 +324,12 @@ class EditPrinter : Fragment() {
             val listCategories = categoryAdapter.getList()
             var listIds = ArrayList<Int>()
             listCategories.forEach {
-                if (it.printerEnable && it.categoryActive){
+                if (it.printerEnable && it.categoryActive) {
 
                     listIds.add(it.id)
                 }
             }
-            Log.e(TAG,"listIdslistIds  ${Gson().toJson(listIds)}")
+            Log.e(TAG, "listIdslistIds  ${Gson().toJson(listIds)}")
 
             if (type != printerModel?.type) {
                 var tempList = adapter.getList()
@@ -360,8 +400,14 @@ class EditPrinter : Fragment() {
                     AlertUtils.showCustomAlertWithListenerWithOK(
                         it, data.toString()
                     ) { _, _ ->
-                        val navController = findNavController()
-                        navController.popBackStack()
+                        try {
+                            if (findNavController().currentDestination?.id == R.id.editPrinter) {
+                                val navController = findNavController()
+                                navController.popBackStack()
+                            }
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                        }
                     }
                 }
 

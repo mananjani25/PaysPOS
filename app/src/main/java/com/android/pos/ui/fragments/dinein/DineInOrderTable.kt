@@ -2246,10 +2246,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
 
 
-                        Log.e("MYFN", "subTotalDInin  ${subTotalDInin}")
-                        Log.e("MYFN", "serviceCharge  ${serviceCharge}")
-                        Log.e("MYFN", "finalTaxAmt  ${finalTaxAmt}")
-                        Log.e("MYFN", "orderDis  ${orderDis}")
+
 
 
                         var finalAmount = subTotalDInin + serviceCharge + finalTaxAmt - orderDis
@@ -2272,7 +2269,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
                     }
 
-                    Log.e(TAG, "paidGuestCount  ${paidGuestCount}")
+
                     if (dineInList.isNotEmpty()) {
                         dineInTableAdapter.setList(dineInList)
                         checkForAutoFire(true)
@@ -2285,7 +2282,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                         }
                     }
 
-                    Log.e(TAG, "notPayAnyAmount  ${notPayAnyAmount}")
+
                     if (notPayAnyAmount) {
                         binding.txtEditOrder.visibility = View.GONE
                     } else {
@@ -7208,7 +7205,15 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 addHorizontalKitchenLine(builder)
 
 
-                addOrdersForKitchenDineIn(builder, item, fontSizeH, fontSizeW)
+                addOrdersForKitchenDineIn(
+                    builder,
+                    item,
+                    fontSizeH,
+                    fontSizeW,
+                    customerReceiptPrinters.printerCategories.toCollection(
+                        arrayListOf()
+                    )
+                )
 
                 if (getOrderDetailsResponse?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote) {
                     builder.addTextLineSpace(30)
@@ -7395,7 +7400,15 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 addHorizontalLine(builder)
 
 
-                addOrdersForKitchenCustoemrPrinter(builder, item, fontSizeH, fontSizeW)
+                addOrdersForKitchenCustoemrPrinter(
+                    builder,
+                    item,
+                    fontSizeH,
+                    fontSizeW,
+                    customerReceiptPrinters.printerCategories.toCollection(
+                        arrayListOf()
+                    )
+                )
 
                 if (getOrderDetailsResponse?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote) {
                     builder.addTextLineSpace(30)
@@ -8008,6 +8021,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                                         )!!
                                     )
                                     var tbItem: TbItem = TbItem()
+                                    tbItem.categoryId = getOrderDetailsResponse?.orderItems?.get(index)?.categoryId ?: 0
                                     tbItem.name =
                                         getOrderDetailsResponse?.orderItems?.get(index)?.itemName
                                             ?: ""
@@ -8051,8 +8065,6 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 if (isCheckAndFire) {
                     kit.orderTypes.forEach {
                         if (it.orderTypeId == getOrderDetailsResponse?.orderTypeId) {
-                            Log.e(TAG, "orderTypeIdSettings  ${it.orderTypeName}")
-                            Log.e(TAG, "orderTypeIdMainData  ${getOrderDetailsResponse?.orderType}")
                             it.printerSettings.forEach {
                                 if (it.printType.lowercase()
                                         .equals(Constants.KITCHEN.lowercase()) && it.autoPrinting

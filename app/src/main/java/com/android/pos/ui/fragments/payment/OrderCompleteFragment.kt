@@ -40,7 +40,6 @@ import com.android.pos.data.remote.Constants.BUSINESS_ADDRESS
 import com.android.pos.data.remote.Constants.BUSINESS_NAME
 import com.android.pos.data.remote.Constants.BUSINESS_PHONE_NO
 import com.android.pos.data.remote.Constants.CASH_DISCOUNT_SURCHARGE
-import com.android.pos.data.remote.Constants.CAT_ID_SELECTED
 import com.android.pos.data.remote.Constants.CUSTOMER
 import com.android.pos.data.remote.Constants.DINE_IN_ADAPTER_LIST
 import com.android.pos.data.remote.Constants.GUEST_POSITION
@@ -1025,7 +1024,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         },
                         customerReceiptPrinters.ipAddress,
                         enabled,
-                        1000
+                        interval
                     )
                     //printer?.setStatusChangeEventCallback(this)
 
@@ -1042,10 +1041,6 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                             val checkOutDineInModel =
                                 requireArguments().getParcelable<GuestDataModel>(Constants.DINE_IN_GUEST_PAYMENT_DATA)
-                            Log.e(
-                                TAG,
-                                "checkOutDineInModel:  ${Gson().toJson(checkOutDineInModel)}"
-                            )
 
 
                             if (checkOutDineInModel != null) {
@@ -5361,6 +5356,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 Status.SUCCESS -> {
                     ProgressUtils.dismissProgressDialog()
                     if (it.data != null) {
+                        Log.e(TAG,"printerCategories  ${Gson().toJson(it.data[0].printerCategories)}")
 
 
                         kitchenPrinterList = it.data
@@ -7039,13 +7035,13 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 //  printerDialog.show(requireContext())
 
                 var printer: Print? = Print(requireContext())
-                if (printer != null) {
+                /*if (printer != null) {
                     printer.setStatusChangeEventCallback(this)
                     printer.setBatteryStatusChangeEventCallback(this)
-                }
+                }*/
 
 
-                val enabled = Print.TRUE
+                val enabled = Print.FALSE
 
                 try {
 
@@ -7271,7 +7267,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         builder!!,
                         it,
                         fontSizeH,
-                        fontSizeW
+                        fontSizeW,
+                        customerReceiptPrinters.printerCategories.toCollection(arrayListOf())
                     )
                 }
 
@@ -7609,7 +7606,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         builder,
                         it,
                         fontSizeH,
-                        fontSizeW
+                        fontSizeW,
+                        customerReceiptPrinters.printerCategories.toCollection(arrayListOf())
                     )
                 }
 

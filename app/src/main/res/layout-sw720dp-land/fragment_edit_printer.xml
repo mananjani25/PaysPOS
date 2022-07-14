@@ -337,6 +337,7 @@
                     tools:listitem="@layout/view_edit_printer_list" />
 
                 <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/txtSelectCatPrint"
                     style="@style/CustomFontSemiBold"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -350,11 +351,39 @@
                     android:textSize="@dimen/_6mdpi" />
 
                 <View
+                    android:id="@+id/viewLineCat"
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:layout_marginStart="@dimen/_65sdp"
                     android:layout_marginEnd="@dimen/_65sdp"
                     android:background="@color/strokeColor" />
+
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:id="@+id/linearSelectAllCat"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginStart="@dimen/_65sdp"
+                    android:layout_marginEnd="@dimen/_65sdp">
+
+                    <CheckBox
+                        android:id="@+id/chCategory"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:button="@drawable/checkbox_selector_category_print" />
+
+                    <TextView
+                        android:id="@+id/txtCategoryName"
+                        style="@style/CustomFontMediumStyle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:text="Select All"
+                        android:layout_marginStart="@dimen/_5sdp"
+                        android:gravity="center"
+                        android:textColor="@color/txtColor" />
+
+                </androidx.appcompat.widget.LinearLayoutCompat>
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rvCategoriesList"
