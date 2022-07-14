@@ -442,7 +442,10 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                             )
                         } else {
                             remainingValue = if (cashDiscountType == "CashDiscount") {
-                                wholePrice - (paymentAmount + cashDiscountSurcharge)
+                                wholePrice - String.format(
+                                    "%.2f",
+                                    paymentAmount + cashDiscountSurcharge
+                                ).toDouble()
                             } else {
                                 wholePrice - paymentAmount
                             }
@@ -2113,7 +2116,10 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                 } else {
                     if (cashDiscountType == "CashDiscount") {
                         remainingValue =
-                            wholePrice - (paymentAmount + cashDiscountSurcharge)
+                            wholePrice - String.format(
+                                "%.2f",
+                                paymentAmount + cashDiscountSurcharge
+                            ).toDouble()
                     } else {
                         remainingValue = wholePrice - paymentAmount
                     }

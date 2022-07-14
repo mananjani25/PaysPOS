@@ -132,29 +132,29 @@ class MergeTableDialog : DialogFragment() {
                     )
 
                 }
-               else if (table.lock_by_id != null && table.lock_by_id ==  prefProvider.getValueInt(
-                        EMPLOYEE_ID,0)) {
-                    listTable.add(
-                        MergeTableModel(
-                            table.id,
-                            table.table_name,
-                            it.id,
-                            it.name,
-                            if (table.status == OCCUPIED) {
-                                true
-                            } else {
-                                false
-                            },
-                            orderId = if (table.order_details != null) {
-                                table.order_details.id
-                            } else {
-                                null
-                            },
-                            orderDetails = table.order_details,
-                            chairCount = table.chair_count
-                        )
-                    )
-                }
+//               else if (table.lock_by_id != null && table.lock_by_id ==  prefProvider.getValueInt(
+//                        EMPLOYEE_ID,0)) {
+//                    listTable.add(
+//                        MergeTableModel(
+//                            table.id,
+//                            table.table_name,
+//                            it.id,
+//                            it.name,
+//                            if (table.status == OCCUPIED) {
+//                                true
+//                            } else {
+//                                false
+//                            },
+//                            orderId = if (table.order_details != null) {
+//                                table.order_details.id
+//                            } else {
+//                                null
+//                            },
+//                            orderDetails = table.order_details,
+//                            chairCount = table.chair_count
+//                        )
+//                    )
+//                }
             }
         }
 

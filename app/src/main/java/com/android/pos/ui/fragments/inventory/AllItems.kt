@@ -192,7 +192,10 @@ class AllItems(val clickedPosition: Int) : Fragment(),ItemCallback {
             event.getContentIfNotHandled()?.let {
 //                if (!isreOrder)
                     AlertUtils.showCustomAlert(requireActivity(), it.message)
-
+                val intent = Intent()
+                intent.action = "inventory"
+                intent.putExtra("position", clickedPosition)
+                requireContext().sendBroadcast(intent)
                 if (isreOrder) {
                     isreOrder = false
                     viewModel.reOrder(adapter.getAll())

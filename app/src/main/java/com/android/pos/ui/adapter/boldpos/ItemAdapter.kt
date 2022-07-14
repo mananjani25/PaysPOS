@@ -11,6 +11,8 @@ import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.R
 import com.android.pos.data.entities.TbItem
 import com.android.pos.databinding.ViewCategoryItemBoldBinding
+import com.android.pos.ui.adapter.CategoryItemAdapter1
+import com.android.pos.ui.adapter.ItemListAdapter
 import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.callback.ItemListner
 import com.android.pos.utils.extensions.gone
@@ -73,14 +75,25 @@ class ItemAdapter(
                 )
             }
 
-            //Manan's code
             binding.root.setOnClickListener {
                 try {
                     list[position]?.let {
                         Log.e("ITemAdapter", "onClickposition  ${position}")
                         listener.onItemSelected(it)
-
-
+                    }
+                    if (list[position]?.modifier_set_ids?.isEmpty() == true && list[position]?.variationsAttributes?.isEmpty() == true) {
+                        binding.txtCategoryName.setBackgroundColor(
+                            ContextCompat.getColor(
+                                context,
+                                R.color.txt_color_blue
+                            )
+                        )
+                        binding.txtCategoryName.setTextColor(
+                            ContextCompat.getColor(
+                                context,
+                                R.color.white
+                            )
+                        )
                     }
                 } catch (e: Exception) {
                     e.printStackTrace()
@@ -92,18 +105,9 @@ class ItemAdapter(
 
 
             }
-
         }
 
-        init {
-            /*binding.root.setOnClickListener {
-                if (lastChecked != null) {
-                    lastChecked?.isSelected = false
-                }
-                lastChecked = checkedTextView
-                list[bindingAdapterPosition]?.let { listener.onClick(it) }
-            }*/
-        }
+
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ItemAdapter.MyViewHolder {

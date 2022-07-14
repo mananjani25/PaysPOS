@@ -1326,20 +1326,20 @@ fun addOrdersForKitchenDineInInner(
     list.forEach { obj ->
 
 
-        PrintSunmiUtils.orderTime(obj.itemQuantity.toString() + " " + obj.name)
+        PrintSunmiUtils.normalText(obj.itemQuantity.toString() + " " + obj.name)
 
         if (obj.modifiers.isNotEmpty()) {
             for (j in 0 until obj.modifiers.size) {
                 val modifierObj = obj.modifiers.get(j)
 
-                PrintSunmiUtils.orderTime("  " + modifierObj.name)
+                PrintSunmiUtils.normalText("  " + modifierObj.name)
 
 
             }
         }
         if (obj.note.isNotEmpty()) {
 
-            PrintSunmiUtils.orderTime("  Note:" + obj.note)
+            PrintSunmiUtils.normalText("  Note:" + obj.note)
 
         }
     }

@@ -158,7 +158,10 @@ class HideCategoryListing(val clickedPosition: Int) : Fragment() ,ItemCallback{
                     viewModel.reOrder(adapter.getAll())
                     // categoriesObserver()
 
-
+                    val intent = Intent()
+                    intent.action = "inventory"
+                    intent.putExtra("position", clickedPosition)
+                    requireContext().sendBroadcast(intent)
                 }
             }
         })
