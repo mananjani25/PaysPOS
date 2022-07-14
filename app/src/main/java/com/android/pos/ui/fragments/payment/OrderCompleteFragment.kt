@@ -7803,7 +7803,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                 Handler(Looper.getMainLooper()).postDelayed(Runnable {
 
-                }, 1000)
+                }, 100)
                 //printerDialog.dismiss()
                 PrinterClass.closePrinter()
 
