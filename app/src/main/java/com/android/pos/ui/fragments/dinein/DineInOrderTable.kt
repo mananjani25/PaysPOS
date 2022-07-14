@@ -9,7 +9,10 @@ import android.graphics.Color
 import android.graphics.Point
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.ColorDrawable
-import android.os.*
+import android.os.Build
+import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.util.Base64
 import android.util.Log
 import android.view.*
@@ -1671,7 +1674,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
     ) {
 
         if (listItem.isNotEmpty()) {
-            if (listItem[0].isPaid == true) {
+            if (listItem[0].isPaid) {
                 guestPrint(
                     "Paid",
                     listItem,
@@ -4854,8 +4857,9 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 prefProvider.getValue(Constants.BUSINESS_ADDRESS, ""),
                 prefProvider.getValue(Constants.BUSINESS_PHONE_NO, "")
             )
-
+            SunmiPrintHelper.getInstance().lineWrap(1)
             getOrderDetailsResponse?.orderType?.let { PrintSunmiUtils.headerText(it) }
+            SunmiPrintHelper.getInstance().lineWrap(1)
 
             if (customerSettingModel.fonts == Constants.LARGE) {
 
@@ -5017,20 +5021,17 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 )
 
             }
-            SunmiPrintHelper.getInstance().lineWrap(2)
+            SunmiPrintHelper.getInstance().lineWrap(1)
 
             if (getOrderDetailsResponse?.totalDiscount != null) {
 
                 PrintSunmiUtils.normalText(
                     padLine(
                         "Total Discount",
-
                         if (guestDiscount == 0.0) {
                             "$" + MethodUtils.roundOffAmountString(0.00)
                         } else {
-
                             "-$" + MethodUtils.roundOffAmountString(guestDiscount)
-
                         },
                         if (customerSettingModel.fonts == Constants.LARGE) {
                             23
@@ -5160,6 +5161,13 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
             if (customerSettingModel.showTipSuggestion) {
 
+                Log.e(
+                    "showTipSuggestion",
+                    MethodUtils.roundOffAmountDouble(guestSubTotal + guestServiceCharge + guestTaxes)
+                        .toString()
+                )
+
+                SunmiPrintHelper.getInstance().lineWrap(1)
                 PrintSunmiUtils.additionalTipsInner()
                 if (tipsList.isNotEmpty()) {
                     PrintSunmiUtils.addTipListInner(
@@ -5204,7 +5212,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
 
             if (getOrderDetailsResponse?.note != null && getOrderDetailsResponse?.note != "" && customerSettingModel.showOrderNote) {
-
+                SunmiPrintHelper.getInstance().lineWrap(1)
                 PrintSunmiUtils.orderNoteInner(getOrderDetailsResponse?.note!!)
                 SunmiPrintHelper.getInstance().lineWrap(2)
 
@@ -6208,6 +6216,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
         try {
             PrintSunmiUtils.fontSize(customerSettingModel.fonts)
+
+
             if (customerSettingModel.showVenueLogo && prefProvider.getValue(
                     Constants.VENUE_LOGO,
                     ""
@@ -6670,8 +6680,9 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             )
 
 
+            SunmiPrintHelper.getInstance().lineWrap(1)
             getOrderDetailsResponse?.orderType?.let { PrintSunmiUtils.headerText(it) }
-
+            SunmiPrintHelper.getInstance().lineWrap(1)
 
             if (customerSettingModel.fonts == Constants.LARGE) {
 
@@ -6832,15 +6843,13 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                         )
                     }
 
-                    SunmiPrintHelper.getInstance().lineWrap(1)
-                }
 
+                }
 
             }
 
 
 
-            SunmiPrintHelper.getInstance().lineWrap(2)
 
             if (getOrderDetailsResponse?.totalDiscount != null) {
 
@@ -6934,6 +6943,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 MethodUtils.roundOffAmountDouble(subTotalDInin + serviceCharge + finalTaxAmt)
 
 
+            SunmiPrintHelper.getInstance().lineWrap(1)
 
             PrintSunmiUtils.boldText(
                 padLine(
@@ -7020,6 +7030,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
 
             if (getOrderDetailsResponse?.note != null && getOrderDetailsResponse?.note != "" && customerSettingModel.showOrderNote) {
+                SunmiPrintHelper.getInstance().lineWrap(1)
                 PrintSunmiUtils.orderNoteInner(getOrderDetailsResponse?.note!!)
             }
 
@@ -7637,6 +7648,9 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     timeOut, status, battery
                 )
 
+                Handler(Looper.getMainLooper()).postDelayed(Runnable {
+
+                }, 1000)
                 PrinterClass.closePrinter()
 
                 //PrinterClass.getPrinter()?.sendData(builder, 0, status, battery)
@@ -7871,7 +7885,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
     ) {
         try {
 
-            PrintSunmiUtils.fontSizeInner(kitchenSettingModel.fonts)
+            PrintSunmiUtils.fontSizeInner(Constants.LARGE)
 
             SunmiPrintHelper.getInstance().initPrinter()
 
@@ -7898,7 +7912,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                         getOrderDetailsResponse?.offlineId
                     },
                     "",
-                    if (kitchenSettingModel.fonts == Constants.LARGE) 23 else 48
+                    if (kitchenSettingModel.fonts == Constants.LARGE) 23 else 23
                 ).toString()
             )
 
@@ -7910,7 +7924,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 PrintSunmiUtils.normalText(
                     padLine(
                         "Employee:" + getOrderDetailsResponse?.employee?.name, "",
-                        if (kitchenSettingModel.fonts == Constants.LARGE) 23 else 48
+                        if (kitchenSettingModel.fonts == Constants.LARGE) 23 else 23
                     ).toString()
                 )
 
@@ -7925,7 +7939,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                         getOrderDetailsResponse?.createdAt.toString()
                     ),
                     "",
-                    if (kitchenSettingModel.fonts == Constants.LARGE) 23 else 48
+                    if (kitchenSettingModel.fonts == Constants.LARGE) 23 else 23
                 ).toString()
             )
 

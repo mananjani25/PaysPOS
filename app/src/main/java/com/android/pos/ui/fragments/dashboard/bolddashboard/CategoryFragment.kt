@@ -418,7 +418,7 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
         list.add(CategoryParentModel(listCategories))
         list.add(CategoryParentModel(listCategories))
         categoryParentAdapter = CategoryParentAdapter(requireContext(), arrayListOf(), this)
-        itemAdapter = ItemAdapter(requireContext(), arrayListOf(), this)
+        itemAdapter = ItemAdapter(requireContext(), arrayListOf(), listner)
         binding.rvItemList.adapter = itemAdapter
         binding.rvCategoryParent.adapter = categoryParentAdapter
         binding.rvCategoryParent.layoutManager =

@@ -350,7 +350,7 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
             if (printerQueuelist.isNotEmpty()) {
 
                 configurePrinter(
-                    printerQueuelist.get(printerQueuelist.size - 1),
+                    printerQueuelist[printerQueuelist.size - 1],
                     printerQueuelist.size - 1
                 )
             }

@@ -142,6 +142,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
         checkDineInEditOrder()
         printerProgress()
         getwebOrderingCountObserver()
+        getDineInData()
         prefProvider.setValueboolean(Constants.ORDER_COMPLETED, false)
         binding.lifecycleOwner = this
         return binding.root
@@ -713,6 +714,25 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                                 cashDiscountType = ""
                             }
                         }
+                    Log.d(TAG, "addObserver: "+Gson().toJson(viewModel.cartModel))
+                    Log.d(TAG, "addObserver: "+Gson().toJson(cartList))
+                    if(cartList.isNotEmpty()){
+                        if (cartList[0] != null) {
+                            if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == DINE_IN) {
+                                cartList[0].dineInList?.forEach { dineInModel ->
+                                    dineInModel.items.forEach { items ->
+                                        items.isSelectedItem = true
+                                        viewModel.selectedItems(items.itemId, 1)
+                                    }
+                                }
+                            } else {
+                                cartList[0].items?.forEach { items ->
+                                    items.isSelectedItem = true
+                                    viewModel.selectedItems(items.itemId, 1)
+                                }
+                            }
+                        }
+                    }
 
                 }
             }
@@ -821,7 +841,6 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                     ordertypelist = it.data.toCollection(arrayListOf())
                     viewModel.setOrderTypeList(ordertypelist)
                 }
-                getDineInData()
             }
 
         }
@@ -944,7 +963,11 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
             var dineInList = arguments?.getParcelableArrayList<DineInModel>("dine_in_list")
 
             if (dineInList?.isNotEmpty() == true) {
-
+                dineInList.forEach { it->
+                    it.items.forEach {items->
+                        viewModel.selectedItems(items.itemId,1)
+                    }
+                }
                 if (cartList.isEmpty()) {
                     var orderTypeIdN = 0
                     ordertypelist.forEach {
@@ -2148,13 +2171,16 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
             PrintSunmiUtils.cutPaper()
 
             viewModel.downloadFinished(false)
-            findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
+
+            if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS)
+                findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
 
 
         } catch (e: Exception) {
             e.printStackTrace()
             viewModel.downloadFinished(false)
-            findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
+            if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS)
+                findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
         }
 
     }
@@ -2164,6 +2190,8 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
         receiptModel: CreateOrderResponse.Data
     ) {
         try {
+            PrintSunmiUtils.fontSizeInner(LARGE)
+            SunmiPrintHelper.getInstance().initPrinter()
 
             if (kitchenSettingModel.showOrderType) {
 
@@ -2171,6 +2199,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
             }
             PrintSunmiUtils.headerText(receiptModel?.order?.deliveryType.toString())
 
+            SunmiPrintHelper.getInstance().lineWrap(1)
             PrintSunmiUtils.normalText(
                 padLine(
                     "OrderID:" + receiptModel?.order?.id,
@@ -2178,7 +2207,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                     if (kitchenSettingModel.fonts == LARGE) {
                         23
                     } else {
-                        48
+                        23
                     }
                 ).toString()
             )
@@ -2190,7 +2219,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                     if (kitchenSettingModel.fonts == LARGE) {
                         23
                     } else {
-                        48
+                        23
                     }
                 ).toString()
             )
@@ -2203,7 +2232,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                         if (kitchenSettingModel.fonts == LARGE) {
                             23
                         } else {
-                            48
+                            23
                         }
                     ).toString()
                 )
@@ -2222,7 +2251,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                     if (kitchenSettingModel.fonts == LARGE) {
                         23
                     } else {
-                        48
+                        23
                     }
                 ).toString()
             )
@@ -2296,13 +2325,15 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
             PrintSunmiUtils.cutPaperInner()
 
             viewModel.downloadFinished(false)
-            findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
+            if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS)
+                findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
 
 
         } catch (e: Exception) {
             e.printStackTrace()
             viewModel.downloadFinished(false)
-            findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
+            if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS)
+                findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
         }
 
     }
