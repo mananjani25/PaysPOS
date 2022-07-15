@@ -714,9 +714,9 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                                 cashDiscountType = ""
                             }
                         }
-                    Log.d(TAG, "addObserver: "+Gson().toJson(viewModel.cartModel))
-                    Log.d(TAG, "addObserver: "+Gson().toJson(cartList))
-                    if(cartList.isNotEmpty()){
+                    Log.d(TAG, "addObserver: " + Gson().toJson(viewModel.cartModel))
+                    Log.d(TAG, "addObserver: " + Gson().toJson(cartList))
+                    if (cartList.isNotEmpty()) {
                         if (cartList[0] != null) {
                             if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == DINE_IN) {
                                 cartList[0].dineInList?.forEach { dineInModel ->
@@ -963,9 +963,9 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
             var dineInList = arguments?.getParcelableArrayList<DineInModel>("dine_in_list")
 
             if (dineInList?.isNotEmpty() == true) {
-                dineInList.forEach { it->
-                    it.items.forEach {items->
-                        viewModel.selectedItems(items.itemId,1)
+                dineInList.forEach { it ->
+                    it.items.forEach { items ->
+                        viewModel.selectedItems(items.itemId, 1)
                     }
                 }
                 if (cartList.isEmpty()) {
@@ -2190,8 +2190,11 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
         receiptModel: CreateOrderResponse.Data
     ) {
         try {
-            PrintSunmiUtils.fontSizeInner(LARGE)
+
             SunmiPrintHelper.getInstance().initPrinter()
+
+            PrintSunmiUtils.headerText("OrderID:" + receiptModel?.order?.id)
+            SunmiPrintHelper.getInstance().lineWrap(1)
 
             if (kitchenSettingModel.showOrderType) {
 
@@ -2200,60 +2203,18 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
             PrintSunmiUtils.headerText(receiptModel?.order?.deliveryType.toString())
 
             SunmiPrintHelper.getInstance().lineWrap(1)
-            PrintSunmiUtils.normalText(
-                padLine(
-                    "OrderID:" + receiptModel?.order?.id,
-                    "",
-                    if (kitchenSettingModel.fonts == LARGE) {
-                        23
-                    } else {
-                        23
-                    }
-                ).toString()
-            )
 
-            PrintSunmiUtils.normalText(
-                padLine(
-                    "ReceiptID:" + receiptModel?.order?.offlineId,
-                    "",
-                    if (kitchenSettingModel.fonts == LARGE) {
-                        23
-                    } else {
-                        23
-                    }
-                ).toString()
-            )
 
             if (kitchenSettingModel.showTeamMember) {
-
-                PrintSunmiUtils.normalText(
-                    padLine(
-                        "Employee:" + receiptModel?.order?.employee?.name, "",
-                        if (kitchenSettingModel.fonts == LARGE) {
-                            23
-                        } else {
-                            23
-                        }
-                    ).toString()
-                )
-
-
+                PrintSunmiUtils.normalTextLarge("Employee:" + receiptModel?.order?.employee?.name)
             }
 
 
-            PrintSunmiUtils.normalText(
-                padLine(
-                    Constants.getReceiptFormatDateFromUTCServer(
-                        requireContext(),
-                        receiptModel?.order?.createdAt.toString()
-                    ),
-                    "",
-                    if (kitchenSettingModel.fonts == LARGE) {
-                        23
-                    } else {
-                        23
-                    }
-                ).toString()
+            PrintSunmiUtils.normalTextLarge(
+                Constants.getReceiptFormatDateFromUTCServer(
+                    requireContext(),
+                    receiptModel?.order?.createdAt.toString()
+                )
             )
 
             PrintSunmiUtils.addHorizontalInner()
@@ -2266,7 +2227,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
 
             if (receiptModel?.order?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote) {
 
-                PrintSunmiUtils.orderNoteInner(receiptModel?.order?.note.toString())
+                PrintSunmiUtils.orderNoteInnerLarge(receiptModel?.order?.note.toString())
 
             }
 
@@ -2279,7 +2240,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
 
                     if (kitchenSettingModel.showCustomerName) {
 
-                        PrintSunmiUtils.normalText(receiptModel?.order?.customer?.firstName + " " + receiptModel?.order?.customer?.lastName)
+                        PrintSunmiUtils.normalTextLarge(receiptModel?.order?.customer?.firstName + " " + receiptModel?.order?.customer?.lastName)
 
 
                     }
@@ -2291,7 +2252,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
 
 
                             receiptModel?.order?.customer?.phones?.get(0)?.phoneNumber?.let {
-                                PrintSunmiUtils.normalText(
+                                PrintSunmiUtils.normalTextLarge(
                                     it
                                 )
                             }
@@ -2312,7 +2273,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
 
 
                             receiptModel?.order?.customer?.addresses?.get(0)?.fullAddress?.let {
-                                PrintSunmiUtils.normalText(
+                                PrintSunmiUtils.normalTextLarge(
                                     it
                                 )
                             }
