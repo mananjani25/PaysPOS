@@ -26,6 +26,8 @@ import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.SwipeHelper
 import com.android.pos.utils.callback.ItemCallback
 import com.android.pos.utils.extensions.alert
+import com.android.pos.utils.extensions.gone
+import com.android.pos.utils.extensions.visible
 import com.android.pos.utils.statusUtils.Status
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -81,12 +83,20 @@ class Options(val clickedPosition: Int) : Fragment(), TextWatcher,ItemCallback {
             it?.let { resource ->
                 when (resource.status) {
                     Status.SUCCESS -> {
-                        binding.rvOptonList.visibility = View.VISIBLE
                         binding.progressCircular.visibility = View.GONE
-                        it.data?.let { it1 ->
-                            adapter.add(it1)
-                            binding.edtSearch.hint = "Search (" + it1.size + ") Options"
+                        if(it.data?.isNotEmpty() == true){
+                            binding.rvOptonList.visibility = View.VISIBLE
+                            binding.txtNodata?.gone()
+                            it.data?.let { it1 ->
+                                adapter.add(it1)
+                                binding.edtSearch.hint = "Search (" + it1.size + ") Options"
+                            }
+                        }else{
+                            binding.rvOptonList.visibility = View.GONE
+                            binding.txtNodata?.visible()
+                            binding.txtNodata?.text = "No Data Available"
                         }
+
                     }
                     Status.ERROR -> {
                         binding.rvOptonList.visibility = View.GONE

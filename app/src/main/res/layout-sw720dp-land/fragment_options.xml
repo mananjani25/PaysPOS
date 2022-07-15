@@ -77,10 +77,23 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="vertical"
+                android:visibility="visible"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
 
 
         </androidx.appcompat.widget.LinearLayoutCompat>
 
+        <TextView
+            android:id="@+id/txt_nodata"
+            style="@style/CustomFontBold"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:layout_marginTop="@dimen/_5sdp"
+            android:textColor="@color/txtColor"
+            android:textSize="@dimen/_7mdpi"
+            android:visibility="gone" />
     </androidx.appcompat.widget.LinearLayoutCompat>
+
+
 </layout>
