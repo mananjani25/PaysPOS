@@ -480,12 +480,12 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                                 splitAllAmounts(Constants.TOTAL_DISCOUNT, totalDiscount)
                                 splitAllAmounts(Constants.TAX_CHARGE, totalTax)
                                 splitAllAmounts(Constants.SERVICE_CHARGE, totalServiceCharge)
-                                if (cashDiscountType == "CashDiscount") {
+//                                if (cashDiscountType == "CashDiscount") {
                                     splitAllAmounts(
                                         Constants.CASH_DISCOUNT_SURCHARGE,
                                         cashDiscountSurcharge
                                     )
-                                }
+//                                }
 
                                 splitAllAmounts(Constants.TIP, 0.0)
                             } else if (custom_paymentAmount != 0.0) {
@@ -497,12 +497,12 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                                 splitAllAmounts(Constants.TOTAL_DISCOUNT, totalDiscount)
                                 splitAllAmounts(Constants.TAX_CHARGE, totalTax)
                                 splitAllAmounts(Constants.SERVICE_CHARGE, totalServiceCharge)
-                                if (cashDiscountType == "CashDiscount") {
+//                                if (cashDiscountType == "CashDiscount") {
                                     splitAllAmounts(
                                         Constants.CASH_DISCOUNT_SURCHARGE,
                                         cashDiscountSurcharge
                                     )
-                                }
+//                                }
 
                                 splitAllAmounts(Constants.TIP, 0.0)
                             } else {
@@ -514,12 +514,12 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                                 splitAllAmounts(Constants.TOTAL_DISCOUNT, totalDiscount)
                                 splitAllAmounts(Constants.TAX_CHARGE, totalTax)
                                 splitAllAmounts(Constants.SERVICE_CHARGE, totalServiceCharge)
-                                if (cashDiscountType == "CashDiscount") {
+//                                if (cashDiscountType == "CashDiscount") {
                                     splitAllAmounts(
                                         Constants.CASH_DISCOUNT_SURCHARGE,
                                         cashDiscountSurcharge
                                     )
-                                }
+//                                }
 
                                 splitAllAmounts(Constants.TIP, 0.0)
                             }
