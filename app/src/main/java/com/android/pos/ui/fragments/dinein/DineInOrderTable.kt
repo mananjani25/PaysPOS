@@ -2245,10 +2245,6 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                         var orderDis = orderDiscount - (perGuestorderDis * paidGuestCount)
 
 
-
-
-
-
                         var finalAmount = subTotalDInin + serviceCharge + finalTaxAmt - orderDis
                         binding.txtTotalAmountNew.text = MethodUtils.roundOffAmount(
                             finalAmount
@@ -7686,7 +7682,11 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
             SunmiPrinterApi.getInstance().lineWrap(1)
 
-            addOrdersForKitchenDineIn(item)
+            addOrdersForKitchenDineIn(
+                item, customerReceiptPrinters.printerCategories.toCollection(
+                    arrayListOf()
+                )
+            )
 
             if (getOrderDetailsResponse?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote) {
 
@@ -8021,7 +8021,9 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                                         )!!
                                     )
                                     var tbItem: TbItem = TbItem()
-                                    tbItem.categoryId = getOrderDetailsResponse?.orderItems?.get(index)?.categoryId ?: 0
+                                    tbItem.categoryId =
+                                        getOrderDetailsResponse?.orderItems?.get(index)?.categoryId
+                                            ?: 0
                                     tbItem.name =
                                         getOrderDetailsResponse?.orderItems?.get(index)?.itemName
                                             ?: ""

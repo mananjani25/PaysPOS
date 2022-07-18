@@ -18,7 +18,6 @@ import com.android.pos.di.PrefProvider
 import com.android.pos.utils.MethodUtils.Companion.roundOffAmountString
 import com.epson.epos2.printer.Printer
 import com.epson.eposprint.Builder
-import com.google.gson.Gson
 
 val TAG = "PrinterReceipt"
 
@@ -1163,8 +1162,6 @@ fun addOrdersForKitchenDineIn(
 
     list.forEach { obj ->
         printerCat?.forEach {
-            Log.e(TAG, "printerCatID  ${it.id}")
-            Log.e(TAG, "printerMainCatId ${obj.categoryId}")
             if (it.id == obj.categoryId && it.printerEnable && it.categoryActive) {
 
                 builder.addTextLineSpace(30)
@@ -1305,27 +1302,32 @@ fun addOrdersForKitchenOnlineOrder(
 
 fun addOrdersForKitchenDineIn(
 
-    list: ArrayList<TbItem>
+    list: ArrayList<TbItem>,
+    printerCat: ArrayList<PrinterResponse.Data.PrinterCategories>? = null
 ) {
 
     list.forEach { obj ->
 
+        printerCat?.forEach {
+            if (it.id == obj.categoryId && it.printerEnable && it.categoryActive) {
 
-        PrintSunmiUtils.orderTime(obj.itemQuantity.toString() + " " + obj.name)
+                PrintSunmiUtils.orderTime(obj.itemQuantity.toString() + " " + obj.name)
 
-        if (obj.modifiers.isNotEmpty()) {
-            for (j in 0 until obj.modifiers.size) {
-                val modifierObj = obj.modifiers.get(j)
+                if (obj.modifiers.isNotEmpty()) {
+                    for (j in 0 until obj.modifiers.size) {
+                        val modifierObj = obj.modifiers.get(j)
 
-                PrintSunmiUtils.orderTime("  " + modifierObj.name)
+                        PrintSunmiUtils.orderTime("  " + modifierObj.name)
 
 
+                    }
+                }
+                if (obj.note.isNotEmpty()) {
+
+                    PrintSunmiUtils.orderTime("  Note:" + obj.note)
+
+                }
             }
-        }
-        if (obj.note.isNotEmpty()) {
-
-            PrintSunmiUtils.orderTime("  Note:" + obj.note)
-
         }
     }
 
@@ -1542,8 +1544,6 @@ fun addOrdersForKitchen(
     fontSizeW: Int = 1,
     printerCat: ArrayList<PrinterResponse.Data.PrinterCategories?>? = null
 ): Builder {
-    Log.e(TAG, "printerCategory:   ${Gson().toJson(printerCat)}")
-    Log.e(TAG, "printerItemList:   ${Gson().toJson(list)}")
     for (i in 0 until list.size) {
         printerCat?.forEach {
             if (it?.id == list[i].categoryId) {
@@ -1625,25 +1625,30 @@ fun addOrdersForKitchen(
 ) {
     for (i in 0 until list.size) {
 
-        val obj = list.get(i)
+        printerCat?.forEach {
+            if (it.id == list[i].categoryId && it.categoryActive && it.printerEnable) {
+
+                val obj = list.get(i)
 
 
-        PrintSunmiUtils.orderTime(obj.quantity.toString() + " " + obj.itemName)
+                PrintSunmiUtils.orderTime(obj.quantity.toString() + " " + obj.itemName)
 
-        if (obj.orderItemModifiers.isNotEmpty()) {
-            for (j in 0 until obj.orderItemModifiers.size) {
-                val modifierObj = obj.orderItemModifiers.get(j)
+                if (obj.orderItemModifiers.isNotEmpty()) {
+                    for (j in 0 until obj.orderItemModifiers.size) {
+                        val modifierObj = obj.orderItemModifiers.get(j)
 
-                PrintSunmiUtils.orderTime("  " + modifierObj.name)
+                        PrintSunmiUtils.orderTime("  " + modifierObj.name)
+
+
+                    }
+                }
+                if (obj.note.isNotEmpty()) {
+                    PrintSunmiUtils.orderTime("  Note:" + obj.note)
+                }
 
 
             }
         }
-        if (obj.note.isNotEmpty()) {
-            PrintSunmiUtils.orderTime("  Note:" + obj.note)
-        }
-
-
     }
 
 }

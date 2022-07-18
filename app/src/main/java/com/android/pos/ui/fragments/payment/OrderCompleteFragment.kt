@@ -7892,7 +7892,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
             receiptModel?.order?.orderItems?.let {
                 addOrdersForKitchen(
-                    it
+                    it,
+                    customerReceiptPrinters.printerCategories.toCollection(arrayListOf())
                 )
             }
 

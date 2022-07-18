@@ -714,9 +714,9 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                                 cashDiscountType = ""
                             }
                         }
-                    Log.d(TAG, "addObserver: "+Gson().toJson(viewModel.cartModel))
-                    Log.d(TAG, "addObserver: "+Gson().toJson(cartList))
-                    if(cartList.isNotEmpty()){
+                    Log.d(TAG, "addObserver: " + Gson().toJson(viewModel.cartModel))
+                    Log.d(TAG, "addObserver: " + Gson().toJson(cartList))
+                    if (cartList.isNotEmpty()) {
                         if (cartList[0] != null) {
                             if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == DINE_IN) {
                                 cartList[0].dineInList?.forEach { dineInModel ->
@@ -963,9 +963,9 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
             var dineInList = arguments?.getParcelableArrayList<DineInModel>("dine_in_list")
 
             if (dineInList?.isNotEmpty() == true) {
-                dineInList.forEach { it->
-                    it.items.forEach {items->
-                        viewModel.selectedItems(items.itemId,1)
+                dineInList.forEach { it ->
+                    it.items.forEach { items ->
+                        viewModel.selectedItems(items.itemId, 1)
                     }
                 }
                 if (cartList.isEmpty()) {
@@ -1289,13 +1289,12 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
 
 
                             for (i in 0 until it.data.size) {
-
-
                                 initKitchenPrinter(
                                     it.data.get(i),
                                     Constants.KITCHEN,
                                     createOrderResponse
                                 )
+
                             }
 
 
@@ -2103,7 +2102,8 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
 
             receiptModel?.order?.orderItems?.let {
                 addOrdersForKitchen(
-                    it
+                    it,
+                    customerReceiptPrinters.printerCategories.toCollection(arrayListOf())
                 )
             }
 
