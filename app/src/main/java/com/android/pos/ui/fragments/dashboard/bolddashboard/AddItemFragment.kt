@@ -325,11 +325,6 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
                     viewModel.cartLogic(cartList, item, Constants.UPDATE, false)
                 }
             } else {
-                if (!item.isSelectedItem) {
-                    item.isSelectedItem = true
-                    viewModel.selectedItems(item.itemId, 1)
-                }
-
                 if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == Constants.DINE_IN) {
                     val dineInList = cartList[0].dineInList
                     Log.e(TAG, "dineInList:  ${Gson().toJson(dineInList)}")
