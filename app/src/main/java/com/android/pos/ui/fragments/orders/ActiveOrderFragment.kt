@@ -338,7 +338,6 @@ class ActiveOrderFragment(
                 var itemDiscountTotal: Double = 0.0
                 var itemPassDis: Double = 0.0
                 order.orderItems.forEach {
-                    dashboardViewModel.selectedItems(it.itemId, 1)
                     if (it.discountAmount != 0.0) {
                         itemDiscountTotal += MethodUtils.roundOffAmountDouble(it.discountAmount)
                     }

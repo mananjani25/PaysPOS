@@ -405,17 +405,6 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
             makeItemEdited(item)
             if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == DINE_IN) {
                 Log.e(TAG, "isEditedisEdited  ${item.isEdited}")
-                var count = 0
-                cartList[0].dineInList?.forEach { dineInModel ->
-                    dineInModel.items.forEach { items ->
-                        if (items.itemId == item.itemId) {
-                            count++
-                        }
-                    }
-                }
-                if (count == 1 || count == 0) {
-                    viewModel.selectedItems(item.itemId, 0)
-                }
                 cartList[0].dineInList?.let { it1 ->
                     viewModel.cartLogic(
                         cartList, item, DELETE, false,
@@ -423,16 +412,6 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
                     )
                 }
             } else {
-                var count = 0
-                cartList[0].items?.forEach { items ->
-                    if (items.itemId == item.itemId) {
-                        count++
-                    }
-                }
-                if (count == 1 || count == 0) {
-                    viewModel.selectedItems(item.itemId, 0)
-                }
-                Log.d(TAG, "onClick: " + count)
                 viewModel.cartLogic(cartList, item, DELETE, item.isManualSales)
             }
             listner.onCancelItemSelected()

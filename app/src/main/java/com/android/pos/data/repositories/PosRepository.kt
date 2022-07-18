@@ -574,13 +574,6 @@ class PosRepository @Inject constructor(
     suspend fun reOrderCategoryCall(id: Int, oldPos: Int, newPos: Int) =
         apiHelperNew.reOrderCategoryCall(id, oldPos, newPos)
 
-    suspend fun selectedItem(itemid: Int, isSelected: Int): Int {
-        return appDatabase.itemDao().selectedItem(itemid, isSelected)
-    }
-
-    suspend fun deselectedItem(isSelected: Int): Int {
-        return appDatabase.itemDao().deselectedItem(isSelected)
-    }
     suspend fun updateCategorySort(allCategories: ArrayList<TbCategory>) {
         appDatabase.categoryDao().addAll(allCategories)
     }
