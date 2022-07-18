@@ -2909,7 +2909,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             SunmiPrintHelper.getInstance().initSunmiPrinterService(requireContext())
 
             if (guestPrint && getOrderDetailsResponse?.guestAttributes?.size!! > 2) {
-
+                Log.e("addDineInInner", "3333333")
 
                 viewLifecycleOwner.lifecycleScope.launch {
                     delay(100)
@@ -2929,6 +2929,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 }
 
             } else {
+
+                Log.e("addDineInInner", "4444444")
 
                 viewLifecycleOwner.lifecycleScope.launch {
                     delay(100)
@@ -4818,6 +4820,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
             PrintSunmiUtils.normalTextCenter(guestName)
 
+            Log.e("addDineInInner", "111111111")
             listGuestItem.forEach {
                 addOrderItemForDineInInner(
                     it,
@@ -6640,6 +6643,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
 
                 } else {
+                    Log.e("addDineInInner", "22222222")
                     dineInList.get(i).item?.let {
                         addOrderItemForDineInInner(
                             it,
@@ -7710,7 +7714,6 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
     ) {
         try {
 
-            PrintSunmiUtils.fontSizeInner(Constants.LARGE)
 
             SunmiPrintHelper.getInstance().initPrinter()
 
@@ -7725,47 +7728,26 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             }
 
 
-            PrintSunmiUtils.normalTextCenter(getOrderDetailsResponse?.floorPlanTable?.tableName + " (" + getOrderDetailsResponse?.floorPlanTable?.tableNumber + ")")
+            PrintSunmiUtils.normalTextCenterLarge(getOrderDetailsResponse?.floorPlanTable?.tableName + " (" + getOrderDetailsResponse?.floorPlanTable?.tableNumber + ")")
 
             SunmiPrintHelper.getInstance().lineWrap(1)
 
-            PrintSunmiUtils.normalText(
-                padLine(
-                    "ReceiptID:" + if (getOrderDetailsResponse?.offlineId?.isEmpty() == true) {
-                        "ENTJKOIJH8745"
-                    } else {
-                        getOrderDetailsResponse?.offlineId
-                    },
-                    "",
-                    if (kitchenSettingModel.fonts == Constants.LARGE) 23 else 23
-                ).toString()
-            )
 
-            SunmiPrintHelper.getInstance().lineWrap(1)
 
             if (kitchenSettingModel.showTeamMember) {
 
 
-                PrintSunmiUtils.normalText(
-                    padLine(
-                        "Employee:" + getOrderDetailsResponse?.employee?.name, "",
-                        if (kitchenSettingModel.fonts == Constants.LARGE) 23 else 23
-                    ).toString()
+                PrintSunmiUtils.normalTextLarge(
+                    "Employee:" + getOrderDetailsResponse?.employee?.name
                 )
 
             }
 
-            SunmiPrintHelper.getInstance().lineWrap(1)
-
-            PrintSunmiUtils.normalText(
-                padLine(
-                    Constants.getReceiptFormatDateFromUTCServer(
-                        requireContext(),
-                        getOrderDetailsResponse?.createdAt.toString()
-                    ),
-                    "",
-                    if (kitchenSettingModel.fonts == Constants.LARGE) 23 else 23
-                ).toString()
+            PrintSunmiUtils.normalTextLarge(
+                Constants.getReceiptFormatDateFromUTCServer(
+                    requireContext(),
+                    getOrderDetailsResponse?.createdAt.toString()
+                )
             )
 
             PrintSunmiUtils.addHorizontalInner()
@@ -7776,7 +7758,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
             if (getOrderDetailsResponse?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote) {
 
-                PrintSunmiUtils.orderNoteInner(getOrderDetailsResponse?.note.toString())
+                PrintSunmiUtils.orderNoteInnerLarge(getOrderDetailsResponse?.note.toString())
             }
 
 
