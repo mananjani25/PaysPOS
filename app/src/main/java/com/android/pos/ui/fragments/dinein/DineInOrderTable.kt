@@ -1582,8 +1582,9 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         Log.e(TAG, "WholeTableITem")
         viewModel.fireItemToKitchen(orderId ?: 0, true, ids, true)
         for (i in 0 until kitchenPrinterList.size) {
-
-            initKitchenPrinter(kitchenPrinterList.get(i), Constants.KITCHEN, list)
+            if (kitchenPrinterList[i].status) {
+                initKitchenPrinter(kitchenPrinterList.get(i), Constants.KITCHEN, list)
+            }
         }
     }
 
@@ -1595,8 +1596,10 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         var listItem: ArrayList<TbItem> = arrayListOf()
         listItem.add(item)
         for (i in 0 until kitchenPrinterList.size) {
+            if (kitchenPrinterList[i].status) {
 
-            initKitchenPrinter(kitchenPrinterList.get(i), Constants.KITCHEN, listItem)
+                initKitchenPrinter(kitchenPrinterList.get(i), Constants.KITCHEN, listItem)
+            }
         }
 
     }
@@ -1662,21 +1665,23 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         Log.e(TAG, "customerListSize  ${customerList.size}")
         if (customerList.isNotEmpty()) {
             customerList.forEach {
-                initPrinter(
-                    it,
-                    Constants.CUSTOMER,
-                    paymentStatus,
-                    true,
-                    listGuestItem,
-                    guestName,
-                    wtItems,
-                    subTotalGuest,
-                    total,
-                    taxGuest,
-                    serviceChargeGuest,
-                    divideDiscount
+                if (it.status) {
+                    initPrinter(
+                        it,
+                        Constants.CUSTOMER,
+                        paymentStatus,
+                        true,
+                        listGuestItem,
+                        guestName,
+                        wtItems,
+                        subTotalGuest,
+                        total,
+                        taxGuest,
+                        serviceChargeGuest,
+                        divideDiscount
 
-                )
+                    )
+                }
 
             }
         }
@@ -2785,15 +2790,17 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                         customerList = it.data
 
                         customerList.forEach {
-                            initPrinter(
-                                it,
-                                Constants.CUSTOMER,
-                                paymentType,
-                                false,
-                                arrayListOf(),
-                                "",
-                                arrayListOf()
-                            )
+                            if (it.status) {
+                                initPrinter(
+                                    it,
+                                    Constants.CUSTOMER,
+                                    paymentType,
+                                    false,
+                                    arrayListOf(),
+                                    "",
+                                    arrayListOf()
+                                )
+                            }
 
 
                         }
@@ -8046,24 +8053,27 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         if (listItem.isNotEmpty()) {
             var autoPrintEnable = false
             kitchenPrinterList.forEach { kit ->
-                if (isCheckAndFire) {
-                    kit.orderTypes.forEach {
-                        if (it.orderTypeId == getOrderDetailsResponse?.orderTypeId) {
-                            it.printerSettings.forEach {
-                                if (it.printType.lowercase()
-                                        .equals(Constants.KITCHEN.lowercase()) && it.autoPrinting
-                                ) {
+                if (kit.status) {
 
-                                    autoPrintEnable = true
-                                    initKitchenPrinter(kit, Constants.KITCHEN, listItem)
+                    if (isCheckAndFire) {
+                        kit.orderTypes.forEach {
+                            if (it.orderTypeId == getOrderDetailsResponse?.orderTypeId) {
+                                it.printerSettings.forEach {
+                                    if (it.printType.lowercase()
+                                            .equals(Constants.KITCHEN.lowercase()) && it.autoPrinting
+                                    ) {
+
+                                        autoPrintEnable = true
+                                        initKitchenPrinter(kit, Constants.KITCHEN, listItem)
+                                    }
                                 }
                             }
+
                         }
+                    } else {
+                        initKitchenPrinter(kit, Constants.KITCHEN, listItem)
 
                     }
-                } else {
-                    initKitchenPrinter(kit, Constants.KITCHEN, listItem)
-
                 }
             }
             if (!isCheckAndFire or (isCheckAndFire && autoPrintEnable)) {

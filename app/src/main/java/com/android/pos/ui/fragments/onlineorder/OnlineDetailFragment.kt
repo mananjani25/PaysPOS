@@ -627,11 +627,13 @@ class OnlineDetailFragment(
             when (it.status) {
                 Status.SUCCESS -> {
                     it.data?.forEach {
-                        initKitchenPrinter(
-                            it,
-                            Constants.KITCHEN,
-                            data
-                        )
+                        if (it.status) {
+                            initKitchenPrinter(
+                                it,
+                                Constants.KITCHEN,
+                                data
+                            )
+                        }
 
                     }
 
@@ -752,7 +754,7 @@ class OnlineDetailFragment(
                 )
                 builder.addTextAlign(Builder.ALIGN_CENTER)
 
-                addBuilderText(builder,"Online Order")
+                addBuilderText(builder, "Online Order")
             }
             var tmps = "Open Order".toString().trim()
                 .toString().lowercase()
@@ -1017,9 +1019,7 @@ class OnlineDetailFragment(
 
 
             }
-        }
-        catch (e: Exception)
-        {
+        } catch (e: Exception) {
             // printerDialog.dismiss()
             e.printStackTrace()
         }
@@ -1051,7 +1051,6 @@ class OnlineDetailFragment(
 
 
     }
-
 
 
 }

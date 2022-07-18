@@ -1289,11 +1289,14 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
 
 
                             for (i in 0 until it.data.size) {
-                                initKitchenPrinter(
-                                    it.data.get(i),
-                                    Constants.KITCHEN,
-                                    createOrderResponse
-                                )
+                                Log.e(TAG,"statusPrinter  ${it.data[i].status}")
+                                if (it.data[i].status) {
+                                    initKitchenPrinter(
+                                        it.data.get(i),
+                                        Constants.KITCHEN,
+                                        createOrderResponse
+                                    )
+                                }
 
                             }
 

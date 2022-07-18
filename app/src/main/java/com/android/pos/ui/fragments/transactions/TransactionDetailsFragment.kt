@@ -235,7 +235,7 @@ class TransactionDetailsFragment : Fragment() {
 
         }
         binding.tvIssueRefund.setOnClickListener {
-            if (SystemClock.elapsedRealtime() - mLastClickTime < 1000){
+            if (SystemClock.elapsedRealtime() - mLastClickTime < 1000) {
                 return@setOnClickListener
             }
             mLastClickTime = SystemClock.elapsedRealtime();
@@ -692,7 +692,9 @@ class TransactionDetailsFragment : Fragment() {
                         val customerList = it.data
 
                         customerList.forEach {
-                            initPrinter(it, Constants.CUSTOMER)
+                            if (it.status) {
+                                initPrinter(it, Constants.CUSTOMER)
+                            }
                         }
                     }
                 }
@@ -2526,7 +2528,6 @@ class TransactionDetailsFragment : Fragment() {
 
 
             if (customerSettingModel.fonts == Constants.LARGE) {
-
 
 
                 PrintSunmiUtils.normalText("ReceiptID:" + paymentDetailsResponse.data.order.offline_id)

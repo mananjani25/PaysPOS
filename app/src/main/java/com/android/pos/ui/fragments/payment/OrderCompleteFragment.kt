@@ -910,15 +910,17 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
         }
         customerPrinterDineIn?.forEach {
-            initDineInPrinter(
-                it,
-                Constants.CUSTOMER,
-                paymentType,
-                true,
-                listGuestItem = listItem,
-                dineInList.get(guestPos).title.toString(),
-                listItemWT
-            )
+            if (it.status) {
+                initDineInPrinter(
+                    it,
+                    Constants.CUSTOMER,
+                    paymentType,
+                    true,
+                    listGuestItem = listItem,
+                    dineInList.get(guestPos).title.toString(),
+                    listItemWT
+                )
+            }
 
         }
     }
@@ -5377,24 +5379,27 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                 ) {
                                     if (kitchenPrinterList.isNotEmpty()) {
                                         for (i in 0 until kitchenPrinterList.size) {
-                                            kitchenPrinterList[i].orderTypes.forEach {
+                                            if (kitchenPrinterList[i].status) {
+                                                kitchenPrinterList[i].orderTypes.forEach {
 
-                                                if (it.orderTypeId == receiptModel?.order?.orderTypeId
+                                                    if (it.orderTypeId == receiptModel?.order?.orderTypeId
 
-                                                ) {
+                                                    ) {
 
-                                                    it.printerSettings.forEach {
-                                                        if (it.printType.lowercase()
-                                                                .equals(KITCHEN.lowercase()) && it.autoPrinting
-                                                        ) {
-                                                            initKitchenPrinter(
-                                                                kitchenPrinterList.get(i),
-                                                                KITCHEN
-                                                            )
+                                                        it.printerSettings.forEach {
+                                                            if (it.printType.lowercase()
+                                                                    .equals(KITCHEN.lowercase()) && it.autoPrinting
+                                                            ) {
 
+                                                                initKitchenPrinter(
+                                                                    kitchenPrinterList.get(i),
+                                                                    KITCHEN
+                                                                )
+
+                                                            }
                                                         }
-                                                    }
 
+                                                    }
                                                 }
                                             }
                                         }
@@ -5462,19 +5467,21 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                         if (autoPrintCheck) {
                             customerList.forEach { cus ->
-                                cus.orderTypes.forEach {
+                                if (cus.status) {
+                                    cus.orderTypes.forEach {
 
-                                    if (it.orderTypeId == receiptModel?.order?.orderTypeId) {
+                                        if (it.orderTypeId == receiptModel?.order?.orderTypeId) {
 
-                                        it.printerSettings.forEach {
-                                            if (it.printType.lowercase()
-                                                    .equals(CUSTOMER.lowercase()) && it.autoPrinting
-                                            ) {
-
-
-                                                initPrinter(cus, CUSTOMER)
+                                            it.printerSettings.forEach {
+                                                if (it.printType.lowercase()
+                                                        .equals(CUSTOMER.lowercase()) && it.autoPrinting
+                                                ) {
 
 
+                                                    initPrinter(cus, CUSTOMER)
+
+
+                                                }
                                             }
                                         }
                                     }
