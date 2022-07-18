@@ -36,7 +36,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class EditPrinter : Fragment() {
+class EditPrinter : Fragment(), CategoryPrinterAdapter.CategoryPrinter {
     private var oldOrderTypes: List<PrinterResponse.Data.OrderTypes> = arrayListOf()
     lateinit var binding: FragmentEditPrinterBinding
     private lateinit var adapter: EditPrinterListAdapter
@@ -58,7 +58,7 @@ class EditPrinter : Fragment() {
     ): View? {
         binding = FragmentEditPrinterBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = this
-        categoryAdapter = CategoryPrinterAdapter(arrayListOf())
+        categoryAdapter = CategoryPrinterAdapter(arrayListOf(), this)
         arrayAdapter =
             ArrayAdapter(binding.root.context, android.R.layout.simple_spinner_item, list)
         arrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
@@ -413,5 +413,12 @@ class EditPrinter : Fragment() {
 
             }
         })
+    }
+
+    override fun categoryAllSelected(flag: Boolean) {
+
+        binding.chCategory?.isChecked = flag
+
+
     }
 }

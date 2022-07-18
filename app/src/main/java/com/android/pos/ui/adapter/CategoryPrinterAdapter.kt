@@ -6,7 +6,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.data.model.responseModel.PrinterResponse
 import com.android.pos.databinding.ViewPrinterCategoryBinding
 
-class CategoryPrinterAdapter(var list: ArrayList<PrinterResponse.Data.PrinterCategories>) :
+class CategoryPrinterAdapter(
+    var list: ArrayList<PrinterResponse.Data.PrinterCategories>,
+    var listner: CategoryPrinter
+) :
     RecyclerView.Adapter<CategoryPrinterAdapter.MyViewHolder>() {
     inner class MyViewHolder(private val binding: ViewPrinterCategoryBinding) :
         RecyclerView.ViewHolder(binding.root) {
@@ -20,12 +23,21 @@ class CategoryPrinterAdapter(var list: ArrayList<PrinterResponse.Data.PrinterCat
         init {
 
             binding.chCategory.setOnCheckedChangeListener { compoundButton, b ->
+                var selectAllCat = true
                 if (compoundButton.isPressed) {
 
                     list[bindingAdapterPosition].printerEnable = b
 
 
                 }
+                list.forEach {
+                    if (!it.printerEnable) {
+                        selectAllCat = false
+                        return@forEach
+                    }
+
+                }
+                listner.categoryAllSelected(selectAllCat)
             }
         }
     }
@@ -71,5 +83,9 @@ class CategoryPrinterAdapter(var list: ArrayList<PrinterResponse.Data.PrinterCat
             it.printerEnable = boolean
         }
         notifyDataSetChanged()
+    }
+
+    interface CategoryPrinter {
+        fun categoryAllSelected(flag: Boolean)
     }
 }
