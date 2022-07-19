@@ -1278,6 +1278,61 @@ fun addOrdersForKitchenOnlineOrder(
     return builder
 }
 
+fun addOrdersForKitchenOnlineOrderSunmi(
+    list: List<OnlineOrderResponseModel.Data.OrderItem>
+) {
+    for (i in 0 until list.size) {
+        val obj = list.get(i)
+
+        PrintSunmiUtils.orderTime(obj.quantity.toString() + " " + obj.itemName)
+
+        if (obj.orderItemModifiers.isNotEmpty()) {
+            for (j in 0 until obj.orderItemModifiers.size) {
+                val modifierObj = obj.orderItemModifiers.get(j)
+
+                PrintSunmiUtils.orderTime("  " + modifierObj.name)
+
+
+            }
+        }
+        if (obj.note.isNotEmpty()) {
+            PrintSunmiUtils.orderTime("  Note:" + obj.note)
+
+        }
+
+
+    }
+
+}
+
+
+fun addOrdersForKitchenOnlineOrderSunmiInner(
+    list: List<OnlineOrderResponseModel.Data.OrderItem>
+) {
+    for (i in 0 until list.size) {
+        val obj = list.get(i)
+
+        PrintSunmiUtils.normalTextLarge(obj.quantity.toString() + " " + obj.itemName)
+
+        if (obj.orderItemModifiers.isNotEmpty()) {
+            for (j in 0 until obj.orderItemModifiers.size) {
+                val modifierObj = obj.orderItemModifiers.get(j)
+
+                PrintSunmiUtils.normalTextLarge("  " + modifierObj.name)
+
+
+            }
+        }
+        if (obj.note.isNotEmpty()) {
+            PrintSunmiUtils.normalTextLarge("  Note:" + obj.note)
+
+        }
+
+
+    }
+
+}
+
 fun addOrdersForKitchenDineIn(
 
     list: ArrayList<TbItem>

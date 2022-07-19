@@ -107,6 +107,14 @@ class PrintSunmiUtils {
             SunmiPrinterApi.getInstance().lineWrap(1)
         }
 
+        fun orderIdSunmi(value: String) {
+            SunmiPrinterApi.getInstance().setAlignMode(1)
+            SunmiPrinterApi.getInstance().enableBold(true)
+            SunmiPrinterApi.getInstance().setFontZoom(2, 2)
+            SunmiPrinterApi.getInstance().printText(value)
+            SunmiPrinterApi.getInstance().lineWrap(1)
+        }
+
         fun orderIdInner(value: String) {
 
             SunmiPrintHelper.getInstance().setAlign(0)
@@ -601,7 +609,7 @@ class PrintSunmiUtils {
             } else
                 SunmiPrintHelper.getInstance()
                     .printText(value, setFontSizeInner(), false, false, fontName)
-           // SunmiPrintHelper.getInstance().lineWrap(1)
+            // SunmiPrintHelper.getInstance().lineWrap(1)
         }
 
         fun normalTextLarge(value: String) {
@@ -624,6 +632,7 @@ class PrintSunmiUtils {
                 .printText(value, 36f, false, false, fontName)
             SunmiPrintHelper.getInstance().lineWrap(1)
         }
+
         fun boldText(value: String) {
             SunmiPrintHelper.getInstance().setAlign(0)
             SunmiPrintHelper.getInstance()

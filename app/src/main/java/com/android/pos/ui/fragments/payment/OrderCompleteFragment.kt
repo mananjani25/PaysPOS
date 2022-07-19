@@ -7828,9 +7828,12 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
             PrintSunmiUtils.fontSize(kitchenSettingModel.fonts)
 
+            PrintSunmiUtils.orderIdSunmi(
+                "OrderID:" + receiptModel?.order?.id
+            )
+            SunmiPrinterApi.getInstance().lineWrap(1)
+
             if (kitchenSettingModel.showOrderType) {
-
-
                 PrintSunmiUtils.printOrderType(receiptModel?.order?.orderType.toString())
                 SunmiPrinterApi.getInstance().lineWrap(1)
 
@@ -7847,23 +7850,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             }
 
 
-            PrintSunmiUtils.orderId(
-                padLine(
-                    "OrderID:" + receiptModel?.order?.id,
-                    "",
-                    if (kitchenSettingModel.fonts == LARGE) 23 else 48
-                ).toString()
-            )
-            SunmiPrinterApi.getInstance().lineWrap(1)
 
-            PrintSunmiUtils.receiptID(
-                padLine(
-                    "ReceiptID:" + receiptModel?.order?.offlineId,
-                    "",
-                    if (kitchenSettingModel.fonts == LARGE) 23 else 48
-                ).toString()
-            )
-            SunmiPrinterApi.getInstance().lineWrap(1)
+
 
             if (kitchenSettingModel.showTeamMember) {
 

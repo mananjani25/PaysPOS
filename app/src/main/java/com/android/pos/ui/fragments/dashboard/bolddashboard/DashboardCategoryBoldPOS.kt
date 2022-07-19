@@ -2036,34 +2036,17 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
     ) {
         try {
 
+            PrintSunmiUtils.orderIdSunmi(
+                "OrderID:" + receiptModel?.order?.id
+            )
+            SunmiPrinterApi.getInstance().lineWrap(1)
+
             if (kitchenSettingModel.showOrderType) {
                 PrintSunmiUtils.printOrderType(receiptModel?.order?.orderType.toString())
             }
             PrintSunmiUtils.printOrderType(receiptModel?.order?.deliveryType.toString())
 
-            PrintSunmiUtils.orderId(
-                padLine(
-                    "OrderID:" + receiptModel?.order?.id,
-                    "",
-                    if (kitchenSettingModel.fonts == LARGE) {
-                        23
-                    } else {
-                        48
-                    }
-                ).toString()
-            )
 
-            PrintSunmiUtils.receiptID(
-                padLine(
-                    "ReceiptID:" + receiptModel?.order?.offlineId,
-                    "",
-                    if (kitchenSettingModel.fonts == LARGE) {
-                        23
-                    } else {
-                        48
-                    }
-                ).toString()
-            )
 
             if (kitchenSettingModel.showTeamMember) {
 

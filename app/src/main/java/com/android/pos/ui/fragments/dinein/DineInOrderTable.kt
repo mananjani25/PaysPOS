@@ -7614,6 +7614,13 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
             PrintSunmiUtils.fontSize(kitchenSettingModel.fonts)
 
+            PrintSunmiUtils.orderIdSunmi(
+                "OrderID:" + getOrderDetailsResponse?.id
+            )
+
+            SunmiPrinterApi.getInstance().lineWrap(1)
+
+
             if (kitchenSettingModel.showOrderType) {
 
                 PrintSunmiUtils.printOrderType(getOrderDetailsResponse?.orderType.toString())
@@ -7625,28 +7632,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             PrintSunmiUtils.addValue(getOrderDetailsResponse?.floorPlanTable?.tableName + " (" + getOrderDetailsResponse?.floorPlanTable?.tableNumber + ")")
 
             SunmiPrinterApi.getInstance().lineWrap(1)
-            PrintSunmiUtils.orderId(
-                padLine(
-                    "OrderID:" + getOrderDetailsResponse?.id,
-                    "",
-                    if (kitchenSettingModel.fonts == Constants.LARGE) 23 else 48
-                ).toString()
-            )
 
-            SunmiPrinterApi.getInstance().lineWrap(1)
-            PrintSunmiUtils.receiptID(
-                padLine(
-                    "ReceiptID:" + if (getOrderDetailsResponse?.offlineId?.isEmpty() == true) {
-                        "ENTJKOIJH8745"
-                    } else {
-                        getOrderDetailsResponse?.offlineId
-                    },
-                    "",
-                    if (kitchenSettingModel.fonts == Constants.LARGE) 23 else 48
-                ).toString()
-            )
 
-            SunmiPrinterApi.getInstance().lineWrap(1)
 
             if (kitchenSettingModel.showTeamMember) {
 
