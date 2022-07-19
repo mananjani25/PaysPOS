@@ -5391,10 +5391,14 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                                     .equals(KITCHEN.lowercase()) && it.autoPrinting
                                                             ) {
 
-                                                                initKitchenPrinter(
-                                                                    kitchenPrinterList.get(i),
-                                                                    KITCHEN
-                                                                )
+                                                                if (checkItemsforPrinter(receiptModel?.order?.orderItems ?: arrayListOf(),kitchenPrinterList[i].printerCategories.toCollection(
+                                                                        arrayListOf()))) {
+                                                                            Log.e(TAG,"InsidePrinterKitchen")
+                                                                    initKitchenPrinter(
+                                                                        kitchenPrinterList.get(i),
+                                                                        KITCHEN
+                                                                    )
+                                                                }
 
                                                             }
                                                         }

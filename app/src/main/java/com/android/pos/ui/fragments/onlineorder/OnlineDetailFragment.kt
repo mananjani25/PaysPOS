@@ -709,7 +709,6 @@ class OnlineDetailFragment(
     ) {
         var builder: Builder? = null
         try {
-            Log.e(TAG, "KitchenPrinterName ${customerReceiptPrinters.name}")
             val pname = if (customerReceiptPrinters.name.substring(0, 6).toString()
                     .lowercase() == "TM-m30".lowercase()
             ) {
