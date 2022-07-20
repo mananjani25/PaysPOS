@@ -14,10 +14,9 @@ import com.android.pos.data.entities.TbServiceCharge
 import com.android.pos.data.model.responseModel.*
 import com.android.pos.data.model.responseModel.report.KeyValue
 import com.android.pos.data.remote.Constants
-import com.android.pos.utils.MethodUtils.Companion.roundOffAmountString
 import com.android.pos.di.PrefProvider
+import com.android.pos.utils.MethodUtils.Companion.roundOffAmountString
 import com.epson.eposprint.Builder
-import com.sunmi.externalprinterlibrary.api.SunmiPrinterApi
 
 val TAG = "PrinterReceipt"
 
@@ -102,7 +101,7 @@ fun addPaymentDetailsThreeData(builder: Builder, keyValue: java.util.ArrayList<K
 
 
         if (it.key.toString().toLowerCase().contains("Refund".toLowerCase())) {
-            refund = "$" + it.value
+            refund =   MethodUtils.roundOffAmount(it.value.toString().toDouble() ?: 0.0)
         } else {
             title = it.key.toString()
             amount = MethodUtils.roundOffAmount(it.value.toString().toDouble())
@@ -134,7 +133,7 @@ fun addPaymentDetailsThreeData(keyValue: java.util.ArrayList<KeyValue>) {
 
 
         if (it.key.toString().toLowerCase().contains("Refund".toLowerCase())) {
-            refund = "$" + it.value
+            refund = MethodUtils.roundOffAmount(it.value?.toDouble() ?: 0.0)
         } else {
             title = it.key.toString()
             amount = MethodUtils.roundOffAmount(it.value.toString().toDouble())
