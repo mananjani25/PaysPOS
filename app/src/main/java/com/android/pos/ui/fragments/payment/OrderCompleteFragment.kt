@@ -6848,15 +6848,18 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                 Builder.COLOR_1
                             )
 
+                            val phone = receiptModel?.order?.customer?.phones?.size?.minus(
+                                1
+                            )?.let {
+                                receiptModel?.order?.customer?.phones?.get(
+                                    it
+                                )?.phoneNumber
+                            }
                             builder.addText(
                                 padLine(
-                                    receiptModel?.order?.customer?.phones?.size?.minus(
-                                        1
-                                    )?.let {
-                                        receiptModel?.order?.customer?.phones?.get(
-                                            it
-                                        )?.phoneNumber
-                                    }, "", if (customerSettingModel.fonts == LARGE) {
+                                    MethodUtils.getUSFormatNumber(phone.toString()),
+                                    "",
+                                    if (customerSettingModel.fonts == LARGE) {
                                         24
                                     } else {
                                         48
@@ -7387,7 +7390,13 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                     Builder.TRUE,
                                     Builder.COLOR_1
                                 )
-                                builder.addText(receiptModel?.order?.customer?.phones?.get(0)?.phoneNumber)
+                                builder.addText(
+                                    MethodUtils.getUSFormatNumber(
+                                        receiptModel?.order?.customer?.phones?.get(
+                                            0
+                                        )?.phoneNumber.toString()
+                                    )
+                                )
                             }
 
                         }
@@ -7721,7 +7730,13 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                     Builder.TRUE,
                                     Builder.COLOR_1
                                 )
-                                builder.addText(receiptModel?.order?.customer?.phones?.get(0)?.phoneNumber)
+                                builder.addText(
+                                    MethodUtils.getUSFormatNumber(
+                                        receiptModel?.order?.customer?.phones?.get(
+                                            0
+                                        )?.phoneNumber.toString()
+                                    )
+                                )
                             }
 
                         }
@@ -7916,7 +7931,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                             receiptModel?.order?.customer?.phones?.get(0)?.phoneNumber?.let {
                                 PrintSunmiUtils.customerPhone(
-                                    it
+                                    MethodUtils.getUSFormatNumber(it)
                                 )
                             }
                         }
@@ -8023,7 +8038,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                             receiptModel?.order?.customer?.phones?.get(0)?.phoneNumber?.let {
                                 PrintSunmiUtils.normalTextLarge(
-                                    it
+                                    MethodUtils.getUSFormatNumber(it)
                                 )
                             }
                         }
@@ -8863,15 +8878,18 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                         if (receiptModel?.order?.customer?.phones?.isNotEmpty() == true) {
 
+                            val number = receiptModel?.order?.customer?.phones?.size?.minus(
+                                1
+                            )?.let {
+                                receiptModel?.order?.customer?.phones?.get(
+                                    it
+                                )?.phoneNumber
+                            }
                             PrintSunmiUtils.customerPhone(
                                 padLine(
-                                    receiptModel?.order?.customer?.phones?.size?.minus(
-                                        1
-                                    )?.let {
-                                        receiptModel?.order?.customer?.phones?.get(
-                                            it
-                                        )?.phoneNumber
-                                    }, "", if (customerSettingModel.fonts == LARGE) 23 else 48
+                                    number?.let { MethodUtils.getUSFormatNumber(it) },
+                                    "",
+                                    if (customerSettingModel.fonts == LARGE) 23 else 48
                                 ).toString()
                             )
 
@@ -9491,15 +9509,18 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                         if (receiptModel?.order?.customer?.phones?.isNotEmpty() == true) {
 
+                            val phone = receiptModel?.order?.customer?.phones?.size?.minus(
+                                1
+                            )?.let {
+                                receiptModel?.order?.customer?.phones?.get(
+                                    it
+                                )?.phoneNumber
+                            }
                             PrintSunmiUtils.normalText(
                                 padLine(
-                                    receiptModel?.order?.customer?.phones?.size?.minus(
-                                        1
-                                    )?.let {
-                                        receiptModel?.order?.customer?.phones?.get(
-                                            it
-                                        )?.phoneNumber
-                                    }, "", if (customerSettingModel.fonts == LARGE) 23 else 48
+                                    phone?.let { MethodUtils.getUSFormatNumber(it) },
+                                    "",
+                                    if (customerSettingModel.fonts == LARGE) 23 else 48
                                 ).toString()
                             )
 

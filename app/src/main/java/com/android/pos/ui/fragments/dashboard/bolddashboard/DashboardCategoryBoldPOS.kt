@@ -1618,7 +1618,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                                     Builder.TRUE,
                                     Builder.COLOR_1
                                 )
-                                builder.addText(receiptModel?.order?.customer?.phones?.get(0)?.phoneNumber)
+                                builder.addText(MethodUtils.getUSFormatNumber(receiptModel?.order?.customer?.phones?.get(0)?.phoneNumber))
                             }
 
                         }
@@ -1918,7 +1918,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                                     Builder.FALSE,
                                     Builder.COLOR_1
                                 )
-                                builder.addText(receiptModel?.order?.customer?.phones?.get(0)?.phoneNumber)
+                                builder.addText(MethodUtils.getUSFormatNumber(receiptModel?.order?.customer?.phones?.get(0)?.phoneNumber))
                             }
 
                         }
@@ -2113,7 +2113,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
 
                             receiptModel?.order?.customer?.phones?.get(0)?.phoneNumber?.let {
                                 PrintSunmiUtils.customerPhone(
-                                    it
+                                    MethodUtils.getUSFormatNumber(it)
                                 )
                             }
                         }
@@ -2228,7 +2228,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
 
                             receiptModel?.order?.customer?.phones?.get(0)?.phoneNumber?.let {
                                 PrintSunmiUtils.normalTextLarge(
-                                    it
+                                    MethodUtils.getUSFormatNumber(it)
                                 )
                             }
                         }

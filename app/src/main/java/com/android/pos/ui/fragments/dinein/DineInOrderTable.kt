@@ -3243,7 +3243,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             )
             addBuilderText(
                 builder,
-                prefProvider.getValue(Constants.BUSINESS_PHONE_NO, "").toString()
+                MethodUtils.getUSFormatNumber(prefProvider.getValue(Constants.BUSINESS_PHONE_NO, "").toString())
             )
 
             builder.addFeedLine(1)
@@ -5191,7 +5191,9 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             )
             addBuilderText(
                 builder,
-                prefProvider.getValue(Constants.BUSINESS_PHONE_NO, "").toString()
+                MethodUtils.getUSFormatNumber(
+                    prefProvider.getValue(Constants.BUSINESS_PHONE_NO, "").toString()
+                )
             )
 
             builder.addFeedLine(1)

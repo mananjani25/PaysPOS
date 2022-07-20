@@ -958,7 +958,9 @@ class TransactionDetailsFragment : Fragment() {
             )
             addBuilderText(
                 builder,
-                prefProvider.getValue(Constants.BUSINESS_PHONE_NO, "").toString()
+                MethodUtils.getUSFormatNumber(
+                    prefProvider.getValue(Constants.BUSINESS_PHONE_NO, "").toString()
+                )
             )
 
 

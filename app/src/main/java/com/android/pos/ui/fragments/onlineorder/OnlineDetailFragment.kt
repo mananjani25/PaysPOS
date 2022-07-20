@@ -1006,7 +1006,13 @@ class OnlineDetailFragment(
                                     Builder.TRUE,
                                     Builder.COLOR_1
                                 )
-                                builder.addText(orderData?.data?.customer?.phones?.get(orderData?.data?.customer?.phones.size - 1)?.phoneNumber)
+                                builder.addText(
+                                    MethodUtils.getUSFormatNumber(
+                                        orderData?.data?.customer?.phones?.get(
+                                            orderData?.data?.customer?.phones.size - 1
+                                        )?.phoneNumber
+                                    )
+                                )
                             }
 
                         }
@@ -1249,7 +1255,13 @@ class OnlineDetailFragment(
                                     Builder.TRUE,
                                     Builder.COLOR_1
                                 )
-                                builder.addText(orderData?.data?.customer?.phones?.get(orderData?.data?.customer?.phones.size - 1)?.phoneNumber)
+                                builder.addText(
+                                    MethodUtils.getUSFormatNumber(
+                                        orderData?.data?.customer?.phones?.get(
+                                            orderData?.data?.customer?.phones.size - 1
+                                        )?.phoneNumber
+                                    )
+                                )
                             }
 
                         }
