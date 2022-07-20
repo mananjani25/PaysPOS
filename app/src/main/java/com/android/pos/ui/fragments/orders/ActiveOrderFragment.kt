@@ -1140,6 +1140,27 @@ class ActiveOrderFragment(
                 )
 
             Log.e(TAG, "getVanueLogo:  ${prefProvider.getValue(Constants.VENUE_LOGO, "")}")
+
+
+            if (customerSettingModel.showOrderIdTop) {
+                builder.addFeedLine(1)
+                builder.addTextFont(Builder.FONT_E)
+                builder.addTextAlign(Builder.ALIGN_CENTER)
+                builder.addTextLang(Builder.LANG_EN)
+                builder.addTextSize(2, 2)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.TRUE,
+                    Builder.COLOR_1
+                )
+
+                builder.addText("OrderID:" + receiptModel.id)
+
+                builder.addFeedLine(1)
+            }
+
+
             if (customerSettingModel.showVenueLogo && prefProvider.getValue(
                     Constants.VENUE_LOGO,
                     ""
@@ -1235,7 +1256,7 @@ class ActiveOrderFragment(
             )
             addBuilderText(
                 builder,
-                prefProvider.getValue(Constants.BUSINESS_PHONE_NO, "").toString()
+               MethodUtils.getUSFormatNumber( prefProvider.getValue(Constants.BUSINESS_PHONE_NO, "").toString())
             )
 
             builder.addFeedLine(1)
@@ -1281,22 +1302,7 @@ class ActiveOrderFragment(
 
             if (customerSettingModel.fonts == Constants.LARGE) {
 
-                if (customerSettingModel.showOrderIdTop) {
-                    builder.addFeedLine(1)
-                    builder.addTextFont(Builder.FONT_E)
-                    builder.addTextAlign(Builder.ALIGN_LEFT)
-                    builder.addTextLang(Builder.LANG_EN)
-                    addCustomerTextSize(builder, customerSettingModel.fonts)
-                    builder.addTextStyle(
-                        Builder.FALSE,
-                        Builder.FALSE,
-                        Builder.FALSE,
-                        Builder.COLOR_1
-                    )
 
-                    builder.addText("OrderID:" + receiptModel?.id)
-
-                }
                 builder.addTextLineSpace(30)
                 builder.addFeedUnit(30)
                 builder.addTextFont(Builder.FONT_E)
@@ -1398,12 +1404,8 @@ class ActiveOrderFragment(
 
                 builder.addText(
                     padLine(
-                        if (customerSettingModel.showOrderIdTop) {
-                            "OrderID:" + receiptModel?.id
-                        } else {
-                            ""
-                        },
                         "ReceiptID:" + receiptModel?.offlineId,
+                        "",
                         if (customerSettingModel.fonts == Constants.LARGE) {
                             24
                         } else {
@@ -2186,6 +2188,12 @@ class ActiveOrderFragment(
 
             PrintSunmiUtils.fontSize(customerSettingModel.fonts)
 
+            if (customerSettingModel.showOrderIdTop) {
+                PrintSunmiUtils.orderIdLarge("OrderID:" + receiptModel?.id)
+                SunmiPrinterApi.getInstance().lineWrap(1)
+            }
+
+
             if (customerSettingModel.showVenueLogo && prefProvider.getValue(
                     Constants.VENUE_LOGO,
                     ""
@@ -2225,9 +2233,6 @@ class ActiveOrderFragment(
 
             if (customerSettingModel.fonts == Constants.LARGE) {
 
-                if (customerSettingModel.showOrderIdTop) {
-                    PrintSunmiUtils.orderId("OrderID:" + receiptModel?.id)
-                }
 
                 PrintSunmiUtils.receiptID("ReceiptID:" + receiptModel?.offlineId)
 
@@ -2269,12 +2274,9 @@ class ActiveOrderFragment(
 
 
                 val str = padLine(
-                    if (customerSettingModel.showOrderIdTop) {
-                        "OrderID:" + receiptModel?.id
-                    } else {
-                        ""
-                    },
+
                     "ReceiptID:" + receiptModel?.offlineId,
+                    "",
                     if (customerSettingModel.fonts == Constants.LARGE) {
                         23
                     } else {
@@ -2571,27 +2573,16 @@ class ActiveOrderFragment(
             if (receiptModel?.totalTips == 0.0 && printType == PRINT_PAID) {
 
 
-                var tip = ""
+                if (customerSettingModel.showTipLineForCash) {
 
-                if (receiptModel.totalTips != 0.0) {
-                    tip = receiptModel.totalTips.toString()
-                }
-
-                val str7 = padLine(
-                    "Tips",
-                    if (customerSettingModel.showTipLineForCash) {
-                        "_____________"
-                    } else {
-                        ""
-                    },
                     if (customerSettingModel.fonts == Constants.LARGE) {
-                        23
+                        PrintSunmiUtils.tips("Tips      _____________")
+                        SunmiPrinterApi.getInstance().lineWrap(1)
                     } else {
-                        48
+                        PrintSunmiUtils.tips("Tips                              _____________")
                     }
-                ).toString()
 
-                PrintSunmiUtils.tips(str7)
+                }
 
             }
 
