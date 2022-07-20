@@ -60,7 +60,7 @@ class PrintSunmiUtils {
             SunmiPrinterApi.getInstance().setAlignMode(1)
             SunmiPrinterApi.getInstance().enableBold(false)
             setFontSize()
-            SunmiPrinterApi.getInstance().printText(value2)
+            SunmiPrinterApi.getInstance().printText(MethodUtils.getUSFormatNumber(value2))
             SunmiPrinterApi.getInstance().lineWrap(1)
 
 
@@ -103,6 +103,14 @@ class PrintSunmiUtils {
             SunmiPrinterApi.getInstance().setAlignMode(0)
             SunmiPrinterApi.getInstance().enableBold(false)
             setFontSize()
+            SunmiPrinterApi.getInstance().printText(value)
+            SunmiPrinterApi.getInstance().lineWrap(1)
+        }
+
+        fun orderIdLarge(value: String) {
+            SunmiPrinterApi.getInstance().setAlignMode(1)
+            SunmiPrinterApi.getInstance().enableBold(true)
+            SunmiPrinterApi.getInstance().setFontZoom(2, 2)
             SunmiPrinterApi.getInstance().printText(value)
             SunmiPrinterApi.getInstance().lineWrap(1)
         }
