@@ -26,7 +26,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.android.pos.R
 import com.android.pos.data.entities.*
 import com.android.pos.data.model.requestModel.OrderItemVariationAttribute
-import com.android.pos.data.model.responseModel.*
+import com.android.pos.data.model.responseModel.GetCustomerReceiptSettingsResponse
+import com.android.pos.data.model.responseModel.GetTipReponse
+import com.android.pos.data.model.responseModel.OpenOrderResponse
+import com.android.pos.data.model.responseModel.PrinterResponse
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.BUSINESS_ADDRESS
 import com.android.pos.data.remote.Constants.OPEN_ORDER
@@ -60,7 +63,6 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
 import javax.inject.Inject
-import kotlin.collections.ArrayList
 import kotlin.math.abs
 
 @AndroidEntryPoint
@@ -280,6 +282,11 @@ class ActiveOrderFragment(
     }
 
     private fun getOpenOrders() {
+        var startTime = getDateByTimeZone(viewModel.startDate.value.toString())
+        var endTime = getDateByTimeZone(viewModel.endDate.value.toString())
+        Log.e(TAG, "startTime  ${startTime}")
+        Log.e(TAG, "endTime  ${endTime}")
+
         viewModel.openOrders(
             param1,
             viewModel.startDate.value.toString(),
@@ -328,6 +335,27 @@ class ActiveOrderFragment(
                 }
             }
         }
+
+    }
+
+    private fun getDateByTimeZone(date: String): String {
+        Log.e(TAG, "gotDate ${date}")
+        val myFormat = "MM/dd/yyyy HH:mm a"
+        val sdf = SimpleDateFormat(myFormat)
+        sdf.timeZone = TimeZone.getDefault()
+
+        var parseDate = sdf.parse(date)
+
+        val outputFormat = SimpleDateFormat(myFormat)
+        outputFormat.timeZone = TimeZone.getTimeZone(
+            prefProvider.getValue(
+                Constants.SYSTEM_TIMEZONE,
+                ""
+            )
+        )
+       return outputFormat.format(parseDate)
+       // return outputFormat.format(parseDate)
+
 
     }
 
@@ -995,8 +1023,7 @@ class ActiveOrderFragment(
             }
 
 
-        }
-        else if (customerReceiptPrinters.name.startsWith(SUNMI_INNER_PRINTER, true)) {
+        } else if (customerReceiptPrinters.name.startsWith(SUNMI_INNER_PRINTER, true)) {
 
             SunmiPrintHelper.getInstance().initSunmiPrinterService(requireContext())
             viewLifecycleOwner.lifecycleScope.launch {
