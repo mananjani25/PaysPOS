@@ -13,9 +13,7 @@ import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.R
 import com.android.pos.data.model.responseModel.OnlineOrderResponseModel
-import com.android.pos.data.model.responseModel.OpenOrderResponse
 import com.android.pos.databinding.ViewonlineorderlayoutBinding
-import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.TAG
 import com.android.pos.utils.TimeFormatUtils
 import com.android.pos.utils.callback.OrderCallBack
@@ -200,6 +198,9 @@ class OnlineOrderAdapter(val context: Context) :
                         if (it.offlineId.lowercase(Locale.getDefault())
                                 .contains(charString.lowercase(Locale.getDefault()))
                         ) {
+                            fList.add(it)
+                        } else if (it.id.toString().contains(charString)) {
+
                             fList.add(it)
                         } else if (it.customer != null && it.customer.firstName.lowercase(Locale.getDefault())
                                 .contains(charString.lowercase(Locale.getDefault()))

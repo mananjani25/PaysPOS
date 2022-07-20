@@ -164,10 +164,10 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
             event.getContentIfNotHandled()?.let {
                 if (prefProvider.getValueboolean(ONLINE_ORDER_ENABLE, false)) {
                     binding.layoutHeader.linearOnlineorder?.visible()
+                    viewModel.getOnlineOrderCount()
                 } else {
                     binding.layoutHeader.linearOnlineorder?.gone()
                 }
-                viewModel.getOnlineOrderCount()
             }
         }
     }
@@ -432,7 +432,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
         binding.layoutHeader.txtUserName.text =
             prefProvider.getValue(EMPLOYEE_NAME, "")
 
-        viewModel.getOnlineOrderCount()
+
         getOnlineOrderIsEnableOrNot()
     }
 
@@ -440,8 +440,11 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
     private fun syncData() {
 
         val sync = prefProvider.getValueboolean(Constants.SYNC_DATA, false)
-        if (!sync)
+        if (!sync){
             viewModel.syncInventoryModule()
+        }else{
+            viewModel.getOnlineOrderCount()
+        }
     }
 
     private fun loadCategoryFragment(fragment: Fragment) {
@@ -714,6 +717,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                                 cashDiscountType = ""
                             }
                         }
+                    viewModel.getOnlineOrderCount()
                     Log.d(TAG, "addObserver: " + Gson().toJson(viewModel.cartModel))
                     Log.d(TAG, "addObserver: " + Gson().toJson(cartList))
                     if (cartList.isNotEmpty()) {
