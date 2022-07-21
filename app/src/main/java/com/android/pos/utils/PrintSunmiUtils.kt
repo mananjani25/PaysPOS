@@ -5,7 +5,6 @@ import android.graphics.BitmapFactory
 import android.util.Base64
 import android.util.Log
 import com.android.pos.data.model.responseModel.GetTipReponse
-import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.LARGE
 import com.android.pos.data.remote.Constants.MEDIUM
 import com.android.pos.data.remote.Constants.SMALL
@@ -486,6 +485,13 @@ class PrintSunmiUtils {
 
             SunmiPrinterApi.getInstance().lineWrap(5)
             SunmiPrinterApi.getInstance().cutPaper(1, 1)
+            val aa = ByteArray(5)
+            aa[0] = 0x10;
+            aa[1] = 0x14;
+            aa[2] = 0x00;
+            aa[3] = 0x00;
+            aa[4] = 0x00;
+            SunmiPrinterApi.getInstance().sendRawData(aa)
         }
 
         fun cutPaperInner() {
@@ -700,6 +706,7 @@ class PrintSunmiUtils {
                 else -> 48
             }
         }
+
 
     }
 
