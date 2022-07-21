@@ -64,20 +64,30 @@ class CategoriesDialog : DialogFragment(), View.OnClickListener {
             it?.let { resource ->
                 when (resource.status) {
                     Status.SUCCESS -> {
-                        binding.rvCategoriesList.visibility = View.VISIBLE
                         binding.progressCircular.visibility = View.GONE
+                        if (it.data?.isNotEmpty() == true) {
 
+                            binding.rvCategoriesList.visibility = View.VISIBLE
+                            binding.txtNodata?.visibility = View.GONE
 
-                        it.data?.let { it1 -> adapter.add(it1) }
-                        if (selectedId != -2)
-                            adapter.setPos(selectedId)
+                            it.data.let { it1 -> adapter.add(it1) }
+                            if (selectedId != -2)
+                                adapter.setPos(selectedId)
+
+                        } else {
+                            binding.rvCategoriesList.visibility = View.GONE
+                            binding.txtNodata?.visibility = View.VISIBLE
+                        }
+
                     }
                     Status.ERROR -> {
                         binding.rvCategoriesList.visibility = View.GONE
                         binding.progressCircular.visibility = View.GONE
+                        binding.txtNodata?.visibility = View.VISIBLE
                     }
                     Status.LOADING -> {
                         binding.rvCategoriesList.visibility = View.GONE
+                        binding.txtNodata?.visibility = View.GONE
                         binding.progressCircular.visibility = View.VISIBLE
                     }
                 }

@@ -440,9 +440,9 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
     private fun syncData() {
 
         val sync = prefProvider.getValueboolean(Constants.SYNC_DATA, false)
-        if (!sync){
+        if (!sync) {
             viewModel.syncInventoryModule()
-        }else{
+        } else {
             viewModel.getOnlineOrderCount()
         }
     }
@@ -1027,9 +1027,11 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
 
 
                 val bundle = Bundle()
-                bundle.putParcelable("cartList", cartList[0])
+                if (cartList.isNotEmpty())
+                    bundle.putParcelable("cartList", cartList[0])
                 bundle.putBoolean("isGuestPaid", false)
-                cartList[0].orderId?.let { it1 -> bundle.putInt("orderId", it1) }
+                if (cartList.isNotEmpty())
+                    cartList[0].orderId?.let { it1 -> bundle.putInt("orderId", it1) }
                 prefProvider.setValue(ORDER_TYPE, TAKEOUT)
                 Log.e(TAG, "deleteCartDineIn")
                 viewModel.deleteCart()
@@ -1618,7 +1620,13 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                                     Builder.TRUE,
                                     Builder.COLOR_1
                                 )
-                                builder.addText(MethodUtils.getUSFormatNumber(receiptModel?.order?.customer?.phones?.get(0)?.phoneNumber))
+                                builder.addText(
+                                    MethodUtils.getUSFormatNumber(
+                                        receiptModel?.order?.customer?.phones?.get(
+                                            0
+                                        )?.phoneNumber
+                                    )
+                                )
                             }
 
                         }
@@ -1918,7 +1926,13 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                                     Builder.FALSE,
                                     Builder.COLOR_1
                                 )
-                                builder.addText(MethodUtils.getUSFormatNumber(receiptModel?.order?.customer?.phones?.get(0)?.phoneNumber))
+                                builder.addText(
+                                    MethodUtils.getUSFormatNumber(
+                                        receiptModel?.order?.customer?.phones?.get(
+                                            0
+                                        )?.phoneNumber
+                                    )
+                                )
                             }
 
                         }

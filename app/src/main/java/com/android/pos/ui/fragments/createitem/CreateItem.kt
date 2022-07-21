@@ -32,6 +32,7 @@ import com.android.pos.ui.adapter.ModifierSetsListAdapter
 import com.android.pos.ui.adapter.VariationListAdapter
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.AmountTextWatcher
+import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.MethodUtils.Companion.isDoubleClick
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.callback.ItemCallback
@@ -115,6 +116,7 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback , I
         }
 
         binding.header.txtSave.setOnClickListener {
+            MethodUtils.hideKeyboard(requireActivity())
             saveItem()
         }
 
@@ -500,6 +502,7 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback , I
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.header.imgBack.setOnClickListener {
+            MethodUtils.hideKeyboard(requireActivity())
             val navControll = findNavController()
             navControll.previousBackStackEntry?.savedStateHandle?.set(
                 Constants.KEY,

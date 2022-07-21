@@ -9497,7 +9497,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                 if (receiptModel?.order?.customer != null) {
 
-
+                    SunmiPrintHelper.getInstance().lineWrap(1)
                     PrintSunmiUtils.customerDetailsInner()
 
                     if (customerSettingModel.showCustomerName) {

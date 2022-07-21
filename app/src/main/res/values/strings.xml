@@ -819,6 +819,7 @@
     <string name="toast_4">Bluetooth device not detected. Please open Bluetooth!</string>
     <string name="toast_5">Not Found InnterPrinter!</string>
     <string name="toast_6">Bluetooth connect failed!</string>
+    <string name="no_categories_available">No categories available</string>
 
 </resources>
 
