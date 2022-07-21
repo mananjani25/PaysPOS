@@ -1848,8 +1848,9 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
             Log.e("builder", builder.toString())
 
             //send builder data(empty builder data)
+
             val status = IntArray(1)
-            status[0] = 0
+            val battery = IntArray(1)
 
 
             Log.e(TAG, "getPrinterCheck:  ${PrinterClass.getPrinter().toString()}")
@@ -1858,7 +1859,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
             try {
                 PrinterClass.getPrinter()?.sendData(
-                    builder, 10000, status
+                    builder, 10000, status,battery
                 )
                 //PrinterClass.getPrinter()?.sendData(builder, 0, status, battery)
             } catch (e: Exception) {

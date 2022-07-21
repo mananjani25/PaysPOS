@@ -45,6 +45,8 @@ android {
 
         main {
             jniLibs.srcDirs = ['src/main/jniLibs/']
+            aidl.srcDirs = ['src/main/java']
+
         }
 
     }
