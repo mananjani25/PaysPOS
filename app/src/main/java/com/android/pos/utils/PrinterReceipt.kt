@@ -1536,6 +1536,22 @@ fun addOrdersForKitchenCustomerNewPrinter(
 //    }
 //
 //}
+fun checkItemsforPrinterDineIn(
+    list: List<TbItem>,
+    printerCat: ArrayList<PrinterResponse.Data.PrinterCategories?>? = null
+): Boolean {
+    var flag = false
+    for (i in 0 until list.size) {
+        printerCat?.forEach {
+            if (it?.id == list[i].categoryId && it.categoryActive && it.printerEnable) {
+                flag = true
+            }
+        }
+    }
+
+    return flag
+}
+
 
 fun checkItemsforPrinter(
     list: List<CreateOrderResponse.Data.Order.OrderItem>,

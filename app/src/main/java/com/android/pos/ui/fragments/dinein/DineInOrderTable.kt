@@ -8055,6 +8055,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             kitchenPrinterList.forEach { kit ->
                 if (kit.status) {
 
+
                     if (isCheckAndFire) {
                         kit.orderTypes.forEach {
                             if (it.orderTypeId == getOrderDetailsResponse?.orderTypeId) {
@@ -8063,8 +8064,11 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                                             .equals(Constants.KITCHEN.lowercase()) && it.autoPrinting
                                     ) {
 
-                                        autoPrintEnable = true
-                                        initKitchenPrinter(kit, Constants.KITCHEN, listItem)
+                                        if (checkItemsforPrinterDineIn(listItem,kit.printerCategories.toCollection(
+                                                arrayListOf()))) {
+                                            autoPrintEnable = true
+                                            initKitchenPrinter(kit, Constants.KITCHEN, listItem)
+                                        }
                                     }
                                 }
                             }
