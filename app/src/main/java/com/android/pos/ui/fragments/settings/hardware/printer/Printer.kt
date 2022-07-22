@@ -89,7 +89,8 @@ import javax.inject.Inject
 //Original New
 @AndroidEntryPoint
 class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
-    StatusChangeEventListener, BatteryStatusChangeEventListener {
+    StatusChangeEventListener, BatteryStatusChangeEventListener, ICallback {
+    private var woyouService: IWoyouService?=null
     private lateinit var binding: FragmentPrinterBinding
     var mBluetoothAdapter: BluetoothAdapter? = null
     var deviceList: Array<DeviceInfo>? = null
