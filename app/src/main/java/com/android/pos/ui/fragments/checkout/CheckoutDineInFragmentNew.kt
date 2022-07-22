@@ -1851,7 +1851,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
         val jsonArray1 = magtekRequestUtils.processData(
             (paymentAmount * 100).toInt(),
             TLVParser.getHexString(data),
-            Constants.SALE
+            Constants.AUTHORIZE
         )
 
         networkCall(jsonArray1, 2)
@@ -1908,7 +1908,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                     val jsonArray1 = magtekRequestUtils.processData(
                         (paymentAmount * 100).toInt(),
                         MTParser.getHexString(data.ByteArray()),
-                        Constants.SALE
+                        Constants.AUTHORIZE
                     )
 
                     networkCall(jsonArray1, 2)

@@ -6,10 +6,14 @@ import android.app.Activity
 import android.bluetooth.BluetoothAdapter
 import android.bluetooth.BluetoothDevice
 import android.bluetooth.BluetoothSocket
+import android.content.ComponentName
+import android.content.Context
 import android.content.Intent
+import android.content.ServiceConnection
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
+import android.os.IBinder
 import android.text.Html
 import android.util.Log
 import android.view.LayoutInflater
@@ -21,7 +25,10 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.android.pos.MainApplication
 import com.android.pos.R
+import com.android.pos.aidl.ICallback
+import com.android.pos.aidl.IWoyouService
 import com.android.pos.data.entities.TbOrderType
 import com.android.pos.data.model.PrinterListModel
 import com.android.pos.data.model.requestModel.CreatePrinterRequestModel
@@ -137,6 +144,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
         setUpHeader()
 
+
         return binding.root
     }
 
@@ -204,6 +212,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        Binding()
 
         observeShowProgress()
         onDeleteObserve()
@@ -1138,7 +1147,34 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                     )
                 }
                 SunmiPrintHelper.getInstance().lineWrap(2)
-                PrintSunmiUtils.cutPaperInner()
+                Log.e(TAG,"Here Drawer Code")
+                if (woyouService != null){
+                    ToastUtil.showNormalToast(requireContext(),"Cash Drawer Connected..")
+                    woyouService!!.sendRAWData(byteArrayOf(0x1B, 0x45, 0x01),this)
+                }
+                else{
+                    val aa = ByteArray(5)
+
+                    aa[0] = 0x10
+                    aa[1] = 0x14
+                    aa[2] = 0x00
+                    aa[3] = 0x00
+                    aa[4] = 0x00
+
+
+                    try {
+                        SunmiPrinterApi.getInstance().sendRawData(aa)
+                    }catch (e:java.lang.Exception){
+                        e.printStackTrace()
+                    }
+                    try {
+                        SunmiPrintHelper.getInstance().openCashBox()
+                    }catch (e:java.lang.Exception){
+                        e.printStackTrace()
+                    }
+
+                }
+
 
             } else {
 
@@ -1157,6 +1193,29 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
         } else {
             Log.e("SunmiPrintHelper", "ELSE")
         }
+    }
+
+    private val serviceConnection: ServiceConnection = object : ServiceConnection {
+        override fun onServiceConnected(p0: ComponentName?, service: IBinder?) {
+            Log.e(TAG,"onServiceConnected  1")
+            woyouService = IWoyouService.Stub.asInterface(service)
+
+        }
+
+        override fun onServiceDisconnected(p0: ComponentName?) {
+            Log.e(TAG,"onServiceDisConnected  2")
+            woyouService = null
+
+
+        }
+
+    }
+
+    private fun Binding() {
+        val intent = Intent()
+        intent.setPackage("com.android.pos")
+        intent.action = "com.android.pos.aidl.IWoyouService"
+        MainApplication.getInstance()?.applicationContext?.bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE)
     }
 
 
@@ -1238,6 +1297,34 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                 .printText(getCurrentTimeFromTimeZone(requireContext(), formatted))
             SunmiPrinterApi.getInstance().lineWrap(2)
             SunmiPrinterApi.getInstance().cutPaper(2, 20)
+            Log.e(TAG,"WOHO SERIESNULL ${woyouService}")
+            if (woyouService != null){
+                Log.e(TAG,"WOHO SERIES NOT NULL")
+                ToastUtil.showNormalToast(requireContext(),"Cash Drawer Connected..")
+                woyouService!!.sendRAWData(byteArrayOf(0x1B, 0x45, 0x01),this)
+            }
+            else{
+                val aa = ByteArray(5)
+
+                aa[0] = 0x10
+                aa[1] = 0x14
+                aa[2] = 0x00
+                aa[3] = 0x00
+                aa[4] = 0x00
+
+
+                try {
+                    SunmiPrinterApi.getInstance().sendRawData(aa)
+                }catch (e:java.lang.Exception){
+                    e.printStackTrace()
+                }
+                try {
+                    SunmiPrintHelper.getInstance().openCashBox()
+                }catch (e:java.lang.Exception){
+                    e.printStackTrace()
+                }
+            }
+
 
 
         }
@@ -1429,9 +1516,8 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
     }
 
     private fun onInitPrinter(printerListModel: PrinterListModel) {
-        Log.e(TAG,"printerListModel:  ${Gson().toJson(printerListModel)}")
         //open
-         initPrinter(printerListModel)
+        initPrinter(printerListModel)
 
         //initNewPrinter(printerListModel)
 
@@ -1646,19 +1732,10 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
         PrinterClass.setPrinter(null)
 
         var printer: Print? = Print(requireContext())
-
-      /*  if (printer != null) {
+        if (printer != null) {
             printer.setStatusChangeEventCallback(this)
             printer.setBatteryStatusChangeEventCallback(this)
-            printer.setPowerOffEventCallback {
-                Log.e("PrinterStatus", "powerStatus " + it.toString())
-                ToastUtil.showNormalToast(requireContext(), "PowerOff " + it.toString())
-            }
-            printer.setOnlineEventCallback {
-                Log.e("PrinterStatus", "onlineEventCallback " + it.toString())
-                ToastUtil.showNormalToast(requireContext(), "onlineEventCallback " + it.toString())
-            }
-        }*/
+        }
 
 
         if (printerListModel.connectionType == "") {
@@ -1982,7 +2059,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
             val status = IntArray(1)
             val battery = IntArray(1)
 
-
+            Log.e(TAG, "getPrinterCheck:  ${PrinterClass.getPrinter().toString()}")
 
 
 
@@ -2074,10 +2151,12 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
             builder.addCut(Builder.CUT_FEED)
 
 
-            //send builder data(empty builder data)
-            val status = IntArray(1)
-            status[0] = 0
+            //builder.addFeedUnit(30)
 
+            //send builder data(empty builder data)
+
+            val status = IntArray(1)
+            val battery = IntArray(1)
 
 
             Log.e(TAG, "getPrinterCheck:  ${PrinterClass.getPrinter().toString()}")
@@ -2086,7 +2165,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
             try {
                 PrinterClass.getPrinter()?.sendData(
-                    builder, 1000, status
+                    builder, 10000, status, battery
                 )
                 //PrinterClass.getPrinter()?.sendData(builder, 0, status, battery)
             } catch (e: Exception) {
@@ -2216,5 +2295,13 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                 }
             }
         })
+    }
+
+    override fun asBinder(): IBinder {
+        return woyouService?.asBinder()!!
+    }
+
+    override fun onRunResult(isSuccess: Boolean, code: Int, msg: String?) {
+        ToastUtil.showNormalToast(requireContext(),"Drawer ${msg}")
     }
 }

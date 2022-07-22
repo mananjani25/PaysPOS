@@ -864,6 +864,26 @@ class TransactionDetailsFragment : Fragment() {
                 )
 
             Log.e(TAG, "getVanueLogo:  ${prefProvider.getValue(Constants.VENUE_LOGO, "")}")
+
+            if (customerSettingModel.showOrderIdTop) {
+                builder.addFeedLine(1)
+                builder.addTextFont(Builder.FONT_E)
+                builder.addTextAlign(Builder.ALIGN_CENTER)
+                builder.addTextLang(Builder.LANG_EN)
+                builder.addTextSize(2, 2)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.TRUE,
+                    Builder.COLOR_1
+                )
+
+                builder.addText("OrderID:" + paymentDetailsResponse.data.order.id)
+
+                builder.addFeedLine(1)
+            }
+
+
             if (customerSettingModel.showVenueLogo && prefProvider.getValue(
                     Constants.VENUE_LOGO,
                     ""
@@ -940,7 +960,9 @@ class TransactionDetailsFragment : Fragment() {
             )
             addBuilderText(
                 builder,
-                prefProvider.getValue(Constants.BUSINESS_PHONE_NO, "").toString()
+                MethodUtils.getUSFormatNumber(
+                    prefProvider.getValue(Constants.BUSINESS_PHONE_NO, "").toString()
+                )
             )
 
 
@@ -976,22 +998,7 @@ class TransactionDetailsFragment : Fragment() {
 
             if (customerSettingModel.fonts == Constants.LARGE) {
 
-                if (customerSettingModel.showOrderIdTop) {
-                    builder.addFeedLine(1)
-                    builder.addTextFont(Builder.FONT_E)
-                    builder.addTextAlign(Builder.ALIGN_LEFT)
-                    builder.addTextLang(Builder.LANG_EN)
-                    addCustomerTextSize(builder, customerSettingModel.fonts)
-                    builder.addTextStyle(
-                        Builder.FALSE,
-                        Builder.FALSE,
-                        Builder.FALSE,
-                        Builder.COLOR_1
-                    )
 
-                    builder.addText("OrderID:" + paymentDetailsResponse.data.order.id)
-
-                }
                 builder.addTextLineSpace(30)
                 builder.addFeedUnit(30)
                 builder.addTextFont(Builder.FONT_E)
@@ -1106,12 +1113,8 @@ class TransactionDetailsFragment : Fragment() {
 
                 builder.addText(
                     padLine(
-                        if (customerSettingModel.showOrderIdTop) {
-                            "OrderID:" + paymentDetailsResponse?.data.order.id
-                        } else {
-                            ""
-                        },
                         "ReceiptID:" + paymentDetailsResponse?.data.order.offline_id,
+                        "",
                         if (customerSettingModel.fonts == Constants.LARGE) {
                             24
                         } else {
@@ -2048,6 +2051,11 @@ class TransactionDetailsFragment : Fragment() {
 
             SunmiPrinterApi.getInstance().printerInit()
 
+            if (customerSettingModel.showOrderIdTop) {
+                PrintSunmiUtils.orderIdLarge("OrderID:" + paymentDetailsResponse.data.order.id)
+                SunmiPrinterApi.getInstance().lineWrap(1)
+            }
+
             if (customerSettingModel.showVenueLogo && prefProvider.getValue(
                     Constants.VENUE_LOGO,
                     ""
@@ -2076,12 +2084,8 @@ class TransactionDetailsFragment : Fragment() {
 
             if (customerSettingModel.fonts == Constants.LARGE) {
 
-                if (customerSettingModel.showOrderIdTop) {
-                    PrintSunmiUtils.orderId("OrderID:" + paymentDetailsResponse.data.order.id)
-                }
 
                 PrintSunmiUtils.receiptID("ReceiptID:" + paymentDetailsResponse.data.order.offline_id)
-
 
                 if (customerSettingModel.showTeam) {
                     PrintSunmiUtils.employee("Employee:" + paymentDetailsResponse?.data.order.employee)
@@ -2118,12 +2122,8 @@ class TransactionDetailsFragment : Fragment() {
             } else {
 
                 val str = padLine(
-                    if (customerSettingModel.showOrderIdTop) {
-                        "OrderID:" + paymentDetailsResponse?.data.order.id
-                    } else {
-                        ""
-                    },
                     "ReceiptID:" + paymentDetailsResponse?.data.order.offline_id,
+                    "",
                     if (customerSettingModel.fonts == Constants.LARGE) 23 else 48
                 ).toString().trim()
 

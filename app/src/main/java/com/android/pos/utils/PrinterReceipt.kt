@@ -16,6 +16,7 @@ import com.android.pos.data.model.responseModel.report.KeyValue
 import com.android.pos.data.remote.Constants
 import com.android.pos.di.PrefProvider
 import com.android.pos.utils.MethodUtils.Companion.roundOffAmountString
+import com.android.pos.utils.MethodUtils.Companion.roundOffAmountString
 import com.epson.epos2.printer.Printer
 import com.epson.eposprint.Builder
 
@@ -102,7 +103,7 @@ fun addPaymentDetailsThreeData(builder: Builder, keyValue: java.util.ArrayList<K
 
 
         if (it.key.toString().toLowerCase().contains("Refund".toLowerCase())) {
-            refund = "$" + it.value
+            refund =   MethodUtils.roundOffAmount(it.value.toString().toDouble() ?: 0.0)
         } else {
             title = it.key.toString()
             amount = MethodUtils.roundOffAmount(it.value.toString().toDouble())
@@ -134,7 +135,7 @@ fun addPaymentDetailsThreeData(keyValue: java.util.ArrayList<KeyValue>) {
 
 
         if (it.key.toString().toLowerCase().contains("Refund".toLowerCase())) {
-            refund = "$" + it.value
+            refund = MethodUtils.roundOffAmount(it.value?.toDouble() ?: 0.0)
         } else {
             title = it.key.toString()
             amount = MethodUtils.roundOffAmount(it.value.toString().toDouble())
@@ -1300,6 +1301,61 @@ fun addOrdersForKitchenOnlineOrder(
     return builder
 }
 
+fun addOrdersForKitchenOnlineOrderSunmi(
+    list: List<OnlineOrderResponseModel.Data.OrderItem>
+) {
+    for (i in 0 until list.size) {
+        val obj = list.get(i)
+
+        PrintSunmiUtils.orderTime(obj.quantity.toString() + " " + obj.itemName)
+
+        if (obj.orderItemModifiers.isNotEmpty()) {
+            for (j in 0 until obj.orderItemModifiers.size) {
+                val modifierObj = obj.orderItemModifiers.get(j)
+
+                PrintSunmiUtils.orderTime("  " + modifierObj.name)
+
+
+            }
+        }
+        if (obj.note.isNotEmpty()) {
+            PrintSunmiUtils.orderTime("  Note:" + obj.note)
+
+        }
+
+
+    }
+
+}
+
+
+fun addOrdersForKitchenOnlineOrderSunmiInner(
+    list: List<OnlineOrderResponseModel.Data.OrderItem>
+) {
+    for (i in 0 until list.size) {
+        val obj = list.get(i)
+
+        PrintSunmiUtils.normalTextLarge(obj.quantity.toString() + " " + obj.itemName)
+
+        if (obj.orderItemModifiers.isNotEmpty()) {
+            for (j in 0 until obj.orderItemModifiers.size) {
+                val modifierObj = obj.orderItemModifiers.get(j)
+
+                PrintSunmiUtils.normalTextLarge("  " + modifierObj.name)
+
+
+            }
+        }
+        if (obj.note.isNotEmpty()) {
+            PrintSunmiUtils.normalTextLarge("  Note:" + obj.note)
+
+        }
+
+
+    }
+
+}
+
 fun addOrdersForKitchenDineIn(
 
     list: ArrayList<TbItem>,
@@ -1595,7 +1651,7 @@ fun addOrdersForKitchen(
                         Builder.COLOR_1
                     )
 
-                    builder.addText(obj.quantity.toString() + " " + obj.itemName)
+        builder.addText(obj.quantity.toString() + " " + obj.itemName)
 
                     if (obj.orderItemModifiers.isNotEmpty()) {
                         for (j in 0 until obj.orderItemModifiers.size) {

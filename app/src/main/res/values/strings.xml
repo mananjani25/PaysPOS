@@ -80,7 +80,7 @@
 
     <string name="tip_name_validate">Please enter Tip Name</string>
     <string name="tip_rate_validate">Please enter valid Tip Rate</string>
-    
+
     <string name="minguest_valiidation">Please enter Minimum Guest Number</string>
     <string name="maxguest_valiidation">Please enter Maximum Guest Number</string>
 
@@ -492,7 +492,7 @@
     <string name="tv_date_time">Date/Time</string>
     <string name="tv_total_amount">Total Amount</string>
     <string name="tv_tip_amount">Tip Amount</string>
-    <string name="tv_transaction_receipt_id"><![CDATA[Transactions & Receipt ID]]></string>
+    <string name="tv_transaction_receipt_id"><![CDATA[ORDER & Receipt ID]]></string>
     <string name="manual_sale">Manual Sale</string>
     <string name="tv_team_member">Team Member</string>
     <string name="tv_print">Print</string>
@@ -551,7 +551,7 @@
     <string name="tv_external">External</string>
     <string name="tv_terminal_id">Terminal</string>
     <string name="tv_order_details">Order Details</string>
-    <string name="tv_order_hash">Order #</string>
+    <string name="tv_order_hash">Order Id #</string>
     <string name="tv_status">Status</string>
     <string name="tv_note">Note</string>
     <string name="tv_transactions">Transactions</string>

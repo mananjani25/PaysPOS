@@ -451,7 +451,7 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
             )
             addBuilderText(
                 builder,
-                prefProvider?.getValue(Constants.BUSINESS_PHONE_NO, "").toString()
+                MethodUtils.getUSFormatNumber(prefProvider?.getValue(Constants.BUSINESS_PHONE_NO, "").toString())
             )
 
             builder.addFeedLine(2)
