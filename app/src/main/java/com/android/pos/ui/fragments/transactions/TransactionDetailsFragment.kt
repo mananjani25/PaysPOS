@@ -130,40 +130,40 @@ class TransactionDetailsFragment : Fragment() {
 
 
 
-        viewModel.serviceCharges.observe(requireActivity()) {
-            if (prefProvider.getValue(
-                    Constants.ORDER_TYPE,
-                    Constants.TAKEOUT
-                ) == Constants.DINE_IN
-            ) {
-                if (prefProvider.getValueboolean(
-                        Constants.SERVICECHARGE_DINEIN_ORDER,
-                        false
-                    )
-                ) {
-                    serviceChargesList = arrayListOf()
-                    serviceChargesList = it.data as ArrayList<TbServiceCharge>?
-                }
-            } else {
-                if (prefProvider.getValueboolean(
-                        Constants.SERVICECHARGE_TAKEOUT_OPENORDER,
-                        false
-                    )
-                ) {
-                    serviceChargesList = arrayListOf()
-                    Log.e(TAG, "getServiceCharge:  ${Gson().toJson(it.data)}")
-                    it.data?.forEach { service ->
-                        if (service.order_type == Constants.SERVICECHARGE_TAKEOUT_OPENORDER) {
-                            serviceChargesList?.add(service)
-                        }
-                    }
 
+        return binding.root
+    }
+
+    private fun getServiceCharge() {
+        viewModel.serviceCharges.observe(requireActivity()) {
+            if (paymentDetailsResponse.data.order.order_type == Constants.DINE_IN) {
+//                if (prefProvider.getValueboolean(
+//                        Constants.SERVICECHARGE_DINEIN_ORDER,
+//                        false
+//                    )
+//                ) {
+                serviceChargesList = arrayListOf()
+                serviceChargesList = it.data as ArrayList<TbServiceCharge>?
+//                }
+            } else {
+//                if (prefProvider.getValueboolean(
+//                        Constants.SERVICECHARGE_TAKEOUT_OPENORDER,
+//                        false
+//                    )
+//                ) {
+                serviceChargesList = arrayListOf()
+                Log.e(TAG, "getServiceCharge:  ${Gson().toJson(it.data)}")
+                it.data?.forEach { service ->
+                    if (service.order_type == Constants.SERVICECHARGE_TAKEOUT_OPENORDER) {
+                        serviceChargesList?.add(service)
+                    }
                 }
+
+//                }
             }
 
 
         }
-        return binding.root
     }
 
     private fun setUpRecyclerView() {
@@ -583,7 +583,7 @@ class TransactionDetailsFragment : Fragment() {
                 }
 
 
-
+                getServiceCharge()
 
                 ProgressUtils.dismissProgressDialog()
             }
@@ -1577,7 +1577,7 @@ class TransactionDetailsFragment : Fragment() {
                 builder.addText(
                     padLine(
                         "Refund Amount",
-                        "$" + MethodUtils.roundOffAmountString(paymentDetailsResponse?.data?.order?.refund_detail?.refunded_amount),
+                        "-$" + MethodUtils.roundOffAmountString(paymentDetailsResponse?.data?.order?.refund_detail?.refunded_amount),
                         if (customerSettingModel.fonts == Constants.LARGE) {
                             24
                         } else {
@@ -2345,7 +2345,7 @@ class TransactionDetailsFragment : Fragment() {
                 PrintSunmiUtils.refundAmount(
                     padLine(
                         "Refund Amount",
-                        "$" + MethodUtils.roundOffAmountString(paymentDetailsResponse?.data?.order?.refund_detail?.refunded_amount),
+                        "-$" + MethodUtils.roundOffAmountString(paymentDetailsResponse?.data?.order?.refund_detail?.refunded_amount),
                         if (customerSettingModel.fonts == Constants.LARGE) 23 else 48
                     ).toString()
                 )
@@ -2781,7 +2781,7 @@ class TransactionDetailsFragment : Fragment() {
                 PrintSunmiUtils.boldText(
                     padLine(
                         "Refund Amount",
-                        "$" + MethodUtils.roundOffAmountString(paymentDetailsResponse?.data?.order?.refund_detail?.refunded_amount),
+                        "-$" + MethodUtils.roundOffAmountString(paymentDetailsResponse?.data?.order?.refund_detail?.refunded_amount),
                         PrintSunmiUtils.lineChar()
                     ).toString()
                 )

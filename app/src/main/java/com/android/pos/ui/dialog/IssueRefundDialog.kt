@@ -18,6 +18,7 @@ import com.android.pos.data.model.requestModel.RefundRequestModel
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.CASH_DISCOUNT_SURCHARGE_AMOUNT_TYPE
 import com.android.pos.data.remote.Constants.CASH_DISCOUNT_SURCHARGE_RATE
+import com.android.pos.data.remote.Constants.DINE_IN
 import com.android.pos.databinding.DialogIssueRefundBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.adapter.RefundItemListAdapter
@@ -385,8 +386,10 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
 
 
                 serviceChargesList?.forEach {
-                    if (it.order_type == Constants.SERVICECHARGE_TAKEOUT_OPENORDER) {
+                    if (paymentOrderDetailsResponse.data.order.order_type == DINE_IN && it.order_type == Constants.SERVICECHARGE_DINEIN_ORDER) {
                         totalServiceCharge += (totalItemPrice * it.percentage) / 100
+                    } else {
+                     //   totalServiceCharge += (totalItemPrice * it.percentage) / 100
                     }
                 }
 
