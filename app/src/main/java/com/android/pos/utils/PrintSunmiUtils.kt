@@ -409,7 +409,7 @@ class PrintSunmiUtils {
 
         fun customerDetailsInner() {
 
-            headerText("Customer Details")
+            headerTextLeft("Customer Details")
             addHorizontalInner()
 
         }
@@ -599,6 +599,13 @@ class PrintSunmiUtils {
 
         fun headerText(value: String) {
             SunmiPrintHelper.getInstance().setAlign(1)
+            SunmiPrintHelper.getInstance()
+                .printText(value, setFontSizeHeader(), true, false, fontName)
+            SunmiPrintHelper.getInstance().lineWrap(1)
+        }
+
+        private fun headerTextLeft(value: String) {
+            SunmiPrintHelper.getInstance().setAlign(0)
             SunmiPrintHelper.getInstance()
                 .printText(value, setFontSizeHeader(), true, false, fontName)
             SunmiPrintHelper.getInstance().lineWrap(1)

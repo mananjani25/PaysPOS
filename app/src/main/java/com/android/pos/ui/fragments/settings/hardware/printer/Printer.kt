@@ -1073,68 +1073,8 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                 SunmiPrintHelper.getInstance().lineWrap(2)
                 SunmiPrintHelper.getInstance()
                     .printText("Test Print", 30F, true, false, "test1.ttf")
-
-
                 SunmiPrintHelper.getInstance().lineWrap(1)
-                SunmiPrintHelper.getInstance()
-                    .printText(
-                        "ABCDEFGHIKLMNOPQRSTVXYZABCDEFGHIKLMNOPQRSTVXYZ",
-                        24F,
-                        true,
-                        false,
-                        "test1.ttf"
-                    )
 
-                SunmiPrintHelper.getInstance().lineWrap(1)
-                SunmiPrintHelper.getInstance()
-                    .printText(
-                        "ABCDEFGHIKLMNOPQRSTVXYZABCDEFGHIKLMNOPQRSTVXYZ",
-                        30F,
-                        true,
-                        false,
-                        "test1.ttf"
-                    )
-
-                SunmiPrintHelper.getInstance().lineWrap(1)
-                SunmiPrintHelper.getInstance()
-                    .printText(
-                        "ABCDEFGHIKLMNOPQRSTVXYZABCDEFGHIKLMNOPQRSTVXYZ",
-                        36F,
-                        true,
-                        false,
-                        "test1.ttf"
-                    )
-
-
-                SunmiPrintHelper.getInstance().lineWrap(3)
-                SunmiPrintHelper.getInstance()
-                    .printText(
-                        "ABCDEFGHIKLMNOPQRSTVXYZABCDEFGHIKLMNOPQRSTVXYZ",
-                        24F,
-                        false,
-                        false,
-                        "test1.ttf"
-                    )
-
-                SunmiPrintHelper.getInstance().lineWrap(1)
-                SunmiPrintHelper.getInstance()
-                    .printText(
-                        "ABCDEFGHIKLMNOPQRSTVXYZABCDEFGHIKLMNOPQRSTVXYZ",
-                        30F,
-                        false,
-                        false,
-                        "test1.ttf"
-                    )
-
-                SunmiPrintHelper.getInstance().lineWrap(1)
-                SunmiPrintHelper.getInstance()
-                    .printText(
-                        "ABCDEFGHIKLMNOPQRSTVXYZABCDEFGHIKLMNOPQRSTVXYZ",
-                        36F,
-                        false,
-                        false,
-                        "test1.ttf"
-                    )
 
 
                 SunmiPrintHelper.getInstance().setAlign(1)
@@ -1144,7 +1084,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                         30F,
                         true,
                         false,
-                        null
+                        "test1.ttf"
                     )
                 }
                 SunmiPrintHelper.getInstance().lineWrap(2)
