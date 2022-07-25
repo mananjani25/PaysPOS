@@ -246,7 +246,6 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
                     itemList.addAll(it1)
                 }
             }
-
             itemAdapter.addList(itemList)
 
         }
