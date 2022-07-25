@@ -8024,13 +8024,15 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     if (isCheckAndFire) {
                         kit.orderTypes.forEach {
                             if (it.orderTypeId == getOrderDetailsResponse?.orderTypeId) {
+                                Log.e(TAG,"printerSettings  ${Gson().toJson(it.printerSettings)}")
                                 it.printerSettings.forEach {
-                                    if (it.printType.lowercase()
+                                    if (  it.printType.lowercase()
                                             .equals(Constants.KITCHEN.lowercase()) && it.autoPrinting
                                     ) {
 
                                         if (checkItemsforPrinterDineIn(listItem,kit.printerCategories.toCollection(
                                                 arrayListOf()))) {
+                                            Log.e(TAG,"printerName  ${kit.name} ")
                                             autoPrintEnable = true
                                             initKitchenPrinter(kit, Constants.KITCHEN, listItem)
                                         }
