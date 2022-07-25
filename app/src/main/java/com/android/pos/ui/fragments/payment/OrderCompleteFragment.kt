@@ -2136,7 +2136,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
 
                 try {
-                    builder.addPulse(Printer.DRAWER_HIGH, Printer.PULSE_100)
+                    if (paymentType.equals("Cash", true)) {
+                        builder.addPulse(Printer.DRAWER_HIGH, Printer.PULSE_100)
+                    }
                     PrinterClass.getPrinter()?.sendData(
                         builder,
                         PrinterClass.BLUETOOTH_TIMEOUT, status, battery
@@ -4179,8 +4181,13 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                 try {
 
-
-                    builder.addPulse(Printer.DRAWER_HIGH, Printer.PULSE_100)
+                    if (receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.paymentType.equals(
+                            "Cash",
+                            true
+                        )
+                    ) {
+                        builder.addPulse(Printer.DRAWER_HIGH, Printer.PULSE_100)
+                    }
 
                     PrinterClass.getPrinter()?.sendData(
                         builder,
@@ -6971,10 +6978,16 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
 
             try {
-                builder.addPulse(
-                    com.epson.epos2.printer.Printer.DRAWER_HIGH,
-                    com.epson.epos2.printer.Printer.PULSE_100
-                )
+                if (receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.paymentType.equals(
+                        "Cash",
+                        true
+                    )
+                ) {
+                    builder.addPulse(
+                        com.epson.epos2.printer.Printer.DRAWER_HIGH,
+                        com.epson.epos2.printer.Printer.PULSE_100
+                    )
+                }
                 PrinterClass.getPrinter()?.sendData(
                     builder,
                     BLUETOOTH_TIMEOUT, status, battery
