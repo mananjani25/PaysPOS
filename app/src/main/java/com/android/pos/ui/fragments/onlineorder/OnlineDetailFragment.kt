@@ -642,7 +642,13 @@ class OnlineDetailFragment(
             when (it.status) {
                 Status.SUCCESS -> {
                     it.data?.forEach {
-                        if (it.status) {
+                        if (it.status && checkItemsforPrinterOnlineOrder(
+                                data.data.orderItems, it.printerCategories.toCollection(
+                                    arrayListOf()
+                                )
+                            )
+                        ) {
+
                             initKitchenPrinter(
                                 it,
                                 Constants.KITCHEN,
@@ -900,7 +906,8 @@ class OnlineDetailFragment(
                     builder,
                     orderData.data.orderItems,
                     fontSizeH,
-                    fontSizeW
+                    fontSizeW,
+                    customerReceiptPrinters.printerCategories.toCollection(arrayListOf())
                 )
 
 
@@ -1158,7 +1165,8 @@ class OnlineDetailFragment(
                     builder,
                     orderData.data.orderItems,
                     fontSizeH,
-                    fontSizeW
+                    fontSizeW,
+                    customerReceiptPrinters.printerCategories.toCollection(arrayListOf())
                 )
 
 
@@ -1409,7 +1417,8 @@ class OnlineDetailFragment(
 
 
             addOrdersForKitchenOnlineOrderSunmi(
-                orderData.data.orderItems
+                orderData.data.orderItems,
+                customerReceiptPrinters.printerCategories.toCollection(arrayListOf())
             )
 
 
