@@ -19,6 +19,8 @@ import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.CASH_DISCOUNT_SURCHARGE_AMOUNT_TYPE
 import com.android.pos.data.remote.Constants.CASH_DISCOUNT_SURCHARGE_RATE
 import com.android.pos.data.remote.Constants.DINE_IN
+import com.android.pos.data.remote.Constants.OPEN_ORDER
+import com.android.pos.data.remote.Constants.TAKEOUT
 import com.android.pos.databinding.DialogIssueRefundBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.adapter.RefundItemListAdapter
@@ -300,7 +302,8 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
             paymentOrderDetailsResponse.data.payment_type,
             if (paymentOrderDetailsResponse.data.total_discount > totalItemDiscount) paymentOrderDetailsResponse.data.total_discount - totalItemDiscount else 0.0,
             paymentOrderDetailsResponse.data.loyalty_amount,
-            paymentOrderDetailsResponse.data.tips
+            paymentOrderDetailsResponse.data.tips,
+            paymentOrderDetailsResponse.data.order.order_type
         )
 
 
@@ -388,8 +391,8 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
                 serviceChargesList?.forEach {
                     if (paymentOrderDetailsResponse.data.order.order_type == DINE_IN && it.order_type == Constants.SERVICECHARGE_DINEIN_ORDER) {
                         totalServiceCharge += (totalItemPrice * it.percentage) / 100
-                    } else {
-                     //   totalServiceCharge += (totalItemPrice * it.percentage) / 100
+                    } else if ((paymentOrderDetailsResponse.data.order.order_type == TAKEOUT || paymentOrderDetailsResponse.data.order.order_type == OPEN_ORDER) && it.order_type == Constants.SERVICECHARGE_TAKEOUT_OPENORDER) {
+                        totalServiceCharge += (totalItemPrice * it.percentage) / 100
                     }
                 }
 
