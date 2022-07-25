@@ -36,6 +36,7 @@ class MagtakProAdapter :
                 if (isConnected) {
                     mCallback.onItemClickListener(null, bindingAdapterPosition)
                 } else
+
                     mCallback.onItemClickListener(it, bindingAdapterPosition)
             }
         }

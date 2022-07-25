@@ -40,7 +40,6 @@ import com.android.pos.data.remote.Constants.BUSINESS_ADDRESS
 import com.android.pos.data.remote.Constants.BUSINESS_NAME
 import com.android.pos.data.remote.Constants.BUSINESS_PHONE_NO
 import com.android.pos.data.remote.Constants.CASH_DISCOUNT_SURCHARGE
-import com.android.pos.data.remote.Constants.CAT_ID_SELECTED
 import com.android.pos.data.remote.Constants.CUSTOMER
 import com.android.pos.data.remote.Constants.DINE_IN_ADAPTER_LIST
 import com.android.pos.data.remote.Constants.GUEST_POSITION
@@ -1214,6 +1213,26 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         }, PrinterClass.language, requireActivity()
                     )
 
+
+                if (customerSettingModel.showOrderIdTop) {
+                    builder.addFeedLine(1)
+                    builder.addTextFont(Builder.FONT_E)
+                    builder.addTextAlign(Builder.ALIGN_CENTER)
+                    builder.addTextLang(Builder.LANG_EN)
+                    builder.addTextSize(2, 2)
+                    builder.addTextStyle(
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.TRUE,
+                        Builder.COLOR_1
+                    )
+
+                    builder.addText("OrderID:" + getDineInOrderDetails?.id)
+                    builder.addTextLineSpace(30)
+                    builder.addFeedUnit(30)
+                    builder.addFeedLine(2)
+                }
+
                 if (customerSettingModel.showVenueLogo && prefProvider.getValue(VENUE_LOGO, "")
                         .isNotEmpty()
                 ) {
@@ -1300,7 +1319,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 )
                 addBuilderText(
                     builder,
-                    prefProvider.getValue(Constants.BUSINESS_PHONE_NO, "").toString()
+                    MethodUtils.getUSFormatNumber(
+                        prefProvider.getValue(Constants.BUSINESS_PHONE_NO, "").toString()
+                    )
                 )
 
                 builder.addFeedLine(1)
@@ -1321,22 +1342,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                 if (customerSettingModel.fonts == LARGE) {
 
-                    if (customerSettingModel.showOrderIdTop) {
-                        builder.addFeedLine(1)
-                        builder.addTextFont(Builder.FONT_E)
-                        builder.addTextAlign(Builder.ALIGN_LEFT)
-                        builder.addTextLang(Builder.LANG_EN)
-                        addCustomerTextSize(builder, customerSettingModel.fonts)
-                        builder.addTextStyle(
-                            Builder.FALSE,
-                            Builder.FALSE,
-                            Builder.FALSE,
-                            Builder.COLOR_1
-                        )
 
-                        builder.addText("OrderID:" + getDineInOrderDetails?.id)
-
-                    }
                     builder.addTextLineSpace(30)
                     builder.addFeedUnit(30)
                     builder.addTextFont(Builder.FONT_E)
@@ -1448,16 +1454,12 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                     builder.addText(
                         padLine(
-                            if (customerSettingModel.showOrderIdTop) {
-                                "OrderID:" + getDineInOrderDetails?.id
-                            } else {
-                                ""
-                            },
                             "ReceiptID:" + if (getDineInOrderDetails?.offlineId?.isEmpty() == true) {
                                 "ENTJKOIJH8745"
                             } else {
                                 getDineInOrderDetails?.offlineId
                             },
+                            "",
                             if (customerSettingModel.fonts == LARGE) {
                                 24
                             } else {
@@ -2273,6 +2275,12 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             PrintSunmiUtils.fontSize(customerSettingModel.fonts)
             SunmiPrinterApi.getInstance().printerInit()
 
+            if (customerSettingModel.showOrderIdTop) {
+                PrintSunmiUtils.orderIdLarge("OrderID:" + getDineInOrderDetails?.id)
+                SunmiPrinterApi.getInstance().lineWrap(1)
+            }
+
+
             if (customerSettingModel.showVenueLogo && prefProvider.getValue(VENUE_LOGO, "")
                     .isNotEmpty()
             ) {
@@ -2293,15 +2301,12 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
 
 
-
+            SunmiPrinterApi.getInstance().lineWrap(1)
             getDineInOrderDetails?.orderType?.trim()?.let { PrintSunmiUtils.printOrderType(it) }
-
+            SunmiPrinterApi.getInstance().lineWrap(1)
 
             if (customerSettingModel.fonts == LARGE) {
 
-                if (customerSettingModel.showOrderIdTop) {
-                    PrintSunmiUtils.orderId("OrderID:" + getDineInOrderDetails?.id)
-                }
 
                 PrintSunmiUtils.receiptID(
                     "ReceiptID:" + if (getDineInOrderDetails?.offlineId?.isEmpty() == true) {
@@ -2344,16 +2349,12 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
 
                 val str = padLine(
-                    if (customerSettingModel.showOrderIdTop) {
-                        "OrderID:" + getDineInOrderDetails?.id
-                    } else {
-                        ""
-                    },
                     "ReceiptID:" + if (getDineInOrderDetails?.offlineId?.isEmpty() == true) {
                         "ENTJKOIJH8745"
                     } else {
                         getDineInOrderDetails?.offlineId
                     },
+                    "",
                     if (customerSettingModel.fonts == LARGE) 23 else 48
                 ).toString().trim()
 
@@ -2675,6 +2676,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             PrintSunmiUtils.fontSizeInner(customerSettingModel.fonts)
             SunmiPrintHelper.getInstance().initPrinter()
 
+            if (customerSettingModel.showOrderIdTop) {
+                PrintSunmiUtils.headerText("OrderID:" + getDineInOrderDetails?.id)
+                SunmiPrintHelper.getInstance().lineWrap(1)
+            }
+
             if (customerSettingModel.showVenueLogo && prefProvider.getValue(VENUE_LOGO, "")
                     .isNotEmpty()
             ) {
@@ -2703,9 +2709,6 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
             if (customerSettingModel.fonts == LARGE) {
 
-                if (customerSettingModel.showOrderIdTop) {
-                    PrintSunmiUtils.normalText("OrderID:" + getDineInOrderDetails?.id)
-                }
 
                 PrintSunmiUtils.normalText(
                     "ReceiptID:" + if (getDineInOrderDetails?.offlineId?.isEmpty() == true) {
@@ -2748,16 +2751,13 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
 
                 val str = padLine(
-                    if (customerSettingModel.showOrderIdTop) {
-                        "OrderID:" + getDineInOrderDetails?.id
-                    } else {
-                        ""
-                    },
+
                     "ReceiptID:" + if (getDineInOrderDetails?.offlineId?.isEmpty() == true) {
                         "ENTJKOIJH8745"
                     } else {
                         getDineInOrderDetails?.offlineId
                     },
+                    "",
                     if (customerSettingModel.fonts == LARGE) 23 else 48
                 ).toString().trim()
 
@@ -3145,6 +3145,26 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     )
 
                 Log.e(TAG, "receiptModelDineinData  ${Gson().toJson(receiptModel)}")
+
+                if (customerSettingModel.showOrderIdTop) {
+                    builder.addFeedLine(1)
+                    builder.addTextFont(Builder.FONT_E)
+                    builder.addTextAlign(Builder.ALIGN_CENTER)
+                    builder.addTextLang(Builder.LANG_EN)
+                    builder.addTextSize(2, 2)
+                    builder.addTextStyle(
+                        Builder.FALSE,
+                        Builder.FALSE,
+                        Builder.TRUE,
+                        Builder.COLOR_1
+                    )
+
+                    builder.addText("OrderID:" + getDineInOrderDetails?.id)
+                    builder.addTextLineSpace(30)
+                    builder.addFeedUnit(30)
+                    builder.addFeedLine(2)
+                }
+
                 if (customerSettingModel.showVenueLogo && prefProvider.getValue(VENUE_LOGO, "")
                         .isNotEmpty()
                 ) {
@@ -3246,7 +3266,12 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 )
                 addBuilderText(
                     builder,
-                    prefProvider.getValue(Constants.BUSINESS_PHONE_NO, "").toString()
+                    MethodUtils.getUSFormatNumber(
+                        prefProvider.getValue(
+                            Constants.BUSINESS_PHONE_NO,
+                            ""
+                        ).toString()
+                    )
                 )
 
                 builder.addFeedLine(1)
@@ -3267,22 +3292,6 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                 if (customerSettingModel.fonts == LARGE) {
 
-                    if (customerSettingModel.showOrderIdTop) {
-                        builder.addFeedLine(1)
-                        builder.addTextFont(Builder.FONT_E)
-                        builder.addTextAlign(Builder.ALIGN_LEFT)
-                        builder.addTextLang(Builder.LANG_EN)
-                        addCustomerTextSize(builder, customerSettingModel.fonts)
-                        builder.addTextStyle(
-                            Builder.FALSE,
-                            Builder.FALSE,
-                            Builder.FALSE,
-                            Builder.COLOR_1
-                        )
-
-                        builder.addText("OrderID:" + getDineInOrderDetails?.id)
-
-                    }
                     builder.addTextLineSpace(30)
                     builder.addFeedUnit(30)
                     builder.addTextFont(Builder.FONT_E)
@@ -3395,16 +3404,13 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                     builder.addText(
                         padLine(
-                            if (customerSettingModel.showOrderIdTop) {
-                                "OrderID:" + getDineInOrderDetails?.id
-                            } else {
-                                ""
-                            },
+
                             "ReceiptID:" + if (getDineInOrderDetails?.offlineId?.isEmpty() == true) {
                                 "ENTJKOIJH8745"
                             } else {
                                 getDineInOrderDetails?.offlineId
                             },
+                            "",
                             if (customerSettingModel.fonts == LARGE) {
                                 24
                             } else {
@@ -4217,6 +4223,10 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             PrintSunmiUtils.fontSize(customerSettingModel.fonts)
             SunmiPrinterApi.getInstance().printerInit()
 
+            if (customerSettingModel.showOrderIdTop) {
+                PrintSunmiUtils.orderIdLarge("OrderID:" + getDineInOrderDetails?.id)
+                SunmiPrinterApi.getInstance().lineWrap(1)
+            }
             if (customerSettingModel.showVenueLogo && prefProvider.getValue(VENUE_LOGO, "")
                     .isNotEmpty()
             ) {
@@ -4235,15 +4245,12 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 prefProvider.getValue(BUSINESS_PHONE_NO, "")
             )
 
-
+            SunmiPrinterApi.getInstance().lineWrap(1)
             getDineInOrderDetails?.orderType?.trim()?.let { PrintSunmiUtils.printOrderType(it) }
-
+            SunmiPrinterApi.getInstance().lineWrap(1)
 
             if (customerSettingModel.fonts == LARGE) {
 
-                if (customerSettingModel.showOrderIdTop) {
-                    PrintSunmiUtils.orderId("OrderID:" + getDineInOrderDetails?.id)
-                }
 
                 PrintSunmiUtils.receiptID(
                     "ReceiptID:" + if (getDineInOrderDetails?.offlineId?.isEmpty() == true) {
@@ -4289,16 +4296,13 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
 
                 val str = padLine(
-                    if (customerSettingModel.showOrderIdTop) {
-                        "OrderID:" + getDineInOrderDetails?.id
-                    } else {
-                        ""
-                    },
+
                     "ReceiptID:" + if (getDineInOrderDetails?.offlineId?.isEmpty() == true) {
                         "ENTJKOIJH8745"
                     } else {
                         getDineInOrderDetails?.offlineId
                     },
+                    "",
                     if (customerSettingModel.fonts == LARGE) {
                         23
                     } else {
@@ -5615,6 +5619,25 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 )
 
             Log.e(TAG, "getVanueLogo:  ${prefProvider.getValue(VENUE_LOGO, "")}")
+
+            if (customerSettingModel.showOrderIdTop) {
+                builder.addFeedLine(1)
+                builder.addTextFont(Builder.FONT_E)
+                builder.addTextAlign(Builder.ALIGN_CENTER)
+                builder.addTextLang(Builder.LANG_EN)
+                builder.addTextSize(2, 2)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.TRUE,
+                    Builder.COLOR_1
+                )
+
+                builder.addText("OrderID:" + receiptModel?.order?.id)
+
+                builder.addFeedLine(1)
+            }
+
             if (customerSettingModel.showVenueLogo && prefProvider.getValue(VENUE_LOGO, "")
                     .isNotEmpty()
             ) {
@@ -5684,7 +5707,12 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 Builder.FALSE,
                 Builder.COLOR_1
             )
-            addBuilderText(builder, prefProvider.getValue(BUSINESS_PHONE_NO, "").toString())
+            addBuilderText(
+                builder,
+                MethodUtils.getUSFormatNumber(
+                    prefProvider.getValue(BUSINESS_PHONE_NO, "").toString()
+                )
+            )
 
 
             receiptModel?.order?.venue_website?.let {
@@ -5743,22 +5771,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
             if (customerSettingModel.fonts == LARGE) {
 
-                if (customerSettingModel.showOrderIdTop) {
-                    builder.addFeedLine(1)
-                    builder.addTextFont(Builder.FONT_E)
-                    builder.addTextAlign(Builder.ALIGN_LEFT)
-                    builder.addTextLang(Builder.LANG_EN)
-                    addCustomerTextSize(builder, customerSettingModel.fonts)
-                    builder.addTextStyle(
-                        Builder.FALSE,
-                        Builder.FALSE,
-                        Builder.FALSE,
-                        Builder.COLOR_1
-                    )
-
-                    builder.addText("OrderID:" + receiptModel?.order?.id)
-
-                }
+                builder.addFeedLine(1)
                 builder.addTextLineSpace(30)
                 builder.addFeedUnit(30)
                 builder.addTextFont(Builder.FONT_E)
@@ -5866,12 +5879,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                 builder.addText(
                     padLine(
-                        if (customerSettingModel.showOrderIdTop) {
-                            "OrderID:" + receiptModel?.order?.id
-                        } else {
-                            ""
-                        },
                         "ReceiptID:" + receiptModel?.order?.offlineId,
+                        "",
                         if (customerSettingModel.fonts == LARGE) {
                             24
                         } else {
@@ -6838,15 +6847,18 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                 Builder.COLOR_1
                             )
 
+                            val phone = receiptModel?.order?.customer?.phones?.size?.minus(
+                                1
+                            )?.let {
+                                receiptModel?.order?.customer?.phones?.get(
+                                    it
+                                )?.phoneNumber
+                            }
                             builder.addText(
                                 padLine(
-                                    receiptModel?.order?.customer?.phones?.size?.minus(
-                                        1
-                                    )?.let {
-                                        receiptModel?.order?.customer?.phones?.get(
-                                            it
-                                        )?.phoneNumber
-                                    }, "", if (customerSettingModel.fonts == LARGE) {
+                                    MethodUtils.getUSFormatNumber(phone.toString()),
+                                    "",
+                                    if (customerSettingModel.fonts == LARGE) {
                                         24
                                     } else {
                                         48
@@ -7123,10 +7135,27 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                 builder = Builder(pname, PrinterClass.language, requireActivity())
 
+
+                builder.addTextFont(Builder.FONT_E)
+                builder.addTextAlign(Builder.ALIGN_CENTER)
+                builder.addTextLang(Builder.LANG_EN)
+                builder.addTextSize(2, 2)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.TRUE,
+                    Builder.COLOR_1
+                )
+
+                builder.addText("OrderID:" + receiptModel?.order?.id)
+                builder.addTextLineSpace(30)
+                builder.addFeedUnit(30)
+                builder.addFeedLine(1)
+
                 if (kitchenSettingModel.showOrderType) {
 
 
-                    builder.addFeedLine(0)
+                    builder.addFeedLine(1)
                     builder.addTextFont(Builder.FONT_E)
                     builder.addTextLang(Builder.LANG_EN)
                     builder.addTextSize(fontSizeH, fontSizeW)
@@ -7165,47 +7194,28 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 }
 
 
-                builder.addFeedLine(2)
-                builder.addTextFont(Builder.FONT_E)
-                //  builder.addTextAlign(Builder.ALIGN_LEFT)
-                builder.addTextLang(Builder.LANG_EN)
-                builder.addTextSize(fontSizeH, fontSizeW)
-                builder.addTextStyle(
-                    Builder.FALSE,
-                    Builder.FALSE,
-                    Builder.FALSE,
-                    Builder.COLOR_1
-                )
-
-                builder.addText(
-                    padLine(
-                        "OrderID:" + receiptModel?.order?.id,
-                        "",
-                        33
-                    )
-                )
-
-                builder.addTextLineSpace(30)
-                builder.addFeedUnit(30)
-                builder.addTextFont(Builder.FONT_E)
-                //  builder.addTextAlign(Builder.ALIGN_LEFT)
-                builder.addTextLang(Builder.LANG_EN)
-                builder.addTextSize(fontSizeH, fontSizeW)
-                builder.addTextStyle(
-                    Builder.FALSE,
-                    Builder.FALSE,
-                    Builder.FALSE,
-                    Builder.COLOR_1
-                )
-
-
-                builder.addText(
-                    padLine(
-                        "ReceiptID:" + receiptModel?.order?.offlineId,
-                        "",
-                        33
-                    )
-                )
+//
+//                builder.addTextLineSpace(30)
+//                builder.addFeedUnit(30)
+//                builder.addTextFont(Builder.FONT_E)
+//                //  builder.addTextAlign(Builder.ALIGN_LEFT)
+//                builder.addTextLang(Builder.LANG_EN)
+//                builder.addTextSize(fontSizeH, fontSizeW)
+//                builder.addTextStyle(
+//                    Builder.FALSE,
+//                    Builder.FALSE,
+//                    Builder.FALSE,
+//                    Builder.COLOR_1
+//                )
+//
+//
+//                builder.addText(
+//                    padLine(
+//                        "ReceiptID:" + receiptModel?.order?.offlineId,
+//                        "",
+//                        33
+//                    )
+//                )
                 if (kitchenSettingModel.showTeamMember) {
 
                     builder.addTextLineSpace(30)
@@ -7379,7 +7389,13 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                     Builder.TRUE,
                                     Builder.COLOR_1
                                 )
-                                builder.addText(receiptModel?.order?.customer?.phones?.get(0)?.phoneNumber)
+                                builder.addText(
+                                    MethodUtils.getUSFormatNumber(
+                                        receiptModel?.order?.customer?.phones?.get(
+                                            0
+                                        )?.phoneNumber.toString()
+                                    )
+                                )
                             }
 
                         }
@@ -7454,10 +7470,30 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                 builder = Builder(pname, PrinterClass.language, requireActivity())
 
+
+                builder.addFeedLine(1)
+                builder.addTextFont(Builder.FONT_E)
+                builder.addTextAlign(Builder.ALIGN_CENTER)
+                builder.addTextLang(Builder.LANG_EN)
+                builder.addTextSize(2, 2)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.TRUE,
+                    Builder.COLOR_1
+                )
+
+                builder.addText(
+                    "OrderID:" + receiptModel?.order?.id
+                )
+                builder.addTextLineSpace(30)
+                builder.addFeedUnit(30)
+                builder.addFeedLine(1)
+
                 if (kitchenSettingModel.showOrderType) {
 
 
-                    builder.addFeedLine(0)
+                    builder.addFeedLine(1)
                     builder.addTextFont(Builder.FONT_E)
                     builder.addTextLang(Builder.LANG_EN)
                     builder.addTextSize(fontSizeH, fontSizeW)
@@ -7496,55 +7532,31 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 }
 
 
-                builder.addFeedLine(2)
-                builder.addTextFont(Builder.FONT_E)
-                //  builder.addTextAlign(Builder.ALIGN_LEFT)
-                builder.addTextLang(Builder.LANG_EN)
-                builder.addTextSize(fontSizeH, fontSizeW)
-                builder.addTextStyle(
-                    Builder.FALSE,
-                    Builder.FALSE,
-                    Builder.FALSE,
-                    Builder.COLOR_1
-                )
-
-                builder.addText(
-                    padLine(
-                        "OrderID:" + receiptModel?.order?.id,
-                        "",
-                        if (kitchenSettingModel.fonts == LARGE) {
-                            24
-                        } else {
-                            48
-                        }
-                    )
-                )
-
-                builder.addTextLineSpace(30)
-                builder.addFeedUnit(30)
-                builder.addTextFont(Builder.FONT_E)
-                //  builder.addTextAlign(Builder.ALIGN_LEFT)
-                builder.addTextLang(Builder.LANG_EN)
-                builder.addTextSize(fontSizeH, fontSizeW)
-                builder.addTextStyle(
-                    Builder.FALSE,
-                    Builder.FALSE,
-                    Builder.FALSE,
-                    Builder.COLOR_1
-                )
-
-
-                builder.addText(
-                    padLine(
-                        "ReceiptID:" + receiptModel?.order?.offlineId,
-                        "",
-                        if (kitchenSettingModel.fonts == LARGE) {
-                            24
-                        } else {
-                            48
-                        }
-                    )
-                )
+//                builder.addTextLineSpace(30)
+//                builder.addFeedUnit(30)
+//                builder.addTextFont(Builder.FONT_E)
+//                //  builder.addTextAlign(Builder.ALIGN_LEFT)
+//                builder.addTextLang(Builder.LANG_EN)
+//                builder.addTextSize(fontSizeH, fontSizeW)
+//                builder.addTextStyle(
+//                    Builder.FALSE,
+//                    Builder.FALSE,
+//                    Builder.FALSE,
+//                    Builder.COLOR_1
+//                )
+//
+//
+//                builder.addText(
+//                    padLine(
+//                        "ReceiptID:" + receiptModel?.order?.offlineId,
+//                        "",
+//                        if (kitchenSettingModel.fonts == LARGE) {
+//                            24
+//                        } else {
+//                            48
+//                        }
+//                    )
+//                )
                 if (kitchenSettingModel.showTeamMember) {
 
                     builder.addTextLineSpace(30)
@@ -7717,7 +7729,13 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                     Builder.TRUE,
                                     Builder.COLOR_1
                                 )
-                                builder.addText(receiptModel?.order?.customer?.phones?.get(0)?.phoneNumber)
+                                builder.addText(
+                                    MethodUtils.getUSFormatNumber(
+                                        receiptModel?.order?.customer?.phones?.get(
+                                            0
+                                        )?.phoneNumber.toString()
+                                    )
+                                )
                             }
 
                         }
@@ -7799,7 +7817,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                 Handler(Looper.getMainLooper()).postDelayed(Runnable {
 
-                }, 1000)
+                }, 100)
                 //printerDialog.dismiss()
                 PrinterClass.closePrinter()
 
@@ -7827,6 +7845,10 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
 
             PrintSunmiUtils.fontSize(kitchenSettingModel.fonts)
+            SunmiPrinterApi.getInstance().printerInit()
+
+            PrintSunmiUtils.orderIdLarge("OrderID:" + receiptModel?.order?.id)
+            SunmiPrinterApi.getInstance().lineWrap(1)
 
             if (kitchenSettingModel.showOrderType) {
 
@@ -7846,24 +7868,6 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 SunmiPrinterApi.getInstance().lineWrap(1)
             }
 
-
-            PrintSunmiUtils.orderId(
-                padLine(
-                    "OrderID:" + receiptModel?.order?.id,
-                    "",
-                    if (kitchenSettingModel.fonts == LARGE) 23 else 48
-                ).toString()
-            )
-            SunmiPrinterApi.getInstance().lineWrap(1)
-
-            PrintSunmiUtils.receiptID(
-                padLine(
-                    "ReceiptID:" + receiptModel?.order?.offlineId,
-                    "",
-                    if (kitchenSettingModel.fonts == LARGE) 23 else 48
-                ).toString()
-            )
-            SunmiPrinterApi.getInstance().lineWrap(1)
 
             if (kitchenSettingModel.showTeamMember) {
 
@@ -7926,7 +7930,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                             receiptModel?.order?.customer?.phones?.get(0)?.phoneNumber?.let {
                                 PrintSunmiUtils.customerPhone(
-                                    it
+                                    MethodUtils.getUSFormatNumber(it)
                                 )
                             }
                         }
@@ -8033,7 +8037,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                             receiptModel?.order?.customer?.phones?.get(0)?.phoneNumber?.let {
                                 PrintSunmiUtils.normalTextLarge(
-                                    it
+                                    MethodUtils.getUSFormatNumber(it)
                                 )
                             }
                         }
@@ -8315,6 +8319,13 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
             SunmiPrinterApi.getInstance().printerInit()
 
+            if (customerSettingModel.showOrderIdTop) {
+
+                PrintSunmiUtils.orderIdLarge("OrderID:" + receiptModel?.order?.id)
+                SunmiPrinterApi.getInstance().lineWrap(1)
+
+            }
+
             Log.e(TAG, "getVanueLogo:  ${prefProvider.getValue(VENUE_LOGO, "")}")
             if (customerSettingModel.showVenueLogo && prefProvider.getValue(VENUE_LOGO, "")
                     .isNotEmpty()
@@ -8352,11 +8363,6 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
             if (customerSettingModel.fonts == LARGE) {
 
-                if (customerSettingModel.showOrderIdTop) {
-
-                    PrintSunmiUtils.orderId("OrderID:" + receiptModel?.order?.id)
-
-                }
 
                 PrintSunmiUtils.receiptID("ReceiptID:" + receiptModel?.order?.offlineId)
 
@@ -8397,12 +8403,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
 
                 val str = padLine(
-                    if (customerSettingModel.showOrderIdTop) {
-                        "OrderID:" + receiptModel?.order?.id
-                    } else {
-                        ""
-                    },
                     "ReceiptID:" + receiptModel?.order?.offlineId?.trim(),
+                    "",
                     if (customerSettingModel.fonts == LARGE) 23 else 48
                 ).toString().trim()
 
@@ -8875,15 +8877,18 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                         if (receiptModel?.order?.customer?.phones?.isNotEmpty() == true) {
 
+                            val number = receiptModel?.order?.customer?.phones?.size?.minus(
+                                1
+                            )?.let {
+                                receiptModel?.order?.customer?.phones?.get(
+                                    it
+                                )?.phoneNumber
+                            }
                             PrintSunmiUtils.customerPhone(
                                 padLine(
-                                    receiptModel?.order?.customer?.phones?.size?.minus(
-                                        1
-                                    )?.let {
-                                        receiptModel?.order?.customer?.phones?.get(
-                                            it
-                                        )?.phoneNumber
-                                    }, "", if (customerSettingModel.fonts == LARGE) 23 else 48
+                                    number?.let { MethodUtils.getUSFormatNumber(it) },
+                                    "",
+                                    if (customerSettingModel.fonts == LARGE) 23 else 48
                                 ).toString()
                             )
 
@@ -8959,7 +8964,6 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 SunmiPrintHelper.getInstance().lineWrap(1)
             }
 
-            Log.e(TAG, "getVanueLogo:  ${prefProvider.getValue(VENUE_LOGO, "")}")
             if (customerSettingModel.showVenueLogo && prefProvider.getValue(VENUE_LOGO, "")
                     .isNotEmpty()
             ) {
@@ -9503,15 +9507,18 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                         if (receiptModel?.order?.customer?.phones?.isNotEmpty() == true) {
 
+                            val phone = receiptModel?.order?.customer?.phones?.size?.minus(
+                                1
+                            )?.let {
+                                receiptModel?.order?.customer?.phones?.get(
+                                    it
+                                )?.phoneNumber
+                            }
                             PrintSunmiUtils.normalText(
                                 padLine(
-                                    receiptModel?.order?.customer?.phones?.size?.minus(
-                                        1
-                                    )?.let {
-                                        receiptModel?.order?.customer?.phones?.get(
-                                            it
-                                        )?.phoneNumber
-                                    }, "", if (customerSettingModel.fonts == LARGE) 23 else 48
+                                    phone?.let { MethodUtils.getUSFormatNumber(it) },
+                                    "",
+                                    if (customerSettingModel.fonts == LARGE) 23 else 48
                                 ).toString()
                             )
 

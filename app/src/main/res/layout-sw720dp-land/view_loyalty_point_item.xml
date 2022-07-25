@@ -63,18 +63,19 @@
                 android:layout_gravity="center"
                 android:layout_marginStart="@dimen/_5sdp"
                 android:layout_weight="1"
-                android:gravity="start"
+                android:gravity="center"
                 android:padding="@dimen/_5sdp"
                 android:textColor="@color/txtColor"
                 android:textSize="@dimen/setting_inner_sub_text_size" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 style="@style/CustomFontSemiBold"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:layout_gravity="center"
                 android:layout_marginStart="@dimen/_5sdp"
-                android:gravity="start"
+                android:gravity="end"
                 android:padding="@dimen/_5sdp"
                 android:text="@{``+serviceChargeModel.rewardPoint}"
                 android:textColor="@color/txtColor"
