@@ -1090,7 +1090,6 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                 SunmiPrintHelper.getInstance().lineWrap(2)
                 Log.e(TAG,"Here Drawer Code")
                 if (woyouService != null){
-                    ToastUtil.showNormalToast(requireContext(),"Cash Drawer Connected..")
                     woyouService!!.sendRAWData(byteArrayOf(0x1B, 0x45, 0x01),this)
                 }
                 else{
