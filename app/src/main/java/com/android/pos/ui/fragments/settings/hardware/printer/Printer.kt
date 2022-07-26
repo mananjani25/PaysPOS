@@ -90,7 +90,7 @@ import javax.inject.Inject
 @AndroidEntryPoint
 class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
     StatusChangeEventListener, BatteryStatusChangeEventListener, ICallback {
-    private var woyouService: IWoyouService?=null
+    private var woyouService: IWoyouService? = null
     private lateinit var binding: FragmentPrinterBinding
     var mBluetoothAdapter: BluetoothAdapter? = null
     var deviceList: Array<DeviceInfo>? = null
@@ -1088,11 +1088,10 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                     )
                 }
                 SunmiPrintHelper.getInstance().lineWrap(2)
-                Log.e(TAG,"Here Drawer Code")
-                if (woyouService != null){
-                    woyouService!!.sendRAWData(byteArrayOf(0x1B, 0x45, 0x01),this)
-                }
-                else{
+                Log.e(TAG, "Here Drawer Code")
+                if (woyouService != null) {
+                    woyouService!!.sendRAWData(byteArrayOf(0x1B, 0x45, 0x01), this)
+                } else {
                     val aa = ByteArray(5)
 
                     aa[0] = 0x10
@@ -1104,12 +1103,12 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
                     try {
                         SunmiPrinterApi.getInstance().sendRawData(aa)
-                    }catch (e:java.lang.Exception){
+                    } catch (e: java.lang.Exception) {
                         e.printStackTrace()
                     }
                     try {
                         SunmiPrintHelper.getInstance().openCashBox()
-                    }catch (e:java.lang.Exception){
+                    } catch (e: java.lang.Exception) {
                         e.printStackTrace()
                     }
 
@@ -1137,13 +1136,13 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
     private val serviceConnection: ServiceConnection = object : ServiceConnection {
         override fun onServiceConnected(p0: ComponentName?, service: IBinder?) {
-            Log.e(TAG,"onServiceConnected  1")
+            Log.e(TAG, "onServiceConnected  1")
             woyouService = IWoyouService.Stub.asInterface(service)
 
         }
 
         override fun onServiceDisconnected(p0: ComponentName?) {
-            Log.e(TAG,"onServiceDisConnected  2")
+            Log.e(TAG, "onServiceDisConnected  2")
             woyouService = null
 
 
@@ -1155,7 +1154,11 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
         val intent = Intent()
         intent.setPackage("com.android.pos")
         intent.action = "com.android.pos.aidl.IWoyouService"
-        MainApplication.getInstance()?.applicationContext?.bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE)
+        MainApplication.getInstance()?.applicationContext?.bindService(
+            intent,
+            serviceConnection,
+            Context.BIND_AUTO_CREATE
+        )
     }
 
 
@@ -1237,13 +1240,12 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                 .printText(getCurrentTimeFromTimeZone(requireContext(), formatted))
             SunmiPrinterApi.getInstance().lineWrap(2)
             SunmiPrinterApi.getInstance().cutPaper(2, 20)
-            Log.e(TAG,"WOHO SERIESNULL ${woyouService}")
-            if (woyouService != null){
-                Log.e(TAG,"WOHO SERIES NOT NULL")
-                ToastUtil.showNormalToast(requireContext(),"Cash Drawer Connected..")
-                woyouService!!.sendRAWData(byteArrayOf(0x1B, 0x45, 0x01),this)
-            }
-            else{
+            Log.e(TAG, "WOHO SERIESNULL ${woyouService}")
+            if (woyouService != null) {
+                Log.e(TAG, "WOHO SERIES NOT NULL")
+                ToastUtil.showNormalToast(requireContext(), "Cash Drawer Connected..")
+                woyouService!!.sendRAWData(byteArrayOf(0x1B, 0x45, 0x01), this)
+            } else {
                 val aa = ByteArray(5)
 
                 aa[0] = 0x10
@@ -1255,16 +1257,15 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
                 try {
                     SunmiPrinterApi.getInstance().sendRawData(aa)
-                }catch (e:java.lang.Exception){
+                } catch (e: java.lang.Exception) {
                     e.printStackTrace()
                 }
                 try {
                     SunmiPrintHelper.getInstance().openCashBox()
-                }catch (e:java.lang.Exception){
+                } catch (e: java.lang.Exception) {
                     e.printStackTrace()
                 }
             }
-
 
 
         }
@@ -1317,7 +1318,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                         locationId = prefProvider.getValueInt(LOCATION_ID, 1),
                         receiptPrintType = KITCHEN,
                         printer_type = printerListModel.connectionType,
-                        ip_address =  printerListModel.deviceModel?.ipAddress,
+                        ip_address = printerListModel.deviceModel?.ipAddress,
                         printerSettingsAttributes = list
 
                     )
@@ -1349,7 +1350,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                         locationId = prefProvider.getValueInt(LOCATION_ID, 1),
                         receiptPrintType = CUSTOMER,
                         printer_type = printerListModel.connectionType,
-                        ip_address =  printerListModel.deviceModel?.ipAddress,
+                        ip_address = printerListModel.deviceModel?.ipAddress,
                         printerSettingsAttributes = list
 
                     )
@@ -2104,9 +2105,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
 
             try {
-                PrinterClass.getPrinter()?.sendData(
-                    builder, 10000, status
-                )
+                PrinterClass.getPrinter()?.sendData(builder, 10000, status, battery)
                 //PrinterClass.getPrinter()?.sendData(builder, 0, status, battery)
             } catch (e: Exception) {
                 PrinterClass.closePrinter()
@@ -2242,6 +2241,6 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
     }
 
     override fun onRunResult(isSuccess: Boolean, code: Int, msg: String?) {
-        ToastUtil.showNormalToast(requireContext(),"Drawer ${msg}")
+        ToastUtil.showNormalToast(requireContext(), "Drawer ${msg}")
     }
 }

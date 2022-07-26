@@ -318,9 +318,6 @@ class EditPrinter : Fragment(), CategoryPrinterAdapter.CategoryPrinter {
             findNavController().popBackStack()
         }
         binding.header.txtSave.setOnClickListener {
-            Log.e(TAG, "gettype:  ${type}")
-            Log.e(TAG, "getPrinertype:  ${printerModel?.type}")
-
             val listCategories = categoryAdapter.getList()
             var listIds = ArrayList<Int>()
             listCategories.forEach {
