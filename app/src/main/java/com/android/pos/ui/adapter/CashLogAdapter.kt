@@ -47,7 +47,7 @@ class CashLogAdapter(val context: Context?) :
             binding.txtTime.text = TimeFormatUtils.convertCurrentTime(
                 item.createdAt, context
             )
-            binding.txtOrderId.text = "ORD" + item.orderId.toString()
+            binding.txtOrderId.text = item.orderId.toString()
 
             if (item.event.equals("IN", ignoreCase = true)) {
                 binding.txtEvent.text = "Cash IN"
@@ -99,7 +99,6 @@ class CashLogAdapter(val context: Context?) :
         orderList.addAll(orders)
         notifyDataSetChanged()
     }
-
 
 
 }

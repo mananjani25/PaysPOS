@@ -1,6 +1,7 @@
 package com.android.pos.utils
 
 import android.content.Context
+import android.util.Log
 import com.android.pos.data.remote.Constants.SYSTEM_TIMEZONE
 import com.android.pos.di.PrefProvider
 import java.text.SimpleDateFormat
@@ -20,14 +21,13 @@ object TimeFormatUtils {
     }
 
 
-
     fun convertCurrentTime(mSelectedDate: String, context: Context?): String {
         try {
             val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'")
             inputFormat.timeZone = TimeZone.getTimeZone("UTC")
             val outputFormat = SimpleDateFormat("hh:mm a")
             prefProvider = PrefProvider(context = context!!)
-            outputFormat.timeZone = TimeZone.getTimeZone(prefProvider.getValue(SYSTEM_TIMEZONE,""))
+            outputFormat.timeZone = TimeZone.getTimeZone(prefProvider.getValue(SYSTEM_TIMEZONE, ""))
             val date = inputFormat.parse(mSelectedDate)
             val formattedDate = outputFormat.format(date)
             //  val formattedDateFinalDate = outputFormat.parse(formattedDate)
@@ -49,7 +49,7 @@ object TimeFormatUtils {
             inputFormat.timeZone = TimeZone.getTimeZone("UTC")
             val outputFormat = SimpleDateFormat("MMM-dd-yyyy")
             prefProvider = PrefProvider(context = context!!)
-            outputFormat.timeZone = TimeZone.getTimeZone(prefProvider.getValue(SYSTEM_TIMEZONE,""))
+            outputFormat.timeZone = TimeZone.getTimeZone(prefProvider.getValue(SYSTEM_TIMEZONE, ""))
             val date = inputFormat.parse(mSelectedDate)
             val formattedDate = outputFormat.format(date)
             //  val formattedDateFinalDate = outputFormat.parse(formattedDate)
@@ -58,6 +58,33 @@ object TimeFormatUtils {
 //Thu Jul 16 05:23:26 EDT 2020
             val inputFormat = SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'", Locale.US)
             val outputFormat = SimpleDateFormat("MMM-dd-yyyy")
+            val date = inputFormat.parse(mSelectedDate)
+            val formattedDate = outputFormat.format(date)
+            //  val formattedDateFinalDate = outputFormat.parse(formattedDate)
+            return formattedDate
+
+        }
+
+
+    }
+
+    fun convertServerTimeFromPref(mSelectedDate: String?, context: Context?): String {
+        Log.e(TAG, "mSelectedDatemSelectedDate  ${mSelectedDate}")
+        try {
+            val inputFormat = SimpleDateFormat("MM/dd/yyyy HH:mm a")
+            inputFormat.timeZone = TimeZone.getTimeZone("UTC")
+            val outputFormat = SimpleDateFormat("MM/dd/yyyy HH:mm a")
+            prefProvider = PrefProvider(context = context!!)
+            outputFormat.timeZone = TimeZone.getTimeZone(prefProvider.getValue(SYSTEM_TIMEZONE, ""))
+            val date = inputFormat.parse(mSelectedDate)
+            val formattedDate = outputFormat.format(date)
+            Log.e(TAG, "formattedDateformattedDate  ${formattedDate}")
+            //  val formattedDateFinalDate = outputFormat.parse(formattedDate)
+            return formattedDate
+        } catch (e: Exception) {
+//Thu Jul 16 05:23:26 EDT 2020
+            val inputFormat = SimpleDateFormat("mm/dd/yyyy hh:mm a", Locale.US)
+            val outputFormat = SimpleDateFormat("mm/dd/yyyy hh:mm a")
             val date = inputFormat.parse(mSelectedDate)
             val formattedDate = outputFormat.format(date)
             //  val formattedDateFinalDate = outputFormat.parse(formattedDate)

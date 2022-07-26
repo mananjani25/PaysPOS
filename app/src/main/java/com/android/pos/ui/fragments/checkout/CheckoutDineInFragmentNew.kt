@@ -480,12 +480,12 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                                 splitAllAmounts(Constants.TOTAL_DISCOUNT, totalDiscount)
                                 splitAllAmounts(Constants.TAX_CHARGE, totalTax)
                                 splitAllAmounts(Constants.SERVICE_CHARGE, totalServiceCharge)
-                                if (cashDiscountType == "CashDiscount") {
+//                                if (cashDiscountType == "CashDiscount") {
                                     splitAllAmounts(
                                         Constants.CASH_DISCOUNT_SURCHARGE,
                                         cashDiscountSurcharge
                                     )
-                                }
+//                                }
 
                                 splitAllAmounts(Constants.TIP, 0.0)
                             } else if (custom_paymentAmount != 0.0) {
@@ -497,12 +497,12 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                                 splitAllAmounts(Constants.TOTAL_DISCOUNT, totalDiscount)
                                 splitAllAmounts(Constants.TAX_CHARGE, totalTax)
                                 splitAllAmounts(Constants.SERVICE_CHARGE, totalServiceCharge)
-                                if (cashDiscountType == "CashDiscount") {
+//                                if (cashDiscountType == "CashDiscount") {
                                     splitAllAmounts(
                                         Constants.CASH_DISCOUNT_SURCHARGE,
                                         cashDiscountSurcharge
                                     )
-                                }
+//                                }
 
                                 splitAllAmounts(Constants.TIP, 0.0)
                             } else {
@@ -514,12 +514,12 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                                 splitAllAmounts(Constants.TOTAL_DISCOUNT, totalDiscount)
                                 splitAllAmounts(Constants.TAX_CHARGE, totalTax)
                                 splitAllAmounts(Constants.SERVICE_CHARGE, totalServiceCharge)
-                                if (cashDiscountType == "CashDiscount") {
+//                                if (cashDiscountType == "CashDiscount") {
                                     splitAllAmounts(
                                         Constants.CASH_DISCOUNT_SURCHARGE,
                                         cashDiscountSurcharge
                                     )
-                                }
+//                                }
 
                                 splitAllAmounts(Constants.TIP, 0.0)
                             }
@@ -1851,7 +1851,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
         val jsonArray1 = magtekRequestUtils.processData(
             (paymentAmount * 100).toInt(),
             TLVParser.getHexString(data),
-            Constants.SALE
+            Constants.AUTHORIZE
         )
 
         networkCall(jsonArray1, 2)
@@ -1908,7 +1908,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                     val jsonArray1 = magtekRequestUtils.processData(
                         (paymentAmount * 100).toInt(),
                         MTParser.getHexString(data.ByteArray()),
-                        Constants.SALE
+                        Constants.AUTHORIZE
                     )
 
                     networkCall(jsonArray1, 2)

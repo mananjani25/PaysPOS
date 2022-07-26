@@ -239,10 +239,12 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
             binding.rvCategoryParent.smoothScrollToPosition(posParent)
         }
         if (tabPos != -1) {
-            categoryList1[tabPos].inventoryLists?.filter {
-                it!!.isHide
-            }?.let { it1 ->
-                itemList.addAll(it1)
+            if (tabPos < categoryList1.size) {
+                categoryList1[tabPos].inventoryLists?.filter {
+                    it!!.isHide
+                }?.let { it1 ->
+                    itemList.addAll(it1)
+                }
             }
 
             itemAdapter.addList(itemList)

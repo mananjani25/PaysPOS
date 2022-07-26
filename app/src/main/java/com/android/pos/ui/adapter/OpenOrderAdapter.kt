@@ -277,7 +277,7 @@ class OpenOrderAdapter(val context: Context) :
                     val fList = ArrayList<OpenOrderResponse.Data.Order>()
 
                     for (it in orderList) {
-                        if (it.offlineId.lowercase(Locale.getDefault())
+                        if (it.id.toString().lowercase(Locale.getDefault())
                                 .contains(charString.lowercase(Locale.getDefault()))
                         ) {
                             fList.add(it)
