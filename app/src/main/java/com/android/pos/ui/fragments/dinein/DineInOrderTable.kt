@@ -2536,6 +2536,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
                 model.guestDividedAmt = guestShare
                 Log.d("two", "navigateDineInOrder: " + model.guestDividedAmt)
+                Log.e(TAG, "OLDListGuestId:  ${oldList.get(i).id}")
+                model.id = oldList.get(i).id
             }
             model.isHeader = oldList.get(i).isHeader
             newList.add(model)
@@ -3242,7 +3244,9 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             )
             addBuilderText(
                 builder,
-                MethodUtils.getUSFormatNumber(prefProvider.getValue(Constants.BUSINESS_PHONE_NO, "").toString())
+                MethodUtils.getUSFormatNumber(
+                    prefProvider.getValue(Constants.BUSINESS_PHONE_NO, "").toString()
+                )
             )
 
             builder.addFeedLine(1)
@@ -8024,15 +8028,19 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     if (isCheckAndFire) {
                         kit.orderTypes.forEach {
                             if (it.orderTypeId == getOrderDetailsResponse?.orderTypeId) {
-                                Log.e(TAG,"printerSettings  ${Gson().toJson(it.printerSettings)}")
+                                Log.e(TAG, "printerSettings  ${Gson().toJson(it.printerSettings)}")
                                 it.printerSettings.forEach {
-                                    if (  it.printType.lowercase()
+                                    if (it.printType.lowercase()
                                             .equals(Constants.KITCHEN.lowercase()) && it.autoPrinting
                                     ) {
 
-                                        if (checkItemsforPrinterDineIn(listItem,kit.printerCategories.toCollection(
-                                                arrayListOf()))) {
-                                            Log.e(TAG,"printerName  ${kit.name} ")
+                                        if (checkItemsforPrinterDineIn(
+                                                listItem, kit.printerCategories.toCollection(
+                                                    arrayListOf()
+                                                )
+                                            )
+                                        ) {
+                                            Log.e(TAG, "printerName  ${kit.name} ")
                                             autoPrintEnable = true
                                             initKitchenPrinter(kit, Constants.KITCHEN, listItem)
                                         }
