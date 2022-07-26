@@ -40,7 +40,6 @@ import com.android.pos.data.remote.Constants.BUSINESS_ADDRESS
 import com.android.pos.data.remote.Constants.BUSINESS_NAME
 import com.android.pos.data.remote.Constants.BUSINESS_PHONE_NO
 import com.android.pos.data.remote.Constants.CASH_DISCOUNT_SURCHARGE
-import com.android.pos.data.remote.Constants.CAT_ID_SELECTED
 import com.android.pos.data.remote.Constants.CUSTOMER
 import com.android.pos.data.remote.Constants.DINE_IN_ADAPTER_LIST
 import com.android.pos.data.remote.Constants.GUEST_POSITION
@@ -911,15 +910,17 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
         }
         customerPrinterDineIn?.forEach {
-            initDineInPrinter(
-                it,
-                Constants.CUSTOMER,
-                paymentType,
-                true,
-                listGuestItem = listItem,
-                dineInList.get(guestPos).title.toString(),
-                listItemWT
-            )
+            if (it.status) {
+                initDineInPrinter(
+                    it,
+                    Constants.CUSTOMER,
+                    paymentType,
+                    true,
+                    listGuestItem = listItem,
+                    dineInList.get(guestPos).title.toString(),
+                    listItemWT
+                )
+            }
 
         }
     }
@@ -1025,7 +1026,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         },
                         customerReceiptPrinters.ipAddress,
                         enabled,
-                        1000
+                        interval
                     )
                     //printer?.setStatusChangeEventCallback(this)
 
@@ -1042,10 +1043,6 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                             val checkOutDineInModel =
                                 requireArguments().getParcelable<GuestDataModel>(Constants.DINE_IN_GUEST_PAYMENT_DATA)
-                            Log.e(
-                                TAG,
-                                "checkOutDineInModel:  ${Gson().toJson(checkOutDineInModel)}"
-                            )
 
 
                             if (checkOutDineInModel != null) {
@@ -5387,24 +5384,31 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                 ) {
                                     if (kitchenPrinterList.isNotEmpty()) {
                                         for (i in 0 until kitchenPrinterList.size) {
-                                            kitchenPrinterList[i].orderTypes.forEach {
+                                            if (kitchenPrinterList[i].status) {
+                                                kitchenPrinterList[i].orderTypes.forEach {
 
-                                                if (it.orderTypeId == receiptModel?.order?.orderTypeId
+                                                    if (it.orderTypeId == receiptModel?.order?.orderTypeId
 
-                                                ) {
+                                                    ) {
 
-                                                    it.printerSettings.forEach {
-                                                        if (it.printType.lowercase()
-                                                                .equals(KITCHEN.lowercase()) && it.autoPrinting
-                                                        ) {
-                                                            initKitchenPrinter(
-                                                                kitchenPrinterList.get(i),
-                                                                KITCHEN
-                                                            )
+                                                        it.printerSettings.forEach {
+                                                            if (it.printType.lowercase()
+                                                                    .equals(KITCHEN.lowercase()) && it.autoPrinting
+                                                            ) {
 
+                                                                if (checkItemsforPrinter(receiptModel?.order?.orderItems ?: arrayListOf(),kitchenPrinterList[i].printerCategories.toCollection(
+                                                                        arrayListOf()))) {
+                                                                            Log.e(TAG,"InsidePrinterKitchen")
+                                                                    initKitchenPrinter(
+                                                                        kitchenPrinterList.get(i),
+                                                                        KITCHEN
+                                                                    )
+                                                                }
+
+                                                            }
                                                         }
-                                                    }
 
+                                                    }
                                                 }
                                             }
                                         }
@@ -5472,19 +5476,21 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                         if (autoPrintCheck) {
                             customerList.forEach { cus ->
-                                cus.orderTypes.forEach {
+                                if (cus.status) {
+                                    cus.orderTypes.forEach {
 
-                                    if (it.orderTypeId == receiptModel?.order?.orderTypeId) {
+                                        if (it.orderTypeId == receiptModel?.order?.orderTypeId) {
 
-                                        it.printerSettings.forEach {
-                                            if (it.printType.lowercase()
-                                                    .equals(CUSTOMER.lowercase()) && it.autoPrinting
-                                            ) {
-
-
-                                                initPrinter(cus, CUSTOMER)
+                                            it.printerSettings.forEach {
+                                                if (it.printType.lowercase()
+                                                        .equals(CUSTOMER.lowercase()) && it.autoPrinting
+                                                ) {
 
 
+                                                    initPrinter(cus, CUSTOMER)
+
+
+                                                }
                                             }
                                         }
                                     }
@@ -7053,13 +7059,13 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 //  printerDialog.show(requireContext())
 
                 var printer: Print? = Print(requireContext())
-                if (printer != null) {
+                /*if (printer != null) {
                     printer.setStatusChangeEventCallback(this)
                     printer.setBatteryStatusChangeEventCallback(this)
-                }
+                }*/
 
 
-                val enabled = Print.TRUE
+                val enabled = Print.FALSE
 
                 try {
 
@@ -7283,7 +7289,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         builder!!,
                         it,
                         fontSizeH,
-                        fontSizeW
+                        fontSizeW,
+                        customerReceiptPrinters.printerCategories.toCollection(arrayListOf())
                     )
                 }
 
@@ -7623,7 +7630,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         builder,
                         it,
                         fontSizeH,
-                        fontSizeW
+                        fontSizeW,
+                        customerReceiptPrinters.printerCategories.toCollection(arrayListOf())
                     )
                 }
 
@@ -7900,7 +7908,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
             receiptModel?.order?.orderItems?.let {
                 addOrdersForKitchen(
-                    it
+                    it,
+                    customerReceiptPrinters.printerCategories.toCollection(arrayListOf())
                 )
             }
 
@@ -8965,7 +8974,6 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 SunmiPrintHelper.getInstance().lineWrap(1)
             }
 
-            Log.e(TAG, "getVanueLogo:  ${prefProvider.getValue(VENUE_LOGO, "")}")
             if (customerSettingModel.showVenueLogo && prefProvider.getValue(VENUE_LOGO, "")
                     .isNotEmpty()
             ) {

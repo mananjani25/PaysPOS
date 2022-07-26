@@ -56,44 +56,12 @@ class ItemAdapter(
                 binding.txtCategoryName.isSelected = false
 
             }
-            if (model.isSelectedItem) {
-                binding.txtCategoryName.setBackgroundColor(
-                    ContextCompat.getColor(
-                        context,
-                        R.color.txt_color_blue
-                    )
-                )
-                binding.txtCategoryName.setTextColor(ContextCompat.getColor(context, R.color.white))
-            } else {
-                binding.txtCategoryName.background =
-                    (ContextCompat.getDrawable(context, R.drawable.item_selector))
-                binding.txtCategoryName.setTextColor(
-                    ContextCompat.getColor(
-                        context,
-                        R.drawable.text_selector
-                    )
-                )
-            }
 
             binding.root.setOnClickListener {
                 try {
                     list[position]?.let {
                         Log.e("ITemAdapter", "onClickposition  ${position}")
                         listener.onItemSelected(it)
-                    }
-                    if (list[position]?.modifier_set_ids?.isEmpty() == true && list[position]?.variationsAttributes?.isEmpty() == true) {
-                        binding.txtCategoryName.setBackgroundColor(
-                            ContextCompat.getColor(
-                                context,
-                                R.color.txt_color_blue
-                            )
-                        )
-                        binding.txtCategoryName.setTextColor(
-                            ContextCompat.getColor(
-                                context,
-                                R.color.white
-                            )
-                        )
                     }
                 } catch (e: Exception) {
                     e.printStackTrace()

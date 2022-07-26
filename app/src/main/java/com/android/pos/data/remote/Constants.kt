@@ -29,6 +29,12 @@ object Constants {
     const val LOCK_SCREEN_TRANSACTION = "lock_screen_after_each_transaction"
     const val DINEIN_FLOORPLAN_SHOW_TABLENAME = "dine_floorplan_show_tablename"
 
+    const val PRINTER_QUEUE_DATA = "Printer_Queue_Data"
+    const val PRINTER_QUEUE_DATA_RECEIVED = "Printer_Queue_Data_Received"
+    const val DATA = "Data"
+    const val PRITNER_QUEUE_DATA_DELETE= "PRITNER_QUEUE_DATA_DELETE"
+
+
     //SharedPref Keys
     const val AUTH_TOKEN = "authToken"
     const val TERMINAL_ID = "terminalId"

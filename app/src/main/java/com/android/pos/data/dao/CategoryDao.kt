@@ -118,6 +118,9 @@ interface CategoryDao {
     @Query("DELETE FROM TbBusinessDetails")
     suspend fun deleteBD()
 
+    @Query("DELETE FROM PRINTERQUEUE")
+    suspend fun deletePrinterQueue()
+
     @Transaction
     suspend fun delete1() {
         delete()
@@ -148,6 +151,7 @@ interface CategoryDao {
         deleteCL()
         deleteTZ()
         deleteBD()
+        deletePrinterQueue()
     }
 
     @Query("UPDATE TbCategory SET sort = :sort WHERE  TbCategory.id = :id")

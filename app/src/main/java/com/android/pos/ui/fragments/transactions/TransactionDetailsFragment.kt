@@ -692,7 +692,9 @@ class TransactionDetailsFragment : Fragment() {
                         val customerList = it.data
 
                         customerList.forEach {
-                            initPrinter(it, Constants.CUSTOMER)
+                            if (it.status) {
+                                initPrinter(it, Constants.CUSTOMER)
+                            }
                         }
                     }
                 }

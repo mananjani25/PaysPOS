@@ -234,7 +234,9 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
     private fun generateEODReport() {
         customerList.forEach {
-            initPrinter(it)
+            if (it.status) {
+                initPrinter(it)
+            }
 
         }
     }

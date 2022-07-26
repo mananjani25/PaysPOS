@@ -8,6 +8,7 @@ import androidx.room.TypeConverters
 import com.android.pos.data.dao.*
 import com.android.pos.data.entities.*
 import com.android.pos.data.model.CharacterModel
+import com.android.pos.data.model.PrinterQueueModel
 import com.android.pos.data.model.ShiftRportConfiguration
 import com.android.pos.data.model.SplitDetailListModel
 import com.android.pos.data.model.responseModel.*
@@ -25,7 +26,7 @@ import com.android.pos.data.typeconvert.*
         PrinterResponse.Data.KitchenReceiptPrinters::class, GetKitchenReceiptSettingsResponse.Data::class,
         GetCustomerReceiptSettingsResponse.Data::class, LoyaltyProgramsModel::class, SplitDetailListModel::class,
         CashDiscountModel::class, TbCountryList::class, TbCardReader::class, VenueDetailsResponse.Data.CancelOrderReason::class,
-        DineInCartModel::class,ShiftRportConfiguration::class,TbBusinessDetails::class,TbTimeZones::class],
+        DineInCartModel::class, ShiftRportConfiguration::class, TbBusinessDetails::class, TbTimeZones::class, PrinterQueueModel::class],
     version = 1
 )
 @TypeConverters(
@@ -48,7 +49,10 @@ import com.android.pos.data.typeconvert.*
     TCPrinterCategories::class,
     TCDineInList::class,
     TCLoyaltyPrograms::class,
-    TCBusiness::class
+    TCBusiness::class,
+    TCPrinterQueueData::class,
+    TCOrderItemsPrinter::class,
+    TCPrinterQueueSuucessModel::class
 )
 
 
@@ -81,9 +85,10 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun countryListDao(): CountryListDao
     abstract fun cardReaderDao(): cardReaderDao
     abstract fun cancelOrderReasonDao(): CancelOrderReasonsDao
-    abstract fun eodReportSettings():EODReportDao
+    abstract fun eodReportSettings(): EODReportDao
     abstract fun businessDetailsDao(): BusinessDetailsDao
     abstract fun timeZonesDao(): TimeZonesDao
+    abstract fun printerQueueDao(): PrinterQueueDao
 
     companion object {
         @Volatile

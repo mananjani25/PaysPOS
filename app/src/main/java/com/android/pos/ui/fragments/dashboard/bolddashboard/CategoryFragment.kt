@@ -246,7 +246,6 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
                     itemList.addAll(it1)
                 }
             }
-
             itemAdapter.addList(itemList)
 
         }
@@ -480,8 +479,6 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
 
 
     override fun onClick(item: TbItem) {
-        Log.e(TAG, "selectedItem:  ${Gson().toJson(item)}")
-
         listner.onItemSelected(item)
 
 

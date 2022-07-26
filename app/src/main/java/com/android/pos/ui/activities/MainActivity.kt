@@ -8,6 +8,7 @@ import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.StrictMode
 import android.provider.MediaStore
 import android.provider.Settings
 import android.util.Log
@@ -23,6 +24,7 @@ import androidx.core.view.GravityCompat
 import androidx.databinding.DataBindingUtil
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupWithNavController
@@ -30,8 +32,8 @@ import androidx.work.Data
 import androidx.work.ExistingPeriodicWorkPolicy
 import androidx.work.PeriodicWorkRequest
 import androidx.work.WorkManager
-import com.android.pos.BuildConfig
 import com.android.pos.R
+import com.android.pos.data.model.PrinterQueueModel
 import com.android.pos.data.model.responseModel.GetKitchenReceiptSettingsResponse
 import com.android.pos.data.model.responseModel.PrinterResponse
 import com.android.pos.data.remote.Constants
@@ -45,25 +47,43 @@ import com.android.pos.di.RolePermission
 import com.android.pos.ui.fragments.dashboard.bolddashboard.DashboardCategoryBoldPOS
 import com.android.pos.ui.fragments.payment.OrderCompleteViewModel
 import com.android.pos.ui.fragments.settings.hardware.Hardware
-import com.android.pos.utils.AlertUtils
-import com.android.pos.utils.FileUtils
-import com.android.pos.utils.ProgressUtils
+import com.android.pos.utils.*
 import com.android.pos.utils.extensions.alert
 import com.android.pos.utils.statusUtils.Status
+import com.android.pos.utils.workmanager.ThreadPoolManager
 import com.android.pos.utils.workmanager.UploadWorker
+import com.epson.epos2.ConnectionListener
+import com.epson.epos2.printer.Printer
+import com.epson.epos2.printer.PrinterStatusInfo
+import com.epson.epos2.printer.ReceiveListener
+import com.epson.epos2.printer.StatusChangeListener
+import com.epson.eposprint.Builder
+import com.felhr.usbserial.BuildConfig.APPLICATION_ID
 import com.google.firebase.analytics.FirebaseAnalytics
 import com.google.gson.Gson
+import com.google.gson.reflect.TypeToken
+import com.hosopy.actioncable.ActionCable
+import com.hosopy.actioncable.Consumer
+import com.hosopy.actioncable.Subscription
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import java.io.File
 import java.io.IOException
+import java.net.URI
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 
 @AndroidEntryPoint
-class MainActivity : BaseScannerActivity() {
+class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
+    StatusChangeListener {
 
-    private var customerPrinterList: List<PrinterResponse.Data.KitchenReceiptPrinters> =
+    private var printerQueueModelGlobal: PrinterQueueModel? = null
+    private var isPrinterQueueRun: Boolean = false
+    private var kitchenPrinterList: List<PrinterResponse.Data.KitchenReceiptPrinters> =
         emptyList()
     private var cameraUri: Uri? = null
     private var selectedFilePath: String? = ""
@@ -76,6 +96,11 @@ class MainActivity : BaseScannerActivity() {
     private val TAG = "MainActivity"
     private val viewModelPrinter by viewModels<OrderCompleteViewModel>()
     private var customerSettingModel = GetKitchenReceiptSettingsResponse.Data()
+    private var subscription: Subscription? = null
+    private var consumer: Consumer? = null
+    private var kitchenSettingModel = GetKitchenReceiptSettingsResponse.Data()
+    var mPrinter: Printer? = null
+    var arrayItems: ArrayList<PrinterQueueModel> = arrayListOf()
 
     @set:Inject
     internal var prefProvider: PrefProvider? = null
@@ -85,6 +110,7 @@ class MainActivity : BaseScannerActivity() {
 
     @Inject
     lateinit var rolePermission: RolePermission
+    var currentIndex: Int = 0
 
     @Inject
     lateinit var repo: UserRepository
@@ -112,6 +138,71 @@ class MainActivity : BaseScannerActivity() {
         }
 
     }
+
+    var broadCastReceiverPrinterQueueSuccess = object : BroadcastReceiver() {
+        override fun onReceive(p0: Context?, p1: Intent?) {
+
+            val data = p1?.getStringExtra(Constants.DATA)
+            if (data?.isNotEmpty() == true) {
+                var printerQueueModel: PrinterQueueModel =
+                    Gson().fromJson(data, PrinterQueueModel::class.java)
+                Log.e(TAG, "printerQueueModel:  ${Gson().toJson(printerQueueModel)}")
+                lifecycleScope.launch {
+                    var flag = viewModelPrinter.checkDataisExistOrNot(printerQueueModel)
+                    Log.e(TAG, "UpdateGetloag ${flag}")
+                    if (!flag) {
+                        // viewModelPrinter.updateStatusPrinterQueue(printerQueueModel)
+                    }
+                }
+
+            }
+        }
+
+    }
+
+    var broadCastReceiverPrinterQueueDataGet = object : BroadcastReceiver() {
+        override fun onReceive(p0: Context?, p1: Intent?) {
+            val serializedObject: String = p1?.getStringExtra(Constants.DATA).toString()
+            if (serializedObject.isNotEmpty()) {
+                val gson = Gson()
+                val type = object :
+                    TypeToken<List<PrinterQueueModel?>?>() {}.type
+                arrayItems =
+                    gson.fromJson<Any>(
+                        serializedObject,
+                        type
+                    ) as ArrayList<PrinterQueueModel>
+
+
+                Log.e(TAG, "printerQueueDataReceived  ${Gson().toJson(arrayItems)}")
+
+
+                arrayItems.forEach { data ->
+                    data.id?.let { it1 ->
+                        viewModelPrinter.checkQueueExist(data.id!!).observe(this@MainActivity) {
+                            if (it.status == Status.SUCCESS) {
+                                if (it.data == null) {
+                                    lifecycleScope.launch {
+                                        viewModelPrinter.addPrinterQueueData(data)
+                                    }
+                                }
+                            }
+
+
+                        }
+
+                    }
+                }
+
+
+            } else {
+                getPrinterQueueData()
+            }
+
+
+        }
+
+    }
     var broadcastReceiveronlineOrder = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             Log.e(TAG, "GetOnlineOrderDataNoti")
@@ -125,6 +216,417 @@ class MainActivity : BaseScannerActivity() {
                 sendBroadcast(intent)
             }
         }
+    }
+
+    private fun getPrinterQueueData() {
+        viewModelPrinter.getPrinterQueueData().observe(this) {
+            if (it != null && it.isNotEmpty()) {
+                Log.e(TAG, "getPrinterQueueData " + isPrinterQueueRun)
+                if (!isPrinterQueueRun) {
+                    isPrinterQueueRun = true
+
+
+                    newKitchenPrinterInit(
+                        it[it.size - 1],
+                        it.size - 1,
+                        it.toCollection(arrayListOf())
+                    )
+
+                }
+                /* prefProvider?.setValue(Constants.PRINTER_QUEUE_DATA, "")
+                 prefProvider?.setValue(Constants.PRINTER_QUEUE_DATA, Gson().toJson(it))*/
+
+
+            } else {
+                Log.e(TAG, "getPrinterNull")
+            }
+        }
+    }
+
+
+    private fun newKitchenPrinterInit(
+        printerQueueModel: PrinterQueueModel,
+        index: Int,
+        arrayItems: ArrayList<PrinterQueueModel>
+    ) {
+        Log.e(TAG, "kitchenPrinters  ${kitchenPrinterList.size}")
+        printerQueueModelGlobal = printerQueueModel
+        if (kitchenPrinterList.isEmpty()) {
+            isPrinterQueueRun = false
+        }
+
+
+        for (i in 0 until kitchenPrinterList.size) {
+            var modelName = -1
+            if (kitchenPrinterList[i].modalName.equals("TM-M30", true)) {
+                modelName = Printer.TM_M30
+            } else if (kitchenPrinterList[i].modalName.equals("TM-U220", true)) {
+                modelName = Printer.TM_U220
+            } else if (kitchenPrinterList[i].name.substring(0, 6).toString()
+                    .equals("TM-m30", true)
+            ) {
+                modelName = Printer.TM_M30
+            }
+
+            Log.e(TAG, "modelName  ${modelName}")
+            if (modelName != -1) {
+
+                mPrinter = null
+                mPrinter = com.epson.epos2.printer.Printer(modelName, Printer.MODEL_ANK, this)
+                //mPrinter?.startMonitor()
+
+
+                var containsFlag: Boolean = true
+                Log.e(
+                    TAG,
+                    "printerSuccessData  ${Gson().toJson(printerQueueModel.printSuccessData)}"
+                )
+                Log.e(TAG, "PrinterID ${kitchenPrinterList[i].id}")
+                if (printerQueueModel.printSuccessData.isNotEmpty()) {
+                    for (k in 0 until printerQueueModel.printSuccessData.size) {
+
+                        if (printerQueueModel.printSuccessData[k].toInt() == kitchenPrinterList[i].id) {
+                            containsFlag = true
+                            break
+                        } else {
+                            containsFlag = false
+                        }
+
+                    }
+
+                    /* if (printerQueueModel.printSuccessData.contains(kitchenPrinterList[i].id)) {
+                         containsFlag = true
+                     } else {
+                         containsFlag = false
+                     }*/
+                } else {
+                    containsFlag = false
+                }
+                Log.e(TAG, "containsFlag:  ${containsFlag}  ${mPrinter}")
+                if (!containsFlag && mPrinter != null) {
+
+                    try {
+                        Log.e(TAG, "isPrinterQueueRun  ${isPrinterQueueRun}")
+
+
+
+                        isPrinterQueueRun = true
+                        lifecycleScope.executeAsyncTask(
+                            onPostExecute = {
+                                if (mPrinter != null) {
+                                    Log.e(TAG, "statusInfo  ${Gson().toJson(mPrinter?.status)}")
+
+                                    var fontSizeH = 1
+                                    var fontSizeW = 1
+                                    when (kitchenSettingModel.fonts) {
+                                        Constants.SMALL -> {
+                                            fontSizeH = 1
+                                            fontSizeW = 1
+                                        }
+                                        Constants.MEDIUM -> {
+                                            fontSizeH = 1
+                                            fontSizeW = 2
+                                        }
+                                        Constants.LARGE -> {
+                                            fontSizeH = 2
+                                            fontSizeW = 2
+                                        }
+
+
+                                    }
+                                    mPrinter?.addFeedLine(2)
+                                    if (kitchenSettingModel.showOrderType) {
+
+
+                                        mPrinter?.addFeedLine(0)
+                                        mPrinter?.addTextFont(Builder.FONT_E)
+                                        mPrinter?.addTextLang(Builder.LANG_EN)
+                                        mPrinter?.addTextSize(fontSizeH, fontSizeW)
+                                        mPrinter?.addTextStyle(
+                                            Builder.FALSE,
+                                            Builder.FALSE,
+                                            Builder.TRUE,
+                                            Builder.COLOR_1
+                                        )
+                                        mPrinter?.addTextAlign(Builder.ALIGN_CENTER)
+                                        mPrinter?.addText(printerQueueModel.orderType)
+
+                                    }
+
+                                    mPrinter?.addFeedLine(2)
+                                    mPrinter?.addTextFont(Builder.FONT_E)
+                                    //  builder.addTextAlign(Builder.ALIGN_LEFT)
+                                    mPrinter?.addTextLang(Builder.LANG_EN)
+                                    mPrinter?.addTextSize(1, 1)
+                                    mPrinter?.addTextStyle(
+                                        Builder.FALSE,
+                                        Builder.FALSE,
+                                        Builder.FALSE,
+                                        Builder.COLOR_1
+                                    )
+
+                                    mPrinter?.addText(
+                                        padLine(
+                                            "OrderID:" + printerQueueModel.orderID,
+                                            "",
+                                            48
+                                        )
+                                    )
+
+                                    mPrinter?.addFeedUnit(30)
+                                    mPrinter?.addTextFont(Builder.FONT_E)
+                                    //  builder.addTextAlign(Builder.ALIGN_LEFT)
+                                    mPrinter?.addTextLang(Builder.LANG_EN)
+                                    mPrinter?.addTextSize(1, 1)
+                                    mPrinter?.addTextStyle(
+                                        Builder.FALSE,
+                                        Builder.FALSE,
+                                        Builder.FALSE,
+                                        Builder.COLOR_1
+                                    )
+
+
+                                    mPrinter?.addText(
+                                        padLine(
+                                            "ReceiptID:" + printerQueueModel.offlineId,
+                                            "",
+                                            48
+                                        )
+                                    )
+
+                                    mPrinter?.addFeedUnit(30)
+                                    mPrinter?.addTextFont(Builder.FONT_E)
+                                    mPrinter?.addTextAlign(Builder.ALIGN_LEFT)
+                                    mPrinter?.addTextLang(Builder.LANG_EN)
+                                    mPrinter?.addTextSize(fontSizeH, fontSizeW)
+                                    mPrinter?.addTextStyle(
+                                        Builder.FALSE,
+                                        Builder.FALSE,
+                                        Builder.FALSE,
+                                        Builder.COLOR_1
+                                    )
+
+                                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                                        val current = LocalDateTime.now()
+                                        val formatter =
+                                            DateTimeFormatter.ofPattern("MMM-dd-yyyy hh:mm:a")
+                                        val formatted = current.format(formatter)
+                                        mPrinter?.addText(
+                                            "Print Time:" + Constants.getCurrentTimeFromTimeZone(
+                                                this,
+                                                formatted
+                                            )
+                                        )
+                                    }
+                                    mPrinter?.addFeedLine(1)
+                                    mPrinter?.let {
+                                        addHorizontalLineNew(it)
+                                    }
+
+                                    printerQueueModel.orderItems.let {
+                                        addOrdersForKitchenCustomerNewPrinter(
+                                            mPrinter!!,
+                                            it,
+                                            fontSizeH,
+                                            fontSizeW
+                                        )
+                                    }
+
+                                    if (kitchenSettingModel.showCustomerAddress != false or kitchenSettingModel.showCustomerPhone != false or kitchenSettingModel.showCustomerName != false) {
+                                        if (printerQueueModel.customerName.isNotEmpty()) {
+
+                                            mPrinter?.addFeedUnit(30)
+                                            mPrinter?.addFeedLine(1)
+                                            mPrinter?.addTextFont(Builder.FONT_E)
+                                            //builder.addTextLineSpace(20)
+                                            mPrinter?.addTextAlign(Builder.ALIGN_LEFT)
+                                            mPrinter?.addTextLang(Builder.LANG_EN)
+                                            mPrinter?.addTextSize(fontSizeH, fontSizeW)
+                                            mPrinter?.addTextStyle(
+                                                Builder.FALSE,
+                                                Builder.FALSE,
+                                                Builder.TRUE,
+                                                Builder.COLOR_1
+                                            )
+                                            mPrinter?.addText("Customer Details" + "\n")
+
+                                            mPrinter?.addTextFont(Builder.FONT_B)
+                                            //builder.addTextLineSpace(20)
+                                            mPrinter?.addTextLang(Builder.LANG_EN)
+                                            mPrinter?.addTextSize(fontSizeH, fontSizeW)
+                                            mPrinter?.addTextStyle(
+                                                Builder.FALSE,
+                                                Builder.FALSE,
+                                                Builder.FALSE,
+                                                Builder.COLOR_1
+                                            )
+                                            addHorizontalLineNew(mPrinter!!)
+
+                                            if (kitchenSettingModel.showCustomerName) {
+
+                                                mPrinter?.addFeedUnit(30)
+                                                mPrinter?.addTextFont(Builder.FONT_E)
+                                                mPrinter?.addTextAlign(Builder.ALIGN_LEFT)
+                                                //builder.addTextLineSpace(20)
+                                                mPrinter?.addTextLang(Builder.LANG_EN)
+                                                mPrinter?.addTextSize(fontSizeH, fontSizeW)
+                                                mPrinter?.addTextStyle(
+                                                    Builder.FALSE,
+                                                    Builder.FALSE,
+                                                    Builder.TRUE,
+                                                    Builder.COLOR_1
+                                                )
+                                                mPrinter?.addText(printerQueueModel.customerName)
+
+                                            }
+
+
+                                            if (kitchenSettingModel.showCustomerPhone) {
+
+                                                if (printerQueueModel?.customerPhoneNo.isNotEmpty()) {
+                                                    mPrinter?.addFeedUnit(30)
+                                                    mPrinter?.addTextFont(Builder.FONT_E)
+                                                    mPrinter?.addTextAlign(Builder.ALIGN_LEFT)
+                                                    //builder.addTextLineSpace(20)
+                                                    mPrinter?.addTextLang(Builder.LANG_EN)
+                                                    mPrinter?.addTextSize(fontSizeH, fontSizeW)
+                                                    mPrinter?.addTextStyle(
+                                                        Builder.FALSE,
+                                                        Builder.FALSE,
+                                                        Builder.TRUE,
+                                                        Builder.COLOR_1
+                                                    )
+                                                    mPrinter?.addText(printerQueueModel.customerPhoneNo)
+                                                }
+
+                                            }
+
+                                            if (kitchenSettingModel.showCustomerAddress) {
+
+
+                                                if (printerQueueModel.customerAddress.isNotEmpty()) {
+
+                                                    mPrinter?.addFeedUnit(30)
+                                                    mPrinter?.addTextFont(Builder.FONT_E)
+                                                    mPrinter?.addTextAlign(Builder.ALIGN_LEFT)
+                                                    //builder.addTextLineSpace(20)
+                                                    mPrinter?.addTextLang(Builder.LANG_EN)
+                                                    mPrinter?.addTextSize(fontSizeH, fontSizeW)
+                                                    mPrinter?.addTextStyle(
+                                                        Builder.FALSE,
+                                                        Builder.FALSE,
+                                                        Builder.TRUE,
+                                                        Builder.COLOR_1
+                                                    )
+
+                                                    mPrinter?.addText(printerQueueModel.customerAddress)
+                                                }
+
+                                            }
+
+                                        }
+                                    }
+
+                                    mPrinter?.addFeedLine(2)
+                                    mPrinter?.addCut(Builder.CUT_FEED)
+
+                                    if (mPrinter?.status?.connection != 0) {
+                                        mPrinter?.beginTransaction()
+                                        mPrinter?.sendData(Printer.PARAM_DEFAULT)
+
+                                        isPrinterQueueRun = false
+                                    }
+
+
+                                }
+
+                                lifecycleScope.launch {
+                                    delay(5000)
+                                    getPrinterQueueData()
+                                }
+
+                            },
+                            doInBackground = {
+
+
+                                Log.e(TAG, "getIpAddress  ${kitchenPrinterList[i].ipAddress}")
+                                Log.e(
+                                    TAG,
+                                    "connectionPrinter   ${mPrinter?.status?.connection}"
+                                )
+/*
+                                    try {
+                                        mPrinter?.disconnect()
+                                    } catch (e: Exception) {
+                                        e.printStackTrace()
+                                    }*/
+                                try {
+
+                                    lifecycleScope.launch {
+
+                                        for (m in 0 until 3) {
+                                            try {
+
+                                                mPrinter?.connect(
+                                                    kitchenPrinterList[i].ipAddress,
+                                                    Printer.PARAM_DEFAULT
+                                                )
+
+                                                mPrinter?.startMonitor()
+                                            } catch (e: Exception) {
+                                                isPrinterQueueRun = false
+                                                try {
+                                                    if (mPrinter?.status?.connection == 1) {
+                                                        mPrinter?.disconnect()
+                                                    }
+                                                } catch (e: java.lang.Exception) {
+                                                    e.printStackTrace()
+                                                }
+                                                e.printStackTrace()
+
+                                            }
+
+                                        }
+                                    }
+                                    mPrinter?.setReceiveEventListener(this)
+                                    mPrinter?.setConnectionEventListener(this)
+                                    mPrinter?.setStatusChangeEventListener(this)
+
+
+                                } catch (e: Exception) {
+                                    e.printStackTrace()
+                                }
+
+                            },
+                            onPreExecute = {
+                                isPrinterQueueRun = true
+                            }
+                        )
+
+
+                    } catch (e: java.lang.Exception) {
+
+                        Log.e(TAG, "connectException  ${e.message}")
+
+
+                        isPrinterQueueRun = false
+
+                        e.printStackTrace()
+                    }
+
+
+                } else {
+
+                    isPrinterQueueRun = false
+                    //printerBGRunning = false
+                }
+            } else {
+                isPrinterQueueRun = false
+                // printerBGRunning = false
+            }
+        }
+
+
     }
 
     private fun getCustomerReceiptSettings() {
@@ -145,10 +647,10 @@ class MainActivity : BaseScannerActivity() {
                 Status.SUCCESS -> {
                     ProgressUtils.dismissProgressDialog()
                     if (it.data != null) {
-                        customerPrinterList = emptyList()
-                        customerPrinterList = it.data
+                        kitchenPrinterList = emptyList()
+                        kitchenPrinterList = it.data
 
-                        Log.e("getCustomerPrinters", customerPrinterList.size.toString())
+                        Log.e("getCustomerPrinters", Gson().toJson(kitchenPrinterList))
                     }
 
                 }
@@ -197,15 +699,33 @@ class MainActivity : BaseScannerActivity() {
         val intentFilter = IntentFilter("PrinterQueue")
         registerReceiver(wifiStateReceiver, intentFilter)
         getCustomerReceiptSettings()
+        if (Build.VERSION.SDK_INT > 9) {
+            val policy: StrictMode.ThreadPolicy =
+                StrictMode.ThreadPolicy.Builder().permitAll().build()
+            StrictMode.setThreadPolicy(policy)
+        }
+        var requestURL =
+            prefProvider?.getValue(Constants.BASE_URL_NEW, "") + Constants.CREATE_QUEUE_PRINTER
+        val uri = URI("wss://hugepos.com/cable")
+        consumer = ActionCable.createConsumer(uri)
+        getPrinterQueueData()
 
         getCustomerPrinters()
 
 
-        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this);
+        mFirebaseAnalytics = FirebaseAnalytics.getInstance(this)
+        registerReceiver(
+            broadCastReceiverPrinterQueueSuccess,
+            IntentFilter(Constants.PRITNER_QUEUE_DATA_DELETE)
+        )
         registerReceiver(broadcastReceiver, IntentFilter(Constants.SEND_CLOCKOUT_NOTIFICATION))
         registerReceiver(
             broadcastReceiveronlineOrder,
             IntentFilter(Constants.ONLINE_ORDER_GET_NOTIFICATION)
+        )
+        registerReceiver(
+            broadCastReceiverPrinterQueueDataGet,
+            IntentFilter(Constants.PRINTER_QUEUE_DATA_RECEIVED)
         )
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
@@ -349,13 +869,13 @@ class MainActivity : BaseScannerActivity() {
         @SuppressLint("RestrictedApi")
         override fun onReceive(context: Context, intent: Intent) {
 //            Log.e(TAG,"customerPrinterList  ${Gson().toJson(customerPrinterList)}")
-            customerPrinterList.forEach {
+            kitchenPrinterList.forEach {
                 println("customerPrinterList " + it.name)
             }
 
 
             val data = Data.Builder()
-                .putString("kitchenPrinterList", Gson().toJson(customerPrinterList))
+                .putString("kitchenPrinterList", Gson().toJson(kitchenPrinterList))
                 .put("kitchenSettingData", Gson().toJson(customerSettingModel))
                 .put("location_id", prefProvider?.getValueInt(Constants.LOCATION_ID, 0))
                 .put("base_url", prefProvider?.getValue(Constants.BASE_URL_NEW, ""))
@@ -469,7 +989,7 @@ class MainActivity : BaseScannerActivity() {
             selectedFilePath = photo.absolutePath
             cameraUri = FileProvider.getUriForFile(
                 this,
-                BuildConfig.APPLICATION_ID + ".provider",
+                APPLICATION_ID + ".provider",
                 photo
             )
             val pictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
@@ -582,4 +1102,137 @@ class MainActivity : BaseScannerActivity() {
     fun loadFragmentInSettings(fragment: Fragment?) {
         fragmentCallBack?.invoke(fragment)
     }
+
+    override fun onPtrReceive(p0: Printer?, p1: Int, p2: PrinterStatusInfo?, p3: String?) {
+
+        Log.e(TAG, "onPrintReceived")
+        lifecycleScope.launch {
+            var flag = printerQueueModelGlobal?.let { viewModelPrinter.checkDataisExistOrNot(it) }
+            Log.e(TAG, "UpdateGetloag ${flag}")
+            if (flag == false) {
+                var listIds: ArrayList<Int> =
+                    printerQueueModelGlobal!!.printSuccessData.toCollection(
+                        arrayListOf()
+                    )
+                listIds.add(kitchenPrinterList[currentIndex].id)
+
+                Log.e(TAG, "listIds  ${Gson().toJson(listIds)}")
+                Log.e(TAG, "printerQueueId  ${printerQueueModelGlobal?.id ?: 0}")
+                ThreadPoolManager.instance.executeTask(Runnable {
+                    lifecycleScope.launch {
+                        printerQueueModelGlobal?.id?.let {
+                            viewModelPrinter.updateStatusPrinterQueue(
+                                listIds,
+                                it
+                            )
+
+                            /*delay(2000)*/
+                        }
+                    }
+                })
+
+            }
+            try {
+
+                if (mPrinter?.status?.connection == 1) {
+                    mPrinter?.stopMonitor()
+                    mPrinter?.disconnect()
+                    isPrinterQueueRun = false
+                }
+            } catch (e: java.lang.Exception) {
+                e.printStackTrace()
+            }
+
+            /*try {
+                delay(5000)
+                isPrinterQueueRun = false
+
+                arrayItems.removeAt(currentIndex)
+                mPrinter?.clearCommandBuffer()
+                mPrinter?.disconnect()
+
+
+            } catch (e: java.lang.Exception) {
+                isPrinterQueueRun = false
+                getPrinterQueueData()
+                Log.e("statusChangePRint", "PrinterSuccessDisconnectExcep")
+                e.printStackTrace()
+            }*/
+
+
+        }
+
+
+    }
+
+    override fun onConnection(p0: Any?, p1: Int) {
+        Log.e(TAG, "onConnection: ${p0}  ${p1}")
+    }
+
+    override fun onPtrStatusChange(p0: Printer?, p1: Int) {
+        Log.e(TAG, "OnStatusChanged ${p1}")
+    }
+
+
 }
+
+
+private fun isPrintable(status: PrinterStatusInfo?): Boolean {
+    if (status == null) {
+        return false
+    }
+    if (status.connection == Printer.FALSE) {
+        return false
+    } else if (status.online == Printer.FALSE) {
+        return false
+    } else {
+        return true
+    }
+    return true
+}
+
+private fun makeErrorMessage(status: PrinterStatusInfo): String? {
+    var msg = ""
+    if (status.online == Printer.FALSE) {
+        msg += "Printer is Offline."
+    } else if (status.connection == Printer.FALSE) {
+        msg += "Please check your Printer Connection."
+    } else if (status.coverOpen == Printer.TRUE) {
+        msg += "Printer Cover is Open."
+    } else if (status.paper == Printer.PAPER_EMPTY) {
+        msg += "Feed Paper is Empty."
+    } else if (status.paperFeed == Printer.TRUE || status.panelSwitch == Printer.SWITCH_ON) {
+        msg += "Please check your Printer Connection."
+    }
+    /*if (status.errorStatus == Printer.MECHANICAL_ERR || status.errorStatus == Printer.AUTOCUTTER_ERR) {
+        msg += getString(android.R.string.handlingmsg_err_autocutter)
+        msg += getString(android.R.string.handlingmsg_err_need_recover)
+    }*/
+    /*if (status.errorStatus == Printer.UNRECOVER_ERR) {
+        msg += getString(android.R.string.handlingmsg_err_unrecover)
+    }*/
+
+    /*  if (status.errorStatus == Printer.AUTORECOVER_ERR) {
+          if (status.autoRecoverError == Printer.HEAD_OVERHEAT) {
+              msg += getString(android.R.string.handlingmsg_err_overheat)
+              msg += getString(android.R.string.handlingmsg_err_head)
+          }
+          if (status.autoRecoverError == Printer.MOTOR_OVERHEAT) {
+              msg += getString(android.R.string.handlingmsg_err_overheat)
+              msg += getString(android.R.string.handlingmsg_err_motor)
+          }
+          if (status.autoRecoverError == Printer.BATTERY_OVERHEAT) {
+              msg += getString(android.R.string.handlingmsg_err_overheat)
+              msg += getString(android.R.string.handlingmsg_err_battery)
+          }
+          if (status.autoRecoverError == Printer.WRONG_PAPER) {
+              msg += getString(android.R.string.handlingmsg_err_wrong_paper)
+          }
+      }
+      if (status.batteryLevel == Printer.BATTERY_LEVEL_0) {
+          msg += getString(android.R.string.handlingmsg_err_battery_real_end)
+      }*/
+    return msg
+}
+
+

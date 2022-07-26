@@ -139,7 +139,6 @@ open class PaymentViewModel @Inject constructor(
                                             0
                                         )
                                     )
-                                    posRepository.deselectedItem(0)
                                 }
 
                                 Log.e(TAG, "isOnlySave:  ${onlySave}")
@@ -247,7 +246,6 @@ open class PaymentViewModel @Inject constructor(
                                         0
                                     )
                                 )
-                                posRepository.deselectedItem(0)
                             }
                             resource.data?.let { createOrderResponse ->
                                 if (createOrderResponse.data.order.payments.isNotEmpty()) {
@@ -1774,7 +1772,6 @@ open class PaymentViewModel @Inject constructor(
                                             0
                                         )
                                     )
-                                    posRepository.deselectedItem(0)
                                 }
 
                                 if (onlySave) {

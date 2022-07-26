@@ -544,13 +544,6 @@ class CartFragment(
                 //dineInCartAdapter.setList(dineInList)
 
 
-                dineInList.forEach { it ->
-                    it.items.forEach { items ->
-                        if (!items.isSelectedItem) {
-                            viewModel.selectedItems(items.itemId, 1)
-                        }
-                    }
-                }
                 if (cartlist.isEmpty()) {
                     val cartModel = CartModel().apply {
                         terminalId = prefProvider.getValueInt(Constants.TERMINAL_ID, -1)

@@ -614,11 +614,6 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
             val fragment = AddItemFragment.newInstance(item, this, cartList, false)
             loadCategoryFragment(fragment)
         } else {
-            if (!item.isSelectedItem) {
-                item.isSelectedItem = true
-                viewModel.selectedItems(item.itemId, 1)
-            }
-            prefProvider.setValueInt(Constants.CAT_ID_SELECTED, item.categoryId)
             Log.e(TAG, "cartListItemAddSize: ${cartList.size}")
             if (cartList.isEmpty()) {
                 viewModel.createCart(cartList)
@@ -720,23 +715,6 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                     viewModel.getOnlineOrderCount()
                     Log.d(TAG, "addObserver: " + Gson().toJson(viewModel.cartModel))
                     Log.d(TAG, "addObserver: " + Gson().toJson(cartList))
-                    if (cartList.isNotEmpty()) {
-                        if (cartList[0] != null) {
-                            if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == DINE_IN) {
-                                cartList[0].dineInList?.forEach { dineInModel ->
-                                    dineInModel.items.forEach { items ->
-                                        items.isSelectedItem = true
-                                        viewModel.selectedItems(items.itemId, 1)
-                                    }
-                                }
-                            } else {
-                                cartList[0].items?.forEach { items ->
-                                    items.isSelectedItem = true
-                                    viewModel.selectedItems(items.itemId, 1)
-                                }
-                            }
-                        }
-                    }
 
                 }
             }
@@ -967,11 +945,6 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
             var dineInList = arguments?.getParcelableArrayList<DineInModel>("dine_in_list")
 
             if (dineInList?.isNotEmpty() == true) {
-                dineInList.forEach { it ->
-                    it.items.forEach { items ->
-                        viewModel.selectedItems(items.itemId, 1)
-                    }
-                }
                 if (cartList.isEmpty()) {
                     var orderTypeIdN = 0
                     ordertypelist.forEach {
@@ -1119,7 +1092,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
              printer.setBatteryStatusChangeEventCallback(this)*/
             }
 
-            val enabled = Print.TRUE
+            val enabled = Print.FALSE
 
             try {
 
@@ -1295,13 +1268,18 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
 
 
                             for (i in 0 until it.data.size) {
+                                if(checkItemsforPrinter(createOrderResponse.data.order.orderItems ?: arrayListOf(),it.data[i].printerCategories.toCollection(
+                                    arrayListOf()))) {
+                                    Log.e(TAG, "statusPrinter  ${it.data[i].status}")
+                                    if (it.data[i].status) {
+                                        initKitchenPrinter(
+                                            it.data.get(i),
+                                            Constants.KITCHEN,
+                                            createOrderResponse
+                                        )
+                                    }
+                                }
 
-
-                                initKitchenPrinter(
-                                    it.data.get(i),
-                                    Constants.KITCHEN,
-                                    createOrderResponse
-                                )
                             }
 
 
@@ -1513,7 +1491,8 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                         builder!!,
                         it,
                         fontSizeH,
-                        fontSizeW
+                        fontSizeW,
+                        customerReceiptPrinters.printerCategories.toCollection(arrayListOf())
                     )
                 }
 
@@ -1828,7 +1807,8 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                         builder,
                         it,
                         fontSizeH,
-                        fontSizeW
+                        fontSizeW,
+                        customerReceiptPrinters?.printerCategories.toCollection(arrayListOf())
                     )
                 }
 
@@ -2095,7 +2075,8 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
 
             receiptModel?.order?.orderItems?.let {
                 addOrdersForKitchen(
-                    it
+                    it,
+                    customerReceiptPrinters.printerCategories.toCollection(arrayListOf())
                 )
             }
 

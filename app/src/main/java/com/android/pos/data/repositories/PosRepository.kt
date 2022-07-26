@@ -8,6 +8,7 @@ import com.android.pos.data.db.AppDatabase
 import com.android.pos.data.db.IDataManager
 import com.android.pos.data.entities.*
 import com.android.pos.data.entities.ModifierSet
+import com.android.pos.data.model.PrinterQueueModel
 import com.android.pos.data.model.ShiftRportConfiguration
 import com.android.pos.data.model.SplitDetailListModel
 import com.android.pos.data.model.requestModel.*
@@ -28,6 +29,17 @@ class PosRepository @Inject constructor(
     private val appDatabase: AppDatabase,
     private val apiHelperNew: ApiHelper
 ) : IDataManager {
+
+    fun getPrinterQueueData() = appDatabase.printerQueueDao().printerQueueList
+
+    suspend fun addPrinterQueueData(list: PrinterQueueModel) =
+        appDatabase.printerQueueDao().addPrinterQueueData(list)
+
+    fun checkQueueExist(id: Int) = performGetOperationDatabase {  appDatabase.printerQueueDao().checkQueueDataExist(id) }
+
+
+
+    suspend fun getPrinterQueueQueryData(id: Int) = appDatabase.printerQueueDao().getQueueData(id)
 
     fun getCustomerReceiptSettings() = appDatabase.customerSettingsDao().getCustomerSettings
 
@@ -574,13 +586,6 @@ class PosRepository @Inject constructor(
     suspend fun reOrderCategoryCall(id: Int, oldPos: Int, newPos: Int) =
         apiHelperNew.reOrderCategoryCall(id, oldPos, newPos)
 
-    suspend fun selectedItem(itemid: Int, isSelected: Int): Int {
-        return appDatabase.itemDao().selectedItem(itemid, isSelected)
-    }
-
-    suspend fun deselectedItem(isSelected: Int): Int {
-        return appDatabase.itemDao().deselectedItem(isSelected)
-    }
     suspend fun updateCategorySort(allCategories: ArrayList<TbCategory>) {
         appDatabase.categoryDao().addAll(allCategories)
     }
