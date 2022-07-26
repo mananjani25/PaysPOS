@@ -837,8 +837,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         cartList = getCartModel(adapterList.toCollection(arrayListOf()))
         Log.d(TAG, "addGuestToOrder: " + Gson().toJson(cartList))
         var existing_count = cartList?.dineInList!!.size - 1
-        var total_count = existing_count+count
-        if(total_count<=15)  {
+        var total_count = existing_count + count
+        if (total_count <= 15) {
             var existinglist: ArrayList<DineInModel> = arrayListOf()
             existinglist.addAll(cartList?.dineInList!!.toMutableList())
             Log.d(TAG, "addGuestToOrder size: " + existinglist.size)
@@ -864,7 +864,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             Log.d(TAG, "addGuestToOrder: " + Gson().toJson(cartList?.dineInList))
             val request = viewModel.updateOrderRequest(cartList!!)
             orderId?.let { viewModel.updateOrder(it, request) }
-        }else{
+        } else {
             AlertUtils.showCustomAlertWithListenerWithOK(
                 requireContext(), "You can't add more than 15 Guest in an order."
             ) { _, _ ->
@@ -1094,7 +1094,9 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
         viewModel.msgText.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
-                AlertUtils.showCustomAlert(requireContext(), it)
+                if (it.toString() != "null"){
+                    AlertUtils.showCustomAlert(requireContext(), it)
+                }
                 dineInTableAdapter.updateStatus(clickedPos, isFireAll)
             }
         }
@@ -1222,22 +1224,6 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         }
         var dineInOrderModel = DineInPaymentUpdateModel()
         dineInOrderModel.id = orderId
-        prefProvider.setValue("PaidAmount", "")
-        prefProvider.setValue(Constants.WHOLE_AMOUNT, "")
-        prefProvider.setValueInt("cardCount", 0)
-        prefProvider.setValue(Constants.SUB_TOTAL, "")
-        prefProvider.setValue(Constants.CASH_DISCOUNT_SURCHARGE, "")
-        prefProvider.setValue(Constants.TOTAL_DISCOUNT, "")
-        prefProvider.setValue(Constants.TIP, "")
-        prefProvider.setValue(Constants.TAX_CHARGE, "")
-        prefProvider.setValue(Constants.SERVICE_CHARGE, "")
-        prefProvider.setValue(Constants.SUB_TOTAL_DINEIN, "")
-        prefProvider.setValue(Constants.TOTAL_DISCOUNT_DINEIN, "")
-        prefProvider.setValue(Constants.TIPS_AMOUNT_DINEIN, "")
-        prefProvider.setValue(Constants.TAX_CHARGE_DINEIN, "")
-        prefProvider.setValue(Constants.SERVICE_CHARGE_DINEIN, "")
-        prefProvider.setValue(Constants.CASH_DISCOUNT_SURCHARGE_DINEIN, "")
-        prefProvider.setValue(Constants.TOTAL_PRICE_DINEIN, "")
         var modelReq = DineInOrderPayment(dineInOrderModel)
         var model = GuestPaymentRequest(paymentAttr, dineInOrderModel)
 
@@ -1589,7 +1575,22 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
         Log.d(TAG, "getcartListAfterAdd: remaining : ${Gson().toJson(remaining_list)}")
         Log.e(TAG, "getcartListAfterAdd  ${Gson().toJson(cartList?.taxlistDynamic)}")
-
+        prefProvider.setValue("PaidAmount", "")
+        prefProvider.setValue(Constants.WHOLE_AMOUNT, "")
+        prefProvider.setValueInt("cardCount", 0)
+        prefProvider.setValue(Constants.SUB_TOTAL, "")
+        prefProvider.setValue(Constants.CASH_DISCOUNT_SURCHARGE, "")
+        prefProvider.setValue(Constants.TOTAL_DISCOUNT, "")
+        prefProvider.setValue(Constants.TIP, "")
+        prefProvider.setValue(Constants.TAX_CHARGE, "")
+        prefProvider.setValue(Constants.SERVICE_CHARGE, "")
+        prefProvider.setValue(Constants.SUB_TOTAL_DINEIN, "")
+        prefProvider.setValue(Constants.TOTAL_DISCOUNT_DINEIN, "")
+        prefProvider.setValue(Constants.TIPS_AMOUNT_DINEIN, "")
+        prefProvider.setValue(Constants.TAX_CHARGE_DINEIN, "")
+        prefProvider.setValue(Constants.SERVICE_CHARGE_DINEIN, "")
+        prefProvider.setValue(Constants.CASH_DISCOUNT_SURCHARGE_DINEIN, "")
+        prefProvider.setValue(Constants.TOTAL_PRICE_DINEIN, "")
         viewModelPayment.addCart(cartList!!)
         findNavController().navigate(
             R.id.action_dineInOrderTable_to_checkoutDineIN,
@@ -3431,7 +3432,9 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             )
             addBuilderText(
                 builder,
-                MethodUtils.getUSFormatNumber(prefProvider.getValue(Constants.BUSINESS_PHONE_NO, "").toString())
+                MethodUtils.getUSFormatNumber(
+                    prefProvider.getValue(Constants.BUSINESS_PHONE_NO, "").toString()
+                )
             )
 
             builder.addFeedLine(1)
