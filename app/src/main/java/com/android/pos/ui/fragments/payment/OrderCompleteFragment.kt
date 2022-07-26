@@ -3055,6 +3055,28 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 getDineInOrderDetails?.digitalReceiptUrl?.let { PrintSunmiUtils.qrCodeInner(it) }
             }
 
+            if (paymentType.equals("Cash", true)) {
+                val aa = ByteArray(5)
+
+                aa[0] = 0x10
+                aa[1] = 0x14
+                aa[2] = 0x00
+                aa[3] = 0x00
+                aa[4] = 0x00
+
+
+                try {
+                    SunmiPrinterApi.getInstance().sendRawData(aa)
+                }catch (e:java.lang.Exception){
+                    e.printStackTrace()
+                }
+                try {
+                    SunmiPrintHelper.getInstance().openCashBox()
+                }catch (e:java.lang.Exception){
+                    e.printStackTrace()
+                }
+            }
+
             PrintSunmiUtils.cutPaperInner()
 
         } catch (e: Exception) {
@@ -5216,6 +5238,28 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 PrintSunmiUtils.qrCodeInner(receiptModel?.order?.digital_receipt_url.toString())
 
                 // getDineInOrderDetails?.digitalReceiptUrl.toString().let { PrintSunmiUtils.qrCode(it) }
+            }
+
+            if (receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.paymentType.equals("Cash",true)){
+                val aa = ByteArray(5)
+
+                aa[0] = 0x10
+                aa[1] = 0x14
+                aa[2] = 0x00
+                aa[3] = 0x00
+                aa[4] = 0x00
+
+
+                try {
+                    SunmiPrinterApi.getInstance().sendRawData(aa)
+                }catch (e:java.lang.Exception){
+                    e.printStackTrace()
+                }
+                try {
+                    SunmiPrintHelper.getInstance().openCashBox()
+                }catch (e:java.lang.Exception){
+                    e.printStackTrace()
+                }
             }
             Log.e("printDineReciept", "Staring 2....")
             PrintSunmiUtils.cutPaperInner()
@@ -9586,6 +9630,29 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 SunmiPrintHelper.getInstance().lineWrap(1)
                 receiptModel?.order?.digital_receipt_url?.let { PrintSunmiUtils.qrCodeInner(it) }
 
+            }
+
+            if (receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.paymentType.equals("Cash",true)){
+
+                val aa = ByteArray(5)
+
+                aa[0] = 0x10
+                aa[1] = 0x14
+                aa[2] = 0x00
+                aa[3] = 0x00
+                aa[4] = 0x00
+
+
+                try {
+                    SunmiPrinterApi.getInstance().sendRawData(aa)
+                }catch (e:java.lang.Exception){
+                    e.printStackTrace()
+                }
+                try {
+                    SunmiPrintHelper.getInstance().openCashBox()
+                }catch (e:java.lang.Exception){
+                    e.printStackTrace()
+                }
             }
 
             PrintSunmiUtils.cutPaperInner()

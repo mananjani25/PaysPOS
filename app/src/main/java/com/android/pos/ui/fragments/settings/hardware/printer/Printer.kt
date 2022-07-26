@@ -2105,7 +2105,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
             try {
                 PrinterClass.getPrinter()?.sendData(
-                    builder, 10000, status, battery
+                    builder, 10000, status
                 )
                 //PrinterClass.getPrinter()?.sendData(builder, 0, status, battery)
             } catch (e: Exception) {
