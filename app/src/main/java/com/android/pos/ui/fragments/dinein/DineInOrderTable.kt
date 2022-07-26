@@ -673,6 +673,24 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     model.isFired = list[i].isFired
                     model.guestDividerAmt = list[i].guestDividerAmt
                     model.guestDividedAmt = list[i].guestDividedAmt
+
+
+                    for (j in i + 1 until list.size) {
+                        if (list[j].isHeader == 1) {
+                            list[j].item?.let { it1 ->
+                                if (it1.discountPrice != 0.0) {
+                                    it1.discountPrice =
+                                        MethodUtils.roundOffAmountDouble(it1.discountPrice / it1.itemQuantity)
+                                }
+                                Log.e(TAG, "updateItemForDiscount  ${Gson().toJson(it1)}")
+                                listTbItem.add(it1)
+                            }
+
+                        } else {
+                            break
+                        }
+
+                    }
                     model.items = listTbItem
                     newList.add(model)
 
@@ -8006,13 +8024,15 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     if (isCheckAndFire) {
                         kit.orderTypes.forEach {
                             if (it.orderTypeId == getOrderDetailsResponse?.orderTypeId) {
+                                Log.e(TAG,"printerSettings  ${Gson().toJson(it.printerSettings)}")
                                 it.printerSettings.forEach {
-                                    if (it.printType.lowercase()
+                                    if (  it.printType.lowercase()
                                             .equals(Constants.KITCHEN.lowercase()) && it.autoPrinting
                                     ) {
 
                                         if (checkItemsforPrinterDineIn(listItem,kit.printerCategories.toCollection(
                                                 arrayListOf()))) {
+                                            Log.e(TAG,"printerName  ${kit.name} ")
                                             autoPrintEnable = true
                                             initKitchenPrinter(kit, Constants.KITCHEN, listItem)
                                         }
