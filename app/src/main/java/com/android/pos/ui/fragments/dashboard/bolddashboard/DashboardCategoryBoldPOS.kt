@@ -1269,17 +1269,33 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
 
 
                             for (i in 0 until it.data.size) {
-                                if(checkItemsforPrinter(createOrderResponse.data.order.orderItems ?: arrayListOf(),it.data[i].printerCategories.toCollection(
-                                    arrayListOf()))) {
-                                    Log.e(TAG, "statusPrinter  ${it.data[i].status}")
-                                    if (it.data[i].status) {
-                                        initKitchenPrinter(
-                                            it.data.get(i),
-                                            Constants.KITCHEN,
-                                            createOrderResponse
-                                        )
+                                it.data[i].orderTypes.forEach { order->
+                                    if (order.orderTypeId == createOrderResponse.data.order.orderTypeId ){
+                                        order.printerSettings.forEach { set->
+                                            if (set.printType.equals(Constants.KITCHEN,true) && set.autoPrinting){
+                                                if(checkItemsforPrinter(createOrderResponse.data.order.orderItems ?: arrayListOf(),it.data[i].printerCategories.toCollection(
+                                                        arrayListOf()))) {
+                                                    Log.e(TAG, "statusPrinter  ${it.data[i].status}")
+                                                    if (it.data[i].status) {
+                                                        initKitchenPrinter(
+                                                            it.data.get(i),
+                                                            Constants.KITCHEN,
+                                                            createOrderResponse
+                                                        )
+                                                    }
+                                                }
+
+                                            }
+                                            else{
+                                                if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
+                                                    findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
+                                                }
+                                            }
+                                        }
+
                                     }
                                 }
+
 
                             }
 
