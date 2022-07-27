@@ -491,7 +491,7 @@ class CartFragment(
 
 
         val dineInList: ArrayList<DineInModel> = arrayListOf()
-        dineInList.add(DineInModel(0, true, 0, "Whole Table"))
+        dineInList.add(DineInModel(0, true, 0, "Whole Table",))
         for (i in 1..numOfGuest) {
             dineInList.add(
                 DineInModel(
@@ -499,9 +499,9 @@ class CartFragment(
                     false,
                     0,
                     "Guest $i",
-                    floorPlanTable = orderFloorDetails
+                    floorPlanTable = orderFloorDetails,
 
-                )
+                    )
             )
         }
 
@@ -554,6 +554,7 @@ class CartFragment(
 
                         serviceCharge = serviceChargesList
                         orderId = arguments?.getInt("orderId")
+                        listOfItemRemoved = dineInList[0].listOfItemsMoved
 
                     }
                     cartlist.add(cartModel)

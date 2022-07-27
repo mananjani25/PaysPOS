@@ -36,7 +36,8 @@ data class DineInModel(
     var floorPlanTable: GetOrderDetailsResponse.Data.FloorPlanTable? = null,
     var empName: String = "",
     var cashSurchargeDiscount: Double = 0.0,
-    var orderTotalAmount: Double = 0.0
+    var orderTotalAmount: Double = 0.0,
+    var listOfItemsMoved: java.util.ArrayList<Int> = arrayListOf()
 
 ) : Parcelable {
 }

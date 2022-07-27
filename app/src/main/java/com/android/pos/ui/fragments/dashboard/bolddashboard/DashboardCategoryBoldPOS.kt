@@ -878,7 +878,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
 
 
         val dineInList: java.util.ArrayList<DineInModel> = arrayListOf()
-        dineInList.add(DineInModel(0, true, 0, "Whole Table", floorPlanTable = orderFloorDetails))
+        dineInList.add(DineInModel(0, true, 0, "Whole Table", floorPlanTable = orderFloorDetails,))
         for (i in 1..numOfGuest) {
             dineInList.add(
                 DineInModel(
@@ -886,9 +886,9 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                     false,
                     0,
                     "Guest $i",
-                    floorPlanTable = orderFloorDetails
+                    floorPlanTable = orderFloorDetails,
 
-                )
+                    )
             )
         }
         var orderTypeId = -1
@@ -963,6 +963,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
 
                         serviceCharge = serviceChargesList
                         orderId = arguments?.getInt("orderId")
+                        listOfItemRemoved= dineInList[0].listOfItemsMoved
 
                     }
                     cartList.add(cartModel)
@@ -1268,17 +1269,33 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
 
 
                             for (i in 0 until it.data.size) {
-                                if(checkItemsforPrinter(createOrderResponse.data.order.orderItems ?: arrayListOf(),it.data[i].printerCategories.toCollection(
-                                    arrayListOf()))) {
-                                    Log.e(TAG, "statusPrinter  ${it.data[i].status}")
-                                    if (it.data[i].status) {
-                                        initKitchenPrinter(
-                                            it.data.get(i),
-                                            Constants.KITCHEN,
-                                            createOrderResponse
-                                        )
+                                it.data[i].orderTypes.forEach { order->
+                                    if (order.orderTypeId == createOrderResponse.data.order.orderTypeId ){
+                                        order.printerSettings.forEach { set->
+                                            if (set.printType.equals(Constants.KITCHEN,true) && set.autoPrinting){
+                                                if(checkItemsforPrinter(createOrderResponse.data.order.orderItems ?: arrayListOf(),it.data[i].printerCategories.toCollection(
+                                                        arrayListOf()))) {
+                                                    Log.e(TAG, "statusPrinter  ${it.data[i].status}")
+                                                    if (it.data[i].status) {
+                                                        initKitchenPrinter(
+                                                            it.data.get(i),
+                                                            Constants.KITCHEN,
+                                                            createOrderResponse
+                                                        )
+                                                    }
+                                                }
+
+                                            }
+                                            else{
+                                                if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
+                                                    findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
+                                                }
+                                            }
+                                        }
+
                                     }
                                 }
+
 
                             }
 
@@ -1649,7 +1666,21 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                                     Builder.COLOR_1
                                 )
 
-                                builder.addText(receiptModel?.order?.customer?.addresses?.get(0)?.fullAddress)
+                                receiptModel?.order?.customer?.addresses?.filter { it.typeOfAddress == Constants.BILLING_ADDRESS }
+                                    ?.forEach {
+
+                                        if (it.typeOfAddress.equals(
+                                                Constants.BILLING_ADDRESS,
+                                                ignoreCase = true
+                                            )
+                                        ) {
+                                            builder!!.addText(
+                                                it.fullAddress
+                                            )
+                                        }
+                                    }
+
+                               // builder.addText(receiptModel?.order?.customer?.addresses?.get(0)?.fullAddress)
                             }
                         }
 
@@ -1956,7 +1987,20 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                                     Builder.COLOR_1
                                 )
 
-                                builder.addText(receiptModel?.order?.customer?.addresses?.get(0)?.fullAddress)
+                                receiptModel.order.customer.addresses.filter { it.typeOfAddress == Constants.BILLING_ADDRESS }
+                                    .forEach {
+
+                                        if (it.typeOfAddress.equals(
+                                                Constants.BILLING_ADDRESS,
+                                                ignoreCase = true
+                                            )
+                                        ) {
+                                            builder.addText(
+                                                it.fullAddress
+                                            )
+                                        }
+                                    }
+                               // builder.addText(receiptModel?.order?.customer?.addresses?.get(0)?.fullAddress)
                             }
                         }
 
@@ -2127,11 +2171,27 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                         } else if (receiptModel.order?.customer?.addresses?.isNotEmpty()) {
 
 
-                            receiptModel?.order?.customer?.addresses?.get(0)?.fullAddress?.let {
-                                PrintSunmiUtils.customerAddress(
-                                    it
-                                )
-                            }
+//                            receiptModel?.order?.customer?.addresses?.get(0)?.fullAddress?.let {
+//                                PrintSunmiUtils.customerAddress(
+//                                    it
+//                                )
+//                            }
+
+                            receiptModel?.order?.customer?.addresses?.filter { it.typeOfAddress == Constants.BILLING_ADDRESS }
+                                ?.forEach {
+
+                                    if (it.typeOfAddress.equals(
+                                            Constants.BILLING_ADDRESS,
+                                            ignoreCase = true
+                                        )
+                                    ) {
+                                        PrintSunmiUtils.customerAddress(
+                                            it.fullAddress
+                                        )
+                                    }
+                                }
+
+
                         }
                     }
 
@@ -2242,11 +2302,27 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                         } else if (receiptModel.order?.customer?.addresses?.isNotEmpty()) {
 
 
-                            receiptModel?.order?.customer?.addresses?.get(0)?.fullAddress?.let {
-                                PrintSunmiUtils.normalTextLarge(
-                                    it
-                                )
-                            }
+//                            receiptModel?.order?.customer?.addresses?.get(0)?.fullAddress?.let {
+//                                PrintSunmiUtils.normalTextLarge(
+//                                    it
+//                                )
+//                            }
+
+                            receiptModel?.order?.customer?.addresses?.filter { it.typeOfAddress == Constants.BILLING_ADDRESS }
+                                ?.forEach {
+
+                                    if (it.typeOfAddress.equals(
+                                            Constants.BILLING_ADDRESS,
+                                            ignoreCase = true
+                                        )
+                                    ) {
+                                        PrintSunmiUtils.normalTextLarge(
+                                            it.fullAddress
+                                        )
+                                    }
+                                }
+
+
                         }
                     }
 

@@ -216,7 +216,7 @@ class DineInAdapter : RecyclerView.Adapter<DineInAdapter.MyViewHolder>() {
     fun addItem(item: TbItem, selectedPos: Int) {
         val items: ArrayList<TbItem> = list.get(selectedPos).items
         items.add(item)
-        list.add(selectedPos, DineInModel(0, false, selectedPos, items = items))
+        list.add(selectedPos, DineInModel(0, false, selectedPos, items = items,))
         notifyDataSetChanged()
     }
 

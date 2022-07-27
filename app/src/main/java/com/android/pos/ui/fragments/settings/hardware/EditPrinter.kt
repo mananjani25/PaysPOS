@@ -350,6 +350,7 @@ class EditPrinter : Fragment(), CategoryPrinterAdapter.CategoryPrinter {
                 model.terminalIds = listOf(prefProvider.getValueInt(TERMINAL_ID, 0))
                 model.name = binding.txtPrinterName.text.toString()
                 model.categoryIds = listIds
+                model.terminalId = prefProvider.getValueInt(TERMINAL_ID,0)
 
                 viewModel.updatePrinter(
                     printerModel?.id!!, model
@@ -367,6 +368,7 @@ class EditPrinter : Fragment(), CategoryPrinterAdapter.CategoryPrinter {
                 model.terminalIds = listOf(prefProvider.getValueInt(TERMINAL_ID, 0))
                 model.name = binding.txtPrinterName.text.toString()
                 model.categoryIds = listIds
+                model.terminalId = prefProvider.getValueInt(TERMINAL_ID,0)
 
                 viewModel.updatePrinter(
                     printerModel?.id!!, model
