@@ -352,8 +352,6 @@ object Constants {
 
 
 
-        Log.e("adapterList", "adapterList  ${Gson().toJson(list)}")
-
         for (i in 0 until adapterList.size) {
             adapterList.get(i).printerSettings.forEach {
                 list.add(

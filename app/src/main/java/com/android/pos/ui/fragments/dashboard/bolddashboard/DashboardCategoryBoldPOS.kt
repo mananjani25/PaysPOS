@@ -963,6 +963,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
 
                         serviceCharge = serviceChargesList
                         orderId = arguments?.getInt("orderId")
+                        listOfItemRemoved= dineInList[0].listOfItemsMoved
 
                     }
                     cartList.add(cartModel)

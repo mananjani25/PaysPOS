@@ -700,10 +700,12 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
 
             }
+            Log.e(TAG,"listOfMoveItemIds:  ${listOfMoveItemIds.size}")
+            newList[0].listOfItemsMoved.addAll(listOfMoveItemIds.toCollection(arrayListOf()))
 
             //   prefProvider.setValue(Constants.DINE_IN_UPDATE_LIST, Gson().toJson(newList))
 
-            newList[0].listOfItemsMoved = listOfMoveItemIds
+
             val bundle = Bundle()
             bundle.putBoolean("is_dine_in_edit", true)
             bundle.putParcelableArrayList(
@@ -2393,8 +2395,9 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         var totalTablePrice = 0.0
         var WTDiscount = 0.0
         var guestCount = 0
-        oldList.get(dragTo).item?.itemId?.let { listOfMoveItemIds.add(it) }
-        oldList.get(dragTo).item?.itemId = 0
+        Log.e(TAG,"getMovedItemDAta  ${Gson().toJson(oldList.get(dragTo).item)}")
+        oldList.get(dragTo).item?.guestItemId?.let { listOfMoveItemIds.add(it) }
+        oldList.get(dragTo).item?.guestItemId = null
         dragFrom = -1
         dragTo = -1
 
