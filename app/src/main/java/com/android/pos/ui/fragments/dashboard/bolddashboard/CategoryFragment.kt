@@ -234,6 +234,12 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
         if (posParent == 1) {
             tabPos += 8
         }
+        else if (posParent == 2){
+            tabPos += 16
+        }
+        else if (posParent == 3){
+            tabPos +=24
+        }
 
         if (posParent != 0) {
             binding.rvCategoryParent.smoothScrollToPosition(posParent)
@@ -489,9 +495,11 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
     }
 
     override fun onCategorySelected(parentPosition: Int, childPosition: Int) {
+        Log.e(TAG,"parentPosition  ${parentPosition} childPosition ${childPosition}")
 
         val categoryId =
             categoryParentAdapter.getList()[parentPosition].list[childPosition].id
+        Log.e(TAG,"categoryId  ${categoryId}")
 
         prefProvider.setValueInt(Constants.CAT_ID_SELECTED, categoryId)
 

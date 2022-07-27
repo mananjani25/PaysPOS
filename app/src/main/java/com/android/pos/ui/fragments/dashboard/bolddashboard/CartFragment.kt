@@ -63,7 +63,6 @@ import dagger.hilt.android.AndroidEntryPoint
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
-import kotlin.collections.ArrayList
 
 
 @AndroidEntryPoint
@@ -572,7 +571,6 @@ class CartFragment(
                 prefProvider.setValueInt(Constants.ORDER_TYPE_ID, 2)
 
                 viewModel.orderItemDiscount = arguments?.getDouble("totalDiscount") ?: 0.0
-                Log.e(TAG, "DineInEditDiscount ${arguments?.getDouble("totalDiscount")}")
                 viewModel.totalDiscount = arguments?.getDouble("totalDiscount") ?: 0.0
                 viewModel.cartLogic(cartlist, null, Constants.ADD, false, dineInList = dineInList)
 
@@ -869,6 +867,10 @@ class CartFragment(
 
 
                             viewModel.setCartModel(it)
+                            Log.e(TAG,"${prefProvider.getValueboolean(
+                                Constants.DINE_IN_UPDATE,
+                                false
+                            )}")
                             if (prefProvider.getValueboolean(
                                     Constants.DINE_IN_UPDATE,
                                     false
