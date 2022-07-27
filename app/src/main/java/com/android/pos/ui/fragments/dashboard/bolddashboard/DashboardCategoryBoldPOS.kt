@@ -878,7 +878,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
 
 
         val dineInList: java.util.ArrayList<DineInModel> = arrayListOf()
-        dineInList.add(DineInModel(0, true, 0, "Whole Table", floorPlanTable = orderFloorDetails))
+        dineInList.add(DineInModel(0, true, 0, "Whole Table", floorPlanTable = orderFloorDetails,))
         for (i in 1..numOfGuest) {
             dineInList.add(
                 DineInModel(
@@ -886,9 +886,9 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                     false,
                     0,
                     "Guest $i",
-                    floorPlanTable = orderFloorDetails
+                    floorPlanTable = orderFloorDetails,
 
-                )
+                    )
             )
         }
         var orderTypeId = -1

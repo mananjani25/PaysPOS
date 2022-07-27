@@ -2837,6 +2837,7 @@ class DashBoardCategoryViewModel @Inject constructor(
             totalTaxAmount = totalTax
             orderItemsAttributes = dineInOrderItemAttributed(cartModel)
             offlineId = null
+            deletedGuestItems = cartModel.listOfItemRemoved.toCollection(arrayListOf())
             //            paymentAttributes =
 //                paymentAttributes(
 //                    cartModel,

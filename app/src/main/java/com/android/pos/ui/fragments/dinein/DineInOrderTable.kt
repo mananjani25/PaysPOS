@@ -88,6 +88,7 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
+    private val listOfMoveItemIds: ArrayList<Int> = arrayListOf()
     private var wholeTableDiscount: Double = 0.0
     private var cashDiscountGlobal: Double = 0.0
     private var customerList: List<PrinterResponse.Data.CustomerReceiptPrinters> = listOf()
@@ -702,6 +703,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
             //   prefProvider.setValue(Constants.DINE_IN_UPDATE_LIST, Gson().toJson(newList))
 
+            newList[0].listOfItemsMoved = listOfMoveItemIds
             val bundle = Bundle()
             bundle.putBoolean("is_dine_in_edit", true)
             bundle.putParcelableArrayList(
@@ -2381,8 +2383,6 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
     }
 
     private fun updateAdapterData() {
-
-
         var oldList = dineInTableAdapter.getList()
         var newList: ArrayList<DineInModel> = arrayListOf()
         var wholeTableAmt = 0.0
@@ -2393,6 +2393,10 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         var totalTablePrice = 0.0
         var WTDiscount = 0.0
         var guestCount = 0
+        oldList.get(dragTo).item?.itemId?.let { listOfMoveItemIds.add(it) }
+        oldList.get(dragTo).item?.itemId = 0
+        dragFrom = -1
+        dragTo = -1
 
         for (i in 0 until oldList.size) {
             if (oldList.get(i).isHeader == 1) {
@@ -2745,8 +2749,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 }
 
 
-                dragFrom = -1
-                dragTo = -1
+
+
                 updateAdapterData()
 
             }
