@@ -35,6 +35,7 @@ import com.android.pos.data.remote.Constants.BUSINESS_ADDRESS
 import com.android.pos.data.remote.Constants.OPEN_ORDER
 import com.android.pos.data.remote.Constants.PRINT_PAID
 import com.android.pos.data.remote.Constants.PRINT_UNPAID
+import com.android.pos.data.remote.Constants.SHIPPING_ADDRESS
 import com.android.pos.data.remote.Constants.SUNMI_INNER_PRINTER
 import com.android.pos.data.remote.Constants.SUNMI_PRINTER
 import com.android.pos.databinding.FragmentActiveOrdersBinding
@@ -2095,8 +2096,21 @@ class ActiveOrderFragment(
                                 Builder.FALSE,
                                 Builder.COLOR_1
                             )
+                            receiptModel.customer?.addresses.filter { it.typeOfAddress == SHIPPING_ADDRESS }
+                                .forEach {
 
-                            builder.addText(receiptModel.customer?.addresses?.get(receiptModel.customer?.addresses?.size - 1)?.fullAddress)
+                                    if (it.typeOfAddress.equals(
+                                            SHIPPING_ADDRESS,
+                                            ignoreCase = true
+                                        )
+                                    ) {
+                                        builder.addText(
+                                            it.fullAddress
+                                        )
+                                    }
+                                }
+
+//                            builder.addText(receiptModel.customer?.addresses?.get(receiptModel.customer?.addresses?.size - 1)?.fullAddress)
                         }
                     }
 
@@ -2658,9 +2672,23 @@ class ActiveOrderFragment(
                     if (customerSettingModel.showCustomerAddress) {
                         if (receiptModel.customer?.addresses?.isNotEmpty() == true) {
 
-                            PrintSunmiUtils.customerAddress(
-                                receiptModel.customer?.addresses?.get(receiptModel.customer?.addresses?.size - 1)?.fullAddress
-                            )
+//                            PrintSunmiUtils.customerAddress(
+//                                receiptModel.customer?.addresses?.get(receiptModel.customer?.addresses?.size - 1)?.fullAddress
+//                            )
+
+                            receiptModel.customer?.addresses.filter { it.typeOfAddress == SHIPPING_ADDRESS }
+                                .forEach {
+
+                                    if (it.typeOfAddress.equals(
+                                            SHIPPING_ADDRESS,
+                                            ignoreCase = true
+                                        )
+                                    ) {
+                                        PrintSunmiUtils.customerAddress(
+                                            it.fullAddress
+                                        )
+                                    }
+                                }
                         }
                     }
 
@@ -3158,9 +3186,23 @@ class ActiveOrderFragment(
                     if (customerSettingModel.showCustomerAddress) {
                         if (receiptModel.customer?.addresses?.isNotEmpty() == true) {
 
-                            PrintSunmiUtils.normalText(
-                                receiptModel.customer?.addresses?.get(receiptModel.customer?.addresses?.size - 1)?.fullAddress
-                            )
+                            receiptModel.customer?.addresses.filter { it.typeOfAddress == SHIPPING_ADDRESS }
+                                .forEach {
+
+                                    if (it.typeOfAddress.equals(
+                                            SHIPPING_ADDRESS,
+                                            ignoreCase = true
+                                        )
+                                    ) {
+                                        PrintSunmiUtils.normalText(
+                                            it.fullAddress
+                                        )
+                                    }
+                                }
+
+//                            PrintSunmiUtils.normalText(
+//                                receiptModel.customer?.addresses?.get(receiptModel.customer?.addresses?.size - 1)?.fullAddress
+//                            )
                         }
                     }
 
