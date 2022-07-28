@@ -794,9 +794,11 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
 
         binding.imgBackManualCard.setOnClickListener {
+            MethodUtils.hideKeyboard(requireActivity())
             isManualCard = false
             binding.relativeMain.visible()
             binding.llManualCard.gone()
+
         }
 
         binding.txtCharge.setOnClickListener {

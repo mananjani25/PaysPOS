@@ -561,7 +561,7 @@ class PrinterQueue : Fragment(), StatusChangeEventListener, BatteryStatusChangeE
 
             builder.addText(
                 padLine(
-                    "OrderID:" + printerQueueModel.orderId,
+                    "OrderID:" + printerQueueModel.orderIdN,
                     "",
                     33
                 )

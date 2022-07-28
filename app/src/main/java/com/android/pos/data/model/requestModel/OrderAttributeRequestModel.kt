@@ -126,6 +126,9 @@ class OrderAttributeRequestModel {
 
     @SerializedName("merged_table_nos")
     var mergedTableNumbers: Int? = null
+
+    @SerializedName("deleted_guest_items")
+    var deletedGuestItems:ArrayList<Int> = arrayListOf()
 }
 
 

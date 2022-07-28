@@ -118,8 +118,12 @@ class DineInOrderTableViewModel @Inject constructor(
                     _showProgress.value = Event(false)
                     resource.data.let { response ->
 
-                        if (response != null) {
+                        if (response != null && response.data.order.payments.get(response.data.order.payments.size - 1).paymentType.equals("Cash",true)) {
                             cashLogApi(response, "in")
+                        }
+                        else{
+                            _guestPayment.value =
+                                Event(response?.message.toString())
                         }
 
                     }

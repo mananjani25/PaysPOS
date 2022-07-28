@@ -269,7 +269,6 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
             reorder = true
             var itemDiscount = 0.0
             items?.forEach {
-                it.isSelectedItem = true
                 itemDiscount += it.discountPrice
             }
             discountPrice = (order.totalDiscount - itemDiscount)

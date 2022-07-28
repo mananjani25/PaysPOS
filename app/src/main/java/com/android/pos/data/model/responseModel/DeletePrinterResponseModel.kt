@@ -27,7 +27,7 @@ data class DeletePrinterResponseModel(
         @SerializedName("is_report_print_enable") var isReportPrintEnable: Boolean,
         @SerializedName("is_automatic_two_customer_receipt") var isAutomaticTwoCustomerReceipt: Boolean,
         @SerializedName("receipt_print_type") var receiptPrintType: String,
-        @SerializedName("printer_categories") var printerCategories: List<String>,
+        @SerializedName("printer_categories") var printerCategories: List<PrinterResponse.Data.PrinterCategories>,
         @SerializedName("terminal_ids") var terminalIds: List<Int>,
         @SerializedName("unpaid_receipt_auto_print_terminal_ids") var unpaidReceiptAutoPrintTerminalIds: String,
         @SerializedName("order_types") var orderTypes: List<OrderTypes>

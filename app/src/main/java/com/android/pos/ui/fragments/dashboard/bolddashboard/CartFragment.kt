@@ -63,7 +63,6 @@ import dagger.hilt.android.AndroidEntryPoint
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
-import kotlin.collections.ArrayList
 
 
 @AndroidEntryPoint
@@ -501,7 +500,7 @@ class CartFragment(
 
 
         val dineInList: ArrayList<DineInModel> = arrayListOf()
-        dineInList.add(DineInModel(0, true, 0, "Whole Table"))
+        dineInList.add(DineInModel(0, true, 0, "Whole Table",))
         for (i in 1..numOfGuest) {
             dineInList.add(
                 DineInModel(
@@ -509,9 +508,9 @@ class CartFragment(
                     false,
                     0,
                     "Guest $i",
-                    floorPlanTable = orderFloorDetails
+                    floorPlanTable = orderFloorDetails,
 
-                )
+                    )
             )
         }
 
@@ -560,13 +559,6 @@ class CartFragment(
                     }
                 }
 
-                dineInList.forEach { it ->
-                    it.items.forEach { items ->
-                        if (!items.isSelectedItem) {
-                            viewModel.selectedItems(items.itemId, 1)
-                        }
-                    }
-                }
                 if (cartlist.isEmpty()) {
                     val cartModel = CartModel().apply {
                         terminalId = prefProvider.getValueInt(Constants.TERMINAL_ID, -1)
@@ -578,6 +570,7 @@ class CartFragment(
 
                         serviceCharge = serviceChargesList
                         orderId = arguments?.getInt("orderId")
+                        listOfItemRemoved = dineInList[0].listOfItemsMoved
 
                     }
                     cartlist.add(cartModel)
@@ -595,7 +588,6 @@ class CartFragment(
                 prefProvider.setValueInt(Constants.ORDER_TYPE_ID, 2)
 
                 viewModel.orderItemDiscount = arguments?.getDouble("totalDiscount") ?: 0.0
-                Log.e(TAG, "DineInEditDiscount ${arguments?.getDouble("totalDiscount")}")
                 viewModel.totalDiscount = arguments?.getDouble("totalDiscount") ?: 0.0
                 viewModel.cartLogic(cartlist, null, Constants.ADD, false, dineInList = dineInList)
 
@@ -892,6 +884,10 @@ class CartFragment(
 
 
                             viewModel.setCartModel(it)
+                            Log.e(TAG,"${prefProvider.getValueboolean(
+                                Constants.DINE_IN_UPDATE,
+                                false
+                            )}")
                             if (prefProvider.getValueboolean(
                                     Constants.DINE_IN_UPDATE,
                                     false

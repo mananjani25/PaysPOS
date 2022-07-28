@@ -89,6 +89,7 @@ import kotlin.collections.ArrayList
 
 @AndroidEntryPoint
 class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
+    private val listOfMoveItemIds: ArrayList<Int> = arrayListOf()
     private var wholeTableDiscount: Double = 0.0
     private var cashDiscountGlobal: Double = 0.0
     private var customerList: List<PrinterResponse.Data.CustomerReceiptPrinters> = listOf()
@@ -719,8 +720,11 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
 
             }
+            Log.e(TAG,"listOfMoveItemIds:  ${listOfMoveItemIds.size}")
+            newList[0].listOfItemsMoved.addAll(listOfMoveItemIds.toCollection(arrayListOf()))
 
             //   prefProvider.setValue(Constants.DINE_IN_UPDATE_LIST, Gson().toJson(newList))
+
 
             val bundle = Bundle()
             bundle.putBoolean("is_dine_in_edit", true)
@@ -1644,8 +1648,9 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         Log.e(TAG, "WholeTableITem")
         viewModel.fireItemToKitchen(orderId ?: 0, true, ids, true)
         for (i in 0 until kitchenPrinterList.size) {
-
-            initKitchenPrinter(kitchenPrinterList.get(i), Constants.KITCHEN, list)
+            if (kitchenPrinterList[i].status) {
+                initKitchenPrinter(kitchenPrinterList.get(i), Constants.KITCHEN, list)
+            }
         }
     }
 
@@ -1657,8 +1662,10 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         var listItem: ArrayList<TbItem> = arrayListOf()
         listItem.add(item)
         for (i in 0 until kitchenPrinterList.size) {
+            if (kitchenPrinterList[i].status) {
 
-            initKitchenPrinter(kitchenPrinterList.get(i), Constants.KITCHEN, listItem)
+                initKitchenPrinter(kitchenPrinterList.get(i), Constants.KITCHEN, listItem)
+            }
         }
 
     }
@@ -1724,21 +1731,23 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         Log.e(TAG, "customerListSize  ${customerList.size}")
         if (customerList.isNotEmpty()) {
             customerList.forEach {
-                initPrinter(
-                    it,
-                    Constants.CUSTOMER,
-                    paymentStatus,
-                    true,
-                    listGuestItem,
-                    guestName,
-                    wtItems,
-                    subTotalGuest,
-                    total,
-                    taxGuest,
-                    serviceChargeGuest,
-                    divideDiscount
+                if (it.status) {
+                    initPrinter(
+                        it,
+                        Constants.CUSTOMER,
+                        paymentStatus,
+                        true,
+                        listGuestItem,
+                        guestName,
+                        wtItems,
+                        subTotalGuest,
+                        total,
+                        taxGuest,
+                        serviceChargeGuest,
+                        divideDiscount
 
-                )
+                    )
+                }
 
             }
         }
@@ -2307,13 +2316,6 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                         var orderDis = orderDiscount - (perGuestorderDis * paidGuestCount)
 
 
-
-                        Log.e("MYFN", "subTotalDInin  ${subTotalDInin}")
-                        Log.e("MYFN", "serviceCharge  ${serviceCharge}")
-                        Log.e("MYFN", "finalTaxAmt  ${finalTaxAmt}")
-                        Log.e("MYFN", "orderDis  ${orderDis}")
-
-
                         var finalAmount = subTotalDInin + serviceCharge + finalTaxAmt - orderDis
                         binding.txtTotalAmountNew.text = MethodUtils.roundOffAmount(
                             finalAmount
@@ -2334,7 +2336,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
                     }
 
-                    Log.e(TAG, "paidGuestCount  ${paidGuestCount}")
+
                     if (dineInList.isNotEmpty()) {
                         dineInTableAdapter.setList(dineInList)
                         checkForAutoFire(true)
@@ -2347,7 +2349,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                         }
                     }
 
-                    Log.e(TAG, "notPayAnyAmount  ${notPayAnyAmount}")
+
                     if (notPayAnyAmount) {
                         binding.txtAddguest.visibility = View.GONE
                         binding.txtEditOrder.visibility = View.GONE
@@ -2573,8 +2575,6 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
     }
 
     private fun updateAdapterData() {
-
-
         var oldList = dineInTableAdapter.getList()
         var newList: ArrayList<DineInModel> = arrayListOf()
         var wholeTableAmt = 0.0
@@ -2585,6 +2585,11 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         var totalTablePrice = 0.0
         var WTDiscount = 0.0
         var guestCount = 0
+        Log.e(TAG,"getMovedItemDAta  ${Gson().toJson(oldList.get(dragTo).item)}")
+        oldList.get(dragTo).item?.guestItemId?.let { listOfMoveItemIds.add(it) }
+        oldList.get(dragTo).item?.guestItemId = null
+        dragFrom = -1
+        dragTo = -1
 
         for (i in 0 until oldList.size) {
             if (oldList.get(i).isHeader == 1) {
@@ -2728,6 +2733,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
                 model.guestDividedAmt = guestShare
                 Log.d("two", "navigateDineInOrder: " + model.guestDividedAmt)
+                Log.e(TAG, "OLDListGuestId:  ${oldList.get(i).id}")
+                model.id = oldList.get(i).id
             }
             model.isHeader = oldList.get(i).isHeader
             newList.add(model)
@@ -2935,8 +2942,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 }
 
 
-                dragFrom = -1
-                dragTo = -1
+
+
                 updateAdapterData()
 
             }
@@ -2981,15 +2988,17 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                         customerList = it.data
 
                         customerList.forEach {
-                            initPrinter(
-                                it,
-                                Constants.CUSTOMER,
-                                paymentType,
-                                false,
-                                arrayListOf(),
-                                "",
-                                arrayListOf()
-                            )
+                            if (it.status) {
+                                initPrinter(
+                                    it,
+                                    Constants.CUSTOMER,
+                                    paymentType,
+                                    false,
+                                    arrayListOf(),
+                                    "",
+                                    arrayListOf()
+                                )
+                            }
 
 
                         }
@@ -7378,7 +7387,15 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 addHorizontalKitchenLine(builder)
 
 
-                addOrdersForKitchenDineIn(builder, item, fontSizeH, fontSizeW)
+                addOrdersForKitchenDineIn(
+                    builder,
+                    item,
+                    fontSizeH,
+                    fontSizeW,
+                    customerReceiptPrinters.printerCategories.toCollection(
+                        arrayListOf()
+                    )
+                )
 
                 if (getOrderDetailsResponse?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote) {
                     builder.addTextLineSpace(30)
@@ -7558,7 +7575,15 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 addHorizontalLine(builder)
 
 
-                addOrdersForKitchenCustoemrPrinter(builder, item, fontSizeH, fontSizeW)
+                addOrdersForKitchenCustoemrPrinter(
+                    builder,
+                    item,
+                    fontSizeH,
+                    fontSizeW,
+                    customerReceiptPrinters.printerCategories.toCollection(
+                        arrayListOf()
+                    )
+                )
 
                 if (getOrderDetailsResponse?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote) {
                     builder.addTextLineSpace(30)
@@ -7834,7 +7859,11 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
             SunmiPrinterApi.getInstance().lineWrap(1)
 
-            addOrdersForKitchenDineIn(item)
+            addOrdersForKitchenDineIn(
+                item, customerReceiptPrinters.printerCategories.toCollection(
+                    arrayListOf()
+                )
+            )
 
             if (getOrderDetailsResponse?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote) {
 
@@ -8147,6 +8176,9 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                                         )!!
                                     )
                                     var tbItem: TbItem = TbItem()
+                                    tbItem.categoryId =
+                                        getOrderDetailsResponse?.orderItems?.get(index)?.categoryId
+                                            ?: 0
                                     tbItem.name =
                                         getOrderDetailsResponse?.orderItems?.get(index)?.itemName
                                             ?: ""
@@ -8187,26 +8219,37 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         if (listItem.isNotEmpty()) {
             var autoPrintEnable = false
             kitchenPrinterList.forEach { kit ->
-                if (isCheckAndFire) {
-                    kit.orderTypes.forEach {
-                        if (it.orderTypeId == getOrderDetailsResponse?.orderTypeId) {
-                            Log.e(TAG, "orderTypeIdSettings  ${it.orderTypeName}")
-                            Log.e(TAG, "orderTypeIdMainData  ${getOrderDetailsResponse?.orderType}")
-                            it.printerSettings.forEach {
-                                if (it.printType.lowercase()
-                                        .equals(Constants.KITCHEN.lowercase()) && it.autoPrinting
-                                ) {
+                if (kit.status) {
 
-                                    autoPrintEnable = true
-                                    initKitchenPrinter(kit, Constants.KITCHEN, listItem)
+
+                    if (isCheckAndFire) {
+                        kit.orderTypes.forEach {
+                            if (it.orderTypeId == getOrderDetailsResponse?.orderTypeId) {
+                                Log.e(TAG, "printerSettings  ${Gson().toJson(it.printerSettings)}")
+                                it.printerSettings.forEach {
+                                    if (it.printType.lowercase()
+                                            .equals(Constants.KITCHEN.lowercase()) && it.autoPrinting
+                                    ) {
+
+                                        if (checkItemsforPrinterDineIn(
+                                                listItem, kit.printerCategories.toCollection(
+                                                    arrayListOf()
+                                                )
+                                            )
+                                        ) {
+                                            Log.e(TAG, "printerName  ${kit.name} ")
+                                            autoPrintEnable = true
+                                            initKitchenPrinter(kit, Constants.KITCHEN, listItem)
+                                        }
+                                    }
                                 }
                             }
+
                         }
+                    } else {
+                        initKitchenPrinter(kit, Constants.KITCHEN, listItem)
 
                     }
-                } else {
-                    initKitchenPrinter(kit, Constants.KITCHEN, listItem)
-
                 }
             }
             if (!isCheckAndFire or (isCheckAndFire && autoPrintEnable)) {

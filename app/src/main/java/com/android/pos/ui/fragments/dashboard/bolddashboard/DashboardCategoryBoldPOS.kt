@@ -440,9 +440,9 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
     private fun syncData() {
 
         val sync = prefProvider.getValueboolean(Constants.SYNC_DATA, false)
-        if (!sync){
+        if (!sync) {
             viewModel.syncInventoryModule()
-        }else{
+        } else {
             viewModel.getOnlineOrderCount()
         }
     }
@@ -614,11 +614,6 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
             val fragment = AddItemFragment.newInstance(item, this, cartList, false)
             loadCategoryFragment(fragment)
         } else {
-            if (!item.isSelectedItem) {
-                item.isSelectedItem = true
-                viewModel.selectedItems(item.itemId, 1)
-            }
-            prefProvider.setValueInt(Constants.CAT_ID_SELECTED, item.categoryId)
             Log.e(TAG, "cartListItemAddSize: ${cartList.size}")
             if (cartList.isEmpty()) {
                 viewModel.createCart(cartList)
@@ -720,23 +715,6 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                     viewModel.getOnlineOrderCount()
                     Log.d(TAG, "addObserver: " + Gson().toJson(viewModel.cartModel))
                     Log.d(TAG, "addObserver: " + Gson().toJson(cartList))
-                    if (cartList.isNotEmpty()) {
-                        if (cartList[0] != null) {
-                            if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == DINE_IN) {
-                                cartList[0].dineInList?.forEach { dineInModel ->
-                                    dineInModel.items.forEach { items ->
-                                        items.isSelectedItem = true
-                                        viewModel.selectedItems(items.itemId, 1)
-                                    }
-                                }
-                            } else {
-                                cartList[0].items?.forEach { items ->
-                                    items.isSelectedItem = true
-                                    viewModel.selectedItems(items.itemId, 1)
-                                }
-                            }
-                        }
-                    }
 
                 }
             }
@@ -900,7 +878,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
 
 
         val dineInList: java.util.ArrayList<DineInModel> = arrayListOf()
-        dineInList.add(DineInModel(0, true, 0, "Whole Table", floorPlanTable = orderFloorDetails))
+        dineInList.add(DineInModel(0, true, 0, "Whole Table", floorPlanTable = orderFloorDetails,))
         for (i in 1..numOfGuest) {
             dineInList.add(
                 DineInModel(
@@ -908,9 +886,9 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                     false,
                     0,
                     "Guest $i",
-                    floorPlanTable = orderFloorDetails
+                    floorPlanTable = orderFloorDetails,
 
-                )
+                    )
             )
         }
         var orderTypeId = -1
@@ -967,11 +945,6 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
             var dineInList = arguments?.getParcelableArrayList<DineInModel>("dine_in_list")
 
             if (dineInList?.isNotEmpty() == true) {
-                dineInList.forEach { it ->
-                    it.items.forEach { items ->
-                        viewModel.selectedItems(items.itemId, 1)
-                    }
-                }
                 if (cartList.isEmpty()) {
                     var orderTypeIdN = 0
                     ordertypelist.forEach {
@@ -995,6 +968,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
 
                         serviceCharge = serviceChargesList
                         orderId = arguments?.getInt("orderId")
+                        listOfItemRemoved= dineInList[0].listOfItemsMoved
 
                     }
                     cartList.add(cartModel)
@@ -1032,9 +1006,11 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
 
 
                 val bundle = Bundle()
-                bundle.putParcelable("cartList", cartList[0])
+                if (cartList.isNotEmpty())
+                    bundle.putParcelable("cartList", cartList[0])
                 bundle.putBoolean("isGuestPaid", false)
-                cartList[0].orderId?.let { it1 -> bundle.putInt("orderId", it1) }
+                if (cartList.isNotEmpty())
+                    cartList[0].orderId?.let { it1 -> bundle.putInt("orderId", it1) }
                 prefProvider.setValue(ORDER_TYPE, TAKEOUT)
                 Log.e(TAG, "deleteCartDineIn")
                 viewModel.deleteCart()
@@ -1122,7 +1098,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
              printer.setBatteryStatusChangeEventCallback(this)*/
             }
 
-            val enabled = Print.TRUE
+            val enabled = Print.FALSE
 
             try {
 
@@ -1298,13 +1274,34 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
 
 
                             for (i in 0 until it.data.size) {
+                                it.data[i].orderTypes.forEach { order->
+                                    if (order.orderTypeId == createOrderResponse.data.order.orderTypeId ){
+                                        order.printerSettings.forEach { set->
+                                            if (set.printType.equals(Constants.KITCHEN,true) && set.autoPrinting){
+                                                if(checkItemsforPrinter(createOrderResponse.data.order.orderItems ?: arrayListOf(),it.data[i].printerCategories.toCollection(
+                                                        arrayListOf()))) {
+                                                    Log.e(TAG, "statusPrinter  ${it.data[i].status}")
+                                                    if (it.data[i].status) {
+                                                        initKitchenPrinter(
+                                                            it.data.get(i),
+                                                            Constants.KITCHEN,
+                                                            createOrderResponse
+                                                        )
+                                                    }
+                                                }
+
+                                            }
+                                            else{
+                                                if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
+                                                    findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
+                                                }
+                                            }
+                                        }
+
+                                    }
+                                }
 
 
-                                initKitchenPrinter(
-                                    it.data.get(i),
-                                    Constants.KITCHEN,
-                                    createOrderResponse
-                                )
                             }
 
 
@@ -1516,7 +1513,8 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                         builder!!,
                         it,
                         fontSizeH,
-                        fontSizeW
+                        fontSizeW,
+                        customerReceiptPrinters.printerCategories.toCollection(arrayListOf())
                     )
                 }
 
@@ -1623,7 +1621,13 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                                     Builder.TRUE,
                                     Builder.COLOR_1
                                 )
-                                builder.addText(MethodUtils.getUSFormatNumber(receiptModel?.order?.customer?.phones?.get(0)?.phoneNumber))
+                                builder.addText(
+                                    MethodUtils.getUSFormatNumber(
+                                        receiptModel?.order?.customer?.phones?.get(
+                                            0
+                                        )?.phoneNumber
+                                    )
+                                )
                             }
 
                         }
@@ -1667,7 +1671,21 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                                     Builder.COLOR_1
                                 )
 
-                                builder.addText(receiptModel?.order?.customer?.addresses?.get(0)?.fullAddress)
+                                receiptModel?.order?.customer?.addresses?.filter { it.typeOfAddress == Constants.BILLING_ADDRESS }
+                                    ?.forEach {
+
+                                        if (it.typeOfAddress.equals(
+                                                Constants.BILLING_ADDRESS,
+                                                ignoreCase = true
+                                            )
+                                        ) {
+                                            builder!!.addText(
+                                                it.fullAddress
+                                            )
+                                        }
+                                    }
+
+                               // builder.addText(receiptModel?.order?.customer?.addresses?.get(0)?.fullAddress)
                             }
                         }
 
@@ -1825,7 +1843,8 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                         builder,
                         it,
                         fontSizeH,
-                        fontSizeW
+                        fontSizeW,
+                        customerReceiptPrinters?.printerCategories.toCollection(arrayListOf())
                     )
                 }
 
@@ -1923,7 +1942,13 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                                     Builder.FALSE,
                                     Builder.COLOR_1
                                 )
-                                builder.addText(MethodUtils.getUSFormatNumber(receiptModel?.order?.customer?.phones?.get(0)?.phoneNumber))
+                                builder.addText(
+                                    MethodUtils.getUSFormatNumber(
+                                        receiptModel?.order?.customer?.phones?.get(
+                                            0
+                                        )?.phoneNumber
+                                    )
+                                )
                             }
 
                         }
@@ -1967,7 +1992,20 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                                     Builder.COLOR_1
                                 )
 
-                                builder.addText(receiptModel?.order?.customer?.addresses?.get(0)?.fullAddress)
+                                receiptModel.order.customer.addresses.filter { it.typeOfAddress == Constants.BILLING_ADDRESS }
+                                    .forEach {
+
+                                        if (it.typeOfAddress.equals(
+                                                Constants.BILLING_ADDRESS,
+                                                ignoreCase = true
+                                            )
+                                        ) {
+                                            builder.addText(
+                                                it.fullAddress
+                                            )
+                                        }
+                                    }
+                               // builder.addText(receiptModel?.order?.customer?.addresses?.get(0)?.fullAddress)
                             }
                         }
 
@@ -2086,7 +2124,8 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
 
             receiptModel?.order?.orderItems?.let {
                 addOrdersForKitchen(
-                    it
+                    it,
+                    customerReceiptPrinters.printerCategories.toCollection(arrayListOf())
                 )
             }
 
@@ -2137,11 +2176,27 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                         } else if (receiptModel.order?.customer?.addresses?.isNotEmpty()) {
 
 
-                            receiptModel?.order?.customer?.addresses?.get(0)?.fullAddress?.let {
-                                PrintSunmiUtils.customerAddress(
-                                    it
-                                )
-                            }
+//                            receiptModel?.order?.customer?.addresses?.get(0)?.fullAddress?.let {
+//                                PrintSunmiUtils.customerAddress(
+//                                    it
+//                                )
+//                            }
+
+                            receiptModel?.order?.customer?.addresses?.filter { it.typeOfAddress == Constants.BILLING_ADDRESS }
+                                ?.forEach {
+
+                                    if (it.typeOfAddress.equals(
+                                            Constants.BILLING_ADDRESS,
+                                            ignoreCase = true
+                                        )
+                                    ) {
+                                        PrintSunmiUtils.customerAddress(
+                                            it.fullAddress
+                                        )
+                                    }
+                                }
+
+
                         }
                     }
 
@@ -2252,11 +2307,27 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                         } else if (receiptModel.order?.customer?.addresses?.isNotEmpty()) {
 
 
-                            receiptModel?.order?.customer?.addresses?.get(0)?.fullAddress?.let {
-                                PrintSunmiUtils.normalTextLarge(
-                                    it
-                                )
-                            }
+//                            receiptModel?.order?.customer?.addresses?.get(0)?.fullAddress?.let {
+//                                PrintSunmiUtils.normalTextLarge(
+//                                    it
+//                                )
+//                            }
+
+                            receiptModel?.order?.customer?.addresses?.filter { it.typeOfAddress == Constants.BILLING_ADDRESS }
+                                ?.forEach {
+
+                                    if (it.typeOfAddress.equals(
+                                            Constants.BILLING_ADDRESS,
+                                            ignoreCase = true
+                                        )
+                                    ) {
+                                        PrintSunmiUtils.normalTextLarge(
+                                            it.fullAddress
+                                        )
+                                    }
+                                }
+
+
                         }
                     }
 

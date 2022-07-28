@@ -642,11 +642,19 @@ class OnlineDetailFragment(
             when (it.status) {
                 Status.SUCCESS -> {
                     it.data?.forEach {
-                        initKitchenPrinter(
-                            it,
-                            Constants.KITCHEN,
-                            data
-                        )
+                        if (it.status && checkItemsforPrinterOnlineOrder(
+                                data.data.orderItems, it.printerCategories.toCollection(
+                                    arrayListOf()
+                                )
+                            )
+                        ) {
+
+                            initKitchenPrinter(
+                                it,
+                                Constants.KITCHEN,
+                                data
+                            )
+                        }
 
                     }
 
@@ -762,7 +770,6 @@ class OnlineDetailFragment(
     ) {
         var builder: Builder? = null
         try {
-            Log.e(TAG, "KitchenPrinterName ${customerReceiptPrinters.name}")
             val pname = if (customerReceiptPrinters.name.substring(0, 6).toString()
                     .lowercase() == "TM-m30".lowercase()
             ) {
@@ -899,7 +906,8 @@ class OnlineDetailFragment(
                     builder,
                     orderData.data.orderItems,
                     fontSizeH,
-                    fontSizeW
+                    fontSizeW,
+                    customerReceiptPrinters.printerCategories.toCollection(arrayListOf())
                 )
 
 
@@ -1048,7 +1056,22 @@ class OnlineDetailFragment(
                                 Builder.COLOR_1
                             )
 
-                            builder.addText(orderData?.data?.customer?.addresses.get(orderData?.data?.customer?.addresses.size - 1).fullAddress)
+                            orderData?.data?.customer?.addresses.filter { it.typeOfAddress == Constants.BILLING_ADDRESS
+                            }
+
+                                .forEach {
+
+                                    if (it.typeOfAddress.equals(
+                                            Constants.BILLING_ADDRESS,
+                                            ignoreCase = true
+                                        )
+                                    ) {
+                                        builder.addText(
+                                            it.fullAddress
+                                        )
+                                    }
+                                }
+//                            builder.addText(orderData?.data?.customer?.addresses.get(orderData?.data?.customer?.addresses.size - 1).fullAddress)
                         }
                     }
 
@@ -1157,7 +1180,8 @@ class OnlineDetailFragment(
                     builder,
                     orderData.data.orderItems,
                     fontSizeH,
-                    fontSizeW
+                    fontSizeW,
+                    customerReceiptPrinters.printerCategories.toCollection(arrayListOf())
                 )
 
 
@@ -1297,7 +1321,20 @@ class OnlineDetailFragment(
                                 Builder.COLOR_1
                             )
 
-                            builder.addText(orderData?.data?.customer?.addresses.get(orderData?.data?.customer?.addresses.size - 1).fullAddress)
+                            orderData?.data?.customer?.addresses.filter { it.typeOfAddress == Constants.BILLING_ADDRESS }
+                                .forEach {
+
+                                    if (it.typeOfAddress.equals(
+                                            Constants.BILLING_ADDRESS,
+                                            ignoreCase = true
+                                        )
+                                    ) {
+                                        builder.addText(
+                                            it.fullAddress
+                                        )
+                                    }
+                                }
+//                            builder.addText(orderData?.data?.customer?.addresses.get(orderData?.data?.customer?.addresses.size - 1).fullAddress)
                         }
                     }
 
@@ -1408,7 +1445,8 @@ class OnlineDetailFragment(
 
 
             addOrdersForKitchenOnlineOrderSunmi(
-                orderData.data.orderItems
+                orderData.data.orderItems,
+                customerReceiptPrinters.printerCategories.toCollection(arrayListOf())
             )
 
 
@@ -1448,11 +1486,25 @@ class OnlineDetailFragment(
 
                     if (orderData?.data?.customer?.addresses?.isNotEmpty() == true) {
 
-                        PrintSunmiUtils.customerAddress(
-                            orderData?.data?.customer?.addresses.get(
-                                orderData?.data?.customer?.addresses.size - 1
-                            ).fullAddress
-                        )
+                        orderData?.data?.customer?.addresses.filter { it.typeOfAddress == Constants.BILLING_ADDRESS }
+
+                            .forEach {
+
+                                if (it.typeOfAddress.equals(
+                                        Constants.BILLING_ADDRESS,
+                                        ignoreCase = true
+                                    )
+                                ) {
+                                    PrintSunmiUtils.customerAddress(
+                                        it.fullAddress
+                                    )
+                                }
+                            }
+//                        PrintSunmiUtils.customerAddress(
+//                            orderData?.data?.customer?.addresses.get(
+//                                orderData?.data?.customer?.addresses.size - 1
+//                            ).fullAddress
+//                        )
                     }
                 }
 
@@ -1580,11 +1632,27 @@ class OnlineDetailFragment(
 
                     if (orderData?.data?.customer?.addresses?.isNotEmpty() == true) {
 
-                        PrintSunmiUtils.normalTextLarge(
-                            orderData?.data?.customer?.addresses.get(
-                                orderData?.data?.customer?.addresses.size - 1
-                            ).fullAddress
-                        )
+
+//                        PrintSunmiUtils.normalTextLarge(
+//                            orderData?.data?.customer?.addresses.get(
+//                                orderData?.data?.customer?.addresses.size - 1
+//                            ).fullAddress
+//                        )
+
+
+                        orderData?.data?.customer?.addresses.filter { it.typeOfAddress == Constants.BILLING_ADDRESS }
+                            .forEach {
+
+                                if (it.typeOfAddress.equals(
+                                        Constants.BILLING_ADDRESS,
+                                        ignoreCase = true
+                                    )
+                                ) {
+                                    PrintSunmiUtils.normalTextLarge(
+                                        it.fullAddress
+                                    )
+                                }
+                            }
                     }
                 }
 

@@ -9,65 +9,66 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <include android:id="@+id/header"
-            layout="@layout/view_header_toolbar"/>
+        <include
+            android:id="@+id/header"
+            layout="@layout/view_header_toolbar" />
 
-<!--
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal">
+        <!--
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal">
 
-            <androidx.appcompat.widget.AppCompatImageView
-                android:id="@+id/imgClose"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:layout_gravity="center"
-                android:background="?attr/selectableItemBackground"
-                android:padding="@dimen/_8sdp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/ic_arrow_back"
-                app:tint="@color/txtColor" />
+                    <androidx.appcompat.widget.AppCompatImageView
+                        android:id="@+id/imgClose"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_gravity="center"
+                        android:background="?attr/selectableItemBackground"
+                        android:padding="@dimen/_8sdp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:srcCompat="@drawable/ic_arrow_back"
+                        app:tint="@color/txtColor" />
 
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/txtTitle"
-                style="@style/CustomFontBold"
-                android:layout_width="0dp"
-                android:layout_height="match_parent"
-                android:layout_gravity="center"
-                android:layout_weight="1"
-                android:gravity="center"
-                android:text="@string/edit_printers"
-                android:textColor="@color/txtColor"
-                android:textSize="@dimen/_6mdpi"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/txtTitle"
+                        style="@style/CustomFontBold"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_gravity="center"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:text="@string/edit_printers"
+                        android:textColor="@color/txtColor"
+                        android:textSize="@dimen/_6mdpi"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
 
 
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/txtSave"
-                style="@style/CustomFontHeavy"
-                android:layout_width="wrap_content"
-                android:layout_height="0dp"
-                android:layout_gravity="center"
-                android:background="@drawable/save_selector"
-                android:gravity="center"
-                android:paddingStart="@dimen/_12sdp"
-                android:paddingEnd="@dimen/_12sdp"
-                android:text="@string/save"
-                android:textAllCaps="true"
-                android:textColor="@color/white"
-                android:textSize="@dimen/_7mdpi"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
--->
+                    <androidx.appcompat.widget.AppCompatTextView
+                        android:id="@+id/txtSave"
+                        style="@style/CustomFontHeavy"
+                        android:layout_width="wrap_content"
+                        android:layout_height="0dp"
+                        android:layout_gravity="center"
+                        android:background="@drawable/save_selector"
+                        android:gravity="center"
+                        android:paddingStart="@dimen/_12sdp"
+                        android:paddingEnd="@dimen/_12sdp"
+                        android:text="@string/save"
+                        android:textAllCaps="true"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/_7mdpi"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+        -->
 
         <View
             android:layout_width="match_parent"
@@ -327,13 +328,72 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="@dimen/_65sdp"
-                    android:background="@color/bg_color"
                     android:layout_marginEnd="@dimen/_65sdp"
                     android:layout_marginBottom="@dimen/_10sdp"
+                    android:background="@color/bg_color"
                     android:orientation="vertical"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     tools:itemCount="2"
                     tools:listitem="@layout/view_edit_printer_list" />
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/txtSelectCatPrint"
+                    style="@style/CustomFontSemiBold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/_65sdp"
+                    android:layout_marginTop="@dimen/_2sdp"
+                    android:gravity="center"
+                    android:paddingVertical="@dimen/_5sdp"
+                    android:text="Select Categories to Print"
+                    android:textAllCaps="false"
+                    android:textColor="@color/txtColor"
+                    android:textSize="@dimen/_6mdpi" />
+
+                <View
+                    android:id="@+id/viewLineCat"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginStart="@dimen/_65sdp"
+                    android:layout_marginEnd="@dimen/_65sdp"
+                    android:background="@color/strokeColor" />
+
+                <androidx.appcompat.widget.LinearLayoutCompat
+                    android:id="@+id/linearSelectAllCat"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginStart="@dimen/_65sdp"
+                    android:layout_marginEnd="@dimen/_65sdp">
+
+                    <CheckBox
+                        android:id="@+id/chCategory"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:button="@drawable/checkbox_selector_category_print" />
+
+                    <TextView
+                        android:id="@+id/txtCategoryName"
+                        style="@style/CustomFontMediumStyle"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:text="Select All"
+                        android:layout_marginStart="@dimen/_5sdp"
+                        android:gravity="center"
+                        android:textColor="@color/txtColor" />
+
+                </androidx.appcompat.widget.LinearLayoutCompat>
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/rvCategoriesList"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/_65sdp"
+                    android:layout_marginEnd="@dimen/_65sdp"
+                    app:layoutManager="androidx.recyclerview.widget.GridLayoutManager"
+                    app:spanCount="3" />
+
 
             </androidx.appcompat.widget.LinearLayoutCompat>
 

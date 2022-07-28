@@ -54,7 +54,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
                 intent.putExtra("count", remoteMessage.data["count"])
                 intent.action = ONLINE_ORDER_GET_NOTIFICATION
                 sendBroadcast(intent)
-                // setSoundForOnlineOrder()
+                 setSoundForOnlineOrder()
             } else {
                 var intent = Intent()
                 intent.putExtra("printer_queue", "rem")

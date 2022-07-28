@@ -31,6 +31,7 @@ import com.android.pos.data.model.responseModel.GetTipReponse
 import com.android.pos.data.model.responseModel.PrinterResponse
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.KEY
+import com.android.pos.data.remote.Constants.SHIPPING_ADDRESS
 import com.android.pos.data.remote.Constants.SUNMI_INNER_PRINTER
 import com.android.pos.data.remote.Constants.SUNMI_PRINTER
 import com.android.pos.data.remote.Constants.getCurrentTimeFromTimeZone
@@ -130,40 +131,40 @@ class TransactionDetailsFragment : Fragment() {
 
 
 
-        viewModel.serviceCharges.observe(requireActivity()) {
-            if (prefProvider.getValue(
-                    Constants.ORDER_TYPE,
-                    Constants.TAKEOUT
-                ) == Constants.DINE_IN
-            ) {
-                if (prefProvider.getValueboolean(
-                        Constants.SERVICECHARGE_DINEIN_ORDER,
-                        false
-                    )
-                ) {
-                    serviceChargesList = arrayListOf()
-                    serviceChargesList = it.data as ArrayList<TbServiceCharge>?
-                }
-            } else {
-                if (prefProvider.getValueboolean(
-                        Constants.SERVICECHARGE_TAKEOUT_OPENORDER,
-                        false
-                    )
-                ) {
-                    serviceChargesList = arrayListOf()
-                    Log.e(TAG, "getServiceCharge:  ${Gson().toJson(it.data)}")
-                    it.data?.forEach { service ->
-                        if (service.order_type == Constants.SERVICECHARGE_TAKEOUT_OPENORDER) {
-                            serviceChargesList?.add(service)
-                        }
-                    }
 
+        return binding.root
+    }
+
+    private fun getServiceCharge() {
+        viewModel.serviceCharges.observe(requireActivity()) {
+            if (paymentDetailsResponse.data.order.order_type == Constants.DINE_IN) {
+//                if (prefProvider.getValueboolean(
+//                        Constants.SERVICECHARGE_DINEIN_ORDER,
+//                        false
+//                    )
+//                ) {
+                serviceChargesList = arrayListOf()
+                serviceChargesList = it.data as ArrayList<TbServiceCharge>?
+//                }
+            } else {
+//                if (prefProvider.getValueboolean(
+//                        Constants.SERVICECHARGE_TAKEOUT_OPENORDER,
+//                        false
+//                    )
+//                ) {
+                serviceChargesList = arrayListOf()
+                Log.e(TAG, "getServiceCharge:  ${Gson().toJson(it.data)}")
+                it.data?.forEach { service ->
+                    if (service.order_type == Constants.SERVICECHARGE_TAKEOUT_OPENORDER) {
+                        serviceChargesList?.add(service)
+                    }
                 }
+
+//                }
             }
 
 
         }
-        return binding.root
     }
 
     private fun setUpRecyclerView() {
@@ -583,7 +584,7 @@ class TransactionDetailsFragment : Fragment() {
                 }
 
 
-
+                getServiceCharge()
 
                 ProgressUtils.dismissProgressDialog()
             }
@@ -692,7 +693,9 @@ class TransactionDetailsFragment : Fragment() {
                         val customerList = it.data
 
                         customerList.forEach {
-                            initPrinter(it, Constants.CUSTOMER)
+                            if (it.status) {
+                                initPrinter(it, Constants.CUSTOMER)
+                            }
                         }
                     }
                 }
@@ -1577,7 +1580,7 @@ class TransactionDetailsFragment : Fragment() {
                 builder.addText(
                     padLine(
                         "Refund Amount",
-                        "$" + MethodUtils.roundOffAmountString(paymentDetailsResponse?.data?.order?.refund_detail?.refunded_amount),
+                        "-$" + MethodUtils.roundOffAmountString(paymentDetailsResponse?.data?.order?.refund_detail?.refunded_amount),
                         if (customerSettingModel.fonts == Constants.LARGE) {
                             24
                         } else {
@@ -1930,11 +1933,21 @@ class TransactionDetailsFragment : Fragment() {
                                 Builder.COLOR_1
                             )
 
-                            builder.addText(
-                                paymentDetailsResponse?.data?.order?.customer?.addresses?.get(
-                                    paymentDetailsResponse?.data?.order?.customer?.addresses?.size - 1
-                                )?.fullAddress
-                            )
+                            paymentDetailsResponse.data.order.customer.addresses.filter { it.typeOfAddress == SHIPPING_ADDRESS }
+                                .forEach {
+
+                                    if (it.typeOfAddress.equals(
+                                            SHIPPING_ADDRESS,
+                                            ignoreCase = true
+                                        )
+                                    ) {
+                                        builder.addText(
+                                            it.fullAddress
+                                        )
+                                    }
+                                }
+
+
                         }
                     }
 
@@ -2076,9 +2089,9 @@ class TransactionDetailsFragment : Fragment() {
             } else {
                 SunmiPrinterApi.getInstance().lineWrap(1)
             }
-
+            SunmiPrinterApi.getInstance().lineWrap(1)
             PrintSunmiUtils.printOrderType(paymentDetailsResponse.data.order.order_type.trim())
-
+            SunmiPrinterApi.getInstance().lineWrap(1)
 
             if (customerSettingModel.fonts == Constants.LARGE) {
 
@@ -2345,7 +2358,7 @@ class TransactionDetailsFragment : Fragment() {
                 PrintSunmiUtils.refundAmount(
                     padLine(
                         "Refund Amount",
-                        "$" + MethodUtils.roundOffAmountString(paymentDetailsResponse?.data?.order?.refund_detail?.refunded_amount),
+                        "-$" + MethodUtils.roundOffAmountString(paymentDetailsResponse?.data?.order?.refund_detail?.refunded_amount),
                         if (customerSettingModel.fonts == Constants.LARGE) 23 else 48
                     ).toString()
                 )
@@ -2453,11 +2466,27 @@ class TransactionDetailsFragment : Fragment() {
                     if (customerSettingModel.showCustomerAddress) {
                         if (paymentDetailsResponse?.data?.order?.customer?.addresses?.isNotEmpty() == true) {
 
-                            PrintSunmiUtils.customerAddress(
-                                paymentDetailsResponse?.data?.order?.customer?.addresses?.get(
-                                    paymentDetailsResponse?.data?.order?.customer?.addresses?.size - 1
-                                )?.fullAddress
-                            )
+
+                            paymentDetailsResponse.data.order.customer.addresses.filter { it.typeOfAddress == SHIPPING_ADDRESS }
+                                .forEach {
+
+                                    if (it.typeOfAddress.equals(
+                                            SHIPPING_ADDRESS,
+                                            ignoreCase = true
+                                        )
+                                    ) {
+                                        PrintSunmiUtils.customerAddress(
+                                            it.fullAddress
+                                        )
+                                    }
+                                }
+
+
+//                            PrintSunmiUtils.customerAddress(
+//                                paymentDetailsResponse?.data?.order?.customer?.addresses?.get(
+//                                    paymentDetailsResponse?.data?.order?.customer?.addresses?.size - 1
+//                                )?.fullAddress
+//                            )
                         }
                     }
 
@@ -2781,7 +2810,7 @@ class TransactionDetailsFragment : Fragment() {
                 PrintSunmiUtils.boldText(
                     padLine(
                         "Refund Amount",
-                        "$" + MethodUtils.roundOffAmountString(paymentDetailsResponse?.data?.order?.refund_detail?.refunded_amount),
+                        "-$" + MethodUtils.roundOffAmountString(paymentDetailsResponse?.data?.order?.refund_detail?.refunded_amount),
                         PrintSunmiUtils.lineChar()
                     ).toString()
                 )
@@ -2889,11 +2918,25 @@ class TransactionDetailsFragment : Fragment() {
                     if (customerSettingModel.showCustomerAddress) {
                         if (paymentDetailsResponse?.data?.order?.customer?.addresses?.isNotEmpty() == true) {
 
-                            PrintSunmiUtils.normalText(
-                                paymentDetailsResponse?.data?.order?.customer?.addresses?.get(
-                                    paymentDetailsResponse?.data?.order?.customer?.addresses?.size - 1
-                                )?.fullAddress
-                            )
+
+                            paymentDetailsResponse.data.order.customer.addresses.filter { it.typeOfAddress == SHIPPING_ADDRESS }
+                                .forEach {
+
+                                    if (it.typeOfAddress.equals(
+                                            SHIPPING_ADDRESS,
+                                            ignoreCase = true
+                                        )
+                                    ) {
+                                        PrintSunmiUtils.normalText(
+                                            it.fullAddress
+                                        )
+                                    }
+                                }
+//                            PrintSunmiUtils.normalText(
+//                                paymentDetailsResponse?.data?.order?.customer?.addresses?.get(
+//                                    paymentDetailsResponse?.data?.order?.customer?.addresses?.size - 1
+//                                )?.fullAddress
+//                            )
                         }
                     }
 

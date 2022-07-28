@@ -17,8 +17,9 @@ data class PrinterListModel(
     var deviceModel: DeviceInfo? = null,
     var uuid: UUID? = null,
     var printerModel: List<PrinterResponse.Data.OrderTypes>? = null,
-    var currentPrinterType:String?=null
-):Parcelable{
+    var currentPrinterType: String? = null,
+    var printerCategories: List<PrinterResponse.Data.PrinterCategories>? = null
+) : Parcelable {
     constructor(parcel: Parcel) : this(
         parcel.readValue(Int::class.java.classLoader) as? Int,
         parcel.readString(),
@@ -27,7 +28,9 @@ data class PrinterListModel(
         parcel.readString()!!,
         TODO("deviceModel"),
         TODO("uuid"),
-        TODO("printerModel")
+        TODO("printerModel"),
+        TODO("printerCategories")
+
     ) {
     }
 
@@ -37,6 +40,7 @@ data class PrinterListModel(
         parcel.writeString(connectionType)
         parcel.writeByte(if (isActive) 1 else 0)
         parcel.writeString(type)
+
     }
 
     override fun describeContents(): Int {

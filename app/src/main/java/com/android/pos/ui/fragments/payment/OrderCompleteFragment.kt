@@ -35,6 +35,7 @@ import com.android.pos.data.model.SplitBundleModel
 import com.android.pos.data.model.SplitDetailListModel
 import com.android.pos.data.model.responseModel.*
 import com.android.pos.data.remote.Constants
+import com.android.pos.data.remote.Constants.BILLING_ADDRESS
 import com.android.pos.data.remote.Constants.BLUETOOTH
 import com.android.pos.data.remote.Constants.BUSINESS_ADDRESS
 import com.android.pos.data.remote.Constants.BUSINESS_NAME
@@ -56,6 +57,7 @@ import com.android.pos.data.remote.Constants.PAYMENT_ID
 import com.android.pos.data.remote.Constants.PRINT_DATA_DINE_IN
 import com.android.pos.data.remote.Constants.SAVE_SPLIT_BUNDLE
 import com.android.pos.data.remote.Constants.SERVICECHARGE_DINEIN_ORDER
+import com.android.pos.data.remote.Constants.SHIPPING_ADDRESS
 import com.android.pos.data.remote.Constants.SPLIT_DINEIN_CHECKOUT
 import com.android.pos.data.remote.Constants.SPLIT_DINEIN_MODEL
 import com.android.pos.data.remote.Constants.SPLIT_IS_GUESTPAY
@@ -910,15 +912,17 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
         }
         customerPrinterDineIn?.forEach {
-            initDineInPrinter(
-                it,
-                Constants.CUSTOMER,
-                paymentType,
-                true,
-                listGuestItem = listItem,
-                dineInList.get(guestPos).title.toString(),
-                listItemWT
-            )
+            if (it.status) {
+                initDineInPrinter(
+                    it,
+                    Constants.CUSTOMER,
+                    paymentType,
+                    true,
+                    listGuestItem = listItem,
+                    dineInList.get(guestPos).title.toString(),
+                    listItemWT
+                )
+            }
 
         }
     }
@@ -1024,7 +1028,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         },
                         customerReceiptPrinters.ipAddress,
                         enabled,
-                        1000
+                        interval
                     )
                     //printer?.setStatusChangeEventCallback(this)
 
@@ -1041,10 +1045,6 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                             val checkOutDineInModel =
                                 requireArguments().getParcelable<GuestDataModel>(Constants.DINE_IN_GUEST_PAYMENT_DATA)
-                            Log.e(
-                                TAG,
-                                "checkOutDineInModel:  ${Gson().toJson(checkOutDineInModel)}"
-                            )
 
 
                             if (checkOutDineInModel != null) {
@@ -3055,6 +3055,28 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                 SunmiPrintHelper.getInstance().lineWrap(1)
                 getDineInOrderDetails?.digitalReceiptUrl?.let { PrintSunmiUtils.qrCodeInner(it) }
+            }
+
+            if (paymentType.equals("Cash", true)) {
+                val aa = ByteArray(5)
+
+                aa[0] = 0x10
+                aa[1] = 0x14
+                aa[2] = 0x00
+                aa[3] = 0x00
+                aa[4] = 0x00
+
+
+                try {
+                    SunmiPrinterApi.getInstance().sendRawData(aa)
+                } catch (e: java.lang.Exception) {
+                    e.printStackTrace()
+                }
+                try {
+                    SunmiPrintHelper.getInstance().openCashBox()
+                } catch (e: java.lang.Exception) {
+                    e.printStackTrace()
+                }
             }
 
             PrintSunmiUtils.cutPaperInner()
@@ -5219,6 +5241,32 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                 // getDineInOrderDetails?.digitalReceiptUrl.toString().let { PrintSunmiUtils.qrCode(it) }
             }
+
+            if (receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.paymentType.equals(
+                    "Cash",
+                    true
+                )
+            ) {
+                val aa = ByteArray(5)
+
+                aa[0] = 0x10
+                aa[1] = 0x14
+                aa[2] = 0x00
+                aa[3] = 0x00
+                aa[4] = 0x00
+
+
+                try {
+                    SunmiPrinterApi.getInstance().sendRawData(aa)
+                } catch (e: java.lang.Exception) {
+                    e.printStackTrace()
+                }
+                try {
+                    SunmiPrintHelper.getInstance().openCashBox()
+                } catch (e: java.lang.Exception) {
+                    e.printStackTrace()
+                }
+            }
             Log.e("printDineReciept", "Staring 2....")
             PrintSunmiUtils.cutPaperInner()
 
@@ -5393,24 +5441,40 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                 ) {
                                     if (kitchenPrinterList.isNotEmpty()) {
                                         for (i in 0 until kitchenPrinterList.size) {
-                                            kitchenPrinterList[i].orderTypes.forEach {
+                                            if (kitchenPrinterList[i].status) {
+                                                kitchenPrinterList[i].orderTypes.forEach {
 
-                                                if (it.orderTypeId == receiptModel?.order?.orderTypeId
+                                                    if (it.orderTypeId == receiptModel?.order?.orderTypeId
 
-                                                ) {
+                                                    ) {
 
-                                                    it.printerSettings.forEach {
-                                                        if (it.printType.lowercase()
-                                                                .equals(KITCHEN.lowercase()) && it.autoPrinting
-                                                        ) {
-                                                            initKitchenPrinter(
-                                                                kitchenPrinterList.get(i),
-                                                                KITCHEN
-                                                            )
+                                                        it.printerSettings.forEach {
+                                                            if (it.printType.lowercase()
+                                                                    .equals(KITCHEN.lowercase()) && it.autoPrinting
+                                                            ) {
 
+                                                                if (checkItemsforPrinter(
+                                                                        receiptModel?.order?.orderItems
+                                                                            ?: arrayListOf(),
+                                                                        kitchenPrinterList[i].printerCategories.toCollection(
+                                                                            arrayListOf()
+                                                                        )
+                                                                    )
+                                                                ) {
+                                                                    Log.e(
+                                                                        TAG,
+                                                                        "InsidePrinterKitchen"
+                                                                    )
+                                                                    initKitchenPrinter(
+                                                                        kitchenPrinterList.get(i),
+                                                                        KITCHEN
+                                                                    )
+                                                                }
+
+                                                            }
                                                         }
-                                                    }
 
+                                                    }
                                                 }
                                             }
                                         }
@@ -5478,19 +5542,21 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                         if (autoPrintCheck) {
                             customerList.forEach { cus ->
-                                cus.orderTypes.forEach {
+                                if (cus.status) {
+                                    cus.orderTypes.forEach {
 
-                                    if (it.orderTypeId == receiptModel?.order?.orderTypeId) {
+                                        if (it.orderTypeId == receiptModel?.order?.orderTypeId) {
 
-                                        it.printerSettings.forEach {
-                                            if (it.printType.lowercase()
-                                                    .equals(CUSTOMER.lowercase()) && it.autoPrinting
-                                            ) {
-
-
-                                                initPrinter(cus, CUSTOMER)
+                                            it.printerSettings.forEach {
+                                                if (it.printType.lowercase()
+                                                        .equals(CUSTOMER.lowercase()) && it.autoPrinting
+                                                ) {
 
 
+                                                    initPrinter(cus, CUSTOMER)
+
+
+                                                }
                                             }
                                         }
                                     }
@@ -6896,19 +6962,32 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                 Builder.COLOR_1
                             )
 
-                            builder.addText(
-                                padLine(
-                                    receiptModel?.order?.customer?.addresses?.size?.minus(1)?.let {
-                                        receiptModel?.order?.customer?.addresses?.get(
-                                            it
-                                        )?.fullAddress
-                                    }, "", if (customerSettingModel.fonts == LARGE) {
-                                        24
-                                    } else {
-                                        48
+
+                            receiptModel?.order?.customer?.addresses?.filter { it.typeOfAddress == SHIPPING_ADDRESS }
+                                ?.forEach {
+
+                                    if (it.typeOfAddress.equals(
+                                            SHIPPING_ADDRESS,
+                                            ignoreCase = true
+                                        )
+                                    ) {
+
+                                        builder.addText(
+                                            padLine(
+                                                it.fullAddress,
+                                                "",
+                                                if (customerSettingModel.fonts == LARGE) {
+                                                    24
+                                                } else {
+                                                    48
+                                                }
+                                            )
+                                        )
+
                                     }
-                                )
-                            )
+                                }
+
+
                         }
                     }
 
@@ -7065,13 +7144,13 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 //  printerDialog.show(requireContext())
 
                 var printer: Print? = Print(requireContext())
-                if (printer != null) {
+                /*if (printer != null) {
                     printer.setStatusChangeEventCallback(this)
                     printer.setBatteryStatusChangeEventCallback(this)
-                }
+                }*/
 
 
-                val enabled = Print.TRUE
+                val enabled = Print.FALSE
 
                 try {
 
@@ -7295,7 +7374,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         builder!!,
                         it,
                         fontSizeH,
-                        fontSizeW
+                        fontSizeW,
+                        customerReceiptPrinters.printerCategories.toCollection(arrayListOf())
                     )
                 }
 
@@ -7452,8 +7532,21 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                         Builder.TRUE,
                                         Builder.COLOR_1
                                     )
+                                    receiptModel?.order?.customer?.addresses?.filter { it.typeOfAddress == BILLING_ADDRESS }
+                                        ?.forEach {
 
-                                    builder.addText(receiptModel?.order?.customer?.addresses?.get(0)?.fullAddress)
+                                            if (it.typeOfAddress.equals(
+                                                    BILLING_ADDRESS,
+                                                    ignoreCase = true
+                                                )
+                                            ) {
+                                                builder!!.addText(
+                                                    it.fullAddress
+                                                )
+                                            }
+                                        }
+
+                                  //  builder.addText(receiptModel?.order?.customer?.addresses?.get(0)?.fullAddress)
                                 }
                             }
                         }
@@ -7635,7 +7728,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         builder,
                         it,
                         fontSizeH,
-                        fontSizeW
+                        fontSizeW,
+                        customerReceiptPrinters.printerCategories.toCollection(arrayListOf())
                     )
                 }
 
@@ -7793,7 +7887,20 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                         Builder.COLOR_1
                                     )
 
-                                    builder.addText(receiptModel?.order?.customer?.addresses?.get(0)?.fullAddress)
+                                    receiptModel?.order?.customer?.addresses?.filter { it.typeOfAddress == BILLING_ADDRESS }
+                                        ?.forEach {
+
+                                            if (it.typeOfAddress.equals(
+                                                    BILLING_ADDRESS,
+                                                    ignoreCase = true
+                                                )
+                                            ) {
+                                                builder.addText(
+                                                    it.fullAddress
+                                                )
+                                            }
+                                        }
+                                    // builder.addText(receiptModel?.order?.customer?.addresses?.get(0)?.fullAddress)
                                 }
                             }
                         }
@@ -7912,7 +8019,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
             receiptModel?.order?.orderItems?.let {
                 addOrdersForKitchen(
-                    it
+                    it,
+                    customerReceiptPrinters.printerCategories.toCollection(arrayListOf())
                 )
             }
 
@@ -7962,12 +8070,25 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                             if (receiptModel?.order?.customer?.addresses?.isNotEmpty() == true) {
 
+                                receiptModel?.order?.customer?.addresses?.filter { it.typeOfAddress == BILLING_ADDRESS }
+                                    ?.forEach {
 
-                                receiptModel?.order?.customer?.addresses?.get(0)?.fullAddress?.let {
-                                    PrintSunmiUtils.customerAddress(
-                                        it
-                                    )
-                                }
+                                        if (it.typeOfAddress.equals(
+                                                BILLING_ADDRESS,
+                                                ignoreCase = true
+                                            )
+                                        ) {
+                                            PrintSunmiUtils.customerAddress(
+                                                it.fullAddress
+                                            )
+                                        }
+                                    }
+
+//                                receiptModel?.order?.customer?.addresses?.get(0)?.fullAddress?.let {
+//                                    PrintSunmiUtils.customerAddress(
+//                                        it
+//                                    )
+//                                }
                             }
                         }
                     }
@@ -8070,11 +8191,25 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                             if (receiptModel?.order?.customer?.addresses?.isNotEmpty() == true) {
 
 
-                                receiptModel?.order?.customer?.addresses?.get(0)?.fullAddress?.let {
-                                    PrintSunmiUtils.normalTextLarge(
-                                        it
-                                    )
-                                }
+//                                receiptModel?.order?.customer?.addresses?.get(0)?.fullAddress?.let {
+//                                    PrintSunmiUtils.normalTextLarge(
+//                                        it
+//                                    )
+//                                }
+
+                                receiptModel?.order?.customer?.addresses?.filter { it.typeOfAddress == BILLING_ADDRESS }
+                                    ?.forEach {
+
+                                        if (it.typeOfAddress.equals(
+                                                BILLING_ADDRESS,
+                                                ignoreCase = true
+                                            )
+                                        ) {
+                                            PrintSunmiUtils.normalTextLarge(
+                                                it.fullAddress
+                                            )
+                                        }
+                                    }
                             }
                         }
                     }
@@ -8916,15 +9051,30 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     if (customerSettingModel.showCustomerAddress) {
                         if (receiptModel?.order?.customer?.addresses?.isNotEmpty() == true) {
 
-                            PrintSunmiUtils.customerAddress(
-                                padLine(
-                                    receiptModel?.order?.customer?.addresses?.size?.minus(1)?.let {
-                                        receiptModel?.order?.customer?.addresses?.get(
-                                            it
-                                        )?.fullAddress
-                                    }, "", if (customerSettingModel.fonts == LARGE) 23 else 48
-                                ).toString()
-                            )
+                            receiptModel?.order?.customer?.addresses!!.filter { it.typeOfAddress == SHIPPING_ADDRESS }
+                                .forEach {
+
+                                    if (it.typeOfAddress.equals(
+                                            SHIPPING_ADDRESS,
+                                            ignoreCase = true
+                                        )
+                                    ) {
+                                        PrintSunmiUtils.customerAddress(
+                                            it.fullAddress
+                                        )
+                                    }
+                                }
+
+
+//                            PrintSunmiUtils.customerAddress(
+//                                padLine(
+//                                    receiptModel?.order?.customer?.addresses?.size?.minus(1)?.let {
+//                                        receiptModel?.order?.customer?.addresses?.get(
+//                                            it
+//                                        )?.fullAddress
+//                                    }, "", if (customerSettingModel.fonts == LARGE) 23 else 48
+//                                ).toString()
+//                            )
 
                         }
                     }
@@ -9508,7 +9658,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                 if (receiptModel?.order?.customer != null) {
 
-
+                    SunmiPrintHelper.getInstance().lineWrap(1)
                     PrintSunmiUtils.customerDetailsInner()
 
                     if (customerSettingModel.showCustomerName) {
@@ -9546,15 +9696,25 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     if (customerSettingModel.showCustomerAddress) {
                         if (receiptModel?.order?.customer?.addresses?.isNotEmpty() == true) {
 
-                            PrintSunmiUtils.normalText(
-                                padLine(
-                                    receiptModel?.order?.customer?.addresses?.size?.minus(1)?.let {
-                                        receiptModel?.order?.customer?.addresses?.get(
-                                            it
-                                        )?.fullAddress
-                                    }, "", if (customerSettingModel.fonts == LARGE) 23 else 48
-                                ).toString()
-                            )
+                            receiptModel?.order?.customer?.addresses?.filter { it.typeOfAddress == SHIPPING_ADDRESS }
+                                ?.forEach {
+
+                                    if (it.typeOfAddress.equals(
+                                            SHIPPING_ADDRESS,
+                                            ignoreCase = true
+                                        )
+                                    ) {
+
+                                        PrintSunmiUtils.normalText(
+                                            padLine(
+                                                it.fullAddress,
+                                                "",
+                                                if (customerSettingModel.fonts == LARGE) 23 else 48
+                                            ).toString()
+                                        )
+                                    }
+                                }
+
 
                         }
                     }
@@ -9576,6 +9736,33 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 SunmiPrintHelper.getInstance().lineWrap(1)
                 receiptModel?.order?.digital_receipt_url?.let { PrintSunmiUtils.qrCodeInner(it) }
 
+            }
+
+            if (receiptModel?.order?.payments?.get(receiptModel?.order?.payments?.size!! - 1)?.paymentType.equals(
+                    "Cash",
+                    true
+                )
+            ) {
+
+                val aa = ByteArray(5)
+
+                aa[0] = 0x10
+                aa[1] = 0x14
+                aa[2] = 0x00
+                aa[3] = 0x00
+                aa[4] = 0x00
+
+
+                try {
+                    SunmiPrinterApi.getInstance().sendRawData(aa)
+                } catch (e: java.lang.Exception) {
+                    e.printStackTrace()
+                }
+                try {
+                    SunmiPrintHelper.getInstance().openCashBox()
+                } catch (e: java.lang.Exception) {
+                    e.printStackTrace()
+                }
             }
 
             PrintSunmiUtils.cutPaperInner()

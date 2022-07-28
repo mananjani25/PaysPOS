@@ -309,16 +309,10 @@ class DashBoardCategoryViewModel @Inject constructor(
         cartModel = null
         viewModelScope.launch {
             posRepository.deleteCart(prefProvider.getValueInt(EMPLOYEE_ID, 0))
-            posRepository.deselectedItem(0)
             destroyedList.clear()
         }
     }
 
-    fun selectedItems(itemid: Int, isSelected: Int) {
-        viewModelScope.launch {
-            posRepository.selectedItem(itemid, isSelected)
-        }
-    }
 
     fun deleteManualSaleCart() {
         viewModelScope.launch {
@@ -2848,6 +2842,7 @@ class DashBoardCategoryViewModel @Inject constructor(
             totalTaxAmount = totalTax
             orderItemsAttributes = dineInOrderItemAttributed(cartModel)
             offlineId = null
+            deletedGuestItems = cartModel.listOfItemRemoved.toCollection(arrayListOf())
             //            paymentAttributes =
 //                paymentAttributes(
 //                    cartModel,
