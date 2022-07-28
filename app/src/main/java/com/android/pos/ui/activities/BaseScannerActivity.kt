@@ -5,10 +5,7 @@ import android.content.*
 import android.content.pm.PackageManager
 import android.content.res.Configuration
 import android.graphics.Point
-import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
-import android.os.Message
+import android.os.*
 import android.util.DisplayMetrics
 import android.util.Log
 import android.view.Display
@@ -71,10 +68,13 @@ open class BaseScannerActivity : AppCompatActivity(), ScannerAppEngine, IDcsSdkA
     private val EVENT = 2
     private val TAG = "BaseScannerActivity"
 
+    private val mSNAPIList = java.util.ArrayList<DCSScannerInfo>()
+
+
     @Inject
     lateinit var barcodePrefProvider: BarcodePrefProvider
 
-    private fun initializeScanner() {
+    fun initializeScanner() {
         mScannerInfoList = MainApplication.mScannerInfoList
         mOfflineScannerInfoList = ArrayList<DCSScannerInfo>()
 
@@ -102,9 +102,12 @@ open class BaseScannerActivity : AppCompatActivity(), ScannerAppEngine, IDcsSdkA
         // ...
         initializeDcsSdkWithAppSettings()
 
-        //reconnect the scanner
-        connectToScanner(getScannerPref().getScannerData())
+
+
     }
+
+
+
 
     fun resetConnectionThroughBarcode(flBarcode: FrameLayout?) {
         if (!checkBluetoothAvailable()) {
@@ -149,7 +152,7 @@ open class BaseScannerActivity : AppCompatActivity(), ScannerAppEngine, IDcsSdkA
         }
     }
 
-    private fun checkBluetoothAvailable(): Boolean {
+    fun checkBluetoothAvailable(): Boolean {
         return packageManager.hasSystemFeature(PackageManager.FEATURE_BLUETOOTH)
     }
 
@@ -166,6 +169,23 @@ open class BaseScannerActivity : AppCompatActivity(), ScannerAppEngine, IDcsSdkA
         //Use a positive priority
         filter.priority = 2
         registerReceiver(onNotification, filter)
+
+        mSNAPIList.clear()
+        updateScannersList()
+        for (device in getActualScannersList()!!) {
+            if (device.connectionType == DCSSDK_CONN_TYPES.DCSSDK_CONNTYPE_USB_SNAPI) {
+                mSNAPIList.add(device)
+            }
+        }
+        //reconnect the scanner
+//        connectToScanner(getScannerPref().getScannerData())
+        Log.e("mSNAPIList", mSNAPIList.size.toString())
+        if (mSNAPIList.isNotEmpty() && !mSNAPIList[0].isActive) {
+            Handler(Looper.getMainLooper()).postDelayed({
+                connectScannerCable(mSNAPIList[0].scannerID)
+            }, 2000)
+
+        }
     }
 
     override fun onPause() {
@@ -535,6 +555,50 @@ open class BaseScannerActivity : AppCompatActivity(), ScannerAppEngine, IDcsSdkA
 
                 if (result == DCSSDK_RESULT.DCSSDK_RESULT_SUCCESS) {
                     curAvailableScanner = scanner
+                    curAvailableScanner?.isConnected = true
+                    return@executeAsyncTask true
+                }
+            }
+            curAvailableScanner = null
+            return@executeAsyncTask false
+
+        }, onPostExecute = {
+            progressDialog?.let { progressDialog ->
+                if (progressDialog.isShowing) {
+                    progressDialog.dismiss()
+                }
+            }
+            if (!it) {
+                Toast.makeText(
+                    MainApplication.getInstance(),
+                    "Unable to communicate with scanner",
+                    Toast.LENGTH_SHORT
+                ).show()
+                scannersListHasBeenUpdated()
+            }
+        })
+    }
+
+
+    private fun connectScannerCable(scanner: Int) {
+        var progressDialog: CustomProgressDialog? = null
+        lifecycleScope.executeAsyncTask(onPreExecute = {
+            progressDialog =
+                CustomProgressDialog(this, "Connecting To scanner. Please Wait...")
+            progressDialog?.setCancelable(false)
+            progressDialog?.show()
+            progressDialog?.setOnCancelListener(DialogInterface.OnCancelListener {
+                //scanner dialog cancel
+            })
+        }, doInBackground = {
+            scanner.let {
+                var result: DCSSDK_RESULT? = null
+                runOnUiThread(Runnable {
+                    result = connect(it)
+                })
+
+                if (result == DCSSDK_RESULT.DCSSDK_RESULT_SUCCESS) {
+//                    curAvailableScanner = scanner
                     curAvailableScanner?.isConnected = true
                     return@executeAsyncTask true
                 }
@@ -1238,8 +1302,8 @@ open class BaseScannerActivity : AppCompatActivity(), ScannerAppEngine, IDcsSdkA
         val address = bluetoothAdapter.address
         Log.e("!_@_ MAC :", address.toString())*/
         // return "E0:D0:83:0B:B9:7A"
-       // return "0C:25:76:B4:0B:93"
-         return "0c:25:76:b4:0b:95" // Sunmi Bluetooth MAC Address
+        // return "0C:25:76:B4:0B:93"
+        return "0c:25:76:b4:0b:95" // Sunmi Bluetooth MAC Address
         //0c:25:76:b4:0b:95
         //  return "0c:25:76:b4:0b:95"
     }
