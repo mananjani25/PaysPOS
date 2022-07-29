@@ -1114,11 +1114,24 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         totalGuestCount = getOrderDetailsResponse?.guestAttributes?.size?.minus(1) ?: 1
         Log.e("TODAY", "totalGuestCount:  ${totalGuestCount}")
         Log.e("TODAY", "toFinalAmt:  ${toFinalAmt}")
-        var divideCashDiscount = MethodUtils.calculateCashDiscount(
-            toFinalAmt,
-            prefProvider,
-            requireContext()
-        ) / totalGuestCount
+
+        var divideCashDiscount = 0.0
+        if(getOrderDetailsResponse?.payments?.size!! >1){
+            var payguest = totalGuestCount- paidGuestAmount
+            divideCashDiscount = MethodUtils.calculateCashDiscount(
+                toFinalAmt,
+                prefProvider,
+                requireContext()
+            ) / payguest
+
+        }else{
+            divideCashDiscount = MethodUtils.calculateCashDiscount(
+                toFinalAmt,
+                prefProvider,
+                requireContext()
+            ) / totalGuestCount
+        }
+
 
         Log.e(TAG, "divideCashDiscount:  ${divideCashDiscount}")
         var orderOfflineId = randomOfflineId()

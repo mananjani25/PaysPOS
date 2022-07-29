@@ -736,8 +736,23 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
         guestRequestModel?.paymentAttributes!!.totalDiscount =
             totalDiscount
         guestRequestModel?.paymentAttributes!!.paymentType = paymentType
-        guestRequestModel?.paymentAttributes!!.cash_discount_or_surcharge =
-            cashDiscountSurcharge
+        if (paymentType == "Cash") {
+            if (cashDiscountType == "CashDiscount") {
+                guestRequestModel?.paymentAttributes!!.cash_discount_or_surcharge =
+                    cashDiscountSurcharge
+            }else{
+                guestRequestModel?.paymentAttributes!!.cash_discount_or_surcharge =
+                    0.0
+            }
+        } else {
+            if (cashDiscountType == "SurCharge") {
+                guestRequestModel?.paymentAttributes!!.cash_discount_or_surcharge =
+                    cashDiscountSurcharge
+            }else{
+                guestRequestModel?.paymentAttributes!!.cash_discount_or_surcharge =
+                    0.0
+            }
+        }
         guestRequestModel?.paymentAttributes!!.cash_discount_type = cashDiscountType
         guestRequestModel?.paymentAttributes!!.terminalId =
             prefProvider.getValueInt(Constants.TERMINAL_ID, 0)
@@ -2179,13 +2194,10 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                         splitAllAmounts(Constants.TOTAL_DISCOUNT, totalDiscount)
                         splitAllAmounts(Constants.TAX_CHARGE, totalTax)
                         splitAllAmounts(Constants.SERVICE_CHARGE, totalServiceCharge)
-                        if (cashDiscountType == "CashDiscount") {
-                            splitAllAmounts(
-                                Constants.CASH_DISCOUNT_SURCHARGE,
-                                cashDiscountSurcharge
-                            )
-                        }
-
+                        splitAllAmounts(
+                            Constants.CASH_DISCOUNT_SURCHARGE,
+                            cashDiscountSurcharge
+                        )
                         splitAllAmounts(Constants.TIP, 0.0)
                     } else if (custom_paymentAmount != 0.0) {
                         bundle.putBoolean("isSpilt", false)
@@ -2196,13 +2208,10 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                         splitAllAmounts(Constants.TOTAL_DISCOUNT, totalDiscount)
                         splitAllAmounts(Constants.TAX_CHARGE, totalTax)
                         splitAllAmounts(Constants.SERVICE_CHARGE, totalServiceCharge)
-                        if (cashDiscountType == "CashDiscount") {
-                            splitAllAmounts(
-                                Constants.CASH_DISCOUNT_SURCHARGE,
-                                cashDiscountSurcharge
-                            )
-                        }
-
+                        splitAllAmounts(
+                            Constants.CASH_DISCOUNT_SURCHARGE,
+                            cashDiscountSurcharge
+                        )
                         splitAllAmounts(Constants.TIP, 0.0)
                     } else {
                         bundle.putBoolean("isSpilt", true)
@@ -2213,12 +2222,10 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                         splitAllAmounts(Constants.TOTAL_DISCOUNT, totalDiscount)
                         splitAllAmounts(Constants.TAX_CHARGE, totalTax)
                         splitAllAmounts(Constants.SERVICE_CHARGE, totalServiceCharge)
-                        if (cashDiscountType == "CashDiscount") {
-                            splitAllAmounts(
-                                Constants.CASH_DISCOUNT_SURCHARGE,
-                                cashDiscountSurcharge
-                            )
-                        }
+                        splitAllAmounts(
+                            Constants.CASH_DISCOUNT_SURCHARGE,
+                            cashDiscountSurcharge
+                        )
 
                         splitAllAmounts(Constants.TIP, 0.0)
                     }
