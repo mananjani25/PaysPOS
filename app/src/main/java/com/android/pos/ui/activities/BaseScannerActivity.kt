@@ -103,10 +103,7 @@ open class BaseScannerActivity : AppCompatActivity(), ScannerAppEngine, IDcsSdkA
         initializeDcsSdkWithAppSettings()
 
 
-
     }
-
-
 
 
     fun resetConnectionThroughBarcode(flBarcode: FrameLayout?) {
@@ -150,6 +147,31 @@ open class BaseScannerActivity : AppCompatActivity(), ScannerAppEngine, IDcsSdkA
         } else {
             flBarcode?.removeAllViews()
         }
+    }
+
+    open fun getSnapiBarcode(llBarcode: FrameLayout?) {
+        val layoutParams = LinearLayout.LayoutParams(-1, -1)
+        val barCodeView: BarCodeView? =
+            MainApplication.sdkHandler?.dcssdkGetUSBSNAPIWithImagingBarcode()
+        val display = windowManager.defaultDisplay
+        val size = Point()
+        display.getSize(size)
+        val width = size.x
+        val height = size.y
+        val orientation = this.resources.configuration.orientation
+        var x = width * 9 / 10
+        var y = x / 3
+        if (getDeviceScreenSize() > 6) { // TODO: Check 6 is ok or not
+            if (orientation == Configuration.ORIENTATION_LANDSCAPE) {
+                x = width / 2
+                y = x / 3
+            } else {
+                x = width * 2 / 3
+                y = x / 3
+            }
+        }
+        barCodeView?.setSize(x, y)
+        llBarcode?.addView(barCodeView, layoutParams)
     }
 
     fun checkBluetoothAvailable(): Boolean {

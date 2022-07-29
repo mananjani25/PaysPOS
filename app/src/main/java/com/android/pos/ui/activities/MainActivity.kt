@@ -989,7 +989,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
             selectedFilePath = photo.absolutePath
             cameraUri = FileProvider.getUriForFile(
                 this,
-                APPLICATION_ID + ".provider",
+                "$APPLICATION_ID.provider",
                 photo
             )
             val pictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
