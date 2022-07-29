@@ -871,7 +871,7 @@
                         android:text="Actual In Time" />
 
                     <androidx.appcompat.widget.AppCompatTextView
-                        android:id="@+id/txtTotal"
+                        android:id="@+id/txtTotalLabel"
                         style="@style/ReportItemText"
                         android:gravity="end"
                         android:text="Total" />

@@ -46,7 +46,8 @@ class CategoryParentAdapter(
     }
 
 
-    fun addList(tmpList: ArrayList<CategoryParentModel>) {
+    fun addList(tmpList: List<CategoryParentModel>) {
+        Log.e(TAG,"tmpListtmpList:  ${tmpList.size}")
         list.clear()
         list = arrayListOf()
         list.addAll(tmpList)
