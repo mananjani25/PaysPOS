@@ -60,6 +60,7 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
 import javax.inject.Inject
+import kotlin.collections.ArrayList
 import kotlin.math.abs
 
 @AndroidEntryPoint
@@ -103,6 +104,8 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
 
     private val salesOrderDetailsAdapter by lazy { SalesOrderDetailsAdapter() }
+
+    private val clockInClockOutAdapter by lazy { ClockInClockOutAdapter() }
 
     private val creditCardBreakdownAdapter by lazy { CreditCardBreakDownAdapter(hideRefund = false) }
 
@@ -451,7 +454,12 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
             )
             addBuilderText(
                 builder,
-                MethodUtils.getUSFormatNumber(prefProvider?.getValue(Constants.BUSINESS_PHONE_NO, "").toString())
+                MethodUtils.getUSFormatNumber(
+                    prefProvider?.getValue(
+                        Constants.BUSINESS_PHONE_NO,
+                        ""
+                    ).toString()
+                )
             )
 
             builder.addFeedLine(2)
@@ -2737,6 +2745,8 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
         binding.rvCreditAuditTip.adapter = creditTipAuditAdapter
         binding.rvemployeeGuestDetails.adapter = employeeGuestDetailsAdapter
         binding.rvSaleCategorySummary?.adapter = saleCategorySummaryAdapter
+        binding.rvClockInClockOut?.adapter = clockInClockOutAdapter
+
     }
 
     private fun initObservers() {
@@ -2908,6 +2918,24 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
                         headerView = null,
                         visible = it1.isNotEmpty()
                     )
+                }
+
+                it.clockInClockOut?.let {
+                    if (it.isNotEmpty()) {
+                        var list: ArrayList<EodReportResponse.Data.ClockInClockOut> = arrayListOf()
+                        it.forEach {
+
+
+                        }
+
+                        clockInClockOutAdapter.setList(it[0])
+
+
+                    } else {
+                        binding.rvClockInClockOut?.gone()
+                        binding.txtClockInClockOut?.gone()
+                        binding.linearClockInOut?.gone()
+                    }
                 }
                 if (it.salesPerCategorySummary != null) {
 

@@ -24,6 +24,7 @@ import com.android.pos.data.model.responseModel.GuestPaymentAttributes
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.DINE_IN_ADAPTER_LIST
 import com.android.pos.data.remote.Constants.DINE_IN_GUEST_PAYMENT_DATA
+import com.android.pos.data.remote.Constants.OPTION_TYPE
 import com.android.pos.data.remote.Constants.PRINT_DATA_DINE_IN
 import com.android.pos.databinding.FragmentCheckoutDetailsNewBinding
 import com.android.pos.di.ApiModule1
@@ -481,10 +482,10 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                                 splitAllAmounts(Constants.TAX_CHARGE, totalTax)
                                 splitAllAmounts(Constants.SERVICE_CHARGE, totalServiceCharge)
 //                                if (cashDiscountType == "CashDiscount") {
-                                    splitAllAmounts(
-                                        Constants.CASH_DISCOUNT_SURCHARGE,
-                                        cashDiscountSurcharge
-                                    )
+                                splitAllAmounts(
+                                    Constants.CASH_DISCOUNT_SURCHARGE,
+                                    cashDiscountSurcharge
+                                )
 //                                }
 
                                 splitAllAmounts(Constants.TIP, 0.0)
@@ -498,10 +499,10 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                                 splitAllAmounts(Constants.TAX_CHARGE, totalTax)
                                 splitAllAmounts(Constants.SERVICE_CHARGE, totalServiceCharge)
 //                                if (cashDiscountType == "CashDiscount") {
-                                    splitAllAmounts(
-                                        Constants.CASH_DISCOUNT_SURCHARGE,
-                                        cashDiscountSurcharge
-                                    )
+                                splitAllAmounts(
+                                    Constants.CASH_DISCOUNT_SURCHARGE,
+                                    cashDiscountSurcharge
+                                )
 //                                }
 
                                 splitAllAmounts(Constants.TIP, 0.0)
@@ -515,10 +516,10 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                                 splitAllAmounts(Constants.TAX_CHARGE, totalTax)
                                 splitAllAmounts(Constants.SERVICE_CHARGE, totalServiceCharge)
 //                                if (cashDiscountType == "CashDiscount") {
-                                    splitAllAmounts(
-                                        Constants.CASH_DISCOUNT_SURCHARGE,
-                                        cashDiscountSurcharge
-                                    )
+                                splitAllAmounts(
+                                    Constants.CASH_DISCOUNT_SURCHARGE,
+                                    cashDiscountSurcharge
+                                )
 //                                }
 
                                 splitAllAmounts(Constants.TIP, 0.0)
@@ -750,6 +751,14 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
             guestRequestModel?.paymentAttributes!!.cardNumber =
                 if (cardNumber.isNotEmpty()) cardNumber.takeLast(4) else ""
             guestRequestModel?.paymentAttributes!!.cardType = "Credit"
+            Log.e(TAG, "getOptionType:  ${prefProvider.getValue(OPTION_TYPE, "")}")
+            if (prefProvider.getValue(OPTION_TYPE, "").equals("SurCharge", true)) {
+                guestRequestModel?.paymentAttributes?.cash_discount_or_surcharge =
+                    cashDiscountSurcharge
+
+            } else {
+                guestRequestModel?.paymentAttributes?.cash_discount_or_surcharge = 0.0
+            }
         } else if (paymentType == "Card" && toJson.isNotEmpty()) {
 
             if (toJson.isNotEmpty()) {
@@ -831,6 +840,22 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
             guestPaymentAttributes.cardType = guestRequestModel?.paymentAttributes!!.cardType
             guestPaymentAttributes.transactionId =
                 guestRequestModel?.paymentAttributes!!.transactionId
+            if (prefProvider.getValue(OPTION_TYPE, "").equals("SurCharge", true)) {
+                guestPaymentAttributes?.cash_discount_or_surcharge =
+                    cashDiscountSurcharge
+
+            } else {
+                guestPaymentAttributes?.cash_discount_or_surcharge = 0.0
+            }
+        } else if (paymentType == "Cash") {
+            if (prefProvider.getValue(OPTION_TYPE, "").equals("CashDiscount", true)) {
+                guestPaymentAttributes?.cash_discount_or_surcharge = cashDiscountSurcharge
+                guestRequestModel?.paymentAttributes?.cash_discount_or_surcharge = cashDiscountSurcharge
+
+            } else {
+                guestPaymentAttributes?.cash_discount_or_surcharge = 0.0
+                guestRequestModel?.paymentAttributes?.cash_discount_or_surcharge = 0.0
+            }
         }
 
         guestRequestModel?.paymentAttributes!!.paymentAttributes =
