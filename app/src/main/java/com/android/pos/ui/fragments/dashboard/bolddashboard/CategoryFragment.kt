@@ -281,7 +281,7 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
                 R.layout.search_category_item,
                 searchList
             )
-        edtSearch?.threshold = 3
+        edtSearch?.threshold = 2
         edtSearch?.setAdapter(searchAdapter)
         edtSearch?.setOnItemClickListener { parent, _, position, _ ->
             val model: CategorySearchData = parent.getItemAtPosition(position) as CategorySearchData
@@ -309,7 +309,9 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
                 if (it.id == model.categoryID) {
                     Log.e(TAG, "indexCategory  ${index}")
                     it.isSelected = true
+                    prefProvider.setValueInt(Constants.CAT_ID_SELECTED, model.categoryID)
                     tabPos = index
+                    categoryParentAdapter.notifyItemChanged(posParent)
                     return@forEachIndexed
 
 
@@ -325,40 +327,9 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
             }
 
         }
-        categoryParentAdapter.addList(tabList.toCollection(arrayListOf()))
-        binding.rvCategoryParent.scrollToPosition(posParent)
-        categoryParentAdapter.notifyDataSetChanged()
-
-        /*  tabList.forEach {
-              posParent++
-
-              it.list.forEachIndexed { index, it ->
-
-                  if (it.id == model.categoryID) {
-                      Log.e(TAG, "indexCategory  ${index}")
-                      it.isSelected = true
-                      tabPos = index
-                      return@forEachIndexed
-
-
-                  } else {
-                      it.isSelected = false
-                  }
-
-              }
-              Log.e(TAG, "tabPosInside  ${tabPos}")
-              if (tabPos != -1) {
-
-                  return@forEach
-              }
-
-
-          }*/
-        Log.e(TAG, "selectedTabList  ${Gson().toJson(tabList)}")
-
-        categoryParentAdapter.addList(tabList.toCollection(arrayListOf()))
-        binding.rvCategoryParent.scrollToPosition(posParent)
-        categoryParentAdapter.notifyDataSetChanged()
+        Log.d(TAG, "resetTabbySearch: "+Gson().toJson(tabList))
+//        categoryParentAdapter.addList(tabList.toCollection(arrayListOf()))
+//        categoryParentAdapter.notifyDataSetChanged()
 
         var itemList: ArrayList<TbItem?> = arrayListOf()
         Log.e(TAG, "tabPos  ${tabPos}")
@@ -366,9 +337,16 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
         if (posParent == 1) {
             tabPos += 8
         }
-
+        else if (posParent == 2){
+            tabPos += 16
+        }
+        else if (posParent == 3){
+            tabPos +=24
+        }
+        if (posParent != 0) {
+            binding.rvCategoryParent.smoothScrollToPosition(posParent)
+        }
         if (tabPos != -1) {
-
             categoryList1[tabPos].inventoryLists?.filter {
                 it!!.isHide
             }?.let { it1 ->
@@ -386,20 +364,6 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
             itemAdapter.notifyDataSetChanged()
 
         }
-
-        // (binding.rvTabLayout.adapter as CategoryTabAdapter1).list.clear()
-        /* (binding.rvCategoryParent.adapter as CategoryParentAdapter).list = tabList
-         binding.rvCategoryParent.adapter?.notifyDataSetChanged()
-
-         val listCategry = arrayListOf<TbItem?>()
-         //listCategry.add(0, TbItem())
-         categoryList1[tabPos].inventoryLists?.let { it1 -> listCategry.addAll(it1)
-         }
-         (binding.rvItemList.adapter as ItemAdapter).list.clear()
-         (binding.rvItemList.adapter as ItemAdapter).list = listCategry
-         binding.rvItemList.adapter?.notifyDataSetChanged()
- */
-
     }
 
 
@@ -512,6 +476,7 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
                     it.data.filter {
                         it.isHide
                     }.let { it1 ->
+                        edtSearch?.text?.clear()
                         if (prefProvider.getValueInt(Constants.CAT_ID_SELECTED, 0) == 0) {
                             Log.e(TAG, "GOTZERO")
                             itemAdapter.addList(it.data.toCollection(arrayListOf()))
