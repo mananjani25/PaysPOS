@@ -231,19 +231,14 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
         var itemList: ArrayList<TbItem?> = arrayListOf()
         Log.e(TAG, "tabPosGET  ${tabPos}")
         Log.e(TAG, "posParentGET  ${posParent}")
-        if (posParent == 1) {
-            tabPos += 8
-        }
-        else if (posParent == 2){
-            tabPos += 16
-        }
-        else if (posParent == 3){
-            tabPos +=24
-        }
 
-        if (posParent != 0) {
-            binding.rvCategoryParent.smoothScrollToPosition(posParent)
-        }
+        var tempV = getTabPosByParent(posParent)
+        tabPos += tempV
+
+
+
+        binding.rvCategoryParent.smoothScrollToPosition(posParent)
+
         if (tabPos != -1) {
             if (tabPos < categoryList1.size) {
                 categoryList1[tabPos].inventoryLists?.filter {
@@ -327,25 +322,29 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
             }
 
         }
-        Log.d(TAG, "resetTabbySearch: "+Gson().toJson(tabList))
+        Log.d(TAG, "resetTabbySearch: " + Gson().toJson(tabList))
 //        categoryParentAdapter.addList(tabList.toCollection(arrayListOf()))
 //        categoryParentAdapter.notifyDataSetChanged()
 
         var itemList: ArrayList<TbItem?> = arrayListOf()
         Log.e(TAG, "tabPos  ${tabPos}")
         Log.e(TAG, "posParent  ${posParent}")
-        if (posParent == 1) {
-            tabPos += 8
-        }
-        else if (posParent == 2){
-            tabPos += 16
-        }
-        else if (posParent == 3){
-            tabPos +=24
-        }
-        if (posParent != 0) {
-            binding.rvCategoryParent.smoothScrollToPosition(posParent)
-        }
+        var tabTempPos = getTabPosByParent(posParent)
+        Log.e(TAG, "tabTempPos  ${tabTempPos}")
+        tabPos += tabTempPos
+        /* if (posParent == 1) {
+             tabPos += 8
+         } else if (posParent == 2) {
+             tabPos += 16
+         } else if (posParent == 3) {
+             tabPos += 24
+         } else if (posParent == 4) {
+             tabPos += 32
+         } else if (posParent == 5) {
+             tabPos += 40
+         }*/
+
+        binding.rvCategoryParent.smoothScrollToPosition(posParent)
         if (tabPos != -1) {
             categoryList1[tabPos].inventoryLists?.filter {
                 it!!.isHide
@@ -364,6 +363,12 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
             itemAdapter.notifyDataSetChanged()
 
         }
+    }
+
+    private fun getTabPosByParent(posParent: Int): Int {
+        return posParent * 8
+
+
     }
 
 
@@ -459,11 +464,11 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
     }
 
     override fun onCategorySelected(parentPosition: Int, childPosition: Int) {
-        Log.e(TAG,"parentPosition  ${parentPosition} childPosition ${childPosition}")
+        Log.e(TAG, "parentPosition  ${parentPosition} childPosition ${childPosition}")
 
         val categoryId =
             categoryParentAdapter.getList()[parentPosition].list[childPosition].id
-        Log.e(TAG,"categoryId  ${categoryId}")
+        Log.e(TAG, "categoryId  ${categoryId}")
 
         prefProvider.setValueInt(Constants.CAT_ID_SELECTED, categoryId)
 
