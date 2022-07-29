@@ -9,6 +9,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
+import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
@@ -38,6 +39,7 @@ import com.android.pos.data.remote.Constants.TAKEOUT
 import com.android.pos.databinding.FragmentDashboardCategoryBoldPosBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.di.RolePermission
+import com.android.pos.ui.activities.MainActivity
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.android.pos.ui.fragments.payment.PaymentViewModel
 import com.android.pos.ui.fragments.settings.hardware.printer.BluetoothUtil
@@ -48,6 +50,7 @@ import com.android.pos.utils.callback.ItemListner
 import com.android.pos.utils.extensions.gone
 import com.android.pos.utils.extensions.visible
 import com.android.pos.utils.printer.PrinterClass
+import com.android.pos.utils.scanner.helpers.ScannerAppEngine
 import com.android.pos.utils.statusUtils.Resource
 import com.android.pos.utils.statusUtils.Status
 import com.epson.eposprint.Builder
@@ -57,11 +60,13 @@ import com.google.gson.reflect.TypeToken
 import com.sunmi.externalprinterlibrary.api.ConnectCallback
 import com.sunmi.externalprinterlibrary.api.SunmiPrinter
 import com.sunmi.externalprinterlibrary.api.SunmiPrinterApi
+import com.zebra.scannercontrol.FirmwareUpdateEvent
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
-class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
+class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
+    ScannerAppEngine.IScannerAppEngineDevEventsDelegate {
     private var dineInList: List<DineInModel>? = null
     private var cartList: ArrayList<CartModel> = arrayListOf()
 
@@ -343,7 +348,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
+
 
         onClick()
         if (prefProvider.getValueboolean(ONLINE_ORDER_ENABLE, false)) {
@@ -434,8 +439,16 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
 
 
         getOnlineOrderIsEnableOrNot()
+
+        initScanner()
+
+        super.onViewCreated(view, savedInstanceState)
     }
 
+    private fun initScanner() {
+        //barcode event listener
+        (activity as MainActivity).addDevEventsDelegate(this)
+    }
 
     private fun syncData() {
 
@@ -878,7 +891,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
 
 
         val dineInList: java.util.ArrayList<DineInModel> = arrayListOf()
-        dineInList.add(DineInModel(0, true, 0, "Whole Table", floorPlanTable = orderFloorDetails,))
+        dineInList.add(DineInModel(0, true, 0, "Whole Table", floorPlanTable = orderFloorDetails))
         for (i in 1..numOfGuest) {
             dineInList.add(
                 DineInModel(
@@ -963,7 +976,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
 
                         serviceCharge = serviceChargesList
                         orderId = arguments?.getInt("orderId")
-                        listOfItemRemoved= dineInList[0].listOfItemsMoved
+                        listOfItemRemoved = dineInList[0].listOfItemsMoved
 
                     }
                     cartList.add(cartModel)
@@ -1269,13 +1282,26 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
 
 
                             for (i in 0 until it.data.size) {
-                                it.data[i].orderTypes.forEach { order->
-                                    if (order.orderTypeId == createOrderResponse.data.order.orderTypeId ){
-                                        order.printerSettings.forEach { set->
-                                            if (set.printType.equals(Constants.KITCHEN,true) && set.autoPrinting){
-                                                if(checkItemsforPrinter(createOrderResponse.data.order.orderItems ?: arrayListOf(),it.data[i].printerCategories.toCollection(
-                                                        arrayListOf()))) {
-                                                    Log.e(TAG, "statusPrinter  ${it.data[i].status}")
+                                it.data[i].orderTypes.forEach { order ->
+                                    if (order.orderTypeId == createOrderResponse.data.order.orderTypeId) {
+                                        order.printerSettings.forEach { set ->
+                                            if (set.printType.equals(
+                                                    Constants.KITCHEN,
+                                                    true
+                                                ) && set.autoPrinting
+                                            ) {
+                                                if (checkItemsforPrinter(
+                                                        createOrderResponse.data.order.orderItems
+                                                            ?: arrayListOf(),
+                                                        it.data[i].printerCategories.toCollection(
+                                                            arrayListOf()
+                                                        )
+                                                    )
+                                                ) {
+                                                    Log.e(
+                                                        TAG,
+                                                        "statusPrinter  ${it.data[i].status}"
+                                                    )
                                                     if (it.data[i].status) {
                                                         initKitchenPrinter(
                                                             it.data.get(i),
@@ -1285,8 +1311,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                                                     }
                                                 }
 
-                                            }
-                                            else{
+                                            } else {
                                                 if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
                                                     findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
                                                 }
@@ -1680,7 +1705,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                                         }
                                     }
 
-                               // builder.addText(receiptModel?.order?.customer?.addresses?.get(0)?.fullAddress)
+                                // builder.addText(receiptModel?.order?.customer?.addresses?.get(0)?.fullAddress)
                             }
                         }
 
@@ -2000,7 +2025,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
                                             )
                                         }
                                     }
-                               // builder.addText(receiptModel?.order?.customer?.addresses?.get(0)?.fullAddress)
+                                // builder.addText(receiptModel?.order?.customer?.addresses?.get(0)?.fullAddress)
                             }
                         }
 
@@ -2415,5 +2440,110 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner {
             )
             viewModelPayment.createQueuePrinter(createRequest, createOrder)
         }
+    }
+
+    override fun scannerBarcodeEvent(barcodeData: ByteArray?, barcodeType: Int, scannerID: Int) {
+        Log.e(TAG, "scannerBarcodeEvent: ${barcodeData?.let { String(it) }}")
+
+        //Check product code in db
+        val productCode = barcodeData?.let { String(it) }
+
+        if (productCode.isNullOrEmpty()) {
+            viewModel.showErrorMessage("Product code is not available !!")
+            return
+        }
+        try {
+
+            viewModel.getItemByProductCode(productCode ?: "").observe(viewLifecycleOwner) {
+                it?.let { resource ->
+                    when (resource.status) {
+                        Status.SUCCESS -> {
+                            if (resource.data != null) {
+                                //data found. | Add in cart
+                                if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
+                                    //add item in the cart
+                                    addItemInCartThroughBarcode(resource.data)
+                                }
+                            } else {
+                                //data not found. Create New Item
+                                if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
+                                    val bundle = Bundle()
+                                    bundle.putString("productCode", productCode ?: "")
+                                    findNavController().navigate(
+                                        R.id.action_dashboardCategoryBoldPOS_to_createItem,
+                                        bundle
+                                    )
+                                }
+                            }
+                        }
+                        Status.ERROR -> {
+                        }
+                        Status.LOADING -> {
+
+                        }
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
+    }
+
+
+    override fun scannerFirmwareUpdateEvent(firmwareUpdateEvent: FirmwareUpdateEvent?) {
+        TODO("Not yet implemented")
+    }
+
+    override fun scannerImageEvent(imageData: ByteArray?) {
+        TODO("Not yet implemented")
+    }
+
+    override fun scannerVideoEvent(videoData: ByteArray?) {
+        TODO("Not yet implemented")
+    }
+
+    private fun addItemInCartThroughBarcode(item: TbItem?) {
+
+
+        // qty check logic
+        var itemQty = 1
+        var itemQuantity = 1
+        if (cartList.isNotEmpty()) {
+            cartList[0].items?.filter { it.itemId == item?.itemId }?.map {
+                Log.e(TAG, "ScanItemQuantity: ${it.itemQuantity}")
+                itemQty = it.itemQuantity
+
+
+            }
+        }
+        if (item?.quantity ?: 0 >= itemQty) {
+            item?.itemQuantity = 1
+            //item?.itemQuantity = 0
+
+            if (cartList.isEmpty()) {
+                viewModel.setServiceCharges(serviceChargesList)
+            }
+
+            viewModel.cartLogic(cartList, item, Constants.ADD, false)
+
+        } else {
+            item?.itemQuantity = -1
+            AlertUtils.showCustomAlert(
+                requireActivity(),
+                getString(R.string.qty_validation)
+            )
+        }
+
+
+        /*if (prefProvider.getValue(ORDER_TYPE, "") == DINE_IN) {
+            cartList.get(0).orderType = DINE_IN
+            val dineInList = dineInCartAdapter.getList()
+            // dineInList.get(dineInCartAdapter.getHeaderPosition()).items.add(data)
+            dineInList.get(0).selectedPosition = dineInCartAdapter.getHeaderPosition()
+            viewModel.cartLogic(cartList, item, ADD, dineInList = dineInList)
+        } else {
+            viewModel.cartLogic(cartList, item, ADD)
+        }*/
+
     }
 }

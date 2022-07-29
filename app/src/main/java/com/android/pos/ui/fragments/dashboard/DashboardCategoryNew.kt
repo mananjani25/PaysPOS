@@ -432,7 +432,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
     private fun initScanner() {
         //barcode event listener
-        (activity as MainActivity).addDevEventsDelegate(this)
+//        (activity as MainActivity).addDevEventsDelegate(this)
     }
 
 
@@ -595,9 +595,9 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         orderTypeAdapter.setCallback(this)
         binding.rvOrderType.adapter = orderTypeAdapter
 
-        viewModel.orderTypes().observe(requireActivity(), {
+        viewModel.orderTypes().observe(requireActivity()) {
             it.data?.let { it1 -> orderTypeAdapter.addAll(it1) }
-        })
+        }
 
     }
 

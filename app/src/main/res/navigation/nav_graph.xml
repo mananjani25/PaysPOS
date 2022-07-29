@@ -1513,6 +1513,9 @@
             android:id="@+id/action_dashboardCategoryBoldPOS_to_addVariablePriceDialog"
             app:destination="@id/addVariablePriceDialog"
             app:enterAnim="@anim/nav_default_enter_anim" />
+        <action
+            android:id="@+id/action_dashboardCategoryBoldPOS_to_createItem"
+            app:destination="@id/createItem" />
 
 
     </fragment>
