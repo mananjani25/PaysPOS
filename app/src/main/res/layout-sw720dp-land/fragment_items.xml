@@ -8,6 +8,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         >
+
         <androidx.appcompat.widget.LinearLayoutCompat
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -16,8 +17,8 @@
 
             <androidx.appcompat.widget.LinearLayoutCompat
                 android:layout_width="match_parent"
-                android:orientation="vertical"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
 
                 <View
                     android:layout_width="match_parent"
@@ -60,9 +61,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="@dimen/_25sdp"
                     android:layout_gravity="center"
+                    android:layout_marginVertical="@dimen/_10sdp"
                     android:background="@drawable/button_action_hover"
                     android:gravity="center"
-                    android:layout_marginVertical="@dimen/_10sdp"
                     android:text="@string/add_new_items"
                     android:textColor="@color/white"
                     android:textSize="@dimen/_7sdp"

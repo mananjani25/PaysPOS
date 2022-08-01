@@ -60,7 +60,6 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
 import javax.inject.Inject
-import kotlin.collections.ArrayList
 import kotlin.math.abs
 
 @AndroidEntryPoint
@@ -159,7 +158,7 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
             binding.txtEmail.setOnClickListener {
 
 
-                if (viewModel.selectedTerminalId.isNotEmpty())
+                if (viewModel.selectedTerminalId.isNotEmpty()) {
                     viewModel.getEmployeeEmail(viewModel.selectedTerminalId.toInt())
                         .observe(viewLifecycleOwner) {
 
@@ -174,6 +173,18 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
                                 )
                             }
                         }
+                }
+                else{
+                    val bundle = Bundle()
+                    bundle.putBoolean("EOD", true)
+                    bundle.putInt("type", 2)
+                    bundle.putString("email", "")
+                    findNavController().navigate(
+                        R.id.action_reportEODFragment_to_sendReceiptFragment,
+                        bundle
+                    )
+
+                }
 
 
                 //  viewModel.getReportSummary("")

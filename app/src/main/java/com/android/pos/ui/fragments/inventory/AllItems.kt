@@ -11,6 +11,7 @@ import android.view.ViewGroup
 import androidx.appcompat.widget.PopupMenu
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -24,11 +25,13 @@ import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.callback.ItemCallback
 import com.android.pos.utils.extensions.alert
+import com.android.pos.utils.extensions.runOnUiThread
 import com.android.pos.utils.statusUtils.Status
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class AllItems(val clickedPosition: Int) : Fragment(),ItemCallback {
+class AllItems(val clickedPosition: Int) : Fragment(), ItemCallback {
 
     private var isreOrder: Boolean = false
     private var deleteAndHide: Boolean = false
@@ -38,11 +41,12 @@ class AllItems(val clickedPosition: Int) : Fragment(),ItemCallback {
     private lateinit var adapter: ItemListAdapter
     private lateinit var binding: FragmentItemsBinding
     private val viewModel by viewModels<ItemsViewModel>()
-    var listSize:Int?=0
+    var listSize: Int? = 0
 
     var dragFrom = -1
     var dragTo = -1
 
+    private val TAG = this.javaClass.name
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -65,21 +69,31 @@ class AllItems(val clickedPosition: Int) : Fragment(),ItemCallback {
     }
 
     private fun searchFilter() {
+        runOnUiThread(Runnable {
 
-        binding.edtSearch.addTextChangedListener(object : TextWatcher {
-            override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
+            binding.edtSearch.addTextChangedListener(object : TextWatcher {
+                override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
 
-            }
+                }
 
-            override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
-            }
+                override fun beforeTextChanged(
+                    s: CharSequence,
+                    start: Int,
+                    count: Int,
+                    after: Int
+                ) {
+                }
 
-            override fun afterTextChanged(s: Editable) {
+                override fun afterTextChanged(s: Editable) {
+                    lifecycleScope.launch {
+                        adapter.filter.filter(s.toString().trim())
+                    }
 
-                adapter.filter.filter(s.toString().trim())
 
-            }
+                }
+            })
         })
+
     }
 
 
@@ -170,7 +184,7 @@ class AllItems(val clickedPosition: Int) : Fragment(),ItemCallback {
                             adapter.add(it1 as List<TbItem>)
                             binding.edtSearch.hint = "Search (" + it1.size + ") Items"
                         }
-                        listSize=it.data?.size
+                        listSize = it.data?.size
 
                     }
                     Status.ERROR -> {
@@ -191,7 +205,7 @@ class AllItems(val clickedPosition: Int) : Fragment(),ItemCallback {
         viewModel.data.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
 //                if (!isreOrder)
-                    AlertUtils.showCustomAlert(requireActivity(), it.message)
+                AlertUtils.showCustomAlert(requireActivity(), it.message)
                 val intent = Intent()
                 intent.action = "inventory"
                 intent.putExtra("position", clickedPosition)
