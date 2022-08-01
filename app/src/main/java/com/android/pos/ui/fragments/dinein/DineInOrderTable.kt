@@ -1094,7 +1094,9 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
         viewModel.msgText.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
-                AlertUtils.showCustomAlert(requireContext(), it)
+                if (it.toString() != "null"){
+                    AlertUtils.showCustomAlert(requireContext(), it)
+                }
                 dineInTableAdapter.updateStatus(clickedPos, isFireAll)
             }
         }
