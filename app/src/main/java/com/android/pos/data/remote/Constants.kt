@@ -29,6 +29,12 @@ object Constants {
     const val LOCK_SCREEN_TRANSACTION = "lock_screen_after_each_transaction"
     const val DINEIN_FLOORPLAN_SHOW_TABLENAME = "dine_floorplan_show_tablename"
 
+    const val PRINTER_QUEUE_DATA = "Printer_Queue_Data"
+    const val PRINTER_QUEUE_DATA_RECEIVED = "Printer_Queue_Data_Received"
+    const val DATA = "Data"
+    const val PRITNER_QUEUE_DATA_DELETE = "PRITNER_QUEUE_DATA_DELETE"
+
+
     //SharedPref Keys
     const val AUTH_TOKEN = "authToken"
     const val TERMINAL_ID = "terminalId"
@@ -265,7 +271,6 @@ object Constants {
     const val UPDATE_LOCK_SCREEN_PERMISSION = "locations/update_lock_screen_permission"
 
 
-
     const val ACTIVE_ORDER = "active_order"
     const val UPCOMING_ORDER = "upcoming_order"
     const val COMPLETED_ORDER = "completed_order"
@@ -345,8 +350,6 @@ object Constants {
         }
 
 
-
-        Log.e("adapterList", "adapterList  ${Gson().toJson(list)}")
 
         for (i in 0 until adapterList.size) {
             adapterList.get(i).printerSettings.forEach {
@@ -644,5 +647,9 @@ object Constants {
 
     const val SUNMI_INNER_PRINTER = "InnerPrinter"
     const val SUNMI_PRINTER = "CloudPrint"
+
+
+    const val SHIPPING_ADDRESS = "Shipping"
+    const val BILLING_ADDRESS = "Billing"
 
 }

@@ -25,7 +25,7 @@ class MainApplication : Application() {
     override fun onCreate() {
         super.onCreate()
         FirebaseApp.initializeApp(this)
-        TestFairy.begin(this, "SDK-pRyI0xxm"); // vishal.j.patel+905@bacancy.com/10Ce70901@
+        TestFairy.begin(this, "SDK-oauliEDO"); // vishal.j.patel+905@bacancy.com/10Ce70901@
         instance = this
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
 

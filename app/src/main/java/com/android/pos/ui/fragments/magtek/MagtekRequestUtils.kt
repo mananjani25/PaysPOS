@@ -2,6 +2,7 @@ package com.android.pos.ui.fragments.magtek
 
 import android.content.Context
 import com.android.pos.data.model.responseModel.VenueDetailsResponse
+import com.android.pos.data.remote.Constants.AUTHORIZE
 import com.android.pos.data.remote.Constants.CAPTURE
 import com.android.pos.data.remote.Constants.CHASE_GATEWAY
 import com.android.pos.data.remote.Constants.ELAVON_GATEWAY
@@ -11,7 +12,6 @@ import com.android.pos.data.remote.Constants.HEARTLAND_GATEWAY
 import com.android.pos.data.remote.Constants.MAGENSA_SETTINGS
 import com.android.pos.data.remote.Constants.MAGENSA_SETTINGS1
 import com.android.pos.data.remote.Constants.REFUND1
-import com.android.pos.data.remote.Constants.SALE
 import com.android.pos.data.remote.Constants.TSYS_GATEWAY
 import com.android.pos.data.remote.Constants.VANIT_EXORESS_GATEWAY
 import com.android.pos.data.remote.Constants.VOID
@@ -72,7 +72,7 @@ class MagtekRequestUtils @Inject constructor(
             transactionInput = ProcessCardSwipeRequest.TransactionInput(
                 amount = payableAmount,
                 processorName = processorName(),
-                transactionType = SALE
+                transactionType = AUTHORIZE
             )
         )
 
@@ -111,7 +111,7 @@ class MagtekRequestUtils @Inject constructor(
             transactionInput = ProcessCardSwipeRequest.TransactionInput(
                 amount = payableAmount,
                 processorName = processorName(),
-                transactionType = SALE
+                transactionType = AUTHORIZE
             )
         )
 

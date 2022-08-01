@@ -26,12 +26,16 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.android.pos.R
 import com.android.pos.data.entities.*
 import com.android.pos.data.model.requestModel.OrderItemVariationAttribute
-import com.android.pos.data.model.responseModel.*
+import com.android.pos.data.model.responseModel.GetCustomerReceiptSettingsResponse
+import com.android.pos.data.model.responseModel.GetTipReponse
+import com.android.pos.data.model.responseModel.OpenOrderResponse
+import com.android.pos.data.model.responseModel.PrinterResponse
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.BUSINESS_ADDRESS
 import com.android.pos.data.remote.Constants.OPEN_ORDER
 import com.android.pos.data.remote.Constants.PRINT_PAID
 import com.android.pos.data.remote.Constants.PRINT_UNPAID
+import com.android.pos.data.remote.Constants.SHIPPING_ADDRESS
 import com.android.pos.data.remote.Constants.SUNMI_INNER_PRINTER
 import com.android.pos.data.remote.Constants.SUNMI_PRINTER
 import com.android.pos.databinding.FragmentActiveOrdersBinding
@@ -60,7 +64,6 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
 import javax.inject.Inject
-import kotlin.collections.ArrayList
 import kotlin.math.abs
 
 @AndroidEntryPoint
@@ -280,6 +283,11 @@ class ActiveOrderFragment(
     }
 
     private fun getOpenOrders() {
+        var startTime = getDateByTimeZone(viewModel.startDate.value.toString())
+        var endTime = getDateByTimeZone(viewModel.endDate.value.toString())
+        Log.e(TAG, "startTime  ${startTime}")
+        Log.e(TAG, "endTime  ${endTime}")
+
         viewModel.openOrders(
             param1,
             viewModel.startDate.value.toString(),
@@ -331,6 +339,27 @@ class ActiveOrderFragment(
 
     }
 
+    private fun getDateByTimeZone(date: String): String {
+        Log.e(TAG, "gotDate ${date}")
+        val myFormat = "MM/dd/yyyy HH:mm a"
+        val sdf = SimpleDateFormat(myFormat)
+        sdf.timeZone = TimeZone.getDefault()
+
+        var parseDate = sdf.parse(date)
+
+        val outputFormat = SimpleDateFormat(myFormat)
+        outputFormat.timeZone = TimeZone.getTimeZone(
+            prefProvider.getValue(
+                Constants.SYSTEM_TIMEZONE,
+                ""
+            )
+        )
+       return outputFormat.format(parseDate)
+       // return outputFormat.format(parseDate)
+
+
+    }
+
     override fun onItemClickListener(view: View?, pos: Int, status: String) {
         val order = adapter.getItem(pos)
         when (status) {
@@ -338,7 +367,6 @@ class ActiveOrderFragment(
                 var itemDiscountTotal: Double = 0.0
                 var itemPassDis: Double = 0.0
                 order.orderItems.forEach {
-                    dashboardViewModel.selectedItems(it.itemId, 1)
                     if (it.discountAmount != 0.0) {
                         itemDiscountTotal += MethodUtils.roundOffAmountDouble(it.discountAmount)
                     }
@@ -924,7 +952,9 @@ class ActiveOrderFragment(
                         val customerList = it.data
 
                         customerList.forEach {
-                            initPrinter(it, Constants.CUSTOMER, order, type)
+                            if (it.status) {
+                                initPrinter(it, Constants.CUSTOMER, order, type)
+                            }
 
 
                         }
@@ -1112,6 +1142,27 @@ class ActiveOrderFragment(
                 )
 
             Log.e(TAG, "getVanueLogo:  ${prefProvider.getValue(Constants.VENUE_LOGO, "")}")
+
+
+            if (customerSettingModel.showOrderIdTop) {
+                builder.addFeedLine(1)
+                builder.addTextFont(Builder.FONT_E)
+                builder.addTextAlign(Builder.ALIGN_CENTER)
+                builder.addTextLang(Builder.LANG_EN)
+                builder.addTextSize(2, 2)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.TRUE,
+                    Builder.COLOR_1
+                )
+
+                builder.addText("OrderID:" + receiptModel.id)
+
+                builder.addFeedLine(1)
+            }
+
+
             if (customerSettingModel.showVenueLogo && prefProvider.getValue(
                     Constants.VENUE_LOGO,
                     ""
@@ -1207,7 +1258,7 @@ class ActiveOrderFragment(
             )
             addBuilderText(
                 builder,
-                prefProvider.getValue(Constants.BUSINESS_PHONE_NO, "").toString()
+               MethodUtils.getUSFormatNumber( prefProvider.getValue(Constants.BUSINESS_PHONE_NO, "").toString())
             )
 
             builder.addFeedLine(1)
@@ -1253,22 +1304,7 @@ class ActiveOrderFragment(
 
             if (customerSettingModel.fonts == Constants.LARGE) {
 
-                if (customerSettingModel.showOrderIdTop) {
-                    builder.addFeedLine(1)
-                    builder.addTextFont(Builder.FONT_E)
-                    builder.addTextAlign(Builder.ALIGN_LEFT)
-                    builder.addTextLang(Builder.LANG_EN)
-                    addCustomerTextSize(builder, customerSettingModel.fonts)
-                    builder.addTextStyle(
-                        Builder.FALSE,
-                        Builder.FALSE,
-                        Builder.FALSE,
-                        Builder.COLOR_1
-                    )
 
-                    builder.addText("OrderID:" + receiptModel?.id)
-
-                }
                 builder.addTextLineSpace(30)
                 builder.addFeedUnit(30)
                 builder.addTextFont(Builder.FONT_E)
@@ -1370,12 +1406,8 @@ class ActiveOrderFragment(
 
                 builder.addText(
                     padLine(
-                        if (customerSettingModel.showOrderIdTop) {
-                            "OrderID:" + receiptModel?.id
-                        } else {
-                            ""
-                        },
                         "ReceiptID:" + receiptModel?.offlineId,
+                        "",
                         if (customerSettingModel.fonts == Constants.LARGE) {
                             24
                         } else {
@@ -2064,8 +2096,21 @@ class ActiveOrderFragment(
                                 Builder.FALSE,
                                 Builder.COLOR_1
                             )
+                            receiptModel.customer?.addresses.filter { it.typeOfAddress == SHIPPING_ADDRESS }
+                                .forEach {
 
-                            builder.addText(receiptModel.customer?.addresses?.get(receiptModel.customer?.addresses?.size - 1)?.fullAddress)
+                                    if (it.typeOfAddress.equals(
+                                            SHIPPING_ADDRESS,
+                                            ignoreCase = true
+                                        )
+                                    ) {
+                                        builder.addText(
+                                            it.fullAddress
+                                        )
+                                    }
+                                }
+
+//                            builder.addText(receiptModel.customer?.addresses?.get(receiptModel.customer?.addresses?.size - 1)?.fullAddress)
                         }
                     }
 
@@ -2158,6 +2203,12 @@ class ActiveOrderFragment(
 
             PrintSunmiUtils.fontSize(customerSettingModel.fonts)
 
+            if (customerSettingModel.showOrderIdTop) {
+                PrintSunmiUtils.orderIdLarge("OrderID:" + receiptModel?.id)
+                SunmiPrinterApi.getInstance().lineWrap(1)
+            }
+
+
             if (customerSettingModel.showVenueLogo && prefProvider.getValue(
                     Constants.VENUE_LOGO,
                     ""
@@ -2197,9 +2248,6 @@ class ActiveOrderFragment(
 
             if (customerSettingModel.fonts == Constants.LARGE) {
 
-                if (customerSettingModel.showOrderIdTop) {
-                    PrintSunmiUtils.orderId("OrderID:" + receiptModel?.id)
-                }
 
                 PrintSunmiUtils.receiptID("ReceiptID:" + receiptModel?.offlineId)
 
@@ -2241,12 +2289,9 @@ class ActiveOrderFragment(
 
 
                 val str = padLine(
-                    if (customerSettingModel.showOrderIdTop) {
-                        "OrderID:" + receiptModel?.id
-                    } else {
-                        ""
-                    },
+
                     "ReceiptID:" + receiptModel?.offlineId,
+                    "",
                     if (customerSettingModel.fonts == Constants.LARGE) {
                         23
                     } else {
@@ -2543,27 +2588,16 @@ class ActiveOrderFragment(
             if (receiptModel?.totalTips == 0.0 && printType == PRINT_PAID) {
 
 
-                var tip = ""
+                if (customerSettingModel.showTipLineForCash) {
 
-                if (receiptModel.totalTips != 0.0) {
-                    tip = receiptModel.totalTips.toString()
-                }
-
-                val str7 = padLine(
-                    "Tips",
-                    if (customerSettingModel.showTipLineForCash) {
-                        "_____________"
-                    } else {
-                        ""
-                    },
                     if (customerSettingModel.fonts == Constants.LARGE) {
-                        23
+                        PrintSunmiUtils.tips("Tips      _____________")
+                        SunmiPrinterApi.getInstance().lineWrap(1)
                     } else {
-                        48
+                        PrintSunmiUtils.tips("Tips                              _____________")
                     }
-                ).toString()
 
-                PrintSunmiUtils.tips(str7)
+                }
 
             }
 
@@ -2638,9 +2672,23 @@ class ActiveOrderFragment(
                     if (customerSettingModel.showCustomerAddress) {
                         if (receiptModel.customer?.addresses?.isNotEmpty() == true) {
 
-                            PrintSunmiUtils.customerAddress(
-                                receiptModel.customer?.addresses?.get(receiptModel.customer?.addresses?.size - 1)?.fullAddress
-                            )
+//                            PrintSunmiUtils.customerAddress(
+//                                receiptModel.customer?.addresses?.get(receiptModel.customer?.addresses?.size - 1)?.fullAddress
+//                            )
+
+                            receiptModel.customer?.addresses.filter { it.typeOfAddress == SHIPPING_ADDRESS }
+                                .forEach {
+
+                                    if (it.typeOfAddress.equals(
+                                            SHIPPING_ADDRESS,
+                                            ignoreCase = true
+                                        )
+                                    ) {
+                                        PrintSunmiUtils.customerAddress(
+                                            it.fullAddress
+                                        )
+                                    }
+                                }
                         }
                     }
 
@@ -3138,9 +3186,23 @@ class ActiveOrderFragment(
                     if (customerSettingModel.showCustomerAddress) {
                         if (receiptModel.customer?.addresses?.isNotEmpty() == true) {
 
-                            PrintSunmiUtils.normalText(
-                                receiptModel.customer?.addresses?.get(receiptModel.customer?.addresses?.size - 1)?.fullAddress
-                            )
+                            receiptModel.customer?.addresses.filter { it.typeOfAddress == SHIPPING_ADDRESS }
+                                .forEach {
+
+                                    if (it.typeOfAddress.equals(
+                                            SHIPPING_ADDRESS,
+                                            ignoreCase = true
+                                        )
+                                    ) {
+                                        PrintSunmiUtils.normalText(
+                                            it.fullAddress
+                                        )
+                                    }
+                                }
+
+//                            PrintSunmiUtils.normalText(
+//                                receiptModel.customer?.addresses?.get(receiptModel.customer?.addresses?.size - 1)?.fullAddress
+//                            )
                         }
                     }
 

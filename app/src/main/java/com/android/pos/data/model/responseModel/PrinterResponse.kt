@@ -84,7 +84,7 @@ data class PrinterResponse(
 
         data class PrinterSettings(
 
-            @SerializedName("id") var id: Int?=null,
+            @SerializedName("id") var id: Int? = null,
             @SerializedName("order_type_id") var orderTypeId: Int,
             @SerializedName("print_type") var printType: String,
             @SerializedName("manual_printing") var manualPrinting: Boolean,
@@ -105,8 +105,8 @@ data class PrinterResponse(
             @SerializedName("location_id") var locationId: Int,
             @SerializedName("created_at") var createdAt: String,
             @SerializedName("updated_at") var updatedAt: String,
-            @SerializedName("active") var active: Boolean,
-            @SerializedName("item_ids") var itemIds: List<Int>
+            @SerializedName("active") var categoryActive: Boolean,
+            @SerializedName("printer_enable") var printerEnable: Boolean
 
         )
     }

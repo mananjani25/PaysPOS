@@ -10,7 +10,6 @@ import com.android.pos.data.model.requestModel.CreatePrinterRequestModel
 import com.android.pos.data.model.responseModel.DeletePrinterResponseModel
 import com.android.pos.data.model.responseModel.PrinterResponse
 import com.android.pos.data.remote.Constants
-import com.android.pos.data.remote.Constants.TERMINAL_ID
 import com.android.pos.data.repositories.PosRepository
 import com.android.pos.di.PrefProvider
 import com.android.pos.utils.Event
@@ -95,8 +94,10 @@ class PrinterViewModel @Inject constructor(
                 posRepository.updatePrinter(id, model)
             when (resource.status) {
                 Status.SUCCESS -> {
+                    syncSettingModule()
                     _showProgress.value = Event(false)
                     _update.value = Event(resource.data?.message!!)
+
 
 
                 }
@@ -185,6 +186,45 @@ class PrinterViewModel @Inject constructor(
                 }
 
             }
+        }
+
+    }
+
+
+    private fun syncSettingModule() {
+        viewModelScope.launch {
+            val resource = posRepository.syncVenueDetails()
+
+            when (resource.status) {
+                Status.SUCCESS -> {
+
+                    resource.data.let { venueDetailsResponse ->
+                        if (venueDetailsResponse?.status == 200) {
+
+                            resource.data?.let {
+                                posRepository.deleteCustomerPrinters()
+                                posRepository.deleteKitchenPrinters()
+                                posRepository.addKitchenPrinter(it.data.printers.kitchenPrinterList)
+                                posRepository.addCustomerPrinter(it.data.printers.customerPrinterList)
+                            }
+                            _showProgress.value = Event(false)
+                            prefProvider.setValueboolean(Constants.SYNC_DATA, true)
+                        } else {
+                            _snackbarText.value = Event(resource.message)
+                        }
+                    }
+                }
+
+                Status.ERROR -> {
+                    _snackbarText.value = Event(resource.message)
+                    _showProgress.value = Event(false)
+                }
+
+                Status.LOADING -> {
+                    _showProgress.value = Event(true)
+                }
+            }
+
         }
 
     }

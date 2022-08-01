@@ -29,6 +29,7 @@ class RefundItemListAdapter(val viewModel: TransactionDetailsViewModel) :
     var serviceChargeList: List<TbServiceCharge> = arrayListOf()
     var tipValue: Double = 0.0
     var rate_or_amount = ""
+    var orderType = ""
 
     fun setSelectedItemList(
         list: ArrayList<GetOrderDetailsResponse.Data.OrderItem>,
@@ -58,7 +59,8 @@ class RefundItemListAdapter(val viewModel: TransactionDetailsViewModel) :
         paymentType: String,
         totalDiscount: Double,
         loyaltyAmount: Double?,
-        tipAmount: Double?
+        tipAmount: Double?,
+        orderType: String
     ) {
         this.cash_discount_or_surcharge = cash_discount_or_surcharge
         this.totalDiscount = totalDiscount
@@ -74,6 +76,7 @@ class RefundItemListAdapter(val viewModel: TransactionDetailsViewModel) :
         this.tipValue = tipAmount!!
         this.serviceChargeList =
             serviceCharge as List<TbServiceCharge>
+        this.orderType = orderType
         notifyDataSetChanged()
     }
 
@@ -134,24 +137,59 @@ class RefundItemListAdapter(val viewModel: TransactionDetailsViewModel) :
 
 
 
+//            item.orderItemTaxes.forEach { tax ->
+//                tax.taxTotalAmount.let {
+//                    totalTax += it
+//                }
+//
+//
+//            }
             item.orderItemTaxes.forEach { tax ->
-                tax.taxTotalAmount.let {
-                    totalTax += it
+                totalTax += if (tax.taxType == "Percentage") {
+                    if (totalItemPrice < 0.0) {
+
+                        String.format("%.2f", 0.00)
+                            .toDouble()
+                    } else {
+                        val itemTaxPrice =
+                            (tax.rate * totalItemPrice) / 100
+                        Log.e("itemTaxPrice", "" + itemTaxPrice)
+                        String.format("%.2f", itemTaxPrice)
+                            .toDouble()
+                    }
+
+                } else {
+                    Log.d("yash", "taxCalculation: " + tax.taxType)
+                    if (totalItemPrice <= 0.0) {
+                        String.format("%.2f", 0.00)
+                            .toDouble()
+                    } else {
+                        String.format("%.2f", tax.rate * item.quantity)
+                            .toDouble()
+                    }
                 }
             }
             Log.d("yash", "bind: [$absoluteAdapterPosition] totaltax : $totalTax")
 
             var totalServiceCharge = 0.0
             serviceChargeList.forEach {
-                if (it.order_type == Constants.SERVICECHARGE_TAKEOUT_OPENORDER) {
+
+                if (orderType == Constants.DINE_IN && it.order_type == Constants.SERVICECHARGE_DINEIN_ORDER) {
                     totalServiceCharge += (totalItemPrice * it.percentage) / 100
+                    Log.e("totalServiceCharge", totalServiceCharge.toString())
+                } else if ((orderType == Constants.TAKEOUT || orderType == Constants.OPEN_ORDER) && it.order_type == Constants.SERVICECHARGE_TAKEOUT_OPENORDER) {
+                    totalServiceCharge += (totalItemPrice * it.percentage) / 100
+                    Log.e("totalServiceCharge1", totalServiceCharge.toString())
                 }
+
+//                if (it.order_type == Constants.SERVICECHARGE_TAKEOUT_OPENORDER) {
+//                    totalServiceCharge += (totalItemPrice * it.percentage) / 100
+//                }
             }
             Log.d(
                 "yash",
                 "bind: [$absoluteAdapterPosition] totalServiceCharge : $totalServiceCharge"
             )
-
 
 
             var tip_divided = tipValue / itemCount

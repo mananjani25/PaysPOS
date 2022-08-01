@@ -5,7 +5,6 @@ import android.graphics.BitmapFactory
 import android.util.Base64
 import android.util.Log
 import com.android.pos.data.model.responseModel.GetTipReponse
-import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.LARGE
 import com.android.pos.data.remote.Constants.MEDIUM
 import com.android.pos.data.remote.Constants.SMALL
@@ -60,7 +59,7 @@ class PrintSunmiUtils {
             SunmiPrinterApi.getInstance().setAlignMode(1)
             SunmiPrinterApi.getInstance().enableBold(false)
             setFontSize()
-            SunmiPrinterApi.getInstance().printText(value2)
+            SunmiPrinterApi.getInstance().printText(MethodUtils.getUSFormatNumber(value2))
             SunmiPrinterApi.getInstance().lineWrap(1)
 
 
@@ -103,6 +102,22 @@ class PrintSunmiUtils {
             SunmiPrinterApi.getInstance().setAlignMode(0)
             SunmiPrinterApi.getInstance().enableBold(false)
             setFontSize()
+            SunmiPrinterApi.getInstance().printText(value)
+            SunmiPrinterApi.getInstance().lineWrap(1)
+        }
+
+        fun orderIdLarge(value: String) {
+            SunmiPrinterApi.getInstance().setAlignMode(1)
+            SunmiPrinterApi.getInstance().enableBold(true)
+            SunmiPrinterApi.getInstance().setFontZoom(2, 2)
+            SunmiPrinterApi.getInstance().printText(value)
+            SunmiPrinterApi.getInstance().lineWrap(1)
+        }
+
+        fun orderIdSunmi(value: String) {
+            SunmiPrinterApi.getInstance().setAlignMode(1)
+            SunmiPrinterApi.getInstance().enableBold(true)
+            SunmiPrinterApi.getInstance().setFontZoom(2, 2)
             SunmiPrinterApi.getInstance().printText(value)
             SunmiPrinterApi.getInstance().lineWrap(1)
         }
@@ -394,7 +409,7 @@ class PrintSunmiUtils {
 
         fun customerDetailsInner() {
 
-            headerText("Customer Details")
+            headerTextLeft("Customer Details")
             addHorizontalInner()
 
         }
@@ -470,6 +485,13 @@ class PrintSunmiUtils {
 
             SunmiPrinterApi.getInstance().lineWrap(5)
             SunmiPrinterApi.getInstance().cutPaper(1, 1)
+            val aa = ByteArray(5)
+            aa[0] = 0x10;
+            aa[1] = 0x14;
+            aa[2] = 0x00;
+            aa[3] = 0x00;
+            aa[4] = 0x00;
+            SunmiPrinterApi.getInstance().sendRawData(aa)
         }
 
         fun cutPaperInner() {
@@ -582,6 +604,13 @@ class PrintSunmiUtils {
             SunmiPrintHelper.getInstance().lineWrap(1)
         }
 
+        private fun headerTextLeft(value: String) {
+            SunmiPrintHelper.getInstance().setAlign(0)
+            SunmiPrintHelper.getInstance()
+                .printText(value, setFontSizeHeader(), true, false, fontName)
+            SunmiPrintHelper.getInstance().lineWrap(1)
+        }
+
         fun normalText(value: String) {
             SunmiPrintHelper.getInstance().setAlign(0)
             if (fontSizeInner == LARGE) {
@@ -601,7 +630,7 @@ class PrintSunmiUtils {
             } else
                 SunmiPrintHelper.getInstance()
                     .printText(value, setFontSizeInner(), false, false, fontName)
-           // SunmiPrintHelper.getInstance().lineWrap(1)
+            // SunmiPrintHelper.getInstance().lineWrap(1)
         }
 
         fun normalTextLarge(value: String) {
@@ -624,6 +653,7 @@ class PrintSunmiUtils {
                 .printText(value, 36f, false, false, fontName)
             SunmiPrintHelper.getInstance().lineWrap(1)
         }
+
         fun boldText(value: String) {
             SunmiPrintHelper.getInstance().setAlign(0)
             SunmiPrintHelper.getInstance()
@@ -683,6 +713,7 @@ class PrintSunmiUtils {
                 else -> 48
             }
         }
+
 
     }
 

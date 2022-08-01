@@ -13,7 +13,6 @@ import com.android.pos.data.remote.Constants
 import com.android.pos.data.repositories.PosRepository
 import com.android.pos.di.PrefProvider
 import com.android.pos.utils.Event
-import com.android.pos.utils.Pref
 import com.android.pos.utils.statusUtils.Resource
 import com.android.pos.utils.statusUtils.Status
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -27,6 +26,7 @@ class ActiveOrderViewModel @Inject constructor(
     private val posRepository: PosRepository,
     private val prefProvider: PrefProvider
 ) : ViewModel() {
+    private val TAG = "ActiveOrderViewModel"
     private val _snackbarText = MutableLiveData<Event<Any?>>()
     val snackbarText: LiveData<Event<Any?>> = _snackbarText
 

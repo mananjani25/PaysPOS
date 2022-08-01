@@ -89,6 +89,7 @@ import kotlin.collections.ArrayList
 
 @AndroidEntryPoint
 class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
+    private val listOfMoveItemIds: ArrayList<Int> = arrayListOf()
     private var wholeTableDiscount: Double = 0.0
     private var cashDiscountGlobal: Double = 0.0
     private var customerList: List<PrinterResponse.Data.CustomerReceiptPrinters> = listOf()
@@ -719,8 +720,11 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
 
             }
+            Log.e(TAG,"listOfMoveItemIds:  ${listOfMoveItemIds.size}")
+            newList[0].listOfItemsMoved.addAll(listOfMoveItemIds.toCollection(arrayListOf()))
 
             //   prefProvider.setValue(Constants.DINE_IN_UPDATE_LIST, Gson().toJson(newList))
+
 
             val bundle = Bundle()
             bundle.putBoolean("is_dine_in_edit", true)
@@ -837,8 +841,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         cartList = getCartModel(adapterList.toCollection(arrayListOf()))
         Log.d(TAG, "addGuestToOrder: " + Gson().toJson(cartList))
         var existing_count = cartList?.dineInList!!.size - 1
-        var total_count = existing_count+count
-        if(total_count<=15)  {
+        var total_count = existing_count + count
+        if (total_count <= 15) {
             var existinglist: ArrayList<DineInModel> = arrayListOf()
             existinglist.addAll(cartList?.dineInList!!.toMutableList())
             Log.d(TAG, "addGuestToOrder size: " + existinglist.size)
@@ -864,7 +868,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             Log.d(TAG, "addGuestToOrder: " + Gson().toJson(cartList?.dineInList))
             val request = viewModel.updateOrderRequest(cartList!!)
             orderId?.let { viewModel.updateOrder(it, request) }
-        }else{
+        } else {
             AlertUtils.showCustomAlertWithListenerWithOK(
                 requireContext(), "You can't add more than 15 Guest in an order."
             ) { _, _ ->
@@ -1224,22 +1228,6 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         }
         var dineInOrderModel = DineInPaymentUpdateModel()
         dineInOrderModel.id = orderId
-        prefProvider.setValue("PaidAmount", "")
-        prefProvider.setValue(Constants.WHOLE_AMOUNT, "")
-        prefProvider.setValueInt("cardCount", 0)
-        prefProvider.setValue(Constants.SUB_TOTAL, "")
-        prefProvider.setValue(Constants.CASH_DISCOUNT_SURCHARGE, "")
-        prefProvider.setValue(Constants.TOTAL_DISCOUNT, "")
-        prefProvider.setValue(Constants.TIP, "")
-        prefProvider.setValue(Constants.TAX_CHARGE, "")
-        prefProvider.setValue(Constants.SERVICE_CHARGE, "")
-        prefProvider.setValue(Constants.SUB_TOTAL_DINEIN, "")
-        prefProvider.setValue(Constants.TOTAL_DISCOUNT_DINEIN, "")
-        prefProvider.setValue(Constants.TIPS_AMOUNT_DINEIN, "")
-        prefProvider.setValue(Constants.TAX_CHARGE_DINEIN, "")
-        prefProvider.setValue(Constants.SERVICE_CHARGE_DINEIN, "")
-        prefProvider.setValue(Constants.CASH_DISCOUNT_SURCHARGE_DINEIN, "")
-        prefProvider.setValue(Constants.TOTAL_PRICE_DINEIN, "")
         var modelReq = DineInOrderPayment(dineInOrderModel)
         var model = GuestPaymentRequest(paymentAttr, dineInOrderModel)
 
@@ -1591,7 +1579,22 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
         Log.d(TAG, "getcartListAfterAdd: remaining : ${Gson().toJson(remaining_list)}")
         Log.e(TAG, "getcartListAfterAdd  ${Gson().toJson(cartList?.taxlistDynamic)}")
-
+        prefProvider.setValue("PaidAmount", "")
+        prefProvider.setValue(Constants.WHOLE_AMOUNT, "")
+        prefProvider.setValueInt("cardCount", 0)
+        prefProvider.setValue(Constants.SUB_TOTAL, "")
+        prefProvider.setValue(Constants.CASH_DISCOUNT_SURCHARGE, "")
+        prefProvider.setValue(Constants.TOTAL_DISCOUNT, "")
+        prefProvider.setValue(Constants.TIP, "")
+        prefProvider.setValue(Constants.TAX_CHARGE, "")
+        prefProvider.setValue(Constants.SERVICE_CHARGE, "")
+        prefProvider.setValue(Constants.SUB_TOTAL_DINEIN, "")
+        prefProvider.setValue(Constants.TOTAL_DISCOUNT_DINEIN, "")
+        prefProvider.setValue(Constants.TIPS_AMOUNT_DINEIN, "")
+        prefProvider.setValue(Constants.TAX_CHARGE_DINEIN, "")
+        prefProvider.setValue(Constants.SERVICE_CHARGE_DINEIN, "")
+        prefProvider.setValue(Constants.CASH_DISCOUNT_SURCHARGE_DINEIN, "")
+        prefProvider.setValue(Constants.TOTAL_PRICE_DINEIN, "")
         viewModelPayment.addCart(cartList!!)
         findNavController().navigate(
             R.id.action_dineInOrderTable_to_checkoutDineIN,
@@ -1645,8 +1648,9 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         Log.e(TAG, "WholeTableITem")
         viewModel.fireItemToKitchen(orderId ?: 0, true, ids, true)
         for (i in 0 until kitchenPrinterList.size) {
-
-            initKitchenPrinter(kitchenPrinterList.get(i), Constants.KITCHEN, list)
+            if (kitchenPrinterList[i].status) {
+                initKitchenPrinter(kitchenPrinterList.get(i), Constants.KITCHEN, list)
+            }
         }
     }
 
@@ -1658,8 +1662,10 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         var listItem: ArrayList<TbItem> = arrayListOf()
         listItem.add(item)
         for (i in 0 until kitchenPrinterList.size) {
+            if (kitchenPrinterList[i].status) {
 
-            initKitchenPrinter(kitchenPrinterList.get(i), Constants.KITCHEN, listItem)
+                initKitchenPrinter(kitchenPrinterList.get(i), Constants.KITCHEN, listItem)
+            }
         }
 
     }
@@ -1725,21 +1731,23 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         Log.e(TAG, "customerListSize  ${customerList.size}")
         if (customerList.isNotEmpty()) {
             customerList.forEach {
-                initPrinter(
-                    it,
-                    Constants.CUSTOMER,
-                    paymentStatus,
-                    true,
-                    listGuestItem,
-                    guestName,
-                    wtItems,
-                    subTotalGuest,
-                    total,
-                    taxGuest,
-                    serviceChargeGuest,
-                    divideDiscount
+                if (it.status) {
+                    initPrinter(
+                        it,
+                        Constants.CUSTOMER,
+                        paymentStatus,
+                        true,
+                        listGuestItem,
+                        guestName,
+                        wtItems,
+                        subTotalGuest,
+                        total,
+                        taxGuest,
+                        serviceChargeGuest,
+                        divideDiscount
 
-                )
+                    )
+                }
 
             }
         }
@@ -2308,13 +2316,6 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                         var orderDis = orderDiscount - (perGuestorderDis * paidGuestCount)
 
 
-
-                        Log.e("MYFN", "subTotalDInin  ${subTotalDInin}")
-                        Log.e("MYFN", "serviceCharge  ${serviceCharge}")
-                        Log.e("MYFN", "finalTaxAmt  ${finalTaxAmt}")
-                        Log.e("MYFN", "orderDis  ${orderDis}")
-
-
                         var finalAmount = subTotalDInin + serviceCharge + finalTaxAmt - orderDis
                         binding.txtTotalAmountNew.text = MethodUtils.roundOffAmount(
                             finalAmount
@@ -2335,7 +2336,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
                     }
 
-                    Log.e(TAG, "paidGuestCount  ${paidGuestCount}")
+
                     if (dineInList.isNotEmpty()) {
                         dineInTableAdapter.setList(dineInList)
                         checkForAutoFire(true)
@@ -2348,7 +2349,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                         }
                     }
 
-                    Log.e(TAG, "notPayAnyAmount  ${notPayAnyAmount}")
+
                     if (notPayAnyAmount) {
                         binding.txtAddguest.visibility = View.GONE
                         binding.txtEditOrder.visibility = View.GONE
@@ -2574,8 +2575,6 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
     }
 
     private fun updateAdapterData() {
-
-
         var oldList = dineInTableAdapter.getList()
         var newList: ArrayList<DineInModel> = arrayListOf()
         var wholeTableAmt = 0.0
@@ -2586,6 +2585,11 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         var totalTablePrice = 0.0
         var WTDiscount = 0.0
         var guestCount = 0
+        Log.e(TAG,"getMovedItemDAta  ${Gson().toJson(oldList.get(dragTo).item)}")
+        oldList.get(dragTo).item?.guestItemId?.let { listOfMoveItemIds.add(it) }
+        oldList.get(dragTo).item?.guestItemId = null
+        dragFrom = -1
+        dragTo = -1
 
         for (i in 0 until oldList.size) {
             if (oldList.get(i).isHeader == 1) {
@@ -2729,6 +2733,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
                 model.guestDividedAmt = guestShare
                 Log.d("two", "navigateDineInOrder: " + model.guestDividedAmt)
+                Log.e(TAG, "OLDListGuestId:  ${oldList.get(i).id}")
+                model.id = oldList.get(i).id
             }
             model.isHeader = oldList.get(i).isHeader
             newList.add(model)
@@ -2936,8 +2942,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 }
 
 
-                dragFrom = -1
-                dragTo = -1
+
+
                 updateAdapterData()
 
             }
@@ -2982,15 +2988,17 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                         customerList = it.data
 
                         customerList.forEach {
-                            initPrinter(
-                                it,
-                                Constants.CUSTOMER,
-                                paymentType,
-                                false,
-                                arrayListOf(),
-                                "",
-                                arrayListOf()
-                            )
+                            if (it.status) {
+                                initPrinter(
+                                    it,
+                                    Constants.CUSTOMER,
+                                    paymentType,
+                                    false,
+                                    arrayListOf(),
+                                    "",
+                                    arrayListOf()
+                                )
+                            }
 
 
                         }
@@ -3051,6 +3059,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
                         override fun onConnect() {
                             println("onConnect")
+
                             if (guestPrint && getOrderDetailsResponse?.guestAttributes?.size!! > 2) {
                                 generateGuestPrintSunmi(
                                     customerReceiptPrinters,
@@ -3179,6 +3188,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                         if (printer != null) {
                             PrinterClass.setPrinter(printer)
                             if (guestPrint && getOrderDetailsResponse?.guestAttributes?.size!! > 2) {
+
                                 generateGuestPrint(
                                     customerReceiptPrinters,
                                     type,
@@ -3317,6 +3327,25 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 )
 
 
+            if (customerSettingModel.showOrderIdTop) {
+                builder.addFeedLine(1)
+                builder.addTextFont(Builder.FONT_E)
+                builder.addTextAlign(Builder.ALIGN_CENTER)
+                builder.addTextLang(Builder.LANG_EN)
+                builder.addTextSize(2, 2)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.TRUE,
+                    Builder.COLOR_1
+                )
+
+                builder.addText("OrderID:" + getOrderDetailsResponse?.id)
+                builder.addTextLineSpace(30)
+                builder.addFeedUnit(30)
+                builder.addFeedLine(2)
+            }
+
             if (customerSettingModel.showVenueLogo && prefProvider.getValue(
                     Constants.VENUE_LOGO,
                     ""
@@ -3412,7 +3441,9 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             )
             addBuilderText(
                 builder,
-                prefProvider.getValue(Constants.BUSINESS_PHONE_NO, "").toString()
+                MethodUtils.getUSFormatNumber(
+                    prefProvider.getValue(Constants.BUSINESS_PHONE_NO, "").toString()
+                )
             )
 
             builder.addFeedLine(1)
@@ -3433,22 +3464,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
             if (customerSettingModel.fonts == Constants.LARGE) {
 
-                if (customerSettingModel.showOrderIdTop) {
-                    builder.addFeedLine(1)
-                    builder.addTextFont(Builder.FONT_E)
-                    builder.addTextAlign(Builder.ALIGN_LEFT)
-                    builder.addTextLang(Builder.LANG_EN)
-                    addCustomerTextSize(builder, customerSettingModel.fonts)
-                    builder.addTextStyle(
-                        Builder.FALSE,
-                        Builder.FALSE,
-                        Builder.FALSE,
-                        Builder.COLOR_1
-                    )
-
-                    builder.addText("OrderID:" + getOrderDetailsResponse?.id)
-
-                }
+                builder.addFeedLine(1)
                 builder.addTextLineSpace(30)
                 builder.addFeedUnit(30)
                 builder.addTextFont(Builder.FONT_E)
@@ -3560,16 +3576,12 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
                 builder.addText(
                     padLine(
-                        if (customerSettingModel.showOrderIdTop) {
-                            "OrderID:" + getOrderDetailsResponse?.id
-                        } else {
-                            ""
-                        },
                         "ReceiptID:" + if (getOrderDetailsResponse?.offlineId?.isEmpty() == true) {
                             "ENTJKOIJH8745"
                         } else {
                             getOrderDetailsResponse?.offlineId
                         },
+                        "",
                         if (customerSettingModel.fonts == Constants.LARGE) {
                             24
                         } else {
@@ -4341,6 +4353,13 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
             PrintSunmiUtils.fontSize(customerSettingModel.fonts)
 
+            if (customerSettingModel.showOrderIdTop) {
+
+                PrintSunmiUtils.orderIdLarge("OrderID:" + getOrderDetailsResponse?.id)
+                SunmiPrinterApi.getInstance().lineWrap(1)
+
+            }
+
             if (customerSettingModel.showVenueLogo && prefProvider.getValue(
                     Constants.VENUE_LOGO,
                     ""
@@ -4361,16 +4380,12 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 prefProvider.getValue(Constants.BUSINESS_ADDRESS, ""),
                 prefProvider.getValue(Constants.BUSINESS_PHONE_NO, "")
             )
-
+            SunmiPrinterApi.getInstance().lineWrap(1)
             getOrderDetailsResponse?.orderType?.let { PrintSunmiUtils.printOrderType(it) }
+            SunmiPrinterApi.getInstance().lineWrap(1)
 
             if (customerSettingModel.fonts == Constants.LARGE) {
 
-                if (customerSettingModel.showOrderIdTop) {
-
-                    PrintSunmiUtils.orderId("OrderID:" + getOrderDetailsResponse?.id)
-
-                }
 
                 PrintSunmiUtils.receiptID(
                     "ReceiptID:" + if (getOrderDetailsResponse?.offlineId?.isEmpty() == true) {
@@ -4421,16 +4436,12 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
                 PrintSunmiUtils.orderId(
                     padLine(
-                        if (customerSettingModel.showOrderIdTop) {
-                            "OrderID:" + getOrderDetailsResponse?.id
-                        } else {
-                            ""
-                        },
                         "ReceiptID:" + if (getOrderDetailsResponse?.offlineId?.isEmpty() == true) {
                             "ENTJKOIJH8745"
                         } else {
                             getOrderDetailsResponse?.offlineId
                         },
+                        "",
                         if (customerSettingModel.fonts == Constants.LARGE) {
                             23
                         } else {
@@ -5257,6 +5268,25 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 )
 
 
+            if (customerSettingModel.showOrderIdTop) {
+                builder.addFeedLine(1)
+                builder.addTextFont(Builder.FONT_E)
+                builder.addTextAlign(Builder.ALIGN_CENTER)
+                builder.addTextLang(Builder.LANG_EN)
+                builder.addTextSize(2, 2)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.TRUE,
+                    Builder.COLOR_1
+                )
+
+                builder.addText("OrderID:" + getOrderDetailsResponse?.id)
+                builder.addTextLineSpace(30)
+                builder.addFeedUnit(30)
+                builder.addFeedLine(2)
+            }
+
             if (customerSettingModel.showVenueLogo && prefProvider.getValue(
                     Constants.VENUE_LOGO,
                     ""
@@ -5361,7 +5391,9 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             )
             addBuilderText(
                 builder,
-                prefProvider.getValue(Constants.BUSINESS_PHONE_NO, "").toString()
+                MethodUtils.getUSFormatNumber(
+                    prefProvider.getValue(Constants.BUSINESS_PHONE_NO, "").toString()
+                )
             )
 
             builder.addFeedLine(1)
@@ -5382,22 +5414,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
             if (customerSettingModel.fonts == Constants.LARGE) {
 
-                if (customerSettingModel.showOrderIdTop) {
-                    builder.addFeedLine(1)
-                    builder.addTextFont(Builder.FONT_E)
-                    builder.addTextAlign(Builder.ALIGN_LEFT)
-                    builder.addTextLang(Builder.LANG_EN)
-                    addCustomerTextSize(builder, customerSettingModel.fonts)
-                    builder.addTextStyle(
-                        Builder.FALSE,
-                        Builder.FALSE,
-                        Builder.FALSE,
-                        Builder.COLOR_1
-                    )
-
-                    builder.addText("OrderID:" + getOrderDetailsResponse?.id)
-
-                }
+                builder.addFeedLine(1)
                 builder.addTextLineSpace(30)
                 builder.addFeedUnit(30)
                 builder.addTextFont(Builder.FONT_E)
@@ -5510,16 +5527,12 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
                 builder.addText(
                     padLine(
-                        if (customerSettingModel.showOrderIdTop) {
-                            "OrderID:" + getOrderDetailsResponse?.id
-                        } else {
-                            ""
-                        },
                         "ReceiptID:" + if (getOrderDetailsResponse?.offlineId?.isEmpty() == true) {
                             "ENTJKOIJH8745"
                         } else {
                             getOrderDetailsResponse?.offlineId
                         },
+                        "",
                         if (customerSettingModel.fonts == Constants.LARGE) {
                             24
                         } else {
@@ -6221,7 +6234,12 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
         try {
             PrintSunmiUtils.fontSize(customerSettingModel.fonts)
+            if (customerSettingModel.showOrderIdTop) {
 
+                PrintSunmiUtils.orderIdLarge("OrderID:" + getOrderDetailsResponse?.id)
+                SunmiPrinterApi.getInstance().lineWrap(1)
+
+            }
 
             if (customerSettingModel.showVenueLogo && prefProvider.getValue(
                     Constants.VENUE_LOGO,
@@ -6245,17 +6263,12 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 prefProvider.getValue(Constants.BUSINESS_PHONE_NO, "")
             )
 
-
+            SunmiPrinterApi.getInstance().lineWrap(1)
             getOrderDetailsResponse?.orderType?.let { PrintSunmiUtils.printOrderType(it) }
-
+            SunmiPrinterApi.getInstance().lineWrap(1)
 
             if (customerSettingModel.fonts == Constants.LARGE) {
 
-                if (customerSettingModel.showOrderIdTop) {
-
-                    PrintSunmiUtils.orderId("OrderID:" + getOrderDetailsResponse?.id)
-
-                }
 
                 PrintSunmiUtils.receiptID(
                     "ReceiptID:" + if (getOrderDetailsResponse?.offlineId?.isEmpty() == true) {
@@ -6308,16 +6321,12 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
                 PrintSunmiUtils.orderId(
                     padLine(
-                        if (customerSettingModel.showOrderIdTop) {
-                            "OrderID:" + getOrderDetailsResponse?.id
-                        } else {
-                            ""
-                        },
                         "ReceiptID:" + if (getOrderDetailsResponse?.offlineId?.isEmpty() == true) {
                             "ENTJKOIJH8745"
                         } else {
                             getOrderDetailsResponse?.offlineId
                         },
+                        "",
                         if (customerSettingModel.fonts == Constants.LARGE) {
                             23
                         } else {
@@ -7261,10 +7270,30 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             if (customerReceiptPrinters.name.substring(0, 4)
                     .equals("TM-U", true) || customerReceiptPrinters.name.contains("U")
             ) {
+
+                builder.addFeedLine(2)
+                builder.addTextFont(Builder.FONT_E)
+                builder.addTextAlign(Builder.ALIGN_CENTER)
+                builder.addTextLang(Builder.LANG_EN)
+                builder.addTextSize(2, 2)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.TRUE,
+                    Builder.COLOR_1
+                )
+
+                builder.addText(
+                    "OrderID:" + getOrderDetailsResponse?.id
+                )
+                builder.addTextLineSpace(30)
+                builder.addFeedUnit(30)
+                builder.addFeedLine(1)
+
                 if (kitchenSettingModel.showOrderType) {
 
 
-                    builder.addFeedLine(0)
+                    builder.addFeedLine(1)
                     builder.addTextFont(Builder.FONT_E)
                     builder.addTextLang(Builder.LANG_EN)
                     builder.addTextSize(fontSizeH, fontSizeW)
@@ -7294,51 +7323,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
                 builder.addText(getOrderDetailsResponse?.floorPlanTable?.tableName + " (" + getOrderDetailsResponse?.floorPlanTable?.tableNumber + ")")
 
-                builder.addFeedLine(2)
-                builder.addTextFont(Builder.FONT_E)
-                //  builder.addTextAlign(Builder.ALIGN_LEFT)
-                builder.addTextLang(Builder.LANG_EN)
-                builder.addTextSize(fontSizeH, fontSizeW)
-                builder.addTextStyle(
-                    Builder.FALSE,
-                    Builder.FALSE,
-                    Builder.FALSE,
-                    Builder.COLOR_1
-                )
 
-                builder.addText(
-                    padLine(
-                        "OrderID:" + getOrderDetailsResponse?.id,
-                        "",
-                        33
-                    )
-                )
-
-                builder.addTextLineSpace(30)
-                builder.addFeedUnit(30)
-                builder.addTextFont(Builder.FONT_E)
-                //  builder.addTextAlign(Builder.ALIGN_LEFT)
-                builder.addTextLang(Builder.LANG_EN)
-                builder.addTextSize(fontSizeH, fontSizeW)
-                builder.addTextStyle(
-                    Builder.FALSE,
-                    Builder.FALSE,
-                    Builder.FALSE,
-                    Builder.COLOR_1
-                )
-
-
-                builder.addText(
-                    padLine(
-                        "ReceiptID:" + if (getOrderDetailsResponse?.offlineId?.isEmpty() == true) {
-                            "ENTJKOIJH8745"
-                        } else {
-                            getOrderDetailsResponse?.offlineId
-                        },
-                        "",
-                        33
-                    )
-                )
                 if (kitchenSettingModel.showTeamMember) {
 
                     builder.addTextLineSpace(30)
@@ -7402,7 +7387,15 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 addHorizontalKitchenLine(builder)
 
 
-                addOrdersForKitchenDineIn(builder, item, fontSizeH, fontSizeW)
+                addOrdersForKitchenDineIn(
+                    builder,
+                    item,
+                    fontSizeH,
+                    fontSizeW,
+                    customerReceiptPrinters.printerCategories.toCollection(
+                        arrayListOf()
+                    )
+                )
 
                 if (getOrderDetailsResponse?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote) {
                     builder.addTextLineSpace(30)
@@ -7442,10 +7435,26 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
             } else {
 
+                builder.addTextFont(Builder.FONT_E)
+                builder.addTextAlign(Builder.ALIGN_CENTER)
+                builder.addTextLang(Builder.LANG_EN)
+                builder.addTextSize(2, 2)
+                builder.addTextStyle(
+                    Builder.FALSE,
+                    Builder.FALSE,
+                    Builder.TRUE,
+                    Builder.COLOR_1
+                )
+
+                builder.addText("OrderID:" + getOrderDetailsResponse?.id)
+                builder.addTextLineSpace(30)
+                builder.addFeedUnit(30)
+                builder.addFeedLine(1)
+
                 if (kitchenSettingModel.showOrderType) {
 
 
-                    builder.addFeedLine(0)
+                    builder.addFeedLine(1)
                     builder.addTextFont(Builder.FONT_E)
                     builder.addTextLang(Builder.LANG_EN)
                     builder.addTextSize(fontSizeH, fontSizeW)
@@ -7475,59 +7484,36 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
                 builder.addText(getOrderDetailsResponse?.floorPlanTable?.tableName + " (" + getOrderDetailsResponse?.floorPlanTable?.tableNumber + ")")
 
-                builder.addFeedLine(2)
-                builder.addTextFont(Builder.FONT_E)
-                //  builder.addTextAlign(Builder.ALIGN_LEFT)
-                builder.addTextLang(Builder.LANG_EN)
-                builder.addTextSize(fontSizeH, fontSizeW)
-                builder.addTextStyle(
-                    Builder.FALSE,
-                    Builder.FALSE,
-                    Builder.FALSE,
-                    Builder.COLOR_1
-                )
 
-                builder.addText(
-                    padLine(
-                        "OrderID:" + getOrderDetailsResponse?.id,
-                        "",
-                        if (kitchenSettingModel.fonts == Constants.LARGE) {
-                            24
-                        } else {
-                            48
-                        }
-                    )
-                )
-
-                builder.addTextLineSpace(30)
-                builder.addFeedUnit(30)
-                builder.addTextFont(Builder.FONT_E)
-                //  builder.addTextAlign(Builder.ALIGN_LEFT)
-                builder.addTextLang(Builder.LANG_EN)
-                builder.addTextSize(fontSizeH, fontSizeW)
-                builder.addTextStyle(
-                    Builder.FALSE,
-                    Builder.FALSE,
-                    Builder.FALSE,
-                    Builder.COLOR_1
-                )
-
-
-                builder.addText(
-                    padLine(
-                        "ReceiptID:" + if (getOrderDetailsResponse?.offlineId?.isEmpty() == true) {
-                            "ENTJKOIJH8745"
-                        } else {
-                            getOrderDetailsResponse?.offlineId
-                        },
-                        "",
-                        if (kitchenSettingModel.fonts == Constants.LARGE) {
-                            24
-                        } else {
-                            48
-                        }
-                    )
-                )
+//                builder.addTextLineSpace(30)
+//                builder.addFeedUnit(30)
+//                builder.addTextFont(Builder.FONT_E)
+//                //  builder.addTextAlign(Builder.ALIGN_LEFT)
+//                builder.addTextLang(Builder.LANG_EN)
+//                builder.addTextSize(fontSizeH, fontSizeW)
+//                builder.addTextStyle(
+//                    Builder.FALSE,
+//                    Builder.FALSE,
+//                    Builder.FALSE,
+//                    Builder.COLOR_1
+//                )
+//
+//
+//                builder.addText(
+//                    padLine(
+//                        "ReceiptID:" + if (getOrderDetailsResponse?.offlineId?.isEmpty() == true) {
+//                            "ENTJKOIJH8745"
+//                        } else {
+//                            getOrderDetailsResponse?.offlineId
+//                        },
+//                        "",
+//                        if (kitchenSettingModel.fonts == Constants.LARGE) {
+//                            24
+//                        } else {
+//                            48
+//                        }
+//                    )
+//                )
                 if (kitchenSettingModel.showTeamMember) {
 
                     builder.addTextLineSpace(30)
@@ -7589,7 +7575,15 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 addHorizontalLine(builder)
 
 
-                addOrdersForKitchenCustoemrPrinter(builder, item, fontSizeH, fontSizeW)
+                addOrdersForKitchenCustoemrPrinter(
+                    builder,
+                    item,
+                    fontSizeH,
+                    fontSizeW,
+                    customerReceiptPrinters.printerCategories.toCollection(
+                        arrayListOf()
+                    )
+                )
 
                 if (getOrderDetailsResponse?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote) {
                     builder.addTextLineSpace(30)
@@ -7803,6 +7797,10 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         try {
 
             PrintSunmiUtils.fontSize(kitchenSettingModel.fonts)
+            SunmiPrinterApi.getInstance().printerInit()
+
+            PrintSunmiUtils.orderIdLarge("OrderID:" + getOrderDetailsResponse?.id)
+            SunmiPrinterApi.getInstance().lineWrap(1)
 
             if (kitchenSettingModel.showOrderType) {
 
@@ -7815,28 +7813,22 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             PrintSunmiUtils.addValue(getOrderDetailsResponse?.floorPlanTable?.tableName + " (" + getOrderDetailsResponse?.floorPlanTable?.tableNumber + ")")
 
             SunmiPrinterApi.getInstance().lineWrap(1)
-            PrintSunmiUtils.orderId(
-                padLine(
-                    "OrderID:" + getOrderDetailsResponse?.id,
-                    "",
-                    if (kitchenSettingModel.fonts == Constants.LARGE) 23 else 48
-                ).toString()
-            )
 
-            SunmiPrinterApi.getInstance().lineWrap(1)
-            PrintSunmiUtils.receiptID(
-                padLine(
-                    "ReceiptID:" + if (getOrderDetailsResponse?.offlineId?.isEmpty() == true) {
-                        "ENTJKOIJH8745"
-                    } else {
-                        getOrderDetailsResponse?.offlineId
-                    },
-                    "",
-                    if (kitchenSettingModel.fonts == Constants.LARGE) 23 else 48
-                ).toString()
-            )
 
-            SunmiPrinterApi.getInstance().lineWrap(1)
+//            SunmiPrinterApi.getInstance().lineWrap(1)
+//            PrintSunmiUtils.receiptID(
+//                padLine(
+//                    "ReceiptID:" + if (getOrderDetailsResponse?.offlineId?.isEmpty() == true) {
+//                        "ENTJKOIJH8745"
+//                    } else {
+//                        getOrderDetailsResponse?.offlineId
+//                    },
+//                    "",
+//                    if (kitchenSettingModel.fonts == Constants.LARGE) 23 else 48
+//                ).toString()
+//            )
+//
+//            SunmiPrinterApi.getInstance().lineWrap(1)
 
             if (kitchenSettingModel.showTeamMember) {
 
@@ -7867,7 +7859,11 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
             SunmiPrinterApi.getInstance().lineWrap(1)
 
-            addOrdersForKitchenDineIn(item)
+            addOrdersForKitchenDineIn(
+                item, customerReceiptPrinters.printerCategories.toCollection(
+                    arrayListOf()
+                )
+            )
 
             if (getOrderDetailsResponse?.note?.isNotEmpty() == true && kitchenSettingModel.showOrderNote) {
 
@@ -8180,6 +8176,9 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                                         )!!
                                     )
                                     var tbItem: TbItem = TbItem()
+                                    tbItem.categoryId =
+                                        getOrderDetailsResponse?.orderItems?.get(index)?.categoryId
+                                            ?: 0
                                     tbItem.name =
                                         getOrderDetailsResponse?.orderItems?.get(index)?.itemName
                                             ?: ""
@@ -8220,26 +8219,37 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         if (listItem.isNotEmpty()) {
             var autoPrintEnable = false
             kitchenPrinterList.forEach { kit ->
-                if (isCheckAndFire) {
-                    kit.orderTypes.forEach {
-                        if (it.orderTypeId == getOrderDetailsResponse?.orderTypeId) {
-                            Log.e(TAG, "orderTypeIdSettings  ${it.orderTypeName}")
-                            Log.e(TAG, "orderTypeIdMainData  ${getOrderDetailsResponse?.orderType}")
-                            it.printerSettings.forEach {
-                                if (it.printType.lowercase()
-                                        .equals(Constants.KITCHEN.lowercase()) && it.autoPrinting
-                                ) {
+                if (kit.status) {
 
-                                    autoPrintEnable = true
-                                    initKitchenPrinter(kit, Constants.KITCHEN, listItem)
+
+                    if (isCheckAndFire) {
+                        kit.orderTypes.forEach {
+                            if (it.orderTypeId == getOrderDetailsResponse?.orderTypeId) {
+                                Log.e(TAG, "printerSettings  ${Gson().toJson(it.printerSettings)}")
+                                it.printerSettings.forEach {
+                                    if (it.printType.lowercase()
+                                            .equals(Constants.KITCHEN.lowercase()) && it.autoPrinting
+                                    ) {
+
+                                        if (checkItemsforPrinterDineIn(
+                                                listItem, kit.printerCategories.toCollection(
+                                                    arrayListOf()
+                                                )
+                                            )
+                                        ) {
+                                            Log.e(TAG, "printerName  ${kit.name} ")
+                                            autoPrintEnable = true
+                                            initKitchenPrinter(kit, Constants.KITCHEN, listItem)
+                                        }
+                                    }
                                 }
                             }
+
                         }
+                    } else {
+                        initKitchenPrinter(kit, Constants.KITCHEN, listItem)
 
                     }
-                } else {
-                    initKitchenPrinter(kit, Constants.KITCHEN, listItem)
-
                 }
             }
             if (!isCheckAndFire or (isCheckAndFire && autoPrintEnable)) {

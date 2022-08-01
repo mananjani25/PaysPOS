@@ -63,7 +63,6 @@ import dagger.hilt.android.AndroidEntryPoint
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
-import kotlin.collections.ArrayList
 
 
 @AndroidEntryPoint
@@ -501,7 +500,7 @@ class CartFragment(
 
 
         val dineInList: ArrayList<DineInModel> = arrayListOf()
-        dineInList.add(DineInModel(0, true, 0, "Whole Table"))
+        dineInList.add(DineInModel(0, true, 0, "Whole Table",))
         for (i in 1..numOfGuest) {
             dineInList.add(
                 DineInModel(
@@ -509,9 +508,9 @@ class CartFragment(
                     false,
                     0,
                     "Guest $i",
-                    floorPlanTable = orderFloorDetails
+                    floorPlanTable = orderFloorDetails,
 
-                )
+                    )
             )
         }
 
@@ -552,21 +551,7 @@ class CartFragment(
                 dineInCartAdapter.setListner(this)
                 //dineInCartAdapter.setList(dineInList)
 
-                dineInList.forEach { it ->
-                    it.items.forEach { items ->
-                        if (!items.isSelectedItem) {
-                            viewModel.selectedItems(items.itemId, 1)
-                        }
-                    }
-                }
 
-                dineInList.forEach { it ->
-                    it.items.forEach { items ->
-                        if (!items.isSelectedItem) {
-                            viewModel.selectedItems(items.itemId, 1)
-                        }
-                    }
-                }
                 if (cartlist.isEmpty()) {
                     val cartModel = CartModel().apply {
                         terminalId = prefProvider.getValueInt(Constants.TERMINAL_ID, -1)
@@ -578,6 +563,7 @@ class CartFragment(
 
                         serviceCharge = serviceChargesList
                         orderId = arguments?.getInt("orderId")
+                        listOfItemRemoved = dineInList[0].listOfItemsMoved
 
                     }
                     cartlist.add(cartModel)
@@ -595,7 +581,6 @@ class CartFragment(
                 prefProvider.setValueInt(Constants.ORDER_TYPE_ID, 2)
 
                 viewModel.orderItemDiscount = arguments?.getDouble("totalDiscount") ?: 0.0
-                Log.e(TAG, "DineInEditDiscount ${arguments?.getDouble("totalDiscount")}")
                 viewModel.totalDiscount = arguments?.getDouble("totalDiscount") ?: 0.0
                 viewModel.cartLogic(cartlist, null, Constants.ADD, false, dineInList = dineInList)
 
@@ -892,10 +877,14 @@ class CartFragment(
 
 
                             viewModel.setCartModel(it)
+                            Log.e(TAG,"${prefProvider.getValueboolean(
+                                Constants.DINE_IN_UPDATE,
+                                false
+                            )}")
                             if (prefProvider.getValueboolean(
                                     Constants.DINE_IN_UPDATE,
                                     false
-                                ) == true
+                                )
                             ) {
                                 binding.txtDineInProceed.setText("Update and Proceed")
 
@@ -990,58 +979,6 @@ class CartFragment(
                             } else {
                                 binding.relativeOrderNotes?.visibility = View.GONE
                             }
-//                        var data: TbCustomer? = prefProvider.getCustomerData()
-//                        if (data != null) {
-//                            if (viewModel.loyaltyPointCondition(data)) {
-//                                if (isFromPayment) {
-//                                    if (viewModel.redeemLoyaltyInfo.needToApplyLoyalty) {
-//                                        binding.liinearInfoLayout.layoutParams.height =
-//                                            resources.getDimension(R.dimen._70sdp).toInt()
-//                                        binding.relativeLoylatyPoints.visibility = View.VISIBLE
-//                                        binding.lblLoyaltyPoints.visibility = View.VISIBLE
-//                                        binding.txtLabelLoyaltyAmounts.visibility = View.VISIBLE
-//                                        binding.checkloylaty.visibility = View.GONE
-//                                        binding.txtLoyaltyAmount.text =
-//                                            "- $${
-//                                                String.format(
-//                                                    "%.2f",
-//                                                    viewModel.redeemLoyaltyInfo.usedLoyaltyAmount
-//                                                )
-//                                            }"
-//                                        binding.txtLoyaltyPoints.text =
-//                                            "${viewModel.redeemLoyaltyInfo.usedLoyaltyPoints}"
-//                                    } else {
-//                                        binding.liinearInfoLayout.layoutParams.height =
-//                                            resources.getDimension(R.dimen._40sdp).toInt()
-//                                        binding.relativeLoylatyPoints.visibility = View.GONE
-//                                        binding.lblLoyaltyPoints.visibility = View.GONE
-//                                    }
-//                                } else {
-//                                    binding.liinearInfoLayout.layoutParams.height =
-//                                        resources.getDimension(R.dimen._70sdp).toInt()
-//                                    binding.relativeLoylatyPoints.visibility = View.VISIBLE
-//                                    binding.lblLoyaltyPoints.visibility = View.VISIBLE
-//                                    Log.e(TAG, "InsideLoyalty")
-//                                    Log.e(TAG, Gson().toJson(viewModel.redeemLoyaltyInfo))
-//                                    binding.txtLoyaltyAmount.text =
-//                                        "- $${
-//                                            String.format(
-//                                                "%.2f",
-//                                                viewModel.redeemLoyaltyInfo.usedLoyaltyAmount
-//                                            )
-//                                        }"
-//                                    binding.txtLoyaltyPoints.text =
-//                                        "${viewModel.redeemLoyaltyInfo.usedLoyaltyPoints}"
-//                                    binding.checkloylaty.isChecked =
-//                                        viewModel.redeemLoyaltyInfo.needToApplyLoyalty
-//                                }
-//                            }
-//                        } else {
-//                            binding.liinearInfoLayout.layoutParams.height =
-//                                resources.getDimension(R.dimen._40sdp).toInt()
-//                            binding.relativeLoylatyPoints.visibility = View.GONE
-//                            binding.lblLoyaltyPoints.visibility = View.GONE
-//                        }
 
                             binding.relativeLoylatyPoints.visibility = View.GONE
                             binding.lblLoyaltyPoints.visibility = View.GONE
@@ -1270,6 +1207,12 @@ class CartFragment(
                                         resources.getDimension(R.dimen._70sdp).toInt()
                                     binding.relativeLoylatyPoints.visibility = View.VISIBLE
                                     binding.lblLoyaltyPoints.visibility = View.VISIBLE
+
+                                    binding.txtLoyaltyAmount.text =
+                                        "$0.00"
+                                    binding.txtLoyaltyPoints.text =
+                                        "$0.00"
+
                                 } else {
                                     binding.liinearInfoLayout.layoutParams.height =
                                         resources.getDimension(R.dimen._50sdp).toInt()

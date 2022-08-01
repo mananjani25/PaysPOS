@@ -3085,7 +3085,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         }
 
         val dineInList: ArrayList<DineInModel> = arrayListOf()
-        dineInList.add(DineInModel(0, true, 0, "Whole Table"))
+        dineInList.add(DineInModel(0, true, 0, "Whole Table",))
         for (i in 1..numOfGuest) {
             dineInList.add(
                 DineInModel(
@@ -3093,9 +3093,9 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
                     false,
                     0,
                     "Guest $i",
-                    floorPlanTable = orderFloorDetails
+                    floorPlanTable = orderFloorDetails,
 
-                )
+                    )
             )
         }
 

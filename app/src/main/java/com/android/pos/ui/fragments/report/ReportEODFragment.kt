@@ -234,7 +234,9 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
     private fun generateEODReport() {
         customerList.forEach {
-            initPrinter(it)
+            if (it.status) {
+                initPrinter(it)
+            }
 
         }
     }
@@ -449,7 +451,7 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
             )
             addBuilderText(
                 builder,
-                prefProvider?.getValue(Constants.BUSINESS_PHONE_NO, "").toString()
+                MethodUtils.getUSFormatNumber(prefProvider?.getValue(Constants.BUSINESS_PHONE_NO, "").toString())
             )
 
             builder.addFeedLine(2)
