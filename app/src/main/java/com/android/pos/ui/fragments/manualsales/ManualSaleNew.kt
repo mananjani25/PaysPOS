@@ -307,7 +307,8 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
 
             if (it != null) {
                 manualCategoryId = it.id
-                manualItemId = it.item_ids[0]
+                if (it.item_ids.isNotEmpty())
+                    manualItemId = it.item_ids[0]
                 Log.e("manualItemId", manualItemId.toString())
             }
 

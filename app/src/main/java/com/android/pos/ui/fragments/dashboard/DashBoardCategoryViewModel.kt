@@ -880,7 +880,11 @@ class DashBoardCategoryViewModel @Inject constructor(
                         list.forEachIndexed { pos, tbItem ->
                             if (item != null) {
                                 if (!item.isManualSales) {
-                                    if (tbItem.itemId == item.itemId) {
+                                    if (tbItem.itemId == item.itemId && checkSameModifier(
+                                            tbItem,
+                                            item
+                                        )
+                                    ) {
                                         index = pos
                                         return@forEachIndexed
                                     }
@@ -952,6 +956,31 @@ class DashBoardCategoryViewModel @Inject constructor(
 
 
         }
+    }
+
+    private fun checkSameModifier(tbItem: TbItem, item: TbItem): Boolean {
+
+        var isSame = false
+
+        if (tbItem.modifiers.size != item.modifiers.size) {
+
+            run breaking@{
+                tbItem.modifiers.forEach { tbItemM ->
+
+                    item.modifiers.forEach { itemM ->
+
+                        isSame = tbItemM.id == itemM.id
+                    }
+                    if (isSame) return@breaking
+                }
+            }
+
+        } else {
+            isSame = true
+        }
+
+
+        return isSame
     }
 
     private fun itemDiscountApply(model: TbItem, item: TbItem) {
