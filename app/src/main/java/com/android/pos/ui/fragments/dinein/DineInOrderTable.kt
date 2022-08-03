@@ -720,7 +720,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
 
             }
-            Log.e(TAG,"listOfMoveItemIds:  ${listOfMoveItemIds.size}")
+            Log.e(TAG, "listOfMoveItemIds:  ${listOfMoveItemIds.size}")
             newList[0].listOfItemsMoved.addAll(listOfMoveItemIds.toCollection(arrayListOf()))
 
             //   prefProvider.setValue(Constants.DINE_IN_UPDATE_LIST, Gson().toJson(newList))
@@ -1098,7 +1098,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
         viewModel.msgText.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
-                if (it.toString() != "null"){
+                if (it.toString() != "null") {
                     AlertUtils.showCustomAlert(requireContext(), it)
                 }
                 dineInTableAdapter.updateStatus(clickedPos, isFireAll)
@@ -1109,7 +1109,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
     }
 
     private fun setupSnackbar() {
-        binding.root.liveSnackBar(this, viewModel.snackbarText, Snackbar.LENGTH_SHORT)
+        if (viewModel.snackbarText.value != null)
+            binding.root.liveSnackBar(this, viewModel.snackbarText, Snackbar.LENGTH_SHORT)
 
     }
 
@@ -2585,7 +2586,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         var totalTablePrice = 0.0
         var WTDiscount = 0.0
         var guestCount = 0
-        Log.e(TAG,"getMovedItemDAta  ${Gson().toJson(oldList.get(dragTo).item)}")
+        Log.e(TAG, "getMovedItemDAta  ${Gson().toJson(oldList.get(dragTo).item)}")
         oldList.get(dragTo).item?.guestItemId?.let { listOfMoveItemIds.add(it) }
         oldList.get(dragTo).item?.guestItemId = null
         dragFrom = -1
