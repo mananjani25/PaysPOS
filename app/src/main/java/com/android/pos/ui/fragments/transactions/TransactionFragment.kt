@@ -2,7 +2,6 @@ package com.android.pos.ui.fragments.transactions
 
 import android.app.DatePickerDialog
 import android.app.TimePickerDialog
-import android.nfc.Tag
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -26,13 +25,9 @@ import com.android.pos.data.model.responseModel.MagtekOnlineOrderRefundResponse
 import com.android.pos.data.model.responseModel.VenueDetailsResponse
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.KEY
-import com.android.pos.data.remote.Constants.REPORT_END_TIME
-import com.android.pos.data.remote.Constants.REPORT_START_TIME
-import com.android.pos.data.remote.Constants.TRANSACTION_DETAIL
 import com.android.pos.databinding.FragmentTransactionBinding
 import com.android.pos.di.ApiModule1
 import com.android.pos.di.PrefProvider
-import com.android.pos.ui.activities.MainActivity
 import com.android.pos.ui.adapter.TransactionAdapter
 import com.android.pos.ui.fragments.magtek.MagtekRequestUtils
 import com.android.pos.ui.fragments.magtek.PaymentResponse
@@ -53,7 +48,6 @@ import retrofit2.Response
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
-import kotlin.collections.ArrayList
 import kotlin.math.abs
 
 @AndroidEntryPoint
@@ -910,37 +904,40 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
     private fun navigate() {
         viewModel.transactionDetails.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
-                val bundle = Bundle().apply {
-                    putInt("orderId", it.orderDetails.id)
-                    putInt("paymentId", it.id)
-                    putBoolean("isFromTrans", true)
-                    putString("orderType", it.orderDetails.orderType)
 
-                    putInt(
-                        "selectedorderType",
-                        binding.includeView.spOrders.selectedItemPosition
-                    )
-                    putInt(
-                        "selectedtransactionType",
-                        binding.includeView.spTransactionTypes.selectedItemPosition
-                    )
-                    putInt(
-                        "selectedroleType",
-                        binding.includeView.spRoles.selectedItemPosition
-                    )
-                    putInt(
-                        "selectedemployeeType",
-                        binding.includeView.spEmployees.selectedItemPosition
-                    )
-                    putInt(
-                        "selectedterminalType",
-                        binding.includeView.spTerminals.selectedItemPosition
+                if (!it.payableType.equals("Invoice",true) && !it.payableType.equals("GiftCard",true)) {
+                    val bundle = Bundle().apply {
+                        putInt("orderId", it.orderDetails.id)
+                        putInt("paymentId", it.id)
+                        putBoolean("isFromTrans", true)
+                        putString("orderType", it.orderDetails.orderType)
+
+                        putInt(
+                            "selectedorderType",
+                            binding.includeView.spOrders.selectedItemPosition
+                        )
+                        putInt(
+                            "selectedtransactionType",
+                            binding.includeView.spTransactionTypes.selectedItemPosition
+                        )
+                        putInt(
+                            "selectedroleType",
+                            binding.includeView.spRoles.selectedItemPosition
+                        )
+                        putInt(
+                            "selectedemployeeType",
+                            binding.includeView.spEmployees.selectedItemPosition
+                        )
+                        putInt(
+                            "selectedterminalType",
+                            binding.includeView.spTerminals.selectedItemPosition
+                        )
+                    }
+                    findNavController().navigate(
+                        R.id.action_transactionFragment_to_transactionDetailsFragment,
+                        bundle
                     )
                 }
-                findNavController().navigate(
-                    R.id.action_transactionFragment_to_transactionDetailsFragment,
-                    bundle
-                )
             }
         }
 
@@ -968,16 +965,24 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
 
         selectedPos = pos
         singleTransaction = transactionAdapter.getItem(pos)
+        if (!singleTransaction?.payableType.equals(
+                "GiftCard",
+                true
+            ) && !singleTransaction?.payableType.equals(
+                "Invoice", true
+            )
+        ) {
 
 
-        val bundle = Bundle()
-        bundle.putDouble("totalTip", singleTransaction!!.tips)
-        bundle.putBoolean("isFromTransaction", true)
-        singleTransaction?.amount?.let { bundle.putDouble("totalPrice", it) }
-        findNavController().navigate(
-            R.id.action_transactionFragment_to_addTipsDialog,
-            bundle
-        )
+            val bundle = Bundle()
+            bundle.putDouble("totalTip", singleTransaction!!.tips)
+            bundle.putBoolean("isFromTransaction", true)
+            singleTransaction?.amount?.let { bundle.putDouble("totalPrice", it) }
+            findNavController().navigate(
+                R.id.action_transactionFragment_to_addTipsDialog,
+                bundle
+            )
+        }
 
 
     }

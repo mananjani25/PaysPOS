@@ -14,14 +14,12 @@ import com.android.pos.data.repositories.TaxServiceChargeRepository
 import com.android.pos.di.PrefProvider
 import com.android.pos.utils.Event
 import com.android.pos.utils.statusUtils.Status
-import com.google.gson.Gson
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
-import kotlin.collections.LinkedHashMap
 
 @HiltViewModel
 class TransactionViewModel @Inject constructor(
@@ -117,7 +115,9 @@ class TransactionViewModel @Inject constructor(
     }
 
     fun transactionId(transactionId: GetTransactionListResponse.Data.Payment) {
-        _transactionDetails.value = Event(transactionId)
+        if (!transactionId.payableType.equals("GiftCart",true) || !transactionId.payableType.equals("Invoice",true)) {
+            _transactionDetails.value = Event(transactionId)
+        }
     }
 
     fun updateLabel(myCalendar: Calendar) {

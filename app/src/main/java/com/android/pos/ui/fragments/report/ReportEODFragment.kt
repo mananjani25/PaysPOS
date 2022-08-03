@@ -25,6 +25,7 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
 import com.android.pos.R
 import com.android.pos.data.entities.Employee
+import com.android.pos.data.model.ClockinOutReportModel
 import com.android.pos.data.model.ShiftRportConfiguration
 import com.android.pos.data.model.responseModel.EodReportResponse
 import com.android.pos.data.model.responseModel.PrinterResponse
@@ -173,8 +174,7 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
                                 )
                             }
                         }
-                }
-                else{
+                } else {
                     val bundle = Bundle()
                     bundle.putBoolean("EOD", true)
                     bundle.putInt("type", 2)
@@ -2931,23 +2931,51 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
                     )
                 }
 
+                Log.e(TAG, "clock in out Data:  ${Gson().toJson(it.clockInClockOut)}")
                 it.clockInClockOut?.let {
                     if (it.isNotEmpty()) {
-                        var list: ArrayList<EodReportResponse.Data.ClockInClockOut> = arrayListOf()
+                        var list: ArrayList<ClockinOutReportModel> = arrayListOf()
                         it.forEach {
+                            if (it.size == 5) {
+                                it.forEach {
 
 
+                                    val model = ClockinOutReportModel()
+
+                                    if (it.key == "Employee") {
+                                        model.empName = it.value
+
+
+                                    } else if (it.key == "Clock In") {
+                                        model.clockIn = it.value
+                                    } else if (it.key == "Clock Out") {
+                                        model.clockOutval = it.value
+
+                                    } else if (it.key == "Total Working Hour") {
+                                        model.totalTime = it.value
+                                    } else if (it.key == "Actual In Time") {
+                                        model.actualTime = it.value
+                                    }
+
+                                    list.add(model)
+
+
+                                }
+
+                            }
                         }
+                        Log.e(TAG, "clockinData ${list.size}")
 
-                        clockInClockOutAdapter.setList(it[0])
-
-
+                        clockInClockOutAdapter.setList(list)
                     } else {
                         binding.rvClockInClockOut?.gone()
                         binding.txtClockInClockOut?.gone()
                         binding.linearClockInOut?.gone()
                     }
+
+
                 }
+
                 if (it.salesPerCategorySummary != null) {
 
                     var arrayListSalePerCategory: ArrayList<KeyValue> = arrayListOf()
