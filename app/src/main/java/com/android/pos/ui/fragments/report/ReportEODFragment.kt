@@ -20,6 +20,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.setFragmentResultListener
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.viewModelScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
@@ -109,7 +110,7 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
     private val creditCardBreakdownAdapter by lazy { CreditCardBreakDownAdapter(hideRefund = false) }
 
-    private lateinit var teamEmployeeListGlobal: ArrayList<Employee>
+    private var teamEmployeeListGlobal: ArrayList<Employee> = arrayListOf()
 
     val myCalendar = Calendar.getInstance()
     val myCalendar1 = Calendar.getInstance()
@@ -3252,9 +3253,9 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
                     Status.SUCCESS -> {
                         ProgressUtils.dismissProgressDialog()
                         resource.data?.let { employeeList ->
+                            teamEmployeeListGlobal.clear()
                             teamEmployeeListGlobal = employeeList as ArrayList<Employee>
 
-                            Log.e("teamEmployeeListGlobal", Gson().toJson(teamEmployeeListGlobal))
 
                             val isPresent =
                                 teamEmployeeListGlobal.any { it.name == "All Team Members" }
@@ -3296,10 +3297,15 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
                             val roleName = teamEmployeeListGlobal.map { it.name }
 
 
-                            setUpEmployeeSpinnerAdapter(
-                                roleName as ArrayList<String>,
-                                defaultEmployeePos
-                            )
+
+                            if (defaultEmployeePos != -1 && roleName.isNotEmpty())
+                                setUpEmployeeSpinnerAdapter(
+                                    roleName as ArrayList<String>,
+                                    defaultEmployeePos
+                                )
+
+
+
 
 
 
@@ -3333,9 +3339,15 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
             spinnerAdapter.setDropDownViewResource(R.layout.row_spinner)
             binding.spTerminals.adapter = spinnerAdapter
 
-            binding.spTerminals.setSelection(defaultEmployeePos, false);
-            Log.e("defaultEmployeePos", defaultEmployeePos.toString())
-            binding.spTerminals.setSelection(defaultEmployeePos)
+            if (defaultEmployeePos != -1) {
+                // binding.spTerminals.setSelection(defaultEmployeePos, false);
+                Log.e("defaultEmployeePos", defaultEmployeePos.toString())
+
+                viewModel.viewModelScope.launch {
+                    delay(200)
+                    binding.spTerminals.setSelection(defaultEmployeePos)
+                }
+            }
         } catch (e: Exception) {
         }
 
