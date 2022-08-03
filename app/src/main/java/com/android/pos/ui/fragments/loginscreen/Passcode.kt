@@ -18,18 +18,13 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
-import com.android.pos.data.remote.Constants.ORDER_TYPE
-import com.android.pos.data.remote.Constants.TAKEOUT
 import com.android.pos.data.remote.Constants.UNIQUE_ID
 import com.android.pos.databinding.FragmentPasscodeBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.activities.MainActivity
 import com.android.pos.utils.AlertUtils
-import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.ProgressUtils
 import dagger.hilt.android.AndroidEntryPoint
-import java.text.SimpleDateFormat
-import java.util.*
 import javax.inject.Inject
 
 
@@ -392,7 +387,6 @@ class Passcode : Fragment() {
                     binding.tvWelcomeTag.text = getString(R.string.tv_clock_in)
                     AlertUtils.showCustomAlert(requireContext(), validationmsg)
                 } else {
-                    prefProvider.setValue(ORDER_TYPE, TAKEOUT)
                     findNavController().navigate(R.id.action_passcode_to_dashboardCategoryBoldPOS)
                 }
             }

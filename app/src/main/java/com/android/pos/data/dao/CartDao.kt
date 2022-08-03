@@ -1,10 +1,7 @@
 package com.android.pos.data.dao
 
 import androidx.lifecycle.LiveData
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.Query
+import androidx.room.*
 import com.android.pos.data.entities.CartModel
 import com.android.pos.data.entities.DineInCartModel
 
@@ -25,6 +22,7 @@ interface CartDao {
     @Query("DELETE FROM CartModel where CartModel.employeeID=:employee_Id")
     suspend fun delete(employee_Id: Int)
 
+    @Transaction
     @Query("DELETE FROM CartModel")
     suspend fun delete()
 

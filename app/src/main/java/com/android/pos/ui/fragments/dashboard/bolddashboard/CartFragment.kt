@@ -25,6 +25,7 @@ import com.android.pos.data.remote.Constants.DINE_IN
 import com.android.pos.data.remote.Constants.DINE_IN_LIST_EDIT
 import com.android.pos.data.remote.Constants.DINE_IN_UPDATE
 import com.android.pos.data.remote.Constants.DINE_IN_UPDATE_LIST
+import com.android.pos.data.remote.Constants.EMPLOYEE_ID
 import com.android.pos.data.remote.Constants.IS_UPDATE_ORDER
 import com.android.pos.data.remote.Constants.IS_UPDATE_ORDER_FROM_ACTIVE_ORDER
 import com.android.pos.data.remote.Constants.IS_UPDATE_ORDER_ID
@@ -639,7 +640,7 @@ class CartFragment(
     private fun addObserver() {
 
 
-        Log.e("ORDER_TYPE", prefProvider.getValue(ORDER_TYPE, TAKEOUT))
+        Log.e("CreateCartEmpIdRecd", ""+prefProvider.getValueInt(EMPLOYEE_ID, 0))
 
         if (arguments?.getString(REDIRECT_FROM) == MANUAL_SALE) {
             viewModel.manualSaleItems(
@@ -800,7 +801,7 @@ class CartFragment(
                     prefProvider.getValue(ORDER_TYPE, TAKEOUT),
                     prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
                 ).observe(requireActivity()) {
-                    Log.e(TAG, "listSize  ${Gson().toJson(it)}")
+
                     Log.e(TAG, "listSizeOrderType: ${prefProvider.getValue(ORDER_TYPE, TAKEOUT)}")
 
                     if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == Constants.DINE_IN) {
@@ -1027,6 +1028,7 @@ class CartFragment(
                         binding.rvCartDineIn.gone()
                         binding.rvCartList.visible()
                         if (it.isNotEmpty()) {
+                            Log.e(TAG, "listSize  ${it.get(0).items?.size}")
                             viewModel.destroyedList.clear()
                             it[0].items?.filter { item -> item.isDestroy }?.let {
                                 viewModel.destroyedList.addAll(it)
@@ -1064,6 +1066,7 @@ class CartFragment(
                                 filterItems.addAll(it!!.toCollection(arrayListOf()))
                             }
 
+                            Log.e(TAG,"filterItems  ${filterItems.size}")
                             cartAdapter.setList(filterItems)
                             /*it[0].items?.toCollection(arrayListOf())
                             ?.let { it1 ->

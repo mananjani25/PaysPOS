@@ -3387,6 +3387,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
 
     fun createCart(cartList: ArrayList<CartModel>): ArrayList<CartModel> {
+        Log.e(TAG,"CreateCartEmpId  ${prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)}")
         if (cartList.isEmpty()) {
             val model = CartModel()
             model.employeeID =
