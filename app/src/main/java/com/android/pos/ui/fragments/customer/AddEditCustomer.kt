@@ -120,7 +120,7 @@ class AddEditCustomer : Fragment() {
     }
 
     private fun showObserveProgress() {
-        viewModel.showProgress.observe(viewLifecycleOwner, { event ->
+        viewModel.showProgress.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
                 if (it) {
                     ProgressUtils.showProgressDialog(requireActivity())
@@ -129,7 +129,7 @@ class AddEditCustomer : Fragment() {
                 }
             }
 
-        })
+        }
     }
 
     private fun setUpSnackBar() {
@@ -138,20 +138,7 @@ class AddEditCustomer : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-//        modelAddress = CreateCustomerRequestModel.Customer.Addresses(
-//            null,
-//            "",
-//            "",
-//            "",
-//            "",
-//            "",
-//            "",
-//            "",
-//            0.0,
-//            0.0,
-//        )
 
-//        setAddress()
         onClick()
         setPlaceApi()
         isEdit = requireArguments().getBoolean("isEdit", false)
@@ -523,78 +510,52 @@ class AddEditCustomer : Fragment() {
 
     @SuppressLint("NotifyDataSetChanged")
     private fun onClick() {
-//        binding.imgAddressAdd.setOnClickListener {
-//
-//            Log.e(TAG, "adapterGetAddress  ${Gson().toJson(adapter.getList())}")
-//            if (adapter.getList().isEmpty()) {
-//                modelAddress = CreateCustomerRequestModel.Customer.Addresses()
-//                modelAddress.apply {
-//                    latitude = 0.0
-//                    longitude = 0.0
-//                }
-//                adapter.addData(
-//                    modelAddress
-//                )
-//
-//            } else if (adapter.getList()[adapter.getList().size - 1].address1.isNotEmpty() || adapter.getList()[adapter.getList().size - 1].city.isNotEmpty() || adapter.getList()
-//                    .get(adapter.getList().size - 1)._destroy == "true"
-//            ) {
-//                Log.d("yash", "onClick: " + adapter.getList()[adapter.getList().size - 1].address1)
-//                modelAddress = CreateCustomerRequestModel.Customer.Addresses()
-//                modelAddress.apply {
-//                    latitude = 0.0
-//                    longitude = 0.0
-//                }
-//                adapter.addData(
-//                    modelAddress
-//                )
-//            }
-//
-//        }
+
 
         binding.header.txtSave.setOnClickListener {
             if (isEdit) {
                 var id1: Int? = null
                 var id2: Int? = null
 
-                if(viewModel.listAddress.size==1){
+                if (viewModel.listAddress.size == 1) {
                     id1 = viewModel.listAddress[0].id!!
-                }else if(viewModel.listAddress.size==2){
+                } else if (viewModel.listAddress.size == 2) {
                     id2 = viewModel.listAddress[1].id!!
                 }
                 listAddress = arrayListOf()
 
-
-                listAddress.add(
-                    CreateCustomerRequestModel.Customer.Addresses(
-                        id1,
-                        binding.edtStreet?.text.toString(),
-                        "",
-                        binding.edtCity?.text.toString(),
-                        binding.edtState?.text.toString(),
-                        binding.edtAddress?.selectedItem.toString(),
-                        binding.edtZip?.text.toString(),
-                        "Billing",
-                        0.0,
-                        0.0,
-                        "false"
+                if (binding.edtStreet?.text.toString().isNotEmpty())
+                    listAddress.add(
+                        CreateCustomerRequestModel.Customer.Addresses(
+                            id1,
+                            binding.edtStreet?.text.toString(),
+                            "",
+                            binding.edtCity?.text.toString(),
+                            binding.edtState?.text.toString(),
+                            binding.edtAddress?.selectedItem.toString(),
+                            binding.edtZip?.text.toString(),
+                            "Billing",
+                            0.0,
+                            0.0,
+                            "false"
+                        )
                     )
-                )
-                listAddress.add(
-                    CreateCustomerRequestModel.Customer.Addresses(
-                        id2,
-                        binding.edtStreetDel?.text.toString(),
-                        "",
-                        binding.edtCityDel?.text.toString(),
-                        binding.edtStateDel?.text.toString(),
-                        binding.edtAddressDel?.selectedItem.toString(),
-                        binding.edtZipDel?.text.toString(),
-                        "Shipping",
-                        0.0,
-                        0.0,
-                        "false"
+                if (binding.edtStreetDel?.text.toString().isNotEmpty())
+                    listAddress.add(
+                        CreateCustomerRequestModel.Customer.Addresses(
+                            id2,
+                            binding.edtStreetDel?.text.toString(),
+                            "",
+                            binding.edtCityDel?.text.toString(),
+                            binding.edtStateDel?.text.toString(),
+                            binding.edtAddressDel?.selectedItem.toString(),
+                            binding.edtZipDel?.text.toString(),
+                            "Shipping",
+                            0.0,
+                            0.0,
+                            "false"
+                        )
                     )
-                )
             } else {
                 listAddress = arrayListOf()
                 if (binding.edtStreet?.text.toString().isNotEmpty())
