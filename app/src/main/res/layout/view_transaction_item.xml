@@ -44,10 +44,10 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="start"
                     android:gravity="center"
+                    android:paddingLeft="@dimen/_25sdp"
                     android:textColor="@color/txtColor"
                     android:textSize="@dimen/text_size_medium"
-                    tools:text="@string/date"
-                    android:paddingLeft="@dimen/_25sdp"/>
+                    tools:text="@string/date" />
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/tvTime"
@@ -57,10 +57,10 @@
                     android:layout_gravity="start"
                     android:layout_marginTop="@dimen/_2sdp"
                     android:gravity="center"
+                    android:paddingLeft="@dimen/_25sdp"
                     android:textColor="@color/colorC4"
                     android:textSize="@dimen/text_size_normal"
-                    tools:text="@string/date"
-                    android:paddingLeft="@dimen/_25sdp"/>
+                    tools:text="@string/date" />
 
             </LinearLayout>
 
@@ -92,12 +92,13 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="start"
                     android:gravity="center"
+                    android:paddingLeft="@dimen/_18sdp"
                     android:text="@{@string/symbole+String.format(@string/format,itemSheetModel.totalAmount) }"
                     android:textColor="@color/txtColor"
                     android:textSize="@dimen/text_size_medium"
                     app:textAllCaps="true"
-                    tools:text="$0.00"
-                    android:paddingLeft="@dimen/_18sdp"/>
+                    tools:text="$0.00" />
+
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/tvPaymentType"
                     style="@style/CustomFontMediumStyle"
@@ -105,12 +106,12 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="start"
                     android:gravity="center"
+                    android:paddingLeft="@dimen/_18sdp"
                     android:text="@{itemSheetModel.paymentType}"
                     android:textColor="@color/txtColor"
                     android:textSize="@dimen/text_size_medium"
                     app:textAllCaps="true"
-                    tools:text="$0.00"
-                    android:paddingLeft="@dimen/_18sdp"/>
+                    tools:text="$0.00" />
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/tvRefundedAmount"
@@ -119,10 +120,10 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="start"
                     android:gravity="center"
+                    android:paddingLeft="@dimen/_18sdp"
                     android:textColor="@color/colorRed"
                     android:textSize="@dimen/text_size_medium"
-                    tools:text="$0.00"
-                    android:paddingLeft="@dimen/_18sdp"/>
+                    tools:text="$0.00" />
 
             </LinearLayout>
 
@@ -131,13 +132,13 @@
                 style="@style/CustomFontBold"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
                 android:layout_weight="1"
+                android:paddingLeft="@dimen/_22sdp"
                 android:text="@{@string/symbole +` `+String.format(@string/format,itemSheetModel.tips)}"
                 android:textColor="@color/btnColor"
                 android:textSize="@dimen/text_size_medium"
-                android:layout_gravity="center_vertical"
-                tools:text="$0.00"
-                android:paddingLeft="@dimen/_22sdp" />
+                tools:text="$0.00" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 android:id="@+id/txtCustomerName"
@@ -146,10 +147,10 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_weight="1"
+                android:paddingLeft="@dimen/_22sdp"
                 android:textColor="@color/txtColor"
                 android:textSize="@dimen/text_size_medium"
-                tools:text="John Smith"
-                android:paddingLeft="@dimen/_22sdp"/>
+                tools:text="John Smith" />
 
             <androidx.appcompat.widget.AppCompatTextView
                 style="@style/CustomFontMediumStyle"
@@ -191,26 +192,25 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="start"
                     android:gravity="center"
-                    android:text="@{``+itemSheetModel.orderId}"
-                    android:textColor="@color/txtColor"
-
-                    android:textSize="@dimen/text_size_medium"
-                    tools:text="AXDAWEDWD"
                     android:paddingLeft="@dimen/_2sdp"
-                    />
+                    android:text="@{``+itemSheetModel.orderId}"
+
+                    android:textColor="@color/txtColor"
+                    android:textSize="@dimen/text_size_medium"
+                    tools:text="AXDAWEDWD" />
 
                 <androidx.appcompat.widget.AppCompatTextView
                     style="@style/CustomFontBold"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="start"
-                    android:gravity="center"
-                    android:text="@{`#`+itemSheetModel.orderDetails.receiptId}"
-                    android:textColor="@color/txtColor"
                     android:alpha="0.6"
+                    android:gravity="center"
+                    android:paddingLeft="@dimen/_2sdp"
+                    android:text="@{`#`+itemSheetModel.orderDetails.receiptId == null ? `` : `#` +itemSheetModel.orderDetails.receiptId}"
+                    android:textColor="@color/txtColor"
                     android:textSize="@dimen/text_size_medium"
                     tools:text="$AAAAAAA"
-                    android:paddingLeft="@dimen/_2sdp"
 
                     />
 
@@ -220,14 +220,14 @@
                 style="@style/CustomFontBold"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
                 android:layout_gravity="center_vertical"
+                android:layout_weight="1"
+                android:paddingLeft="@dimen/_25sdp"
                 android:text="@{itemSheetModel.terminalName}"
                 android:textColor="@color/txtColor"
                 android:textSize="@dimen/text_size_medium"
                 android:visibility="visible"
-                tools:text="terminal name"
-                android:paddingLeft="@dimen/_25sdp"/>
+                tools:text="terminal name" />
 
         </LinearLayout>
 

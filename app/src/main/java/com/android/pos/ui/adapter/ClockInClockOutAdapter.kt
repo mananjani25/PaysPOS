@@ -13,6 +13,11 @@ class ClockInClockOutAdapter : RecyclerView.Adapter<ClockInClockOutAdapter.MyVie
         RecyclerView.ViewHolder(binding.root) {
 
         fun bind(model: ClockinOutReportModel) {
+            binding.txtEmpName.text = model.empName
+            binding.txtClockIn.text = model.clockIn
+            binding.txtClockOutLabel.text = model.clockOutval
+            binding.txtActTime.text = model.actualTime
+            binding.txtTotalLabel.text = model.totalTime
 
         }
 
@@ -40,7 +45,8 @@ class ClockInClockOutAdapter : RecyclerView.Adapter<ClockInClockOutAdapter.MyVie
         return arrayList.size
 
     }
-    fun setList(list:ArrayList<ClockinOutReportModel>){
+
+    fun setList(list: ArrayList<ClockinOutReportModel>) {
         this.arrayList.clear()
         this.arrayList.addAll(list)
         notifyDataSetChanged()

@@ -2937,10 +2937,9 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
                         var list: ArrayList<ClockinOutReportModel> = arrayListOf()
                         it.forEach {
                             if (it.size == 5) {
+                                val model = ClockinOutReportModel()
                                 it.forEach {
 
-
-                                    val model = ClockinOutReportModel()
 
                                     if (it.key == "Employee") {
                                         model.empName = it.value
@@ -2957,10 +2956,9 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
                                         model.actualTime = it.value
                                     }
 
-                                    list.add(model)
-
 
                                 }
+                                list.add(model)
 
                             }
                         }

@@ -9,7 +9,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
-import android.widget.Toast
 import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
@@ -499,7 +498,9 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
         binding.layoutHeader.txtTransaction.setOnClickListener {
             if (rolePermission.hasTransactionPermission(binding.root)) {
-                findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_transactionFragment)
+                if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
+                    findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_transactionFragment)
+                }
             }
 
         }
