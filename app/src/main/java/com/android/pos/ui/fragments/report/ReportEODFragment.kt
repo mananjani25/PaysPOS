@@ -3254,36 +3254,36 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
                         ProgressUtils.dismissProgressDialog()
                         resource.data?.let { employeeList ->
                             teamEmployeeListGlobal.clear()
-                            teamEmployeeListGlobal = employeeList as ArrayList<Employee>
+                            teamEmployeeListGlobal.addAll(employeeList)
 
 
                             val isPresent =
                                 teamEmployeeListGlobal.any { it.name == "All Team Members" }
-                            if (!isPresent) {
-                                //  teamEmployeeListGlobal.removeAt(0)
-                                teamEmployeeListGlobal.add(
-                                    0,
-                                    Employee(
-                                        "",
-                                        "",
-                                        -1,
-                                        false,
-                                        "",
-                                        "",
-                                        -1,
-                                        "All Team Members",
-                                        "",
-                                        "",
-                                        "",
-                                        false,
-                                        -1,
-                                        "",
-                                        -1,
-                                        0.0,
-                                        false
-                                    )
+
+                            //  teamEmployeeListGlobal.removeAt(0)
+                            teamEmployeeListGlobal.add(
+                                0,
+                                Employee(
+                                    "",
+                                    "",
+                                    -1,
+                                    false,
+                                    "",
+                                    "",
+                                    -1,
+                                    "All Team Members",
+                                    "",
+                                    "",
+                                    "",
+                                    false,
+                                    -1,
+                                    "",
+                                    -1,
+                                    0.0,
+                                    false
                                 )
-                            }
+                            )
+
 
                             teamEmployeeListGlobal.forEachIndexed { index, employee ->
 
@@ -3329,6 +3329,7 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
         terminalList: ArrayList<String>,
         defaultEmployeePos: Int
     ) {
+        Log.e(TAG, "terminalListSize  ${terminalList.size}")
         val spinnerAdapter = ArrayAdapter(
             requireActivity(),
             R.layout.row_spinner,
@@ -3344,11 +3345,11 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
                 Log.e("defaultEmployeePos", defaultEmployeePos.toString())
 
                 viewModel.viewModelScope.launch {
-                    delay(200)
-                    binding.spTerminals.setSelection(defaultEmployeePos)
+                    binding.spTerminals.setSelection(defaultEmployeePos, false)
                 }
             }
         } catch (e: Exception) {
+            e.printStackTrace()
         }
 
     }
