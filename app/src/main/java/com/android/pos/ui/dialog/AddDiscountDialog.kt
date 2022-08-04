@@ -701,7 +701,11 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
 
 
                     if (isOrderDiscount) {
-                        price = totalOrderPrice
+                        if (totalOrderPrice == 0.0) {
+
+                            price = totalOrderPrice + orderDiscountPrice
+                        } else
+                            price = totalOrderPrice
                     } else {
                         price = itemPrice /*- defaultModel.discountPrice*/
                     }
