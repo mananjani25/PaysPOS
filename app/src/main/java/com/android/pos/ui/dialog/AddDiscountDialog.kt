@@ -718,9 +718,6 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
                         if (binding.edtAmount.text.toString().toDouble() > price) {
                             binding.edtAmount.setText(MethodUtils.roundOffAmountString(price))
                         }
-                        else {
-                            binding.edtAmount.setText(formatted.replace("""[$,%]""".toRegex(), ""))
-                        }
 
                     } else {
 
