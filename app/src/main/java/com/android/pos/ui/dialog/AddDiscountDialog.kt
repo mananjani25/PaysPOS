@@ -699,16 +699,22 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
 
 
                     if (isOrderDiscount) {
-                        price = totalOrderPrice
+                        if (totalOrderPrice == 0.0) {
+
+                            price = totalOrderPrice + orderDiscountPrice
+                        } else
+                            price = totalOrderPrice
                     } else {
                         price = itemPrice /*- defaultModel.discountPrice*/
                     }
 
                     if (defaultModel.discountPrice == 0.0) {
 
-                        if (binding.edtAmount.text.toString().toDouble() > price) {
-                            binding.edtAmount.setText(MethodUtils.roundOffAmountString(price))
-                        }
+                        if (binding.edtAmount.text.toString().isNotEmpty()) {
+
+                        } else if (binding.edtAmount.text.toString().toDouble() > price) {
+                                binding.edtAmount.setText(MethodUtils.roundOffAmountString(price))
+                            }
                     } else {
 
                         if (binding.edtAmount.text.toString()
