@@ -673,6 +673,7 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
     var current = ""
     override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
 
+        Log.e(TAG, "isSet  ${isSet}")
 
         if (!isSet) {
             if (s.toString().isNotEmpty()) {
@@ -689,6 +690,7 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
 
                 current = formatted
 
+                Log.e(TAG,"formatted  ${formatted}")
                 binding.edtAmount.setText(formatted.replace("""[$,%]""".toRegex(), ""))
                 binding.edtAmount.setSelection(formatted.replace("""[$,%]""".toRegex(), "").length)
 
@@ -704,11 +706,18 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
                         price = itemPrice /*- defaultModel.discountPrice*/
                     }
 
+                    Log.e(TAG,"pricediscount  ${price}")
+                    Log.e(TAG,"discountPriceDefault  ${defaultModel.discountPrice}")
+                    Log.e(TAG,"TextAmount ${binding.edtAmount.text.toString().toDouble()}")
                     if (defaultModel.discountPrice == 0.0) {
 
                         if (binding.edtAmount.text.toString().toDouble() > price) {
                             binding.edtAmount.setText(MethodUtils.roundOffAmountString(price))
                         }
+                        else {
+                            binding.edtAmount.setText(formatted.replace("""[$,%]""".toRegex(), ""))
+                        }
+
                     } else {
 
                         if (binding.edtAmount.text.toString()
