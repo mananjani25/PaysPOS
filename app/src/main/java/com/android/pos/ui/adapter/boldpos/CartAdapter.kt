@@ -104,7 +104,8 @@ class CartAdapter : RecyclerView.Adapter<CartAdapter.MyViewHolder>() {
     }
 
     fun setList(list: ArrayList<TbItem>) {
-        cartList.addAll(list)
+        Log.e(TAG,"itemListSize ${list.size}")
+        cartList = list
         notifyDataSetChanged()
 
 //        cartList.clear()
