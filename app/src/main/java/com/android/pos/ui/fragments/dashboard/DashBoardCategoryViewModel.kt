@@ -877,26 +877,52 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                         var index = -1
 
-                        list.forEachIndexed { pos, tbItem ->
+
+                        for (i in list.indices) {
                             if (item != null) {
                                 if (!item.isManualSales) {
-                                    if (tbItem.itemId == item.itemId && checkSameModifier(
-                                            tbItem,
+
+                                    if (list[i].itemId == item.itemId && checkVariationDelete(
+                                            list[i],
                                             item
-                                        )
+                                        ) && checkModifierDelete(list[i], item)
                                     ) {
-                                        index = pos
-                                        return@forEachIndexed
+                                        index = i
+                                        break
                                     }
                                 } else {
-                                    if (tbItem.manualSaleId == item.manualSaleId) {
-                                        index = pos
-                                        return@forEachIndexed
+                                    if (list[i].manualSaleId == item.manualSaleId) {
+                                        index = i
+                                        break
                                     }
                                 }
-
                             }
+
                         }
+
+//                        list.forEachIndexed { pos, tbItem ->
+//                            if (item != null) {
+//                                if (!item.isManualSales) {
+//                                    if (tbItem.itemId == item.itemId && checkVariationDelete(
+//                                            tbItem,
+//                                            item
+//                                        ) && checkModifierDelete(tbItem, item)
+//                                    ) {
+//                                        index = pos
+//                                        return@forEachIndexed
+//                                    }
+//                                } else {
+//                                    if (tbItem.manualSaleId == item.manualSaleId) {
+//                                        index = pos
+//                                        return@forEachIndexed
+//                                    }
+//                                }
+//
+//                            }
+//                        }
+
+
+
                         Log.e(TAG, "DeleteIndex  ${index}")
                         if (index != -1) {
                             val model = cartList[0].items?.get(index)
@@ -1132,35 +1158,82 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     private fun checkModifier(tbItem: TbItem, item: TbItem): Boolean {
 
-        if (item.modifiers.isEmpty()) return true
+        var isSame = false
 
-        var checkModifier = false
 
-        item.modifiers.forEach { itemM ->
-            if (tbItem.modifiers.isNotEmpty()) {
-                tbItem.modifiers.forEach {
-                    return (itemM.id == it.id).also { checkModifier = it }
+        for (i in tbItem.modifiers.indices) {
+
+            for (j in item.modifiers.indices) {
+
+                isSame = tbItem.modifiers[i].id == item.modifiers[j].id
+                if (isSame) {
+                    isSame = false
+                    break
                 }
-            } else {
-                return false
             }
+            if (isSame) break
         }
-        return checkModifier
+        return isSame
+
+
     }
 
     private fun checkVariation(tbItem: TbItem, item: TbItem): Boolean {
 
-        if (item.variationsAttributes.isEmpty()) return true
+        var isSame = false
 
-        var variation = false
+        for (i in tbItem.variationsAttributes.indices) {
 
-        item.variationsAttributes.forEach { itemM ->
-            tbItem.variationsAttributes.forEach {
-                variation = itemM.id == it.id
+            for (j in item.variationsAttributes.indices) {
+
+                isSame = tbItem.variationsAttributes[i].id == item.variationsAttributes[j].id
+                if (isSame) {
+                    isSame = false
+                    break
+                }
             }
+            if (isSame) break
         }
-        return variation
+        return isSame
     }
+
+
+    private fun checkModifierDelete(tbItem: TbItem, item: TbItem): Boolean {
+
+        var isSame = false
+
+        if (tbItem.modifiers.isEmpty() && item.modifiers.isEmpty()) return true
+
+        for (i in tbItem.modifiers.indices) {
+
+            for (j in item.modifiers.indices) {
+
+                isSame = tbItem.modifiers[i].id == item.modifiers[j].id
+
+            }
+            if (isSame) break
+        }
+        return isSame
+
+
+    }
+
+    private fun checkVariationDelete(tbItem: TbItem, item: TbItem): Boolean {
+
+        var isSame = false
+
+        for (i in tbItem.variationsAttributes.indices) {
+
+            for (j in item.variationsAttributes.indices) {
+
+                isSame = tbItem.variationsAttributes[i].id == item.variationsAttributes[j].id
+
+            }
+            if (isSame) break
+        }
+        return isSame
+    }
+
 
     fun addCartModel(item: TbItem, isManualSales: Boolean): CartModel {
         val inventoryModelList = ArrayList<TbItem>()
@@ -3387,7 +3460,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
 
     fun createCart(cartList: ArrayList<CartModel>): ArrayList<CartModel> {
-        Log.e(TAG,"CreateCartEmpId  ${prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)}")
+        Log.e(TAG, "CreateCartEmpId  ${prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)}")
         if (cartList.isEmpty()) {
             val model = CartModel()
             model.employeeID =
