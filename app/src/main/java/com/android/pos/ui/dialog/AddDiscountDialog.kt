@@ -710,11 +710,9 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
 
                     if (defaultModel.discountPrice == 0.0) {
 
-                        if (binding.edtAmount.text.toString().isNotEmpty()) {
-
-                        } else if (binding.edtAmount.text.toString().toDouble() > price) {
-                                binding.edtAmount.setText(MethodUtils.roundOffAmountString(price))
-                            }
+                        if (binding.edtAmount.text.toString().toDouble() > price) {
+                            binding.edtAmount.setText(MethodUtils.roundOffAmountString(price))
+                        }
                     } else {
 
                         if (binding.edtAmount.text.toString()
