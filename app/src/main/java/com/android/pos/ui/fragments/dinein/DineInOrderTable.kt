@@ -348,12 +348,16 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
             var dividedOrderDiscount = 0.0
             totalGuestCount = getOrderDetailsResponse?.guestAttributes?.size!! - 1
+            var tmpOrderDis = 0.0
             if (paidGuestAmount > 0 && globalOrderDiscount > 0.0) {
                 Log.e("globalOrderDiscount", "globalOrderDiscount  ${globalOrderDiscount}")
                 var eachGuestDiscount =
                     MethodUtils.roundOffAmountDouble(globalOrderDiscount / (getOrderDetailsResponse?.guestAttributes?.size!! - 1))
 
                 dividedOrderDiscount = globalOrderDiscount - (eachGuestDiscount * paidGuestAmount)
+                Log.e(TAG,"DividedOrwrs ${dividedOrderDiscount}")
+
+                tmpOrderDis  = globalOrderDiscount - (eachGuestDiscount * paidGuestAmount)
 
 
                 var wholeDisDivide =
@@ -364,7 +368,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     dividedOrderDiscount -= wholeDisDivide
                 }
                 totalDiscount -= wholeDisDivide
-                subTotalDInin -= dividedOrderDiscount
+
+                subTotalDInin -= tmpOrderDis
                 Log.e("dividedOrderDiscount", "dividedOrderDiscount  ${dividedOrderDiscount}")
                 Log.e("WRqwrfarf", "wholeDisDivide  ${wholeDisDivide}")
                 Log.e(TAG, "subtotal :: " + subTotalDInin)
@@ -374,8 +379,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
 
             Log.e("totalDiscount", "totalDiscount  ${totalDiscount}")
-            if (totalDiscount > dividedOrderDiscount) {
-                totalDiscount -= dividedOrderDiscount
+            if (totalDiscount > tmpOrderDis) {
+                totalDiscount -= tmpOrderDis
             }
 
 
