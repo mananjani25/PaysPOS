@@ -1291,8 +1291,12 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             if (serviceChargeList?.isNotEmpty() == true) {
                 Log.e("AajeChange", "serviceChargeList:  ${Gson().toJson(serviceChargeList)}")
                 var isApplied = false
+                var chSubTotal = wholeNewSubtotal / (getOrderDetailsResponse?.guestAttributes?.size?.minus(1) ?: 1)
+                Log.e(TAG,"chSubTotal  ${chSubTotal}")
+                chSubTotal -= divideDiscount
                 serviceChargeList.forEach {
                     if (prefProvider.getValueboolean(Constants.SERVICECHARGE_DINEIN_ORDER, false)) {
+
                         if (it.order_type == Constants.SERVICECHARGE_DINEIN_ORDER) {
                             if (isInRange(
                                     it.min_guest_count!!,
@@ -1305,7 +1309,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                                     "calculateDineInServiceCharge: DashBoard " + it.min_guest_count + "....." + it.max_guest_count + " in between " + totalGuestCount
                                 )
                                 isApplied = true
-                                serviceCharge += MethodUtils.roundOffAmountDouble((wholeNewSubtotal * it.percentage) / 100)
+                                Log.e(TAG,"checkSer  ${it.percentage}  check 2ndSubTital ${chSubTotal}")
+                                serviceCharge += MethodUtils.roundOffAmountDouble((chSubTotal * it.percentage) / 100)
                                 return@forEach
                             }
                         }
@@ -1314,7 +1319,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 if (!isApplied) {
                     serviceChargeList.forEach { service ->
                         if (service.id == checkMaxGuestCountId(serviceChargeList)) {
-                            serviceCharge += MethodUtils.roundOffAmountDouble((wholeNewSubtotal * service.percentage) / 100)
+                            serviceCharge += MethodUtils.roundOffAmountDouble((chSubTotal * service.percentage) / 100)
                             return@forEach
                         }
                     }
@@ -1331,7 +1336,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
         wholeNewSubtotal = MethodUtils.roundOffAmountDouble(wholeNewSubtotal / totalGuestCount)
         WTTaxes = MethodUtils.roundOffAmountDouble(WTTaxes / totalGuestCount)
-        serviceCharge = MethodUtils.roundOffAmountDouble(serviceCharge / totalGuestCount)
+       // serviceCharge = MethodUtils.roundOffAmountDouble(serviceCharge / totalGuestCount)
 
         Log.e(
             "FinalDetails",
