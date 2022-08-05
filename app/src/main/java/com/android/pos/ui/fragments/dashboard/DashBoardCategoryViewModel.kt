@@ -882,10 +882,10 @@ class DashBoardCategoryViewModel @Inject constructor(
                             if (item != null) {
                                 if (!item.isManualSales) {
 
-                                    if (list[i].itemId == item.itemId && checkVariationDelete(
+                                    if (list[i].itemId == item.itemId && checkVariation(
                                             list[i],
                                             item
-                                        ) && checkModifierDelete(list[i], item)
+                                        ) && checkModifier(list[i], item)
                                     ) {
                                         index = i
                                         break
@@ -1157,22 +1157,32 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     private fun checkModifier(tbItem: TbItem, item: TbItem): Boolean {
 
-        var isSame = false
+
+        var isSame = true
+
+        var listOfDataMod: ArrayList<Int> = arrayListOf()
+
+        if (tbItem.modifiers.isNotEmpty()) {
+            tbItem.modifiers.forEach {
+                listOfDataMod.add(it.id ?: 0)
+            }
+        }
+
+        var listOfDataModSelected: ArrayList<Int> = arrayListOf()
+        if (item.modifiers.isNotEmpty()) {
+            item.modifiers.forEach {
+                listOfDataModSelected.add(it.id ?: 0)
+            }
+        }
 
         if (tbItem.modifiers.isEmpty() && item.modifiers.isEmpty()) return true
 
-        for (i in tbItem.modifiers.indices) {
-
-            for (j in item.modifiers.indices) {
-
-                isSame = tbItem.modifiers[i].id == item.modifiers[j].id
-//                if (isSame) {
-//                    isSame = false
-//                    break
-//                }
-            }
-            if (isSame) break
+        if (listOfDataMod.containsAll(listOfDataModSelected) && listOfDataMod.size == listOfDataModSelected.size) {
+            isSame = true
+        } else {
+            isSame = false
         }
+
         return isSame
 
 
@@ -1180,62 +1190,31 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     private fun checkVariation(tbItem: TbItem, item: TbItem): Boolean {
 
-        var isSame = false
+        var isSame = true
+
+        var listOfDataMod: ArrayList<Int> = arrayListOf()
+        if (tbItem.variationsAttributes.isNotEmpty()) {
+            tbItem.variationsAttributes.forEach {
+                listOfDataMod.add(it.id ?: 0)
+            }
+        }
+
+        var listOfDataModSelecteItem: ArrayList<Int> = arrayListOf()
+        if (item.variationsAttributes.isNotEmpty()) {
+            item.variationsAttributes.forEach {
+                listOfDataModSelecteItem.add(it.id ?: 0)
+            }
+        }
 
         if (tbItem.variationsAttributes.isEmpty() && item.variationsAttributes.isEmpty()) return true
-
-
-        for (i in tbItem.variationsAttributes.indices) {
-
-            for (j in item.variationsAttributes.indices) {
-
-                isSame = tbItem.variationsAttributes[i].id == item.variationsAttributes[j].id
-                if (isSame) {
-                    isSame = false
-                    break
-                }
-            }
-            if (isSame) break
+        if (listOfDataMod.containsAll(listOfDataModSelecteItem) && listOfDataMod.size == listOfDataModSelecteItem.size) {
+            isSame = true
+        } else {
+            isSame = false
         }
-        return isSame
-    }
 
 
-    private fun checkModifierDelete(tbItem: TbItem, item: TbItem): Boolean {
 
-        var isSame = false
-
-        if (tbItem.modifiers.isEmpty() && item.modifiers.isEmpty()) return true
-
-        for (i in tbItem.modifiers.indices) {
-
-            for (j in item.modifiers.indices) {
-
-                isSame = tbItem.modifiers[i].id == item.modifiers[j].id
-
-            }
-            if (isSame) break
-        }
-        return isSame
-
-
-    }
-
-    private fun checkVariationDelete(tbItem: TbItem, item: TbItem): Boolean {
-
-        var isSame = false
-
-        if (tbItem.variationsAttributes.isEmpty() && item.variationsAttributes.isEmpty()) return true
-
-        for (i in tbItem.variationsAttributes.indices) {
-
-            for (j in item.variationsAttributes.indices) {
-
-                isSame = tbItem.variationsAttributes[i].id == item.variationsAttributes[j].id
-
-            }
-            if (isSame) break
-        }
         return isSame
     }
 
