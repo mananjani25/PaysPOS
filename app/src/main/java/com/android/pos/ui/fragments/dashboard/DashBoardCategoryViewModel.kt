@@ -1166,10 +1166,10 @@ class DashBoardCategoryViewModel @Inject constructor(
             for (j in item.modifiers.indices) {
 
                 isSame = tbItem.modifiers[i].id == item.modifiers[j].id
-//                if (isSame) {
-//                    isSame = false
-//                    break
-//                }
+                if (isSame) {
+                    isSame = false
+                    break
+                }
             }
             if (isSame) break
         }
@@ -1181,9 +1181,6 @@ class DashBoardCategoryViewModel @Inject constructor(
     private fun checkVariation(tbItem: TbItem, item: TbItem): Boolean {
 
         var isSame = false
-
-        if (tbItem.variationsAttributes.isEmpty() && item.variationsAttributes.isEmpty()) return true
-
 
         for (i in tbItem.variationsAttributes.indices) {
 
