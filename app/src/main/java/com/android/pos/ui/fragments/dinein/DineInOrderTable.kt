@@ -582,7 +582,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     employeeId = prefProvider.getValueInt(EMPLOYEE_ID, 0)
                     taxAmount = MethodUtils.roundOffAmountDouble(finalTaxAmt)
                     subTotalPrice = MethodUtils.roundOffAmountDouble(subTotalWT)
-                    offlineId = offlineId
+                    offlineId = getOrderDetailsResponse?.offlineId ?:""
                     payableType = "GuestTab"
                     paymentType = "Cash"
                     transactionId = randomOfflineId()

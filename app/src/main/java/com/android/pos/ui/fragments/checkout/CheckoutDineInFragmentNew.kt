@@ -1541,6 +1541,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
         Log.d("yash", "makeCashPayment: totaltax    : " + totalTax)
         Log.d("yash", "makeCashPayment: total disc  : " + totalDiscount)
         Log.d("yash", "makeCashPayment: total serv  : " + totalServiceCharge)
+
         val myRequest = cartList?.let {
             paymentviewModel.createOrderRequest(
                 it,
@@ -1559,7 +1560,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                 cashDiscountSurcharge,
                 true,
                 paymentType, cashDiscountType,
-                tipID
+                tipID, offlineId = orderOfflineId
             )
         }
         Log.e(TAG, "myRequestOriginal ${Gson().toJson(myRequest)}")

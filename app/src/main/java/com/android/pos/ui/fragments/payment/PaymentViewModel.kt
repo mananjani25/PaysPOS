@@ -508,6 +508,8 @@ open class PaymentViewModel @Inject constructor(
         if (isPrinterQueue) {
             orderAttributeRequestModel.offlineId = offlineId
         }
+
+
         Log.e(TAG, "openOrderType: " + cartModel.orderType)
         orderAttributeRequestModel.paymentStatus = if (isPaid) 1 else 0
         orderAttributeRequestModel.serviceChargeEnabled = true
