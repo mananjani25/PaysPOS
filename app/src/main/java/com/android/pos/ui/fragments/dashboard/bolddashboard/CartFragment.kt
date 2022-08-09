@@ -492,7 +492,7 @@ class CartFragment(
 
 
         val dineInList: ArrayList<DineInModel> = arrayListOf()
-        dineInList.add(DineInModel(0, true, 0, "Whole Table",))
+        dineInList.add(DineInModel(0, true, 0, "Whole Table"))
         for (i in 1..numOfGuest) {
             dineInList.add(
                 DineInModel(
@@ -640,7 +640,7 @@ class CartFragment(
     private fun addObserver() {
 
 
-        Log.e("CreateCartEmpIdRecd", ""+prefProvider.getValueInt(EMPLOYEE_ID, 0))
+        Log.e("CreateCartEmpIdRecd", "" + prefProvider.getValueInt(EMPLOYEE_ID, 0))
 
         if (arguments?.getString(REDIRECT_FROM) == MANUAL_SALE) {
             viewModel.manualSaleItems(
@@ -869,10 +869,14 @@ class CartFragment(
 
 
                             viewModel.setCartModel(it)
-                            Log.e(TAG,"${prefProvider.getValueboolean(
-                                Constants.DINE_IN_UPDATE,
-                                false
-                            )}")
+                            Log.e(
+                                TAG, "${
+                                    prefProvider.getValueboolean(
+                                        Constants.DINE_IN_UPDATE,
+                                        false
+                                    )
+                                }"
+                            )
                             if (prefProvider.getValueboolean(
                                     Constants.DINE_IN_UPDATE,
                                     false
@@ -1066,7 +1070,7 @@ class CartFragment(
                                 filterItems.addAll(it!!.toCollection(arrayListOf()))
                             }
 
-                            Log.e(TAG,"filterItems  ${filterItems.size}")
+                            Log.e(TAG, "filterItems  ${filterItems.size}")
                             cartAdapter.setList(filterItems)
                             /*it[0].items?.toCollection(arrayListOf())
                             ?.let { it1 ->
