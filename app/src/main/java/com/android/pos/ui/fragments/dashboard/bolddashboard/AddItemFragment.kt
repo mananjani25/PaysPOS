@@ -191,32 +191,6 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
             prefProvider.setValueInt(Constants.CAT_ID_SELECTED, item.categoryId)
             var isPriceNull = true
 
-            /*  item.variationsAttributes.forEach {
-                  if (it.price!=0.00){
-                      adapter.getSelectedModifiers().forEach {
-                          if (it.price!=0.00)
-                          {
-                              // item.price=it.price
-                              isPriceNull=false
-                          }
-                      }
-                      return@forEach
-                  }
-              }*/
-            Log.e(
-                "TAG",
-                "price - ${item.price.toString() + " variatiions :  " + item.variationsAttributes + " modifiers : "}"
-            )
-            /*  if (item.price == 0.0 && item.variationsAttributes.isNotEmpty()*//*&&isPriceNull*//*) {
-                AlertUtils.showCustomAlert(
-                    requireActivity(),
-                    "Please enter atleast one price of item"
-                )
-                return@setOnClickListener
-            }*/
-
-
-
             if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == Constants.OPEN_ORDER) {
 
                 if (cartList.isEmpty()) {
