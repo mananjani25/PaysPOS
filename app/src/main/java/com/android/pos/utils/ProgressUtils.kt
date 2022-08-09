@@ -116,6 +116,7 @@ object ProgressUtils {
         try {
             if (builder != null && builder?.isShowing == true) {
                 builder?.dismiss()
+                builder = null
             }
         } catch (e: Exception) {
             Log.d("pos", "dismissProgressDialog: " + e.message)
