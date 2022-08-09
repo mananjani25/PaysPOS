@@ -109,7 +109,7 @@ class MergeTableDialog : DialogFragment() {
             listFloor.add(MergeFloorModel(it.id, it.name))
 
             it.floor_plan_tables.forEach { table ->
-                if (table.status == AVAILABLE){
+                if (table.status == AVAILABLE) {
                     listTable.add(
                         MergeTableModel(
                             table.id,
@@ -131,30 +131,34 @@ class MergeTableDialog : DialogFragment() {
                         )
                     )
 
+                } else if (table.lock_by_id != null && table.lock_by_id == prefProvider.getValueInt(
+                        EMPLOYEE_ID, 0
+                    )
+                ) {
+
+                    if ( table.status == OCCUPIED) {
+                        listTable.add(
+                            MergeTableModel(
+                                table.id,
+                                table.table_name,
+                                it.id,
+                                it.name,
+                                if (table.status == OCCUPIED) {
+                                    true
+                                } else {
+                                    false
+                                },
+                                orderId = if (table.order_details != null) {
+                                    table.order_details.id
+                                } else {
+                                    null
+                                },
+                                orderDetails = table.order_details,
+                                chairCount = table.chair_count
+                            )
+                        )
+                    }
                 }
-//               else if (table.lock_by_id != null && table.lock_by_id ==  prefProvider.getValueInt(
-//                        EMPLOYEE_ID,0)) {
-//                    listTable.add(
-//                        MergeTableModel(
-//                            table.id,
-//                            table.table_name,
-//                            it.id,
-//                            it.name,
-//                            if (table.status == OCCUPIED) {
-//                                true
-//                            } else {
-//                                false
-//                            },
-//                            orderId = if (table.order_details != null) {
-//                                table.order_details.id
-//                            } else {
-//                                null
-//                            },
-//                            orderDetails = table.order_details,
-//                            chairCount = table.chair_count
-//                        )
-//                    )
-//                }
             }
         }
 
@@ -432,16 +436,16 @@ class MergeTableDialog : DialogFragment() {
                 var valdate = false
                 for (i in allIds.indices) {
                     if (allIds[i] == 0) {
-                        valdate =true
+                        valdate = true
                     }
                 }
-                if(valdate){
+                if (valdate) {
                     AlertUtils.showCustomAlertWithListenerWithOK(
                         requireContext(), "Please select Floor and Table"
                     ) { _, _ ->
 
                     }
-                }else{
+                } else {
                     AlertUtils.showCustomAlertWithListenerWithOK(
                         requireContext(), "Same table can't be merged."
                     ) { _, _ ->

@@ -169,7 +169,7 @@ open class PaymentViewModel @Inject constructor(
                                         Log.e("QueueCheck", "CreateOrderData")
                                     }
 
-                                    if (createOrderResponse.data.order.orderType != "Dine In" ) {
+                                    if (createOrderResponse.data.order.orderType != "Dine In") {
                                         _queueStartTakeOut.value = Event(createOrderResponse)
                                         Log.e("QueueCheck", "QueueStart")
                                     }
@@ -497,7 +497,7 @@ open class PaymentViewModel @Inject constructor(
         try {
             orderAttributeRequestModel.tax_bifurcation_data =
                 Gson().toJson(cartModel.taxlistDynamic)
-        }catch (e:Exception){
+        } catch (e: Exception) {
             e.printStackTrace()
         }
         orderAttributeRequestModel.offlineId =
@@ -660,7 +660,7 @@ open class PaymentViewModel @Inject constructor(
             try {
                 orderAttributeRequestModel.tax_bifurcation_data =
                     Gson().toJson(cartModel.taxlistDynamic)
-            }catch (e:java.lang.Exception){
+            } catch (e: java.lang.Exception) {
                 e.printStackTrace()
             }
         }
@@ -1829,7 +1829,7 @@ open class PaymentViewModel @Inject constructor(
             when (resource.status) {
                 Status.SUCCESS -> {
                     _showProgress.value = Event(false)
-                  //  _data.value = Event(createOrder)
+                    //  _data.value = Event(createOrder)
                     _queueCreateSaveOrder.value = Event(true)
 
                     // _queuePrinter.value = Event(resource?.data?.message.toString())
