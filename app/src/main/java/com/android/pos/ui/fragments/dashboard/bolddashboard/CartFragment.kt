@@ -1715,10 +1715,8 @@ class CartFragment(
                     }
 
                     if (viewModel.restrictedAmount(binding.txtTotal)) {
-                        val cartList = viewModel.generateCombinedItems(viewModel.cartModel!!)
-                        cartList.openOrderType = Constants.PICK_UP
-                        cartList.orderType = ordertype
-                        cartList.orderTypeId = ordertypeId
+
+
 
 
                         viewModelPayment.updateOrder(
@@ -1728,6 +1726,11 @@ class CartFragment(
                             paymentOfflineId,
                             orderOfflineId
                         )
+
+                        val cartList = viewModel.generateCombinedItems(viewModel.cartModel!!)
+                        cartList.openOrderType = Constants.PICK_UP
+                        cartList.orderType = ordertype
+                        cartList.orderTypeId = ordertypeId
 
                         val totalAmountTobeSave =
                             if (viewModel.redeemLoyaltyInfo.isLoyaltyApplied == true) {
@@ -1746,6 +1749,7 @@ class CartFragment(
                         future_delivery_date = formatterdate.format(date)
                         future_delivery_time = formattertime.format(date)
 
+                        Log.e(TAG,"UpdateOrderItemsList  ${cartList.items?.size}")
                         val request = viewModelPayment.createOpenOrderRequest(
                             cartList,
                             viewModel.subTotalPrice,

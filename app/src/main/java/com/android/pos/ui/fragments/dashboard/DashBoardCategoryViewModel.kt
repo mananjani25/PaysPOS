@@ -221,7 +221,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     fun getItemByProductCode(productCode: String) = posRepository.getItemByProductCode(productCode)
 
-    fun checkCategoryHideOrNot(id:Int) = posRepository.checkCategoryHideOrNot(id)
+    fun checkCategoryHideOrNot(id: Int) = posRepository.checkCategoryHideOrNot(id)
 
 
     fun getItemByCategoryId(id: Int) = posRepository.getItemByCategoryId(id)
@@ -287,7 +287,19 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     fun generateCombinedItems(cartModel: CartModel): CartModel {
         val combinedItems = arrayListOf<TbItem>()
-        cartModel.items?.let { combinedItems.addAll(it) }
+        cartModel.items?.let {
+
+            if (isOrderUpdate) {
+                it.forEach {
+                    Log.e(TAG, "orderItemId  ${it.orderItemId}")
+                    if (it.orderItemId != null && it.isDestroy == true) {
+                        combinedItems.add(it)
+                    }
+                }
+            } else {
+                combinedItems.addAll(it)
+            }
+        }
         if (cartModel.isOpenOrder && isOrderUpdate) {
             combinedItems.addAll(destroyedList)
         }
@@ -845,6 +857,27 @@ class DashBoardCategoryViewModel @Inject constructor(
                                             item.modifiers.forEach {
                                                 it.itemQuantity = model.itemQuantity
                                             }
+
+                                            Log.e(
+                                                TAG,
+                                                "modelmodifiers:  ${Gson().toJson(model.modifiers)}"
+                                            )
+                                            Log.e(
+                                                TAG,
+                                                "itemModifierIds:  ${Gson().toJson(item.modifiers)}"
+                                            )
+                                            for (i in model.modifiers) {
+                                                for (j in item.modifiers) {
+                                                    if (i.id == j.id) {
+                                                        j.itemQuantity = j.itemQuantity
+                                                        j.orderModifierId = i.orderModifierId
+                                                    }
+                                                }
+                                            }
+                                            Log.e(
+                                                TAG,
+                                                "passmodifiers  ${Gson().toJson(item.modifiers)}"
+                                            )
                                             model.modifiers = item.modifiers
                                             if (item.isEdited) {
                                                 model.isEdited = item.isEdited

@@ -15,9 +15,7 @@ import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.DELETE
 import com.android.pos.data.remote.Constants.DINE_IN
 import com.android.pos.data.remote.Constants.DINE_IN_UPDATE
-import com.android.pos.data.remote.Constants.DINE_IN_SERVICECHARGE
 import com.android.pos.data.remote.Constants.ORDER_TYPE
-import com.android.pos.data.remote.Constants.SERVICECHARGE_DINEIN_ORDER
 import com.android.pos.data.remote.Constants.SERVICECHARGE_TAKEOUT_OPENORDER
 import com.android.pos.data.remote.Constants.TAKEOUT
 import com.android.pos.data.remote.Constants.TERMINAL_ID
@@ -40,6 +38,7 @@ import javax.inject.Inject
 
 @AndroidEntryPoint
 class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
+    private var mainItem: TbItem? = null
     private lateinit var item: TbItem
     private var cartList: ArrayList<CartModel> = arrayListOf()
     private lateinit var binding: FragmentAddItemBinding
@@ -53,6 +52,8 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
 
     private lateinit var adapter: ItemModifierSetAdapter
     private var intArray: IntArray? = null
+    private var mainModifiersId: ArrayList<Int> = arrayListOf()
+    private var mainVariationId: ArrayList<Int> = arrayListOf()
 
     @Inject
     lateinit var prefProvider: PrefProvider
@@ -226,13 +227,8 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
                             it.itemQuantity = qty
 
                             item.modifiers.forEach { it1 ->
-                                Log.e(
-                                    "OrderItem",
-                                    "orderModifierIdorderModifierId  ${it1.orderModifierId}"
-                                )
                                 if (it1.orderModifierId != null) {
 
-                                    Log.e("OrderIem", "orderModifierId:  ${it1.orderModifierId}")
                                     it.orderModifierId = it1.orderModifierId
 
                                 }
@@ -241,7 +237,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
                         item.modifiers = modifiers
 
 
-                    }else{
+                    } else {
                         item.modifiers = arrayListOf()
                     }
                 } else {
@@ -296,7 +292,20 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
                             taxData.totalTaxTypePrice = 0.0
                         }
                     }
-                    viewModel.cartLogic(cartList, item, Constants.UPDATE, false)
+
+
+                    if (checkVar() && checkMod()) {
+                        Log.e("NewItem", "ItemSame")
+                        viewModel.cartLogic(cartList, item, Constants.UPDATE, false)
+
+                    } else {
+
+                        Log.e("NewItem", "ItemSameNot")
+                        item.orderItemId = null
+                        viewModel.cartLogic(cartList, item, Constants.ADD, false)
+                    }
+
+
                 }
             } else {
                 if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == Constants.DINE_IN) {
@@ -426,6 +435,17 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
 
     private fun getData() {
         item = requireArguments().getParcelable<TbItem>("item") ?: TbItem()
+        if (item.modifiers.isNotEmpty()) {
+            item.modifiers.forEach {
+                mainModifiersId.add(it.id ?: 0)
+            }
+        }
+        if (item.variationsAttributes.isNotEmpty()) {
+            item.variationsAttributes.forEach {
+                mainVariationId.add(it.id ?: 0)
+            }
+        }
+        mainItem = requireArguments().getParcelable<TbItem>("item") ?: TbItem()
         Log.e(TAG, "getIrem  ${Gson().toJson(item)}")
         cartList = requireArguments().getSerializable("cartList") as ArrayList<CartModel>
         setData()
@@ -853,5 +873,85 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
         ) {
             item.isEdited = true
         }
+    }
+
+    private fun checkVariation(mainItem: TbItem, item: TbItem): Boolean {
+
+        var isSame = false
+        Log.e(TAG, "mainItem:  ${Gson().toJson(mainItem)}")
+        Log.e(TAG, "mainItemitem:  ${Gson().toJson(item)}")
+
+        if (mainItem.variationsAttributes.size == item.variationsAttributes.size && item.variationsAttributes.containsAll(
+                mainItem.variationsAttributes
+            )
+        ) {
+            isSame = true
+        } else {
+            isSame = false
+        }
+
+
+        return isSame
+    }
+
+    private fun checkMod(): Boolean {
+        var isSame = true
+
+        var listIds = ArrayList<Int>()
+        item.modifiers.forEach {
+            listIds.add(it.id ?: 0)
+        }
+
+        if (listIds.isNotEmpty() && mainModifiersId.isNotEmpty()) {
+            if (mainModifiersId.containsAll(listIds) && listIds.size == mainModifiersId.size) {
+                isSame = true
+            } else {
+                isSame = false
+            }
+        }
+
+        return isSame
+
+    }
+
+    private fun checkVar(): Boolean {
+        var isSame = true
+
+        var listIds = ArrayList<Int>()
+        item.variationsAttributes.forEach {
+            listIds.add(it.id ?: 0)
+        }
+
+        if (listIds.isNotEmpty() && mainVariationId.isNotEmpty()) {
+            if (mainVariationId.containsAll(listIds) && listIds.size == mainVariationId.size) {
+                isSame = true
+            } else {
+                isSame = false
+            }
+        }
+
+        return isSame
+
+    }
+
+    private fun checkModifier(mainItem: TbItem, item: TbItem): Boolean {
+
+
+        var isSame = true
+
+        if (mainItem.modifiers.size == item.modifiers.size && item.modifiers.containsAll(
+                mainItem.modifiers
+            )
+        ) {
+            isSame = true
+        } else {
+            isSame = false
+        }
+
+
+
+        return isSame
+
+
     }
 }
