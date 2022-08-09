@@ -255,6 +255,10 @@ class PosRepository @Inject constructor(
             appDatabase.itemDao().itemByProductCode(productCode)!!
         })
 
+    fun checkCategoryHideOrNot(id:Int) = performGetOperationDatabase(databaseQuery = {
+        appDatabase.categoryDao().getCategory(id)
+    })
+
     fun getItemByCategoryId(id: Int) =
         performGetOperationDatabase(databaseQuery = {
             appDatabase.itemDao().getItemList(id)

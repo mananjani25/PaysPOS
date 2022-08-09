@@ -221,6 +221,8 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     fun getItemByProductCode(productCode: String) = posRepository.getItemByProductCode(productCode)
 
+    fun checkCategoryHideOrNot(id:Int) = posRepository.checkCategoryHideOrNot(id)
+
 
     fun getItemByCategoryId(id: Int) = posRepository.getItemByCategoryId(id)
 

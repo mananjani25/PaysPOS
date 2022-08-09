@@ -34,7 +34,7 @@ interface DBItemDao {
     @Query("SELECT * from TbItem where TbItem.itemId  = :id and TbItem.name != 'Manual Item' LIMIT 1")
     fun itemById(id: Int?): LiveData<TbItem>?
 
-    @Query("SELECT * from TbItem where TbItem.sku  = :productCode and TbItem.isHide = 0 and TbItem.name != 'Manual Item' LIMIT 1")
+    @Query("SELECT * from TbItem where TbItem.sku  = :productCode and TbItem.name != 'Manual Item' LIMIT 1")
     fun itemByProductCode(productCode: String): LiveData<TbItem>?
 
     @Query("SELECT * from TbItem LIMIT 1")
