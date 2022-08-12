@@ -452,7 +452,9 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
     private fun syncData() {
 
         val sync = prefProvider.getValueboolean(Constants.SYNC_DATA, false)
+        Log.e(TAG,"getsyncStatus  ${sync}")
         if (!sync) {
+            ProgressUtils.showProgressDialog(requireActivity())
             viewModel.syncInventoryModule()
         } else {
             viewModel.getOnlineOrderCount()
@@ -678,7 +680,9 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
     private fun addObserver() {
         viewModel.showProgress.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
+                Log.e(TAG,"showDialogData ${it}")
                 if (it) {
+
                     ProgressUtils.showProgressDialog(requireActivity())
                 } else {
                     ProgressUtils.dismissProgressDialog()
