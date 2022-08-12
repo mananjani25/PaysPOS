@@ -2459,7 +2459,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 it?.let { resource ->
                     when (resource.status) {
                         Status.SUCCESS -> {
-                            Log.e(TAG,"TBITEMDATA  ${resource.data}")
+                            Log.e(TAG, "TBITEMDATA  ${resource.data}")
                             if (resource.data != null) {
 
                                 //data found. | Add in cart
@@ -2468,10 +2468,9 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                         .observe(viewLifecycleOwner) {
                                             when (it.status) {
                                                 Status.SUCCESS -> {
-                                                    Log.e(TAG,"isItemHider  ${resource.data.isHide}")
                                                     if (it.data != null && resource.data.isHide) {
                                                         //add item in the cart
-                                                            
+
                                                         addItemInCartThroughBarcode(resource.data)
                                                     }
                                                 }
@@ -2490,7 +2489,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                             } else {
                                 //data not found. Create New Item
                                 if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
-                                    Log.e(TAG,"productCode  ${productCode}")
+                                    Log.e(TAG, "productCode  ${productCode}")
                                     val bundle = Bundle()
                                     bundle.putString("productCode", productCode ?: "")
                                     findNavController().navigate(

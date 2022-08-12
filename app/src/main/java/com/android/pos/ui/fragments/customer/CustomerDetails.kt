@@ -13,7 +13,6 @@ import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.data.entities.*
 import com.android.pos.data.model.responseModel.GetOrderDetailsResponse
-import com.android.pos.data.model.responseModel.OpenOrderResponse
 import com.android.pos.data.model.responseModel.orderhistory.Orders
 import com.android.pos.data.remote.Constants
 import com.android.pos.databinding.FragmentCustomerDetailsBinding
@@ -111,7 +110,6 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
 
         viewModel.customerId = customerModel.id.toString()
 
-        Log.e(TAG, "CustomerDetails:  ${Gson().toJson(customerModel)}")
         binding.txtEdit.setOnClickListener {
             val bundle: Bundle = bundleOf("isEdit" to true, "dataModel" to customerModel)
             findNavController().navigate(R.id.action_customer_to_addEditCustomer, bundle)
