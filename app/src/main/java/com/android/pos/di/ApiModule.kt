@@ -52,7 +52,7 @@ object ApiModule {
         Retrofit.Builder()
             .baseUrl(prefProvider.getValue(BASE_URL_NEW, BASE_URL))
             .client(
-                OkHttpClient.Builder().connectTimeout(10000, TimeUnit.MILLISECONDS)
+                OkHttpClient.Builder().connectTimeout(50000, TimeUnit.MILLISECONDS).readTimeout(100000,TimeUnit.MILLISECONDS)
                     .addInterceptor(hostSelectionInterceptor)
                     .addInterceptor { chain ->
                         chain.proceed(chain.request().newBuilder().also {
