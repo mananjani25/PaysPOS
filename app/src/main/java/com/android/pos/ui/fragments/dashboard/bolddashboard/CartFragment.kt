@@ -1717,8 +1717,6 @@ class CartFragment(
                     if (viewModel.restrictedAmount(binding.txtTotal)) {
 
 
-
-
                         viewModelPayment.updateOrder(
                             isOrderUpdate,
                             orderId,
@@ -1749,7 +1747,7 @@ class CartFragment(
                         future_delivery_date = formatterdate.format(date)
                         future_delivery_time = formattertime.format(date)
 
-                        Log.e(TAG,"UpdateOrderItemsList  ${cartList.items?.size}")
+                        Log.e(TAG, "UpdateOrderItemsList  ${cartList.items?.size}")
                         val request = viewModelPayment.createOpenOrderRequest(
                             cartList,
                             viewModel.subTotalPrice,
