@@ -1111,7 +1111,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
     private fun setupSnackbar() {
         Log.e("AlertUtils", viewModel.snackbarText.value.toString())
-        if (viewModel.snackbarText.value != null)
+        if (viewModel.snackbarText.value != null && !viewModel.snackbarText.value!!.equals("null"))
             binding.root.liveSnackBar(this, viewModel.snackbarText, Snackbar.LENGTH_SHORT)
 
     }
@@ -7951,7 +7951,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         viewModel.unMergeStatusUpdate.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let { status ->
 
-                Log.e("AlertUtils 1",status)
+                Log.e("AlertUtils 1", status)
                 AlertUtils.showCustomAlertWithListenerWithOK(
                     requireContext(), status.toString()
                 ) { _, _ ->
