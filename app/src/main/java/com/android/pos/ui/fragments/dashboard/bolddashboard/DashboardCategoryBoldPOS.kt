@@ -616,24 +616,26 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
         if (cartList.isEmpty() && viewModel.cartModel != null) {
             cartList = arrayListOf()
-            viewModel.createCart(cartList)
-            cartList[0] = viewModel.cartModel!!
+            cartList = viewModel.createCart(cartList)
+            if (cartList[0].employeeID != prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)) {
+                cartList[0] = viewModel.cartModel!!
+            }
         }
 
 
         if (item.modifier_set_ids.isNotEmpty() || item.variationsAttributes.isNotEmpty()) {
-            /*  if (item.variationsAttributes.isNotEmpty()) {
-                  item.variationsAttributes.get(0).isChecked = true
-              }*/
             val fragment = AddItemFragment.newInstance(item, this, cartList, false)
             loadCategoryFragment(fragment)
         } else {
-            Log.e(TAG, "cartListItemAddSize: ${cartList.size}")
             if (cartList.isEmpty()) {
-                viewModel.createCart(cartList)
+                cartList = viewModel.createCart(cartList)
+
             }
             item.itemQuantity = 1
             if (cartList.size > 0) {
+
+                if (cartList.isNotEmpty())
+                    cartList[0].employeeID = prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
 
                 if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == Constants.DINE_IN) {
                     if (cartList[0].dineInList?.isEmpty() == true) {
@@ -733,11 +735,11 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 }
             }
         }
+
         viewModel.mAllWords(
             prefProvider.getValue(ORDER_TYPE, TAKEOUT),
             prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
         ).observe(requireActivity()) {
-            Log.e(TAG, "MAllWords:::  ${Gson().toJson(it)}")
             if (it.isEmpty()) {
                 cartList.clear()
                 cartList = arrayListOf()
@@ -757,16 +759,6 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
         }
 
-
-        /*  viewModelPayment.QueueCreateSaveOrder.observe(requireActivity()) {
-              it.getContentIfNotHandled()?.let {
-                  viewModel.deleteCart()
-                  clearCustomer()
-                  prefProvider.setValue(ORDER_TYPE, TAKEOUT)
-                  findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
-
-              }
-          }*/
     }
 
     private fun clearCustomer() {

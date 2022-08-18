@@ -802,7 +802,13 @@ class CartFragment(
                     prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
                 ).observe(requireActivity()) {
 
-                    Log.e(TAG, "listSizeOrderType: ${prefProvider.getValue(ORDER_TYPE, TAKEOUT)}")
+                    Log.e("mAllWords :", "LIST SIZE :" + it.size.toString())
+                    Log.e(
+                        "mAllWords",
+                        "LIST EMPLOYEE :" + prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
+                            .toString()
+                    )
+
 
                     if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == Constants.DINE_IN) {
                         binding.rvCartDineIn.visible()
@@ -861,22 +867,10 @@ class CartFragment(
                                     requireContext()
                                 )
                             }
-                            /*  viewModel.itemCalculationCartModel(
-                              it[0],
-                              binding.txtTotal,
-                              requireContext()
-                          )*/
+
 
 
                             viewModel.setCartModel(it)
-                            Log.e(
-                                TAG, "${
-                                    prefProvider.getValueboolean(
-                                        Constants.DINE_IN_UPDATE,
-                                        false
-                                    )
-                                }"
-                            )
                             if (prefProvider.getValueboolean(
                                     Constants.DINE_IN_UPDATE,
                                     false
@@ -1031,8 +1025,9 @@ class CartFragment(
                     } else {
                         binding.rvCartDineIn.gone()
                         binding.rvCartList.visible()
+
                         if (it.isNotEmpty()) {
-                            Log.e(TAG, "listSize  ${it.get(0).items?.size}")
+                            Log.e("mAllWords", "listSize ITEM ${it.get(0).items?.size}")
                             viewModel.destroyedList.clear()
                             it[0].items?.filter { item -> item.isDestroy }?.let {
                                 viewModel.destroyedList.addAll(it)
@@ -1059,8 +1054,8 @@ class CartFragment(
                                 binding.linearButtonView.visible()
                                 binding.relPreoceedToFire.gone()
                             }
-                            binding.rvCartList.removeAllViews()
-                            binding.rvCartList.removeAllViewsInLayout()
+//                            binding.rvCartList.removeAllViews()
+//                            binding.rvCartList.removeAllViewsInLayout()
 
                             var filterItems = arrayListOf<TbItem>()
                             it[0].items?.filter {
@@ -1070,12 +1065,8 @@ class CartFragment(
                                 filterItems.addAll(it!!.toCollection(arrayListOf()))
                             }
 
-                            Log.e(TAG, "filterItems  ${filterItems.size}")
+                            Log.e("mAllWords", "filterItems  ${filterItems.size}")
                             cartAdapter.setList(filterItems)
-                            /*it[0].items?.toCollection(arrayListOf())
-                            ?.let { it1 ->
-                                cartAdapter.setList(it1)
-                            }*/
 
                             cartlist = it as ArrayList<CartModel>
                             viewModel.itemCalculationCartModel(
@@ -1652,6 +1643,9 @@ class CartFragment(
         }
 
         binding.tvPayNow.setOnClickListener {
+
+            prefProvider.setValueboolean(Constants.TIP_ADDED, false)
+
             if (cartAdapter.cartList.isNotEmpty()) {
                 prefProvider.setValue(ORDER_TYPE, prefProvider.getValue(ORDER_TYPE, TAKEOUT))
                 prefProvider.setValue("PaidAmount", "")
@@ -1717,8 +1711,6 @@ class CartFragment(
                     if (viewModel.restrictedAmount(binding.txtTotal)) {
 
 
-
-
                         viewModelPayment.updateOrder(
                             isOrderUpdate,
                             orderId,
@@ -1749,7 +1741,7 @@ class CartFragment(
                         future_delivery_date = formatterdate.format(date)
                         future_delivery_time = formattertime.format(date)
 
-                        Log.e(TAG,"UpdateOrderItemsList  ${cartList.items?.size}")
+                        Log.e(TAG, "UpdateOrderItemsList  ${cartList.items?.size}")
                         val request = viewModelPayment.createOpenOrderRequest(
                             cartList,
                             viewModel.subTotalPrice,

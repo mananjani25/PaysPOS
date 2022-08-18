@@ -27,7 +27,7 @@ class OnSingleClickListener : View.OnClickListener {
         // Tweak this value as you see fit. In my personal testing this
         // seems to be good, but you may want to try on some different
         // devices and make sure you can't produce any crashes.
-        private const val DELAY_MILLIS = 500L
+        private const val DELAY_MILLIS = 1000L
 
         private var previousClickTimeMillis = 0L
     }
