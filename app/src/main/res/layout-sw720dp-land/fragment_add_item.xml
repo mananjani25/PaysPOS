@@ -106,17 +106,20 @@
                     android:layout_height="@dimen/_24sdp"
                     android:background="@drawable/background_light_edit_printer">
 
-                    <TextView
-                        android:id="@+id/txtQuantity"
+                    <androidx.appcompat.widget.AppCompatEditText
+                        android:id="@+id/edttxtQuantity"
                         style="@style/CustomFontBold"
-                        android:layout_width="wrap_content"
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_centerInParent="true"
-                        android:paddingStart="@dimen/_12sdp"
+                        android:background="@android:color/transparent"
+                        android:gravity="center"
+                        android:inputType="phone"
+                        android:maxLength="3"
                         android:paddingTop="@dimen/_7sdp"
-                        android:paddingEnd="@dimen/_12sdp"
                         android:paddingBottom="@dimen/_7sdp"
                         android:text="1"
+                        android:digits="1234567890"
                         android:textColor="@color/white"
                         android:textSize="@dimen/_7mdpi" />
 

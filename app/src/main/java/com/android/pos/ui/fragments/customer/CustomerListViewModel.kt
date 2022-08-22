@@ -51,6 +51,7 @@ public class CustomerListViewModel @Inject constructor(
     private val _orderHistory = MutableLiveData<Event<List<Orders>?>>()
     val orderHistory: LiveData<Event<List<Orders>?>> = _orderHistory
 
+    val serviceCharges = posRepository.serviceChargeList()
 
     var itemlist = posRepository.getItemsList()
 

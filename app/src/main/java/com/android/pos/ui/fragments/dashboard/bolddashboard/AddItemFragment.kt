@@ -1,6 +1,8 @@
 package com.android.pos.ui.fragments.dashboard.bolddashboard
 
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -127,7 +129,32 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
                 }
 
             }
+        binding.edttxtQuantity.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+                binding.edttxtQuantity?.isCursorVisible = true
+            }
 
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+                if (s.toString().isNotEmpty()) {
+                    qty = s.toString().toInt()
+                    if (qty > 15) {
+                        qty = 15
+                        binding.edttxtQuantity.setText("15")
+                    }
+                    binding.edttxtQuantity.setSelection(binding.edttxtQuantity.text!!.length)
+                } else {
+                    qty = 1
+                    binding.edttxtQuantity.setText("1")
+                    binding.edttxtQuantity.setSelection(binding.edttxtQuantity.text!!.length)
+                }
+
+            }
+
+        })
     }
 
     private fun getCartList() {
@@ -168,12 +195,12 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
             }
 
 
-            binding.txtQuantity.setText("" + qty)
+            binding.edttxtQuantity.setText("" + qty)
 
         }
         binding.imgPlus.setOnClickListener {
             qty += 1
-            binding.txtQuantity.setText("" + qty)
+            binding.edttxtQuantity.setText("" + qty)
         }
 
         binding.txtCancel.setOnClickListener {
@@ -617,7 +644,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
 
         if (isUpdateItem) {
             qty = item.itemQuantity
-            binding.txtQuantity.text = "" + qty
+            binding.edttxtQuantity.setText("" + qty)
             if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == DINE_IN && item.isFired) {
                 binding.txtRemoveItem.visibility = View.GONE
             } else {

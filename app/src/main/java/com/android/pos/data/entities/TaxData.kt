@@ -15,7 +15,7 @@ data class TaxData(
     @SerializedName("id")
     val id: Int,
     @SerializedName("location_id")
-    val locationId: Int,
+    var locationId: Int,
     @SerializedName("name")
     val name: String?,
     @SerializedName("rate")

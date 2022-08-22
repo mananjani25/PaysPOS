@@ -45,6 +45,7 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
     lateinit var prefProvider: PrefProvider
     lateinit var listOfTbItem: List<TbItem>
     lateinit var listOfItemsId: ArrayList<Int>
+    lateinit var listOfServiceCharge: ArrayList<TbServiceCharge>
 
     private val orderHistoryAdapter by lazy {
         OrderHistoryAdapter { view, order ->
@@ -88,6 +89,30 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
 
         //call initial api
         viewModel.getReportSummary()
+    }
+
+    private fun observerServiceCharge() {
+        viewModel.serviceCharges.observe(viewLifecycleOwner) {
+            if (prefProvider.getValueboolean(
+                    Constants.SERVICECHARGE_TAKEOUT_OPENORDER,
+                    false
+                )
+            ) {
+                Log.e(TAG, "getServiceCharge:  ${Gson().toJson(it.data)}")
+                listOfServiceCharge = ArrayList()
+                it.data?.forEach { service ->
+                    if (service.order_type == Constants.SERVICECHARGE_TAKEOUT_OPENORDER) {
+                        listOfServiceCharge.add(service)
+                    }
+                }
+                Log.d(
+                    TAG,
+                    "getServiceCharges: finall " + Gson().toJson(listOfServiceCharge)
+                )
+
+            }
+        }
+
     }
 
     private fun initControls() {
@@ -178,6 +203,7 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
         }
         viewModel.orderHistory.observe(viewLifecycleOwner, EventObserver { data ->
             if (data?.isNotEmpty() == true) {
+                observerServiceCharge()
                 binding.llOrderHistory.visible()
                 orderHistoryAdapter.add(data)
                 /*var point = 0.0
@@ -260,7 +286,7 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
             orderTypeName = Constants.TAKEOUT
             futureDeliveryDate = order.date.toString()
             isOpenOrder = false
-            serviceCharge = serviceChargesList(order)
+            serviceCharge = listOfServiceCharge
             customer = assignCustomer(order)
             items = inventoryList(order)
             note = order.note
@@ -270,7 +296,7 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
                 itemDiscount += it.discountPrice
             }
             discountPrice = (order.totalDiscount - itemDiscount)
-            taxlistDynamic = getTaxBirfucationList(order.orderItems)
+            taxlistDynamic = arrayListOf()
         }
     }
 
@@ -492,7 +518,7 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
                 reorder = true
                 categoryId = it.categoryId
                 categoryName = ""
-                taxes = taxes(it.orderItemTaxes, order.locationId)
+                taxes = taxes(it.orderItemTaxes, order.locationId, it.itemId)
                 modifier_set_ids = modifiersIds(it.orderItemModifiers)
                 modifiers = modifierSets(it.orderItemModifiers)
                 discountPrice = it.discountAmount
@@ -531,30 +557,18 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
 
     private fun taxes(
         taxs: List<GetOrderDetailsResponse.Data.OrderItem.OrderItemTaxe>,
-        locationId: Int
+        locationId: Int,
+        itemIdexist: Int
     ): List<TaxData>? {
-        val taxList = ArrayList<TaxData>()
-
-        taxs.forEach {
-            val tax = TaxData(
-                it.createdAt,
-                it.taxId,
-                locationId,
-                it.name,
-                it.rate,
-                it.taxType,
-                it.updatedAt,
-                true,
-                it.isDefault,
-                false,
-                "",
-                listOf(),
-                it.id
-            )
-            taxList.add(tax)
+        listOfTbItem.forEach { activeItems ->
+            if (activeItems.itemId == itemIdexist) {
+                activeItems.taxes?.forEach { taxData ->
+                    taxData.locationId = locationId
+                }
+                return activeItems.taxes
         }
-
-        return taxList
+        }
+        return emptyList()
     }
 
     private fun modifierSets(orderItemModifiers: List<GetOrderDetailsResponse.Data.OrderItem.OrderItemModifier>): List<Modifier> {
