@@ -9,8 +9,10 @@ import androidx.paging.PagedList
 import com.android.pos.data.db.AppDatabase
 import com.android.pos.data.entities.TbItem
 import com.android.pos.data.model.responseModel.BaseResponse
+import com.android.pos.data.model.responseModel.InventoryCountsResponse
 import com.android.pos.data.repositories.PosRepository
 import com.android.pos.utils.Event
+import com.android.pos.utils.statusUtils.Resource
 import com.android.pos.utils.statusUtils.Status
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -34,6 +36,9 @@ class ItemsViewModel @Inject constructor(
 
     val items = posRepository.getItemsList()
     val showItemsList = posRepository.unhideItemList()
+
+    fun inventoryCounts(): LiveData<Resource<InventoryCountsResponse>> =
+        posRepository.inventoryCounts()
 
     var itemCount = 50
 

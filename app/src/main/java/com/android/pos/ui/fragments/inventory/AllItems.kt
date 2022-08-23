@@ -24,12 +24,15 @@ import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.callback.ItemCallback
 import com.android.pos.utils.extensions.alert
+import com.android.pos.utils.statusUtils.Status
+import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
 class AllItems(val clickedPosition: Int) : Fragment(), ItemCallback {
 
-    private var pageCount: Int = 50
+    private var totalItemCount: Int = 0
+    private var pageCount: Int = 49
     private var isreOrder: Boolean = false
     private var deleteAndHide: Boolean = false
 
@@ -56,6 +59,7 @@ class AllItems(val clickedPosition: Int) : Fragment(), ItemCallback {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        getInventoryCountsObserver()
         setAdapter()
         onClick()
         itemsObserver()
@@ -174,7 +178,7 @@ class AllItems(val clickedPosition: Int) : Fragment(), ItemCallback {
                 Log.e(TAG, "pagedListSize  ${it.size}")
                 if (it.isNotEmpty()) {
                     adapter.add(it.toCollection(arrayListOf()))
-                    binding.edtSearch.hint = "Search (" + it.size + ") Items"
+                    binding.edtSearch.hint = "Search (" + totalItemCount + ") Items"
                 }
 
                 /*  it?.let { resource ->
@@ -260,18 +264,22 @@ class AllItems(val clickedPosition: Int) : Fragment(), ItemCallback {
                 val bindinAdapterPos =
                     (recyclerView.layoutManager as LinearLayoutManager).findLastVisibleItemPosition()
                 Log.e(TAG, "AllItemVisiblePos ${bindinAdapterPos}")
-                if (bindinAdapterPos == 49 || bindinAdapterPos == 99 || bindinAdapterPos == 149 || bindinAdapterPos == 199) {
+                Log.e(TAG, "checkDynamicFun ${checkForNextPage(bindinAdapterPos)}")
+                if (checkForNextPage(bindinAdapterPos)) {
+
                     viewModel.itemCount += 50
+                    pageCount += 50
                     viewModel._getItems().observe(viewLifecycleOwner) {
                         Log.e(TAG, "itPAgedSize  ${it.size}")
                         if (it.isNotEmpty()) {
+
                             adapter.add(it.toCollection(arrayListOf()))
                             binding.edtSearch.hint = "Search (" + it.size + ") Items"
                             recyclerView.smoothScrollToPosition(bindinAdapterPos)
                         }
                     }
 
-                    pageCount += 50
+
                 }
                 super.onScrollStateChanged(recyclerView, newState)
             }
@@ -283,8 +291,57 @@ class AllItems(val clickedPosition: Int) : Fragment(), ItemCallback {
         })
     }
 
-    private fun checkForNextPage() {
+    private fun checkForNextPage(pos: Int): Boolean {
+        if (totalItemCount != 0) {
+            var tmpPag = pageCount
+            var matched = false
+            Log.e("ItemPagination", "tmpPag  ${tmpPag}")
+            Log.e("ItemPagination", "bindingAdapterPos  ${pos}")
+            var temp = (totalItemCount / 50).toInt()
+            for (i in 0 until temp) {
+                if (pos == tmpPag) {
+                    matched = true
+                    break
 
+                } else {
+                    tmpPag += 49
+                }
+            }
+            return matched
+
+        } else {
+            return false
+        }
+
+    }
+
+    private fun getInventoryCountsObserver() {
+        try {
+            if (view != null) {
+                viewModel.inventoryCounts().observe(viewLifecycleOwner) {
+                    it?.let { resource ->
+                        when (resource.status) {
+                            Status.SUCCESS -> {
+
+                                Log.e(TAG, "inventroyCounts${Gson().toJson(resource)}")
+                                totalItemCount = it.data?.data?.activeItems ?: 0
+
+
+                            }
+                            Status.ERROR -> {
+
+                            }
+                            Status.LOADING -> {
+
+                            }
+                        }
+                    }
+                }
+            }
+
+        } catch (e: Exception) {
+            e.printStackTrace()
+        }
     }
 
     private fun reallyMoved(oldPos: Int, newPos: Int, categoryId: Int?, inventoryId: Int?) {
