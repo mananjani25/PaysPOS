@@ -87,6 +87,15 @@ class ItemListAdapter(private val isChoose: Boolean, private val where: String) 
         return filterList.size
     }
 
+    fun addPaginationData(list: ArrayList<TbItem>) {
+        filterList.addAll(list)
+        /*for (i in 0 until list.size) {
+
+            filterList.add(list[i])
+        }*/
+        notifyDataSetChanged()
+    }
+
     /*private fun isAllItemsChecked(): Boolean {
             for (selectItem in itemsList) {
                 if (!selectItem.isChecked) {
@@ -211,4 +220,6 @@ class ItemListAdapter(private val isChoose: Boolean, private val where: String) 
     fun getAll(): ArrayList<TbItem> {
         return filterList
     }
+
+
 }

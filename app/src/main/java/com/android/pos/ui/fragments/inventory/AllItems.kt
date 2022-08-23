@@ -24,12 +24,13 @@ import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.callback.ItemCallback
 import com.android.pos.utils.extensions.alert
+import com.android.pos.utils.extensions.runOnUiThread
 import com.android.pos.utils.statusUtils.Status
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class AllItems(val clickedPosition: Int) : Fragment(), ItemCallback {
+class AllItems(val clickedPosition: Int, val totalItems: Int) : Fragment(), ItemCallback {
 
     private var totalItemCount: Int = 0
     private var pageCount: Int = 49
@@ -261,25 +262,43 @@ class AllItems(val clickedPosition: Int) : Fragment(), ItemCallback {
         adapter.setCallback(this)
         binding.rvAllItemList.addOnScrollListener(object : RecyclerView.OnScrollListener() {
             override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+
                 val bindinAdapterPos =
                     (recyclerView.layoutManager as LinearLayoutManager).findLastVisibleItemPosition()
-                Log.e(TAG, "AllItemVisiblePos ${bindinAdapterPos}")
-                Log.e(TAG, "checkDynamicFun ${checkForNextPage(bindinAdapterPos)}")
                 if (checkForNextPage(bindinAdapterPos)) {
+                    runOnUiThread(Runnable {
 
-                    viewModel.itemCount += 50
-                    pageCount += 50
-                    viewModel._getItems().observe(viewLifecycleOwner) {
-                        Log.e(TAG, "itPAgedSize  ${it.size}")
-                        if (it.isNotEmpty()) {
+                        viewModel.itemCount += 50
+                        pageCount += 50
+                        viewModel._getItems().observe(viewLifecycleOwner) {
+                            Log.e(TAG, "itPAgedSize  ${it.size}")
+                            if (it.isNotEmpty()) {
+                                var list: ArrayList<TbItem> = arrayListOf()
+                                var datacount = it.size - adapter.itemCount
+                                Log.e(TAG, "datacount  ${datacount}")
+                                if (it.size > adapter.itemCount && it.size != 50) {
 
-                            adapter.add(it.toCollection(arrayListOf()))
-                            binding.edtSearch.hint = "Search (" + it.size + ") Items"
-                            recyclerView.smoothScrollToPosition(bindinAdapterPos)
+                                    for (i in adapter.itemCount - 1 until it.size) {
+
+                                        it[i]?.let { it1 -> list.add(it1) }
+                                    }
+
+                                    adapter.addPaginationData(list)
+                                    binding.edtSearch.hint = "Search (" + totalItemCount + ") Items"
+                                    recyclerView.smoothScrollToPosition(bindinAdapterPos)
+
+                                } else {
+
+
+                                    adapter.add(it.toCollection(arrayListOf()))
+                                    binding.edtSearch.hint = "Search (" + it.size + ") Items"
+                                    recyclerView.smoothScrollToPosition(bindinAdapterPos)
+                                }
+                            }
                         }
-                    }
 
 
+                    })
                 }
                 super.onScrollStateChanged(recyclerView, newState)
             }
@@ -299,7 +318,7 @@ class AllItems(val clickedPosition: Int) : Fragment(), ItemCallback {
             Log.e("ItemPagination", "bindingAdapterPos  ${pos}")
             var temp = (totalItemCount / 50).toInt()
             for (i in 0 until temp) {
-                if (pos == tmpPag) {
+                if (pos == tmpPag || pos == tmpPag + 1) {
                     matched = true
                     break
 
@@ -325,6 +344,7 @@ class AllItems(val clickedPosition: Int) : Fragment(), ItemCallback {
 
                                 Log.e(TAG, "inventroyCounts${Gson().toJson(resource)}")
                                 totalItemCount = it.data?.data?.activeItems ?: 0
+                                binding.edtSearch.hint = "Search (" + totalItemCount + ") Items"
 
 
                             }

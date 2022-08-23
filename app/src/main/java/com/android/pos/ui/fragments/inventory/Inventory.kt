@@ -171,7 +171,7 @@ class Inventory : Fragment() {
         mPos = position
         when (position) {
             0 -> {
-                val allItem: Fragment = AllItems(0)
+                val allItem: Fragment = AllItems(0, totalItems = itemsCount?:0)
                 loadFragment(allItem)
                 binding.commonToolbar.txtSetItem.visibility = View.GONE
                 binding.commonToolbar.txtSubTitle.text = resources.getString(R.string.items_title)
