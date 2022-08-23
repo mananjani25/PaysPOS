@@ -158,6 +158,7 @@
                     android:visibility="gone"
                     android:textColor="@color/txtColor"
                     android:textSize="@dimen/_5mdpi" />
+
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rvEmployeeList"
                     android:layout_width="match_parent"

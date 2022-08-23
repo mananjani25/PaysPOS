@@ -12,7 +12,6 @@ import com.android.pos.utils.callback.ItemCallback
 import com.android.pos.utils.extensions.gone
 import com.android.pos.utils.extensions.visible
 import java.util.*
-import kotlin.collections.ArrayList
 
 class ItemListAdapter(private val isChoose: Boolean, private val where: String) :
     RecyclerView.Adapter<ItemListAdapter.MyViewHolder>(), Filterable {
@@ -23,6 +22,7 @@ class ItemListAdapter(private val isChoose: Boolean, private val where: String) 
     fun setCallback(callback: ItemCallback) {
         mCallback = callback
     }
+
     inner class MyViewHolder(private val binding: ViewItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
@@ -39,11 +39,11 @@ class ItemListAdapter(private val isChoose: Boolean, private val where: String) 
             } else {
                 binding.ivCheck.visibility = View.GONE
             }
-        if (where=="tax" || where=="modifier"){
-            binding.layoutMenu.imgOrderMenu.gone()
-        }else{
-            binding.layoutMenu.imgOrderMenu.visible()
-        }
+            if (where == "tax" || where == "modifier") {
+                binding.layoutMenu.imgOrderMenu.gone()
+            } else {
+                binding.layoutMenu.imgOrderMenu.visible()
+            }
         }
 
         init {
@@ -56,7 +56,6 @@ class ItemListAdapter(private val isChoose: Boolean, private val where: String) 
                     selectedItemList.remove(filterList.get(layoutPosition))
                 }
                 notifyDataSetChanged()
-
 
 
             }
@@ -86,6 +85,15 @@ class ItemListAdapter(private val isChoose: Boolean, private val where: String) 
 
     override fun getItemCount(): Int {
         return filterList.size
+    }
+
+    fun addPaginationData(list: ArrayList<TbItem>) {
+        filterList.addAll(list)
+        /*for (i in 0 until list.size) {
+
+            filterList.add(list[i])
+        }*/
+        notifyDataSetChanged()
     }
 
     /*private fun isAllItemsChecked(): Boolean {
@@ -135,6 +143,7 @@ class ItemListAdapter(private val isChoose: Boolean, private val where: String) 
         this.filterList = categoryModel
         notifyDataSetChanged()
     }
+
 
     fun getItem(position: Int): TbItem {
         return filterList[position]
@@ -211,4 +220,6 @@ class ItemListAdapter(private val isChoose: Boolean, private val where: String) 
     fun getAll(): ArrayList<TbItem> {
         return filterList
     }
+
+
 }

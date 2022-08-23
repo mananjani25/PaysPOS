@@ -1,19 +1,21 @@
 package com.android.pos.ui.fragments.inventory
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.paging.PagedList
 import com.android.pos.data.db.AppDatabase
 import com.android.pos.data.entities.TbItem
 import com.android.pos.data.model.responseModel.BaseResponse
+import com.android.pos.data.model.responseModel.InventoryCountsResponse
 import com.android.pos.data.repositories.PosRepository
 import com.android.pos.utils.Event
 import com.android.pos.utils.statusUtils.Resource
 import com.android.pos.utils.statusUtils.Status
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
-import java.util.*
 import javax.inject.Inject
 
 @HiltViewModel
@@ -35,10 +37,16 @@ class ItemsViewModel @Inject constructor(
     val items = posRepository.getItemsList()
     val showItemsList = posRepository.unhideItemList()
 
+    fun inventoryCounts(): LiveData<Resource<InventoryCountsResponse>> =
+        posRepository.inventoryCounts()
 
-    fun _getItems(): LiveData<Resource<List<TbItem?>>> {
-        return posRepository.getInventory()
+    var itemCount = 50
+
+    fun _getItems(): LiveData<PagedList<TbItem>> {
+        Log.e("passedItemitemCount","passedItemitemCount  ${itemCount}")
+        return posRepository.getPaginationList(itemCount)
     }
+
 
     fun deleteAndHide(id: Int, deleteAndHide: Boolean, isHideItemScreen: Boolean) {
         _showProgress.value = Event(true)

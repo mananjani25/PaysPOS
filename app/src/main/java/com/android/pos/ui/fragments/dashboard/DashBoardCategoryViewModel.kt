@@ -1544,13 +1544,16 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                 if (cartModel.reorder) {
 
+
                     val itemCount = cartModel.items?.size
 
                     cartModel.items?.forEach { item ->
+                        Log.e(TAG, "reorderItem:  ${Gson().toJson(item)}")
                         totalCount += item.itemQuantity
                         totalDiscount += item.discountPrice
-                        subTotalPrice += (item.price * item.itemQuantity) - (item.discountPrice * item.itemQuantity)
-                        taxCalculation(item, cartModel.discountPrice / itemCount!!)
+                        subTotalPrice += (item.price * item.itemQuantity) - (item.discountPrice)
+
+                        taxCalculationReorder(item, cartModel.discountPrice / itemCount!!)
 
                         item.modifiers.forEach {
                             subTotalPrice += (it.price * it.itemQuantity)
@@ -1622,6 +1625,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                     val itemCount = cartModel.items?.size
                     var taxList: ArrayList<TaxData> = arrayListOf()
+                    Log.e(TAG,"cartItemsSizeView  ${cartModel.items?.size}")
                     cartModel.items?.forEach { item ->
                         if (!item.isDestroy) {
                             totalCount += item.itemQuantity
@@ -2074,6 +2078,53 @@ class DashBoardCategoryViewModel @Inject constructor(
                 var modifierPrice = 0.0
                 val price =
                     (item.price * item.itemQuantity) - (item.discountPrice * item.itemQuantity)
+
+                item.modifiers.forEach {
+                    modifierPrice += (it.price * it.itemQuantity)
+                }
+
+                val totalPrice = price + modifierPrice /*- (discountPrice * item.itemQuantity)*/
+
+
+                totalTax += if (tax.taxType == "Percentage") {
+                    Log.d("yash", "taxCalculation: " + tax.taxType)
+
+
+                    if (totalPrice < 0.0) {
+
+                        String.format("%.2f", 0.00)
+                            .toDouble()
+                    } else {
+                        val itemTaxPrice =
+                            (tax.rate * totalPrice) / 100
+                        Log.e("itemTaxPrice", "" + itemTaxPrice)
+                        String.format("%.2f", itemTaxPrice)
+                            .toDouble()
+                    }
+
+                } else {
+                    Log.d("yash", "taxCalculation: " + tax.taxType)
+
+                    if (totalPrice <= 0.0) {
+                        String.format("%.2f", 0.00)
+                            .toDouble()
+                    } else {
+                        String.format("%.2f", tax.rate * item.itemQuantity)
+                            .toDouble()
+                    }
+
+                }
+            }
+        }
+    }
+
+    private fun taxCalculationReorder(item: TbItem, discountPrice: Double) {
+        item.taxes?.forEach { tax ->
+            if (tax.isActive) {
+
+                var modifierPrice = 0.0
+                val price =
+                    (item.price * item.itemQuantity) - (item.discountPrice)
 
                 item.modifiers.forEach {
                     modifierPrice += (it.price * it.itemQuantity)
@@ -3117,6 +3168,7 @@ class DashBoardCategoryViewModel @Inject constructor(
             val resource = posRepository.syncInventory()
             when (resource.status) {
                 Status.SUCCESS -> {
+                    Log.e("SyncInventory", "SyncSuccess")
 
                     resource.data.let { response ->
                         if (response?.status == 200) {
@@ -3133,11 +3185,13 @@ class DashBoardCategoryViewModel @Inject constructor(
                 }
 
                 Status.ERROR -> {
+                    Log.e("SyncInventory", "SyncError")
                     _snackbarText.value = Event(resource.message.toString())
                     _showProgress.value = Event(false)
                 }
 
                 Status.LOADING -> {
+                    Log.e("SyncInventory", "SyncLoading")
                     _showProgress.value = Event(true)
                 }
             }

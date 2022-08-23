@@ -78,11 +78,11 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         setAdapter()
         setVenueData()
 
     }
+
 
     private fun setVenueData() {
         viewModel.venueDataLocal().observe(
@@ -236,9 +236,9 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
         tabPos += tempV
 
 
-            if(posParent != 0) {
-                binding.rvCategoryParent.smoothScrollToPosition(posParent)
-            }
+        if (posParent != 0) {
+            binding.rvCategoryParent.smoothScrollToPosition(posParent)
+        }
 
         if (tabPos != -1) {
             if (tabPos < categoryList1.size) {

@@ -58,21 +58,21 @@
                 android:textColor="@color/white"
                 android:textSize="@dimen/_7mdpi" />
 
-            <TextView
-                android:id="@+id/txtCancel"
-                style="@style/CustomFontBold"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="@dimen/_5sdp"
-                android:layout_toStartOf="@+id/txtDone"
-                android:background="@color/switchTrackColor"
-                android:gravity="center"
-                android:paddingHorizontal="@dimen/_15sdp"
-                android:paddingTop="@dimen/_7sdp"
-                android:paddingBottom="@dimen/_7sdp"
-                android:text="Cancel"
-                android:textColor="@color/white"
-                android:textSize="@dimen/_7mdpi" />
+                    <TextView
+                        android:id="@+id/txtCancel"
+                        style="@style/CustomFontBold"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="@dimen/_5sdp"
+                        android:layout_toStartOf="@+id/txtDone"
+                        android:background="@color/switchTrackColor"
+                        android:gravity="center"
+                        android:paddingHorizontal="@dimen/_15sdp"
+                        android:paddingTop="@dimen/_7sdp"
+                        android:paddingBottom="@dimen/_7sdp"
+                        android:text="Cancel"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/_7mdpi" />
 
             <LinearLayout
                 android:id="@+id/linear_quanty"
