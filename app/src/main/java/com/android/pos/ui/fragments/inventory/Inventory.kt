@@ -45,10 +45,12 @@ class Inventory : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
+
         binding = DataBindingUtil.inflate(inflater, R.layout.fragment_inventory, container, false)
         binding.lifecycleOwner = this
         return binding.root
     }
+
 
     var broadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
@@ -114,7 +116,6 @@ class Inventory : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         configureToolbar()
         getInventoryCountsObserver()
 
@@ -149,7 +150,6 @@ class Inventory : Fragment() {
 
             }
 
-
     }
 
     private fun configureToolbar() {
@@ -168,7 +168,7 @@ class Inventory : Fragment() {
     }
 
     private fun changePosition(position: Int) {
-        mPos=position
+        mPos = position
         when (position) {
             0 -> {
                 val allItem: Fragment = AllItems(0)
@@ -545,15 +545,16 @@ class Inventory : Fragment() {
     //added by zeeshan for inventory items count
     private fun getInventoryCountsObserver() {
         try {
-            viewModel.inventoryCounts().observe(viewLifecycleOwner) {
-                it?.let { resource ->
-                    when (resource.status) {
-                        Status.SUCCESS -> {
+            if (view != null) {
+                viewModel.inventoryCounts().observe(viewLifecycleOwner) {
+                    it?.let { resource ->
+                        when (resource.status) {
+                            Status.SUCCESS -> {
 
-                            Log.e(TAG, "inventroyCounts${Gson().toJson(resource)}")
+                                Log.e(TAG, "inventroyCounts${Gson().toJson(resource)}")
 
 
-                            /*private var itemsCount: Int? = 0
+                                /*private var itemsCount: Int? = 0
                             private var categoriesCount: Int? = 0
                             private var moodifierSetsCount: Int? = 0
                             private var optionSetsCount: Int? = 0
@@ -561,21 +562,22 @@ class Inventory : Fragment() {
                             private var hiddenItemsCount: Int? = 0*/
 
 
-                            itemsCount = it.data?.data?.activeItems
-                            categoriesCount = it.data?.data?.categories
-                            modifierSetsCount = it.data?.data?.modifierSets
-                            optionSetsCount = it.data?.data?.optionSets
-                            hiddenCategoriesCount = it.data?.data?.hiddenCategories
-                            hiddenItemsCount = it.data?.data?.hiddenItems
+                                itemsCount = it.data?.data?.activeItems
+                                categoriesCount = it.data?.data?.categories
+                                modifierSetsCount = it.data?.data?.modifierSets
+                                optionSetsCount = it.data?.data?.optionSets
+                                hiddenCategoriesCount = it.data?.data?.hiddenCategories
+                                hiddenItemsCount = it.data?.data?.hiddenItems
 
-                            setAdapter(mPos)
+                                setAdapter(mPos)
 
-                        }
-                        Status.ERROR -> {
-                            setAdapter(mPos)
-                        }
-                        Status.LOADING -> {
-                            setAdapter(mPos)
+                            }
+                            Status.ERROR -> {
+                                setAdapter(mPos)
+                            }
+                            Status.LOADING -> {
+                                setAdapter(mPos)
+                            }
                         }
                     }
                 }

@@ -12,7 +12,6 @@ import com.android.pos.utils.statusUtils.Resource
 import com.android.pos.utils.statusUtils.Status
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
-import java.util.*
 import javax.inject.Inject
 
 @HiltViewModel
@@ -24,7 +23,7 @@ class ModifierSetViewModel @Inject constructor(
     val unhideCategories = posRepository.unhideCategoryList()
 
     fun modifierSets(): LiveData<Resource<List<ModifierSet>>> {
-        return posRepository.modifierSets()
+        return posRepository.modifierSetsList()
     }
 
     private val _snackbarText = MutableLiveData<Event<Any?>>()

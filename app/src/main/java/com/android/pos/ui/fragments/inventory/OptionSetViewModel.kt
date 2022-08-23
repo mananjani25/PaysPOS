@@ -4,7 +4,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.android.pos.data.entities.ModifierSet
 import com.android.pos.data.entities.OptionSet
 import com.android.pos.data.model.responseModel.BaseResponse
 import com.android.pos.data.repositories.PosRepository
@@ -13,7 +12,6 @@ import com.android.pos.utils.statusUtils.Resource
 import com.android.pos.utils.statusUtils.Status
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
-import java.util.*
 import javax.inject.Inject
 
 @HiltViewModel
@@ -23,6 +21,10 @@ class OptionSetViewModel @Inject constructor(
 
     fun optionSets(): LiveData<Resource<List<OptionSet>>> {
         return posRepository.getOptionSet()
+    }
+
+    fun optionSetLocalList():LiveData<Resource<List<OptionSet>>>{
+        return posRepository.getOptionListData()
     }
 
 

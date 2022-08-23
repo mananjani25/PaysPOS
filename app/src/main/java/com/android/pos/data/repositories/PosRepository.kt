@@ -4,6 +4,8 @@ package com.android.pos.data.repositories
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.paging.PagedList
+import androidx.paging.toLiveData
 import com.android.pos.data.db.AppDatabase
 import com.android.pos.data.db.IDataManager
 import com.android.pos.data.entities.*
@@ -35,8 +37,8 @@ class PosRepository @Inject constructor(
     suspend fun addPrinterQueueData(list: PrinterQueueModel) =
         appDatabase.printerQueueDao().addPrinterQueueData(list)
 
-    fun checkQueueExist(id: Int) = performGetOperationDatabase {  appDatabase.printerQueueDao().checkQueueDataExist(id) }
-
+    fun checkQueueExist(id: Int) =
+        performGetOperationDatabase { appDatabase.printerQueueDao().checkQueueDataExist(id) }
 
 
     suspend fun getPrinterQueueQueryData(id: Int) = appDatabase.printerQueueDao().getQueueData(id)
@@ -255,7 +257,7 @@ class PosRepository @Inject constructor(
             appDatabase.itemDao().itemByProductCode(productCode)!!
         })
 
-    fun checkCategoryHideOrNot(id:Int) = performGetOperationDatabase(databaseQuery = {
+    fun checkCategoryHideOrNot(id: Int) = performGetOperationDatabase(databaseQuery = {
         appDatabase.categoryDao().getCategory(id)
     })
 
@@ -278,20 +280,8 @@ class PosRepository @Inject constructor(
 
 
     fun getInventory() =
-        performGetOperation(
-            databaseQuery = { appDatabase.itemDao().allItem!! },
-            networkCall = { apiHelperNew.getItemsCall() },
-            saveCallResult = {
-
-                val inventoryModelList = ArrayList<TbItem>()
-
-                it.data.forEach {
-
-                    val items = TbItem().convertToItem(it, null)
-                    inventoryModelList.add(items)
-                }
-                appDatabase.itemDao().addAllItem(inventoryModelList)
-            }
+        performGetOperationDatabase(
+            databaseQuery = { appDatabase.itemDao().allItem!! }
         )
 
 
@@ -299,6 +289,23 @@ class PosRepository @Inject constructor(
         databaseQuery = { appDatabase.notesDao().alllNotes },
     )
 
+    fun getPaginationList(count: Int): LiveData<PagedList<TbItem>> {
+        val factory = appDatabase.itemDao().getPaginationList()
+        val config = PagedList.Config.Builder().setInitialLoadSizeHint(count).setPageSize(count)
+            .setEnablePlaceholders(false).setPrefetchDistance(count + 49).build()
+        return factory.toLiveData(config)
+        /*return LivePagedListBuilder<Int, TbItem>(
+            factory,
+            PagedList
+                .Config
+                .Builder()
+                .setInitialLoadSizeHint(count)
+                .setPageSize(50)
+                .setPrefetchDistance(count + 49)
+                .setEnablePlaceholders(false)
+                .build()
+        ).build()*/
+    }
 
     suspend fun deleteNotesFromDb() =
         appDatabase.notesDao().delete()
@@ -697,6 +704,8 @@ class PosRepository @Inject constructor(
                 appDatabase.optionSetDao().addAll(it.data)
             })
 
+    fun getOptionListData() =
+        performGetOperationDatabase(databaseQuery = { appDatabase.optionSetDao().all })
 
     suspend fun createOptionSet(data: CreateOptionRequestModel) =
         apiHelperNew.createOptionSet(data)

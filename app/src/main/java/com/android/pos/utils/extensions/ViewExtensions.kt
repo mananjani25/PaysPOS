@@ -8,7 +8,6 @@ import android.graphics.Color
 import android.graphics.Paint
 import android.graphics.PorterDuff
 import android.graphics.Typeface
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -25,7 +24,6 @@ import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
-import com.android.pos.data.entities.VariationsAttribute
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.Event
 import com.android.pos.utils.OnSingleClickListener
@@ -115,7 +113,7 @@ fun View.liveSnackBar(
 
 fun View.showAlert(message: String?) {
     // Snackbar.make(this, snackbarText, timeLength).show()
-    if (message?.isNotEmpty() == true){
+    if (message?.isNotEmpty() == true) {
         AlertUtils.showCustomAlert(context, message)
     }
 }
@@ -173,4 +171,9 @@ fun Fragment?.runOnUiThread(action: Runnable) {
     this ?: return
     if (!isAdded) return // Fragment not attached to an Activity
     activity?.runOnUiThread(action)
+}
+
+fun View.isClickable(flag: Boolean) {
+    isClickable = flag
+    isEnabled = flag
 }

@@ -1,6 +1,7 @@
 package com.android.pos.data.dao
 
 import androidx.lifecycle.LiveData
+import androidx.paging.DataSource
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
@@ -18,8 +19,11 @@ interface DBItemDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun addAllItem(elementsBeanList: List<TbItem>)
 
-    @get:Query("select * from TbItem where TbItem.isHide = 1 and TbItem.name != 'Manual Item' GROUP by TbItem.itemId ORDER BY TbItem.sort DESC ")
+    @get:Query("select * from TbItem where TbItem.isHide = 1 and TbItem.name != 'Manual Item' GROUP by TbItem.itemId ORDER BY TbItem.sort DESC LIMIT 50")
     val allItem: LiveData<List<TbItem?>>?
+
+    @Query("select * from TbItem")
+    fun getPaginationList(): DataSource.Factory<Int, TbItem>
 
     /*@get:Query("select * from TbItem whe  re TbItem.isManualSales = 1")
     val manualItems : LiveData<List<TabItem?>>?
@@ -57,7 +61,6 @@ interface DBItemDao {
 
     @Query("UPDATE TbItem SET isHide = 1 WHERE  TbItem.itemId = :id")
     suspend fun updateShowItem(id: Int): Int
-
 
 
     @Query("UPDATE TbItem SET categoryId = :catId,categoryName = :catName  WHERE  TbItem.itemId = :itemId")

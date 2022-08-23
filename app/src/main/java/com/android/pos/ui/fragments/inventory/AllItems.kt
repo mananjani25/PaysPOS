@@ -11,7 +11,6 @@ import android.view.ViewGroup
 import androidx.appcompat.widget.PopupMenu
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -25,14 +24,12 @@ import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.callback.ItemCallback
 import com.android.pos.utils.extensions.alert
-import com.android.pos.utils.extensions.runOnUiThread
-import com.android.pos.utils.statusUtils.Status
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class AllItems(val clickedPosition: Int) : Fragment(), ItemCallback {
 
+    private var pageCount: Int = 50
     private var isreOrder: Boolean = false
     private var deleteAndHide: Boolean = false
 
@@ -69,30 +66,29 @@ class AllItems(val clickedPosition: Int) : Fragment(), ItemCallback {
     }
 
     private fun searchFilter() {
-        runOnUiThread(Runnable {
-
-            binding.edtSearch.addTextChangedListener(object : TextWatcher {
-                override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
-
-                }
-
-                override fun beforeTextChanged(
-                    s: CharSequence,
-                    start: Int,
-                    count: Int,
-                    after: Int
-                ) {
-                }
-
-                override fun afterTextChanged(s: Editable) {
-                    lifecycleScope.launch {
-                        adapter.filter.filter(s.toString().trim())
-                    }
 
 
-                }
-            })
+        binding.edtSearch.addTextChangedListener(object : TextWatcher {
+            override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
+
+            }
+
+            override fun beforeTextChanged(
+                s: CharSequence,
+                start: Int,
+                count: Int,
+                after: Int
+            ) {
+            }
+
+            override fun afterTextChanged(s: Editable) {
+
+
+                adapter.filter.filter(s.toString().trim())
+
+            }
         })
+
 
     }
 
@@ -172,30 +168,37 @@ class AllItems(val clickedPosition: Int) : Fragment(), ItemCallback {
     }
 
     private fun itemsObserver() {
+        if (view != null) {
+            viewModel._getItems().observe(viewLifecycleOwner) {
 
-        viewModel._getItems().observe(viewLifecycleOwner) {
-
-            it?.let { resource ->
-                when (resource.status) {
-                    Status.SUCCESS -> {
-                        binding.rvAllItemList.visibility = View.VISIBLE
-                        binding.progressCircular.visibility = View.GONE
-                        it.data?.let { it1 ->
-                            adapter.add(it1 as List<TbItem>)
-                            binding.edtSearch.hint = "Search (" + it1.size + ") Items"
-                        }
-                        listSize = it.data?.size
-
-                    }
-                    Status.ERROR -> {
-                        binding.rvAllItemList.visibility = View.GONE
-                        binding.progressCircular.visibility = View.GONE
-                    }
-                    Status.LOADING -> {
-                        binding.rvAllItemList.visibility = View.GONE
-                        binding.progressCircular.visibility = View.VISIBLE
-                    }
+                Log.e(TAG, "pagedListSize  ${it.size}")
+                if (it.isNotEmpty()) {
+                    adapter.add(it.toCollection(arrayListOf()))
+                    binding.edtSearch.hint = "Search (" + it.size + ") Items"
                 }
+
+                /*  it?.let { resource ->
+                      when (resource.status) {
+                          Status.SUCCESS -> {
+                              binding.rvAllItemList.visibility = View.VISIBLE
+                              binding.progressCircular.visibility = View.GONE
+                              it.data?.let { it1 ->
+                                  adapter.add(it1 as List<TbItem>)
+                                  binding.edtSearch.hint = "Search (" + it1.size + ") Items"
+                              }
+                              listSize = it.data?.size
+
+                          }
+                          Status.ERROR -> {
+                              binding.rvAllItemList.visibility = View.GONE
+                              binding.progressCircular.visibility = View.GONE
+                          }
+                          Status.LOADING -> {
+                              binding.rvAllItemList.visibility = View.GONE
+                              binding.progressCircular.visibility = View.VISIBLE
+                          }
+                      }
+                  }*/
             }
         }
     }
@@ -252,6 +255,36 @@ class AllItems(val clickedPosition: Int) : Fragment(), ItemCallback {
         adapter = ItemListAdapter(false, "")
         binding.rvAllItemList.adapter = adapter
         adapter.setCallback(this)
+        binding.rvAllItemList.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrollStateChanged(recyclerView: RecyclerView, newState: Int) {
+                val bindinAdapterPos =
+                    (recyclerView.layoutManager as LinearLayoutManager).findLastVisibleItemPosition()
+                Log.e(TAG, "AllItemVisiblePos ${bindinAdapterPos}")
+                if (bindinAdapterPos == 49 || bindinAdapterPos == 99 || bindinAdapterPos == 149 || bindinAdapterPos == 199) {
+                    viewModel.itemCount += 50
+                    viewModel._getItems().observe(viewLifecycleOwner) {
+                        Log.e(TAG, "itPAgedSize  ${it.size}")
+                        if (it.isNotEmpty()) {
+                            adapter.add(it.toCollection(arrayListOf()))
+                            binding.edtSearch.hint = "Search (" + it.size + ") Items"
+                            recyclerView.smoothScrollToPosition(bindinAdapterPos)
+                        }
+                    }
+
+                    pageCount += 50
+                }
+                super.onScrollStateChanged(recyclerView, newState)
+            }
+
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+            }
+
+        })
+    }
+
+    private fun checkForNextPage() {
+
     }
 
     private fun reallyMoved(oldPos: Int, newPos: Int, categoryId: Int?, inventoryId: Int?) {

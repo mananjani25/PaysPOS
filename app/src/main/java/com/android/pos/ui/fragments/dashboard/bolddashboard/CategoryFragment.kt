@@ -236,9 +236,9 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
         tabPos += tempV
 
 
-            if(posParent != 0) {
-                binding.rvCategoryParent.smoothScrollToPosition(posParent)
-            }
+        if (posParent != 0) {
+            binding.rvCategoryParent.smoothScrollToPosition(posParent)
+        }
 
         if (tabPos != -1) {
             if (tabPos < categoryList1.size) {

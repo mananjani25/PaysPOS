@@ -1,7 +1,6 @@
 package com.android.pos.ui.fragments.inventory
 
 import android.content.Intent
-import android.graphics.Color
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -10,7 +9,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.PopupMenu
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
@@ -23,7 +21,6 @@ import com.android.pos.databinding.FragmentOptionsBinding
 import com.android.pos.ui.adapter.OptionListAdapter
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.ProgressUtils
-import com.android.pos.utils.SwipeHelper
 import com.android.pos.utils.callback.ItemCallback
 import com.android.pos.utils.extensions.alert
 import com.android.pos.utils.extensions.gone
@@ -78,7 +75,7 @@ class Options(val clickedPosition: Int) : Fragment(), TextWatcher,ItemCallback {
 
     private fun optionSetObserver() {
 
-        viewModel.optionSets().observe(viewLifecycleOwner) {
+        viewModel.optionSetLocalList().observe(viewLifecycleOwner) {
 
             it?.let { resource ->
                 when (resource.status) {

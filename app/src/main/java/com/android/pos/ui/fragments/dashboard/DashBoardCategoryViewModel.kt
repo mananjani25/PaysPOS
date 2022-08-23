@@ -1625,6 +1625,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                     val itemCount = cartModel.items?.size
                     var taxList: ArrayList<TaxData> = arrayListOf()
+                    Log.e(TAG,"cartItemsSizeView  ${cartModel.items?.size}")
                     cartModel.items?.forEach { item ->
                         if (!item.isDestroy) {
                             totalCount += item.itemQuantity
@@ -3167,7 +3168,7 @@ class DashBoardCategoryViewModel @Inject constructor(
             val resource = posRepository.syncInventory()
             when (resource.status) {
                 Status.SUCCESS -> {
-                    Log.e("SyncInventory","SyncSuccess")
+                    Log.e("SyncInventory", "SyncSuccess")
 
                     resource.data.let { response ->
                         if (response?.status == 200) {
@@ -3184,13 +3185,13 @@ class DashBoardCategoryViewModel @Inject constructor(
                 }
 
                 Status.ERROR -> {
-                    Log.e("SyncInventory","SyncError")
+                    Log.e("SyncInventory", "SyncError")
                     _snackbarText.value = Event(resource.message.toString())
                     _showProgress.value = Event(false)
                 }
 
                 Status.LOADING -> {
-                    Log.e("SyncInventory","SyncLoading")
+                    Log.e("SyncInventory", "SyncLoading")
                     _showProgress.value = Event(true)
                 }
             }

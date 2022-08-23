@@ -1034,9 +1034,13 @@ class CartFragment(
                         if (it.isNotEmpty()) {
                             Log.e(TAG, "listSize  ${it.get(0).items?.size}")
                             viewModel.destroyedList.clear()
-                            it[0].items?.filter { item -> item.isDestroy }?.let {
-                                viewModel.destroyedList.addAll(it)
-                            }
+                            Log.e(TAG,"isOrderUpdate  ${isOrderUpdate}")
+
+                                it[0].items?.filter { item -> item.isDestroy }?.let {
+                                    viewModel.destroyedList.addAll(it)
+                                }
+
+                            Log.e(TAG,"listItemSize ${it[0].items?.size ?: 0}")
                             if (isFromPayment) {
                                 viewModel.selectedCustomer = prefProvider.getCustomerData()
                                 if (MethodUtils.isEnableCashDiscount(requireContext())) {
@@ -1071,6 +1075,8 @@ class CartFragment(
                             }
 
                             Log.e(TAG, "filterItems  ${filterItems.size}")
+                            binding.rvCartList.adapter = cartAdapter
+                            binding.rvCartList.visible()
                             cartAdapter.setList(filterItems)
                             /*it[0].items?.toCollection(arrayListOf())
                             ?.let { it1 ->
