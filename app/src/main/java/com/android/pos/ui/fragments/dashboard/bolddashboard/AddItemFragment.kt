@@ -181,7 +181,8 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
             if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == DINE_IN) {
                 listner.onCancelItemSelected(true)
             } else {
-                listner.onCancelItemSelected(false)
+                requireActivity().supportFragmentManager.popBackStackImmediate(AddItemFragment.javaClass.getName(),FragmentManager.POP_BACK_STACK_INCLUSIVE)
+              //  listner.onCancelItemSelected(false)
 
             }
         }
@@ -399,7 +400,8 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
             } else {
                 viewModel.cartLogic(cartList, item, DELETE, item.isManualSales)
             }
-            listner.onCancelItemSelected()
+            requireActivity().supportFragmentManager.popBackStackImmediate(AddItemFragment.javaClass.getName(),FragmentManager.POP_BACK_STACK_INCLUSIVE)
+          //  listner.onCancelItemSelected()
 
         }
 
