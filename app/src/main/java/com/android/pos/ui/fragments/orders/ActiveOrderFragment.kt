@@ -285,8 +285,8 @@ class ActiveOrderFragment(
     private fun getOpenOrders() {
         var startTime = getDateByTimeZone(viewModel.startDate.value.toString())
         var endTime = getDateByTimeZone(viewModel.endDate.value.toString())
-        Log.e(TAG, "startTime  ${startTime}")
-        Log.e(TAG, "endTime  ${endTime}")
+        LogUtil.logE(TAG, "startTime  ${startTime}")
+        LogUtil.logE(TAG, "endTime  ${endTime}")
 
         viewModel.openOrders(
             param1,
@@ -306,7 +306,7 @@ class ActiveOrderFragment(
                                 val data = it.data.orders
 
                                 adapter.add(data)
-                                Log.e("DATA", data.size.toString())
+                                LogUtil.logE("DATA", data.size.toString())
                             } else {
                                 binding.llNoData.visibility = View.VISIBLE
                                 binding.txtNodata.text = it.message
@@ -340,7 +340,7 @@ class ActiveOrderFragment(
     }
 
     private fun getDateByTimeZone(date: String): String {
-        Log.e(TAG, "gotDate ${date}")
+        LogUtil.logE(TAG, "gotDate ${date}")
         val myFormat = "MM/dd/yyyy HH:mm a"
         val sdf = SimpleDateFormat(myFormat)
         sdf.timeZone = TimeZone.getDefault()
@@ -377,12 +377,12 @@ class ActiveOrderFragment(
                             MethodUtils.roundOffAmountDouble(it.discountAmount / it.quantity)
                     }
                 }
-                Log.e(TAG, "itemDiscountTotal:  ${itemDiscountTotal}")
-                Log.e(TAG, "totalOrderDiscount  ${order.totalDiscount}")
+                LogUtil.logE(TAG, "itemDiscountTotal:  ${itemDiscountTotal}")
+                LogUtil.logE(TAG, "totalOrderDiscount  ${order.totalDiscount}")
 
                 order.totalDiscount = order.totalDiscount - itemDiscountTotal
 
-                Log.e(TAG, "OpenORderUpdateOrder:  ${Gson().toJson(order.orderItems)}")
+                LogUtil.logE(TAG, "OpenORderUpdateOrder:  ${Gson().toJson(order.orderItems)}")
 
                 prefProvider.setValue(Constants.ORDER_TYPE, OPEN_ORDER)
 
@@ -477,8 +477,8 @@ class ActiveOrderFragment(
                             MethodUtils.roundOffAmountDouble(it.discountAmount / it.quantity)
                     }
                 }
-                Log.e(TAG, "itemDiscountTotal:  ${itemDiscountTotal}")
-                Log.e(TAG, "totalOrderDiscount  ${order.totalDiscount}")
+                LogUtil.logE(TAG, "itemDiscountTotal:  ${itemDiscountTotal}")
+                LogUtil.logE(TAG, "totalOrderDiscount  ${order.totalDiscount}")
 
                 order.totalDiscount = order.totalDiscount - itemDiscountTotal
 
@@ -492,7 +492,7 @@ class ActiveOrderFragment(
                     prefProvider.saveCustomerData(TbCustomer.customerMapping(order.customer))
                 }
 
-                Log.e(TAG, "getOrder  ${Gson().toJson(order)}")
+                LogUtil.logE(TAG, "getOrder  ${Gson().toJson(order)}")
                 dashboardViewModel.addCart(
                     cartModel(order)
                 )
@@ -518,7 +518,7 @@ class ActiveOrderFragment(
                 bundle.putParcelable("cartList", cartModel(order))
 
                 bundle.putInt("orderId", order.id)
-                Log.e("orderId :: ", order.id.toString())
+                LogUtil.logE("orderId :: ", order.id.toString())
                 if (order.payments.isNotEmpty()) {
                     bundle.putInt("paymentId", order.payments[0].id)
                     bundle.putString("paymentOfflineId", order.payments[0].offlineId)
@@ -594,7 +594,7 @@ class ActiveOrderFragment(
     }
 
     private fun cartModel(order: OpenOrderResponse.Data.Order): CartModel {
-        Log.e("futureDeliveryDate  ", Gson().toJson(order))
+        LogUtil.logE("futureDeliveryDate  ", Gson().toJson(order))
         return CartModel().apply {
             terminalId = prefProvider.getValueInt(Constants.TERMINAL_ID, -1)
             employeeID = prefProvider.getValueInt(Constants.EMPLOYEE_ID, -1)
@@ -727,7 +727,7 @@ class ActiveOrderFragment(
             } else {
                 val itemTaxPrice =
                     (orderItemTaxe.rate * totalPrice) / 100
-                Log.e("itemTaxPrice", "" + itemTaxPrice)
+                LogUtil.logE("itemTaxPrice", "" + itemTaxPrice)
                 String.format("%.2f", itemTaxPrice)
                     .toDouble()
             }
@@ -1064,7 +1064,7 @@ class ActiveOrderFragment(
                     //printer?.setStatusChangeEventCallback(this)
 
                 } catch (e: Exception) {
-                    Log.e(TAG, "PrinterException: " + e.message)
+                    LogUtil.logE(TAG, "PrinterException: " + e.message)
                     printer = null
                     return
                 }
@@ -1081,7 +1081,7 @@ class ActiveOrderFragment(
                     e.printStackTrace()
                 }
             } else {
-                Log.e(TAG, "PrinterIsNotNull:")
+                LogUtil.logE(TAG, "PrinterIsNotNull:")
             }
         }
 
@@ -1095,7 +1095,7 @@ class ActiveOrderFragment(
     ) {
         if (SunmiPrintHelper.getInstance().sunmiPrinter == SunmiPrintHelper.FoundSunmiPrinter) {
 
-            Log.e("SunmiPrintHelper", "FoundSunmiPrinter")
+            LogUtil.logE("SunmiPrintHelper", "FoundSunmiPrinter")
 
             if (!BluetoothUtil.isBlueToothPrinter) {
 
@@ -1112,12 +1112,12 @@ class ActiveOrderFragment(
                     printType
                 )
             }, 2000)
-            Log.e("SunmiPrintHelper", "CheckSunmiPrinter")
+            LogUtil.logE("SunmiPrintHelper", "CheckSunmiPrinter")
         } else if (SunmiPrintHelper.getInstance().sunmiPrinter == SunmiPrintHelper.LostSunmiPrinter) {
 
-            Log.e("SunmiPrintHelper", "LostSunmiPrinter")
+            LogUtil.logE("SunmiPrintHelper", "LostSunmiPrinter")
         } else {
-            Log.e("SunmiPrintHelper", "ELSE")
+            LogUtil.logE("SunmiPrintHelper", "ELSE")
         }
     }
 
@@ -1128,7 +1128,7 @@ class ActiveOrderFragment(
         printType: String
     ) {
         var builder: Builder? = null
-        Log.e(TAG, "customerSettingModel:  ${Gson().toJson(customerSettingModel)}")
+        LogUtil.logE(TAG, "customerSettingModel:  ${Gson().toJson(customerSettingModel)}")
         try {
             builder =
                 Builder(
@@ -1141,7 +1141,7 @@ class ActiveOrderFragment(
                     }, PrinterClass.language, requireActivity()
                 )
 
-            Log.e(TAG, "getVanueLogo:  ${prefProvider.getValue(Constants.VENUE_LOGO, "")}")
+            LogUtil.logE(TAG, "getVanueLogo:  ${prefProvider.getValue(Constants.VENUE_LOGO, "")}")
 
 
             if (customerSettingModel.showOrderIdTop) {
@@ -2070,7 +2070,7 @@ class ActiveOrderFragment(
                             var phoneNoFormatted = MethodUtils.getUSFormatNumber(
                                 receiptModel?.customer?.phones?.get(receiptModel?.customer?.phones?.size - 1).phoneNumber
                             )
-                            Log.e(TAG, "phoneNoFormatted:  ${phoneNoFormatted}")
+                            LogUtil.logE(TAG, "phoneNoFormatted:  ${phoneNoFormatted}")
                             builder.addText(phoneNoFormatted)
 
                         }
@@ -2153,8 +2153,8 @@ class ActiveOrderFragment(
                 builder.addFeedLine(1)
                 builder.addTextAlign(Builder.ALIGN_CENTER)
                 val bitmap = generateQRCode(receiptModel.digitalReceiptUrl)
-                Log.e(TAG, "BitmapHeight ${bitmap.height}")
-                Log.e(TAG, "BitmapWidth ${bitmap.width}")
+                LogUtil.logE(TAG, "BitmapHeight ${bitmap.height}")
+                LogUtil.logE(TAG, "BitmapWidth ${bitmap.width}")
                 val newBitmap = Bitmap.createScaledBitmap(bitmap, 210, 210, true)
                 builder.addImage(
                     newBitmap, 0, 0,
@@ -2183,7 +2183,7 @@ class ActiveOrderFragment(
             } catch (e: Exception) {
                 PrinterClass.closePrinter()
                 e.printStackTrace()
-                Log.e(TAG, "PrinterError: " + e.localizedMessage)
+                LogUtil.logE(TAG, "PrinterError: " + e.localizedMessage)
             }
 
 
@@ -3268,7 +3268,7 @@ class ActiveOrderFragment(
         var dimen = if (width < height) width else height
         dimen = dimen * 3 / 4
 
-        Log.e(TAG, "getDimen:  ${dimen}")
+        LogUtil.logE(TAG, "getDimen:  ${dimen}")
         return net.glxn.qrgen.android.QRCode.from(qrcodeStaticUrl).bitmap()
 
 
@@ -3282,7 +3282,7 @@ class ActiveOrderFragment(
         val reqLent = 12 - ss.length
         val Alphabet = getSaltString(reqLent)
         val timeStampFinal = Alphabet + ss
-        Log.e("timeStampFinal", timeStampFinal)
+        LogUtil.logE("timeStampFinal", timeStampFinal)
 
         return timeStampFinal
     }

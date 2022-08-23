@@ -26,6 +26,7 @@ import com.android.pos.di.PrefProvider
 import com.android.pos.ui.adapter.RefundItemListAdapter
 import com.android.pos.ui.fragments.transactions.TransactionDetailsViewModel
 import com.android.pos.utils.AlertUtils
+import com.android.pos.utils.LogUtil
 import com.android.pos.utils.MethodUtils
 import dagger.hilt.android.AndroidEntryPoint
 import java.text.NumberFormat
@@ -370,7 +371,7 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
                         } else {
                             val itemTaxPrice =
                                 (tax.rate * totalItemPrice) / 100
-                            Log.e("itemTaxPrice", "" + itemTaxPrice)
+                            LogUtil.logE("itemTaxPrice", "" + itemTaxPrice)
                             String.format("%.2f", itemTaxPrice)
                                 .toDouble()
                         }
@@ -404,16 +405,16 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
                     loyaltyAmount += la / refundItemListAdapter.itemCount
                 }
 
-                Log.e("subTotalPrice", totalItemPrice.toString())
+                LogUtil.logE("subTotalPrice", totalItemPrice.toString())
 
-                Log.e(
+                LogUtil.logE(
                     "totalItemPerItem",
                     "totalItemPrice = " + totalItemPrice + "\n totalServiceCharge = " + totalServiceCharge + "\n totalTax = " + totalTax + "\n loyaltyAmount = " + loyaltyAmount
                 )
                 val totalItemPerItem =
                     totalItemPrice - applyDiscount + totalServiceCharge + totalTax - loyaltyAmount
 
-                Log.e("subTotalPrice1", totalItemPerItem.toString())
+                LogUtil.logE("subTotalPrice1", totalItemPerItem.toString())
 
                 this.subTotalPrice += totalItemPerItem
                 this.totalTax += totalTax

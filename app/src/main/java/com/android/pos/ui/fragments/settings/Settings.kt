@@ -38,6 +38,7 @@ import com.android.pos.ui.fragments.settings.servicecharge.ServiceChargeList
 import com.android.pos.ui.fragments.settings.tax.TaxesList
 import com.android.pos.ui.fragments.settings.teamrole.TeamMemberSettings
 import com.android.pos.ui.fragments.settings.tip.TipsList
+import com.android.pos.utils.LogUtil
 import com.android.pos.utils.extensions.styleBold
 import com.android.pos.utils.extensions.styleNormal
 import dagger.hilt.android.AndroidEntryPoint
@@ -418,7 +419,7 @@ class Settings : Fragment() {
 
     fun setCallBack() {
         ((activity as MainActivity).fragmentCallBack) = { fragment ->
-            Log.e("!_@_", "fragment callback")
+            LogUtil.logE("!_@_", "fragment callback")
             fragment?.let { loadFragment(it) }
         }
     }

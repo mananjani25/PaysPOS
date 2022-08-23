@@ -42,7 +42,6 @@ class CategoryListItemAdapter :
                 }
                 notifyItemChanged(layoutPosition)
 
-                Log.e("selectedIds", selectedIds.toString())
             }
         }
     }

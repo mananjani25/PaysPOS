@@ -50,6 +50,7 @@ import com.android.pos.ui.fragments.checkout.CheckoutDineInPaymentViewModel
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.android.pos.ui.fragments.payment.PaymentViewModel
 import com.android.pos.utils.AlertUtils
+import com.android.pos.utils.LogUtil
 import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.callback.ItemClickListner
@@ -127,7 +128,7 @@ class CartFragment(
     ): View? {
         binding = FragmentCartBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = this
-        Log.e("bundleData", arguments.toString())
+        LogUtil.logE("bundleData", arguments.toString())
 
         if (arguments?.getBundle("updateBundle") != null) {
             updateBundle = arguments?.getBundle("updateBundle")
@@ -156,7 +157,7 @@ class CartFragment(
                 if (it.getBundle("updateBundle") != null) {
                     updateBundle = it.getBundle("updateBundle")
                     isOrderUpdate = updateBundle?.getBoolean("update") ?: false
-                    Log.e(TAG, "isOrderUpdateReq:  $isOrderUpdate")
+                    LogUtil.logE(TAG, "isOrderUpdateReq:  $isOrderUpdate")
                     if (isOrderUpdate) {
                         orderId = updateBundle?.getInt("orderId")
                         paymentId = updateBundle?.getInt("paymentId")
@@ -174,7 +175,7 @@ class CartFragment(
                         )
                     } else {
                         //  prefProvider.setValue(ORDER_TYPE, TAKEOUT)
-                        Log.e("ORDER_TYPE", "Updated check")
+                        LogUtil.logE("ORDER_TYPE", "Updated check")
                         updateActiveOrderFlag()
                     }
                     uiSave()
@@ -194,7 +195,7 @@ class CartFragment(
 
 
         val name = prefProvider.getValue(Constants.CUSTOMER_NAME, "")
-        Log.e("Customer Name", name)
+        LogUtil.logE("Customer Name", name)
         if (name.isNotEmpty() && name != null) {
             binding.txtAddCustomer.text = name
         } else {
@@ -285,7 +286,7 @@ class CartFragment(
 
         if (updateBundle != null) {
             isOrderUpdate = requireArguments().getBoolean("update")
-            Log.e(TAG, "isOrderUpdateReq:  $isOrderUpdate")
+            LogUtil.logE(TAG, "isOrderUpdateReq:  $isOrderUpdate")
             if (isOrderUpdate) {
                 orderId = updateBundle?.getInt("orderId")
                 paymentId = updateBundle?.getInt("paymentId")
@@ -303,7 +304,7 @@ class CartFragment(
                 )
             } else {
                 //  prefProvider.setValue(ORDER_TYPE, TAKEOUT)
-                Log.e("ORDER_TYPE", "Updated check")
+                LogUtil.logE("ORDER_TYPE", "Updated check")
 
                 updateActiveOrderFlag()
 
@@ -326,7 +327,7 @@ class CartFragment(
                 }
             }
             //   prefProvider.setValue(ORDER_TYPE, TAKEOUT)
-            Log.e("ORDER_TYPE", "Updated check1")
+            LogUtil.logE("ORDER_TYPE", "Updated check1")
         }
 
         uiSave()
@@ -411,7 +412,7 @@ class CartFragment(
     private fun getDineInData() {
         if (updateBundle != null) {
             if (updateBundle?.getBoolean("isFromDineIn") == true) {
-                Log.e(TAG, "isFromDinein")
+                LogUtil.logE(TAG, "isFromDinein")
                 getDineInCartList()
             } else if (updateBundle?.getBoolean("is_dine_in_edit") == true) {
                 checkDineInEditOrder()
@@ -640,14 +641,14 @@ class CartFragment(
     private fun addObserver() {
 
 
-        Log.e("CreateCartEmpIdRecd", "" + prefProvider.getValueInt(EMPLOYEE_ID, 0))
+        LogUtil.logE("CreateCartEmpIdRecd", "" + prefProvider.getValueInt(EMPLOYEE_ID, 0))
 
         if (arguments?.getString(REDIRECT_FROM) == MANUAL_SALE) {
             viewModel.manualSaleItems(
                 prefProvider.getValue(ORDER_TYPE, TAKEOUT),
                 prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
             ).observe(requireActivity()) {
-                Log.e(TAG, "listSize  ${Gson().toJson(it)}")
+                LogUtil.logE(TAG, "listSize  ${Gson().toJson(it)}")
                 if (it.isNotEmpty()) {
                     if (isFromPayment) {
                         if (MethodUtils.isEnableCashDiscount(requireContext())) {
@@ -700,7 +701,7 @@ class CartFragment(
                     binding.txtServiceCharge.text =
                         MethodUtils.roundOffAmount(viewModel.totalServiceCharge)
                     binding.tvPayNow.text = "Pay " + binding.txtTotal.text.toString()
-                    Log.e("totalDiscount", viewModel.totalDiscount.toString())
+                    LogUtil.logE("totalDiscount", viewModel.totalDiscount.toString())
                     binding.txtDiscount.text = "-" +
                             MethodUtils.roundOffAmount(viewModel.totalDiscount)
                     binding.txtNoncashAdj.text =
@@ -736,8 +737,8 @@ class CartFragment(
                                     resources.getDimension(R.dimen._70sdp).toInt()
                                 binding.relativeLoylatyPoints.visibility = View.VISIBLE
                                 binding.lblLoyaltyPoints.visibility = View.VISIBLE
-                                Log.e(TAG, "InsideLoyalty")
-                                Log.e(TAG, Gson().toJson(viewModel.redeemLoyaltyInfo))
+                                LogUtil.logE(TAG, "InsideLoyalty")
+                                LogUtil.logE(TAG, Gson().toJson(viewModel.redeemLoyaltyInfo))
                                 binding.txtLoyaltyAmount.text =
                                     "- $${
                                         String.format(
@@ -802,8 +803,8 @@ class CartFragment(
                     prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
                 ).observe(requireActivity()) {
 
-                    Log.e("mAllWords :", "LIST SIZE :" + it.size.toString())
-                    Log.e(
+                    LogUtil.logE("mAllWords :", "LIST SIZE :" + it.size.toString())
+                    LogUtil.logE(
                         "mAllWords",
                         "LIST EMPLOYEE :" + prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
                             .toString()
@@ -814,7 +815,7 @@ class CartFragment(
                         binding.rvCartDineIn.visible()
                         binding.rvCartList.gone()
                         if (it.isNotEmpty()) {
-                            Log.e(TAG, "cartListDine:  ${Gson().toJson(it)}")
+                            LogUtil.logE(TAG, "cartListDine:  ${Gson().toJson(it)}")
 
                             cartlist = it as ArrayList<CartModel>
                             if (isFromPayment) {
@@ -847,11 +848,11 @@ class CartFragment(
 
 
                             }
-                            Log.e(TAG, "getPAyment:  ${isFromPayment}")
-                            Log.e(TAG, "isGuestPayment:  ${isGuestPayment}")
+                            LogUtil.logE(TAG, "getPAyment:  ${isFromPayment}")
+                            LogUtil.logE(TAG, "isGuestPayment:  ${isGuestPayment}")
 
                             if (isFromPaymentDinein) {
-                                Log.e(TAG, "guestCalModel:  ${Gson().toJson(guestCalModel)}")
+                                LogUtil.logE(TAG, "guestCalModel:  ${Gson().toJson(guestCalModel)}")
                                 viewModel.itemCalculationForDineInPayment(
                                     it[0],
                                     binding.txtTotal,
@@ -860,7 +861,7 @@ class CartFragment(
                                     isGuestPayment
                                 )
                             } else {
-                                Log.e(TAG, "WithOutDineIn")
+                                LogUtil.logE(TAG, "WithOutDineIn")
                                 viewModel.itemCalculationCartModel(
                                     it[0],
                                     binding.txtTotal,
@@ -879,12 +880,12 @@ class CartFragment(
                                 binding.txtDineInProceed.setText("Update and Proceed")
 
                                 var getOldList = prefProvider.getValue(DINE_IN_UPDATE_LIST, "")
-                                Log.e(TAG, "getOldList  ${Gson().toJson(getOldList)}")
+                                LogUtil.logE(TAG, "getOldList  ${Gson().toJson(getOldList)}")
                                 if (getOldList.isEmpty()) {
                                     var listItemDine: ArrayList<GetOrderDetailsResponse.Data.OrderItem> =
                                         arrayListOf()
                                     var data = it[0].dineInList
-                                    Log.e(TAG, "getDataSizeDin ${data?.size}")
+                                    LogUtil.logE(TAG, "getDataSizeDin ${data?.size}")
                                     data?.forEach {
                                         it.items.forEach { item ->
                                             var modifiers: ArrayList<GetOrderDetailsResponse.Data.OrderItem.OrderItemModifier> =
@@ -1027,7 +1028,7 @@ class CartFragment(
                         binding.rvCartList.visible()
 
                         if (it.isNotEmpty()) {
-                            Log.e("mAllWords", "listSize ITEM ${it.get(0).items?.size}")
+                            LogUtil.logE("mAllWords", "listSize ITEM ${it.get(0).items?.size}")
                             viewModel.destroyedList.clear()
                             it[0].items?.filter { item -> item.isDestroy }?.let {
                                 viewModel.destroyedList.addAll(it)
@@ -1065,7 +1066,7 @@ class CartFragment(
                                 filterItems.addAll(it!!.toCollection(arrayListOf()))
                             }
 
-                            Log.e("mAllWords", "filterItems  ${filterItems.size}")
+                            LogUtil.logE("mAllWords", "filterItems  ${filterItems.size}")
                             cartAdapter.setList(filterItems)
 
                             cartlist = it as ArrayList<CartModel>
@@ -1088,7 +1089,7 @@ class CartFragment(
                             binding.txtServiceCharge.text =
                                 MethodUtils.roundOffAmount(viewModel.totalServiceCharge)
                             binding.tvPayNow.text = "Pay " + binding.txtTotal.text.toString()
-                            Log.e("totalDiscount", viewModel.totalDiscount.toString())
+                            LogUtil.logE("totalDiscount", viewModel.totalDiscount.toString())
                             binding.txtDiscount.text =
                                 "-" + MethodUtils.roundOffAmount(viewModel.totalDiscount)
                             binding.txtNoncashAdj.text =
@@ -1140,8 +1141,8 @@ class CartFragment(
                                             resources.getDimension(R.dimen._70sdp).toInt()
                                         binding.relativeLoylatyPoints.visibility = View.VISIBLE
                                         binding.lblLoyaltyPoints.visibility = View.VISIBLE
-                                        Log.e(TAG, "InsideLoyalty")
-                                        Log.e(TAG, Gson().toJson(viewModel.redeemLoyaltyInfo))
+                                        LogUtil.logE(TAG, "InsideLoyalty")
+                                        LogUtil.logE(TAG, Gson().toJson(viewModel.redeemLoyaltyInfo))
                                         binding.txtLoyaltyAmount.text =
                                             "- $${
                                                 String.format(
@@ -1273,7 +1274,7 @@ class CartFragment(
     }
 
     override fun onItemClickListener(view: View?, data: TbItem, position: Int) {
-        Log.e(TAG, "itemClicked  ${Gson().toJson(data)}")
+        LogUtil.logE(TAG, "itemClicked  ${Gson().toJson(data)}")
 
 
         itemClickListner?.onItemUpdate(data)
@@ -1288,7 +1289,7 @@ class CartFragment(
     }
 
     override fun onItemSelected(headerPosition: Int, position: Int, item: TbItem) {
-        Log.e(TAG, "onDineinItemClick ${position}")
+        LogUtil.logE(TAG, "onDineinItemClick ${position}")
 
         viewModel.selectedItemPositionDine = position
         // viewModel.dineInHeaderPosition = headerPosition
@@ -1305,7 +1306,7 @@ class CartFragment(
     }
 
     override fun onCustomerClicked(position: Int, isRemoved: Boolean) {
-        Log.e(TAG, "onCustomerClicked  ${isRemoved}")
+        LogUtil.logE(TAG, "onCustomerClicked  ${isRemoved}")
         if (isRemoved) {
             if (cartlist.get(0).dineInList?.size!! >= position) {
                 val dineIn = cartlist.get(0).dineInList
@@ -1387,7 +1388,7 @@ class CartFragment(
                     if (cartlist.size > 0) {
 
                         val dList = cartlist[0].dineInList ?: arrayListOf()
-                        Log.e(TAG, "dList:  ${Gson().toJson(dList)}")
+                        LogUtil.logE(TAG, "dList:  ${Gson().toJson(dList)}")
                         if (dList.isNotEmpty()) {
                             dList[0].floorPlanTable?.id?.let {
 
@@ -1741,7 +1742,7 @@ class CartFragment(
                         future_delivery_date = formatterdate.format(date)
                         future_delivery_time = formattertime.format(date)
 
-                        Log.e(TAG, "UpdateOrderItemsList  ${cartList.items?.size}")
+                        LogUtil.logE(TAG, "UpdateOrderItemsList  ${cartList.items?.size}")
                         val request = viewModelPayment.createOpenOrderRequest(
                             cartList,
                             viewModel.subTotalPrice,

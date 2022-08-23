@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.data.entities.TbCardReader
 import com.android.pos.databinding.ViewMagtekDeviceBinding
+import com.android.pos.utils.LogUtil
 import com.android.pos.utils.callback.ItemCallback
 
 class MagtakAdapter :
@@ -25,7 +26,7 @@ class MagtakAdapter :
             binding.model = item
             binding.executePendingBindings()
 
-            Log.e("MyViewHolder", item.mcAddress)
+            LogUtil.logE("MyViewHolder", item.mcAddress)
 
             if (item.status == 0) {
                 binding.txtStatus.text = "Connect"

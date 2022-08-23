@@ -250,7 +250,7 @@ class CreateTeamMember : Fragment() {
                         ProgressUtils.dismissProgressDialog()
                         resource.data?.let { roleList ->
                             teamRoleList = roleList as ArrayList<TeamRole>
-                            Log.e("teamRoleList", teamRoleList.size.toString())
+                            LogUtil.logE("teamRoleList", teamRoleList.size.toString())
 
 
                             teamRoleList.forEachIndexed { index, teamRole ->

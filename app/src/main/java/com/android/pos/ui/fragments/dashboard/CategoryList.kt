@@ -13,6 +13,7 @@ import com.android.pos.data.model.responseModel.VenueDataResponse
 import com.android.pos.data.model.responseModel.item.Item
 import com.android.pos.databinding.FragmentCategoryItemListBinding
 import com.android.pos.ui.adapter.CategoryItemAdapter
+import com.android.pos.utils.LogUtil
 import dagger.hilt.android.AndroidEntryPoint
 import java.io.Serializable
 
@@ -48,7 +49,7 @@ class CategoryList : Fragment() {
 
         val list: ArrayList<Item> =
             requireArguments().get(ITEM_LIST) as ArrayList<Item>
-        Log.e("CategoryList", "${list.size}")
+        LogUtil.logE("CategoryList", "${list.size}")
 
         binding.recyclerViewItemsList.adapter = CategoryItemAdapter(
             requireContext(),

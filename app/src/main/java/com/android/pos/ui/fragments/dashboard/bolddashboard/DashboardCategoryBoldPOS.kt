@@ -180,7 +180,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         viewModel.activeLoyaltyProgram = prefProvider.getActiveLoyaltyData()
         viewModel.activeLoyaltyProgramLiveData.observe(requireActivity()) {
             if (it.status == Status.SUCCESS && it.data != null) {
-                Log.e("Loyalty", "getLoyaltyPrograms fetched..")
+                LogUtil.logE("Loyalty", "getLoyaltyPrograms fetched..")
                 prefProvider.saveActiveLoyaltyData(it.data)
                 viewModel.activeLoyaltyProgram = it.data
             }
@@ -192,7 +192,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         setFragmentResultListener("request_key_customer") { _: String, bundle: Bundle ->
             val result = bundle.getParcelable<TbCustomer>("data")
             if (result != null) {
-                Log.e(TAG, "gotBundlebundle:  ${Gson().toJson(bundle)}")
+                LogUtil.logE(TAG, "gotBundlebundle:  ${Gson().toJson(bundle)}")
                 setUpCustomer(result, bundle)
             }
         }
@@ -286,7 +286,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                     TAKEOUT
                 ) ==DINE_IN
             ) {
-                Log.e(TAG,"notecartlist$cartList")
+                LogUtil.logE(TAG,"notecartlist$cartList")
                 dineInArrayList = cartList?.get(0)?.dineInList
                 dineInArrayList?.get(0)?.selectedPosition = bundle.getInt("headerPos")
             }
@@ -381,26 +381,26 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             setFragmentResultListener("request_key_customer_dine_in") { _, bundle ->
                 val result = bundle.getParcelable<TbCustomer>("data")
                 if (result != null) {
-                    Log.e(TAG, "assignResult:  ${Gson().toJson(result)}")
+                    LogUtil.logE(TAG, "assignResult:  ${Gson().toJson(result)}")
                     if (cartList.isEmpty()) {
                         cartList =
                             bundle.getParcelableArrayList<CartModel>("cartList") as ArrayList<CartModel>
                     }
                     val dineInList = cartList[0].dineInList
-                    Log.e(TAG, "getdineInListSize:  ${dineInList?.size}")
+                    LogUtil.logE(TAG, "getdineInListSize:  ${dineInList?.size}")
 
                     if (dineInList?.isNotEmpty() == true) {
 
                         var position = bundle.getInt("position")
-                        Log.e(TAG, "getCustomerAssignPos:  ${position}")
+                        LogUtil.logE(TAG, "getCustomerAssignPos:  ${position}")
 
                         if (dineInList.size >= position && position != 0) {
 
 
                             dineInList.get(position).customer = result
 
-                            Log.e(TAG, "UpdateCustomerPostition ${position}")
-                            Log.e(
+                            LogUtil.logE(TAG, "UpdateCustomerPostition ${position}")
+                            LogUtil.logE(
                                 TAG,
                                 "UpdateCustomer ${dineInList.get(position).customer}"
                             )
@@ -420,7 +420,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             result = bundle
             resultData = bundle.getParcelable<TbCustomer>("data")
             if (result != null) {
-                Log.e(TAG,"REQUEST_KEY_CUSTOMER_DINE_IN$result")
+                LogUtil.logE(TAG,"REQUEST_KEY_CUSTOMER_DINE_IN$result")
             }
         }
 */
@@ -508,7 +508,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == DINE_IN) {
                 if (cartList.isNotEmpty()) {
                     val dList = cartList[0].dineInList ?: arrayListOf()
-                    Log.e(TAG, "dList:  ${Gson().toJson(dList)}")
+                    LogUtil.logE(TAG, "dList:  ${Gson().toJson(dList)}")
                     var updateDinein = arguments?.getBoolean("is_dine_in_edit") ?: false
                     if (!updateDinein) {
                         if (dList.isNotEmpty()) {
@@ -642,7 +642,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                         cartList[0].dineInList = dineInList
                     }
 
-                    Log.e(TAG, "dineInCartListData:  ${Gson().toJson(cartList[0].dineInList)}")
+                    LogUtil.logE(TAG, "dineInCartListData:  ${Gson().toJson(cartList[0].dineInList)}")
                     if (cartList[0].dineInList?.isNotEmpty() == true) {
                         var dineInList = cartList[0].dineInList
                         dineInList!![0]?.selectedPosition = viewModel.dineInHeaderPosition
@@ -779,7 +779,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             if (it.status == Status.SUCCESS) {
                 if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == DINE_IN) {
                     if (prefProvider.getValueboolean(Constants.SERVICECHARGE_DINEIN_ORDER, false)) {
-                        Log.e(TAG, "getServiceCharge:  ${Gson().toJson(it.data)}")
+                        LogUtil.logE(TAG, "getServiceCharge:  ${Gson().toJson(it.data)}")
                         serviceChargesList = ArrayList()
                         viewModel.serviceChargesList.clear()
                         it.data?.forEach { service ->
@@ -799,7 +799,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                             false
                         )
                     ) {
-                        Log.e(TAG, "getServiceCharge:  ${Gson().toJson(it.data)}")
+                        LogUtil.logE(TAG, "getServiceCharge:  ${Gson().toJson(it.data)}")
                         serviceChargesList = ArrayList()
                         viewModel.serviceChargesList.clear()
                         it.data?.forEach { service ->
@@ -836,7 +836,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
 
     override fun onItemUpdate(item: TbItem) {
-        Log.e(TAG, "dashboardPosItem:  ${Gson().toJson(item)}")
+        LogUtil.logE(TAG, "dashboardPosItem:  ${Gson().toJson(item)}")
         prefProvider.setValueInt(Constants.CAT_ID_SELECTED, item.categoryId)
         val frag: Fragment = AddItemFragment.newInstance(item, this, cartList, true)
         loadCategoryFragment(frag)
@@ -851,7 +851,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
     private fun getDineInData() {
         if (arguments?.getBoolean("isFromDineIn") == true) {
-            Log.e(TAG, "isFromDineInTrue")
+            LogUtil.logE(TAG, "isFromDineInTrue")
             getDineInCartList()
         }
     }
@@ -987,8 +987,8 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 prefProvider.setValueInt(Constants.ORDER_TYPE_ID, 2)
 
                 cartList[0].note = arguments?.getString("order_note").toString()
-                Log.e("AAjeDine", "cartdiscountPrice  ${cartList[0].discountPrice}")
-                Log.e("AAjeDine", "dineTotalDiscount  ${arguments?.getDouble("totalDiscount")}")
+                LogUtil.logE("AAjeDine", "cartdiscountPrice  ${cartList[0].discountPrice}")
+                LogUtil.logE("AAjeDine", "dineTotalDiscount  ${arguments?.getDouble("totalDiscount")}")
                 cartList[0].discountPrice = arguments?.getDouble("totalDiscount") ?: 0.0
                 viewModel.cartLogic(cartList, null, Constants.ADD, false, dineInList = dineInList)
                 // viewModel.orderItemDiscount = arguments?.getDouble("totalDiscount") ?: 0.0
@@ -1013,7 +1013,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 if (cartList.isNotEmpty())
                     cartList[0].orderId?.let { it1 -> bundle.putInt("orderId", it1) }
                 prefProvider.setValue(ORDER_TYPE, TAKEOUT)
-                Log.e(TAG, "deleteCartDineIn")
+                LogUtil.logE(TAG, "deleteCartDineIn")
                 viewModel.deleteCart()
                 clearCustomer()
 
@@ -1116,7 +1116,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 //  printer?.setStatusChangeEventCallback(this)
 
             } catch (e: Exception) {
-                Log.e(TAG, "PrinterException: " + e.message)
+                LogUtil.logE(TAG, "PrinterException: " + e.message)
                 printer = null
                 viewModel.downloadFinished(false)
                 if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
@@ -1132,7 +1132,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 generateKitchenReceipt(data, type, createOrderResponse.data)
 
             } else {
-                Log.e(TAG, "PrinterIsNotNull:")
+                LogUtil.logE(TAG, "PrinterIsNotNull:")
                 viewModel.downloadFinished(false)
                 if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
                     findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_orders)
@@ -1150,11 +1150,11 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
     private fun setService(data: CreateOrderResponse.Data) {
         if (SunmiPrintHelper.getInstance().sunmiPrinter == SunmiPrintHelper.FoundSunmiPrinter) {
 
-            Log.e("SunmiPrintHelper1", "FoundSunmiPrinter")
+            LogUtil.logE("SunmiPrintHelper1", "FoundSunmiPrinter")
 
             if (!BluetoothUtil.isBlueToothPrinter) {
 
-                Log.e("SunmiPrintHelpe1r", "isBlueToothPrinter")
+                LogUtil.logE("SunmiPrintHelpe1r", "isBlueToothPrinter")
 
                 generateKitchenReceiptSunmiInner(data)
 
@@ -1165,12 +1165,12 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             Handler(Looper.getMainLooper()).postDelayed({
                 setService(data)
             }, 2000)
-            Log.e("SunmiPrintHelper", "CheckSunmiPrinter")
+            LogUtil.logE("SunmiPrintHelper", "CheckSunmiPrinter")
         } else if (SunmiPrintHelper.getInstance().sunmiPrinter == SunmiPrintHelper.LostSunmiPrinter) {
 
-            Log.e("SunmiPrintHelper", "LostSunmiPrinter")
+            LogUtil.logE("SunmiPrintHelper", "LostSunmiPrinter")
         } else {
-            Log.e("SunmiPrintHelper", "ELSE")
+            LogUtil.logE("SunmiPrintHelper", "ELSE")
         }
     }
 
@@ -1184,7 +1184,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 if (prefProvider.getValue(ORDER_TYPE, "").toString() != "") {
                     prefProvider.setValue(ORDER_TYPE, TAKEOUT)
                 }
-                Log.e(TAG, "QueueCreateAgain")
+                LogUtil.logE(TAG, "QueueCreateAgain")
 
                 clearCustomer()
                 if (prefProvider.getValueboolean(IS_PRINTER_QUEUE_ENABLE, false)) {
@@ -1204,8 +1204,8 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         viewModel.getKitchenPrinterList().observe(viewLifecycleOwner) { it ->
             when (it.status) {
                 Status.SUCCESS -> {
-                    Log.e(TAG, "getKitchenPrinterList:  ${Gson().toJson(it.data)}")
-                    Log.e(TAG, "isUpdateOrder  ${viewModelPayment.isUpdateOrder}")
+                    LogUtil.logE(TAG, "getKitchenPrinterList:  ${Gson().toJson(it.data)}")
+                    LogUtil.logE(TAG, "isUpdateOrder  ${viewModelPayment.isUpdateOrder}")
 
                     requireActivity().runOnUiThread {
                         ProgressUtils.dismissProgressDialog()
@@ -1213,7 +1213,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
                         if (viewModelPayment.isUpdateOrder) {
                             var model = prefProvider.getValue(OPEN_ORDER_ITEMS, "")
-                            Log.e(TAG, "getItemsModel  ${Gson().toJson(model)}")
+                            LogUtil.logE(TAG, "getItemsModel  ${Gson().toJson(model)}")
                             var printOrderItems:
                                     ArrayList<CreateOrderResponse.Data.Order.OrderItem> =
                                 arrayListOf()
@@ -1230,7 +1230,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                         type
                                     ) as ArrayList<CreateOrderResponse.Data.Order.OrderItem>
 
-                                Log.e(TAG, "arrayItems:  ${Gson().toJson(arrayItems)}")
+                                LogUtil.logE(TAG, "arrayItems:  ${Gson().toJson(arrayItems)}")
                                 var itemIds: ArrayList<Int> = arrayListOf()
                                 arrayItems.forEach {
                                     itemIds.add(it.id)
@@ -1291,7 +1291,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                                                         )
                                                     )
                                                 ) {
-                                                    Log.e(
+                                                    LogUtil.logE(
                                                         TAG,
                                                         "statusPrinter  ${it.data[i].status}"
                                                     )
@@ -1379,8 +1379,8 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             ) {
 
                 builder = Builder(pname, PrinterClass.language, requireActivity())
-                Log.e(TAG, "kitchenFonts:  ${kitchenSettingModel.fonts}")
-                Log.e(TAG, "kitfontSize:  ${fontSizeH}")
+                LogUtil.logE(TAG, "kitchenFonts:  ${kitchenSettingModel.fonts}")
+                LogUtil.logE(TAG, "kitfontSize:  ${fontSizeH}")
 
 
                 builder.addFeedLine(1)
@@ -1707,8 +1707,8 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             } else {
 
                 builder = Builder(pname, PrinterClass.language, requireActivity())
-                Log.e(TAG, "kitchenFonts:  ${kitchenSettingModel.fonts}")
-                Log.e(TAG, "kitfontSize:  ${fontSizeH}")
+                LogUtil.logE(TAG, "kitchenFonts:  ${kitchenSettingModel.fonts}")
+                LogUtil.logE(TAG, "kitfontSize:  ${fontSizeH}")
 
 
                 builder.addTextFont(Builder.FONT_E)
@@ -2067,7 +2067,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 }
                 /*PrinterClass.closePrinter()
                 e.printStackTrace()
-                Log.e(TAG, "PrinterError: " + e.localizedMessage)
+                LogUtil.logE(TAG, "PrinterError: " + e.localizedMessage)
                */
             }
 
@@ -2436,7 +2436,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
     }
 
     override fun scannerBarcodeEvent(barcodeData: ByteArray?, barcodeType: Int, scannerID: Int) {
-        Log.e(TAG, "scannerBarcodeEvent: ${barcodeData?.let { String(it) }}")
+        LogUtil.logE(TAG, "scannerBarcodeEvent: ${barcodeData?.let { String(it) }}")
 
         //Check product code in db
         val productCode = barcodeData?.let { String(it) }
@@ -2451,7 +2451,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 it?.let { resource ->
                     when (resource.status) {
                         Status.SUCCESS -> {
-                            Log.e(TAG, "TBITEMDATA  ${resource.data}")
+                            LogUtil.logE(TAG, "TBITEMDATA  ${resource.data}")
                             if (resource.data != null) {
 
                                 //data found. | Add in cart
@@ -2481,7 +2481,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                             } else {
                                 //data not found. Create New Item
                                 if (findNavController().currentDestination?.id == R.id.dashboardCategoryBoldPOS) {
-                                    Log.e(TAG, "productCode  ${productCode}")
+                                    LogUtil.logE(TAG, "productCode  ${productCode}")
                                     val bundle = Bundle()
                                     bundle.putString("productCode", productCode ?: "")
                                     findNavController().navigate(
@@ -2525,7 +2525,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         var itemQuantity = 1
         if (cartList.isNotEmpty()) {
             cartList[0].items?.filter { it.itemId == item?.itemId }?.map {
-                Log.e(TAG, "ScanItemQuantity: ${it.itemQuantity}")
+                LogUtil.logE(TAG, "ScanItemQuantity: ${it.itemQuantity}")
                 itemQty = it.itemQuantity
 
 

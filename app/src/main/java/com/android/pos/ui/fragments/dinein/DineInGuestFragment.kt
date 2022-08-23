@@ -26,6 +26,7 @@ import com.android.pos.di.PrefProvider
 import com.android.pos.ui.adapter.GuestListAdapter
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.android.pos.utils.AlertUtils
+import com.android.pos.utils.LogUtil
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.statusUtils.Resource
 import dagger.hilt.android.AndroidEntryPoint
@@ -123,7 +124,7 @@ class DineInGuestFragment : Fragment(), GuestListAdapter.GuestListner {
     override fun onGuestSelected(numberOfGuest: Int) {
         guestCount = numberOfGuest
 
-        Log.e(TAG,"DineMergeStatus  ${dineInFloorTableModel.status}")
+        LogUtil.logE(TAG,"DineMergeStatus  ${dineInFloorTableModel.status}")
 
         if(dineInFloorTableModel.status== AVAILABLE){
             viewModelDash.deleteCart()
@@ -158,7 +159,7 @@ class DineInGuestFragment : Fragment(), GuestListAdapter.GuestListner {
     private fun tableStatusCheck() {
         viewModel.tableCheck.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let { status ->
-                Log.e(TAG, "getstr:   $status")
+                LogUtil.logE(TAG, "getstr:   $status")
 
                 AlertUtils.showCustomAlertWithListenerWithOK(
                     requireContext(),
@@ -196,7 +197,7 @@ class DineInGuestFragment : Fragment(), GuestListAdapter.GuestListner {
     private fun observeUnMergeTable() {
         viewModel.unMergeStatusUpdate.observe(viewLifecycleOwner, { event ->
             event.getContentIfNotHandled()?.let { status ->
-                Log.e(TAG, "AnyStatus:  ${status}")
+                LogUtil.logE(TAG, "AnyStatus:  ${status}")
                 AlertUtils.showCustomAlertWithListenerWithOK(
                     requireContext(), status.toString()
                 ) { _, _ ->

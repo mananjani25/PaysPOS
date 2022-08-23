@@ -20,6 +20,7 @@ import com.android.pos.di.PrefProvider
 
 import com.android.pos.di.RolePermission
 import com.android.pos.ui.adapter.InventoryAdapter
+import com.android.pos.utils.LogUtil
 import com.android.pos.utils.TAG
 import com.android.pos.utils.statusUtils.Status
 import dagger.hilt.android.AndroidEntryPoint
@@ -94,7 +95,7 @@ class OnlineOrderFragment : Fragment() {
                     }
                 }
 
-                Log.e("broadcastReceiver", count.toString())
+                LogUtil.logE("broadcastReceiver", count.toString())
             } else {
                 val position = intent?.getIntExtra("position", 0)
                 changePosition(position!!)
@@ -241,7 +242,7 @@ class OnlineOrderFragment : Fragment() {
                         } else {
                             changePosition(position)
                         }
-                        Log.e(TAG, "position  $position")
+                        LogUtil.logE(TAG, "position  $position")
 
 
                     }

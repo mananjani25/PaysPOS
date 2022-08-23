@@ -323,7 +323,7 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
 
                     } catch (e: Exception) {
-                        Log.e(TAG, "PrinterException: " + e.message)
+                        LogUtil.logE(TAG, "PrinterException: " + e.message)
                         printer = null
                         return@launch
                     }
@@ -344,7 +344,7 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
     private fun setService(customerReceiptPrinters: PrinterResponse.Data.CustomerReceiptPrinters) {
         if (SunmiPrintHelper.getInstance().sunmiPrinter == SunmiPrintHelper.FoundSunmiPrinter) {
 
-            Log.e("SunmiPrintHelper", "FoundSunmiPrinter")
+            LogUtil.logE("SunmiPrintHelper", "FoundSunmiPrinter")
 
             if (!BluetoothUtil.isBlueToothPrinter) {
                 createReportFormatEODSunmiInner(customerReceiptPrinters)
@@ -355,12 +355,12 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
                 { setService(customerReceiptPrinters) },
                 2000
             )
-            Log.e("SunmiPrintHelper", "CheckSunmiPrinter")
+            LogUtil.logE("SunmiPrintHelper", "CheckSunmiPrinter")
         } else if (SunmiPrintHelper.getInstance().sunmiPrinter == SunmiPrintHelper.LostSunmiPrinter) {
 
-            Log.e("SunmiPrintHelper", "LostSunmiPrinter")
+            LogUtil.logE("SunmiPrintHelper", "LostSunmiPrinter")
         } else {
-            Log.e("SunmiPrintHelper", "ELSE")
+            LogUtil.logE("SunmiPrintHelper", "ELSE")
         }
     }
 
@@ -1647,7 +1647,7 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
             } catch (e: Exception) {
                 PrinterClass.closePrinter()
                 e.printStackTrace()
-                Log.e(TAG, "PrinterError: " + e.localizedMessage)
+                LogUtil.logE(TAG, "PrinterError: " + e.localizedMessage)
             }
 
         } catch (e: java.lang.Exception) {
@@ -2730,7 +2730,7 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
         } else {
             startDatestring = sdf.format(myCalendar1.time)
         }
-        Log.e("CheckDate", "startingDate   $startDatestring $timestring")
+        LogUtil.logE("CheckDate", "startingDate   $startDatestring $timestring")
         return "$startDatestring $timestring"
     }
 
@@ -2932,7 +2932,7 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
                     )
                 }
 
-                Log.e(TAG, "clock in out Data:  ${Gson().toJson(it.clockInClockOut)}")
+                LogUtil.logE(TAG, "clock in out Data:  ${Gson().toJson(it.clockInClockOut)}")
                 it.clockInClockOut?.let {
                     if (it.isNotEmpty()) {
                         var list: ArrayList<ClockinOutReportModel> = arrayListOf()
@@ -2963,7 +2963,7 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
                             }
                         }
-                        Log.e(TAG, "clockinData ${list.size}")
+                        LogUtil.logE(TAG, "clockinData ${list.size}")
 
                         clockInClockOutAdapter.setList(list)
                     } else {
@@ -3329,7 +3329,7 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
         terminalList: ArrayList<String>,
         defaultEmployeePos: Int
     ) {
-        Log.e(TAG, "terminalListSize  ${terminalList.size}")
+        LogUtil.logE(TAG, "terminalListSize  ${terminalList.size}")
         val spinnerAdapter = ArrayAdapter(
             requireActivity(),
             R.layout.row_spinner,
@@ -3342,7 +3342,7 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
             if (defaultEmployeePos != -1) {
                 // binding.spTerminals.setSelection(defaultEmployeePos, false);
-                Log.e("defaultEmployeePos", defaultEmployeePos.toString())
+                LogUtil.logE("defaultEmployeePos", defaultEmployeePos.toString())
 
                 viewModel.viewModelScope.launch {
                     binding.spTerminals.setSelection(defaultEmployeePos, false)
@@ -3360,7 +3360,7 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
         try {
             if (teamEmployeeListGlobal.size > 0 && position > 0 && position < teamEmployeeListGlobal.size) {
                 viewModel.selectedTerminalId = teamEmployeeListGlobal[position].id.toString()
-                Log.e("selectedEmpId", teamEmployeeListGlobal[position].id.toString())
+                LogUtil.logE("selectedEmpId", teamEmployeeListGlobal[position].id.toString())
             } else {
                 viewModel.selectedTerminalId = ""
             }

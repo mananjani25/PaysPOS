@@ -19,6 +19,7 @@ import com.android.pos.data.entities.TaxData
 import com.android.pos.databinding.FragmentTaxesBinding
 import com.android.pos.ui.adapter.TaxListAdapter
 import com.android.pos.utils.AlertUtils
+import com.android.pos.utils.LogUtil
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.SwipeHelper
 import com.android.pos.utils.callback.ItemCallback
@@ -82,7 +83,7 @@ class TaxesList : Fragment() , ItemCallback {
             it?.let { resource ->
                 when (resource.status) {
                     Status.SUCCESS -> {
-                        Log.e(TAG, "taxListData ${Gson().toJson(it.data)}")
+                        LogUtil.logE(TAG, "taxListData ${Gson().toJson(it.data)}")
                         ProgressUtils.dismissProgressDialog()
                         binding.rvTaxList.visibility = View.VISIBLE
                         resource.data?.let { taxList ->

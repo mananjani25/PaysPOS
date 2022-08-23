@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.data.entities.TbItem
 import com.android.pos.databinding.ViewCartItemBinding
+import com.android.pos.utils.LogUtil
 import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.callback.MyCallback
 
@@ -96,7 +97,7 @@ class CartAdapter : RecyclerView.Adapter<CartAdapter.MyViewHolder>() {
                 binding.txtNote.visibility = View.VISIBLE
             }
 
-            Log.e("itemQuantity", "" + item.itemQuantity)
+            LogUtil.logE("itemQuantity", "" + item.itemQuantity)
             binding.model = item
             binding.executePendingBindings()
         }

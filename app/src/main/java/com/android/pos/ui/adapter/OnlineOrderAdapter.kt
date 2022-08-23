@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.R
 import com.android.pos.data.model.responseModel.OnlineOrderResponseModel
 import com.android.pos.databinding.ViewonlineorderlayoutBinding
+import com.android.pos.utils.LogUtil
 import com.android.pos.utils.TAG
 import com.android.pos.utils.TimeFormatUtils
 import com.android.pos.utils.callback.OrderCallBack
@@ -86,7 +87,7 @@ class OnlineOrderAdapter(val context: Context) :
                 binding.rvOpenOrder.visible()
                 adapter = OnlineOrderItemsAdapter()
                 binding.rvOpenOrder.adapter = adapter
-                Log.e("TAG", "OpenOrderorderItems:  ${Gson().toJson(item.orderItems)}")
+                LogUtil.logE("TAG", "OpenOrderorderItems:  ${Gson().toJson(item.orderItems)}")
 
                 adapter!!.addAll(item.orderItems)
             } else {

@@ -188,7 +188,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
             Finder.start(requireContext(), DevType.TCP, "255.255.255.255")
 
         } catch (e: Exception) {
-            Log.e(TAG, "PrinterFinderError  ${e.message}")
+            LogUtil.logE(TAG, "PrinterFinderError  ${e.message}")
 
         }
 
@@ -257,7 +257,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
         /* try {
              Discovery.start(requireContext(), mFilterOption, mDiscoveryListener)
          } catch (e: Exception) {
-             Log.e(TAG, "PrinterException:      ${e.message}")
+             LogUtil.logE(TAG, "PrinterException:      ${e.message}")
              e.printStackTrace()
          }*/
 
@@ -299,7 +299,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
         try {
             Discovery.start(view.context, mFilterOption, mDiscoveryListener)
         } catch (e: Exception) {
-            Log.e(TAG, "GetPinterNameFailed:  " + e.message)
+            LogUtil.logE(TAG, "GetPinterNameFailed:  " + e.message)
             e.printStackTrace()
         }
         */
@@ -316,14 +316,14 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                   com.epson.epos2.Log.LOGLEVEL_LOW
               )
           } catch (e: Exception) {
-              Log.e(TAG, "ExceptionName:  ${e.message}")
+              LogUtil.logE(TAG, "ExceptionName:  ${e.message}")
               e.printStackTrace()
 
           }
           try {
               Discovery.start(view.context, mFilterOption, mDiscoveryListener)
           } catch (e: Exception) {
-              Log.e(TAG, "GetPinterNameFailed:  " + e.message)
+              LogUtil.logE(TAG, "GetPinterNameFailed:  " + e.message)
               e.printStackTrace()
           }*/
 
@@ -365,7 +365,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
     private fun onDeleteObserve() {
         viewModel.deletePrinter.observe(viewLifecycleOwner) {
             it.getContentIfNotHandled()?.let { data ->
-                Log.e(TAG, "deleteSuccess")
+                LogUtil.logE(TAG, "deleteSuccess")
                 syncPrinterList()
 
             }
@@ -378,13 +378,13 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
             when (it.status) {
 
                 Status.SUCCESS -> {
-                    Log.e(TAG, "SyncPrinterList")
+                    LogUtil.logE(TAG, "SyncPrinterList")
                     ProgressUtils.dismissProgressDialog()
 
                     val data = it.data
 
 
-                    Log.e(TAG, "PrinterREsponseData:  ${Gson().toJson(data)}")
+                    LogUtil.logE(TAG, "PrinterREsponseData:  ${Gson().toJson(data)}")
 
                     if (it.data != null) {
                         if (data != null) {
@@ -458,13 +458,13 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                                 }
                             }
                         } else {
-                            Log.e(TAG, "CustomerListCleared ")
+                            LogUtil.logE(TAG, "CustomerListCleared ")
                             customerAdapter.clearList()
                         }
 
 
                     } else {
-                        Log.e(TAG, "ITNotNull  ")
+                        LogUtil.logE(TAG, "ITNotNull  ")
                         kitchenAdapter.clearList()
 
                         customerAdapter.clearList()
@@ -495,7 +495,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                     }
                 }
                 Status.ERROR -> {
-                    Log.e(TAG, "PrinterError ")
+                    LogUtil.logE(TAG, "PrinterError ")
                     ProgressUtils.dismissProgressDialog()
                     availableNetworkAdapter.clearList()
                     searchBluetooth()
@@ -512,12 +512,12 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
             when (it.status) {
 
                 Status.SUCCESS -> {
-                    Log.e(TAG, "SyncPrinterList")
+                    LogUtil.logE(TAG, "SyncPrinterList")
                     ProgressUtils.dismissProgressDialog()
                     val data = it.data
 
 
-                    Log.e(TAG, "PrinterREsponseData:  ${Gson().toJson(data)}")
+                    LogUtil.logE(TAG, "PrinterREsponseData:  ${Gson().toJson(data)}")
 
                     if (it.data != null) {
                         if (data != null) {
@@ -590,13 +590,13 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                             }
 
                         } else {
-                            Log.e(TAG, "CustomerListCleared 2")
+                            LogUtil.logE(TAG, "CustomerListCleared 2")
                             kitchenAdapter.clearList()
                         }
 
 
                     } else {
-                        Log.e(TAG, "ITNotNull  ")
+                        LogUtil.logE(TAG, "ITNotNull  ")
                         kitchenAdapter.clearList()
 
 
@@ -617,7 +617,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
                 }
                 Status.ERROR -> {
-                    Log.e(TAG, "PrinterError ")
+                    LogUtil.logE(TAG, "PrinterError ")
                     ProgressUtils.dismissProgressDialog()
                     availableNetworkAdapter.clearList()
                     searchBluetooth()
@@ -658,7 +658,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                 if (!isAdded) {
 
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-                        Log.e(TAG, "BluetoothPrinteralias:  ${i.alias}")
+                        LogUtil.logE(TAG, "BluetoothPrinteralias:  ${i.alias}")
                     }
 
                     availableNetworkAdapter.addItem(
@@ -748,7 +748,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                 if (e.errorStatus != Epos2Exception.ERR_PROCESSING) {
                     return
                 } else {
-                    Log.e(TAG, "StartPrinterStart")
+                    LogUtil.logE(TAG, "StartPrinterStart")
 
                     Discovery.start(requireContext(), mFilterOption, mDiscoveryListener)
                 }
@@ -858,7 +858,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
         try {
             deviceList = Finder.getDeviceInfoList(com.epson.epsonio.FilterOption.PARAM_DEFAULT)
-            Log.e(TAG, "deviceList  ${Gson().toJson(deviceList)}")
+            LogUtil.logE(TAG, "deviceList  ${Gson().toJson(deviceList)}")
 
             if (deviceList != null) {
                 for (i in 0 until deviceList!!.size) {
@@ -962,7 +962,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                 this.startActivityForResult(enableBluetooth, 100)
             }
             val pairedDevices: Set<BluetoothDevice> = mBluetoothAdapter!!.getBondedDevices()
-            Log.e(TAG, "pairedDevices:   ${Gson().toJson(pairedDevices)}")
+            LogUtil.logE(TAG, "pairedDevices:   ${Gson().toJson(pairedDevices)}")
             if (pairedDevices.size > 0) {
                 for (device in pairedDevices) {
 
@@ -1063,11 +1063,11 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
     private fun setService() {
         if (SunmiPrintHelper.getInstance().sunmiPrinter == SunmiPrintHelper.FoundSunmiPrinter) {
 
-            Log.e("SunmiPrintHelper", "FoundSunmiPrinter")
+            LogUtil.logE("SunmiPrintHelper", "FoundSunmiPrinter")
 
             if (!BluetoothUtil.isBlueToothPrinter) {
 
-                Log.e("SunmiPrintHelper", "isBlueToothPrinter")
+                LogUtil.logE("SunmiPrintHelper", "isBlueToothPrinter")
                 SunmiPrintHelper.getInstance().initPrinter()
                 SunmiPrintHelper.getInstance().setAlign(1)
                 SunmiPrintHelper.getInstance().lineWrap(2)
@@ -1088,7 +1088,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                     )
                 }
                 SunmiPrintHelper.getInstance().lineWrap(2)
-                Log.e(TAG, "Here Drawer Code")
+                LogUtil.logE(TAG, "Here Drawer Code")
                 if (woyouService != null) {
                     woyouService!!.sendRAWData(byteArrayOf(0x1B, 0x45, 0x01), this)
                 } else {
@@ -1117,7 +1117,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
             } else {
 
-                Log.e("SunmiPrintHelper", "isBlueToothPrinter")
+                LogUtil.logE("SunmiPrintHelper", "isBlueToothPrinter")
 
 
                 printByBluTooth("ABCDEFGHIJKLMNOPQRSTUVWXYZ")
@@ -1125,24 +1125,24 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
         } else if (SunmiPrintHelper.getInstance().sunmiPrinter == SunmiPrintHelper.CheckSunmiPrinter) {
             handler.postDelayed({ setService() }, 2000)
-            Log.e("SunmiPrintHelper", "CheckSunmiPrinter")
+            LogUtil.logE("SunmiPrintHelper", "CheckSunmiPrinter")
         } else if (SunmiPrintHelper.getInstance().sunmiPrinter == SunmiPrintHelper.LostSunmiPrinter) {
 
-            Log.e("SunmiPrintHelper", "LostSunmiPrinter")
+            LogUtil.logE("SunmiPrintHelper", "LostSunmiPrinter")
         } else {
-            Log.e("SunmiPrintHelper", "ELSE")
+            LogUtil.logE("SunmiPrintHelper", "ELSE")
         }
     }
 
     private val serviceConnection: ServiceConnection = object : ServiceConnection {
         override fun onServiceConnected(p0: ComponentName?, service: IBinder?) {
-            Log.e(TAG, "onServiceConnected  1")
+            LogUtil.logE(TAG, "onServiceConnected  1")
             woyouService = IWoyouService.Stub.asInterface(service)
 
         }
 
         override fun onServiceDisconnected(p0: ComponentName?) {
-            Log.e(TAG, "onServiceDisConnected  2")
+            LogUtil.logE(TAG, "onServiceDisConnected  2")
             woyouService = null
 
 
@@ -1240,9 +1240,9 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                 .printText(getCurrentTimeFromTimeZone(requireContext(), formatted))
             SunmiPrinterApi.getInstance().lineWrap(2)
             SunmiPrinterApi.getInstance().cutPaper(2, 20)
-            Log.e(TAG, "WOHO SERIESNULL ${woyouService}")
+            LogUtil.logE(TAG, "WOHO SERIESNULL ${woyouService}")
             if (woyouService != null) {
-                Log.e(TAG, "WOHO SERIES NOT NULL")
+                LogUtil.logE(TAG, "WOHO SERIES NOT NULL")
                 ToastUtil.showNormalToast(requireContext(), "Cash Drawer Connected..")
                 woyouService!!.sendRAWData(byteArrayOf(0x1B, 0x45, 0x01), this)
             } else {
@@ -1272,7 +1272,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
     }
 
     override fun onPrinterActive(printerListModel: PrinterListModel, layoutPosition: Int) {
-        Log.e(TAG, "printerListModel: ${Gson().toJson(printerListModel)}")
+        LogUtil.logE(TAG, "printerListModel: ${Gson().toJson(printerListModel)}")
 
         /* for (i in 0 until orderTypeList.size) {
              list.add(
@@ -1292,7 +1292,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
         setFragmentResultListener("request_printer_type") { requestKey: String, bundle: Bundle ->
             val data = bundle.getString("type")
             var list: ArrayList<CreatePrinterRequestModel.PrinterSettingsAttributes> = arrayListOf()
-            Log.e(TAG, "getOrderTypeList: ${Gson().toJson(orderTypeList)}")
+            LogUtil.logE(TAG, "getOrderTypeList: ${Gson().toJson(orderTypeList)}")
             when (data) {
                 KITCHEN -> {
 
@@ -1420,7 +1420,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
 
     override fun onEditSelected(printerListModel: PrinterListModel) {
-        Log.e(TAG, "printerListModel:  ${Gson().toJson(printerListModel)}")
+        LogUtil.logE(TAG, "printerListModel:  ${Gson().toJson(printerListModel)}")
 
         val bundle = Bundle()
         bundle.putParcelable("printerSetting", printerListModel)
@@ -1465,7 +1465,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
     }
 
     private fun initNewPrinter(printerListModel: PrinterListModel) {
-        Log.e(TAG, "printerListModel:  ${Gson().toJson(printerListModel)}")
+        LogUtil.logE(TAG, "printerListModel:  ${Gson().toJson(printerListModel)}")
         // Declare a global instance of Printer
 
         (activity as MainActivity).runOnUiThread {
@@ -1479,7 +1479,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
             mPrinter.setReceiveEventListener { printer, i, printerStatusInfo, s ->
 
-                Log.e(
+                LogUtil.logE(
                     "PrinterDataCh",
                     "${Gson().toJson(printer)}   int: ${i}  printerInfo: ${
                         Gson().toJson(printerStatusInfo)
@@ -1494,7 +1494,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                     p2: PrinterStatusInfo?,
                     p3: String?
                 ) {
-                    Log.e("getPrintReceive", "online ${Gson().toJson(p2)}  data${p3}")
+                    LogUtil.logE("getPrintReceive", "online ${Gson().toJson(p2)}  data${p3}")
                     mPrinter.endTransaction()
                     mPrinter.disconnect()
                     /*
@@ -1536,7 +1536,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
                     } catch (e: java.lang.Exception) {
                         e.printStackTrace()
                     }
-                    Log.e(TAG, "PrinterConnectFailed")
+                    LogUtil.logE(TAG, "PrinterConnectFailed")
                     e.printStackTrace()
                 }
 
@@ -1691,12 +1691,12 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
 
             } catch (e: Exception) {
-                Log.e(TAG, "Exception:  " + e.message)
+                LogUtil.logE(TAG, "Exception:  " + e.message)
                 printer = null
                 return
             }
             PrinterClass.setPrinter(printer)
-            Log.e(TAG, "printerListModel:  ${Gson().toJson(printerListModel)}")
+            LogUtil.logE(TAG, "printerListModel:  ${Gson().toJson(printerListModel)}")
 
             //generateKitchenReceipt(printerListModel)
             showPrinterStatus(printerListModel)
@@ -1708,7 +1708,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
         var method = ""
 
         try {
-            Log.e(TAG, "printerName: ${printerListModel.printerName}")
+            LogUtil.logE(TAG, "printerName: ${printerListModel.printerName}")
             builder = Builder("TM-m30", language, requireActivity())
 
 
@@ -1994,13 +1994,13 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
             //builder.addFeedUnit(30)
 
-            Log.e("builder", builder.toString())
+            LogUtil.logE("builder", builder.toString())
 
             //send builder data(empty builder data)
             val status = IntArray(1)
             val battery = IntArray(1)
 
-            Log.e(TAG, "getPrinterCheck:  ${PrinterClass.getPrinter().toString()}")
+            LogUtil.logE(TAG, "getPrinterCheck:  ${PrinterClass.getPrinter().toString()}")
 
 
 
@@ -2011,7 +2011,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
             } catch (e: Exception) {
                 PrinterClass.closePrinter()
                 e.printStackTrace()
-                Log.e(TAG, "PrinterError: " + e.localizedMessage)
+                LogUtil.logE(TAG, "PrinterError: " + e.localizedMessage)
             }
 
             try {
@@ -2038,7 +2038,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
 
         try {
-            Log.e(TAG, "SUBSTR:  ${printerListModel.printerName?.substring(0, 6)}")
+            LogUtil.logE(TAG, "SUBSTR:  ${printerListModel.printerName?.substring(0, 6)}")
             builder = Builder(
                 if (printerListModel.printerName?.substring(0, 6).toString()
                         .lowercase() == "TM-m30".lowercase()
@@ -2100,7 +2100,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
             val battery = IntArray(1)
 
 
-            Log.e(TAG, "getPrinterCheck:  ${PrinterClass.getPrinter().toString()}")
+            LogUtil.logE(TAG, "getPrinterCheck:  ${PrinterClass.getPrinter().toString()}")
 
 
 
@@ -2110,7 +2110,7 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
             } catch (e: Exception) {
                 PrinterClass.closePrinter()
                 e.printStackTrace()
-                Log.e(TAG, "PrinterError: " + e.localizedMessage)
+                LogUtil.logE(TAG, "PrinterError: " + e.localizedMessage)
             }
 
             try {
@@ -2129,12 +2129,12 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
     }
 
     override fun onStatusChangeEvent(p0: String?, p1: Int) {
-        Log.e(TAG, "onStatusChanged  ${p0}")
+        LogUtil.logE(TAG, "onStatusChanged  ${p0}")
 
     }
 
     override fun onBatteryStatusChangeEvent(p0: String?, p1: Int) {
-        Log.e(TAG, "onBatteryLevelChange  ${p0}")
+        LogUtil.logE(TAG, "onBatteryLevelChange  ${p0}")
     }
 
     @SuppressLint("MissingPermission")
@@ -2143,11 +2143,11 @@ class Printer : Fragment(), Runnable, PrinterListAdapter.PrinterListInterface,
 
             val myData: BluetoothDevice =
                 data?.getParcelableArrayExtra(BluetoothDevice.EXTRA_NAME) as BluetoothDevice
-            Log.e(TAG, "AvailableName   ${myData.name}")
+            LogUtil.logE(TAG, "AvailableName   ${myData.name}")
         } else if (requestCode == 211) {
             val device =
                 data!!.getParcelableExtra<BluetoothDevice>(BluetoothDevice.EXTRA_DEVICE)
-            Log.e(TAG, "DeviceName  ${device!!.name}")
+            LogUtil.logE(TAG, "DeviceName  ${device!!.name}")
         }
 
     }

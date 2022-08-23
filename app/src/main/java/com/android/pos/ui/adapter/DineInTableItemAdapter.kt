@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.data.entities.TbItem
 import com.android.pos.databinding.ViewDineInTableItemsBinding
+import com.android.pos.utils.LogUtil
 import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.callback.MyCallback
 
@@ -28,8 +29,8 @@ class DineInTableItemAdapter : RecyclerView.Adapter<DineInTableItemAdapter.MyVie
             if (item.discountPrice != 0.0) {
                 binding.tvDiscountRate.visibility = View.VISIBLE
                 binding.tvRate.paintFlags = binding.tvRate.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
-                Log.e(TAG, "PriceOriginalTotal  ${totalPrice(item)}")
-                Log.e(TAG, "PriceDiscounted  ${item.discountPrice}")
+                LogUtil.logE(TAG, "PriceOriginalTotal  ${totalPrice(item)}")
+                LogUtil.logE(TAG, "PriceDiscounted  ${item.discountPrice}")
                 val dPrice = totalPrice(item) - item.discountPrice
                 MethodUtils.setPriceTextView(binding.tvDiscountRate, dPrice)
             } else {

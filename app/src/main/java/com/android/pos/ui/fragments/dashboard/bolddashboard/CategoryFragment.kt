@@ -131,7 +131,8 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
 
                                 )
                                 categoryList1[i].inventoryLists?.forEach {
-                                    allItems.add(it)
+                                    if (it?.isDeleted == false)
+                                        allItems.add(it)
                                 }
                                 if ((tmpTabList.size == 8) or (tabList.size > 8 && tabList.size == categoryList1.size)) {
                                     var model = CategoryParentModel()
@@ -150,7 +151,7 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
                             categoryParentAdapter.addList(list)
 
                             categoryList1[0].inventoryLists?.filter {
-                                it!!.isHide
+                                it!!.isHide && !it.isDeleted
                             }?.let { it1 ->
                                 itemList1.addAll(it1)
                             }
@@ -162,7 +163,6 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
 
                             if (list.isNotEmpty()) {
                                 if (prefProvider.getValueInt(Constants.CAT_ID_SELECTED, 0) == 0) {
-                                    Log.e(TAG, "GOTZERO")
                                     itemAdapter.addList(itemList1)
                                     binding.rvCategoryParent.scrollToPosition(0)
 
@@ -194,24 +194,17 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
     private fun changePositionOfCate() {
         var tabPos = -1
         val tabList = categoryParentAdapter.getList()
-        Log.e(TAG, "tabListGET  ${Gson().toJson(tabList)}")
 
         var posParent = -1
 
-        Log.d(
-            TAG,
-            "changePositionOfCate: " + prefProvider.getValueInt(Constants.CAT_ID_SELECTED, 0)
-        )
         for (i in 0 until tabList.size) {
             posParent++
 
             tabList[i].list.forEachIndexed { index, it ->
 
                 if (it.id == prefProvider.getValueInt(Constants.CAT_ID_SELECTED, 0)) {
-                    Log.e(TAG, "indexCategory  ${index}")
                     it.isSelected = true
                     tabPos = index
-                    //prefProvider.setValueInt(Constants.CAT_ID_SELECTED, 0)
                     return@forEachIndexed
 
 
@@ -227,23 +220,20 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
             }
 
         }
-        Log.e(TAG, "selectedTabList  ${Gson().toJson(tabList)}")
         var itemList: ArrayList<TbItem?> = arrayListOf()
-        Log.e(TAG, "tabPosGET  ${tabPos}")
-        Log.e(TAG, "posParentGET  ${posParent}")
 
         var tempV = getTabPosByParent(posParent)
         tabPos += tempV
 
 
-            if(posParent != 0) {
-                binding.rvCategoryParent.smoothScrollToPosition(posParent)
-            }
+        if (posParent != 0) {
+            binding.rvCategoryParent.smoothScrollToPosition(posParent)
+        }
 
         if (tabPos != -1) {
             if (tabPos < categoryList1.size) {
                 categoryList1[tabPos].inventoryLists?.filter {
-                    it!!.isHide
+                    it!!.isHide && !it.isDeleted
                 }?.let { it1 ->
                     itemList.addAll(it1)
                 }
@@ -293,7 +283,6 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
     private fun resetTabbySearch(model: CategorySearchData) {
         var tabPos = -1
         val tabList = categoryParentAdapter.getList()
-        Log.e(TAG, "tabList  ${Gson().toJson(tabList)}")
 
         var posParent = -1
 
@@ -303,7 +292,6 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
             tabList[i].list.forEachIndexed { index, it ->
 
                 if (it.id == model.categoryID) {
-                    Log.e(TAG, "indexCategory  ${index}")
                     it.isSelected = true
                     prefProvider.setValueInt(Constants.CAT_ID_SELECTED, model.categoryID)
                     tabPos = index
@@ -323,27 +311,10 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
             }
 
         }
-        Log.d(TAG, "resetTabbySearch: " + Gson().toJson(tabList))
-//        categoryParentAdapter.addList(tabList.toCollection(arrayListOf()))
-//        categoryParentAdapter.notifyDataSetChanged()
 
-        var itemList: ArrayList<TbItem?> = arrayListOf()
-        Log.e(TAG, "tabPos  ${tabPos}")
-        Log.e(TAG, "posParent  ${posParent}")
-        var tabTempPos = getTabPosByParent(posParent)
-        Log.e(TAG, "tabTempPos  ${tabTempPos}")
+        val itemList: ArrayList<TbItem?> = arrayListOf()
+        val tabTempPos = getTabPosByParent(posParent)
         tabPos += tabTempPos
-        /* if (posParent == 1) {
-             tabPos += 8
-         } else if (posParent == 2) {
-             tabPos += 16
-         } else if (posParent == 3) {
-             tabPos += 24
-         } else if (posParent == 4) {
-             tabPos += 32
-         } else if (posParent == 5) {
-             tabPos += 40
-         }*/
 
         binding.rvCategoryParent.smoothScrollToPosition(posParent)
         if (tabPos != -1) {
@@ -407,29 +378,14 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
 
                 val bindingAdapterPos =
                     (recyclerView.layoutManager as LinearLayoutManager).findFirstVisibleItemPosition()
-                Log.e(TAG, "bindingAdapterPosbindingAdapterPos  ${bindingAdapterPos}")
 
                 categoryParentAdapter.list.forEachIndexed { index1, it ->
                     it.list.forEachIndexed { index, categoryTabModel ->
-                        Log.e(TAG, "categoryId ${categoryTabModel.id}")
-                        Log.e(
-                            TAG,
-                            "selectedLastID ${
-                                prefProvider.getValueInt(
-                                    Constants.CAT_ID_SELECTED,
-                                    0
-                                )
-                            }"
+
+                        categoryTabModel.isSelected = categoryTabModel.id == prefProvider.getValueInt(
+                            Constants.CAT_ID_SELECTED,
+                            0
                         )
-                        if (categoryTabModel.id == prefProvider.getValueInt(
-                                Constants.CAT_ID_SELECTED,
-                                0
-                            )
-                        ) {
-                            categoryTabModel.isSelected = true
-                        } else {
-                            categoryTabModel.isSelected = false
-                        }
                     }
                 }
                 categoryParentAdapter.notifyDataSetChanged()
@@ -465,11 +421,9 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
     }
 
     override fun onCategorySelected(parentPosition: Int, childPosition: Int) {
-        Log.e(TAG, "parentPosition  ${parentPosition} childPosition ${childPosition}")
 
         val categoryId =
             categoryParentAdapter.getList()[parentPosition].list[childPosition].id
-        Log.e(TAG, "categoryId  ${categoryId}")
 
         prefProvider.setValueInt(Constants.CAT_ID_SELECTED, categoryId)
 
@@ -477,14 +431,12 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
 
             if (it.status == Status.SUCCESS) {
                 if (it.data != null && it.data.isNotEmpty()) {
-                    Log.e(TAG, "CategorySelectedata")
                     itemAdapter.setPos(-2)
                     it.data.filter {
                         it.isHide
                     }.let { it1 ->
                         edtSearch?.text?.clear()
                         if (prefProvider.getValueInt(Constants.CAT_ID_SELECTED, 0) == 0) {
-                            Log.e(TAG, "GOTZERO")
                             itemAdapter.addList(it.data.toCollection(arrayListOf()))
                             binding.rvCategoryParent.scrollToPosition(0)
 
@@ -507,7 +459,6 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
 
 
     override fun onPositionChanged(position: Int) {
-        Log.e(TAG, "onPOSChanged ${position}")
     }
 
     override fun onTabSelected(pos: Int) {

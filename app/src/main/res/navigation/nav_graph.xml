@@ -1084,7 +1084,7 @@
 
     <dialog
         android:id="@+id/editVariationDialog"
-        android:name="com.android.pos.ui.dialog.EditVariationDialog"
+        android:name="com.android.pos.ui.diaLogUtil.logEditVariationDialog"
         android:label="EditVariationDialog">
 
     </dialog>

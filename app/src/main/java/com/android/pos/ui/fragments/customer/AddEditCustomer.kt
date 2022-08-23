@@ -27,6 +27,7 @@ import com.android.pos.data.model.requestModel.CreateCustomerRequestModel
 import com.android.pos.databinding.FragmentAddEditCustomerBinding
 import com.android.pos.ui.adapter.AddressListAdapter
 import com.android.pos.utils.AlertUtils
+import com.android.pos.utils.LogUtil
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.extensions.liveSnackBar
 import com.google.android.material.snackbar.Snackbar
@@ -107,9 +108,9 @@ class AddEditCustomer : Fragment() {
     private fun setAddress() {
 
         adapter = AddressListAdapter(refreshCallBack = { adapterPos ->
-            Log.e(TAG, "callback")
+            LogUtil.logE(TAG, "callback")
             if (::adapter.isInitialized) {
-                Log.e(TAG, "notify list")
+                LogUtil.logE(TAG, "notify list")
                 activity?.runOnUiThread {
                     adapter.notifyItemChanged(adapterPos)
                 }
@@ -142,7 +143,7 @@ class AddEditCustomer : Fragment() {
         onClick()
         setPlaceApi()
         isEdit = requireArguments().getBoolean("isEdit", false)
-        Log.e(TAG, "isEdit  $isEdit")
+        LogUtil.logE(TAG, "isEdit  $isEdit")
 
         binding.chkIsLoyalty.setOnClickListener {
             viewModel.enroll_to_loyalty.value = binding.chkIsLoyalty.isChecked
@@ -176,9 +177,9 @@ class AddEditCustomer : Fragment() {
             }
 
 
-            /*Log.e(TAG, "Date  ${getDay(editModel?.birth_date!!)}")
-            Log.e(TAG, "Month  ${getMonth(editModel?.birth_date!!)}")
-            Log.e(TAG, "Year  ${getYear(editModel?.birth_date!!)}")*/
+            /*LogUtil.logE(TAG, "Date  ${getDay(editModel?.birth_date!!)}")
+            LogUtil.logE(TAG, "Month  ${getMonth(editModel?.birth_date!!)}")
+            LogUtil.logE(TAG, "Year  ${getYear(editModel?.birth_date!!)}")*/
             viewModel.addCustomerDetails.value?.data?.birth_day =
                 if (editModel?.birth_date?.isNotEmpty() == true) {
                     editModel?.birth_date?.let {
@@ -276,7 +277,7 @@ class AddEditCustomer : Fragment() {
         }
 
         binding.edtBirthDay.setOnClickListener {
-            Log.e(TAG, "DatePicker  ")
+            LogUtil.logE(TAG, "DatePicker  ")
             showDatePicker()
 
         }
@@ -354,14 +355,14 @@ class AddEditCustomer : Fragment() {
                             binding.edtZip?.setText(zip)
                             binding.edtStreet?.dismissDropDown()
                         } catch (e: Exception) {
-                            Log.e(TAG, "exception in pplaces api")
+                            LogUtil.logE(TAG, "exception in pplaces api")
                         } finally {
                             binding.edtStreet?.dismissDropDown()
-                            Log.e(TAG, "notify callback")
+                            LogUtil.logE(TAG, "notify callback")
                         }
                     }
 
-                    Log.e(TAG, "placeDetails:  ${Gson().toJson(placeDetails.name)}")
+                    LogUtil.logE(TAG, "placeDetails:  ${Gson().toJson(placeDetails.name)}")
 
                 }
 
@@ -429,14 +430,14 @@ class AddEditCustomer : Fragment() {
                             binding.edtZipDel?.setText(zip)
                             binding.edtStreetDel?.dismissDropDown()
                         } catch (e: Exception) {
-                            Log.e(TAG, "exception in pplaces api")
+                            LogUtil.logE(TAG, "exception in pplaces api")
                         } finally {
                             binding.edtStreetDel?.dismissDropDown()
-                            Log.e(TAG, "notify callback")
+                            LogUtil.logE(TAG, "notify callback")
                         }
                     }
 
-                    Log.e(TAG, "placeDetails:  ${Gson().toJson(placeDetails.name)}")
+                    LogUtil.logE(TAG, "placeDetails:  ${Gson().toJson(placeDetails.name)}")
 
                 }
 
@@ -636,12 +637,12 @@ class AddEditCustomer : Fragment() {
             )
         datePicker.datePicker.maxDate = System.currentTimeMillis()
         datePicker.show()
-        Log.e(TAG, "DatePickerInside  ")
+        LogUtil.logE(TAG, "DatePickerInside  ")
     }
 
     private fun navigate() {
 
-        Log.e(TAG, "POPBACKCUSTOMER")
+        LogUtil.logE(TAG, "POPBACKCUSTOMER")
         viewModel._Basedata.observe(viewLifecycleOwner, { event ->
             event.getContentIfNotHandled()?.let { baseResponse ->
                 activity?.let {

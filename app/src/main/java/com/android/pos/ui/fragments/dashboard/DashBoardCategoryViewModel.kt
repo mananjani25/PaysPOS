@@ -46,6 +46,7 @@ import com.android.pos.data.remote.Constants.REPORT_START_TIME
 import com.android.pos.data.remote.Constants.SERVICECHARGE_DINEIN_ORDER
 import com.android.pos.data.remote.Constants.SERVICECHARGE_TAKEOUT_OPENORDER
 import com.android.pos.data.remote.Constants.SYSTEM_TIMEZONE
+import com.android.pos.data.remote.Constants.TERMINAL_ID
 import com.android.pos.data.remote.Constants.UPDATE
 import com.android.pos.data.remote.Constants.VENUE_LOGO
 import com.android.pos.data.remote.NetworkConnectionInterceptor
@@ -54,10 +55,7 @@ import com.android.pos.data.repositories.TaxServiceChargeRepository
 import com.android.pos.data.repositories.TipDiscountRepository
 import com.android.pos.di.PrefProvider
 import com.android.pos.di.RolePermission
-import com.android.pos.utils.Event
-import com.android.pos.utils.MethodUtils
-import com.android.pos.utils.Pref
-import com.android.pos.utils.TimeFormatUtils
+import com.android.pos.utils.*
 import com.android.pos.utils.statusUtils.Resource
 import com.android.pos.utils.statusUtils.Status
 import com.google.gson.Gson
@@ -291,7 +289,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
             if (isOrderUpdate) {
                 it.forEach {
-                    Log.e(TAG, "orderItemId  ${it.orderItemId}")
+                    LogUtil.logE(TAG, "orderItemId  ${it.orderItemId}")
                     if (it.orderItemId != null && it.isDestroy == true) {
                         combinedItems.add(it)
                     }
@@ -308,7 +306,7 @@ class DashBoardCategoryViewModel @Inject constructor(
     }
 
     fun addDineInRemovedItems(cartModel: CartModel): CartModel {
-        Log.e(TAG, "removeItemDineInList  ${Gson().toJson(removeItemDineInList)}")
+        LogUtil.logE(TAG, "removeItemDineInList  ${Gson().toJson(removeItemDineInList)}")
         val items = arrayListOf<TbItem>()
         cartModel.items.let { it?.let { it1 -> items.addAll(it1) } }
         items.addAll(removeItemDineInList)
@@ -858,11 +856,11 @@ class DashBoardCategoryViewModel @Inject constructor(
                                                 it.itemQuantity = model.itemQuantity
                                             }
 
-                                            Log.e(
+                                            LogUtil.logE(
                                                 TAG,
                                                 "modelmodifiers:  ${Gson().toJson(model.modifiers)}"
                                             )
-                                            Log.e(
+                                            LogUtil.logE(
                                                 TAG,
                                                 "itemModifierIds:  ${Gson().toJson(item.modifiers)}"
                                             )
@@ -874,7 +872,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                                     }
                                                 }
                                             }
-                                            Log.e(
+                                            LogUtil.logE(
                                                 TAG,
                                                 "passmodifiers  ${Gson().toJson(item.modifiers)}"
                                             )
@@ -957,17 +955,17 @@ class DashBoardCategoryViewModel @Inject constructor(
 //                        }
 
 
-                        Log.e(TAG, "DeleteIndex  ${index}")
+                        LogUtil.logE(TAG, "DeleteIndex  ${index}")
                         if (index != -1) {
                             val model = cartList[0].items?.get(index)
-                            Log.e(TAG, "getItem  ${Gson().toJson(cartList[0].items?.get(index))}")
+                            LogUtil.logE(TAG, "getItem  ${Gson().toJson(cartList[0].items?.get(index))}")
                             if (model != null) {
                                 //delete from cart
                                 if (item?.isEdited == true) {
                                     model.isEdited = item.isEdited
                                     model.isDestroy = true
                                 } else {
-                                    Log.e(TAG, "listRemoveItem")
+                                    LogUtil.logE(TAG, "listRemoveItem")
                                     list.remove(model)
                                 }
                             }
@@ -1000,7 +998,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                         deleteCart()
                     } else {
 
-                        Log.e(TAG, "AddedListNull")
+                        LogUtil.logE(TAG, "AddedListNull")
                         var cartModel = cartList?.get(0)
                         cartModel = taxBifurcationCalculation(item!!, cartModel!!, type, false)
                         if (item != null)
@@ -1174,10 +1172,10 @@ class DashBoardCategoryViewModel @Inject constructor(
                     deleteCart()
                 } else {
 
-                    Log.e(TAG, "AddedListNull")
+                    LogUtil.logE(TAG, "AddedListNull")
                     val cartModel = cartList?.get(0)
                     cartModel?.items = listOf(item!!)
-                    Log.e(TAG, "cartModel:  ${Gson().toJson(cartModel)}")
+                    LogUtil.logE(TAG, "cartModel:  ${Gson().toJson(cartModel)}")
                     if (cartModel != null) {
 
                         addCart(cartModel)
@@ -1284,7 +1282,7 @@ class DashBoardCategoryViewModel @Inject constructor(
         context: Context
     ) {
 
-        Log.e("itemCalculation", "------------------>")
+        LogUtil.logE("itemCalculation", "------------------>")
 
         var totalAmmount = 0.0
         nonCashAdj = 0.0
@@ -1379,7 +1377,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                         totalDiscount += (it.discountPrice * it.itemQuantity)
                     }
 
-                    Log.e("totalDiscount", totalDiscount.toString())
+                    LogUtil.logE("totalDiscount", totalDiscount.toString())
 
                     totalPrice = (subTotalPrice + totalTax + totalServiceCharge)
                     cashDiscountType = prefProvider.getValue(Constants.OPTION_TYPE, "")
@@ -1412,7 +1410,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                     } else {
                         cashdiscountAmount = 0.0
                     }
-                    Log.e("amountToBePaid", "" + amountToBePaid)
+                    LogUtil.logE("amountToBePaid", "" + amountToBePaid)
                 } else {
 
                     nonCashAdj = 0.0
@@ -1428,7 +1426,7 @@ class DashBoardCategoryViewModel @Inject constructor(
         }
         //totalAmmount = totalPrice-cartList[0].discountPrice
 
-        Log.e("itemCalculation 1", "------------------>")
+        LogUtil.logE("itemCalculation 1", "------------------>")
     }
 
     @SuppressLint("SetTextI18n")
@@ -1448,8 +1446,8 @@ class DashBoardCategoryViewModel @Inject constructor(
         totalServiceCharge = 0.0
         var amountToBePaid = 0.0
         if (cartModel.orderType == DINE_IN) {
-            Log.e("TOCHE", "discountPriceDineIn  ${cartModel.discountPrice}")
-            Log.e("TOCHE", "discountPriceDineIn  ${totalDiscount}")
+            LogUtil.logE("TOCHE", "discountPriceDineIn  ${cartModel.discountPrice}")
+            LogUtil.logE("TOCHE", "discountPriceDineIn  ${totalDiscount}")
 
             var dineInItems = 0
 
@@ -1500,9 +1498,9 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                 }
             }
-            Log.e("AjjeDine", "totalDis ${totalDis}")
-            Log.e("AjjeDine", "totalDineItemDis ${totalDineItemDis}")
-            Log.e("AjjeDine", "totalDiscount ${totalDiscount}")
+            LogUtil.logE("AjjeDine", "totalDis ${totalDis}")
+            LogUtil.logE("AjjeDine", "totalDineItemDis ${totalDineItemDis}")
+            LogUtil.logE("AjjeDine", "totalDiscount ${totalDiscount}")
 
 
             var finalTotal = 0.0
@@ -1607,10 +1605,10 @@ class DashBoardCategoryViewModel @Inject constructor(
                         cashdiscountAmount = 0.0
                     }
 
-                    Log.e("amountToBePaid", "" + totalPrice)
+                    LogUtil.logE("amountToBePaid", "" + totalPrice)
 
                 } else {
-                    Log.e(TAG, "openOrderUpdate ${cartModel.discountPrice}")
+                    LogUtil.logE(TAG, "openOrderUpdate ${cartModel.discountPrice}")
 
                     nonCashAdj = 0.0
                     totalPrice = 0.0
@@ -1650,8 +1648,8 @@ class DashBoardCategoryViewModel @Inject constructor(
 
 
                     order_note = cartModel.note
-                    Log.e("OpenOrderCh", "cartDiscount  ${cartModel.discountPrice}")
-                    Log.e("OpenOrderCh", "totalDiscounts  ${totalDiscount}")
+                    LogUtil.logE("OpenOrderCh", "cartDiscount  ${cartModel.discountPrice}")
+                    LogUtil.logE("OpenOrderCh", "totalDiscounts  ${totalDiscount}")
 
                     var finalTotal = 0.0
                     finalTotal = (subTotalPrice + totalTax + totalServiceCharge)
@@ -1688,7 +1686,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                         cashdiscountAmount = 0.0
                     }
 
-                    Log.e("amountToBePaid", "" + totalPrice)
+                    LogUtil.logE("amountToBePaid", "" + totalPrice)
                 }
 
 
@@ -1720,7 +1718,7 @@ class DashBoardCategoryViewModel @Inject constructor(
         txtTotalAmount: AppCompatTextView
     ) {
 
-        Log.e("Loyalty", "checkAppliedLoyaltyProgram..")
+        LogUtil.logE("Loyalty", "checkAppliedLoyaltyProgram..")
         redeemLoyaltyInfo.total = total
         val availablePoints = customer?.final_reward ?: 0
 
@@ -1762,7 +1760,7 @@ class DashBoardCategoryViewModel @Inject constructor(
             redeemLoyaltyInfo.usedLoyaltyAmount = 0.0
             //redeemLoyaltyInfo.isLoyaltyApplied = false
         }
-        Log.e("Loyalty", "txtTotalAmount : ${redeemLoyaltyInfo.getAmountToBePaid()}")
+        LogUtil.logE("Loyalty", "txtTotalAmount : ${redeemLoyaltyInfo.getAmountToBePaid()}")
         redeemLoyaltyInfo.getAmountToBePaid()?.let {
             MethodUtils.setPriceTextView(
                 txtTotalAmount,
@@ -1807,7 +1805,7 @@ class DashBoardCategoryViewModel @Inject constructor(
     private fun calculateDineInServiceCharge(cartModel: CartModel) {
         var guestCount = cartModel.dineInList?.size?.minus(1)
         if (serviceChargesList.isNotEmpty() && serviceChargesList != null) {
-            Log.e(TAG, "dashboardserviceChargesList:  ${Gson().toJson(serviceChargesList)}")
+            LogUtil.logE(TAG, "dashboardserviceChargesList:  ${Gson().toJson(serviceChargesList)}")
             if (prefProvider.getValueboolean(SERVICECHARGE_DINEIN_ORDER, false)) {
                 var isApplied = false
                 serviceChargesList.forEach {
@@ -1879,7 +1877,7 @@ class DashBoardCategoryViewModel @Inject constructor(
             } else {
                 val itemTaxPrice =
                     (itemtype.rate * totalPrice) / 100
-                Log.e("itemTaxPrice", "" + itemTaxPrice)
+                LogUtil.logE("itemTaxPrice", "" + itemTaxPrice)
                 String.format("%.2f", itemTaxPrice)
                     .toDouble()
             }
@@ -2093,7 +2091,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                     } else {
                         val itemTaxPrice =
                             (tax.rate * totalPrice) / 100
-                        Log.e("itemTaxPrice", "" + itemTaxPrice)
+                        LogUtil.logE("itemTaxPrice", "" + itemTaxPrice)
                         String.format("%.2f", itemTaxPrice)
                             .toDouble()
                     }
@@ -2330,7 +2328,7 @@ class DashBoardCategoryViewModel @Inject constructor(
         val reqLent = 12 - ss.length
         val Alphabet = getSaltString(reqLent)
         val timeStampFinal = Alphabet + ss
-        Log.e("timeStampFinal", timeStampFinal)
+        LogUtil.logE("timeStampFinal", timeStampFinal)
 
         return timeStampFinal
     }
@@ -2592,7 +2590,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                 orderItemsAttribute.isCount = 0
                 orderItemsAttribute.isEdited = item.isEdited
                 orderItemsAttribute.isDestroy = item.isDestroy
-                Log.e(TAG, "Passes: ${item.isDestroy}")
+                LogUtil.logE(TAG, "Passes: ${item.isDestroy}")
                 orderItemsAttribute.isPaid = item.isPaid
                 orderItemsAttribute.isPrinted = true
                 orderItemsAttribute.isTaxRemoved = false
@@ -2607,16 +2605,16 @@ class DashBoardCategoryViewModel @Inject constructor(
                 orderItemsAttribute.isFired = cartModel.isFired
 
 
-                Log.e(TAG, "TimeStampMo: ${item.timeStamp}")
+                LogUtil.logE(TAG, "TimeStampMo: ${item.timeStamp}")
                 if (item.timeStamp == null || item.timeStamp?.lowercase() == "null".lowercase()) {
                     orderItemsAttribute.timestamp = randomOfflineId()
-                    Log.e(TAG, "Timetimestamp  ${orderItemsAttribute.timestamp}")
+                    LogUtil.logE(TAG, "Timetimestamp  ${orderItemsAttribute.timestamp}")
                 } else {
                     orderItemsAttribute.timestamp = item.timeStamp.toString()
                 }
                 orderItemsAttribute.totalPrice =
                     MethodUtils.roundOffAmountDouble(item.price * item.itemQuantity)
-                Log.e(TAG, "orderId:  ${cartModel.orderId}")
+                LogUtil.logE(TAG, "orderId:  ${cartModel.orderId}")
                 orderItemsAttribute.orderItemTaxesAttributes =
                     orderItemTaxesAttributes(item, orderId = cartModel.orderId)
 
@@ -2636,7 +2634,7 @@ class DashBoardCategoryViewModel @Inject constructor(
             }
         }
 
-        Log.e("removeItemDine", "removeItemDineInList  ${removeItemDineInList.size}")
+        LogUtil.logE("removeItemDine", "removeItemDineInList  ${removeItemDineInList.size}")
         if (removeItemDineInList.isNotEmpty()) {
             orderItemsAttributeList = addDestroyedItemsinDinein(orderItemsAttributeList)
         }
@@ -2772,7 +2770,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                     orderModifierTaxesAttribute.tax_id = tax?.taxId
                     orderModifierTaxesAttribute.id = tax?.id
 
-                    Log.e(TAG, "IDTax:  ${tax?.id}")
+                    LogUtil.logE(TAG, "IDTax:  ${tax?.id}")
                 }
             } else {
                 orderModifierTaxesAttribute.tax_id = tax?.id
@@ -2936,7 +2934,7 @@ class DashBoardCategoryViewModel @Inject constructor(
     fun updateOrder(cartModel: CartModel): OrderRequestModel {
         val orderModel: OrderAttributeRequestModel = OrderAttributeRequestModel()
         var ttotalDiscount = totalDiscount
-        Log.e(TAG, "getCartmodelId  ${cartModel.orderId}")
+        LogUtil.logE(TAG, "getCartmodelId  ${cartModel.orderId}")
         orderModel.apply {
             date = TimeFormatUtils.getCurrentDate()
             id = if (cartModel.orderId != null && cartModel.orderId != 0) {
@@ -3019,7 +3017,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
         val orderItemsAttributeList: ArrayList<OrderItemsAttribute> =
             arrayListOf()
-        Log.e(TAG, "insideSize  ${cartModel.items?.size}")
+        LogUtil.logE(TAG, "insideSize  ${cartModel.items?.size}")
 
         cartModel.items?.forEach { item ->
 
@@ -3075,7 +3073,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
             orderItemsAttributeList.add(orderItemsAttribute)
         }
-        Log.e(TAG, "orderItemsAttributeList:  ${Gson().toJson(orderItemsAttributeList)}")
+        LogUtil.logE(TAG, "orderItemsAttributeList:  ${Gson().toJson(orderItemsAttributeList)}")
         return orderItemsAttributeList
     }
 
@@ -3114,12 +3112,13 @@ class DashBoardCategoryViewModel @Inject constructor(
     fun syncInventoryModule() {
         _showProgress.value = Event(true)
         viewModelScope.launch {
-            val resource = posRepository.syncInventory()
+            val resource = posRepository.syncInventory(prefProvider.getValueInt(TERMINAL_ID,-1))
             when (resource.status) {
                 Status.SUCCESS -> {
 
                     resource.data.let { response ->
                         if (response?.status == 200) {
+                            _showProgress.value = Event(false)
                             posRepository.saveDatabase(response)
 
 
@@ -3127,7 +3126,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                             _tableStatus.value = response?.let { Event(it.message) }
                         }
 
-                        syncSettingModule()
+//                        syncSettingModule()
 
                     }
                 }
@@ -3156,7 +3155,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                         if (venueDetailsResponse?.status == 200) {
 
                             resource.data?.let {
-                                Log.e(TAG, "FullData  ${Gson().toJson(it)}")
+                                LogUtil.logE(TAG, "FullData  ${Gson().toJson(it)}")
 
 
                                 try {
@@ -3474,12 +3473,12 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     fun setPosition(position: Int) {
         mPosition = position
-        Log.e(TAG, "mSelectedPosition$mPosition")
+        LogUtil.logE(TAG, "mSelectedPosition$mPosition")
     }
 
 
     fun createCart(cartList: ArrayList<CartModel>): ArrayList<CartModel> {
-        Log.e(TAG, "CreateCartEmpId  ${prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)}")
+        LogUtil.logE(TAG, "CreateCartEmpId  ${prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)}")
         if (cartList.isEmpty()) {
             val model = CartModel()
             model.employeeID =
@@ -3496,7 +3495,7 @@ class DashBoardCategoryViewModel @Inject constructor(
             }
             model.items = null
             cartList.add(0, model)
-            Log.e(TAG, "CartIsEmpty::")
+            LogUtil.logE(TAG, "CartIsEmpty::")
             return cartList
         }
 
@@ -3602,7 +3601,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
 
             } else {
-                Log.e(TAG, "NotDineInGuest")
+                LogUtil.logE(TAG, "NotDineInGuest")
                 subTotalPrice = model.subTotal
                 totalTax = model.tax
                 totalServiceCharge = model.serviceCharge
@@ -3651,7 +3650,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                 amountToBePaid = finalTotal
                 totalPrice = finalTotal
 
-                Log.e(TAG, "newDAstotalPrice  ${totalPrice}")
+                LogUtil.logE(TAG, "newDAstotalPrice  ${totalPrice}")
                 if (selectedCustomer == null) {
                     totalPrice = amountToBePaid
                     /* MethodUtils.setPriceTextView(
@@ -3760,7 +3759,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                     cashdiscountAmount = 0.0
                 }
 
-                Log.e("amountToBePaid", "" + totalPrice)
+                LogUtil.logE("amountToBePaid", "" + totalPrice)
             } else {
 
                 nonCashAdj = 0.0

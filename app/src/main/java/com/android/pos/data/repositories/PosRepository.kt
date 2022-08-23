@@ -17,6 +17,7 @@ import com.android.pos.data.remote.ApiHelper
 import com.android.pos.data.remote.Constants.DINE_IN
 import com.android.pos.data.remote.Constants.TERMINAL_ID
 import com.android.pos.di.PrefProvider
+import com.android.pos.utils.LogUtil
 import com.android.pos.utils.performGetOperation
 import com.android.pos.utils.performGetOperationDatabase
 import com.android.pos.utils.performGetOperationNew
@@ -46,8 +47,8 @@ class PosRepository @Inject constructor(
     fun getKitchenReceiptSettings() = appDatabase.kitchenSettingsDao().getKitchenSettings
     fun getTipsList() = appDatabase.tipDao().allTips
 
-    fun syncVenueData() =
-        performGetOperationNew(networkCall = { apiHelperNew.syncVenueData() })
+//    fun syncVenueData() =
+//        performGetOperationNew(networkCall = { apiHelperNew.syncVenueData() })
 
     suspend fun deleteKitchenPrinter(id: Int) =
         appDatabase.printerDao().deleteKitchenPrinterById(id)
@@ -132,7 +133,7 @@ class PosRepository @Inject constructor(
 
     suspend fun getOnlineOrderNotificationCount() = apiHelperNew.getOnlineOrderCountNoti()
 
-    suspend fun syncInventory() = apiHelperNew.syncVenueData()
+    suspend fun syncInventory(terminalId: Int) = apiHelperNew.syncVenueData(terminalId)
 
 
     suspend fun updateTransactionLockScreen(lock_screen_after_each_transaction: Boolean) =
@@ -144,11 +145,11 @@ class PosRepository @Inject constructor(
 
     suspend fun saveDatabase(response: VenueDataResponse) {
         appDatabase.customerDao().deleteCustomerTb()
-        appDatabase.categoryDao().delete()
-        appDatabase.itemDao().delete()
-        appDatabase.modifierSetDao().delete()
-        appDatabase.itemModifierSetsDao().delete()
-        appDatabase.optionSetDao().delete()
+//        appDatabase.categoryDao().delete()
+//        appDatabase.itemDao().delete()
+//        appDatabase.modifierSetDao().delete()
+//        appDatabase.itemModifierSetsDao().delete()
+//        appDatabase.optionSetDao().delete()
 
         val mData = response.data
         val mCategory = mData.categories
@@ -158,8 +159,6 @@ class PosRepository @Inject constructor(
         val itemModifierSetList = ArrayList<ItemModifierSets>()
         mCategory.forEach { category ->
             val model = TbCategory().apply {
-
-
                 createdAt = ""
                 id = category.id
                 active = category.active
@@ -170,6 +169,7 @@ class PosRepository @Inject constructor(
                 item_ids = category.itemIds
                 thumbImgUrl = category.thumbImgUrl
                 originalImgUrl = category.originalImgUrl
+                isDeleted = category.isDeleted
             }
             categoryModelList.add(model)
 
@@ -184,6 +184,7 @@ class PosRepository @Inject constructor(
                         modifierSetId = modifierSets.id!!
                         minRequired = modifierSets.min_required
                         maxAllowed = modifierSets.max_allowed
+                        isDeleted  = modifierSets.isDeleted
                     }
 
                     itemModifierSetList.add(itemModifierSets)
@@ -953,7 +954,7 @@ class PosRepository @Inject constructor(
 
     suspend fun clearTable() {
 
-        Log.e("clear Db Table", "-------")
+        LogUtil.logE("clear Db Table", "-------")
         appDatabase.categoryDao().delete1()
         appDatabase.itemDao().delete()
         appDatabase.taxDao().delete()

@@ -12,6 +12,7 @@ import com.android.pos.data.model.responseModel.GetEmployeesTimeSheetResponse
 import com.android.pos.data.repositories.PosRepository
 import com.android.pos.data.repositories.TaxServiceChargeRepository
 import com.android.pos.utils.Event
+import com.android.pos.utils.LogUtil
 import com.android.pos.utils.statusUtils.Resource
 import com.android.pos.utils.statusUtils.Status
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -192,8 +193,8 @@ class TeamMemberSheetViewModel @Inject constructor(
         _showProgress.value = Event(true)
         viewModelScope.launch {
 
-            Log.e("startDate", startDate.value ?: "")
-            Log.e("endDate", endDate.value ?: "")
+            LogUtil.logE("startDate", startDate.value ?: "")
+            LogUtil.logE("endDate", endDate.value ?: "")
             var resource: Resource<BaseResponse>?= null
             if (teamId.isNotEmpty()) {
                 resource =

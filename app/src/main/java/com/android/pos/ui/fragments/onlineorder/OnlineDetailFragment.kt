@@ -170,7 +170,7 @@ class OnlineDetailFragment(
                         ProgressUtils.dismissProgressDialog()
                         getOnlineOrders()
                         resource.data?.let {
-                            Log.e(TAG, "getREsponseForOnline  ${Gson().toJson(it)}")
+                            LogUtil.logE(TAG, "getREsponseForOnline  ${Gson().toJson(it)}")
                             if (it.data.orderItems.isNotEmpty()) {
                                 getKitchenPrinters(it)
                             }
@@ -236,7 +236,7 @@ class OnlineDetailFragment(
                                 val data = it.data
 
                                 adapter.add(data)
-                                Log.e("DATA", data.size.toString())
+                                LogUtil.logE("DATA", data.size.toString())
 
                             } else {
                                 binding.llNoData.visibility = View.VISIBLE
@@ -374,7 +374,7 @@ class OnlineDetailFragment(
         val reqLent = 12 - ss.length
         val Alphabet = getSaltString(reqLent)
         val timeStampFinal = Alphabet + ss
-        Log.e("timeStampFinal", timeStampFinal)
+        LogUtil.logE("timeStampFinal", timeStampFinal)
 
         return timeStampFinal
     }
@@ -743,7 +743,7 @@ class OnlineDetailFragment(
 
                 } catch (e: Exception) {
                     //  printerDialog.dismiss()
-                    Log.e(TAG, "PrinterException: " + e.message)
+                    LogUtil.logE(TAG, "PrinterException: " + e.message)
                     printer = null
                     return
                 }
@@ -757,7 +757,7 @@ class OnlineDetailFragment(
                 }
 
             } else {
-                Log.e(TAG, "PrinterIsNotNull:")
+                LogUtil.logE(TAG, "PrinterIsNotNull:")
             }
         }
 
@@ -837,7 +837,7 @@ class OnlineDetailFragment(
                 }
                 var tmps = "Open Order".toString().trim()
                     .toString().lowercase()
-                Log.e(TAG, "LowerCAse ${tmps.trimmedLength()}")
+                LogUtil.logE(TAG, "LowerCAse ${tmps.trimmedLength()}")
 
 
                 if (kitchenSettingModel.showTeamMember) {
@@ -1381,7 +1381,7 @@ class OnlineDetailFragment(
 //                printerDialog.dismiss()
             PrinterClass.closePrinter()
             e.printStackTrace()
-            Log.e(TAG, "PrinterError: " + e.localizedMessage)
+            LogUtil.logE(TAG, "PrinterError: " + e.localizedMessage)
         }
 
 
@@ -1527,7 +1527,7 @@ class OnlineDetailFragment(
     ) {
         if (SunmiPrintHelper.getInstance().sunmiPrinter == SunmiPrintHelper.FoundSunmiPrinter) {
 
-            Log.e("SunmiPrintHelper", "FoundSunmiPrinter")
+            LogUtil.logE("SunmiPrintHelper", "FoundSunmiPrinter")
 
             if (!BluetoothUtil.isBlueToothPrinter) {
 
@@ -1539,12 +1539,12 @@ class OnlineDetailFragment(
             Handler(Looper.getMainLooper()).postDelayed({
                 setService(data, type, orderData)
             }, 2000)
-            Log.e("SunmiPrintHelper", "CheckSunmiPrinter")
+            LogUtil.logE("SunmiPrintHelper", "CheckSunmiPrinter")
         } else if (SunmiPrintHelper.getInstance().sunmiPrinter == SunmiPrintHelper.LostSunmiPrinter) {
 
-            Log.e("SunmiPrintHelper", "LostSunmiPrinter")
+            LogUtil.logE("SunmiPrintHelper", "LostSunmiPrinter")
         } else {
-            Log.e("SunmiPrintHelper", "ELSE")
+            LogUtil.logE("SunmiPrintHelper", "ELSE")
         }
     }
 

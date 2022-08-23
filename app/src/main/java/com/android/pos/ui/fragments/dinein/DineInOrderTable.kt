@@ -209,7 +209,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                             false
                         )
                     ) {
-                        Log.e(TAG, "getServiceCharge:  ${Gson().toJson(it.data)}")
+                        LogUtil.logE(TAG, "getServiceCharge:  ${Gson().toJson(it.data)}")
                         serviceChargeList = arrayListOf()
                         it.data.forEach { service ->
                             if (service.order_type == Constants.SERVICECHARGE_DINEIN_ORDER) {
@@ -344,18 +344,18 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     }
                 }
             }
-            Log.e(TAG, "listWTItems ${Gson().toJson(listWT)}")
+            LogUtil.logE(TAG, "listWTItems ${Gson().toJson(listWT)}")
 
             var dividedOrderDiscount = 0.0
             totalGuestCount = getOrderDetailsResponse?.guestAttributes?.size!! - 1
             var tmpOrderDis = 0.0
             if (paidGuestAmount > 0 && globalOrderDiscount > 0.0) {
-                Log.e("globalOrderDiscount", "globalOrderDiscount  ${globalOrderDiscount}")
+                LogUtil.logE("globalOrderDiscount", "globalOrderDiscount  ${globalOrderDiscount}")
                 var eachGuestDiscount =
                     MethodUtils.roundOffAmountDouble(globalOrderDiscount / (getOrderDetailsResponse?.guestAttributes?.size!! - 1))
 
                 dividedOrderDiscount = globalOrderDiscount - (eachGuestDiscount * paidGuestAmount)
-                Log.e(TAG,"DividedOrwrs ${dividedOrderDiscount}")
+                LogUtil.logE(TAG,"DividedOrwrs ${dividedOrderDiscount}")
 
                 tmpOrderDis  = globalOrderDiscount - (eachGuestDiscount * paidGuestAmount)
 
@@ -370,15 +370,15 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 totalDiscount -= wholeDisDivide
 
                 subTotalDInin -= tmpOrderDis
-                Log.e("dividedOrderDiscount", "dividedOrderDiscount  ${dividedOrderDiscount}")
-                Log.e("WRqwrfarf", "wholeDisDivide  ${wholeDisDivide}")
-                Log.e(TAG, "subtotal :: " + subTotalDInin)
+                LogUtil.logE("dividedOrderDiscount", "dividedOrderDiscount  ${dividedOrderDiscount}")
+                LogUtil.logE("WRqwrfarf", "wholeDisDivide  ${wholeDisDivide}")
+                LogUtil.logE(TAG, "subtotal :: " + subTotalDInin)
             }
 
-            Log.e("WholeTableDis", "wholeDis  ${wholeTableDiscount}")
+            LogUtil.logE("WholeTableDis", "wholeDis  ${wholeTableDiscount}")
 
 
-            Log.e("totalDiscount", "totalDiscount  ${totalDiscount}")
+            LogUtil.logE("totalDiscount", "totalDiscount  ${totalDiscount}")
             if (totalDiscount > tmpOrderDis) {
                 totalDiscount -= tmpOrderDis
             }
@@ -389,7 +389,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
             cartList = getCartModel(adapterList.toCollection(arrayListOf()))
             cartList?.note = order_note
-            Log.e(TAG, "getcartList  ${Gson().toJson(cartList)}")
+            LogUtil.logE(TAG, "getcartList  ${Gson().toJson(cartList)}")
             cartList!!.taxlistDynamic = listOf()
             var temp_itemsList: ArrayList<TbItem> = arrayListOf()
             cartList?.dineInList?.forEach { dineModel ->
@@ -431,7 +431,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                         } else {
                             val itemTaxPrice =
                                 (taxData.rate * totalPrice) / 100
-                            Log.e("itemTaxPrice", "" + itemTaxPrice)
+                            LogUtil.logE("itemTaxPrice", "" + itemTaxPrice)
                             String.format("%.2f", itemTaxPrice)
                                 .toDouble()
                         }
@@ -491,7 +491,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
             Log.d(TAG, "onClick: listof Tax: after  " + Gson().toJson(cartList?.taxlistDynamic))
             viewModelPayment.addCart(cartList!!)
-            Log.e(TAG, "getcartListAfterAdd  ${Gson().toJson(cartList)}")
+            LogUtil.logE(TAG, "getcartListAfterAdd  ${Gson().toJson(cartList)}")
 
             totalTax = 0.0
             var subTotal = 0.0
@@ -529,7 +529,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
                                 val itemTaxPrice =
                                     (tax.rate * totalPrice) / 100
-                                Log.e("itemTaxPrice", "" + itemTaxPrice)
+                                LogUtil.logE("itemTaxPrice", "" + itemTaxPrice)
                                 String.format("%.2f", itemTaxPrice)
                                     .toDouble()
                             } else {
@@ -593,7 +593,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 },
                 dineInOrderModel
             )
-//            Log.e(TAG, "getPassmodel  ${Gson().toJson(model)}")
+//            LogUtil.logE(TAG, "getPassmodel  ${Gson().toJson(model)}")
             val bundle = Bundle()
 //            viewModelPayment.totalPrice = MethodUtils.roundOffAmobtnPayuntDouble(toFinalAmt)
 //            viewModelPayment.subTotalPrice = MethodUtils.roundOffAmountDouble(subTotalDInin)
@@ -603,7 +603,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 //            viewModelPayment.totalServiceCharge = MethodUtils.roundOffAmountDouble(serviceCharge)
 //            viewModelPayment.totalDiscount = MethodUtils.roundOffAmountDouble(totalDiscount)
 
-            Log.e("AAJE", "subTotalDInin:  ${MethodUtils.roundOffAmountDouble(subTotalDInin)}")
+            LogUtil.logE("AAJE", "subTotalDInin:  ${MethodUtils.roundOffAmountDouble(subTotalDInin)}")
             bundle.putDouble("totalPrice", MethodUtils.roundOffAmountDouble(toFinalAmt))
             bundle.putDouble("subTotalPrice", MethodUtils.roundOffAmountDouble(subTotalDInin))
             bundle.putDouble("totalTax", MethodUtils.roundOffAmountDouble(finalTaxAmt))
@@ -613,7 +613,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 "divideCashDiscount",
                 MethodUtils.roundOffAmountDouble(divideCashDiscount)
             )
-            Log.e("DineCheck", "totalDiscount  ${totalDiscount}")
+            LogUtil.logE("DineCheck", "totalDiscount  ${totalDiscount}")
             bundle.putParcelable("floorPlan", floorPlanModel)
             bundle.putDouble("totalServiceCharge", MethodUtils.roundOffAmountDouble(serviceCharge))
             bundle.putDouble("totalDiscount", MethodUtils.roundOffAmountDouble(totalDiscount))
@@ -644,7 +644,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 )
             )
 
-            Log.e(TAG, "passOrderId:  ${orderId}")
+            LogUtil.logE(TAG, "passOrderId:  ${orderId}")
             bundle.putInt("orderId", orderId ?: -1)
             bundle.putInt(GUEST_POSITION, 0)
             prefProvider.setValue(Constants.ORDER_TYPE, Constants.DINE_IN)
@@ -688,7 +688,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                                     it1.discountPrice =
                                         MethodUtils.roundOffAmountDouble(it1.discountPrice / it1.itemQuantity)
                                 }
-                                Log.e(TAG, "updateItemForDiscount  ${Gson().toJson(it1)}")
+                                LogUtil.logE(TAG, "updateItemForDiscount  ${Gson().toJson(it1)}")
                                 listTbItem.add(it1)
                             }
 
@@ -705,7 +705,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
 
             }
-            Log.e(TAG,"listOfMoveItemIds:  ${listOfMoveItemIds.size}")
+            LogUtil.logE(TAG,"listOfMoveItemIds:  ${listOfMoveItemIds.size}")
             newList[0].listOfItemsMoved.addAll(listOfMoveItemIds.toCollection(arrayListOf()))
 
             //   prefProvider.setValue(Constants.DINE_IN_UPDATE_LIST, Gson().toJson(newList))
@@ -718,9 +718,9 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 newList
             )
 
-            Log.e("OrderFre", "APIDISc  ${getOrderDetailsResponse?.totalDiscount?.toDouble()}")
-            Log.e("OrderFre", "totalDiscount  ${totalDiscount}")
-            Log.e("OrderFre", "OrderDiscount  ${globalOrderDiscount}")
+            LogUtil.logE("OrderFre", "APIDISc  ${getOrderDetailsResponse?.totalDiscount?.toDouble()}")
+            LogUtil.logE("OrderFre", "totalDiscount  ${totalDiscount}")
+            LogUtil.logE("OrderFre", "OrderDiscount  ${globalOrderDiscount}")
 
             bundle.putDouble(
                 "totalDiscount",
@@ -842,7 +842,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             } else {
                 val itemTaxPrice =
                     (itemtype.rate * totalPrice) / 100
-                Log.e("itemTaxPrice", "" + itemTaxPrice)
+                LogUtil.logE("itemTaxPrice", "" + itemTaxPrice)
                 String.format("%.2f", itemTaxPrice)
                     .toDouble()
             }
@@ -1025,7 +1025,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
         viewModel.showProgress.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
-                Log.e(TAG, "ShowProgress ${it}")
+                LogUtil.logE(TAG, "ShowProgress ${it}")
                 if (it) {
                     if (pd != null && !pd.isShowing) {
                         pd.show()
@@ -1073,19 +1073,19 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         //New Drag and Drop
 
         var divideDiscount = divideDiscount2
-        Log.e("WholeTabDis", "Fasf  ${wholeTableDiscount}")
+        LogUtil.logE("WholeTabDis", "Fasf  ${wholeTableDiscount}")
         var dividedWtDis: Double = MethodUtils.roundOffAmountDouble(
             wholeTableDiscount / (getOrderDetailsResponse?.guestAttributes?.size?.minus(1)!!)
         )
 
         divideDiscount += dividedWtDis
-        Log.e("saff", "afadivideDiscount ${divideDiscount}")
+        LogUtil.logE("saff", "afadivideDiscount ${divideDiscount}")
 
-        Log.e("TODAYBOLD", "subTotalB  ${subTotalGuest + dividedGuestAmt}")
-        Log.e("TODAYBOLD", "totalGuest ${totalGuest}")
-        Log.e("TODAYBOLD", "taxGuest ${taxGuest}")
-        Log.e("TODAYBOLD", "serviceChargeGuest  ${serviceChargeGuest}")
-        Log.e("TODAYBOLD", "divideDiscount ${divideDiscount}")
+        LogUtil.logE("TODAYBOLD", "subTotalB  ${subTotalGuest + dividedGuestAmt}")
+        LogUtil.logE("TODAYBOLD", "totalGuest ${totalGuest}")
+        LogUtil.logE("TODAYBOLD", "taxGuest ${taxGuest}")
+        LogUtil.logE("TODAYBOLD", "serviceChargeGuest  ${serviceChargeGuest}")
+        LogUtil.logE("TODAYBOLD", "divideDiscount ${divideDiscount}")
         val bundle = Bundle()
         bundle.putDouble("subTotalB", subTotalGuest + dividedGuestAmt)
         bundle.putDouble("totalB", totalGuest)
@@ -1119,8 +1119,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
 
         totalGuestCount = getOrderDetailsResponse?.guestAttributes?.size?.minus(1) ?: 1
-        Log.e("TODAY", "totalGuestCount:  ${totalGuestCount}")
-        Log.e("TODAY", "toFinalAmt:  ${toFinalAmt}")
+        LogUtil.logE("TODAY", "totalGuestCount:  ${totalGuestCount}")
+        LogUtil.logE("TODAY", "toFinalAmt:  ${toFinalAmt}")
 
         var divideCashDiscount = 0.0
         if(getOrderDetailsResponse?.payments?.size!! >1){
@@ -1140,7 +1140,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         }
 
 
-        Log.e(TAG, "divideCashDiscount:  ${divideCashDiscount}")
+        LogUtil.logE(TAG, "divideCashDiscount:  ${divideCashDiscount}")
         var orderOfflineId = randomOfflineId()
 
 
@@ -1244,7 +1244,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         var WTTaxes = 0.0
         var serviceCharge = 0.0
 
-        Log.e("AAjeChange", "listItemWT:  ${Gson().toJson(listItemWT)}")
+        LogUtil.logE("AAjeChange", "listItemWT:  ${Gson().toJson(listItemWT)}")
         listItemWT.forEach {
             val obj = it
             wholeNewSubtotal += (obj.price * obj.itemQuantity)
@@ -1272,7 +1272,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
                         val itemTaxPrice =
                             (tax.rate * totalPrice) / 100
-                        Log.e("itemTaxPrice", "" + itemTaxPrice)
+                        LogUtil.logE("itemTaxPrice", "" + itemTaxPrice)
                         String.format("%.2f", itemTaxPrice)
                             .toDouble()
                     } else {
@@ -1289,10 +1289,10 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
 
             if (serviceChargeList?.isNotEmpty() == true) {
-                Log.e("AajeChange", "serviceChargeList:  ${Gson().toJson(serviceChargeList)}")
+                LogUtil.logE("AajeChange", "serviceChargeList:  ${Gson().toJson(serviceChargeList)}")
                 var isApplied = false
                 var chSubTotal = wholeNewSubtotal / (getOrderDetailsResponse?.guestAttributes?.size?.minus(1) ?: 1)
-                Log.e(TAG,"chSubTotal  ${chSubTotal}")
+                LogUtil.logE(TAG,"chSubTotal  ${chSubTotal}")
                 chSubTotal -= divideDiscount
                 serviceChargeList.forEach {
                     if (prefProvider.getValueboolean(Constants.SERVICECHARGE_DINEIN_ORDER, false)) {
@@ -1309,7 +1309,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                                     "calculateDineInServiceCharge: DashBoard " + it.min_guest_count + "....." + it.max_guest_count + " in between " + totalGuestCount
                                 )
                                 isApplied = true
-                                Log.e(TAG,"checkSer  ${it.percentage}  check 2ndSubTital ${chSubTotal}")
+                                LogUtil.logE(TAG,"checkSer  ${it.percentage}  check 2ndSubTital ${chSubTotal}")
                                 serviceCharge += MethodUtils.roundOffAmountDouble((chSubTotal * it.percentage) / 100)
                                 return@forEach
                             }
@@ -1329,32 +1329,32 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             }
 
         }
-        Log.e("AajeChange", "wholeNewSubtotal  ${wholeNewSubtotal}")
-        Log.e("AajeChange", "WTTaxes  ${WTTaxes}")
-        Log.e("AajeChange", "serviceCharge  ${serviceCharge}")
-        Log.e("AajeChange", "totalGuestCount  ${totalGuestCount}")
+        LogUtil.logE("AajeChange", "wholeNewSubtotal  ${wholeNewSubtotal}")
+        LogUtil.logE("AajeChange", "WTTaxes  ${WTTaxes}")
+        LogUtil.logE("AajeChange", "serviceCharge  ${serviceCharge}")
+        LogUtil.logE("AajeChange", "totalGuestCount  ${totalGuestCount}")
 
         wholeNewSubtotal = MethodUtils.roundOffAmountDouble(wholeNewSubtotal / totalGuestCount)
         WTTaxes = MethodUtils.roundOffAmountDouble(WTTaxes / totalGuestCount)
        // serviceCharge = MethodUtils.roundOffAmountDouble(serviceCharge / totalGuestCount)
 
-        Log.e(
+        LogUtil.logE(
             "FinalDetails",
             "subTotal:  ${MethodUtils.roundOffAmountDouble(subTotalGuest + wholeNewSubtotal)}"
         )
-        Log.e(
+        LogUtil.logE(
             "FinalDetails",
             "guestTotalTax:  ${MethodUtils.roundOffAmountDouble(taxGuest + WTTaxes)}"
         )
-        Log.e(
+        LogUtil.logE(
             "FinalDetails",
             "dividedDiscount:  ${MethodUtils.roundOffAmountDouble(divideDiscount)}"
         )
-        Log.e(
+        LogUtil.logE(
             "FinalDetails",
             "dividedCashdiscount :  ${MethodUtils.roundOffAmountDouble(divideCashDiscount)}"
         )
-        Log.e(
+        LogUtil.logE(
             "FinalDetails",
             "guestTotalServiceCharge:  ${MethodUtils.roundOffAmountDouble(serviceChargeGuest + serviceCharge)}"
         )
@@ -1368,7 +1368,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             totalServiceCharge = MethodUtils.roundOffAmountDouble(serviceChargeGuest + serviceCharge)
 
         )
-        Log.e(TAG, "newGuestModel:  ${Gson().toJson(newGuestModel)}")
+        LogUtil.logE(TAG, "newGuestModel:  ${Gson().toJson(newGuestModel)}")
         bundle.putParcelable(DINE_IN_GUEST_PAYMENT_DATA, newGuestModel)
         //orderId?.let { it1 -> bundle.putInt("orderId", it1) }
 //        orderId?.let { it1 -> prefProvider.setValueInt("ORDER_ID", it1) }
@@ -1409,7 +1409,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
         var tempGuestWithItem = 0
         var guestItemWithoutItem = 0
-        Log.e("MainTo", "wholeEmpty:  ${wholeEmpty}")
+        LogUtil.logE("MainTo", "wholeEmpty:  ${wholeEmpty}")
         if (wholeEmpty) {
             getOrderDetailsResponse?.guestAttributes?.forEach {
                 if (!it.name.equals(
@@ -1432,7 +1432,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             bundle.putBoolean("isLastPayment", true)
         }
 
-        Log.e("FinalLast", "FinalLast ${isLastPayment}")
+        LogUtil.logE("FinalLast", "FinalLast ${isLastPayment}")
 
 
         val dineinCartPaymentModel: DineinCartPaymentModel? = null
@@ -1475,7 +1475,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         }
 
         var remaining_list: List<TaxData> = emptyList()
-        Log.e(TAG, "getcartListbeforeAdd  ${Gson().toJson(cartList?.taxlistDynamic)}")
+        LogUtil.logE(TAG, "getcartListbeforeAdd  ${Gson().toJson(cartList?.taxlistDynamic)}")
         listItemWT.forEach { wholetableitems ->
             wholetableitems.taxes?.forEachIndexed { index, taxData ->
                 var modifierPrice: Double = 0.0
@@ -1497,7 +1497,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     } else {
                         val itemTaxPrice =
                             (taxData.rate * totalPrice) / 100
-                        Log.e("itemTaxPrice", "" + itemTaxPrice)
+                        LogUtil.logE("itemTaxPrice", "" + itemTaxPrice)
                         String.format("%.2f", itemTaxPrice)
                             .toDouble()
                     }
@@ -1555,7 +1555,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
 
         Log.d(TAG, "getcartListAfterAdd: remaining : ${Gson().toJson(remaining_list)}")
-        Log.e(TAG, "getcartListAfterAdd  ${Gson().toJson(cartList?.taxlistDynamic)}")
+        LogUtil.logE(TAG, "getcartListAfterAdd  ${Gson().toJson(cartList?.taxlistDynamic)}")
 
         viewModelPayment.addCart(cartList!!)
         findNavController().navigate(
@@ -1607,7 +1607,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
     }
 
     override fun onWholeTableToKitchen(ids: String, list: ArrayList<TbItem>) {
-        Log.e(TAG, "WholeTableITem")
+        LogUtil.logE(TAG, "WholeTableITem")
         viewModel.fireItemToKitchen(orderId ?: 0, true, ids, true)
         for (i in 0 until kitchenPrinterList.size) {
             if (kitchenPrinterList[i].status) {
@@ -1690,7 +1690,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         divideDiscount: Double = 0.0
     ) {
 
-        Log.e(TAG, "customerListSize  ${customerList.size}")
+        LogUtil.logE(TAG, "customerListSize  ${customerList.size}")
         if (customerList.isNotEmpty()) {
             customerList.forEach {
                 if (it.status) {
@@ -1952,7 +1952,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
                                                             val itemTaxPrice =
                                                                 (tax.rate * totalPrice) / 100
-                                                            Log.e("itemTaxPrice", "" + itemTaxPrice)
+                                                            LogUtil.logE("itemTaxPrice", "" + itemTaxPrice)
                                                             String.format("%.2f", itemTaxPrice)
                                                                 .toDouble()
                                                         } else {
@@ -2092,13 +2092,13 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                                         }
 
                                         totalPriceWT = subTotalWT + totalTaxWT + serviceChargeWT
-                                        Log.e("TODO", "totalPriceWT:  ${totalPriceWT}")
+                                        LogUtil.logE("TODO", "totalPriceWT:  ${totalPriceWT}")
 
                                         guestShareTotal =
                                             totalPriceWT / (baseResponse.guestAttributes.size - 1)
-                                        Log.e("TODO", "subTotalWT:  ${subTotalWT}")
-                                        Log.e("TODO", "totalTaxWT:  ${totalTaxWT}")
-                                        Log.e("TODO", "serviceChargeWT:  ${serviceChargeWT}")
+                                        LogUtil.logE("TODO", "subTotalWT:  ${subTotalWT}")
+                                        LogUtil.logE("TODO", "totalTaxWT:  ${totalTaxWT}")
+                                        LogUtil.logE("TODO", "serviceChargeWT:  ${serviceChargeWT}")
 
                                     }
 
@@ -2156,8 +2156,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
                     var finalAmount =
                         totalSubTotal + totalTaxAmount + totalServiceChargeAmount - orderDiscount
-                    Log.e("TODO", "finalAmount  ${finalAmount}")
-                    Log.e("TODO", "guestShareTotal  ${guestShareTotal}")
+                    LogUtil.logE("TODO", "finalAmount  ${finalAmount}")
+                    LogUtil.logE("TODO", "guestShareTotal  ${guestShareTotal}")
                     dineInList.get(0).guestDividedAmt = guestShareTotal
                     dineInList.get(0).totalGuestCount = baseResponse.guestAttributes.size - 1
                     dineInList.get(0).wholeTableSubTotal =
@@ -2166,7 +2166,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                         totalTaxWT / (baseResponse.guestAttributes.size - 1)
                     dineInList.get(0).wholeTableSurTax =
                         serviceChargeWT / (baseResponse.guestAttributes.size - 1)
-                    Log.e("WholeDiscount", "wholeTableDiscount  ${wholeTableDiscount}")
+                    LogUtil.logE("WholeDiscount", "wholeTableDiscount  ${wholeTableDiscount}")
                     dineInList.get(0).wholeTableDiscont =
                         MethodUtils.roundOffAmountDouble(wholeTableDiscount / (baseResponse.guestAttributes.size - 1))
 
@@ -2176,13 +2176,13 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
 
 
-                    Log.e(TAG, "totalTaxAmount:  ${totalTaxAmount}")
+                    LogUtil.logE(TAG, "totalTaxAmount:  ${totalTaxAmount}")
                     viewModel.totalTaxAmount = totalTaxAmount
                     subTotalDInin = totalSubTotal - orderDiscount
                     serviceCharge = totalServiceChargeAmount
                     totalDiscount = orderDiscount + totalItemDiscount
                     finalTaxAmt = totalTaxAmount
-                    Log.e(TAG, "GotsubTotalDInin  ${subTotalDInin}")
+                    LogUtil.logE(TAG, "GotsubTotalDInin  ${subTotalDInin}")
                     binding.txtTotalAmountNew.text = MethodUtils.roundOffAmount(
                         finalAmount
                     )
@@ -2205,7 +2205,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                                 }
                             }
                         }*/
-                    Log.e("TODO", "paidGuestCount:  ${paidGuestCount}")
+                    LogUtil.logE("TODO", "paidGuestCount:  ${paidGuestCount}")
                     if (paidGuestCount > 0) {
 
                         paidGuestAmount = paidGuestCount
@@ -2214,7 +2214,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                             paidGuestAmount = paidGuestCount
                             var perGTotal =
                                 subTotalWT / (baseResponse.guestAttributes.size - 1)
-                            Log.e(TAG, "perGTotal:  ${perGTotal}")
+                            LogUtil.logE(TAG, "perGTotal:  ${perGTotal}")
                             subTotalDInin = totalSubTotal - (perGTotal * paidGuestCount)
                         } else {
                             subTotalDInin = totalSubTotal
@@ -2336,8 +2336,8 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         var dineInItems: ArrayList<TbItem> = arrayListOf()
         var newDineInList: ArrayList<DineInModel> = arrayListOf()
         var dineinModel: DineInModel = DineInModel()
-        Log.e(TAG, "orderDiscountGEt:  ${list[0].orderDiscount}")
-        Log.e(TAG, "dineExtractList  ${Gson().toJson(list)}")
+        LogUtil.logE(TAG, "orderDiscountGEt:  ${list[0].orderDiscount}")
+        LogUtil.logE(TAG, "dineExtractList  ${Gson().toJson(list)}")
         for (i in 0 until list.size) {
             if (list[i].isHeader == 1) {
                 list.get(i).item?.let {
@@ -2420,7 +2420,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         var totalTablePrice = 0.0
         var WTDiscount = 0.0
         var guestCount = 0
-        Log.e(TAG,"getMovedItemDAta  ${Gson().toJson(oldList.get(dragTo).item)}")
+        LogUtil.logE(TAG,"getMovedItemDAta  ${Gson().toJson(oldList.get(dragTo).item)}")
         oldList.get(dragTo).item?.guestItemId?.let { listOfMoveItemIds.add(it) }
         oldList.get(dragTo).item?.guestItemId = null
         dragFrom = -1
@@ -2488,7 +2488,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
                                     val itemTaxPrice =
                                         (tax.rate * totalPrice) / 100
-                                    Log.e("itemTaxPrice", "" + itemTaxPrice)
+                                    LogUtil.logE("itemTaxPrice", "" + itemTaxPrice)
                                     String.format("%.2f", itemTaxPrice)
                                         .toDouble()
                                 } else {
@@ -2547,11 +2547,11 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             }
 
         }
-        Log.e("AfterMove", "wholeTableAmt  ${wholeTableAmt}")
-        Log.e("AfterMove", "WTServiceCharge  ${WTServiceCharge}")
-        Log.e("AfterMove", "WTTax  ${WTTax}")
-        Log.e("AfterMove", "WTTax  ${WTDiscount}")
-        Log.e("AfterMode", "guestCount  ${guestCount}")
+        LogUtil.logE("AfterMove", "wholeTableAmt  ${wholeTableAmt}")
+        LogUtil.logE("AfterMove", "WTServiceCharge  ${WTServiceCharge}")
+        LogUtil.logE("AfterMove", "WTTax  ${WTTax}")
+        LogUtil.logE("AfterMove", "WTTax  ${WTDiscount}")
+        LogUtil.logE("AfterMode", "guestCount  ${guestCount}")
         guestShare = (wholeTableAmt + WTServiceCharge + WTTax) / (guestCount - 1)
 
 
@@ -2568,7 +2568,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
                 model.guestDividedAmt = guestShare
                 Log.d("two", "navigateDineInOrder: " + model.guestDividedAmt)
-                Log.e(TAG, "OLDListGuestId:  ${oldList.get(i).id}")
+                LogUtil.logE(TAG, "OLDListGuestId:  ${oldList.get(i).id}")
                 model.id = oldList.get(i).id
             }
             model.isHeader = oldList.get(i).isHeader
@@ -2950,7 +2950,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             SunmiPrintHelper.getInstance().initSunmiPrinterService(requireContext())
 
             if (guestPrint && getOrderDetailsResponse?.guestAttributes?.size!! > 2) {
-                Log.e("addDineInInner", "3333333")
+                LogUtil.logE("addDineInInner", "3333333")
 
                 viewLifecycleOwner.lifecycleScope.launch {
                     delay(100)
@@ -2971,7 +2971,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
             } else {
 
-                Log.e("addDineInInner", "4444444")
+                LogUtil.logE("addDineInInner", "4444444")
 
                 viewLifecycleOwner.lifecycleScope.launch {
                     delay(100)
@@ -3014,7 +3014,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                         //printer?.setStatusChangeEventCallback(this)
 
                     } catch (e: Exception) {
-                        Log.e(TAG, "PrinterException: " + e.message)
+                        LogUtil.logE(TAG, "PrinterException: " + e.message)
                         printer = null
                         return@launch
                     }
@@ -3048,7 +3048,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                         e.printStackTrace()
                     }
                 } else {
-                    Log.e(TAG, "PrinterIsNotNull:")
+                    LogUtil.logE(TAG, "PrinterIsNotNull:")
                 }
             }
         }
@@ -3084,7 +3084,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
             it.taxes?.forEach { tax ->
                 if (tax.isActive) {
-                    Log.e(TAG, "getTaxP  ${Gson().toJson(tax)}")
+                    LogUtil.logE(TAG, "getTaxP  ${Gson().toJson(tax)}")
                     guestTaxes += if (tax.taxType == "Percentage") {
 
                         var modifierPrice = 0.0
@@ -3542,7 +3542,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
             addHorizontalLine(builder)
 
-            Log.e(TAG, "listWTitemsItemsGet  ${Gson().toJson(listWTitems)}")
+            LogUtil.logE(TAG, "listWTitemsItemsGet  ${Gson().toJson(listWTitems)}")
             for (i in 0 until listWTitems.size) {
                 builder.addFeedLine(1)
                 builder.addTextLineSpace(30)
@@ -4142,7 +4142,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
             it.taxes?.forEach { tax ->
                 if (tax.isActive) {
-                    Log.e(TAG, "getTaxP  ${Gson().toJson(tax)}")
+                    LogUtil.logE(TAG, "getTaxP  ${Gson().toJson(tax)}")
                     guestTaxes += if (tax.taxType == "Percentage") {
 
                         var modifierPrice = 0.0
@@ -4628,7 +4628,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
             it.taxes?.forEach { tax ->
                 if (tax.isActive) {
-                    Log.e(TAG, "getTaxP  ${Gson().toJson(tax)}")
+                    LogUtil.logE(TAG, "getTaxP  ${Gson().toJson(tax)}")
                     guestTaxes += if (tax.taxType == "Percentage") {
 
                         var modifierPrice = 0.0
@@ -4863,7 +4863,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
             PrintSunmiUtils.normalTextCenter(guestName)
 
-            Log.e("addDineInInner", "111111111")
+            LogUtil.logE("addDineInInner", "111111111")
             listGuestItem.forEach {
                 addOrderItemForDineInInner(
                     it,
@@ -5012,7 +5012,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
             if (customerSettingModel.showTipSuggestion) {
 
-                Log.e(
+                LogUtil.logE(
                     "showTipSuggestion",
                     MethodUtils.roundOffAmountDouble(guestSubTotal + guestServiceCharge + guestTaxes)
                         .toString()
@@ -5593,7 +5593,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 Builder.FALSE,
                 Builder.COLOR_1
             )
-            Log.e(TAG, "subTotalWT  ${subTotalDInin}")
+            LogUtil.logE(TAG, "subTotalWT  ${subTotalDInin}")
 
             builder.addText(
                 padLine(
@@ -6051,7 +6051,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             } catch (e: Exception) {
                 PrinterClass.closePrinter()
                 e.printStackTrace()
-                Log.e(TAG, "PrinterError: " + e.localizedMessage)
+                LogUtil.logE(TAG, "PrinterError: " + e.localizedMessage)
             }
 
 
@@ -6474,7 +6474,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
             if (customerSettingModel.showQrCode) {
 
-                getOrderDetailsResponse?.digitalReceiptUrl?.let { Log.e("digitalReceiptUrl", it) }
+                getOrderDetailsResponse?.digitalReceiptUrl?.let { LogUtil.logE("digitalReceiptUrl", it) }
 
                 getOrderDetailsResponse?.digitalReceiptUrl?.let { PrintSunmiUtils.qrCode(it) }
 
@@ -6684,7 +6684,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
 
                 } else {
-                    Log.e("addDineInInner", "22222222")
+                    LogUtil.logE("addDineInInner", "22222222")
                     dineInList.get(i).item?.let {
                         addOrderItemForDineInInner(
                             it,
@@ -7044,7 +7044,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     // printer?.setStatusChangeEventCallback(this)
 
                 } catch (e: Exception) {
-                    Log.e(TAG, "PrinterException: " + e.message)
+                    LogUtil.logE(TAG, "PrinterException: " + e.message)
                     printer = null
                     return
                 }
@@ -7057,7 +7057,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                 }
 
             } else {
-                Log.e(TAG, "PrinterIsNotNull:")
+                LogUtil.logE(TAG, "PrinterIsNotNull:")
             }
         }
 
@@ -7492,7 +7492,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             } catch (e: Exception) {
                 PrinterClass.closePrinter()
                 e.printStackTrace()
-                Log.e(TAG, "PrinterError: " + e.localizedMessage)
+                LogUtil.logE(TAG, "PrinterError: " + e.localizedMessage)
             }
 
 
@@ -7509,11 +7509,11 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
     ) {
         if (SunmiPrintHelper.getInstance().sunmiPrinter == SunmiPrintHelper.FoundSunmiPrinter) {
 
-            Log.e("SunmiPrintHelper1", "FoundSunmiPrinter")
+            LogUtil.logE("SunmiPrintHelper1", "FoundSunmiPrinter")
 
             if (!BluetoothUtil.isBlueToothPrinter) {
 
-                Log.e("SunmiPrintHelpe1r", "isBlueToothPrinter")
+                LogUtil.logE("SunmiPrintHelpe1r", "isBlueToothPrinter")
 
                 generateKitchenReceiptSunmiInner(data, type, item)
 
@@ -7524,12 +7524,12 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             Handler(Looper.getMainLooper()).postDelayed({
                 setService(data, type, item)
             }, 2000)
-            Log.e("SunmiPrintHelper", "CheckSunmiPrinter")
+            LogUtil.logE("SunmiPrintHelper", "CheckSunmiPrinter")
         } else if (SunmiPrintHelper.getInstance().sunmiPrinter == SunmiPrintHelper.LostSunmiPrinter) {
 
-            Log.e("SunmiPrintHelper", "LostSunmiPrinter")
+            LogUtil.logE("SunmiPrintHelper", "LostSunmiPrinter")
         } else {
-            Log.e("SunmiPrintHelper", "ELSE")
+            LogUtil.logE("SunmiPrintHelper", "ELSE")
         }
     }
 
@@ -7537,11 +7537,11 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
     ) {
         if (SunmiPrintHelper.getInstance().sunmiPrinter == SunmiPrintHelper.FoundSunmiPrinter) {
 
-            Log.e("SunmiPrintHelper1", "FoundSunmiPrinter")
+            LogUtil.logE("SunmiPrintHelper1", "FoundSunmiPrinter")
 
             if (!BluetoothUtil.isBlueToothPrinter) {
 
-                Log.e("SunmiPrintHelpe1r", "isBlueToothPrinter")
+                LogUtil.logE("SunmiPrintHelpe1r", "isBlueToothPrinter")
 
                 generatePrintSunmiInner()
 
@@ -7552,12 +7552,12 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             Handler(Looper.getMainLooper()).postDelayed({
                 setService1()
             }, 2000)
-            Log.e("SunmiPrintHelper", "CheckSunmiPrinter")
+            LogUtil.logE("SunmiPrintHelper", "CheckSunmiPrinter")
         } else if (SunmiPrintHelper.getInstance().sunmiPrinter == SunmiPrintHelper.LostSunmiPrinter) {
 
-            Log.e("SunmiPrintHelper", "LostSunmiPrinter")
+            LogUtil.logE("SunmiPrintHelper", "LostSunmiPrinter")
         } else {
-            Log.e("SunmiPrintHelper", "ELSE")
+            LogUtil.logE("SunmiPrintHelper", "ELSE")
         }
     }
 
@@ -7576,11 +7576,11 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
     ) {
         if (SunmiPrintHelper.getInstance().sunmiPrinter == SunmiPrintHelper.FoundSunmiPrinter) {
 
-            Log.e("SunmiPrintHelper1", "FoundSunmiPrinter")
+            LogUtil.logE("SunmiPrintHelper1", "FoundSunmiPrinter")
 
             if (!BluetoothUtil.isBlueToothPrinter) {
 
-                Log.e("SunmiPrintHelpe1r", "isBlueToothPrinter")
+                LogUtil.logE("SunmiPrintHelpe1r", "isBlueToothPrinter")
 
                 generateGuestPrintSunmiInner(
                     customerReceiptPrinters,
@@ -7615,12 +7615,12 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     divideDiscount,
                 )
             }, 2000)
-            Log.e("SunmiPrintHelper", "CheckSunmiPrinter")
+            LogUtil.logE("SunmiPrintHelper", "CheckSunmiPrinter")
         } else if (SunmiPrintHelper.getInstance().sunmiPrinter == SunmiPrintHelper.LostSunmiPrinter) {
 
-            Log.e("SunmiPrintHelper", "LostSunmiPrinter")
+            LogUtil.logE("SunmiPrintHelper", "LostSunmiPrinter")
         } else {
-            Log.e("SunmiPrintHelper", "ELSE")
+            LogUtil.logE("SunmiPrintHelper", "ELSE")
         }
     }
 
@@ -7805,7 +7805,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
     private fun observeFireAll() {
         viewModel.fireAllStatus.observe(viewLifecycleOwner) { event ->
-            Log.e(TAG, "FireAllStatusObserved")
+            LogUtil.logE(TAG, "FireAllStatusObserved")
 
             if (prefProvider.getValueboolean(IS_PRINTER_QUEUE_ENABLE, false)) {
 
@@ -7950,7 +7950,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         var list = dineInTableAdapter.getList()
         val builder = ArrayList<String>()
         var listItem: ArrayList<TbItem> = arrayListOf()
-        Log.e(TAG, "dineInList:  ${Gson().toJson(list)}")
+        LogUtil.logE(TAG, "dineInList:  ${Gson().toJson(list)}")
         list.forEach {
             if (it.isHeader == 1) {
                 it.item?.let {
@@ -7967,10 +7967,10 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             }
 
         }
-        Log.e(TAG, "listItem:  ${Gson().toJson(listItem)}")
+        LogUtil.logE(TAG, "listItem:  ${Gson().toJson(listItem)}")
         val serializedObject: String =
             prefProvider.getValue(Constants.DINE_IN_UPDATE_LIST, "")
-        Log.e(TAG, "serializedObjectData:  ${Gson().toJson(serializedObject)}")
+        LogUtil.logE(TAG, "serializedObjectData:  ${Gson().toJson(serializedObject)}")
         if (serializedObject.isNotEmpty()) {
             var printOrderItems:
                     ArrayList<GetOrderDetailsResponse.Data.OrderItem> =
@@ -7985,7 +7985,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     type
                 ) as ArrayList<GetOrderDetailsResponse.Data.OrderItem>
 
-            Log.e(TAG, "arrayItems:  ${Gson().toJson(arrayItems)}")
+            LogUtil.logE(TAG, "arrayItems:  ${Gson().toJson(arrayItems)}")
             var itemIds: ArrayList<Int> = arrayListOf()
             arrayItems.forEach {
                 itemIds.add(it.id)
@@ -7994,7 +7994,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             arrayItems.forEachIndexed { index, orderItem ->
                 if (getOrderDetailsResponse?.orderItems?.size!!.minus(1) >= index) {
                     if (itemIds.contains(getOrderDetailsResponse?.orderItems?.get(index)?.id)) {
-                        Log.e("InsideLoop", "Inside")
+                        LogUtil.logE("InsideLoop", "Inside")
                         if (getOrderDetailsResponse?.orderItems?.get(index)?.quantity != orderItem.quantity) {
                             if (getOrderDetailsResponse?.orderItems?.get(index)?.quantity!! > arrayItems[index].quantity) {
                                 getOrderDetailsResponse?.orderItems?.get(index)?.quantity =
@@ -8060,7 +8060,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     if (isCheckAndFire) {
                         kit.orderTypes.forEach {
                             if (it.orderTypeId == getOrderDetailsResponse?.orderTypeId) {
-                                Log.e(TAG, "printerSettings  ${Gson().toJson(it.printerSettings)}")
+                                LogUtil.logE(TAG, "printerSettings  ${Gson().toJson(it.printerSettings)}")
                                 it.printerSettings.forEach {
                                     if (it.printType.lowercase()
                                             .equals(Constants.KITCHEN.lowercase()) && it.autoPrinting
@@ -8072,7 +8072,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                                                 )
                                             )
                                         ) {
-                                            Log.e(TAG, "printerName  ${kit.name} ")
+                                            LogUtil.logE(TAG, "printerName  ${kit.name} ")
                                             autoPrintEnable = true
                                             initKitchenPrinter(kit, Constants.KITCHEN, listItem)
                                         }

@@ -17,4 +17,7 @@ class ItemModifierSets {
 
     @SerializedName("max_allowed")
     var maxAllowed: Int = 0
+
+    @SerializedName("is_deleted")
+    var isDeleted: Boolean = false
 }

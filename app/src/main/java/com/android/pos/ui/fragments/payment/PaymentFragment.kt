@@ -42,6 +42,7 @@ import com.android.pos.data.remote.Constants.TOTAL_SERVICE_CHARGE_ACTUAL
 import com.android.pos.databinding.PaymentFragmentBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.utils.AlertUtils
+import com.android.pos.utils.LogUtil
 import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.extensions.gone
@@ -117,7 +118,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
         val callback: OnBackPressedCallback =
             object : OnBackPressedCallback(true) {
                 override fun handleOnBackPressed() {
-                    Log.e(TAG, "splitAmountValue  ${prefProvider.getValue(SPLIT_PAY_AMOUNT, "")}")
+                    LogUtil.logE(TAG, "splitAmountValue  ${prefProvider.getValue(SPLIT_PAY_AMOUNT, "")}")
                     if (prefProvider.getValue(SPLIT_PAY_AMOUNT, "") == "") {
                         prefProvider.setValue(SPLIT_PAY_AMOUNT, "")
                         prefProvider.setValueInt(SPLIT_NO, -1)
@@ -218,7 +219,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
         } else {
             cardActualAmount = totalPrice
         }
-        Log.e(TAG, "gottotalPrice:  ${totalPrice}")
+        LogUtil.logE(TAG, "gottotalPrice:  ${totalPrice}")
         viewModel.saveActualValue(
             totalPrice,
             subTotalPrice,
@@ -299,7 +300,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
 
                 var splitModel =
                     Gson().fromJson<SplitBundleModel>(data, SplitBundleModel::class.java)
-                Log.e(TAG, "splitModel:  ${Gson().toJson(splitModel)}")
+                LogUtil.logE(TAG, "splitModel:  ${Gson().toJson(splitModel)}")
                 isNextPayment = splitModel.isNextPayment
                 remainingAmount = splitModel.remainingAmt
                 splitValue = splitModel.splitValue
@@ -342,7 +343,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
         actualDiscount: Double,
         redeemLoyaltyInfo: RedeemLoyaltyInfo?
     ) {
-        Log.e(TAG, "actualAmount  ${actualAmount}")
+        LogUtil.logE(TAG, "actualAmount  ${actualAmount}")
         MethodUtils.setPriceTextView(binding.txtTotal, actualAmount)
         MethodUtils.setPriceTextView(binding.txtSubTotal, actualSubTotal)
         MethodUtils.setPriceTextView(binding.txtTax, actualTax)
@@ -397,11 +398,11 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                     }
                     cardPaymentAmount =
                         (remainingAmount + last_cash_discount_surcharge.toDouble())
-                    Log.e(
+                    LogUtil.logE(
                         TAG,
                         "paylast_cash_discount_surcharge ${last_cash_discount_surcharge.toDouble()}"
                     )
-                    Log.e(TAG, "paycardPaymentAmount: ${cardPaymentAmount}")
+                    LogUtil.logE(TAG, "paycardPaymentAmount: ${cardPaymentAmount}")
                     MethodUtils.setPriceTextView(binding.txtCardAmount, cardPaymentAmount)
                     //  binding.txtCardAmount.text = "$ " + String.format("%.2f", cardPaymentAmount)
                     if (prefProvider.getValue(CASH_DISCOUNT_SURCHARGE, "").isNotEmpty()) {
@@ -453,7 +454,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
 //                    binding.txtCardAmount.text =
 //                        "$" + String.format("%.2f", remainingAmount)
                 }
-                Log.e(TAG, "remainingAmount  ${remainingAmount}")
+                LogUtil.logE(TAG, "remainingAmount  ${remainingAmount}")
                 MethodUtils.setPriceTextView(binding.txtTotalAmount, remainingAmount)
                 getCashPaymentOptionList(remainingAmount)
 
@@ -464,7 +465,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                 if (MethodUtils.isEnableCashDiscount(requireContext())) {
                     cardPaymentAmount = (splitAfterAmount + (cashDiscountSurcharge / splitValue))
 
-                    Log.e(TAG, "paycardPaymentAmount:  ${cardPaymentAmount}")
+                    LogUtil.logE(TAG, "paycardPaymentAmount:  ${cardPaymentAmount}")
                     MethodUtils.setPriceTextView(
                         binding.txtCardAmount,
                         (splitAfterAmount + (cashDiscountSurcharge / splitValue))
@@ -526,7 +527,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
     }
 
     private fun setUpPaymentSummary() {
-        Log.e(TAG, "SetupSummaryTotal  ${totalPrice}")
+        LogUtil.logE(TAG, "SetupSummaryTotal  ${totalPrice}")
         MethodUtils.setPriceTextView(binding.txtTotal, totalPrice)
         MethodUtils.setPriceTextView(binding.txtSubTotal, subTotalPrice)
         MethodUtils.setPriceTextView(binding.txtTax, totalTax)
@@ -562,7 +563,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                     "%.2f",
                     MethodUtils.calculateCashDiscount(totalPrice, prefProvider, requireContext())
                 )
-                Log.e(TAG, "cashDiscountSurcharge:  ${cashDiscountSurcharge}")
+                LogUtil.logE(TAG, "cashDiscountSurcharge:  ${cashDiscountSurcharge}")
                 totalPrice -= cashDiscountSurcharge
                 if (totalPrice < 0.0) {
                     totalPrice = 0.0
@@ -753,12 +754,12 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
 
     @SuppressLint("SetTextI18n")
     private fun getCashPaymentOptionList(totalPrice: Double) {
-        Log.e(TAG, "totalPrice  $totalPrice")
+        LogUtil.logE(TAG, "totalPrice  $totalPrice")
         secondValue = floor(totalPrice + 1).toInt()
-        Log.e(TAG, "secondValue  $secondValue")
+        LogUtil.logE(TAG, "secondValue  $secondValue")
         val newVal = totalPrice + 1
         thirdValue = calculateCashOption(newVal)
-        Log.e(TAG, "thirdValuethirdValue:   ${thirdValue}")
+        LogUtil.logE(TAG, "thirdValuethirdValue:   ${thirdValue}")
         if (secondValue.toDouble() == thirdValue) {
             if (secondValue > 1000) {
                 thirdValue += 100
@@ -813,14 +814,14 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                 500
             )
             val myValue = value.toInt()
-            Log.e(TAG, "myValue:  ${myValue}")
+            LogUtil.logE(TAG, "myValue:  ${myValue}")
             var searchIndex: Int = -1
             val filterValue = arrAmount.filter {
                 it >= value
             }.first()
             searchIndex = arrAmount.indexOf(filterValue)
-            Log.e(TAG, "filterValue:  ${filterValue}")
-            Log.e(TAG, "searchIndex:  ${searchIndex}")
+            LogUtil.logE(TAG, "filterValue:  ${filterValue}")
+            LogUtil.logE(TAG, "searchIndex:  ${searchIndex}")
 
             /* arrAmount.forEachIndexed { index, i ->
                  if (i >= value) {
@@ -853,7 +854,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
 
             R.id.imgBack -> {
 
-                Log.e(TAG, "splitAmountValue  ${prefProvider.getValue(SPLIT_PAY_AMOUNT, "")}")
+                LogUtil.logE(TAG, "splitAmountValue  ${prefProvider.getValue(SPLIT_PAY_AMOUNT, "")}")
                 if (prefProvider.getValue(SPLIT_PAY_AMOUNT, "") == "") {
                     prefProvider.setValue(SPLIT_PAY_AMOUNT, "")
                     prefProvider.setValueInt(SPLIT_NO, -1)
@@ -869,7 +870,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                 paymentType = "Cash"
                 paymentAmount = when {
                     isSplitByNo -> {
-                        Log.e(TAG, "SplitNo")
+                        LogUtil.logE(TAG, "SplitNo")
                         var remaining_payment =
                             String.format(
                                 "%.2f",
@@ -890,19 +891,19 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                         splitAfterAmount
                     }
                     isSplitByAmount -> {
-                        Log.e(TAG, "SplitByAmount")
+                        LogUtil.logE(TAG, "SplitByAmount")
                         splitAfterAmount
                     }
                     isCustomCash -> {
-                        Log.e(TAG, "CustomCash")
+                        LogUtil.logE(TAG, "CustomCash")
                         paymentAmount
                     }
                     else -> {
                         if (remainingAmount == 0.0) {
-                            Log.e(TAG, "RemainingAmtZero")
+                            LogUtil.logE(TAG, "RemainingAmtZero")
                             totalPrice
                         } else {
-                            Log.e(TAG, "RemainingNotZero")
+                            LogUtil.logE(TAG, "RemainingNotZero")
                             remainingAmount
                         }
                     }
@@ -1169,7 +1170,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
             cartList?.items = cartItems
         }
         if (isSplitByNo) {
-            Log.e(TAG, "isSplitByNo:  ${isSplitByNo}")
+            LogUtil.logE(TAG, "isSplitByNo:  ${isSplitByNo}")
 
             val myRequest = cartList?.let {
                 viewModel.createOrderRequestForCard(
@@ -1356,12 +1357,12 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                     tipID
                 )
             }
-            Log.e(TAG, "myRequest  ${Gson().toJson(myRequest)}")
+            LogUtil.logE(TAG, "myRequest  ${Gson().toJson(myRequest)}")
             if (myRequest != null) {
                 viewModel.totalPayAmount((paymentAmount))
 
                 val orderId = prefProvider.getValueInt("ORDER_ID", -1)
-                Log.e(TAG, "orderIdInside  ${orderId}")
+                LogUtil.logE(TAG, "orderIdInside  ${orderId}")
 
                 if (orderId == -1) {
                     viewModel.submit(myRequest)
@@ -1410,12 +1411,12 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                     tipID
                 )
             }
-            Log.e(TAG, "myRequestSplitNo  ${Gson().toJson(myRequest)}")
+            LogUtil.logE(TAG, "myRequestSplitNo  ${Gson().toJson(myRequest)}")
             if (myRequest != null) {
                 viewModel.totalPayAmount((paymentAmount))
 
                 val orderId = prefProvider.getValueInt("ORDER_ID", -1)
-                Log.e(TAG, "orderidinsplit  ${orderId}")
+                LogUtil.logE(TAG, "orderidinsplit  ${orderId}")
 
                 if (orderId == -1) {
                     viewModel.submit(myRequest)
@@ -1465,11 +1466,11 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                         tipID
                     )
                 }
-                Log.e(TAG, "myRequest  ${Gson().toJson(myRequest)}")
+                LogUtil.logE(TAG, "myRequest  ${Gson().toJson(myRequest)}")
                 if (myRequest != null) {
                     viewModel.totalPayAmount(splitAfterAmount)
                     val orderId = prefProvider.getValueInt("ORDER_ID", -1)
-                    Log.e(TAG, "orderIDIsLast  ${orderId})}")
+                    LogUtil.logE(TAG, "orderIDIsLast  ${orderId})}")
                     if (orderId == -1) {
                         viewModel.submit(myRequest)
                     } else {
@@ -1517,11 +1518,11 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                     tipID
                 )
             }
-            Log.e(TAG, "myRequest  ${Gson().toJson(myRequest)}")
+            LogUtil.logE(TAG, "myRequest  ${Gson().toJson(myRequest)}")
             if (myRequest != null) {
                 viewModel.totalPayAmount(paymentAmount)
                 val orderId = prefProvider.getValueInt("ORDER_ID", -1)
-                Log.e(TAG, "orderIdCustom  ${orderId}")
+                LogUtil.logE(TAG, "orderIdCustom  ${orderId}")
                 if (orderId == -1) {
                     viewModel.submit(myRequest)
                 } else {
@@ -1544,8 +1545,8 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
             }
         } else {
 
-            Log.e(TAG, "cartList:  ${Gson().toJson(cartList)}")
-            Log.e(TAG, "cartListcartItems:  ${Gson().toJson(cartItems)}")
+            LogUtil.logE(TAG, "cartList:  ${Gson().toJson(cartList)}")
+            LogUtil.logE(TAG, "cartListcartItems:  ${Gson().toJson(cartItems)}")
             if (cartItems?.isNotEmpty() == true && cartList?.items?.isEmpty() == true) {
                 cartList?.items = cartItems
             }
@@ -1571,11 +1572,11 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                     tipID
                 )
             }
-            Log.e(TAG, "myRequestOriginal ${Gson().toJson(myRequest)}")
+            LogUtil.logE(TAG, "myRequestOriginal ${Gson().toJson(myRequest)}")
             if (myRequest != null) {
                 viewModel.totalPayAmount(paymentAmount)
                 val orderId = prefProvider.getValueInt("ORDER_ID", -1)
-                Log.e(TAG, "orderIdmyRequestOriginal ${orderId}")
+                LogUtil.logE(TAG, "orderIdmyRequestOriginal ${orderId}")
                 if (orderId == -1) {
                     viewModel.submit(myRequest)
                 } else {
@@ -1640,7 +1641,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
         viewModel.data.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
 
-                Log.e("observe : splitValue", splitValue.toString())
+                LogUtil.logE("observe : splitValue", splitValue.toString())
 
                 prefProvider.setValueInt("ORDER_ID", it.data.order.id)
 
@@ -1855,7 +1856,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                                 bundle.putInt("splitValue", splitValue)
                                 bundle.putDouble("TipAmount", tipAmount)
 
-                                Log.e("TipAmount 1:: ", tipAmount.toString())
+                                LogUtil.logE("TipAmount 1:: ", tipAmount.toString())
 
                                 if (splitValue != -1) {
                                     if (remainingAmount <= 0.0) {
@@ -1922,7 +1923,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                                 bundle.putParcelable("receiptData", it.data)
                                 bundle.putInt("splitValue", splitValue)
                                 bundle.putDouble("TipAmount", tipAmount)
-                                Log.e("TipAmount 2:: ", tipAmount.toString())
+                                LogUtil.logE("TipAmount 2:: ", tipAmount.toString())
                                 if (splitValue != -1) {
                                     if (remainingAmount <= 0.0) {
                                         bundle.putBoolean("isSpilt", false)
@@ -2047,7 +2048,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                                 bundle.putParcelable("cartList", cartList)
                                 bundle.putParcelable("redeemLoyalty", redeemLoyaltyInfo)
                                 bundle.putDouble("TipAmount", tipAmount)
-                                Log.e("TipAmount 3:: ", tipAmount.toString())
+                                LogUtil.logE("TipAmount 3:: ", tipAmount.toString())
                                 bundle.putDouble("noCashAdj", noCashAdj)
                                 bundle.putBoolean("isFromActiveOrder", isFromActiveOrder)
                                 findNavController().navigate(
@@ -2059,7 +2060,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
                             }
                             else -> {
 
-                                Log.e("TipAmount 4:: ", tipAmount.toString())
+                                LogUtil.logE("TipAmount 4:: ", tipAmount.toString())
 
                                 val bundle = Bundle()
                                 bundle.putBoolean("isDineIn", false)

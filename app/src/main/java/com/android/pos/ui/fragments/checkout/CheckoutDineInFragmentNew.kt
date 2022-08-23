@@ -141,7 +141,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
             bundle.putParcelable("dineInModel", modelDineIn)
 
             frag.arguments = bundle
-            Log.e(TAG, "modelDineInmodelDineIn:  ${Gson().toJson(modelDineIn)}")
+            LogUtil.logE(TAG, "modelDineInmodelDineIn:  ${Gson().toJson(modelDineIn)}")
             return frag
         }
     }
@@ -176,13 +176,13 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        Log.e(TAG, "dineInDataModel:  ${Gson().toJson(dineInDataModel)}")
+        LogUtil.logE(TAG, "dineInDataModel:  ${Gson().toJson(dineInDataModel)}")
         orderId = dineInDataModel?.orderId
         isGuestPay = dineInDataModel?.isFromGuest ?: false
         isLastPayment = dineInDataModel?.isLastPayment ?: false
         guestRequestModel = dineInDataModel?.guestPaymentReq
         splitModel = dineInDataModel?.splitModel
-        Log.e("orderId :: ", orderId.toString())
+        LogUtil.logE("orderId :: ", orderId.toString())
         if (orderId != null) {
             paymentId = arguments?.getInt("paymentId")!!
             paymentOfflineId = arguments?.getString("paymentOfflineId").toString()
@@ -381,7 +381,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                 prefProvider.setValueInt("ORDER_ID", it.data.order.id)
                 when {
                     paymentType == "Cash" -> {
-                        Log.e("TipAmount 4:: ", tipAmount.toString())
+                        LogUtil.logE("TipAmount 4:: ", tipAmount.toString())
 
                         val bundle = Bundle()
                         bundle.putBoolean("isDineIn", true)
@@ -567,7 +567,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
 
                     }
                     paymentType == "Card" -> {
-                        Log.e("TipAmount 4:: ", tipAmount.toString())
+                        LogUtil.logE("TipAmount 4:: ", tipAmount.toString())
 
                         val bundle = Bundle()
                         bundle.putBoolean("isDineIn", true)
@@ -696,7 +696,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
             paymentAmount -= cashDiscountSurcharge
         }
 
-        Log.e(TAG, "isGuestPay:  ${isGuestPay}")
+        LogUtil.logE(TAG, "isGuestPay:  ${isGuestPay}")
         if (isGuestPay) {
             if (custom_paymentAmount != 0.0) {
                 dineinOrderVieweModel.totalPayAmount(custom_paymentAmount)
@@ -771,7 +771,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
             guestRequestModel?.paymentAttributes!!.magensaResponse = toJson
 
 
-            Log.e(TAG, "getOptionType:  ${prefProvider.getValue(OPTION_TYPE, "")}")
+            LogUtil.logE(TAG, "getOptionType:  ${prefProvider.getValue(OPTION_TYPE, "")}")
             if (prefProvider.getValue(OPTION_TYPE, "").equals("SurCharge", true)) {
                 guestRequestModel?.paymentAttributes?.cash_discount_or_surcharge =
                     cashDiscountSurcharge
@@ -786,17 +786,17 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                     toJson,
                     PaymentResponse.PaymentResponseItem::class.java
                 )
-                Log.e("magensaResponse", Gson().toJson(model))
+                LogUtil.logE("magensaResponse", Gson().toJson(model))
 
 
                 guestRequestModel?.paymentAttributes!!.magensaResponse = toJson
 
                 if (model.dataOutput != null) {
-                    Log.e("dataOutput", Gson().toJson(model))
+                    LogUtil.logE("dataOutput", Gson().toJson(model))
                     val cardNumber = model.dataOutput.PANLast4
                     var cardN = ""
                     model.dataOutput.additionalOutputData?.forEach {
-                        Log.e("additionalOutputData", it.key)
+                        LogUtil.logE("additionalOutputData", it.key)
                         if (it.key == "CardType") {
                             cardN = it.value
                         }
@@ -807,7 +807,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                 }
 
                 if (model.cardSwipeOutput != null) {
-                    Log.e("cardSwipeOutput", Gson().toJson(model))
+                    LogUtil.logE("cardSwipeOutput", Gson().toJson(model))
                     val cardNumber = model.cardSwipeOutput.pANLast4
                     var cardN = ""
                     model.cardSwipeOutput.additionalOutputData?.forEach {
@@ -1118,7 +1118,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                 ""
             ) == "0.0"
         ) {
-            Log.e(TAG, "totalPrice  ${viewModel.totalPrice}")
+            LogUtil.logE(TAG, "totalPrice  ${viewModel.totalPrice}")
 
             WholetotalPrice = viewModel.totalPrice
             prefProvider.setValue(
@@ -1227,7 +1227,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
 
 
         cartList = viewModel.cartModel
-        Log.e("ORDER_TYPE", prefProvider.getValue(Constants.ORDER_TYPE, Constants.TAKEOUT))
+        LogUtil.logE("ORDER_TYPE", prefProvider.getValue(Constants.ORDER_TYPE, Constants.TAKEOUT))
 
         viewModel.ordertypelist.forEach {
             if (prefProvider.getValue(Constants.ORDER_TYPE, Constants.DINE_IN) == it.orderType) {
@@ -1487,8 +1487,8 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
         paymentAmount -= tipAmount
         paymentAmount = MethodUtils.roundOffAmountDouble(paymentAmount)
         paymentType = "Card"
-        Log.e(TAG, "cartList:  ${Gson().toJson(cartList)}")
-        Log.e(TAG, "cartListcartItems:  ${Gson().toJson(cartItems)}")
+        LogUtil.logE(TAG, "cartList:  ${Gson().toJson(cartList)}")
+        LogUtil.logE(TAG, "cartListcartItems:  ${Gson().toJson(cartItems)}")
         if (orderId != -1 && orderId != 0) {
             paymentviewModel.updateOrder(
                 true,
@@ -1522,7 +1522,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                 tipID
             )
         }
-        Log.e(TAG, "myRequestOriginal ${Gson().toJson(myRequest)}")
+        LogUtil.logE(TAG, "myRequestOriginal ${Gson().toJson(myRequest)}")
         if (myRequest != null) {
             paymentviewModel.totalPayAmount(paymentAmount)
             paymentAttributesRequest(myRequest)
@@ -1573,7 +1573,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                 tipID, offlineId = orderOfflineId
             )
         }
-        Log.e(TAG, "myRequestOriginal ${Gson().toJson(myRequest)}")
+        LogUtil.logE(TAG, "myRequestOriginal ${Gson().toJson(myRequest)}")
 
         if (myRequest != null) {
             if (custom_paymentAmount != 0.0) {
@@ -1619,7 +1619,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
 
     private fun paymentAttributesRequest(myRequest: OrderRequestModel) {
         val orderId = prefProvider.getValueInt("ORDER_ID", -1)
-        Log.e(TAG, "orderIdmyRequestOriginal ${orderId}")
+        LogUtil.logE(TAG, "orderIdmyRequestOriginal ${orderId}")
         if (orderId == -1) {
             myRequest.completed_all_payments = isSelectedCount <= 1
             paymentviewModel.submit(myRequest)
@@ -1832,7 +1832,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
             ) {
                 ProgressUtils.dismissProgressDialog()
                 if (response.isSuccessful) {
-                    Log.e("onResponse", Gson().toJson(response.body()))
+                    LogUtil.logE("onResponse", Gson().toJson(response.body()))
                     if (response.body() != null && response.body()!![0].transactionOutput != null) {
 
                         if (response.body()!![0].transactionOutput?.isTransactionApproved == true) {
@@ -1929,20 +1929,20 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                 EventType.ConnectionState -> {
                     when (ConnectionStateBuilder.GetValue(data.StringValue())) {
                         ConnectionState.Connected -> {
-                            Log.e("", "[CONNECTED]")
+                            LogUtil.logE("", "[CONNECTED]")
 
                             startTransaction()
                         }
                         ConnectionState.Disconnected -> {
-                            Log.e("", "[DISCONNECTED]")
+                            LogUtil.logE("", "[DISCONNECTED]")
                             ProgressUtils.dismissProgressDialog()
                             AlertUtils.showCustomAlert(requireContext(), "DISCONNECTED")
                         }
                         ConnectionState.Disconnecting -> {
-                            Log.e("", "[DISCONNECTING]")
+                            LogUtil.logE("", "[DISCONNECTING]")
                         }
                         ConnectionState.Connecting -> {
-                            Log.e("", "[CONNECTING]")
+                            LogUtil.logE("", "[CONNECTING]")
 
                         }
                         else -> ""
@@ -1952,7 +1952,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
 
 //                ProgressUtils.dismissProgressDialog()
 
-                    Log.e("TransactionResult", "TransactionResult called")
+                    LogUtil.logE("TransactionResult", "TransactionResult called")
 
                     dismissDialog()
 
@@ -2008,7 +2008,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
         ProgressUtils.setCallback(this)
 
 
-        Log.e("mSessionManager", mSessionManager.isConnected.toString())
+        LogUtil.logE("mSessionManager", mSessionManager.isConnected.toString())
         if (mSessionManager.isConnected) {
             startTransaction()
         } else {
@@ -2073,7 +2073,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
     private fun navigateOnPaymentSuccess() {
         dineinOrderVieweModel.onPayment.observe(viewLifecycleOwner, { event ->
             event.getContentIfNotHandled()?.let { str ->
-                Log.e(TAG, "getstr:   $str")
+                LogUtil.logE(TAG, "getstr:   $str")
                 /*AlertUtils.showCustomAlertWithListenerWithOK(requireContext(), str) { _, _ ->*/
 
 
@@ -2090,7 +2090,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
         when {
 
             paymentType == "Cash" -> {
-                Log.e("TipAmount 4:: ", tipAmount.toString())
+                LogUtil.logE("TipAmount 4:: ", tipAmount.toString())
 
                 val bundle = Bundle()
                 bundle.putBoolean("isDineIn", true)
@@ -2115,7 +2115,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                         ).toDouble()
                     }
 
-                Log.e(TAG, "wholePricewholePrice:  ${wholePrice}")
+                LogUtil.logE(TAG, "wholePricewholePrice:  ${wholePrice}")
 
                 bundle.putDouble("WholetotalPrice", wholePrice)
                 var remainingValue = 0.0
@@ -2283,7 +2283,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
             }
 
             paymentType == "Card" -> {
-                Log.e("TipAmount 4:: ", tipAmount.toString())
+                LogUtil.logE("TipAmount 4:: ", tipAmount.toString())
 
                 val bundle = Bundle()
                 bundle.putBoolean("isDineIn", true)

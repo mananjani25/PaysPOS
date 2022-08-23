@@ -14,6 +14,7 @@ import com.android.pos.R
 import com.android.pos.data.remote.Constants
 import com.android.pos.databinding.FragmentScannerListBinding
 import com.android.pos.ui.activities.MainActivity
+import com.android.pos.utils.LogUtil
 import com.android.pos.utils.extensions.gone
 import com.android.pos.utils.extensions.visible
 import dagger.hilt.android.AndroidEntryPoint
@@ -128,8 +129,8 @@ class ScannerListFragment : Fragment() {
         lastConnectedScannerListAdapter.notifyDataSetChanged()
         availableScannerListAdapter.notifyDataSetChanged()
 
-        Log.e(TAG, "connected device list : ${lastConnectedScannerListAdapter.arrayList.size}")
-        Log.e(TAG, "other device list : ${availableScannerListAdapter.arrayList.size}")
+        LogUtil.logE(TAG, "connected device list : ${lastConnectedScannerListAdapter.arrayList.size}")
+        LogUtil.logE(TAG, "other device list : ${availableScannerListAdapter.arrayList.size}")
 
         if (lastConnectedScannerListAdapter.arrayList.isNotEmpty()) {
             //connected device list > Not Empty

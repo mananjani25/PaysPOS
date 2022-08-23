@@ -25,6 +25,7 @@ import com.android.pos.databinding.FragmentPasscodeBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.activities.MainActivity
 import com.android.pos.utils.AlertUtils
+import com.android.pos.utils.LogUtil
 import com.android.pos.utils.ProgressUtils
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -130,7 +131,7 @@ class Passcode : Fragment() {
 
         viewModel.timeDetails.observe(requireActivity()) {
             it.data?.let {
-                Log.e("TAG", "timeDetails ${it.data}")
+                LogUtil.logE("TAG", "timeDetails ${it.data}")
                 binding.currentTime.text = it.data.time
                 binding.currentDate.text = it.data.date
             }
@@ -343,7 +344,7 @@ class Passcode : Fragment() {
             override fun afterTextChanged(s: Editable?) {
                 var value = s.toString()
                 if (value.length == 4) {
-                    Log.e("passCodeView", value)
+                    LogUtil.logE("passCodeView", value)
                     viewModel.submit(value)
                 }
 
@@ -397,7 +398,7 @@ class Passcode : Fragment() {
 
         viewModel.data1.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
-                Log.e("action_passcode", it.toString())
+                LogUtil.logE("action_passcode", it.toString())
                 findNavController().navigate(R.id.action_passcode_to_login)
 
             }

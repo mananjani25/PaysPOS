@@ -24,6 +24,7 @@ import androidx.core.view.GravityCompat
 import androidx.databinding.DataBindingUtil
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
@@ -44,6 +45,7 @@ import com.android.pos.di.ApiModule.BASE_URL
 import com.android.pos.di.HostSelectionInterceptor
 import com.android.pos.di.PrefProvider
 import com.android.pos.di.RolePermission
+import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.android.pos.ui.fragments.dashboard.bolddashboard.DashboardCategoryBoldPOS
 import com.android.pos.ui.fragments.payment.OrderCompleteViewModel
 import com.android.pos.ui.fragments.settings.hardware.Hardware
@@ -102,6 +104,8 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
     var mPrinter: Printer? = null
     var arrayItems: ArrayList<PrinterQueueModel> = arrayListOf()
 
+    private val dashBoardCategoryViewModel by viewModels<DashBoardCategoryViewModel>()
+
     @set:Inject
     internal var prefProvider: PrefProvider? = null
 
@@ -117,7 +121,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
     private lateinit var mFirebaseAnalytics: FirebaseAnalytics
     var broadcastReceiver = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
-            Log.e(TAG, "getDataFirebaseNot")
+            LogUtil.logE(TAG, "getDataFirebaseNot")
             var message = intent?.getStringExtra("message")
             var isAuto = intent?.getBooleanExtra("isAuto", false)
             if (isAuto == true) {
@@ -146,16 +150,26 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
             if (data?.isNotEmpty() == true) {
                 var printerQueueModel: PrinterQueueModel =
                     Gson().fromJson(data, PrinterQueueModel::class.java)
-                Log.e(TAG, "printerQueueModel:  ${Gson().toJson(printerQueueModel)}")
+                LogUtil.logE(TAG, "printerQueueModel:  ${Gson().toJson(printerQueueModel)}")
                 lifecycleScope.launch {
                     var flag = viewModelPrinter.checkDataisExistOrNot(printerQueueModel)
-                    Log.e(TAG, "UpdateGetloag ${flag}")
+                    LogUtil.logE(TAG, "UpdateGetloag ${flag}")
                     if (!flag) {
                         // viewModelPrinter.updateStatusPrinterQueue(printerQueueModel)
                     }
                 }
 
             }
+        }
+
+    }
+
+    private var syncReceiver = object : BroadcastReceiver() {
+        override fun onReceive(p0: Context?, p1: Intent?) {
+
+            if (p0 != null)
+                dashBoardCategoryViewModel.syncInventoryModule()
+
         }
 
     }
@@ -174,7 +188,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                     ) as ArrayList<PrinterQueueModel>
 
 
-                Log.e(TAG, "printerQueueDataReceived  ${Gson().toJson(arrayItems)}")
+                LogUtil.logE(TAG, "printerQueueDataReceived  ${Gson().toJson(arrayItems)}")
 
 
                 arrayItems.forEach { data ->
@@ -205,7 +219,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
     }
     var broadcastReceiveronlineOrder = object : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
-            Log.e(TAG, "GetOnlineOrderDataNoti")
+            LogUtil.logE(TAG, "GetOnlineOrderDataNoti")
             var count = intent?.getStringExtra("count")
             count?.toInt()
                 ?.let { DashboardCategoryBoldPOS.newInstance().onlineOrderBadgeDisplay(it) }
@@ -221,7 +235,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
     private fun getPrinterQueueData() {
         viewModelPrinter.getPrinterQueueData().observe(this) {
             if (it != null && it.isNotEmpty()) {
-                Log.e(TAG, "getPrinterQueueData " + isPrinterQueueRun)
+                LogUtil.logE(TAG, "getPrinterQueueData " + isPrinterQueueRun)
                 if (!isPrinterQueueRun) {
                     isPrinterQueueRun = true
 
@@ -238,7 +252,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
 
 
             } else {
-                Log.e(TAG, "getPrinterNull")
+                LogUtil.logE(TAG, "getPrinterNull")
             }
         }
     }
@@ -249,7 +263,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
         index: Int,
         arrayItems: ArrayList<PrinterQueueModel>
     ) {
-        Log.e(TAG, "kitchenPrinters  ${kitchenPrinterList.size}")
+        LogUtil.logE(TAG, "kitchenPrinters  ${kitchenPrinterList.size}")
         printerQueueModelGlobal = printerQueueModel
         if (kitchenPrinterList.isEmpty()) {
             isPrinterQueueRun = false
@@ -268,7 +282,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                 modelName = Printer.TM_M30
             }
 
-            Log.e(TAG, "modelName  ${modelName}")
+            LogUtil.logE(TAG, "modelName  ${modelName}")
             if (modelName != -1) {
 
                 mPrinter = null
@@ -277,11 +291,11 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
 
 
                 var containsFlag: Boolean = true
-                Log.e(
+                LogUtil.logE(
                     TAG,
                     "printerSuccessData  ${Gson().toJson(printerQueueModel.printSuccessData)}"
                 )
-                Log.e(TAG, "PrinterID ${kitchenPrinterList[i].id}")
+                LogUtil.logE(TAG, "PrinterID ${kitchenPrinterList[i].id}")
                 if (printerQueueModel.printSuccessData.isNotEmpty()) {
                     for (k in 0 until printerQueueModel.printSuccessData.size) {
 
@@ -302,11 +316,11 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                 } else {
                     containsFlag = false
                 }
-                Log.e(TAG, "containsFlag:  ${containsFlag}  ${mPrinter}")
+                LogUtil.logE(TAG, "containsFlag:  ${containsFlag}  ${mPrinter}")
                 if (!containsFlag && mPrinter != null) {
 
                     try {
-                        Log.e(TAG, "isPrinterQueueRun  ${isPrinterQueueRun}")
+                        LogUtil.logE(TAG, "isPrinterQueueRun  ${isPrinterQueueRun}")
 
 
 
@@ -314,7 +328,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                         lifecycleScope.executeAsyncTask(
                             onPostExecute = {
                                 if (mPrinter != null) {
-                                    Log.e(TAG, "statusInfo  ${Gson().toJson(mPrinter?.status)}")
+                                    LogUtil.logE(TAG, "statusInfo  ${Gson().toJson(mPrinter?.status)}")
 
                                     var fontSizeH = 1
                                     var fontSizeW = 1
@@ -549,8 +563,8 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                             doInBackground = {
 
 
-                                Log.e(TAG, "getIpAddress  ${kitchenPrinterList[i].ipAddress}")
-                                Log.e(
+                                LogUtil.logE(TAG, "getIpAddress  ${kitchenPrinterList[i].ipAddress}")
+                                LogUtil.logE(
                                     TAG,
                                     "connectionPrinter   ${mPrinter?.status?.connection}"
                                 )
@@ -606,7 +620,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
 
                     } catch (e: java.lang.Exception) {
 
-                        Log.e(TAG, "connectException  ${e.message}")
+                        LogUtil.logE(TAG, "connectException  ${e.message}")
 
 
                         isPrinterQueueRun = false
@@ -650,7 +664,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                         kitchenPrinterList = emptyList()
                         kitchenPrinterList = it.data
 
-                        Log.e("getCustomerPrinters", Gson().toJson(kitchenPrinterList))
+                        LogUtil.logE("getCustomerPrinters", Gson().toJson(kitchenPrinterList))
                     }
 
                 }
@@ -726,6 +740,11 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
         registerReceiver(
             broadCastReceiverPrinterQueueDataGet,
             IntentFilter(Constants.PRINTER_QUEUE_DATA_RECEIVED)
+        )
+
+        registerReceiver(
+            syncReceiver,
+            IntentFilter(Constants.SYNC_NOTIFICATION)
         )
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
@@ -868,7 +887,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
     private val wifiStateReceiver: BroadcastReceiver = object : BroadcastReceiver() {
         @SuppressLint("RestrictedApi")
         override fun onReceive(context: Context, intent: Intent) {
-//            Log.e(TAG,"customerPrinterList  ${Gson().toJson(customerPrinterList)}")
+//            LogUtil.logE(TAG,"customerPrinterList  ${Gson().toJson(customerPrinterList)}")
             kitchenPrinterList.forEach {
                 println("customerPrinterList " + it.name)
             }
@@ -896,7 +915,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                     uploadWorkRequest
                 )
             } catch (e: java.lang.Exception) {
-                Log.e(TAG, "printerQueueLog  ${e.message.toString()}")
+                LogUtil.logE(TAG, "printerQueueLog  ${e.message.toString()}")
                 e.printStackTrace()
             }
         }
@@ -1059,16 +1078,16 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
         grantResults: IntArray
     ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-        Log.e("!_@_", "$requestCode")
+        LogUtil.logE("!_@_", "$requestCode")
         when (requestCode) {
             Constants.REQUEST_LOCATION_PERMISSION ->
                 if (permissions.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     //permission with request code 1 granted
-                    Log.e("!_@_", "Permission Granted")
+                    LogUtil.logE("!_@_", "Permission Granted")
                     requestCallBack?.invoke()
                 } else {
                     //permission with request code 1 was not granted
-                    Log.e("!_@_", "Permission not granted")
+                    LogUtil.logE("!_@_", "Permission not granted")
                 }
             else -> super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         }
@@ -1105,10 +1124,10 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
 
     override fun onPtrReceive(p0: Printer?, p1: Int, p2: PrinterStatusInfo?, p3: String?) {
 
-        Log.e(TAG, "onPrintReceived")
+        LogUtil.logE(TAG, "onPrintReceived")
         lifecycleScope.launch {
             var flag = printerQueueModelGlobal?.let { viewModelPrinter.checkDataisExistOrNot(it) }
-            Log.e(TAG, "UpdateGetloag ${flag}")
+            LogUtil.logE(TAG, "UpdateGetloag ${flag}")
             if (flag == false) {
                 var listIds: ArrayList<Int> =
                     printerQueueModelGlobal!!.printSuccessData.toCollection(
@@ -1116,8 +1135,8 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                     )
                 listIds.add(kitchenPrinterList[currentIndex].id)
 
-                Log.e(TAG, "listIds  ${Gson().toJson(listIds)}")
-                Log.e(TAG, "printerQueueId  ${printerQueueModelGlobal?.id ?: 0}")
+                LogUtil.logE(TAG, "listIds  ${Gson().toJson(listIds)}")
+                LogUtil.logE(TAG, "printerQueueId  ${printerQueueModelGlobal?.id ?: 0}")
                 ThreadPoolManager.instance.executeTask(Runnable {
                     lifecycleScope.launch {
                         printerQueueModelGlobal?.id?.let {
@@ -1155,7 +1174,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
             } catch (e: java.lang.Exception) {
                 isPrinterQueueRun = false
                 getPrinterQueueData()
-                Log.e("statusChangePRint", "PrinterSuccessDisconnectExcep")
+                LogUtil.logE("statusChangePRint", "PrinterSuccessDisconnectExcep")
                 e.printStackTrace()
             }*/
 
@@ -1166,11 +1185,11 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
     }
 
     override fun onConnection(p0: Any?, p1: Int) {
-        Log.e(TAG, "onConnection: ${p0}  ${p1}")
+        LogUtil.logE(TAG, "onConnection: ${p0}  ${p1}")
     }
 
     override fun onPtrStatusChange(p0: Printer?, p1: Int) {
-        Log.e(TAG, "OnStatusChanged ${p1}")
+        LogUtil.logE(TAG, "OnStatusChanged ${p1}")
     }
 
 

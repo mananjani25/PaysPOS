@@ -19,6 +19,7 @@ import com.android.pos.data.repositories.TaxServiceChargeRepository
 import com.android.pos.data.repositories.TipDiscountRepository
 import com.android.pos.di.PrefProvider
 import com.android.pos.utils.Event
+import com.android.pos.utils.LogUtil
 import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.statusUtils.Resource
 import com.android.pos.utils.statusUtils.Status
@@ -261,7 +262,7 @@ class DineInOrderTableViewModel @Inject constructor(
 
                     val itemTaxPrice =
                         (tax.rate * totalPrice) / 100
-                    Log.e("itemTaxPrice", "" + itemTaxPrice)
+                    LogUtil.logE("itemTaxPrice", "" + itemTaxPrice)
                     String.format("%.2f", itemTaxPrice)
                         .toDouble()
                 } else {
@@ -365,11 +366,11 @@ class DineInOrderTableViewModel @Inject constructor(
                         resource.data?.let {
 
 
-                            Log.e(
+                            LogUtil.logE(
                                 "INOUT : Total Amount",
                                 order.payments[order.payments.size - 1].amount.toString()
                             )
-                            Log.e("INOUT : Total PayAmount", totalPayAmounts.toString())
+                            LogUtil.logE("INOUT : Total PayAmount", totalPayAmounts.toString())
 
                             if (order.payments.isNotEmpty()) {
                                 if (order.payments[order.payments.size - 1].amount == totalPayAmounts) {

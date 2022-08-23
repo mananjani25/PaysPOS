@@ -32,6 +32,7 @@ import com.android.pos.data.remote.Constants
 import com.android.pos.databinding.FragmentOpenOrderNewBinding
 import com.android.pos.ui.adapter.AddressListAdapter
 import com.android.pos.utils.AlertUtils
+import com.android.pos.utils.LogUtil
 import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.ProgressUtils
 import com.google.android.material.datepicker.MaterialDatePicker
@@ -87,9 +88,9 @@ class OpenOrderCustomerFragmentNew : DialogFragment(), View.OnClickListener {
     private fun setAddress() {
 
         adapter = AddressListAdapter(refreshCallBack = { adapterPos ->
-            Log.e(TAG, "callback")
+            LogUtil.logE(TAG, "callback")
             if (::adapter.isInitialized) {
-                Log.e(TAG, "notify list")
+                LogUtil.logE(TAG, "notify list")
                 activity?.runOnUiThread {
                     adapter.notifyItemChanged(adapterPos)
                 }
@@ -189,7 +190,7 @@ class OpenOrderCustomerFragmentNew : DialogFragment(), View.OnClickListener {
 
         binding.edtStreet.setOnFocusChangeListener { v, hasFocus ->
 
-            Log.e(TAG, "HasFocusChanged")
+            LogUtil.logE(TAG, "HasFocusChanged")
 
         }
         //   binding.edtStreetBill.setAdapter(PlacesAutoCompleteAdapter(binding.root.context, placesApi))
@@ -204,7 +205,7 @@ class OpenOrderCustomerFragmentNew : DialogFragment(), View.OnClickListener {
 
                 @SuppressLint("LongLogTag")
                 override fun onPlaceDetailsFetched(placeDetails: PlaceDetails) {
-                    Log.e(TAG, "onPlaceFatched ${Gson().toJson(placeDetails)}")
+                    LogUtil.logE(TAG, "onPlaceFatched ${Gson().toJson(placeDetails)}")
 
 
                     MethodUtils.hideKeyboard(requireActivity())
@@ -213,7 +214,7 @@ class OpenOrderCustomerFragmentNew : DialogFragment(), View.OnClickListener {
                         gcd.getFromLocation(placeDetails.lat, placeDetails.lng, 1)
 
 
-                    Log.e(TAG, "address   ${Gson().toJson(address)}")
+                    LogUtil.logE(TAG, "address   ${Gson().toJson(address)}")
 
                     if (placeDetails.address.isNotEmpty()) {
 
@@ -259,7 +260,7 @@ class OpenOrderCustomerFragmentNew : DialogFragment(), View.OnClickListener {
                     val gcd = Geocoder(context, Locale.getDefault())
                     val address: List<Address> =
                         gcd.getFromLocation(placeDetails.lat, placeDetails.lng, 1)
-                    Log.e(TAG, "address:  ${Gson().toJson(address)}")
+                    LogUtil.logE(TAG, "address:  ${Gson().toJson(address)}")
 
                     if (address.isNotEmpty()) {
 
@@ -309,7 +310,7 @@ class OpenOrderCustomerFragmentNew : DialogFragment(), View.OnClickListener {
 
     private fun navigate() {
 
-        Log.e(TAG, "POPBACKCUSTOMER")
+        LogUtil.logE(TAG, "POPBACKCUSTOMER")
         viewModel._Basedata.observe(viewLifecycleOwner, { event ->
             event.getContentIfNotHandled()?.let { baseResponse ->
                 val phonesList: ArrayList<TbPhones> =
@@ -413,7 +414,7 @@ class OpenOrderCustomerFragmentNew : DialogFragment(), View.OnClickListener {
             if (customer.addresses.isNotEmpty()) {
 
                 addressListNew = arrayListOf()
-                Log.e(TAG, "addressesList1:  ${Gson().toJson(customer.addresses.size)}")
+                LogUtil.logE(TAG, "addressesList1:  ${Gson().toJson(customer.addresses.size)}")
 
                 for (i in 0 until customer.addresses.size) {
                     val obj = customer.addresses.get(i)
@@ -479,7 +480,7 @@ class OpenOrderCustomerFragmentNew : DialogFragment(), View.OnClickListener {
             )
 
             addressListNew = arrayListOf()
-            Log.e(TAG, "addressesList2:  ${Gson().toJson(customer.addresses.size)}")
+            LogUtil.logE(TAG, "addressesList2:  ${Gson().toJson(customer.addresses.size)}")
 
             for (i in 0 until customer.addresses.size) {
                 val obj = customer.addresses.get(i)
@@ -697,7 +698,7 @@ class OpenOrderCustomerFragmentNew : DialogFragment(), View.OnClickListener {
                         binding.edtState.text.toString()
                     addressListNew.get(addressListNew.size - 1).postcode =
                         binding.edtZip.text.toString()
-                    Log.e(TAG, "addressListSize:  ${addressListNew.size}")
+                    LogUtil.logE(TAG, "addressListSize:  ${addressListNew.size}")
 
 
                     viewModel.setAddressList(addressListNew)

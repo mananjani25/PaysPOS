@@ -152,7 +152,7 @@ interface ApiService {
     suspend fun userLogOut(@FieldMap option: HashMap<String, String>): BaseResponse
 
     @GET(SYNC_VENUE_DATA)
-    suspend fun syncVenueData(): VenueDataResponse
+    suspend fun syncVenueData(@Query("terminal_id") terminalId: Int): VenueDataResponse
 
     @GET(GET_PRINTERS)
     suspend fun getPrinterList(@Query("terminal_id") terminalId: Int): PrinterResponse

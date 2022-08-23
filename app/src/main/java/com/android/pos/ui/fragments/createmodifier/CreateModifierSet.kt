@@ -22,6 +22,7 @@ import com.android.pos.data.remote.Constants
 import com.android.pos.databinding.CreateModifierSetBinding
 import com.android.pos.ui.adapter.ModifierAdapter
 import com.android.pos.utils.AlertUtils
+import com.android.pos.utils.LogUtil
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.extensions.getNavigationResultLiveData
 import com.android.pos.utils.extensions.liveSnackBar
@@ -137,7 +138,7 @@ class CreateModifierSet : Fragment(), TextWatcher {
 
                 val oldPos = viewHolder.bindingAdapterPosition
                 val newPos = target.bindingAdapterPosition
-                Log.e(
+                LogUtil.logE(
                     "reorder after", "" + ":::" + ":::" +
                             viewHolder.bindingAdapterPosition.toString() + " :::  " + target.bindingAdapterPosition.toString()
                 )
@@ -148,7 +149,7 @@ class CreateModifierSet : Fragment(), TextWatcher {
 
                 val a = adapter.getItem(dragFrom).sort
                 val b = adapter.getItem(dragTo).sort
-                Log.e("onItemMove", "$a:: $b")
+                LogUtil.logE("onItemMove", "$a:: $b")
 
 
 
