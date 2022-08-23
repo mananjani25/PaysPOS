@@ -452,7 +452,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
     private fun syncData() {
 
         val sync = prefProvider.getValueboolean(Constants.SYNC_DATA, false)
-        Log.e(TAG,"getsyncStatus  ${sync}")
+        Log.e(TAG, "getsyncStatus  ${sync}")
         if (!sync) {
             ProgressUtils.showProgressDialog(requireActivity())
             viewModel.syncInventoryModule()
@@ -627,8 +627,12 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             /*  if (item.variationsAttributes.isNotEmpty()) {
                   item.variationsAttributes.get(0).isChecked = true
               }*/
+            val backStateName: String = AddItemFragment.javaClass.getName()
             val fragment = AddItemFragment.newInstance(item, this, cartList, false)
-            loadCategoryFragment(fragment)
+            val fm: FragmentManager = requireActivity().supportFragmentManager
+            fm.beginTransaction().add(binding.frameLayout.id, fragment).setReorderingAllowed(true)
+                .addToBackStack(backStateName).commit()
+            //  loadCategoryFragment(fragment)
         } else {
             Log.e(TAG, "cartListItemAddSize: ${cartList.size}")
             if (cartList.isEmpty()) {
@@ -668,6 +672,8 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             arguments?.clear()
             findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_self)
         } else {
+
+
             loadCategoryFragment(CategoryFragment(this, binding.layoutHeader.edtSearch))
         }
 
@@ -680,7 +686,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
     private fun addObserver() {
         viewModel.showProgress.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
-                Log.e(TAG,"showDialogData ${it}")
+                Log.e(TAG, "showDialogData ${it}")
                 if (it) {
 
                     ProgressUtils.showProgressDialog(requireActivity())
@@ -848,10 +854,14 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
 
     override fun onItemUpdate(item: TbItem) {
-        Log.e(TAG, "dashboardPosItem:  ${Gson().toJson(item)}")
         prefProvider.setValueInt(Constants.CAT_ID_SELECTED, item.categoryId)
-        val frag: Fragment = AddItemFragment.newInstance(item, this, cartList, true)
-        loadCategoryFragment(frag)
+        val backStateName: String = AddItemFragment.javaClass.getName()
+        val fragment = AddItemFragment.newInstance(item, this, cartList, true)
+        val fm: FragmentManager = requireActivity().supportFragmentManager
+        fm.beginTransaction().add(binding.frameLayout.id, fragment).setReorderingAllowed(true)
+            .addToBackStack(backStateName).commit()
+        /*val frag: Fragment = AddItemFragment.newInstance(item, this, cartList, true)
+        loadCategoryFragment(frag)*/
     }
 
     override fun onDineInOrderCleared() {

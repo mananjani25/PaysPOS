@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
@@ -321,7 +322,8 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
                 }
             }
 
-            listner.onCancelItemSelected()
+            requireActivity().supportFragmentManager.popBackStackImmediate(AddItemFragment.javaClass.getName(),FragmentManager.POP_BACK_STACK_INCLUSIVE)
+            //listner.onCancelItemSelected()
 
         }
 

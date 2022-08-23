@@ -78,11 +78,11 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         setAdapter()
         setVenueData()
 
     }
+
 
     private fun setVenueData() {
         viewModel.venueDataLocal().observe(
