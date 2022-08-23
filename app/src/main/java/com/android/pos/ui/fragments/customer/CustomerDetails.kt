@@ -296,25 +296,25 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
                 itemDiscount += it.discountPrice
             }
             discountPrice = (order.totalDiscount - itemDiscount)
-            taxlistDynamic = arrayListOf()
+            taxlistDynamic = getTaxBirfucationList(inventoryList(order)!!)
         }
     }
 
-    private fun getTaxBirfucationList(orderItems: List<GetOrderDetailsResponse.Data.OrderItem>): ArrayList<TaxData> {
+    private fun getTaxBirfucationList(orderItems: List<TbItem>): ArrayList<TaxData> {
         var taxListDynamic: ArrayList<TaxData> = arrayListOf()
         if (orderItems.isNotEmpty()) {
             orderItems.forEach { orderItem ->
-                var totalPrice = orderItem.price * orderItem.quantity
-                orderItem.orderItemModifiers.forEach { orderItemModifier ->
-                    totalPrice += orderItemModifier.price * orderItemModifier.quantity
+                var totalPrice = orderItem.price * orderItem.itemQuantity
+                orderItem.modifiers.forEach { orderItemModifier ->
+                    totalPrice += orderItemModifier.price * orderItemModifier.itemQuantity
                 }
                 Log.d(TAG, "navigate: itemPrice : $totalPrice")
                 var totaltaxtemp = 0.0
-                orderItem.orderItemTaxes.forEach { orderItemTaxe ->
+                orderItem.taxes?.forEach { orderItemTaxe ->
                     if (taxListDynamic?.isNotEmpty() == true) {
                         var found = -1
                         taxListDynamic.forEachIndexed { index, taxData ->
-                            if (taxData.orderTaxId == orderItemTaxe.taxId) {
+                            if (taxData.id == orderItemTaxe.id) {
                                 found = index
                                 return@forEachIndexed
                             }
@@ -322,7 +322,7 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
                         if (found == -1) {
                             var taxData: TaxData = TaxData(
                                 orderItemTaxe.createdAt,
-                                orderItemTaxe.taxId,
+                                orderItemTaxe.id,
                                 0,
                                 orderItemTaxe.name,
                                 orderItemTaxe.rate,
@@ -332,8 +332,8 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
                                 orderItemTaxe.isDefault,
                                 false,
                                 "",
-                                listOf(orderItemTaxe.orderItemId),
-                                orderItemTaxe.taxId,
+                                orderItemTaxe.itemIds,
+                                orderItemTaxe.orderTaxId,
                                 false,
                                 getTaxFromTotalPrice(
                                     orderItemTaxe,
@@ -357,7 +357,7 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
                     } else {
                         var taxData: TaxData = TaxData(
                             orderItemTaxe.createdAt,
-                            orderItemTaxe.taxId,
+                            orderItemTaxe.id,
                             0,
                             orderItemTaxe.name,
                             orderItemTaxe.rate,
@@ -367,8 +367,8 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
                             orderItemTaxe.isDefault,
                             false,
                             "",
-                            listOf(orderItemTaxe.orderItemId),
-                            orderItemTaxe.taxId,
+                            orderItemTaxe.itemIds,
+                            orderItemTaxe.orderTaxId,
                             false,
                             getTaxFromTotalPrice(
                                 orderItemTaxe,
@@ -393,9 +393,9 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
 
 
     fun getTaxFromTotalPrice(
-        orderItemTaxe: GetOrderDetailsResponse.Data.OrderItem.OrderItemTaxe,
+        orderItemTaxe: TaxData,
         totalPrice: Double,
-        item: GetOrderDetailsResponse.Data.OrderItem
+        item: TbItem
     ): Double {
         var totaltaxtemp = 0.0
 
@@ -562,11 +562,15 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
     ): List<TaxData>? {
         listOfTbItem.forEach { activeItems ->
             if (activeItems.itemId == itemIdexist) {
+                var taxactive: ArrayList<TaxData> = arrayListOf()
                 activeItems.taxes?.forEach { taxData ->
-                    taxData.locationId = locationId
+                    if (taxData.isActive) {
+                        taxData.locationId = locationId
+                        taxactive.add(taxData)
+                    }
                 }
-                return activeItems.taxes
-        }
+                return taxactive.toList()
+            }
         }
         return emptyList()
     }
