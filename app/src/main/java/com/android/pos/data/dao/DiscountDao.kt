@@ -20,10 +20,10 @@ interface DiscountDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun addDiscounts(discountList: List<TbDiscount>)
 
-    @get:Query("select * from TbDiscount")
+    @get:Query("select * from TbDiscount where TbDiscount.isDeleted  = 0")
     val allDiscount: LiveData<List<TbDiscount>>
 
-    @Query("select * from TbDiscount")
+    @Query("select * from TbDiscount where TbDiscount.isDeleted  = 0")
     fun allDiscountList(): List<TbDiscount>
 
     @Query("SELECT * from TbDiscount where TbDiscount.id  = :id LIMIT 1")

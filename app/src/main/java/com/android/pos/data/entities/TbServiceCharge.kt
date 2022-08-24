@@ -35,5 +35,7 @@ data class TbServiceCharge(
     var isChecked: Boolean = true,
     @SerializedName("order_service_charge_id")
     val order_service_charge_id: Int? = null,
+    @SerializedName("is_deleted")
+    var isDeleted: Boolean = false
 
     ) : Parcelable

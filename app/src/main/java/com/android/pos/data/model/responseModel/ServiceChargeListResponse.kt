@@ -22,7 +22,9 @@ data class ServiceChargeListResponse(
             @SerializedName("updated_at") val updatedAt: String,
             @SerializedName("min_guest_count") val minGuestCount: Int,
             @SerializedName("max_guest_count") val maxGuestCount: Int,
-            @SerializedName("order_type") val orderType: String
+            @SerializedName("order_type") val orderType: String,
+            @SerializedName("is_deleted")
+            var isDeleted: Boolean = false
         )
     }
 }

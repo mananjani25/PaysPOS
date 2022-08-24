@@ -17,10 +17,10 @@ interface NotesDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun addAllNotesSuspend(noteList: List<NoteResponse.Data>)
 
-    @get:Query("select * from TbNotes ORDER BY TbNotes.sort DESC")
+    @get:Query("select * from TbNotes where TbNotes.isDeleted = 0 ORDER BY TbNotes.sort DESC")
     val alllNotes: LiveData<List<NoteResponse.Data>>
 
-    @Query("select * from TbNotes")
+    @Query("select * from TbNotes where TbNotes.isDeleted = 0")
     fun allNotesList(): List<NoteResponse.Data>
 
     @Query("SELECT * from TbNotes where TbNotes.id  = :id LIMIT 1")

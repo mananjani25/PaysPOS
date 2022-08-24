@@ -38,6 +38,8 @@ data class GetTipReponse(
         var sort: Int,
         @SerializedName("updated_at")
         val updatedAt: String,
-        var isChecked: Boolean = true
+        var isChecked: Boolean = true,
+        @SerializedName("is_deleted")
+        var isDeleted: Boolean = false
     ) : Parcelable
 }

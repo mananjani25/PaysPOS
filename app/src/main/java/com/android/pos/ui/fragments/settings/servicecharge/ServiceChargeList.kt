@@ -114,34 +114,36 @@ class ServiceChargeList : Fragment(), ServiceChargeListAdapter.ItemCallback,
 
                 if (it.serviceCharges.isNotEmpty()) {
                     it.serviceCharges.forEach { service ->
-                        if (service.orderType == "TakeOutAndParkOrder") {
-                            var data: TbServiceCharge = TbServiceCharge(
-                                service.createdAt,
-                                service.id,
-                                service.isEnabled,
-                                service.locationId,
-                                service.minGuestCount,
-                                service.maxGuestCount,
-                                service.name,
-                                service.orderType,
-                                service.percentage,
-                                service.updatedAt
-                            )
-                            takeout_servicechargelist.add(data)
-                        } else if (service.orderType == "DineIn") {
-                            var data: TbServiceCharge = TbServiceCharge(
-                                service.createdAt,
-                                service.id,
-                                service.isEnabled,
-                                service.locationId,
-                                service.minGuestCount,
-                                service.maxGuestCount,
-                                service.name,
-                                service.orderType,
-                                service.percentage,
-                                service.updatedAt
-                            )
-                            dinein_servicechargelist.add(data)
+                        if (!service.isDeleted) {
+                            if (service.orderType == "TakeOutAndParkOrder") {
+                                var data: TbServiceCharge = TbServiceCharge(
+                                    service.createdAt,
+                                    service.id,
+                                    service.isEnabled,
+                                    service.locationId,
+                                    service.minGuestCount,
+                                    service.maxGuestCount,
+                                    service.name,
+                                    service.orderType,
+                                    service.percentage,
+                                    service.updatedAt
+                                )
+                                takeout_servicechargelist.add(data)
+                            } else if (service.orderType == "DineIn") {
+                                var data: TbServiceCharge = TbServiceCharge(
+                                    service.createdAt,
+                                    service.id,
+                                    service.isEnabled,
+                                    service.locationId,
+                                    service.minGuestCount,
+                                    service.maxGuestCount,
+                                    service.name,
+                                    service.orderType,
+                                    service.percentage,
+                                    service.updatedAt
+                                )
+                                dinein_servicechargelist.add(data)
+                            }
                         }
                     }
                     setTaxDatatakeout(takeout_servicechargelist)
