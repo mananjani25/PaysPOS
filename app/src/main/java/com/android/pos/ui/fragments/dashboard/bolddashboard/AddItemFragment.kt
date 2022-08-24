@@ -136,7 +136,6 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
             prefProvider.getValue(ORDER_TYPE, TAKEOUT),
             prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
         ).observe(requireActivity()) {
-            Log.e(TAG, "MAllWords:::  ${Gson().toJson(it)}")
             if (it.isEmpty()) {
                 cartList.clear()
                 cartList = arrayListOf()
