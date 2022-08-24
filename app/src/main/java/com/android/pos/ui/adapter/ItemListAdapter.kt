@@ -88,7 +88,7 @@ class ItemListAdapter(private val isChoose: Boolean, private val where: String) 
     }
 
     fun addPaginationData(list: ArrayList<TbItem>) {
-
+        filterList.addAll(filterList.size , list)
         /*for (i in 0 until list.size) {
 
             filterList.add(list[i])
