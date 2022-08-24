@@ -64,9 +64,7 @@ class ItemsViewModel @Inject constructor(
     val allItems: Flow<PagingData<TbItem>> = Pager(
         config = PagingConfig(
             pageSize = 50,
-            enablePlaceholders = false,
-            maxSize = 2000,
-            prefetchDistance = 30
+            enablePlaceholders = false
         )
     ) {
         appDatabase.itemDao().getPaginationList()

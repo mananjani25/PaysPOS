@@ -179,43 +179,11 @@ class AllItems(val clickedPosition: Int, val totalItems: Int) : Fragment(), Item
     }
 
     private fun itemsObserver() {
-        /*  if (view != null) {
-              viewModel._getItems().observe(viewLifecycleOwner) {
-
-                  Log.e(TAG, "pagedListSize  ${it.size}")
-                  if (it.isNotEmpty()) {
-                      //   adapter.add(it.toCollection(arrayListOf()))
-                      binding.edtSearch.hint = "Search (" + totalItemCount + ") Items"
-                  }
-
-                  *//*  it?.let { resource ->
-                      when (resource.status) {
-                          Status.SUCCESS -> {
-                              binding.rvAllItemList.visibility = View.VISIBLE
-                              binding.progressCircular.visibility = View.GONE
-                              it.data?.let { it1 ->
-                                  adapter.add(it1 as List<TbItem>)
-                                  binding.edtSearch.hint = "Search (" + it1.size + ") Items"
-                              }
-                              listSize = it.data?.size
-
-                          }
-                          Status.ERROR -> {
-                              binding.rvAllItemList.visibility = View.GONE
-                              binding.progressCircular.visibility = View.GONE
-                          }
-                          Status.LOADING -> {
-                              binding.rvAllItemList.visibility = View.GONE
-                              binding.progressCircular.visibility = View.VISIBLE
-                          }
-                      }
-                  }*//*
-            }
-        }*/
 
         if (view != null) {
             lifecycleScope.launch {
                 viewModel.allItems.collectLatest {
+                    Log.e(TAG, "pageSubmitData  ${Gson().toJson(it)}")
                     adapterPage.submitData(it)
 
                 }
@@ -228,7 +196,6 @@ class AllItems(val clickedPosition: Int, val totalItems: Int) : Fragment(), Item
         searchText = "%$searchText%"
         lifecycleScope.launch {
             viewModel.allItemsQuery(desc = searchText).collectLatest {
-                Log.e(TAG, "")
                 adapterPage.submitData(it)
             }
         }
@@ -287,6 +254,7 @@ class AllItems(val clickedPosition: Int, val totalItems: Int) : Fragment(), Item
         adapterPage = ItemListPageAdapter()
         val layoutManager =
             LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
+        binding.rvAllItemList.setHasFixedSize(true)
         binding.rvAllItemList.layoutManager = layoutManager
         binding.rvAllItemList.adapter = adapterPage
         adapterPage.setCallback(this)
