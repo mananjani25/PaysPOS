@@ -25,9 +25,11 @@ import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.callback.ItemCallback
 import com.android.pos.utils.extensions.alert
+import com.android.pos.utils.extensions.runOnUiThread
 import com.android.pos.utils.statusUtils.Status
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -91,7 +93,11 @@ class AllItems(val clickedPosition: Int, val totalItems: Int) : Fragment(), Item
 
             override fun afterTextChanged(s: Editable) {
 
-                getSearchItemsFromDB(s.toString().trim())
+                if (s.isNotEmpty() && s.length > 2) {
+                    getSearchItemsFromDB(s.toString().trim())
+                } else {
+                    itemsObserver()
+                }
 
 
             }
@@ -179,11 +185,10 @@ class AllItems(val clickedPosition: Int, val totalItems: Int) : Fragment(), Item
     }
 
     private fun itemsObserver() {
-
         if (view != null) {
-            lifecycleScope.launch {
+            lifecycleScope.launch(Dispatchers.IO) {
                 viewModel.allItems.collectLatest {
-                    Log.e(TAG, "pageSubmitData  ${Gson().toJson(it)}")
+                    Log.e("collectLatest", it.toString())
                     adapterPage.submitData(it)
 
                 }
@@ -194,7 +199,7 @@ class AllItems(val clickedPosition: Int, val totalItems: Int) : Fragment(), Item
     private fun getSearchItemsFromDB(query: String) {
         var searchText = query
         searchText = "%$searchText%"
-        lifecycleScope.launch {
+        lifecycleScope.launch(Dispatchers.IO) {
             viewModel.allItemsQuery(desc = searchText).collectLatest {
                 adapterPage.submitData(it)
             }
@@ -251,88 +256,16 @@ class AllItems(val clickedPosition: Int, val totalItems: Int) : Fragment(), Item
             )
         )
 
-        adapterPage = ItemListPageAdapter()
-        val layoutManager =
-            LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
         binding.rvAllItemList.setHasFixedSize(true)
-        binding.rvAllItemList.layoutManager = layoutManager
+
+
+        adapterPage = ItemListPageAdapter()
         binding.rvAllItemList.adapter = adapterPage
         adapterPage.setCallback(this)
 
 
-        /*  binding.rvAllItemList.addOnScrollListener(object : PaginationScrollListener(layoutManager){
-              override fun isLastPage(): Boolean {
-                  return false
-              }
-
-              override fun isLoading(): Boolean {
-                  return false
-              }
-
-              override fun getTotalPageCount(): Int {
-                  return  0
-              }
-
-              override fun loadMoreItems() {
-                  runOnUiThread(Runnable {
-
-                      viewModel.itemCount += 50
-                      pageCount += 50
-                      viewModel._getItems().observe(viewLifecycleOwner) {
-                          Log.e(TAG, "itPAgedSize  ${it.size}")
-                          if (it.isNotEmpty()) {
-                              var list: ArrayList<TbItem> = arrayListOf()
-                              var datacount = it.size - adapter.itemCount
-                              if (it.size > adapter.itemCount && it.size != 50) {
-
-                                  for (i in adapter.itemCount - 1 until it.size) {
-
-                                      it[i]?.let { it1 -> list.add(it1) }
-                                  }
-
-                                  adapter.addPaginationData(list)
-                                  binding.edtSearch.hint = "Search (" + totalItemCount + ") Items"
-                               //   binding.rvAllItemList.smoothScrollToPosition(adapter.filterList.size - 1)
-
-                              } else {
-
-
-                                  adapter.add(it.toCollection(arrayListOf()))
-                                  binding.edtSearch.hint = "Search (" + it.size + ") Items"
-                                 // recyclerView.smoothScrollToPosition(bindinAdapterPos)
-                              }
-                          }
-                      }
-
-
-                  })
-              }
-
-          })*/
-
     }
 
-    private fun checkForNextPage(pos: Int): Boolean {
-        if (totalItemCount != 0) {
-            var tmpPag = pageCount - 29
-            var matched = false
-            var temp = (totalItemCount / 20).toInt()
-            for (i in 0 until temp) {
-                if (pos == tmpPag || pos == tmpPag + 1) {
-                    matched = true
-                    break
-
-                } else {
-                    tmpPag += 20
-                }
-            }
-            return matched
-
-        } else {
-            return false
-        }
-
-    }
 
     private fun getInventoryCountsObserver() {
         try {

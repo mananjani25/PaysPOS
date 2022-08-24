@@ -22,14 +22,14 @@ interface DBItemDao {
     @get:Query("select * from TbItem where TbItem.isHide = 1 and TbItem.name != 'Manual Item' GROUP by TbItem.itemId ORDER BY TbItem.sort DESC LIMIT 50")
     val allItem: LiveData<List<TbItem?>>?
 
-    @Query("select * from TbItem")
+    @Query("select * from TbItem where TbItem.isHide = 1 and TbItem.name != 'Manual Item' GROUP by TbItem.itemId ORDER BY TbItem.sort DESC")
     fun getPaginationList(): PagingSource<Int, TbItem>
 
     /*@get:Query("select * from TbItem whe  re TbItem.isManualSales = 1")
     val manualItems : LiveData<List<TabItem?>>?
     */
 
-    @Query("select * from TbItem where TbItem.name like :desc")
+    @Query("select * from TbItem where TbItem.name like :desc and TbItem.isHide = 1 and TbItem.name != 'Manual Item' GROUP by TbItem.itemId ORDER BY TbItem.sort DESC")
     fun getItemSearchResults(desc:String):PagingSource<Int,TbItem>
 
     @get:Query("select * from TbItem where TbItem.isHide = 0 and TbItem.name != 'Manual Item' ORDER BY TbItem.sort DESC")
