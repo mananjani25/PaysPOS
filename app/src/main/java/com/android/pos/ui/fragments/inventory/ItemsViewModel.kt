@@ -1,6 +1,7 @@
 package com.android.pos.ui.fragments.inventory
 
 import android.util.Log
+import androidx.annotation.WorkerThread
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -46,6 +47,12 @@ class ItemsViewModel @Inject constructor(
         Log.e("passedItemitemCount","passedItemitemCount  ${itemCount}")
         return posRepository.getPaginationList(itemCount)
     }
+
+    @WorkerThread
+    fun searchItemResults(desc:String):LiveData<List<TbItem>>{
+        return posRepository.searchItemList(desc)
+    }
+
 
 
     fun deleteAndHide(id: Int, deleteAndHide: Boolean, isHideItemScreen: Boolean) {

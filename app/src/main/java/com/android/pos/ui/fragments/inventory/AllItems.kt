@@ -33,7 +33,7 @@ import dagger.hilt.android.AndroidEntryPoint
 class AllItems(val clickedPosition: Int, val totalItems: Int) : Fragment(), ItemCallback {
 
     private var totalItemCount: Int = 0
-    private var pageCount: Int = 49
+    private var pageCount: Int = 35
     private var isreOrder: Boolean = false
     private var deleteAndHide: Boolean = false
 
@@ -87,9 +87,13 @@ class AllItems(val clickedPosition: Int, val totalItems: Int) : Fragment(), Item
             }
 
             override fun afterTextChanged(s: Editable) {
+                if (s.toString().trim().length > 2) {
+                    getSearchItemsFromDB(s.toString().trim())
+                } else {
+                    itemsObserver()
+                }
 
-
-                adapter.filter.filter(s.toString().trim())
+                //  adapter.filter.filter(s.toString().trim())
 
             }
         })
@@ -208,6 +212,15 @@ class AllItems(val clickedPosition: Int, val totalItems: Int) : Fragment(), Item
         }
     }
 
+    private fun getSearchItemsFromDB(query: String) {
+        var searchText = query
+        searchText = "%$searchText%"
+        viewModel.searchItemResults(desc = searchText).observe(viewLifecycleOwner) {
+            Log.e(TAG, "getList  ${it.size}")
+            adapter.add(it)
+        }
+    }
+
     private fun deleteObserver() {
 
         viewModel.data.observe(viewLifecycleOwner) { event ->
@@ -314,8 +327,6 @@ class AllItems(val clickedPosition: Int, val totalItems: Int) : Fragment(), Item
         if (totalItemCount != 0) {
             var tmpPag = pageCount
             var matched = false
-            Log.e("ItemPagination", "tmpPag  ${tmpPag}")
-            Log.e("ItemPagination", "bindingAdapterPos  ${pos}")
             var temp = (totalItemCount / 50).toInt()
             for (i in 0 until temp) {
                 if (pos == tmpPag || pos == tmpPag + 1) {

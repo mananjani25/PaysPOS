@@ -1040,5 +1040,10 @@ class PosRepository @Inject constructor(
         appDatabase.printerDao().addCustomerPrinterList(customerPrinterList)
 
     }
+
+    fun searchItemList(desc: String): LiveData<List<TbItem>> {
+        return appDatabase.itemDao().getItemSearchResults(desc)
+
+    }
 }
 
