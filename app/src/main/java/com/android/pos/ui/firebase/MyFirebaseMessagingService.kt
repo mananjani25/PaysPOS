@@ -11,6 +11,7 @@ import android.os.Build
 import android.util.Log
 import androidx.core.app.NotificationCompat
 import com.android.pos.R
+import com.android.pos.data.remote.Constants.EMPLOYEE_ID
 import com.android.pos.data.remote.Constants.ONLINE_ORDER_GET_NOTIFICATION
 import com.android.pos.data.remote.Constants.SEND_CLOCKOUT_NOTIFICATION
 import com.android.pos.di.PrefProvider
@@ -35,34 +36,35 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         if (remoteMessage.data.isNotEmpty()) {
             type = remoteMessage.data["type"].toString()
             Log.e(TAG, "onMessageReceived: type : $type")
-            if (type == "Clock Out") {
-                var intent = Intent()
-                intent.putExtra("isAuto", false)
-                intent.action = SEND_CLOCKOUT_NOTIFICATION
-                prefProvider.setValueboolean("clockOutFromNoti", true)
-                sendBroadcast(intent)
-            } else if (type == "Auto Clockout") {
-                var intent = Intent()
-                intent.putExtra("isAuto", true)
-                intent.putExtra("message", remoteMessage.data["message"].toString())
-                intent.action = SEND_CLOCKOUT_NOTIFICATION
-                prefProvider.setValueboolean("clockOutFromNoti", true)
-                sendBroadcast(intent)
-            } else if (type == "onlineorder") {
-                var intent = Intent()
-                intent.putExtra("message", remoteMessage.data["message"].toString())
-                intent.putExtra("count", remoteMessage.data["count"])
-                intent.action = ONLINE_ORDER_GET_NOTIFICATION
-                sendBroadcast(intent)
-                 setSoundForOnlineOrder()
-            } else {
-                var intent = Intent()
-                intent.putExtra("printer_queue", "rem")
-                intent.action = "PrinterQueue"
-                sendBroadcast(intent)
+            if (prefProvider.getValueInt(EMPLOYEE_ID, -1) != -1) {
+                if (type == "Clock Out") {
+                    var intent = Intent()
+                    intent.putExtra("isAuto", false)
+                    intent.action = SEND_CLOCKOUT_NOTIFICATION
+                    prefProvider.setValueboolean("clockOutFromNoti", true)
+                    sendBroadcast(intent)
+                } else if (type == "Auto Clockout") {
+                    var intent = Intent()
+                    intent.putExtra("isAuto", true)
+                    intent.putExtra("message", remoteMessage.data["message"].toString())
+                    intent.action = SEND_CLOCKOUT_NOTIFICATION
+                    prefProvider.setValueboolean("clockOutFromNoti", true)
+                    sendBroadcast(intent)
+                } else if (type == "onlineorder") {
+                    var intent = Intent()
+                    intent.putExtra("message", remoteMessage.data["message"].toString())
+                    intent.putExtra("count", remoteMessage.data["count"])
+                    intent.action = ONLINE_ORDER_GET_NOTIFICATION
+                    sendBroadcast(intent)
+                    setSoundForOnlineOrder()
+                } else {
+                    var intent = Intent()
+                    intent.putExtra("printer_queue", "rem")
+                    intent.action = "PrinterQueue"
+                    sendBroadcast(intent)
 
+                }
             }
-
         }
 
     }
@@ -72,10 +74,12 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
             val manager = getSystemService(Context.NOTIFICATION_SERVICE)
                     as NotificationManager
             val channelId = getString(R.string.default_notification_channel_id)
-            if(manager.getNotificationChannel(channelId)==null) {
-                val channel = NotificationChannel(channelId,
+            if (manager.getNotificationChannel(channelId) == null) {
+                val channel = NotificationChannel(
+                    channelId,
                     getString(R.string.common_google_play_services_notification_channel_name),
-                    NotificationManager.IMPORTANCE_DEFAULT)
+                    NotificationManager.IMPORTANCE_DEFAULT
+                )
                 channel.description = ""
                 manager.createNotificationChannel(channel)
             }
