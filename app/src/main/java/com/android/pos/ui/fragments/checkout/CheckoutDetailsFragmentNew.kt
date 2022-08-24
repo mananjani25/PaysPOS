@@ -3,6 +3,8 @@ package com.android.pos.ui.fragments.checkout
 import android.annotation.SuppressLint
 import android.bluetooth.BluetoothDevice
 import android.os.Bundle
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -158,6 +160,66 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         observeQueueCreate()
         observeData()
         callback()
+        setUpManualCardFocusChanged()
+    }
+
+    private fun setUpManualCardFocusChanged() {
+        binding.edtCardNumber.addTextChangedListener(object :TextWatcher{
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+                try {
+                    if(s?.length==22){
+                        binding.edtMMYY.requestFocus()
+                    }
+                } catch (e: Exception) {
+                }
+            }
+        })
+        binding.edtMMYY.addTextChangedListener(object :TextWatcher{
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+                try {
+                    if(s?.length==5){
+                        binding.edtCVV.requestFocus()
+                    }else if(s?.length==0){
+                        binding.edtCardNumber.requestFocus()
+                    }
+                } catch (e: Exception) {
+                }
+            }
+        })
+        binding.edtCVV.addTextChangedListener(object :TextWatcher{
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+                try {
+                    if(s?.length==0){
+                        binding.edtMMYY.requestFocus()
+                    }
+                } catch (e: Exception) {
+                }
+            }
+        })
     }
 
     @SuppressLint("SetTextI18n")
