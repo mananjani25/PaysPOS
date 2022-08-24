@@ -181,6 +181,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
 
     private fun onClick() {
         binding.imgMinus.setOnClickListener {
+            MethodUtils.hideSoftKeyboard(requireActivity())
             /* if (prefProvider.getValueboolean(DINE_IN_UPDATE, false) == true && item.isFired) {
                  if (qty > item.itemQuantity) {
                      qty -= 1
@@ -200,11 +201,13 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
 
         }
         binding.imgPlus.setOnClickListener {
+            MethodUtils.hideSoftKeyboard(requireActivity())
             qty += 1
             binding.edttxtQuantity.setText("" + qty)
         }
 
         binding.txtCancel.setOnClickListener {
+            MethodUtils.hideSoftKeyboard(requireActivity())
             if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == DINE_IN) {
                 listner.onCancelItemSelected(true)
             } else {
@@ -214,7 +217,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
         }
 
         binding.txtDone.setOnClickListener {
-
+            MethodUtils.hideSoftKeyboard(requireActivity())
 
             item.itemQuantity = qty
             prefProvider.setValueInt(Constants.CAT_ID_SELECTED, item.categoryId)

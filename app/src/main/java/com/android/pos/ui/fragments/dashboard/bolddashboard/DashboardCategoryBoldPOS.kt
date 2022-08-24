@@ -673,7 +673,6 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_self)
         } else {
 
-
             loadCategoryFragment(CategoryFragment(this, binding.layoutHeader.edtSearch))
         }
 
