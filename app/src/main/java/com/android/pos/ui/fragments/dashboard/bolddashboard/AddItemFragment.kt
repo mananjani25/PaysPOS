@@ -145,11 +145,12 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
                     if (qty > 15) {
                         qty = 15
                         binding.edttxtQuantity.setText("15")
+                    }else if (qty==0){
+                        binding.edttxtQuantity.setText("1")
                     }
                     binding.edttxtQuantity.setSelection(binding.edttxtQuantity.text!!.length)
                 } else {
                     qty = 1
-                    binding.edttxtQuantity.setText("1")
                     binding.edttxtQuantity.setSelection(binding.edttxtQuantity.text!!.length)
                 }
 
@@ -210,15 +211,20 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
             if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == DINE_IN) {
                 listner.onCancelItemSelected(true)
             } else {
-                requireActivity().supportFragmentManager.popBackStackImmediate(AddItemFragment.javaClass.getName(),FragmentManager.POP_BACK_STACK_INCLUSIVE)
-              //  listner.onCancelItemSelected(false)
+                requireActivity().supportFragmentManager.popBackStackImmediate(
+                    AddItemFragment.javaClass.getName(),
+                    FragmentManager.POP_BACK_STACK_INCLUSIVE
+                )
+                //  listner.onCancelItemSelected(false)
 
             }
         }
 
         binding.txtDone.setOnClickListener {
+            if (binding.edttxtQuantity.text.isNullOrEmpty()){
+                binding.edttxtQuantity.setText("1")
+            }
             MethodUtils.hideSoftKeyboard(requireActivity())
-
             item.itemQuantity = qty
             prefProvider.setValueInt(Constants.CAT_ID_SELECTED, item.categoryId)
             var isPriceNull = true
@@ -352,7 +358,10 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
                 }
             }
 
-            requireActivity().supportFragmentManager.popBackStackImmediate(AddItemFragment.javaClass.getName(),FragmentManager.POP_BACK_STACK_INCLUSIVE)
+            requireActivity().supportFragmentManager.popBackStackImmediate(
+                AddItemFragment.javaClass.getName(),
+                FragmentManager.POP_BACK_STACK_INCLUSIVE
+            )
             //listner.onCancelItemSelected()
 
         }
@@ -429,8 +438,11 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
             } else {
                 viewModel.cartLogic(cartList, item, DELETE, item.isManualSales)
             }
-            requireActivity().supportFragmentManager.popBackStackImmediate(AddItemFragment.javaClass.getName(),FragmentManager.POP_BACK_STACK_INCLUSIVE)
-          //  listner.onCancelItemSelected()
+            requireActivity().supportFragmentManager.popBackStackImmediate(
+                AddItemFragment.javaClass.getName(),
+                FragmentManager.POP_BACK_STACK_INCLUSIVE
+            )
+            //  listner.onCancelItemSelected()
 
         }
 
