@@ -452,7 +452,6 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
     private fun syncData() {
 
         val sync = prefProvider.getValueboolean(Constants.SYNC_DATA, false)
-        Log.e(TAG, "getsyncStatus  ${sync}")
         if (!sync) {
             ProgressUtils.showProgressDialog(requireActivity())
             viewModel.syncInventoryModule()
@@ -618,8 +617,10 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
         if (cartList.isEmpty() && viewModel.cartModel != null) {
             cartList = arrayListOf()
-            viewModel.createCart(cartList)
-            cartList[0] = viewModel.cartModel!!
+            cartList = viewModel.createCart(cartList)
+            if (cartList[0].employeeID != prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)) {
+                cartList[0] = viewModel.cartModel!!
+            }
         }
 
 
@@ -640,6 +641,9 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             }
             item.itemQuantity = 1
             if (cartList.size > 0) {
+
+                if (cartList.isNotEmpty())
+                    cartList[0].employeeID = prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
 
                 if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == Constants.DINE_IN) {
                     if (cartList[0].dineInList?.isEmpty() == true) {
@@ -685,9 +689,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
     private fun addObserver() {
         viewModel.showProgress.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
-                Log.e(TAG, "showDialogData ${it}")
                 if (it) {
-
                     ProgressUtils.showProgressDialog(requireActivity())
                 } else {
                     ProgressUtils.dismissProgressDialog()

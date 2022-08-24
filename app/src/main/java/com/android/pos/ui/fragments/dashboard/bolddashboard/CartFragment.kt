@@ -802,7 +802,13 @@ class CartFragment(
                     prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
                 ).observe(requireActivity()) {
 
-                    Log.e(TAG, "listSizeOrderType: ${prefProvider.getValue(ORDER_TYPE, TAKEOUT)}")
+                    Log.e("mAllWords :", "LIST SIZE :" + it.size.toString())
+                    Log.e(
+                        "mAllWords",
+                        "LIST EMPLOYEE :" + prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)
+                            .toString()
+                    )
+
 
                     if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == Constants.DINE_IN) {
                         binding.rvCartDineIn.visible()
@@ -861,22 +867,10 @@ class CartFragment(
                                     requireContext()
                                 )
                             }
-                            /*  viewModel.itemCalculationCartModel(
-                              it[0],
-                              binding.txtTotal,
-                              requireContext()
-                          )*/
+
 
 
                             viewModel.setCartModel(it)
-                            Log.e(
-                                TAG, "${
-                                    prefProvider.getValueboolean(
-                                        Constants.DINE_IN_UPDATE,
-                                        false
-                                    )
-                                }"
-                            )
                             if (prefProvider.getValueboolean(
                                     Constants.DINE_IN_UPDATE,
                                     false
@@ -1031,16 +1025,13 @@ class CartFragment(
                     } else {
                         binding.rvCartDineIn.gone()
                         binding.rvCartList.visible()
+
                         if (it.isNotEmpty()) {
-                            Log.e(TAG, "listSize  ${it.get(0).items?.size}")
+                            Log.e("mAllWords", "listSize ITEM ${it.get(0).items?.size}")
                             viewModel.destroyedList.clear()
-                            Log.e(TAG,"isOrderUpdate  ${isOrderUpdate}")
-
-                                it[0].items?.filter { item -> item.isDestroy }?.let {
-                                    viewModel.destroyedList.addAll(it)
-                                }
-
-                            Log.e(TAG,"listItemSize ${it[0].items?.size ?: 0}")
+                            it[0].items?.filter { item -> item.isDestroy }?.let {
+                                viewModel.destroyedList.addAll(it)
+                            }
                             if (isFromPayment) {
                                 viewModel.selectedCustomer = prefProvider.getCustomerData()
                                 if (MethodUtils.isEnableCashDiscount(requireContext())) {
@@ -1074,14 +1065,8 @@ class CartFragment(
                                 filterItems.addAll(it!!.toCollection(arrayListOf()))
                             }
 
-                            Log.e(TAG, "filterItems  ${filterItems.size}")
-                            binding.rvCartList.adapter = cartAdapter
-                            binding.rvCartList.visible()
+                            Log.e("mAllWords", "filterItems  ${filterItems.size}")
                             cartAdapter.setList(filterItems)
-                            /*it[0].items?.toCollection(arrayListOf())
-                            ?.let { it1 ->
-                                cartAdapter.setList(it1)
-                            }*/
 
                             cartlist = it as ArrayList<CartModel>
                             viewModel.itemCalculationCartModel(
@@ -1658,6 +1643,9 @@ class CartFragment(
         }
 
         binding.tvPayNow.setOnClickListener {
+
+            prefProvider.setValueboolean(Constants.TIP_ADDED, false)
+
             if (cartAdapter.cartList.isNotEmpty()) {
                 prefProvider.setValue(ORDER_TYPE, prefProvider.getValue(ORDER_TYPE, TAKEOUT))
                 prefProvider.setValue("PaidAmount", "")

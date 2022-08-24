@@ -45,6 +45,7 @@ import com.android.pos.utils.callback.DeleteOptionCallback
 import com.android.pos.utils.callback.magtekCallback
 import com.android.pos.utils.extensions.gone
 import com.android.pos.utils.extensions.runOnUiThread
+import com.android.pos.utils.extensions.setOnSingleClickListener
 import com.android.pos.utils.extensions.visible
 import com.android.pos.utils.statusUtils.Status
 import com.google.gson.Gson
@@ -311,14 +312,14 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
 
     private fun splitClick() {
 
-        binding.linearNextSplit.setOnClickListener {
+        binding.linearNextSplit.setOnSingleClickListener {
             PaymentBoldPosFragment.newInstance().addTipHideShow(false)
             viewModel.setSplitCount(isSelectedCount)
             loadPaymentLayout()
             tipAmountCalculation()
         }
 
-        binding.tvFullAmount.setOnClickListener {
+        binding.tvFullAmount.setOnSingleClickListener {
             listtextview = arrayListOf()
             listtextview.add(binding.tv2ways)
             listtextview.add(binding.tv3ways)
@@ -335,7 +336,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
 
         }
 
-        binding.tv2ways.setOnClickListener {
+        binding.tv2ways.setOnSingleClickListener {
             listtextview = arrayListOf()
             listtextview.add(binding.tvFullAmount)
             listtextview.add(binding.tv3ways)
@@ -352,7 +353,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
             binding.tvwaysplit?.text = "$isSelectedCount Way Split Amount"
 
         }
-        binding.tv3ways.setOnClickListener {
+        binding.tv3ways.setOnSingleClickListener {
             listtextview = arrayListOf()
             listtextview.add(binding.tv2ways)
             listtextview.add(binding.tvFullAmount)
@@ -368,7 +369,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
             binding.tvwaysplit?.visible()
             binding.tvwaysplit?.text = "$isSelectedCount Way Split Amount"
         }
-        binding.tv4ways.setOnClickListener {
+        binding.tv4ways.setOnSingleClickListener {
             listtextview = arrayListOf()
             listtextview.add(binding.tv2ways)
             listtextview.add(binding.tv3ways)
@@ -384,7 +385,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
             binding.tvwaysplit?.visible()
             binding.tvwaysplit?.text = "$isSelectedCount Way Split Amount"
         }
-        binding.tv5ways.setOnClickListener {
+        binding.tv5ways.setOnSingleClickListener {
             listtextview = arrayListOf()
             listtextview.add(binding.tv2ways)
             listtextview.add(binding.tv3ways)
@@ -400,7 +401,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
             binding.tvwaysplit?.visible()
             binding.tvwaysplit?.text = "$isSelectedCount Way Split Amount"
         }
-        binding.tv6ways.setOnClickListener {
+        binding.tv6ways.setOnSingleClickListener {
             listtextview = arrayListOf()
             listtextview.add(binding.tv2ways)
             listtextview.add(binding.tv3ways)
@@ -416,7 +417,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
             binding.tvwaysplit?.visible()
             binding.tvwaysplit?.text = "$isSelectedCount Way Split Amount"
         }
-        binding.tvCustom.setOnClickListener {
+        binding.tvCustom.setOnSingleClickListener {
             listtextview = arrayListOf()
             listtextview.add(binding.tv2ways)
             listtextview.add(binding.tv3ways)
@@ -800,7 +801,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
             if (cashDiscountType == "CashDiscount") {
                 guestRequestModel?.paymentAttributes!!.cash_discount_or_surcharge =
                     cashDiscountSurcharge
-            }else{
+            } else {
                 guestRequestModel?.paymentAttributes!!.cash_discount_or_surcharge =
                     0.0
             }
@@ -808,7 +809,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
             if (cashDiscountType == "SurCharge") {
                 guestRequestModel?.paymentAttributes!!.cash_discount_or_surcharge =
                     cashDiscountSurcharge
-            }else{
+            } else {
                 guestRequestModel?.paymentAttributes!!.cash_discount_or_surcharge =
                     0.0
             }
@@ -826,6 +827,10 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
             guestRequestModel?.paymentAttributes!!.cardNumber =
                 if (cardNumber.isNotEmpty()) cardNumber.takeLast(4) else ""
             guestRequestModel?.paymentAttributes!!.cardType = "Credit"
+
+            guestRequestModel?.paymentAttributes!!.magensaResponse = toJson
+
+
             Log.e(TAG, "getOptionType:  ${prefProvider.getValue(OPTION_TYPE, "")}")
             if (prefProvider.getValue(OPTION_TYPE, "").equals("SurCharge", true)) {
                 guestRequestModel?.paymentAttributes?.cash_discount_or_surcharge =
@@ -843,6 +848,8 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                 )
                 Log.e("magensaResponse", Gson().toJson(model))
 
+
+                guestRequestModel?.paymentAttributes!!.magensaResponse = toJson
 
                 if (model.dataOutput != null) {
                     Log.e("dataOutput", Gson().toJson(model))
@@ -913,6 +920,8 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
             guestPaymentAttributes.cardName = guestRequestModel?.paymentAttributes!!.cardName
             guestPaymentAttributes.cardNumber = guestRequestModel?.paymentAttributes!!.cardNumber
             guestPaymentAttributes.cardType = guestRequestModel?.paymentAttributes!!.cardType
+            guestPaymentAttributes.magensaResponse =
+                guestRequestModel?.paymentAttributes!!.magensaResponse
             guestPaymentAttributes.transactionId =
                 guestRequestModel?.paymentAttributes!!.transactionId
             if (prefProvider.getValue(OPTION_TYPE, "").equals("SurCharge", true)) {
@@ -925,7 +934,8 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
         } else if (paymentType == "Cash") {
             if (prefProvider.getValue(OPTION_TYPE, "").equals("CashDiscount", true)) {
                 guestPaymentAttributes?.cash_discount_or_surcharge = cashDiscountSurcharge
-                guestRequestModel?.paymentAttributes?.cash_discount_or_surcharge = cashDiscountSurcharge
+                guestRequestModel?.paymentAttributes?.cash_discount_or_surcharge =
+                    cashDiscountSurcharge
 
             } else {
                 guestPaymentAttributes?.cash_discount_or_surcharge = 0.0
@@ -983,7 +993,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
     }
 
     private fun paymentClick() {
-        binding.llCreditCard.setOnClickListener {
+        binding.llCreditCard.setOnSingleClickListener {
 
             val device = prefProvider.getValueInt(Constants.MAGTEK_HARDWARE, 0)
             subTotalPrice = String.format("%.2f", subTotalPrice / isSelectedCount).toDouble()
@@ -1014,7 +1024,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                 errorDisplay("Payment Amount is zero.")
             }
         }
-        binding.llManualCardEntry.setOnClickListener {
+        binding.llManualCardEntry.setOnSingleClickListener {
             binding.frameLayoutId.visible()
             binding.relativeMain.gone()
             binding.llManualCard.visible()
@@ -1022,7 +1032,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
 
         }
 
-        binding.tvCash0.setOnClickListener {
+        binding.tvCash0.setOnSingleClickListener {
 
             custom_paymentAmount = 0.0
 
@@ -1039,24 +1049,24 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
             paymentAmount = binding.tvCash0.text.toString().replace("$", "").trim().toDouble()
             cashPaymentWithVariation()
         }
-        binding.tvCash1.setOnClickListener {
+        binding.tvCash1.setOnSingleClickListener {
 
             custom_paymentAmount =
                 binding.tvCash1.text.toString().replace("$", "").trim().toDouble()
             cashPaymentWithVariation()
         }
-        binding.tvCash2.setOnClickListener {
+        binding.tvCash2.setOnSingleClickListener {
             custom_paymentAmount =
                 binding.tvCash2.text.toString().replace("$", "").trim().toDouble()
             cashPaymentWithVariation()
         }
-        binding.tvCash3.setOnClickListener {
+        binding.tvCash3.setOnSingleClickListener {
 
             custom_paymentAmount =
                 binding.tvCash3.text.toString().replace("$", "").trim().toDouble()
             cashPaymentWithVariation()
         }
-        binding.tvCustomAmount.setOnClickListener {
+        binding.tvCustomAmount.setOnSingleClickListener {
 
 
             val bundleVal = Bundle().apply {
@@ -1068,18 +1078,18 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
             )
 
         }
-        binding.tvPaymentLink.setOnClickListener {
+        binding.tvPaymentLink.setOnSingleClickListener {
 
         }
 
 
-        binding.imgBackManualCard.setOnClickListener {
+        binding.imgBackManualCard.setOnSingleClickListener {
             isManualCard = false
             binding.relativeMain.visible()
             binding.llManualCard.gone()
         }
 
-        binding.txtCharge.setOnClickListener {
+        binding.txtCharge.setOnSingleClickListener {
 
             paymentType = "Card"
 
@@ -1447,14 +1457,14 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
     }
 
     private fun setupTabDesign() {
-        binding.linearTab1.setOnClickListener {
+        binding.linearTab1.setOnSingleClickListener {
             PaymentBoldPosFragment.newInstance().addTipHideShow(false)
             isSelectedCount = 1
             tipsetupGlobal(tipAmount, isSelectedCount)
             loadPaymentLayout()
             tipAmountCalculation()
         }
-        binding.linearTab2.setOnClickListener {
+        binding.linearTab2.setOnSingleClickListener {
             if (tipAmount != 0.0 && viewModel.tipTransactionAmount != 0.0) {
                 AlertUtils.showCustomAlertWithListenerWithOKCancel(
                     requireContext(),

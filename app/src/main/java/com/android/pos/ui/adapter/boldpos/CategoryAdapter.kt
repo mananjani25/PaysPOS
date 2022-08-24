@@ -29,7 +29,6 @@ class CategoryAdapter(
     inner class MyViewHolder(private val binding: ViewBoldCategoryBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(model: CategoryTabModel) {
-            Log.e(TAG, "categoryModelDataList  ${Gson().toJson(model)}")
             binding.txtCategoryName.isSelected = model.isSelected
             binding.txtCategoryName.text = model.title
             var itename_price: StringBuffer = StringBuffer()

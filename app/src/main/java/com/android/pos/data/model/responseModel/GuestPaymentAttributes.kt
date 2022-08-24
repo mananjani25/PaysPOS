@@ -79,4 +79,7 @@ class GuestPaymentAttributes : Parcelable {
     @SerializedName("is_paid")
     var isPaid: Boolean = true
 
+    @SerializedName("magensa_response")
+    var magensaResponse: String = ""
+
 }

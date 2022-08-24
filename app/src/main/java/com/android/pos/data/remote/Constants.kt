@@ -652,4 +652,9 @@ object Constants {
     const val SHIPPING_ADDRESS = "Shipping"
     const val BILLING_ADDRESS = "Billing"
 
+
+    const val TIP_ADDED = "TipAdded"
+    const val TIP_ADDED_AMOUNT = "TipAddedAmount"
+    const val TIP_ADDED_ID = "TipAddedId"
+
 }
