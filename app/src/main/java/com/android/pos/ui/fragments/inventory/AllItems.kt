@@ -11,6 +11,7 @@ import android.view.ViewGroup
 import androidx.appcompat.widget.PopupMenu
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.ItemTouchHelper
@@ -19,16 +20,16 @@ import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.R
 import com.android.pos.data.entities.TbItem
 import com.android.pos.databinding.FragmentItemsBinding
-import com.android.pos.ui.adapter.ItemListAdapter
+import com.android.pos.ui.adapter.boldpos.ItemListPageAdapter
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.callback.ItemCallback
-import com.android.pos.utils.callback.PaginationScrollListener
 import com.android.pos.utils.extensions.alert
-import com.android.pos.utils.extensions.runOnUiThread
 import com.android.pos.utils.statusUtils.Status
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class AllItems(val clickedPosition: Int, val totalItems: Int) : Fragment(), ItemCallback {
@@ -40,7 +41,8 @@ class AllItems(val clickedPosition: Int, val totalItems: Int) : Fragment(), Item
 
     private var deletePos: Int = -1
     private var deleteObj: TbItem? = null
-    private lateinit var adapter: ItemListAdapter
+
+    private lateinit var adapterPage: ItemListPageAdapter
     private lateinit var binding: FragmentItemsBinding
     private val viewModel by viewModels<ItemsViewModel>()
     var listSize: Int? = 0
@@ -88,13 +90,9 @@ class AllItems(val clickedPosition: Int, val totalItems: Int) : Fragment(), Item
             }
 
             override fun afterTextChanged(s: Editable) {
-                if (s.toString().trim().length > 2) {
-                    getSearchItemsFromDB(s.toString().trim())
-                } else {
-                    itemsObserver()
-                }
 
-                //  adapter.filter.filter(s.toString().trim())
+                getSearchItemsFromDB(s.toString().trim())
+
 
             }
         })
@@ -125,13 +123,16 @@ class AllItems(val clickedPosition: Int, val totalItems: Int) : Fragment(), Item
                 }
                 dragTo = newPos
 
-                val a = adapter.getItem(dragFrom).sort
-                val b = adapter.getItem(dragTo).sort
+                val a = adapterPage.peek(dragFrom)?.sort
+                val b = adapterPage.peek(dragTo)?.sort
                 Log.e("onItemMove", "$a:: $b")
 
 
 
-                adapter.onItemMove(viewHolder.bindingAdapterPosition, target.bindingAdapterPosition)
+                adapterPage.onItemMove(
+                    viewHolder.bindingAdapterPosition,
+                    target.bindingAdapterPosition
+                )
 
                 return true
             }
@@ -153,10 +154,10 @@ class AllItems(val clickedPosition: Int, val totalItems: Int) : Fragment(), Item
 
                     Log.e("clearView", "$dragFrom :: $dragTo")
                     reallyMoved(
-                        adapter.getItem(dragFrom).sort,
-                        adapter.getItem(dragTo).sort,
-                        adapter.getItem(viewHolder.bindingAdapterPosition).categoryId,
-                        adapter.getItem(viewHolder.bindingAdapterPosition).itemId
+                        adapterPage.peek(dragFrom)?.sort ?: 0,
+                        adapterPage.peek(dragTo)?.sort ?: 0,
+                        adapterPage.peek(viewHolder.bindingAdapterPosition)?.categoryId,
+                        adapterPage.peek(viewHolder.bindingAdapterPosition)?.itemId
                     )
                 }
 
@@ -178,16 +179,16 @@ class AllItems(val clickedPosition: Int, val totalItems: Int) : Fragment(), Item
     }
 
     private fun itemsObserver() {
-        if (view != null) {
-            viewModel._getItems().observe(viewLifecycleOwner) {
+        /*  if (view != null) {
+              viewModel._getItems().observe(viewLifecycleOwner) {
 
-                Log.e(TAG, "pagedListSize  ${it.size}")
-                if (it.isNotEmpty()) {
-                    adapter.add(it.toCollection(arrayListOf()))
-                    binding.edtSearch.hint = "Search (" + totalItemCount + ") Items"
-                }
+                  Log.e(TAG, "pagedListSize  ${it.size}")
+                  if (it.isNotEmpty()) {
+                      //   adapter.add(it.toCollection(arrayListOf()))
+                      binding.edtSearch.hint = "Search (" + totalItemCount + ") Items"
+                  }
 
-                /*  it?.let { resource ->
+                  *//*  it?.let { resource ->
                       when (resource.status) {
                           Status.SUCCESS -> {
                               binding.rvAllItemList.visibility = View.VISIBLE
@@ -208,7 +209,16 @@ class AllItems(val clickedPosition: Int, val totalItems: Int) : Fragment(), Item
                               binding.progressCircular.visibility = View.VISIBLE
                           }
                       }
-                  }*/
+                  }*//*
+            }
+        }*/
+
+        if (view != null) {
+            lifecycleScope.launch {
+                viewModel.allItems.collectLatest {
+                    adapterPage.submitData(it)
+
+                }
             }
         }
     }
@@ -216,9 +226,11 @@ class AllItems(val clickedPosition: Int, val totalItems: Int) : Fragment(), Item
     private fun getSearchItemsFromDB(query: String) {
         var searchText = query
         searchText = "%$searchText%"
-        viewModel.searchItemResults(desc = searchText).observe(viewLifecycleOwner) {
-            Log.e(TAG, "getList  ${it.size}")
-            adapter.add(it)
+        lifecycleScope.launch {
+            viewModel.allItemsQuery(desc = searchText).collectLatest {
+                Log.e(TAG, "")
+                adapterPage.submitData(it)
+            }
         }
     }
 
@@ -234,7 +246,7 @@ class AllItems(val clickedPosition: Int, val totalItems: Int) : Fragment(), Item
                 requireContext().sendBroadcast(intent)
                 if (isreOrder) {
                     isreOrder = false
-                    viewModel.reOrder(adapter.getAll())
+                    viewModel.reOrder(adapterPage.snapshot().items.toCollection(arrayListOf()))
                 }
 
 //                val intent = Intent()
@@ -271,62 +283,64 @@ class AllItems(val clickedPosition: Int, val totalItems: Int) : Fragment(), Item
                 LinearLayoutManager.VERTICAL
             )
         )
-        adapter = ItemListAdapter(false, "")
-        binding.rvAllItemList.adapter = adapter
-        adapter.setCallback(this)
 
+        adapterPage = ItemListPageAdapter()
         val layoutManager =
             LinearLayoutManager(requireContext(), LinearLayoutManager.VERTICAL, false)
         binding.rvAllItemList.layoutManager = layoutManager
-        binding.rvAllItemList.addOnScrollListener(object : PaginationScrollListener(layoutManager){
-            override fun isLastPage(): Boolean {
-                return false
-            }
-
-            override fun isLoading(): Boolean {
-                return false
-            }
-
-            override fun getTotalPageCount(): Int {
-                return  0
-            }
-
-            override fun loadMoreItems() {
-                runOnUiThread(Runnable {
-
-                    viewModel.itemCount += 50
-                    pageCount += 50
-                    viewModel._getItems().observe(viewLifecycleOwner) {
-                        Log.e(TAG, "itPAgedSize  ${it.size}")
-                        if (it.isNotEmpty()) {
-                            var list: ArrayList<TbItem> = arrayListOf()
-                            var datacount = it.size - adapter.itemCount
-                            if (it.size > adapter.itemCount && it.size != 50) {
-
-                                for (i in adapter.itemCount - 1 until it.size) {
-
-                                    it[i]?.let { it1 -> list.add(it1) }
-                                }
-
-                                adapter.addPaginationData(list)
-                                binding.edtSearch.hint = "Search (" + totalItemCount + ") Items"
-                             //   binding.rvAllItemList.smoothScrollToPosition(adapter.filterList.size - 1)
-
-                            } else {
+        binding.rvAllItemList.adapter = adapterPage
+        adapterPage.setCallback(this)
 
 
-                                adapter.add(it.toCollection(arrayListOf()))
-                                binding.edtSearch.hint = "Search (" + it.size + ") Items"
-                               // recyclerView.smoothScrollToPosition(bindinAdapterPos)
-                            }
-                        }
-                    }
+        /*  binding.rvAllItemList.addOnScrollListener(object : PaginationScrollListener(layoutManager){
+              override fun isLastPage(): Boolean {
+                  return false
+              }
+
+              override fun isLoading(): Boolean {
+                  return false
+              }
+
+              override fun getTotalPageCount(): Int {
+                  return  0
+              }
+
+              override fun loadMoreItems() {
+                  runOnUiThread(Runnable {
+
+                      viewModel.itemCount += 50
+                      pageCount += 50
+                      viewModel._getItems().observe(viewLifecycleOwner) {
+                          Log.e(TAG, "itPAgedSize  ${it.size}")
+                          if (it.isNotEmpty()) {
+                              var list: ArrayList<TbItem> = arrayListOf()
+                              var datacount = it.size - adapter.itemCount
+                              if (it.size > adapter.itemCount && it.size != 50) {
+
+                                  for (i in adapter.itemCount - 1 until it.size) {
+
+                                      it[i]?.let { it1 -> list.add(it1) }
+                                  }
+
+                                  adapter.addPaginationData(list)
+                                  binding.edtSearch.hint = "Search (" + totalItemCount + ") Items"
+                               //   binding.rvAllItemList.smoothScrollToPosition(adapter.filterList.size - 1)
+
+                              } else {
 
 
-                })
-            }
+                                  adapter.add(it.toCollection(arrayListOf()))
+                                  binding.edtSearch.hint = "Search (" + it.size + ") Items"
+                                 // recyclerView.smoothScrollToPosition(bindinAdapterPos)
+                              }
+                          }
+                      }
 
-        })
+
+                  })
+              }
+
+          })*/
 
     }
 
@@ -398,7 +412,7 @@ class AllItems(val clickedPosition: Int, val totalItems: Int) : Fragment(), Item
         popupMenu?.setOnMenuItemClickListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.menu_edit -> {
-                    val itemObject = adapter.getItem(pos)
+                    val itemObject = adapterPage.peek(pos)
                     val bundle = Bundle()
                     bundle.putBoolean("isEdit", true)
                     bundle.putParcelable("itemObject", itemObject)
@@ -413,7 +427,7 @@ class AllItems(val clickedPosition: Int, val totalItems: Int) : Fragment(), Item
 
                             deleteAndHide = false
                             deletePos = pos
-                            deleteObj = adapter.getItem(pos)
+                            deleteObj = adapterPage.peek(pos)
                             //delete API call
                             viewModel.deleteAndHide(deleteObj!!.itemId, deleteAndHide, false)
                             //Delete item in database
@@ -428,7 +442,7 @@ class AllItems(val clickedPosition: Int, val totalItems: Int) : Fragment(), Item
                     ) {
                         positiveButton(getString(R.string.deactivate)) {
                             deleteAndHide = true
-                            deleteObj = adapter.getItem(pos)
+                            deleteObj = adapterPage.peek(pos)
                             viewModel.deleteAndHide(deleteObj!!.itemId, deleteAndHide, false)
                         }
                         negativeButton(R.string.tv_cancel) {
