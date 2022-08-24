@@ -27,6 +27,7 @@ class ItemListPageAdapter :
         )
     }
 
+
     private var mCallback: ItemCallback? = null
     fun setCallback(callback: ItemCallback) {
         mCallback = callback
@@ -35,7 +36,7 @@ class ItemListPageAdapter :
     inner class ViewHolder(val binding: ViewItemBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(tbItem: TbItem?) {
             binding.model = tbItem
-            binding.executePendingBindings()
+
             if (absoluteAdapterPosition == 0) {
                 binding.firstviewItems.visibility = View.VISIBLE
             } else {
@@ -43,11 +44,9 @@ class ItemListPageAdapter :
             }
 
             binding.ivCheck.visibility = View.GONE
-
-
             binding.layoutMenu.imgOrderMenu.visible()
 
-
+            binding.executePendingBindings()
         }
 
         init {

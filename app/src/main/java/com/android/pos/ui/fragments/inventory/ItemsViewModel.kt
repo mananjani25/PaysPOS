@@ -1,5 +1,6 @@
 package com.android.pos.ui.fragments.inventory
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -49,30 +50,22 @@ class ItemsViewModel @Inject constructor(
 
     fun allItemsQuery(desc: String): Flow<PagingData<TbItem>> = Pager(
         config = PagingConfig(
-            pageSize = 50,
+            pageSize = 20,
             enablePlaceholders = false,
-            maxSize = 2000,
-            prefetchDistance = 30
         )
     ) {
         appDatabase.itemDao().getItemSearchResults(desc)
-    }.flow.map {
-        it
-    }.cachedIn(viewModelScope)
+    }.flow.cachedIn(viewModelScope)
 
 
     val allItems: Flow<PagingData<TbItem>> = Pager(
         config = PagingConfig(
             pageSize = 50,
-            enablePlaceholders = false,
-            maxSize = 2000,
-            prefetchDistance = 30
+            enablePlaceholders = false
         )
     ) {
         appDatabase.itemDao().getPaginationList()
-    }.flow.map {
-        it
-    }.cachedIn(viewModelScope)
+    }.flow.cachedIn(viewModelScope)
 
 
     fun deleteAndHide(id: Int, deleteAndHide: Boolean, isHideItemScreen: Boolean) {
