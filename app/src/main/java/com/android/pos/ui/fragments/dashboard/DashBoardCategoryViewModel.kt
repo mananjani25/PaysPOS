@@ -434,13 +434,12 @@ class DashBoardCategoryViewModel @Inject constructor(
                 addCart(cartModel)
 
                 if (list.isEmpty()) {
-                    // delete carts
-                    deleteCart()
+                    deleteManualSaleCart()
                 }
             } else {
 
                 if (type == DELETE) {
-                    deleteCart()
+                    deleteManualSaleCart()
                 } else {
                     var cartModel = cartList?.get(0)
                     cartModel = taxBifurcationCalculation(item!!, cartModel!!, type, false)
