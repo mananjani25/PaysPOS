@@ -1419,26 +1419,11 @@ open class PaymentViewModel @Inject constructor(
                 orderItemTaxesAttribute.orderId = orderId
                 if (isUpdateOrder) {
                 }
-
                 if (tax.taxType == "Percentage") {
-
-
-                    var modifierPrice = 0.0
-
-                    val price =
-                        (items.price * items.itemQuantity) - items.discountPrice
-
-                    items.modifiers.forEach {
-                        modifierPrice += (it.price * it.itemQuantity)
-                    }
-
-                    val totalPrice = price + modifierPrice
-
                     val itemTaxPrice =
-                        (tax.rate * totalPrice) / 100
-
-                    orderItemTaxesAttribute.taxTotalAmount =
-                        MethodUtils.roundOffAmountDouble(itemTaxPrice)
+                        (tax.rate * ((items.price - items.discountPrice) * items.itemQuantity)) / 100
+                    orderItemTaxesAttribute.taxTotalAmount = MethodUtils.roundOffAmountDouble(itemTaxPrice)
+                    Log.d("taxissue", "orderItemTaxesAttributes: "+orderItemTaxesAttribute.taxTotalAmount)
                 } else {
 
                     val ss = tax.rate * items.itemQuantity
@@ -1446,6 +1431,33 @@ open class PaymentViewModel @Inject constructor(
                     orderItemTaxesAttribute.taxTotalAmount =
                         MethodUtils.roundOffAmountDouble((ss))
                 }
+
+//                if (tax.taxType == "Percentage") {
+//
+//
+//                    var modifierPrice = 0.0
+//
+//                    val price =
+//                        (items.price * items.itemQuantity) - items.discountPrice
+//
+//                    items.modifiers.forEach {
+//                        modifierPrice += (it.price * it.itemQuantity)
+//                    }
+//
+//                    val totalPrice = price + modifierPrice
+//
+//                    val itemTaxPrice =
+//                        (tax.rate * totalPrice) / 100
+//
+//                    orderItemTaxesAttribute.taxTotalAmount =
+//                        MethodUtils.roundOffAmountDouble(itemTaxPrice)
+//                } else {
+//
+//                    val ss = tax.rate * items.itemQuantity
+//
+//                    orderItemTaxesAttribute.taxTotalAmount =
+//                        MethodUtils.roundOffAmountDouble((ss))
+//                }
 
 
 
