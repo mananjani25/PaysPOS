@@ -169,14 +169,24 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             }
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                try {
+                    Log.e(TAG,"checkMSfsLOnT ${s?.length}")
+                    if(s?.length==22){
+                        binding.edtMMYY.requestFocus()
+                    }
+
+                } catch (e: Exception) {
+                }
 
             }
 
             override fun afterTextChanged(s: Editable?) {
                 try {
+                    Log.e(TAG,"checkMSfsL ${s?.length}")
                     if(s?.length==22){
                         binding.edtMMYY.requestFocus()
                     }
+
                 } catch (e: Exception) {
                 }
             }
@@ -192,6 +202,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
             override fun afterTextChanged(s: Editable?) {
                 try {
+                    Log.e(TAG,"CheckYYLength ${s?.length}")
                     if(s?.length==5){
                         binding.edtCVV.requestFocus()
                     }else if(s?.length==0){

@@ -1,15 +1,19 @@
 package com.android.pos.ui.fragments.dashboard.bolddashboard
 
 import android.graphics.Typeface
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
+import android.text.Editable
+import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.WindowManager
 import androidx.activity.OnBackPressedCallback
+import androidx.annotation.RequiresApi
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.activityViewModels
@@ -147,9 +151,41 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         printerProgress()
         getwebOrderingCountObserver()
         getDineInData()
+        checkSearch()
         prefProvider.setValueboolean(Constants.ORDER_COMPLETED, false)
         binding.lifecycleOwner = this
         return binding.root
+    }
+
+    private fun checkSearch() {
+        binding.layoutHeader.edtSearch.addTextChangedListener(object : TextWatcher {
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+
+            }
+
+            @RequiresApi(Build.VERSION_CODES.M)
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
+
+
+                if (requireActivity().supportFragmentManager.findFragmentById(R.id.frameLayout)?.javaClass?.name.equals(
+                        "com.android.pos.ui.fragments.dashboard.bolddashboard.AddItemFragment",true
+                    )
+                ) {
+
+                    requireActivity().supportFragmentManager.popBackStackImmediate(
+                        AddItemFragment.javaClass.getName(),
+                        FragmentManager.POP_BACK_STACK_INCLUSIVE
+                    )
+                }
+
+
+            }
+
+            override fun afterTextChanged(p0: Editable?) {
+
+            }
+
+        })
     }
 
     private fun getwebOrderingCountObserver() {
