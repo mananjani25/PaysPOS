@@ -8,7 +8,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.data.model.responseModel.CashLogResponse
 import com.android.pos.databinding.ViewCashLogBinding
 import com.android.pos.databinding.ViewPaginationBinding
-import com.android.pos.databinding.ViewTransactionItemBinding
 import com.android.pos.utils.TimeFormatUtils
 
 class CashLogAdapter(val context: Context?) :
@@ -20,6 +19,12 @@ class CashLogAdapter(val context: Context?) :
     private val TYPE_ITEM = 2
 
     private var showLoader = false
+
+    fun clearList(){
+        orderList.clear()
+        orderList = arrayListOf()
+        notifyDataSetChanged()
+    }
 
     fun showLoading(status: Boolean) {
         showLoader = status
