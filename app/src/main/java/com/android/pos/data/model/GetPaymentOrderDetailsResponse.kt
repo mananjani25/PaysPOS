@@ -20,7 +20,7 @@ class GetPaymentOrderDetailsResponse(
 ) : Parcelable {
     @Parcelize
     data class Data(
-        @SerializedName("id") val id:Int,
+        @SerializedName("id") val id: Int,
         @SerializedName("payable_type") val payable_type: String,
         @SerializedName("payable_id") val payable_id: Int,
         @SerializedName("payment_type") val payment_type: String,
@@ -46,9 +46,10 @@ class GetPaymentOrderDetailsResponse(
         @SerializedName("loyalty_program_id") val loyalty_program_id: Int?,
         @SerializedName("loyalty_amount") val loyalty_amount: Double?,
         @SerializedName("is_loyalty_applied") val is_loyalty_applied: Boolean?,
-        @SerializedName("order") val order: Order
+        @SerializedName("order") val order: Order,
+        @SerializedName("guest_count") val guestCount: Int?
     ) : Parcelable {
-        fun showFormattedValue(value : Double) = "$" + String.format(
+        fun showFormattedValue(value: Double) = "$" + String.format(
             "%.2f",
             value
         )
@@ -91,7 +92,7 @@ class GetPaymentOrderDetailsResponse(
             @SerializedName("created_at") val created_at: String,
             @SerializedName("updated_at") val updated_at: String,
             @SerializedName("order_items") val order_items: List<GetOrderDetailsResponse.Data.OrderItem>,
-            @SerializedName("employee") val employee:String,
+            @SerializedName("employee") val employee: String,
             @SerializedName("customer") val customer: Customer,
             @SerializedName("order_type") val order_type: String,
             @SerializedName("venue_website") val venue_website: String,

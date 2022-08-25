@@ -20,6 +20,7 @@ import com.android.pos.data.remote.Constants.CASH_DISCOUNT_SURCHARGE_AMOUNT_TYPE
 import com.android.pos.data.remote.Constants.CASH_DISCOUNT_SURCHARGE_RATE
 import com.android.pos.data.remote.Constants.DINE_IN
 import com.android.pos.data.remote.Constants.OPEN_ORDER
+import com.android.pos.data.remote.Constants.SERVICECHARGE_DINEIN_ORDER
 import com.android.pos.data.remote.Constants.TAKEOUT
 import com.android.pos.databinding.DialogIssueRefundBinding
 import com.android.pos.di.PrefProvider
@@ -54,6 +55,7 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
     lateinit var prefProvider: PrefProvider
     private var serviceChargesList: List<TbServiceCharge>? = arrayListOf()
     private var isSplitPayment = false
+    private var guestCount: Int = 0
 
     companion object {
         fun newInstance() = IssueRefundDialog()
@@ -74,6 +76,7 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
         payment_id = arguments?.getInt("paymentId")!!
         isSplitPayment = arguments?.getBoolean("isSplitPayment")!!
         serviceChargesList = arguments?.getParcelableArrayList("serviceChargesList")!!
+        guestCount = arguments?.getInt("guestCount") ?: 0
         binding.orderDetails = paymentOrderDetailsResponse
         binding.edtAmount.addTextChangedListener(this)
         prefProvider = PrefProvider(requireContext())
@@ -282,6 +285,8 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
 
     private fun setUpRecyclerView() {
         refundItemListAdapter = RefundItemListAdapter(viewModel)
+        refundItemListAdapter.guestCount = guestCount
+        refundItemListAdapter.isServiceChargeDineInEnable = prefProvider.getValueboolean(SERVICECHARGE_DINEIN_ORDER, false)
         binding.rvItemListRefund.adapter = refundItemListAdapter
 
         var totalItemDiscount = 0.0
