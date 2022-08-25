@@ -183,7 +183,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             override fun afterTextChanged(s: Editable?) {
                 try {
                     Log.e(TAG,"checkMSfsL ${s?.length}")
-                    if(s?.length==22){
+                    if(s?.length == 22){
                         binding.edtMMYY.requestFocus()
                     }
 
