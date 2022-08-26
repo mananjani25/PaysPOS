@@ -85,6 +85,7 @@ import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.util.*
 import javax.inject.Inject
+import kotlin.collections.ArrayList
 
 @AndroidEntryPoint
 class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
@@ -355,9 +356,9 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     MethodUtils.roundOffAmountDouble(globalOrderDiscount / (getOrderDetailsResponse?.guestAttributes?.size!! - 1))
 
                 dividedOrderDiscount = globalOrderDiscount - (eachGuestDiscount * paidGuestAmount)
-                Log.e(TAG,"DividedOrwrs ${dividedOrderDiscount}")
+                Log.e(TAG, "DividedOrwrs ${dividedOrderDiscount}")
 
-                tmpOrderDis  = globalOrderDiscount - (eachGuestDiscount * paidGuestAmount)
+                tmpOrderDis = globalOrderDiscount - (eachGuestDiscount * paidGuestAmount)
 
 
                 var wholeDisDivide =
@@ -582,7 +583,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                     employeeId = prefProvider.getValueInt(EMPLOYEE_ID, 0)
                     taxAmount = MethodUtils.roundOffAmountDouble(finalTaxAmt)
                     subTotalPrice = MethodUtils.roundOffAmountDouble(subTotalWT)
-                    offlineId = getOrderDetailsResponse?.offlineId ?:""
+                    offlineId = getOrderDetailsResponse?.offlineId ?: ""
                     payableType = "GuestTab"
                     paymentType = "Cash"
                     transactionId = randomOfflineId()
@@ -705,7 +706,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
 
             }
-            Log.e(TAG,"listOfMoveItemIds:  ${listOfMoveItemIds.size}")
+            Log.e(TAG, "listOfMoveItemIds:  ${listOfMoveItemIds.size}")
             newList[0].listOfItemsMoved.addAll(listOfMoveItemIds.toCollection(arrayListOf()))
 
             //   prefProvider.setValue(Constants.DINE_IN_UPDATE_LIST, Gson().toJson(newList))
@@ -1041,7 +1042,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
         viewModel.msgText.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
-                if (it.toString() != "null"){
+                if (it.toString() != "null") {
                     AlertUtils.showCustomAlert(requireContext(), it)
                 }
                 dineInTableAdapter.updateStatus(clickedPos, isFireAll)
@@ -1123,15 +1124,15 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         Log.e("TODAY", "toFinalAmt:  ${toFinalAmt}")
 
         var divideCashDiscount = 0.0
-        if(getOrderDetailsResponse?.payments?.size!! >1){
-            var payguest = totalGuestCount- paidGuestAmount
+        if (getOrderDetailsResponse?.payments?.size!! > 1) {
+            var payguest = totalGuestCount - paidGuestAmount
             divideCashDiscount = MethodUtils.calculateCashDiscount(
                 toFinalAmt,
                 prefProvider,
                 requireContext()
             ) / payguest
 
-        }else{
+        } else {
             divideCashDiscount = MethodUtils.calculateCashDiscount(
                 toFinalAmt,
                 prefProvider,
@@ -1286,47 +1287,49 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
 
             }
+        }
+        if (serviceChargeList?.isNotEmpty() == true) {
+            Log.e("AajeChange", "serviceChargeList:  ${Gson().toJson(serviceChargeList)}")
+            var isApplied = false
+            var chSubTotal =
+                wholeNewSubtotal / (getOrderDetailsResponse?.guestAttributes?.size?.minus(1) ?: 1)
+            Log.e(TAG, "chSubTotal  ${chSubTotal}")
+            chSubTotal -= divideDiscount
+            String.format("%.2f", chSubTotal).toDouble()
+            serviceChargeList.forEach {
+                if (prefProvider.getValueboolean(Constants.SERVICECHARGE_DINEIN_ORDER, false)) {
 
-
-            if (serviceChargeList?.isNotEmpty() == true) {
-                Log.e("AajeChange", "serviceChargeList:  ${Gson().toJson(serviceChargeList)}")
-                var isApplied = false
-                var chSubTotal = wholeNewSubtotal / (getOrderDetailsResponse?.guestAttributes?.size?.minus(1) ?: 1)
-                Log.e(TAG,"chSubTotal  ${chSubTotal}")
-                chSubTotal -= divideDiscount
-                serviceChargeList.forEach {
-                    if (prefProvider.getValueboolean(Constants.SERVICECHARGE_DINEIN_ORDER, false)) {
-
-                        if (it.order_type == Constants.SERVICECHARGE_DINEIN_ORDER) {
-                            if (isInRange(
-                                    it.min_guest_count!!,
-                                    it.max_guest_count!!,
-                                    totalGuestCount
-                                )
-                            ) {
-                                Log.d(
-                                    TAG,
-                                    "calculateDineInServiceCharge: DashBoard " + it.min_guest_count + "....." + it.max_guest_count + " in between " + totalGuestCount
-                                )
-                                isApplied = true
-                                Log.e(TAG,"checkSer  ${it.percentage}  check 2ndSubTital ${chSubTotal}")
-                                serviceCharge += MethodUtils.roundOffAmountDouble((chSubTotal * it.percentage) / 100)
-                                return@forEach
-                            }
-                        }
-                    }
-                }
-                if (!isApplied) {
-                    serviceChargeList.forEach { service ->
-                        if (service.id == checkMaxGuestCountId(serviceChargeList)) {
-                            serviceCharge += MethodUtils.roundOffAmountDouble((chSubTotal * service.percentage) / 100)
+                    if (it.order_type == Constants.SERVICECHARGE_DINEIN_ORDER) {
+                        if (isInRange(
+                                it.min_guest_count!!,
+                                it.max_guest_count!!,
+                                totalGuestCount
+                            )
+                        ) {
+                            Log.d(
+                                TAG,
+                                "calculateDineInServiceCharge: DashBoard " + it.min_guest_count + "....." + it.max_guest_count + " in between " + totalGuestCount
+                            )
+                            isApplied = true
+                            Log.e(
+                                TAG,
+                                "checkSer  ${it.percentage}  check 2ndSubTital ${chSubTotal}"
+                            )
+                            serviceCharge += MethodUtils.roundOffAmountDouble((chSubTotal * it.percentage) / 100)
                             return@forEach
                         }
                     }
                 }
-
-
             }
+            if (!isApplied) {
+                serviceChargeList.forEach { service ->
+                    if (service.id == checkMaxGuestCountId(serviceChargeList)) {
+                        serviceCharge += MethodUtils.roundOffAmountDouble((chSubTotal * service.percentage) / 100)
+                        return@forEach
+                    }
+                }
+            }
+
 
         }
         Log.e("AajeChange", "wholeNewSubtotal  ${wholeNewSubtotal}")
@@ -1336,7 +1339,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
         wholeNewSubtotal = MethodUtils.roundOffAmountDouble(wholeNewSubtotal / totalGuestCount)
         WTTaxes = MethodUtils.roundOffAmountDouble(WTTaxes / totalGuestCount)
-       // serviceCharge = MethodUtils.roundOffAmountDouble(serviceCharge / totalGuestCount)
+//        serviceCharge = MethodUtils.roundOffAmountDouble(serviceCharge / totalGuestCount)
 
         Log.e(
             "FinalDetails",
@@ -1476,6 +1479,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
 
         var remaining_list: List<TaxData> = emptyList()
         Log.e(TAG, "getcartListbeforeAdd  ${Gson().toJson(cartList?.taxlistDynamic)}")
+        var listTaxBirfucaWholeTb: ArrayList<TaxData> = arrayListOf()
         listItemWT.forEach { wholetableitems ->
             wholetableitems.taxes?.forEachIndexed { index, taxData ->
                 var modifierPrice: Double = 0.0
@@ -1525,6 +1529,11 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                         found = indexcart
                     }
                 }
+                listTaxBirfucaWholeTb.forEachIndexed { index, whtbtax ->
+                    if (whtbtax.orderTaxId == whtbtax.orderTaxId) {
+                        found = index
+                    }
+                }
                 Log.d(TAG, "onClick: wholetable total tax $totaltaxtemp")
                 if (found != -1) {
                     if (found <= cartList?.taxlistDynamic?.size!! - 1) {
@@ -1538,22 +1547,45 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
                             cartList?.taxlistDynamic?.get(found)?.totalTaxTypePrice!!.plus(
                                 temp_remaining
                             )
+                    } else {
+                        if (listTaxBirfucaWholeTb[found].taxType != "Percentage") {
+                            listTaxBirfucaWholeTb[found].subTotalAmount += temp_subtotal
+                        }
+                        listTaxBirfucaWholeTb[found].totalTaxTypePrice += temp_remaining
                     }
                 } else {
-                    var data = taxData
-                    data.subTotalAmount = temp_subtotal
-                    data.totalTaxTypePrice = temp_remaining
-                    remaining_list = listOf(data)
+                    if (cartList?.taxlistDynamic.isNullOrEmpty()) {
+                        var data = taxData
+                        if (data.taxType != "Percentage") {
+                            data.subTotalAmount = temp_subtotal
+                        }
+                        data.totalTaxTypePrice = temp_remaining
+                        listTaxBirfucaWholeTb.add(data)
+                    } else {
+                        var data = taxData
+                        if (data.taxType != "Percentage") {
+                            data.subTotalAmount = temp_subtotal
+                        }
+                        data.totalTaxTypePrice = temp_remaining
+                        remaining_list = listOf(data)
+                    }
+
                 }
 
             }
         }
-        remaining_list.forEach { remainingdata ->
-            cartList?.taxlistDynamic =
-                concatenate(cartList?.taxlistDynamic!!, listOf(remainingdata))
+        if (cartList?.taxlistDynamic.isNullOrEmpty()) {
+            cartList?.taxlistDynamic = listTaxBirfucaWholeTb.toList()
+        } else {
+            remaining_list.forEach { remainingdata ->
+                cartList?.taxlistDynamic =
+                    concatenate(cartList?.taxlistDynamic!!, listOf(remainingdata))
+            }
         }
 
 
+
+        Log.d(TAG, "onGuestPay: onlywholetable birfurcation" + Gson().toJson(listTaxBirfucaWholeTb))
         Log.d(TAG, "getcartListAfterAdd: remaining : ${Gson().toJson(remaining_list)}")
         Log.e(TAG, "getcartListAfterAdd  ${Gson().toJson(cartList?.taxlistDynamic)}")
 
@@ -2420,7 +2452,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         var totalTablePrice = 0.0
         var WTDiscount = 0.0
         var guestCount = 0
-        Log.e(TAG,"getMovedItemDAta  ${Gson().toJson(oldList.get(dragTo).item)}")
+        Log.e(TAG, "getMovedItemDAta  ${Gson().toJson(oldList.get(dragTo).item)}")
         oldList.get(dragTo).item?.guestItemId?.let { listOfMoveItemIds.add(it) }
         oldList.get(dragTo).item?.guestItemId = null
         dragFrom = -1
