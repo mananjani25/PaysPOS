@@ -244,8 +244,13 @@ class CartFragment(
                             binding.liinearInfoLayout.layoutParams.height =
                                 resources.getDimension(R.dimen._70sdp).toInt()
                         } else {
-                            binding.liinearInfoLayout.layoutParams.height =
-                                resources.getDimension(R.dimen._60sdp).toInt()
+                            if (binding.relativeLoylatyPoints.isVisible()){
+                                binding.liinearInfoLayout.layoutParams.height =
+                                    resources.getDimension(R.dimen._70sdp).toInt()
+                            }else{
+                                binding.liinearInfoLayout.layoutParams.height =
+                                    resources.getDimension(R.dimen._60sdp).toInt()
+                            }
                         }
                     } else if (taxBirfurcationAdapter.taxlist.size == 2) {
                         if (viewModel.order_note.isNotEmpty()) {

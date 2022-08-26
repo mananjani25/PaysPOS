@@ -1551,15 +1551,14 @@ class DashBoardCategoryViewModel @Inject constructor(
                         totalCount += item.itemQuantity
                         totalDiscount += item.discountPrice
                         subTotalPrice += (item.price * item.itemQuantity) - (item.discountPrice)
-
-                        taxCalculationReorder(item, cartModel.discountPrice / itemCount!!)
-
                         item.modifiers.forEach {
                             subTotalPrice += (it.price * it.itemQuantity)
-
                         }
-                    }
+                        taxCalculationReorder(item)
 
+
+                    }
+                    String.format("%.2f", totalTax).toDouble()
                     serviceChargeCalculationModel(cartModel)
 
                     subTotalPrice -= cartModel.discountPrice
@@ -1624,7 +1623,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                     val itemCount = cartModel.items?.size
                     var taxList: ArrayList<TaxData> = arrayListOf()
-                    Log.e(TAG,"cartItemsSizeView  ${cartModel.items?.size}")
+                    Log.e(TAG, "cartItemsSizeView  ${cartModel.items?.size}")
                     cartModel.items?.forEach { item ->
                         if (!item.isDestroy) {
                             totalCount += item.itemQuantity
@@ -1640,6 +1639,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                             }
                         }
                     }
+                    String.format("%.2f", totalTax).toDouble()
 //                    taxDynamicList = cartModel.taxlistDynamic!!.toCollection(ArrayList())
                     Log.d(TAG, "itemCalculationCartModel: " + taxDynamicList)
                     serviceChargeCalculationModel(cartModel)
@@ -1851,7 +1851,8 @@ class DashBoardCategoryViewModel @Inject constructor(
             if (prefProvider.getValueboolean(SERVICECHARGE_TAKEOUT_OPENORDER, false)) {
                 serviceChargesList.forEach {
                     if (it.order_type == Constants.SERVICECHARGE_TAKEOUT_OPENORDER) {
-                        totalServiceCharge += (subTotalPrice * it.percentage) / 100
+                        var serviceTotal = (subTotalPrice * it.percentage) / 100
+                        totalServiceCharge += String.format("%.2f", serviceTotal).toDouble()
                     }
                 }
             }
@@ -1883,8 +1884,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                 val itemTaxPrice =
                     (itemtype.rate * totalPrice) / 100
                 Log.e("itemTaxPrice", "" + itemTaxPrice)
-                String.format("%.2f", itemTaxPrice)
-                    .toDouble()
+                itemTaxPrice
             }
 
         } else {
@@ -2097,8 +2097,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                         val itemTaxPrice =
                             (tax.rate * totalPrice) / 100
                         Log.e("itemTaxPrice", "" + itemTaxPrice)
-                        String.format("%.2f", itemTaxPrice)
-                            .toDouble()
+                        itemTaxPrice
                     }
 
                 } else {
@@ -2117,7 +2116,7 @@ class DashBoardCategoryViewModel @Inject constructor(
         }
     }
 
-    private fun taxCalculationReorder(item: TbItem, discountPrice: Double) {
+    private fun taxCalculationReorder(item: TbItem) {
         item.taxes?.forEach { tax ->
             if (tax.isActive) {
 
@@ -2141,11 +2140,9 @@ class DashBoardCategoryViewModel @Inject constructor(
                         String.format("%.2f", 0.00)
                             .toDouble()
                     } else {
-                        val itemTaxPrice =
-                            (tax.rate * totalPrice) / 100
+                        val itemTaxPrice = (tax.rate * totalPrice) / 100
                         Log.e("itemTaxPrice", "" + itemTaxPrice)
-                        String.format("%.2f", itemTaxPrice)
-                            .toDouble()
+                        itemTaxPrice.toDouble()
                     }
 
                 } else {
@@ -2359,7 +2356,7 @@ class DashBoardCategoryViewModel @Inject constructor(
     */
         orderAttributeRequestModel.orderServiceChargesAttributes =
             orderServiceChargesAttributes(cartModel, subTotalPrice)
-
+    
         orderAttributeRequestModel.guestsAttributes = getGuestsAttributes(cartModel)
 
 

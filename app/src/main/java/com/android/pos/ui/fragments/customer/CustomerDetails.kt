@@ -304,7 +304,8 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
         var taxListDynamic: ArrayList<TaxData> = arrayListOf()
         if (orderItems.isNotEmpty()) {
             orderItems.forEach { orderItem ->
-                var totalPrice = orderItem.price * orderItem.itemQuantity
+                var totalPrice =
+                    (orderItem.price * orderItem.itemQuantity) - orderItem.discountPrice
                 orderItem.modifiers.forEach { orderItemModifier ->
                     totalPrice += orderItemModifier.price * orderItemModifier.itemQuantity
                 }
@@ -409,8 +410,7 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
                 val itemTaxPrice =
                     (orderItemTaxe.rate * totalPrice) / 100
                 Log.e("itemTaxPrice", "" + itemTaxPrice)
-                String.format("%.2f", itemTaxPrice)
-                    .toDouble()
+                itemTaxPrice
             }
 
         } else {
@@ -562,6 +562,15 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
     ): List<TaxData>? {
         listOfTbItem.forEach { activeItems ->
             if (activeItems.itemId == itemIdexist) {
+                var taxactive: ArrayList<TaxData> = arrayListOf()
+                activeItems.taxes?.forEach { taxData ->
+                    if (taxData.isActive) {
+                        taxData.locationId = locationId
+                        taxactive.add(taxData)
+                    }
+                }
+                return taxactive.toList()
+            } else if (itemIdexist == 1) {
                 var taxactive: ArrayList<TaxData> = arrayListOf()
                 activeItems.taxes?.forEach { taxData ->
                     if (taxData.isActive) {

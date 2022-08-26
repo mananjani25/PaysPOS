@@ -623,7 +623,7 @@ class ActiveOrderFragment(
         var taxListDynamic: ArrayList<TaxData> = arrayListOf()
         if (orderItems.isNotEmpty()) {
             orderItems.forEach { orderItem ->
-                var totalPrice = orderItem.price * orderItem.quantity
+                var totalPrice = (orderItem.price * orderItem.quantity) - (orderItem.discountAmount*orderItem.quantity)
                 orderItem.orderItemModifiers.forEach { orderItemModifier ->
                     totalPrice += orderItemModifier.price * orderItemModifier.quantity
                 }
@@ -728,8 +728,7 @@ class ActiveOrderFragment(
                 val itemTaxPrice =
                     (orderItemTaxe.rate * totalPrice) / 100
                 Log.e("itemTaxPrice", "" + itemTaxPrice)
-                String.format("%.2f", itemTaxPrice)
-                    .toDouble()
+                itemTaxPrice
             }
 
         } else {
