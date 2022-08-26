@@ -2199,6 +2199,8 @@ class DashBoardCategoryViewModel @Inject constructor(
         val data = HashMap<String, String>()
         data["email"] =
             prefProvider.getValue(Constants.EMAIL, "").toString()
+
+
         val resource = posRepository.logout(data)
         when (resource.status) {
             Status.SUCCESS -> {
@@ -3126,7 +3128,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                             _tableStatus.value = response?.let { Event(it.message) }
                         }
 
-//                        syncSettingModule()
+                        syncSettingModule()
 
                     }
                 }
@@ -3144,7 +3146,7 @@ class DashBoardCategoryViewModel @Inject constructor(
         }
     }
 
-    private fun syncSettingModule() {
+    fun syncSettingModule() {
         viewModelScope.launch {
             val resource = posRepository.syncVenueDetails()
 
@@ -3235,23 +3237,23 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 )
 
                                 posRepository.addCashDiscountsFromDb(it.data.cash_discounts)
-                                taxServiceChargeRepository.deleteTaxFromDb()
+//                                taxServiceChargeRepository.deleteTaxFromDb()
                                 taxServiceChargeRepository.addAllTaxDatabase(it.data.taxes)
-                                posRepository.deleteNotesFromDb()
+//                                posRepository.deleteNotesFromDb()
                                 posRepository.addAllNotesDatabase(it.data.notes)
-                                tipDiscountRepository.deleteDiscountsFromDb()
+//                                tipDiscountRepository.deleteDiscountsFromDb()
                                 tipDiscountRepository.addDiscount(it.data.discounts)
                                 taxServiceChargeRepository.deleteServiceChargesFromDb()
                                 serviceChargesList.clear()
                                 taxServiceChargeRepository.addServiceCharges(it.data.service_charges)
-                                posRepository.deleteTerminalsFromDb()
+//                                posRepository.deleteTerminalsFromDb()
                                 posRepository.addTerminalsDatabase(it.data.terminals)
-                                tipDiscountRepository.deleteTipsFromDb()
+//                                tipDiscountRepository.deleteTipsFromDb()
                                 tipDiscountRepository.addTips(it.data.tip_settings)
-                                posRepository.deleteCustomerReceiptSettingsFromDb()
+//                                posRepository.deleteCustomerReceiptSettingsFromDb()
                                 posRepository.addCancelOrderReasonFromDb(it.data.cancelOrderReasons)
-                                posRepository.deleteCustomerPrinters()
-                                posRepository.deleteKitchenPrinters()
+//                                posRepository.deleteCustomerPrinters()
+//                                posRepository.deleteKitchenPrinters()
                                 posRepository.addKitchenPrinter(it.data.printers.kitchenPrinterList)
                                 posRepository.addCustomerPrinter(it.data.printers.customerPrinterList)
                                 it.data.customerReceipt?.let { it1 ->
@@ -3265,9 +3267,9 @@ class DashBoardCategoryViewModel @Inject constructor(
                                         it1
                                     )
                                 }
-                                posRepository.deleteLoyaltyProgramFromDb()
+//                                posRepository.deleteLoyaltyProgramFromDb()
                                 posRepository.addLoyaltyProgramFromDb(it.data.loyaltyPrograms)
-                                posRepository.deleteSurcharge()
+//                                posRepository.deleteSurcharge()
                                 posRepository.addCashDiscountsFromDb(it.data.cash_discounts)
                                 posRepository.deleteEODReportSettings()
                                 it.data.shift_report_configuration?.let { it1 ->
@@ -3290,12 +3292,12 @@ class DashBoardCategoryViewModel @Inject constructor(
                                     }
                                 }
 
-                                posRepository.deleteTeamRoleFromDb()
+//                                posRepository.deleteTeamRoleFromDb()
                                 posRepository.addTeamRoleFromDb(it.data.teamRoles)
-                                posRepository.deleteAllEmployee()
+//                                posRepository.deleteAllEmployee()
                                 posRepository.employeeListAddAllFromSeeting(it.data.employee)
                                 rolePermission.findCurrentUserRoleAndSave(it.data.teamRoles)
-                                posRepository.deleteOrderTypeFromDb()
+//                                posRepository.deleteOrderTypeFromDb()
                                 posRepository.addOrderType(it.data.orderTypes)
                                 posRepository.addAllCountryList(it.data.phoneCountrylist)
                                 posRepository.addTimeZones(it.data.time_zone_options)

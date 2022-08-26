@@ -149,7 +149,10 @@ interface ApiService {
 
     @FormUrlEncoded
     @POST(LOGOUT)
-    suspend fun userLogOut(@FieldMap option: HashMap<String, String>): BaseResponse
+    suspend fun userLogOut(
+        @FieldMap option: HashMap<String, String>,
+        @Query("terminal_id") terminalId: String
+    ): BaseResponse
 
     @GET(SYNC_VENUE_DATA)
     suspend fun syncVenueData(@Query("terminal_id") terminalId: Int): VenueDataResponse
@@ -209,7 +212,10 @@ interface ApiService {
     ): BaseResponse
 
     @GET(SYNC_VENUE_DETAILS)
-    suspend fun syncVenueDetails(@Query("terminal_id") terminalId: Int): VenueDetailsResponse
+    suspend fun syncVenueDetails(
+        @Query("terminal_id") terminalId: Int,
+        @Query("new_logic") newLogic: Boolean
+    ): VenueDetailsResponse
 
     @GET(ONLINE_ORDER_NOTIFICATION_COUNT)
     suspend fun getCountOnlineOrdering(): OnlineOrderNotificationCount
@@ -304,7 +310,7 @@ interface ApiService {
     suspend fun getServiceChargeList(): GetServiceChargeResponse
 
     @GET(SERVICE_CHARGE_WHOLE)
-    suspend fun getServiceChargeWholeList(): ServiceChargeListResponse
+    suspend fun getServiceChargeWholeList(@Query("terminal_id") terminalId: Int): ServiceChargeListResponse
 
     @GET(LOYALTY_POINT)
     suspend fun loyaltyPointList(): LoyaltyPointResponse

@@ -38,6 +38,8 @@ import com.android.pos.data.model.PrinterQueueModel
 import com.android.pos.data.model.responseModel.GetKitchenReceiptSettingsResponse
 import com.android.pos.data.model.responseModel.PrinterResponse
 import com.android.pos.data.remote.Constants
+import com.android.pos.data.remote.Constants.SYNC_NOTIFICATION
+import com.android.pos.data.remote.Constants.SYNC_SETTING_NOTIFICATION
 import com.android.pos.data.remote.Constants.UNIQUE_ID
 import com.android.pos.data.repositories.UserRepository
 import com.android.pos.databinding.ParentActivityBinding
@@ -167,8 +169,21 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
     private var syncReceiver = object : BroadcastReceiver() {
         override fun onReceive(p0: Context?, p1: Intent?) {
 
-            if (p0 != null)
+            LogUtil.logEN("onReceive", "" + p1?.action)
+
                 dashBoardCategoryViewModel.syncInventoryModule()
+
+
+
+        }
+
+    }
+    private var syncSettingReceiver = object : BroadcastReceiver() {
+        override fun onReceive(p0: Context?, p1: Intent?) {
+
+            LogUtil.logEN("onReceive", "" + p1?.action)
+            dashBoardCategoryViewModel.syncSettingModule()
+
 
         }
 
@@ -328,7 +343,10 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                         lifecycleScope.executeAsyncTask(
                             onPostExecute = {
                                 if (mPrinter != null) {
-                                    LogUtil.logE(TAG, "statusInfo  ${Gson().toJson(mPrinter?.status)}")
+                                    LogUtil.logE(
+                                        TAG,
+                                        "statusInfo  ${Gson().toJson(mPrinter?.status)}"
+                                    )
 
                                     var fontSizeH = 1
                                     var fontSizeW = 1
@@ -563,7 +581,10 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
                             doInBackground = {
 
 
-                                LogUtil.logE(TAG, "getIpAddress  ${kitchenPrinterList[i].ipAddress}")
+                                LogUtil.logE(
+                                    TAG,
+                                    "getIpAddress  ${kitchenPrinterList[i].ipAddress}"
+                                )
                                 LogUtil.logE(
                                     TAG,
                                     "connectionPrinter   ${mPrinter?.status?.connection}"
@@ -745,6 +766,10 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
         registerReceiver(
             syncReceiver,
             IntentFilter(Constants.SYNC_NOTIFICATION)
+        )
+        registerReceiver(
+            syncSettingReceiver,
+            IntentFilter(Constants.SYNC_SETTING_NOTIFICATION)
         )
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR

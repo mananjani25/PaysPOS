@@ -1,7 +1,6 @@
 package com.android.pos.data.repositories
 
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.android.pos.data.db.AppDatabase
@@ -14,6 +13,7 @@ import com.android.pos.data.model.SplitDetailListModel
 import com.android.pos.data.model.requestModel.*
 import com.android.pos.data.model.responseModel.*
 import com.android.pos.data.remote.ApiHelper
+import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.DINE_IN
 import com.android.pos.data.remote.Constants.TERMINAL_ID
 import com.android.pos.di.PrefProvider
@@ -36,8 +36,8 @@ class PosRepository @Inject constructor(
     suspend fun addPrinterQueueData(list: PrinterQueueModel) =
         appDatabase.printerQueueDao().addPrinterQueueData(list)
 
-    fun checkQueueExist(id: Int) = performGetOperationDatabase {  appDatabase.printerQueueDao().checkQueueDataExist(id) }
-
+    fun checkQueueExist(id: Int) =
+        performGetOperationDatabase { appDatabase.printerQueueDao().checkQueueDataExist(id) }
 
 
     suspend fun getPrinterQueueQueryData(id: Int) = appDatabase.printerQueueDao().getQueueData(id)
@@ -184,7 +184,7 @@ class PosRepository @Inject constructor(
                         modifierSetId = modifierSets.id!!
                         minRequired = modifierSets.min_required
                         maxAllowed = modifierSets.max_allowed
-                        isDeleted  = modifierSets.isDeleted
+                        isDeleted = modifierSets.isDeleted
                     }
 
                     itemModifierSetList.add(itemModifierSets)
@@ -256,7 +256,7 @@ class PosRepository @Inject constructor(
             appDatabase.itemDao().itemByProductCode(productCode)!!
         })
 
-    fun checkCategoryHideOrNot(id:Int) = performGetOperationDatabase(databaseQuery = {
+    fun checkCategoryHideOrNot(id: Int) = performGetOperationDatabase(databaseQuery = {
         appDatabase.categoryDao().getCategory(id)
     })
 
@@ -531,7 +531,7 @@ class PosRepository @Inject constructor(
 
 
     suspend fun logout(data: HashMap<String, String>) =
-        apiHelperNew.logOut(data)
+        apiHelperNew.logOut(data, prefProvider.getValueInt(Constants.TERMINAL_ID, -1).toString())
 
 
     override suspend fun abs() {

@@ -30,7 +30,7 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
     suspend fun syncVenueData(terminalId: Int) =
         getResult { apiService.syncVenueData(terminalId) }
 
-    suspend fun getPrinterData(terminalId:Int) =
+    suspend fun getPrinterData(terminalId: Int) =
         getResult { apiService.getPrinterList(terminalId) }
 
     suspend fun createPrinter(data: CreatePrinterRequestModel) = getResult {
@@ -58,8 +58,8 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
     suspend fun updateServiceChargeDininEnable(id: Int, enable_service_charge: Boolean) =
         getResult { apiService.updateServiceChargeDineinEnable(id, enable_service_charge) }
 
-    suspend fun syncVenueDetails(terminalId:Int) =
-        getResult { apiService.syncVenueDetails(terminalId) }
+    suspend fun syncVenueDetails(terminalId: Int) =
+        getResult { apiService.syncVenueDetails(terminalId, true) }
 
 
     suspend fun updateTransactionLockScreen(lock_screen_after_each_transaction: Boolean) =
@@ -136,8 +136,8 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
     suspend fun getServiceChargeList() =
         getResult { apiService.getServiceChargeList() }
 
-    suspend fun getServiceChargeWholeList() =
-        getResult { apiService.getServiceChargeWholeList() }
+    suspend fun getServiceChargeWholeList(terminalId: Int) =
+        getResult { apiService.getServiceChargeWholeList(terminalId) }
 
     suspend fun loyaltyPointList() =
         getResult { apiService.loyaltyPointList() }
@@ -194,8 +194,8 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
     suspend fun noteActive(tipId: Int, active: Boolean) =
         getResult { apiService.noteActive(tipId, active) }
 
-    suspend fun logOut(data: HashMap<String, String>) = getResult {
-        apiService.userLogOut(data)
+    suspend fun logOut(data: HashMap<String, String>, terminalId: String) = getResult {
+        apiService.userLogOut(data,terminalId)
     }
 
     suspend fun createEmployee(data: CreateEmployeeRequestModel) =

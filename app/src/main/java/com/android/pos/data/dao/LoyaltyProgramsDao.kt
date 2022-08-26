@@ -15,7 +15,7 @@ interface LoyaltyProgramsDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun addAll(tipList: List<LoyaltyProgramsModel>)
 
-    @get:Query("select * from LoyaltyPrograms")
+    @get:Query("select * from LoyaltyPrograms where LoyaltyPrograms.isDeleted = 0")
     val all: LiveData<List<LoyaltyProgramsModel>>
 
     @Query("select * from LoyaltyPrograms")

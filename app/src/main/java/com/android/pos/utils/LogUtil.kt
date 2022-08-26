@@ -19,6 +19,6 @@ object LogUtil {
 //        Log.e(key, message)
     }
     fun logEN(key: String, message: String) {
-//        Log.e(key, message)
+        Log.e(key, message)
     }
 }

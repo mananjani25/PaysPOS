@@ -42,7 +42,9 @@ data class PrinterResponse(
             @SerializedName("terminal_ids") var terminalIds: List<Int>,
             @SerializedName("unpaid_receipt_auto_print_terminal_ids") var unpaidReceiptAutoPrintTerminalIds: String,
 
-            @SerializedName("order_types") var orderTypes: List<OrderTypes>
+            @SerializedName("order_types") var orderTypes: List<OrderTypes>,
+            @SerializedName("is_deleted")
+            val isDeleted: Boolean
 
         )
 
@@ -68,7 +70,9 @@ data class PrinterResponse(
             @SerializedName("printer_categories") var printerCategories: List<PrinterCategories>,
             @SerializedName("terminal_ids") var terminalIds: List<Int>,
             @SerializedName("unpaid_receipt_auto_print_terminal_ids") var unpaidReceiptAutoPrintTerminalIds: String,
-            @SerializedName("order_types") var orderTypes: List<OrderTypes>
+            @SerializedName("order_types") var orderTypes: List<OrderTypes>,
+            @SerializedName("is_deleted")
+            val isDeleted: Boolean
 
         )
 

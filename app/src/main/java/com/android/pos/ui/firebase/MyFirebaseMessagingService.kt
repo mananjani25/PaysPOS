@@ -14,6 +14,7 @@ import com.android.pos.R
 import com.android.pos.data.remote.Constants.ONLINE_ORDER_GET_NOTIFICATION
 import com.android.pos.data.remote.Constants.SEND_CLOCKOUT_NOTIFICATION
 import com.android.pos.data.remote.Constants.SYNC_NOTIFICATION
+import com.android.pos.data.remote.Constants.SYNC_SETTING_NOTIFICATION
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.activities.MainActivity
 import com.android.pos.utils.LogUtil
@@ -28,7 +29,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
     lateinit var prefProvider: PrefProvider
 
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
-        LogUtil.logEN(TAG, "From: ${remoteMessage.from}")
+        LogUtil.logEN(TAG, "From: ${remoteMessage.data}")
 
 //        createNotification()
 
@@ -37,37 +38,47 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
         if (remoteMessage.data.isNotEmpty()) {
             type = remoteMessage.data["type"].toString()
             LogUtil.logEN(TAG, "onMessageReceived: type : $type")
-            if (type == "Clock Out") {
-                var intent = Intent()
-                intent.putExtra("isAuto", false)
-                intent.action = SEND_CLOCKOUT_NOTIFICATION
-                prefProvider.setValueboolean("clockOutFromNoti", true)
-                sendBroadcast(intent)
-            } else if (type == "Auto Clockout") {
-                var intent = Intent()
-                intent.putExtra("isAuto", true)
-                intent.putExtra("message", remoteMessage.data["message"].toString())
-                intent.action = SEND_CLOCKOUT_NOTIFICATION
-                prefProvider.setValueboolean("clockOutFromNoti", true)
-                sendBroadcast(intent)
-            } else if (type == "onlineorder") {
-                var intent = Intent()
-                intent.putExtra("message", remoteMessage.data["message"].toString())
-                intent.putExtra("count", remoteMessage.data["count"])
-                intent.action = ONLINE_ORDER_GET_NOTIFICATION
-                sendBroadcast(intent)
-                setSoundForOnlineOrder()
-            } else if (type == "Sync") {
-                var intent = Intent()
-                intent.action = SYNC_NOTIFICATION
-                sendBroadcast(intent)
-                setSoundForOnlineOrder()
-            } else {
-                var intent = Intent()
-                intent.putExtra("printer_queue", "rem")
-                intent.action = "PrinterQueue"
-                sendBroadcast(intent)
+            when (type) {
+                "Clock Out" -> {
+                    val intent = Intent()
+                    intent.putExtra("isAuto", false)
+                    intent.action = SEND_CLOCKOUT_NOTIFICATION
+                    prefProvider.setValueboolean("clockOutFromNoti", true)
+                    sendBroadcast(intent)
+                }
+                "Auto Clockout" -> {
+                    val intent = Intent()
+                    intent.putExtra("isAuto", true)
+                    intent.putExtra("message", remoteMessage.data["message"].toString())
+                    intent.action = SEND_CLOCKOUT_NOTIFICATION
+                    prefProvider.setValueboolean("clockOutFromNoti", true)
+                    sendBroadcast(intent)
+                }
+                "onlineorder" -> {
+                    val intent = Intent()
+                    intent.putExtra("message", remoteMessage.data["message"].toString())
+                    intent.putExtra("count", remoteMessage.data["count"])
+                    intent.action = ONLINE_ORDER_GET_NOTIFICATION
+                    sendBroadcast(intent)
+                    setSoundForOnlineOrder()
+                }
+                "Sync" -> {
+                    val intent = Intent()
+                    intent.action = SYNC_NOTIFICATION
+                    sendBroadcast(intent)
+                }
+                "SettingData" -> {
+                    val intent = Intent()
+                    intent.action = SYNC_SETTING_NOTIFICATION
+                    sendBroadcast(intent)
+                }
+                else -> {
+                    val intent = Intent()
+                    intent.putExtra("printer_queue", "rem")
+                    intent.action = "PrinterQueue"
+                    sendBroadcast(intent)
 
+                }
             }
 
         }

@@ -94,11 +94,11 @@ class Passcode : Fragment() {
 
         isLogin = arguments?.getBoolean("isLogin") ?: false
 
-        if (isLogin)
-            viewModel.defaultTerminalCall(
-                prefProvider.getValue("device_token", ""),
-                prefProvider.getValue(UNIQUE_ID, ""),
-            )
+//        if (isLogin)
+//            viewModel.defaultTerminalCall(
+//                prefProvider.getValue("device_token", ""),
+//                prefProvider.getValue(UNIQUE_ID, ""),
+//            )
 
 
         return binding.root
