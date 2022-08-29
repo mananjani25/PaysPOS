@@ -3,6 +3,7 @@ package com.android.pos.data.model
 import android.os.Parcelable
 import com.android.pos.data.model.requestModel.DineInOrderPayment
 import com.android.pos.data.model.requestModel.GuestPaymentRequest
+import com.android.pos.data.model.requestModel.OrderServiceChargesAttribute
 import com.android.pos.data.model.responseModel.GetOrderDetailsResponse
 import kotlinx.parcelize.Parcelize
 
@@ -17,7 +18,8 @@ data class CheckOutDineInDataModel(
     val dineInAdapterList:List<DineInModel>?= listOf(),
     val dineInOrderDetails:GetOrderDetailsResponse.Data?=null,
     val guestPaymentModel:GuestDataModel? = null,
-    val guestPosition:Int?=null
+    val guestPosition:Int?=null,
+    val servicChargeAppliedlist:ArrayList<OrderServiceChargesAttribute>?=null
 
 ) : Parcelable {
 

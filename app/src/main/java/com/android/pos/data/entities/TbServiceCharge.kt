@@ -8,7 +8,7 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 @Entity(tableName = "TbServiceCharge")
-data class TbServiceCharge(
+data class  TbServiceCharge(
     @SerializedName("created_at")
     val createdAt: String?=null,
     @PrimaryKey

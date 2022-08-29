@@ -74,8 +74,8 @@ class OnlineDetailFragment(
     private lateinit var startTime: TimePickerDialog.OnTimeSetListener
     private lateinit var endTime: TimePickerDialog.OnTimeSetListener
     private lateinit var adapter: OnlineOrderAdapter
-    val myCalendar = Calendar.getInstance()
-    val myCalendar1 = Calendar.getInstance()
+    var myCalendar = Calendar.getInstance()
+    var myCalendar1 = Calendar.getInstance()
     val myCalendar2 = Calendar.getInstance()
     val myCalendar3 = Calendar.getInstance()
     var order_status = "Pending"
@@ -115,18 +115,22 @@ class OnlineDetailFragment(
         )
         when (param1) {
             "0" -> {
+                order_status = "UpComing"
+                binding.txtOrderWillAppear?.text = "UpComing order will appear here."
+            }
+            "1" -> {
                 order_status = "Pending"
                 binding.txtOrderWillAppear?.text = "Pending order will appear here."
             }
-            "1" -> {
+            "2" -> {
                 order_status = "InProgress"
                 binding.txtOrderWillAppear?.text = "InProgress order will appear here."
             }
-            "2" -> {
+            "3" -> {
                 order_status = "Completed"
                 binding.txtOrderWillAppear?.text = "Completed order will appear here."
             }
-            "3" -> {
+            "4" -> {
                 order_status = "Rejected"
                 binding.txtOrderWillAppear?.text = "Rejected order will appear here."
             }
@@ -282,7 +286,7 @@ class OnlineDetailFragment(
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        viewModel.setCurrentDate(myCalendar, startDateTime, endDateTime)
+        viewModel.setCurrentDate(Calendar.getInstance(), "", "", param1)
     }
 
     override fun onCreateView(
@@ -475,7 +479,16 @@ class OnlineDetailFragment(
         viewModel.startDateSelection.observe(requireActivity()) { event ->
             event.getContentIfNotHandled()?.let {
                 //currentPage = 1
-                DatePickerDialog(
+                myCalendar = Calendar.getInstance()
+                myCalendar.add(Calendar.DATE, 0)
+                Log.d(TAG, "startDatePickerObserver: " + myCalendar.get(Calendar.DAY_OF_MONTH))
+                Log.d(TAG, "startDatePickerObserver: " + myCalendar.get(Calendar.MONTH))
+                Log.d(
+                    TAG, "startDatePickerObserver: " + myCalendar
+                        .get(Calendar.YEAR)
+                )
+                Log.d(TAG, "startDatePickerObserver: " + myCalendar.time)
+                var datePickerDialog: DatePickerDialog = DatePickerDialog(
                     requireActivity(),
                     android.R.style.Theme_Material_Light_Dialog,
                     startDate,
@@ -484,7 +497,16 @@ class OnlineDetailFragment(
                     myCalendar.get(Calendar.MONTH),
                     myCalendar.get(Calendar.DAY_OF_MONTH)
 
-                ).show()
+                )
+                datePickerDialog.show()
+                if (param1 == "0") {
+                    datePickerDialog.datePicker.minDate = myCalendar.timeInMillis
+                    var temp_calender = Calendar.getInstance()
+                    temp_calender.add(Calendar.DATE, 7)
+                    datePickerDialog.datePicker.maxDate = temp_calender.timeInMillis
+                }
+
+
             }
 
         }
@@ -493,8 +515,11 @@ class OnlineDetailFragment(
     private fun endDatePickerObserver() {
         viewModel.endDateSelection.observe(requireActivity()) { event ->
             event.getContentIfNotHandled()?.let {
-                //currentPage = 1
-                DatePickerDialog(
+                if (param1 == "0") {
+                    myCalendar1 = Calendar.getInstance()
+                    myCalendar1.add(Calendar.DATE, 7)
+                }
+                var datePickerDialog: DatePickerDialog = DatePickerDialog(
                     requireActivity(),
                     android.R.style.Theme_Material_Light_Dialog,
                     endDate,
@@ -503,7 +528,11 @@ class OnlineDetailFragment(
                     myCalendar1.get(Calendar.MONTH),
                     myCalendar1.get(Calendar.DAY_OF_MONTH)
 
-                ).show()
+                )
+                if (param1 == "0") {
+                    datePickerDialog.datePicker.minDate =myCalendar1.timeInMillis
+                }
+                datePickerDialog.show()
             }
         }
     }
@@ -1056,7 +1085,8 @@ class OnlineDetailFragment(
                                 Builder.COLOR_1
                             )
 
-                            orderData?.data?.customer?.addresses.filter { it.typeOfAddress == Constants.BILLING_ADDRESS
+                            orderData?.data?.customer?.addresses.filter {
+                                it.typeOfAddress == Constants.BILLING_ADDRESS
                             }
 
                                 .forEach {

@@ -14,6 +14,8 @@ data class OnlineOrderCountResponse (
             @SerializedName("online_complete_orders")
             val online_complete_orders: Int,
             @SerializedName("online_rejected_orders")
-            val online_rejected_orders: Int
+            val online_rejected_orders: Int,
+            @SerializedName("upcoming_orders")
+            val upcoming_orders: Int
         )
 }

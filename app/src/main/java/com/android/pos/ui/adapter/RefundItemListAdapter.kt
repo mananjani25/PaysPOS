@@ -154,8 +154,7 @@ class RefundItemListAdapter(val viewModel: TransactionDetailsViewModel) :
                         val itemTaxPrice =
                             (tax.rate * totalItemPrice) / 100
                         Log.e("itemTaxPrice", "" + itemTaxPrice)
-                        String.format("%.2f", itemTaxPrice)
-                            .toDouble()
+                        itemTaxPrice
                     }
 
                 } else {
@@ -172,19 +171,9 @@ class RefundItemListAdapter(val viewModel: TransactionDetailsViewModel) :
             Log.d("yash", "bind: [$absoluteAdapterPosition] totaltax : $totalTax")
 
             var totalServiceCharge = 0.0
+
             serviceChargeList.forEach {
-
-                if (orderType == Constants.DINE_IN && it.order_type == Constants.SERVICECHARGE_DINEIN_ORDER) {
-                    totalServiceCharge += (totalItemPrice * it.percentage) / 100
-                    Log.e("totalServiceCharge", totalServiceCharge.toString())
-                } else if ((orderType == Constants.TAKEOUT || orderType == Constants.OPEN_ORDER) && it.order_type == Constants.SERVICECHARGE_TAKEOUT_OPENORDER) {
-                    totalServiceCharge += (totalItemPrice * it.percentage) / 100
-                    Log.e("totalServiceCharge1", totalServiceCharge.toString())
-                }
-
-//                if (it.order_type == Constants.SERVICECHARGE_TAKEOUT_OPENORDER) {
-//                    totalServiceCharge += (totalItemPrice * it.percentage) / 100
-//                }
+                totalServiceCharge += (totalItemPrice * it.percentage) / 100
             }
             Log.d(
                 "yash",

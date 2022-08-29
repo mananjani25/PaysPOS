@@ -74,6 +74,7 @@ import java.io.IOException
 import java.io.InputStream
 import java.net.HttpURLConnection
 import java.net.URL
+import java.text.NumberFormat
 import java.util.*
 import javax.inject.Inject
 import kotlin.collections.set
@@ -2354,9 +2355,12 @@ class DashBoardCategoryViewModel @Inject constructor(
                   totalDiscount, tipAmount
               )
     */
+        //        orderAttributeRequestModel.orderServiceChargesAttributes =
+        //            orderServiceChargesAttributes(cartModel, subTotalPrice)
+
         orderAttributeRequestModel.orderServiceChargesAttributes =
-            orderServiceChargesAttributes(cartModel, subTotalPrice)
-    
+            dineInServiceChargeAppliedAttribute(cartModel)
+
         orderAttributeRequestModel.guestsAttributes = getGuestsAttributes(cartModel)
 
 
@@ -2367,6 +2371,54 @@ class DashBoardCategoryViewModel @Inject constructor(
 
 
         return orderRequestModel
+    }
+
+    fun dineInServiceChargeAppliedAttribute(cartModel: CartModel): List<OrderServiceChargesAttribute> {
+        var guestCount = cartModel.dineInList?.size?.minus(1)
+        val orderServiceChargesAttributeList: ArrayList<OrderServiceChargesAttribute> =
+            arrayListOf()
+        if (prefProvider.getValueboolean(SERVICECHARGE_DINEIN_ORDER, false)) {
+            var isApplied = false
+            serviceChargesList.forEach {
+                if (it.order_type == Constants.SERVICECHARGE_DINEIN_ORDER) {
+                    if (isInRange(
+                            it.min_guest_count!!,
+                            it.max_guest_count!!,
+                            guestCount!!
+                        )
+                    ) {
+                        val orderServiceChargesAttribute = OrderServiceChargesAttribute()
+                        orderServiceChargesAttribute.amount =
+                            MethodUtils.roundOffAmountDouble((subTotalPrice * it.percentage) / 100)
+                        orderServiceChargesAttribute.name = it.name
+                        orderServiceChargesAttribute.rate = it.percentage
+                        orderServiceChargesAttribute.serviceChargeId = it.id
+                        orderServiceChargesAttribute.order_type = it.order_type
+                        orderServiceChargesAttribute.max_guest_count = it.max_guest_count
+                        orderServiceChargesAttribute.min_guest_count = it.min_guest_count
+                        orderServiceChargesAttribute.serviceChargeId = it.id
+                        orderServiceChargesAttributeList.add(orderServiceChargesAttribute)
+
+                        isApplied = true
+                        Log.d(
+                            TAG,
+                            "calculateDineInServiceCharge: DashBoard " + it.min_guest_count + "....." + it.max_guest_count + " in between " + guestCount
+                        )
+                        totalServiceCharge += (subTotalPrice * it.percentage) / 100
+                        return@forEach
+                    }
+                }
+            }
+            if (!isApplied) {
+                serviceChargesList.forEach { service ->
+                    if (service.id == checkMaxGuestCountId()) {
+                        totalServiceCharge += (subTotalPrice * service.percentage) / 100
+                        return@forEach
+                    }
+                }
+            }
+        }
+        return orderServiceChargesAttributeList
     }
 
     fun randomOfflineId(): String {
@@ -3570,7 +3622,6 @@ class DashBoardCategoryViewModel @Inject constructor(
         totalServiceCharge = 0.0
         var amountToBePaid = 0.0
         if (cartModel.orderType == DINE_IN) {
-
             if (isGuestPayment) {
 
                 subTotalPrice = model.subTotal
@@ -3647,6 +3698,10 @@ class DashBoardCategoryViewModel @Inject constructor(
                     cashdiscountAmount = 0.0
                 }
 
+                val nf: NumberFormat = NumberFormat.getNumberInstance()
+                nf.maximumFractionDigits = 2
+                val rounded: String = nf.format(cashdiscountAmount)
+                cashdiscountAmount = rounded.toDouble()
                 MethodUtils.setPriceTextView(txtTotal, model.total)
 
 
@@ -3727,6 +3782,12 @@ class DashBoardCategoryViewModel @Inject constructor(
                 } else {
                     cashdiscountAmount = 0.0
                 }
+                val nf: NumberFormat = NumberFormat.getNumberInstance()
+                nf.maximumFractionDigits = 2
+                val rounded: String = nf.format(cashdiscountAmount)
+                cashdiscountAmount = rounded.toDouble()
+                Log.d(TAG, "itemCalculationForDineInPayment: "+cashdiscountAmount)
+
 
                 MethodUtils.setPriceTextView(txtTotal, model.total)
 
@@ -3809,6 +3870,10 @@ class DashBoardCategoryViewModel @Inject constructor(
                     cashdiscountAmount = 0.0
                 }
 
+                val nf: NumberFormat = NumberFormat.getNumberInstance()
+                nf.maximumFractionDigits = 2
+                val rounded: String = nf.format(cashdiscountAmount)
+                cashdiscountAmount = rounded.toDouble()
                 Log.e("amountToBePaid", "" + totalPrice)
             } else {
 

@@ -23,7 +23,9 @@ import com.android.pos.ui.adapter.InventoryAdapter
 import com.android.pos.utils.TAG
 import com.android.pos.utils.statusUtils.Status
 import dagger.hilt.android.AndroidEntryPoint
+import java.util.*
 import javax.inject.Inject
+import kotlin.collections.ArrayList
 
 @AndroidEntryPoint
 class OnlineOrderFragment : Fragment() {
@@ -40,6 +42,7 @@ class OnlineOrderFragment : Fragment() {
     private var pendingOrdersCount: Int? = 0
     private var cancelledOrdersCount: Int? = 0
     private var completedOrdersCount: Int? = 0
+    private var upcomingOrderCount: Int? = 0
 
     @set:Inject
     internal var prefProvider: PrefProvider? = null
@@ -77,20 +80,24 @@ class OnlineOrderFragment : Fragment() {
 
                 when (orderType) {
                     "0" -> {
-                        pendingOrdersCount = count
+                        upcomingOrderCount = count
                         setAdapter(0)
                     }
                     "1" -> {
-                        ongoingOrderCount = count
+                        pendingOrdersCount = count
                         setAdapter(1)
                     }
                     "2" -> {
-                        completedOrdersCount = count
+                        ongoingOrderCount = count
                         setAdapter(2)
                     }
                     "3" -> {
-                        cancelledOrdersCount = count
+                        completedOrdersCount = count
                         setAdapter(3)
+                    }
+                    "4" -> {
+                        cancelledOrdersCount = count
+                        setAdapter(4)
                     }
                 }
 
@@ -110,16 +117,16 @@ class OnlineOrderFragment : Fragment() {
     }
 
     private fun configureToolbar() {
-        binding.commonToolbar?.imgDrawer?.setOnClickListener {
+        binding.commonToolbar?.imgDrawer.setOnClickListener {
             findNavController().navigate(R.id.action_onlineOrder_to_menuposbold)
         }
-        binding.commonToolbar?.txtHome?.setOnClickListener {
+        binding.commonToolbar?.txtHome.setOnClickListener {
             findNavController().navigate(R.id.action_onlineOrder_to_dashboarCategorynew)
         }
 
-        binding.commonToolbar?.txtTitle?.text = "Online Orders"
+        binding.commonToolbar.txtTitle?.text = "Online Orders"
         binding.commonToolbar?.imgOptionMenu?.visibility = View.GONE
-        binding.commonToolbar?.txtSubTitle?.text = "Pending Orders"
+        binding.commonToolbar?.txtSubTitle?.text = "UpComing Orders"
         binding.commonToolbar?.imgOptionMenuContainer?.visibility = View.GONE
     }
 
@@ -134,6 +141,7 @@ class OnlineOrderFragment : Fragment() {
                             ongoingOrderCount = it.data?.data?.online_in_progress_orders
                             completedOrdersCount = it.data?.data?.online_complete_orders
                             cancelledOrdersCount = it.data?.data?.online_rejected_orders
+                            upcomingOrderCount = it.data?.data?.upcoming_orders
 
                             setAdapter(mPos)
 
@@ -160,23 +168,29 @@ class OnlineOrderFragment : Fragment() {
                 val activeOrders = OnlineDetailFragment("0", startDate, endDate)
                 loadFragment(activeOrders)
                 binding.commonToolbar.txtSetItem.visibility = View.GONE
-                binding.commonToolbar.txtSubTitle.text = "Pending Orders"
+                binding.commonToolbar.txtSubTitle.text = "UpComing Orders"
             }
             1 -> {
                 val activeOrders = OnlineDetailFragment("1", startDate, endDate)
                 loadFragment(activeOrders)
                 binding.commonToolbar.txtSetItem.visibility = View.GONE
-                binding.commonToolbar.txtSubTitle.text = "InProgress Orders"
+                binding.commonToolbar.txtSubTitle.text = "Pending Orders"
             }
             2 -> {
-                val modifier: Fragment = OnlineDetailFragment("2", startDate, endDate)
+                val activeOrders = OnlineDetailFragment("2", startDate, endDate)
+                loadFragment(activeOrders)
+                binding.commonToolbar.txtSetItem.visibility = View.GONE
+                binding.commonToolbar.txtSubTitle.text = "InProgress Orders"
+            }
+            3 -> {
+                val modifier: Fragment = OnlineDetailFragment("3", startDate, endDate)
                 loadFragment(modifier)
                 binding.commonToolbar.txtSetItem.visibility = View.GONE
                 binding.commonToolbar.txtSubTitle.text = "Completed Orders"
             }
 
-            3 -> {
-                val cancelled = OnlineDetailFragment("3", startDate, endDate)
+            4 -> {
+                val cancelled = OnlineDetailFragment("4", startDate, endDate)
                 loadFragment(cancelled)
                 binding.commonToolbar.txtSetItem.visibility = View.GONE
                 binding.commonToolbar.txtSubTitle.text = "Rejected Orders"
@@ -200,26 +214,37 @@ class OnlineOrderFragment : Fragment() {
         val list: ArrayList<InventoryItemModel> = arrayListOf()
         when (pos) {
             0 -> {
-                list.add(InventoryItemModel(0, "Pending Orders ", pendingOrdersCount, true))
+                list.add(InventoryItemModel(0, "UpComing Orders ", upcomingOrderCount, true))
+                list.add(InventoryItemModel(0, "Pending Orders ", pendingOrdersCount))
                 list.add(InventoryItemModel(0, "InProgress Orders ", ongoingOrderCount))
                 list.add(InventoryItemModel(0, "Completed Orders", completedOrdersCount))
                 list.add(InventoryItemModel(0, "Rejected Orders ", cancelledOrdersCount))
             }
             1 -> {
+                list.add(InventoryItemModel(0, "UpComing Orders ", upcomingOrderCount))
+                list.add(InventoryItemModel(0, "Pending Orders ", pendingOrdersCount, true))
+                list.add(InventoryItemModel(0, "InProgress Orders ", ongoingOrderCount))
+                list.add(InventoryItemModel(0, "Completed Orders", completedOrdersCount))
+                list.add(InventoryItemModel(0, "Rejected Orders ", cancelledOrdersCount))
+            }
+            2 -> {
+                list.add(InventoryItemModel(0, "UpComing Orders ", upcomingOrderCount))
                 list.add(InventoryItemModel(0, "Pending Orders ", pendingOrdersCount))
                 list.add(InventoryItemModel(0, "InProgress Orders ", ongoingOrderCount, true))
                 list.add(InventoryItemModel(0, "Completed Orders", completedOrdersCount))
                 list.add(InventoryItemModel(0, "Rejected Orders ", cancelledOrdersCount))
 
             }
-            2 -> {
+            3 -> {
+                list.add(InventoryItemModel(0, "UpComing Orders ", upcomingOrderCount))
                 list.add(InventoryItemModel(0, "Pending Orders ", pendingOrdersCount))
                 list.add(InventoryItemModel(0, "InProgress Orders ", ongoingOrderCount))
                 list.add(InventoryItemModel(0, "Completed Orders", completedOrdersCount, true))
                 list.add(InventoryItemModel(0, "Rejected Orders ", cancelledOrdersCount))
 
             }
-            3 -> {
+            4 -> {
+                list.add(InventoryItemModel(0, "UpComing Orders ", upcomingOrderCount))
                 list.add(InventoryItemModel(0, "Pending Orders ", pendingOrdersCount))
                 list.add(InventoryItemModel(0, "InProgress Orders ", ongoingOrderCount))
                 list.add(InventoryItemModel(0, "Completed Orders", completedOrdersCount))

@@ -133,8 +133,7 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                                             val itemTaxPrice =
                                                 (tax.rate * totalPrice) / 100
 
-                                            String.format("%.2f", itemTaxPrice)
-                                                .toDouble()
+                                            itemTaxPrice
                                         } else {
 
                                             String.format("%.2f", tax.rate * it.itemQuantity)

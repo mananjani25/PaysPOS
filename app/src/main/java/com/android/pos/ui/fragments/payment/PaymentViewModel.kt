@@ -78,6 +78,8 @@ open class PaymentViewModel @Inject constructor(
     private val _orderCreate = MutableLiveData<Event<Boolean>>()
     val orderCreate: LiveData<Event<Boolean>> = _orderCreate
 
+    var serviceChargeListApplied : ArrayList<OrderServiceChargesAttribute> = arrayListOf()
+
     public var actual_Total: Double = 0.0
     public var actual_SubTotal: Double = 0.0
     public var actual_TotalTax: Double = 0.0
@@ -560,13 +562,18 @@ open class PaymentViewModel @Inject constructor(
             null
         }
 
-        orderAttributeRequestModel.orderServiceChargesAttributes =
+        if (cartModel.orderType== DINE_IN){
+            orderAttributeRequestModel.orderServiceChargesAttributes = serviceChargeListApplied
+        }else{
+            orderAttributeRequestModel.orderServiceChargesAttributes =
             orderServiceChargesAttributes(cartModel, subTotalPrice)
+        }
+
+//
         if (cartModel.orderType == DINE_IN) {
             orderAttributeRequestModel.guestsAttributes = getGuestsAttributes(cartModel)
             orderAttributeRequestModel.orderItemsAttributes = dineInOrderItemAttributed(cartModel)
         } else {
-
             orderAttributeRequestModel.orderItemsAttributes = orderItemsAttributes(cartModel)
         }
 
@@ -580,8 +587,40 @@ open class PaymentViewModel @Inject constructor(
 
         return orderRequestModel
     }
-
-
+    fun isInRange(minn: Int, maxx: Int, value: Int): Boolean {
+        return (minn <= value && value <= maxx)
+    }
+    fun dineInServiceChargeAppliedAttribute(cartModel: CartModel, subTotalPrice: Double): List<OrderServiceChargesAttribute> {
+        var guestCount = cartModel.dineInList?.size?.minus(1)
+        val orderServiceChargesAttributeList: java.util.ArrayList<OrderServiceChargesAttribute> =
+            arrayListOf()
+        if (prefProvider.getValueboolean(Constants.SERVICECHARGE_DINEIN_ORDER, false)) {
+            cartModel.dineInList?.get(0)!!.serviceChargeList?.forEach {
+                if (it.order_type == Constants.SERVICECHARGE_DINEIN_ORDER) {
+                    if (isInRange(
+                            it.min_guest_count!!,
+                            it.max_guest_count!!,
+                            guestCount!!
+                        )
+                    ) {
+                        val orderServiceChargesAttribute = OrderServiceChargesAttribute()
+                        orderServiceChargesAttribute.amount =
+                            MethodUtils.roundOffAmountDouble((subTotalPrice * it.percentage) / 100)
+                        orderServiceChargesAttribute.name = it.name
+                        orderServiceChargesAttribute.rate = it.percentage
+                        orderServiceChargesAttribute.serviceChargeId = it.id
+                        orderServiceChargesAttribute.order_type = it.order_type
+                        orderServiceChargesAttribute.max_guest_count = it.max_guest_count
+                        orderServiceChargesAttribute.min_guest_count = it.min_guest_count
+                        orderServiceChargesAttribute.serviceChargeId = it.id
+                        orderServiceChargesAttributeList.add(orderServiceChargesAttribute)
+                        return@forEach
+                    }
+                }
+            }
+        }
+        return orderServiceChargesAttributeList
+    }
     fun createOpenOrderRequest(
         cartModel: CartModel,
         subTotalPrice: Double,
@@ -698,8 +737,12 @@ open class PaymentViewModel @Inject constructor(
         } else {
             null
         }
-        orderAttributeRequestModel.orderServiceChargesAttributes =
-            orderServiceChargesAttributes(cartModel, subTotalPrice)
+        if (cartModel.orderType== DINE_IN){
+            orderAttributeRequestModel.orderServiceChargesAttributes = serviceChargeListApplied
+        }else{
+            orderAttributeRequestModel.orderServiceChargesAttributes =
+                orderServiceChargesAttributes(cartModel, subTotalPrice)
+        }
         if (cartModel.orderType == DINE_IN) {
             orderAttributeRequestModel.guestsAttributes = getGuestsAttributes(cartModel)
 
@@ -850,8 +893,12 @@ open class PaymentViewModel @Inject constructor(
             null
         }
 
-        orderAttributeRequestModel.orderServiceChargesAttributes =
-            orderServiceChargesAttributes(cartModel, subTotalPrice)
+        if (cartModel.orderType== DINE_IN){
+            orderAttributeRequestModel.orderServiceChargesAttributes = serviceChargeListApplied
+        }else{
+            orderAttributeRequestModel.orderServiceChargesAttributes =
+                orderServiceChargesAttributes(cartModel, subTotalPrice)
+        }
         if (cartModel.orderType == DINE_IN) {
             orderAttributeRequestModel.guestsAttributes = getGuestsAttributes(cartModel)
             Log.e(
@@ -1494,21 +1541,6 @@ open class PaymentViewModel @Inject constructor(
                         orderServiceChargesAttribute.id = it.order_service_charge_id
                     orderServiceChargesAttributeList.add(orderServiceChargesAttribute)
                 }
-            } else if (prefProvider.getValueboolean(Constants.SERVICECHARGE_DINEIN_ORDER, false)) {
-                serviceChargesList.forEach {
-                    val orderServiceChargesAttribute = OrderServiceChargesAttribute()
-                    orderServiceChargesAttribute.amount =
-                        MethodUtils.roundOffAmountDouble((subTotalPrice * it.percentage) / 100)
-                    orderServiceChargesAttribute.name = it.name
-                    orderServiceChargesAttribute.rate = it.percentage
-                    orderServiceChargesAttribute.serviceChargeId = it.id
-                    orderServiceChargesAttribute.order_type = it.order_type
-                    orderServiceChargesAttribute.max_guest_count = it.max_guest_count
-                    orderServiceChargesAttribute.min_guest_count = it.min_guest_count
-                    if (isUpdateOrder && it.order_service_charge_id != null)
-                        orderServiceChargesAttribute.id = it.order_service_charge_id
-                    orderServiceChargesAttributeList.add(orderServiceChargesAttribute)
-                }
             }
 
         }
@@ -1882,5 +1914,10 @@ open class PaymentViewModel @Inject constructor(
         prefProvider.setValueboolean(Constants.IS_UPDATE_ORDER_LOYALTY_APPLIED, false)
 
 
+    }
+
+    @JvmName("setServiceChargeListApplied1")
+    fun setServiceChargeListApplied(temp_serviceChargeApplied:ArrayList<OrderServiceChargesAttribute>) {
+        this.serviceChargeListApplied = temp_serviceChargeApplied
     }
 }

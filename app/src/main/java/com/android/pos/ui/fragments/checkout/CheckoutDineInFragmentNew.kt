@@ -59,6 +59,7 @@ import retrofit2.Response
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
+import kotlin.collections.ArrayList
 
 @AndroidEntryPoint
 class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : Fragment(),
@@ -71,6 +72,8 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
     private var isManualCard: Boolean = false
     private lateinit var binding: FragmentCheckoutDetailsNewBinding
     private val TAG = "DashboardCategoryBold"
+
+    var serviceChargeAppliedList:ArrayList<OrderServiceChargesAttribute> = arrayListOf()
 
     private var requestCancel: Boolean = false
     private var orderId: Int? = null
@@ -183,6 +186,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
         isLastPayment = dineInDataModel?.isLastPayment ?: false
         guestRequestModel = dineInDataModel?.guestPaymentReq
         splitModel = dineInDataModel?.splitModel
+        serviceChargeAppliedList = dineInDataModel?.servicChargeAppliedlist!!
         Log.e("orderId :: ", orderId.toString())
         if (orderId != null) {
             paymentId = arguments?.getInt("paymentId")!!
@@ -1278,7 +1282,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
 
         cartList = viewModel.cartModel
         Log.e("ORDER_TYPE", prefProvider.getValue(Constants.ORDER_TYPE, Constants.TAKEOUT))
-
+        paymentviewModel.setServiceChargeListApplied(serviceChargeAppliedList)
         viewModel.ordertypelist.forEach {
             if (prefProvider.getValue(Constants.ORDER_TYPE, Constants.DINE_IN) == it.orderType) {
                 paymentviewModel.setOrderTypeId(it.id)

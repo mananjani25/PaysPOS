@@ -371,8 +371,7 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
                             val itemTaxPrice =
                                 (tax.rate * totalItemPrice) / 100
                             Log.e("itemTaxPrice", "" + itemTaxPrice)
-                            String.format("%.2f", itemTaxPrice)
-                                .toDouble()
+                            itemTaxPrice
                         }
 
                     } else {
@@ -388,13 +387,13 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
                 }
 
 
-                serviceChargesList?.forEach {
-                    if (paymentOrderDetailsResponse.data.order.order_type == DINE_IN && it.order_type == Constants.SERVICECHARGE_DINEIN_ORDER) {
-                        totalServiceCharge += (totalItemPrice * it.percentage) / 100
-                    } else if ((paymentOrderDetailsResponse.data.order.order_type == TAKEOUT || paymentOrderDetailsResponse.data.order.order_type == OPEN_ORDER) && it.order_type == Constants.SERVICECHARGE_TAKEOUT_OPENORDER) {
+                if (serviceChargesList?.isNotEmpty() == true) {
+                    serviceChargesList?.forEach {
                         totalServiceCharge += (totalItemPrice * it.percentage) / 100
                     }
                 }
+                Log.d("newserviceCharge", "calculationOfItems: "+totalServiceCharge)
+
 
                 applyDiscount += (totalDiscount / refundItemListAdapter.itemCount)
 

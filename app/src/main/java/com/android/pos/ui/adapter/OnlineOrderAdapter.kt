@@ -13,13 +13,16 @@ import androidx.core.content.res.ResourcesCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.R
 import com.android.pos.data.model.responseModel.OnlineOrderResponseModel
+import com.android.pos.data.remote.Constants
 import com.android.pos.databinding.ViewonlineorderlayoutBinding
+import com.android.pos.di.PrefProvider
 import com.android.pos.utils.TAG
 import com.android.pos.utils.TimeFormatUtils
 import com.android.pos.utils.callback.OrderCallBack
 import com.android.pos.utils.extensions.gone
 import com.android.pos.utils.extensions.visible
 import com.google.gson.Gson
+import java.text.SimpleDateFormat
 import java.util.*
 
 
@@ -42,40 +45,66 @@ class OnlineOrderAdapter(val context: Context) :
         fun bind(item: OnlineOrderResponseModel.Data) {
             binding.viewModel = item
             binding.executePendingBindings()
-            binding.llShowLayout?.visibility = View.GONE
-            if (item.createdAt.isNotEmpty()) {
+            binding.llShowLayout.visibility = View.GONE
+            if (item.futureDeliveryDate != null) {
+                val inputFormat = SimpleDateFormat("yyyy-MM-dd")
+                val outputFormat = SimpleDateFormat("MMM-dd-yyyy")
+                val date = inputFormat.parse(item.futureDeliveryDate)
+                val formattedDate = outputFormat.format(date)
+                binding.tvDate.text = formattedDate
+            }else{
                 binding.tvDate.text =
                     TimeFormatUtils.convertCurrentDate(
                         item.createdAt,
                         context
                     )
+            }
+            if (item.futureDeliveryTime != null) {
+                val inputFormat = SimpleDateFormat("hh:mm a")
+                val outputFormat = SimpleDateFormat("hh:mm a")
+                TimeFormatUtils.prefProvider = PrefProvider(context = context!!)
+                val date = inputFormat.parse(item.futureDeliveryTime.toString())
+                val formattedTime = outputFormat.format(date)
+                binding.tvtime.text = formattedTime
+            }else{
                 binding.tvtime.text =
                     TimeFormatUtils.convertCurrentTime(
                         item.createdAt,
                         context
                     )
-
             }
+
+
             if (item.order_status == "Pending") {
                 binding.orderStatusLinear?.visible()
                 binding.orderInprogressButton?.gone()
                 binding.orderCompletedButton?.gone()
                 binding.orderCancelledButton?.gone()
+                binding.orderUpcomingButton?.gone()
             } else if (item.order_status == "InProgress") {
                 binding.orderStatusLinear?.gone()
                 binding.orderInprogressButton?.visible()
                 binding.orderCompletedButton?.gone()
                 binding.orderCancelledButton?.gone()
+                binding.orderUpcomingButton?.gone()
             } else if (item.order_status == "Completed") {
                 binding.orderStatusLinear?.gone()
                 binding.orderInprogressButton?.gone()
                 binding.orderCompletedButton?.visible()
                 binding.orderCancelledButton?.gone()
+                binding.orderUpcomingButton?.gone()
+            } else if (item.order_status == "UpComing") {
+                binding.orderStatusLinear?.gone()
+                binding.orderInprogressButton?.gone()
+                binding.orderCompletedButton?.gone()
+                binding.orderCancelledButton?.gone()
+                binding.orderUpcomingButton?.visible()
             } else {
                 binding.orderStatusLinear?.gone()
                 binding.orderInprogressButton?.gone()
                 binding.orderCompletedButton?.gone()
                 binding.orderCancelledButton?.visible()
+                binding.orderUpcomingButton?.gone()
             }
 
 
