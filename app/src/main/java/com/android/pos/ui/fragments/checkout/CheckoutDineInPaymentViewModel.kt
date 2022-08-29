@@ -25,6 +25,7 @@ import com.android.pos.data.repositories.TipDiscountRepository
 import com.android.pos.di.PrefProvider
 import com.android.pos.di.RolePermission
 import com.android.pos.utils.Event
+import com.android.pos.utils.LogUtil
 import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.TimeFormatUtils
 import com.android.pos.utils.statusUtils.Resource
@@ -461,8 +462,8 @@ class CheckoutDineInPaymentViewModel @Inject constructor(
 
                     var dine = dineInList.toMutableList()
 
-                    Log.e(TAG, "dineInHeaderPosition:  ${dineInHeaderPosition}")
-                    Log.e(TAG, "selectedItemPositionDine  ${selectedItemPositionDine}")
+                    LogUtil.logE(TAG, "dineInHeaderPosition:  ${dineInHeaderPosition}")
+                    LogUtil.logE(TAG, "selectedItemPositionDine  ${selectedItemPositionDine}")
 
                     dineInHeaderPosition?.let {
                         dine.get(it).items.remove(
@@ -594,7 +595,7 @@ class CheckoutDineInPaymentViewModel @Inject constructor(
                                 }
                             }
                         }
-                        Log.e(TAG, "DeleteIndex  ${index}")
+                        LogUtil.logE(TAG, "DeleteIndex  ${index}")
                         if (index != -1) {
                             val model = cartList[0].items?.get(index)
                             if (model != null) {
@@ -603,7 +604,7 @@ class CheckoutDineInPaymentViewModel @Inject constructor(
                                     model.isEdited = item.isEdited
                                     model.isDestroy = true
                                 } else {
-                                    Log.e(TAG, "listRemoveItem")
+                                    LogUtil.logE(TAG, "listRemoveItem")
                                     list.remove(model)
                                 }
                             }
@@ -626,7 +627,7 @@ class CheckoutDineInPaymentViewModel @Inject constructor(
                         deleteCart()
                     } else {
 
-                        Log.e(TAG, "AddedListNull")
+                        LogUtil.logE(TAG, "AddedListNull")
                         val cartModel = cartList?.get(0)
                         if (item != null)
                             cartModel?.items = listOf(item)
@@ -774,10 +775,10 @@ class CheckoutDineInPaymentViewModel @Inject constructor(
                     deleteCart()
                 } else {
 
-                    Log.e(TAG, "AddedListNull")
+                    LogUtil.logE(TAG, "AddedListNull")
                     val cartModel = cartList?.get(0)
                     cartModel?.items = listOf(item!!)
-                    Log.e(TAG, "cartModel:  ${Gson().toJson(cartModel)}")
+                    LogUtil.logE(TAG, "cartModel:  ${Gson().toJson(cartModel)}")
                     if (cartModel != null) {
 
                         addCart(cartModel)
@@ -852,7 +853,7 @@ class CheckoutDineInPaymentViewModel @Inject constructor(
         context: Context
     ) {
 
-        Log.e("itemCalculation", "------------------>")
+        LogUtil.logE("itemCalculation", "------------------>")
 
         var totalAmmount = 0.0
         nonCashAdj = 0.0
@@ -929,7 +930,7 @@ class CheckoutDineInPaymentViewModel @Inject constructor(
                         totalDiscount += (it.discountPrice * it.itemQuantity)
                     }
 
-                    Log.e("totalDiscount", totalDiscount.toString())
+                    LogUtil.logE("totalDiscount", totalDiscount.toString())
 
                     totalPrice = (subTotalPrice + totalTax + totalServiceCharge)
 
@@ -953,7 +954,7 @@ class CheckoutDineInPaymentViewModel @Inject constructor(
                         )
                     }
 
-                    Log.e("amountToBePaid", "" + amountToBePaid)
+                    LogUtil.logE("amountToBePaid", "" + amountToBePaid)
                 } else {
 
                     nonCashAdj = 0.0
@@ -969,7 +970,7 @@ class CheckoutDineInPaymentViewModel @Inject constructor(
         }
         //totalAmmount = totalPrice-cartList[0].discountPrice
 
-        Log.e("itemCalculation 1", "------------------>")
+        LogUtil.logE("itemCalculation 1", "------------------>")
     }
 
     @SuppressLint("SetTextI18n")
@@ -1118,7 +1119,7 @@ class CheckoutDineInPaymentViewModel @Inject constructor(
                     cashdiscountAmount = 0.0
                 }
 
-                Log.e("amountToBePaid", "" + totalPrice)
+                LogUtil.logE("amountToBePaid", "" + totalPrice)
             } else {
 
                 nonCashAdj = 0.0
@@ -1146,7 +1147,7 @@ class CheckoutDineInPaymentViewModel @Inject constructor(
         txtTotalAmount: AppCompatTextView
     ) {
 
-        Log.e("Loyalty", "checkAppliedLoyaltyProgram..")
+        LogUtil.logE("Loyalty", "checkAppliedLoyaltyProgram..")
         redeemLoyaltyInfo.total = total
         val availablePoints = customer?.final_reward ?: 0
 
@@ -1188,7 +1189,7 @@ class CheckoutDineInPaymentViewModel @Inject constructor(
             redeemLoyaltyInfo.usedLoyaltyAmount = 0.0
             //redeemLoyaltyInfo.isLoyaltyApplied = false
         }
-        Log.e("Loyalty", "txtTotalAmount : ${redeemLoyaltyInfo.getAmountToBePaid()}")
+        LogUtil.logE("Loyalty", "txtTotalAmount : ${redeemLoyaltyInfo.getAmountToBePaid()}")
         redeemLoyaltyInfo.getAmountToBePaid()?.let {
             MethodUtils.setPriceTextView(
                 txtTotalAmount,
@@ -1232,7 +1233,7 @@ class CheckoutDineInPaymentViewModel @Inject constructor(
     private fun calculateDineInServiceCharge(cartModel: CartModel) {
         var guestCount = cartModel.dineInList?.size?.minus(1)
         if (serviceChargesList.isNotEmpty() && serviceChargesList != null) {
-            Log.e(TAG, "dashboardserviceChargesList:  ${Gson().toJson(serviceChargesList)}")
+            LogUtil.logE(TAG, "dashboardserviceChargesList:  ${Gson().toJson(serviceChargesList)}")
             if (prefProvider.getValueboolean(Constants.SERVICECHARGE_DINEIN_ORDER, false)) {
                 var isApplied = false
                 serviceChargesList.forEach {
@@ -1299,7 +1300,7 @@ class CheckoutDineInPaymentViewModel @Inject constructor(
 
                     val itemTaxPrice =
                         (tax.rate * totalPrice) / 100
-                    Log.e("itemTaxPrice", "" + itemTaxPrice)
+                    LogUtil.logE("itemTaxPrice", "" + itemTaxPrice)
                     String.format("%.2f", itemTaxPrice)
                         .toDouble()
                 } else {
@@ -1476,7 +1477,7 @@ class CheckoutDineInPaymentViewModel @Inject constructor(
             orderServiceChargesAttributes(cartModel, subTotalPrice)
 
         orderAttributeRequestModel.guestsAttributes = getGuestsAttributes(cartModel)
-        Log.e(
+        LogUtil.logE(
             TAG,
             "guestsAttributesData:  ${Gson().toJson(orderAttributeRequestModel.guestsAttributes)}"
         )
@@ -1498,7 +1499,7 @@ class CheckoutDineInPaymentViewModel @Inject constructor(
         val reqLent = 12 - ss.length
         val Alphabet = getSaltString(reqLent)
         val timeStampFinal = Alphabet + ss
-        Log.e("timeStampFinal", timeStampFinal)
+        LogUtil.logE("timeStampFinal", timeStampFinal)
 
         return timeStampFinal
     }
@@ -1719,7 +1720,7 @@ class CheckoutDineInPaymentViewModel @Inject constructor(
                 orderItemsAttribute.isCount = 0
                 orderItemsAttribute.isEdited = item.isEdited
                 orderItemsAttribute.isDestroy = item.isDestroy
-                Log.e(TAG, "Passes: ${item.isDestroy}")
+                LogUtil.logE(TAG, "Passes: ${item.isDestroy}")
                 orderItemsAttribute.isPaid = item.isPaid
                 orderItemsAttribute.isPrinted = true
                 orderItemsAttribute.isTaxRemoved = false
@@ -1733,16 +1734,16 @@ class CheckoutDineInPaymentViewModel @Inject constructor(
                 orderItemsAttribute.terminalId = cartModel.terminalId
 
 
-                Log.e(TAG, "TimeStampMo: ${item.timeStamp}")
+                LogUtil.logE(TAG, "TimeStampMo: ${item.timeStamp}")
                 if (item.timeStamp == null || item.timeStamp?.lowercase() == "null".lowercase()) {
                     orderItemsAttribute.timestamp = randomOfflineId()
-                    Log.e(TAG, "Timetimestamp  ${orderItemsAttribute.timestamp}")
+                    LogUtil.logE(TAG, "Timetimestamp  ${orderItemsAttribute.timestamp}")
                 } else {
                     orderItemsAttribute.timestamp = item.timeStamp.toString()
                 }
                 orderItemsAttribute.totalPrice =
                     MethodUtils.roundOffAmountDouble(item.price * item.itemQuantity)
-                Log.e(TAG, "orderId:  ${cartModel.orderId}")
+                LogUtil.logE(TAG, "orderId:  ${cartModel.orderId}")
                 orderItemsAttribute.orderItemTaxesAttributes =
                     orderItemTaxesAttributes(item, orderId = cartModel.orderId)
 
@@ -1891,7 +1892,7 @@ class CheckoutDineInPaymentViewModel @Inject constructor(
                     orderModifierTaxesAttribute.tax_id = tax?.taxId
                     orderModifierTaxesAttribute.id = tax?.id
 
-                    Log.e(TAG, "IDTax:  ${tax?.id}")
+                    LogUtil.logE(TAG, "IDTax:  ${tax?.id}")
                 }
             } else {
                 orderModifierTaxesAttribute.tax_id = tax?.id
@@ -2215,7 +2216,7 @@ class CheckoutDineInPaymentViewModel @Inject constructor(
 
     fun setPosition(position: Int) {
         mPosition = position
-        Log.e(TAG, "mSelectedPosition$mPosition")
+        LogUtil.logE(TAG, "mSelectedPosition$mPosition")
     }
 
 
@@ -2235,7 +2236,7 @@ class CheckoutDineInPaymentViewModel @Inject constructor(
                 }
             }
             cartList.add(0, model)
-            Log.e(TAG, "CartIsEmpty::")
+            LogUtil.logE(TAG, "CartIsEmpty::")
             return cartList
         }
 

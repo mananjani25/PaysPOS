@@ -12,6 +12,7 @@ import com.android.pos.data.model.responseModel.GetOrderDetailsResponse
 import com.android.pos.data.remote.Constants
 import com.android.pos.databinding.ViewRefundItemBinding
 import com.android.pos.ui.fragments.transactions.TransactionDetailsViewModel
+import com.android.pos.utils.LogUtil
 import com.android.pos.utils.MethodUtils
 
 class RefundItemListAdapter(val viewModel: TransactionDetailsViewModel) :
@@ -154,7 +155,7 @@ class RefundItemListAdapter(val viewModel: TransactionDetailsViewModel) :
                     } else {
                         val itemTaxPrice =
                             (tax.rate * totalItemPrice) / 100
-                        Log.e("itemTaxPrice", "" + itemTaxPrice)
+                        LogUtil.logE("itemTaxPrice", "" + itemTaxPrice)
                         String.format("%.2f", itemTaxPrice)
                             .toDouble()
                     }
@@ -195,7 +196,7 @@ class RefundItemListAdapter(val viewModel: TransactionDetailsViewModel) :
                 }
                 else if ((orderType == Constants.TAKEOUT || orderType == Constants.OPEN_ORDER) && it.order_type == Constants.SERVICECHARGE_TAKEOUT_OPENORDER) {
                     totalServiceCharge += (totalItemPrice * it.percentage) / 100
-                    Log.e("totalServiceCharge1", totalServiceCharge.toString())
+                    LogUtil.logE("totalServiceCharge1", totalServiceCharge.toString())
                 }
 
 //                if (it.order_type == Constants.SERVICECHARGE_TAKEOUT_OPENORDER) {

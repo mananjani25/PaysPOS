@@ -16,6 +16,7 @@ import com.android.pos.data.model.responseModel.OpenOrderResponse
 import com.android.pos.data.remote.Constants.PRINT_PAID
 import com.android.pos.data.remote.Constants.PRINT_UNPAID
 import com.android.pos.databinding.ViewOpenOrderItemBinding
+import com.android.pos.utils.LogUtil
 import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.TimeFormatUtils
 import com.android.pos.utils.callback.OrderCallBack
@@ -81,7 +82,7 @@ class OpenOrderAdapter(val context: Context) :
 
                 adapter = OpenOrderItemsAdapter()
                 binding.rvOpenOrder.adapter = adapter
-                Log.e(TAG,"OpenOrderorderItems:  ${Gson().toJson(item.orderItems)}")
+                LogUtil.logE(TAG,"OpenOrderorderItems:  ${Gson().toJson(item.orderItems)}")
 
                 adapter!!.addAll(item.orderItems)
             } else {

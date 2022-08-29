@@ -17,6 +17,7 @@ import com.android.pos.databinding.FragmentNotesBinding
 
 import com.android.pos.ui.adapter.NotesListAdapter
 import com.android.pos.utils.AlertUtils
+import com.android.pos.utils.LogUtil
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.callback.ItemCallback
 import com.android.pos.utils.extensions.alert
@@ -82,7 +83,7 @@ class Notes : Fragment(), ItemCallback {
 
                 val oldPos = viewHolder.bindingAdapterPosition
                 val newPos = target.bindingAdapterPosition
-                Log.e(
+                LogUtil.logE(
                     "reorder after", "" + ":::" + ":::" +
                             viewHolder.bindingAdapterPosition.toString() + " :::  " + target.bindingAdapterPosition.toString()
                 )
@@ -93,7 +94,7 @@ class Notes : Fragment(), ItemCallback {
 
                 val a = noteListadapter.getItem(dragFrom).sort
                 val b = noteListadapter.getItem(dragTo).sort
-                Log.e("onItemMove", "$a:: $b")
+                LogUtil.logE("onItemMove", "$a:: $b")
 
 
 
@@ -120,7 +121,7 @@ class Notes : Fragment(), ItemCallback {
 
                 if (dragFrom != -1 && dragTo != -1 && dragFrom != dragTo) {
 
-                    Log.e("clearView", "$dragFrom :: $dragTo")
+                    LogUtil.logE("clearView", "$dragFrom :: $dragTo")
                     reallyMoved(
                         noteListadapter.getItem(dragFrom).sort,
                         noteListadapter.getItem(dragTo).sort,
@@ -141,7 +142,7 @@ class Notes : Fragment(), ItemCallback {
     private fun reallyMoved(oldPos: Int, newPos: Int, categoryIdOld: Int?) {
         if (categoryIdOld != null) {
             isreOrder = true
-            Log.e("reallyMoved", "$oldPos :: $newPos")
+            LogUtil.logE("reallyMoved", "$oldPos :: $newPos")
             viewModel.reOrderItem(categoryIdOld, oldPos, newPos)
         }
 

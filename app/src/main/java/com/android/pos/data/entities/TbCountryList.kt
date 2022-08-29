@@ -11,5 +11,7 @@ data class TbCountryList(
     @PrimaryKey
     @SerializedName("id")
     val id: Int,
+    @SerializedName("is_deleted")
+    val isDeleted: Boolean
 ) {
 }

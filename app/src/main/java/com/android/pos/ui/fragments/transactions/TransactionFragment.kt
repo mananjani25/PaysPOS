@@ -32,6 +32,7 @@ import com.android.pos.ui.adapter.TransactionAdapter
 import com.android.pos.ui.fragments.magtek.MagtekRequestUtils
 import com.android.pos.ui.fragments.magtek.PaymentResponse
 import com.android.pos.utils.AlertUtils
+import com.android.pos.utils.LogUtil
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.callback.ItemCallback
 import com.android.pos.utils.callback.PaginationScrollListener
@@ -641,7 +642,7 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
 
 
                 } else {
-                    Log.e(TAG, "itemCount ${transactionAdapter.itemCount}")
+                    LogUtil.logE(TAG, "itemCount ${transactionAdapter.itemCount}")
                     /* binding.rvTeamTimeSheet.visibility = View.GONE
                      binding.txtNodata.visibility = View.VISIBLE
                      binding.txtNodata.text = timeSheet.message*/
@@ -1266,7 +1267,7 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
             ) {
                 ProgressUtils.dismissProgressDialog()
                 if (response.isSuccessful) {
-                    Log.e("onResponse", Gson().toJson(response.body()))
+                    LogUtil.logE("onResponse", Gson().toJson(response.body()))
                     if (response.body() != null && response.body()!![0].transactionOutput != null) {
 
                         if (response.body()!![0].transactionOutput?.isTransactionApproved == true) {

@@ -27,21 +27,21 @@ interface ModifierSetDao {
     @Insert(onConflict = REPLACE)
     suspend fun addAll(modifierModel: List<ModifierSet>)
 
-    @get:Query("select * from ModifierSet ORDER BY ModifierSet.sort DESC")
+    @get:Query("select * from ModifierSet where ModifierSet.isDeleted = 0 ORDER BY ModifierSet.sort DESC")
     val all: LiveData<List<ModifierSet>>
 
 
-    @Query("select * from ModifierSet where  ModifierSet.itemIds = :id")
+    @Query("select * from ModifierSet where  ModifierSet.itemIds = :id and ModifierSet.isDeleted = 0")
     fun all(id: Int?): LiveData<List<ModifierSet?>>?
 
-    @Query("select * from ModifierSet")
+    @Query("select * from ModifierSet where ModifierSet.isDeleted = 0")
     fun allModifier(): List<ModifierSet?>?
 
-    @Query("SELECT * FROM ModifierSet WHERE id IN (:itemIds)")
+    @Query("SELECT * FROM ModifierSet WHERE id IN (:itemIds) and ModifierSet.isDeleted = 0")
     fun modifierSetByItem(itemIds: IntArray): LiveData<List<ModifierSet>>
 
 
-    @Query("SELECT * from ModifierSet where ModifierSet.id  = :id LIMIT 1")
+    @Query("SELECT * from ModifierSet where ModifierSet.id  = :id  and ModifierSet.isDeleted = 0 LIMIT 1")
     fun modifierById(id: Int?): ModifierSet?
 
     @Query("SELECT * from ModifierSet LIMIT 1")

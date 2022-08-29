@@ -26,5 +26,7 @@ data class Category(
     @SerializedName("items")
     val items: List<Item>,
     @SerializedName("item_ids")
-    val itemIds: List<Int>
+    val itemIds: List<Int>,
+    @SerializedName("is_deleted")
+    val isDeleted: Boolean,
 )

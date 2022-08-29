@@ -111,7 +111,6 @@ class DineInAdapter : RecyclerView.Adapter<DineInAdapter.MyViewHolder>() {
         init {
 
             binding.txtCrtNewCustomer.setOnClickListener {
-                Log.e(TAG, "DineInlayoutPosition:  $layoutPosition")
                 if (list.get(layoutPosition).customer != null) {
                     //list.get(layoutPosition).customer = null
                     listner.onCustomerClicked(layoutPosition, true)
@@ -176,7 +175,6 @@ class DineInAdapter : RecyclerView.Adapter<DineInAdapter.MyViewHolder>() {
         }
 
         override fun onItemClickListener(view: View?, data: TbItem, position: Int) {
-            Log.e(TAG, "ItemWithDine")
             list.get(0).itemPosition = position
             list.get(0).headerPosition = layoutPosition
             listner.onItemSelected(bindingAdapterPosition, position, data)

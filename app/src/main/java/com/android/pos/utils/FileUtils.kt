@@ -159,7 +159,7 @@ object FileUtils {
                 type = MimeTypeMap.getSingleton().getMimeTypeFromExtension(contentType)
             }
         }
-        Log.e("!_@_", "content type:  $type")
+        LogUtil.logE("!_@_", "content type:  $type")
         return type?:""
     }
 
@@ -469,7 +469,7 @@ object FileUtils {
                 }
             } catch (e: Exception) {
                 if (DEBUG) e.message?.let {
-                    Log.e(
+                    LogUtil.logE(
                         "getThumbnail", it
                     )
                 }

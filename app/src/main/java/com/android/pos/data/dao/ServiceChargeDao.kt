@@ -19,13 +19,13 @@ interface ServiceChargeDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun addServiceCharges(serviceChargeList: List<TbServiceCharge>)
 
-    @get:Query("select * from TbServiceCharge")
+    @get:Query("select * from TbServiceCharge where TbServiceCharge.isDeleted = 0")
     val allServiceCharge: LiveData<List<TbServiceCharge>>
 
-    @Query("select * from TbServiceCharge")
+    @Query("select * from TbServiceCharge where TbServiceCharge.isDeleted = 0")
     fun allServiceChargeList(): List<TbServiceCharge>
 
-    @Query("SELECT * from TbServiceCharge where TbServiceCharge.id  = :id LIMIT 1")
+    @Query("SELECT * from TbServiceCharge where TbServiceCharge.id  = :id and  TbServiceCharge.isDeleted = 0 LIMIT 1")
     fun serviceChargeById(id: Int?): TbServiceCharge
 
     @Query("DELETE FROM TbServiceCharge")
@@ -34,7 +34,7 @@ interface ServiceChargeDao {
     @Query("DELETE FROM TbServiceCharge where TbServiceCharge.id  = :id")
     suspend fun deleteServiceChargeById(id: Int)
 
-    @Query("SELECT * FROM TbServiceCharge WHERE TbServiceCharge.id IN (:userIds)")
+    @Query("SELECT * FROM TbServiceCharge WHERE TbServiceCharge.id IN (:userIds) and  TbServiceCharge.isDeleted = 0")
     fun serviceChargesByIds(userIds: IntArray): List<TbServiceCharge>
 
     @Query("UPDATE TbServiceCharge SET isEnabled = :active WHERE  TbServiceCharge.id = :id")

@@ -20,6 +20,7 @@ import com.android.pos.data.remote.Constants.KEY
 import com.android.pos.databinding.CreateCategoryActivityBinding
 import com.android.pos.ui.adapter.CategoryListItemAdapter
 import com.android.pos.utils.AlertUtils
+import com.android.pos.utils.LogUtil
 import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.extensions.liveSnackBar
@@ -134,7 +135,7 @@ class CreateCategory : Fragment() {
             Constants.DIALOG_IMAGE_PATH
         )?.observe(viewLifecycleOwner) { result ->
             // Do something with the result.
-            Log.e("!_@_ image path", result)
+            LogUtil.logE("!_@_ image path", result)
             viewProfile(result)
         }
     }

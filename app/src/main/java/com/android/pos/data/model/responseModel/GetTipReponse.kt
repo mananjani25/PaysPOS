@@ -22,7 +22,7 @@ data class GetTipReponse(
     @Entity(tableName = "TbTips")
     data class Data(
         @SerializedName("created_at")
-        val createdAt: String,
+        val createdAt: String? =null,
         @PrimaryKey
         @SerializedName("id")
         val id: Int,
@@ -37,7 +37,9 @@ data class GetTipReponse(
         @SerializedName("sort")
         var sort: Int,
         @SerializedName("updated_at")
-        val updatedAt: String,
-        var isChecked: Boolean = true
+        val updatedAt: String? =null,
+        var isChecked: Boolean = true,
+        @SerializedName("is_deleted")
+        var isDeleted: Boolean = false
     ) : Parcelable
 }

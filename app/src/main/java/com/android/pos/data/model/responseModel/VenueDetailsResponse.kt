@@ -130,7 +130,9 @@ data class VenueDetailsResponse(
             @SerializedName("reason")
             val reason: String,
             @SerializedName("updated_at")
-            val updatedAt: String
+            val updatedAt: String,
+            @SerializedName("is_deleted")
+            val isDeleted: Boolean
         )
 
         data class MagensaSettings(
@@ -243,7 +245,9 @@ data class VenueDetailsResponse(
             @SerializedName("updated_at")
             val updatedAt: String,
             @SerializedName("enabled_for_receiving_web_order")
-            val enabled_for_receiving_web_order: Boolean? = null
+            val enabled_for_receiving_web_order: Boolean? = null,
+            @SerializedName("is_deleted")
+            var isDeleted: Boolean = false
         )
     }
 }

@@ -32,6 +32,7 @@ import com.android.pos.di.PrefProvider
 import com.android.pos.di.RolePermission
 import com.android.pos.ui.adapter.DineInFloorNameListAdapter
 import com.android.pos.utils.AlertUtils
+import com.android.pos.utils.LogUtil
 import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.extensions.gone
@@ -193,7 +194,7 @@ class DineInFragment : Fragment() {
 
                         if (resource.data != null && resource.data.data.isNotEmpty()) {
 
-                            Log.e(TAG, "loadFloorPlan${Gson().toJson(resource.data.data)}")
+                            LogUtil.logE(TAG, "loadFloorPlan${Gson().toJson(resource.data.data)}")
 
                             dineInFloorNameList =
                                 it.data!!.data as ArrayList<GetFloorPlanResponse.Data>
@@ -390,7 +391,7 @@ class DineInFragment : Fragment() {
                             "setFloorPlan: xPosition : " + dineInFloorTablesList[i].xPosition
                         )
                         Log.d(TAG, "setFloorPlan: yTop      : " + dineInFloorTablesList[i].yTop)
-                        Log.e(TAG, "YTOPVALUE:  ${dineInFloorTablesList[i].xPosition}")
+                        LogUtil.logE(TAG, "YTOPVALUE:  ${dineInFloorTablesList[i].xPosition}")
 
                         if (dineInFloorTablesList[i].status == OCCUPIED || dineInFloorTablesList[i].status == MERGEDANDOCCUPIED) {
                             llMainParentSquare.background =
@@ -549,7 +550,7 @@ class DineInFragment : Fragment() {
     private fun clickInInflatedLayout(): View.OnClickListener {
         return View.OnClickListener { v ->
             val dineInFloorTableModel = v.tag as GetFloorPlanResponse.Data.FloorPlanTable
-            Log.e(TAG, "dineInFloorTableModel:  ${Gson().toJson(dineInFloorTableModel)}")
+            LogUtil.logE(TAG, "dineInFloorTableModel:  ${Gson().toJson(dineInFloorTableModel)}")
             if (dineInFloorTableModel.status == OCCUPIED) {
                 if (dineInFloorTableModel.lock_by_id == prefProvider.getValueInt(
                         EMPLOYEE_ID,
@@ -666,7 +667,7 @@ class DineInFragment : Fragment() {
                 )
 
             } else if (dineInFloorTableModel.status == MERGED) {
-                Log.e(TAG, "dineInFloorTableModel:  ${Gson().toJson(dineInFloorTableModel)}")
+                LogUtil.logE(TAG, "dineInFloorTableModel:  ${Gson().toJson(dineInFloorTableModel)}")
 
                 val bundle = Bundle()
                 bundle.putBoolean("isMerged", true)
@@ -684,7 +685,7 @@ class DineInFragment : Fragment() {
                         0
                     ) || prefProvider.isAdmin()
                 ) {
-                    Log.e(
+                    LogUtil.logE(
                         TAG,
                         "dineInFloorTableModelMErged:  ${Gson().toJson(dineInFloorTableModel)}"
                     )

@@ -14,10 +14,10 @@ interface TipsDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun addAllTips(tipList: List<GetTipReponse.Data>)
 
-    @get:Query("select * from TbTips ORDER BY TbTips.sort DESC")
+    @get:Query("select * from TbTips where TbTips.isDeleted  = 0 ORDER BY TbTips.sort DESC")
     val allTips: LiveData<List<GetTipReponse.Data>>
 
-    @Query("select * from TbTips")
+    @Query("select * from TbTips where TbTips.isDeleted  = 0")
     fun allTipsList(): List<GetTipReponse.Data>
 
     @Query("SELECT * from TbTips where TbTips.id  = :id LIMIT 1")
@@ -29,9 +29,9 @@ interface TipsDao {
     @Query("DELETE FROM TbTips where TbTips.id  = :id")
     suspend fun deleteTipById(id: Int)
 
-    @Query("SELECT * FROM TbTips WHERE TbTips.id IN (:userIds)")
+    @Query("SELECT * FROM TbTips WHERE TbTips.id IN (:userIds) and TbTips.isDeleted  = 0")
     fun tipsByIds(userIds: IntArray): List<GetTipReponse.Data>
 
-    @Query("UPDATE TbTips SET isActive = :active WHERE  TbTips.id = :id")
+    @Query("UPDATE TbTips SET isActive = :active WHERE  TbTips.id = :id and  TbTips.isDeleted  = 0")
     suspend fun activeTip(id: Int, active: Boolean?): Int
 }

@@ -14,8 +14,11 @@ import com.android.pos.R
 import com.android.pos.data.remote.Constants.EMPLOYEE_ID
 import com.android.pos.data.remote.Constants.ONLINE_ORDER_GET_NOTIFICATION
 import com.android.pos.data.remote.Constants.SEND_CLOCKOUT_NOTIFICATION
+import com.android.pos.data.remote.Constants.SYNC_NOTIFICATION
+import com.android.pos.data.remote.Constants.SYNC_SETTING_NOTIFICATION
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.activities.MainActivity
+import com.android.pos.utils.LogUtil
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import javax.inject.Inject
@@ -27,7 +30,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
     lateinit var prefProvider: PrefProvider
 
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
-        Log.e(TAG, "From: ${remoteMessage.from}")
+        LogUtil.logEN(TAG, "From: ${remoteMessage.data}")
 
 //        createNotification()
 
@@ -57,6 +60,14 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
                     intent.action = ONLINE_ORDER_GET_NOTIFICATION
                     sendBroadcast(intent)
                     setSoundForOnlineOrder()
+                } else if (type == "Sync") {
+                    val intent = Intent()
+                    intent.action = SYNC_NOTIFICATION
+                    sendBroadcast(intent)
+                }else if (type == "SettingData") {
+                    val intent = Intent()
+                    intent.action = SYNC_SETTING_NOTIFICATION
+                    sendBroadcast(intent)
                 } else {
                     var intent = Intent()
                     intent.putExtra("printer_queue", "rem")
@@ -66,8 +77,10 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
                 }
             }
         }
+                }
+            }
 
-    }
+        }
 
     private fun createNotification() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -98,12 +111,12 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
     }
 
     override fun onNewToken(token: String) {
-        Log.e(TAG, "Refreshed token: $token")
+        LogUtil.logEN(TAG, "Refreshed token: $token")
         sendRegistrationToServer(token)
     }
 
     private fun sendRegistrationToServer(token: String?) {
-        Log.e(TAG, "sendRegistrationTokenToServer($token)")
+        LogUtil.logEN(TAG, "sendRegistrationTokenToServer($token)")
     }
 
     private fun sendNotification(messageBody: String) {

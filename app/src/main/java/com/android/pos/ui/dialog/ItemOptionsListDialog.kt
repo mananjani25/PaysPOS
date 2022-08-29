@@ -19,6 +19,7 @@ import com.android.pos.databinding.FragmentItemOptionsListBinding
 
 import com.android.pos.ui.adapter.SelectedOptionSetNameAdapter
 import com.android.pos.ui.fragments.inventory.OptionSetViewModel
+import com.android.pos.utils.LogUtil
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.callback.DeleteOptionSetCallback
 import com.android.pos.utils.extensions.setNavigationResult
@@ -251,7 +252,7 @@ class ItemOptionsListDialog : DialogFragment(), AdapterView.OnItemSelectedListen
         println(cartesianProduct)
 
         cartesianProduct.forEach {
-            Log.e("cartesianProduct", it.joinToString { it })
+            LogUtil.logE("cartesianProduct", it.joinToString { it })
         }
     }
 
@@ -325,7 +326,7 @@ class ItemOptionsListDialog : DialogFragment(), AdapterView.OnItemSelectedListen
                 Log.d("options", "::" + itemOptionList[position].options)
 
                 variationList.add(itemOptionList[position].options)
-                Log.e("optionsvariation", "::$variationList")
+                LogUtil.logE("optionsvariation", "::$variationList")
 
                 if (itemOptionList[position].name == binding.spOptions.selectedItem) {
                     optionName.removeAt(position)

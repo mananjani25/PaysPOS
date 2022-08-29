@@ -16,13 +16,13 @@ interface EmployeeDao {
     fun addAllEmployee(employeeList: List<Employee>)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-   suspend fun addAllEmployeeSuspend(employeeList: List<Employee>)
+    suspend fun addAllEmployeeSuspend(employeeList: List<Employee>)
 
-    @get:Query("select * from TbEmployee")
+    @get:Query("select * from TbEmployee where TbEmployee.isDeleted = 0")
     val allEmployee: LiveData<List<Employee>>
 
     @Query("select * from TbEmployee where TbEmployee.locationId  = :id")
-    fun allEmployeeLocationWise(id:Int?): LiveData<List<Employee>>
+    fun allEmployeeLocationWise(id: Int?): LiveData<List<Employee>>
 
     @Query("select * from TbEmployee")
     fun allEmployeeList(): List<Employee>

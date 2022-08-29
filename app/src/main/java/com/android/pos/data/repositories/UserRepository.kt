@@ -2,6 +2,7 @@ package com.android.pos.data.repositories
 
 import com.android.pos.data.db.AppDatabase
 import com.android.pos.data.remote.ApiHelper
+import com.android.pos.data.remote.Constants
 import javax.inject.Inject
 
 class UserRepository @Inject constructor(
@@ -24,7 +25,6 @@ class UserRepository @Inject constructor(
     suspend fun forgotPassword(data: HashMap<String, String>) =
         apiHelperNew.forgotPassword(data)
 
-    suspend fun logout(data: HashMap<String, String>) = apiHelperNew.logOut(data)
 
 
 }

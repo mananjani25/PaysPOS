@@ -13,6 +13,7 @@ import com.android.pos.R
 import com.android.pos.data.remote.Constants
 import com.android.pos.databinding.DailogSplitAmountBinding
 import com.android.pos.di.PrefProvider
+import com.android.pos.utils.LogUtil
 import dagger.hilt.android.AndroidEntryPoint
 import java.text.NumberFormat
 import java.util.*
@@ -204,7 +205,7 @@ class SplitAmountFragment : DialogFragment(), View.OnClickListener, TextWatcher 
         val value = s.toString()
         if (value.isNotEmpty()) {
 
-            Log.e("remainAmount", value.toString())
+            LogUtil.logE("remainAmount", value.toString())
 
         }
 

@@ -23,6 +23,7 @@ import com.android.pos.data.remote.Constants.KEY
 import com.android.pos.databinding.FragmentInventoryBinding
 import com.android.pos.di.RolePermission
 import com.android.pos.ui.adapter.InventoryAdapter
+import com.android.pos.utils.LogUtil
 import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.statusUtils.Status
 import dagger.hilt.android.AndroidEntryPoint
@@ -60,7 +61,7 @@ class Orders : Fragment() {
         requireContext().registerReceiver(broadcastReceiver, IntentFilter("cancelled"));
         findNavController().currentBackStackEntry?.savedStateHandle?.getLiveData<String>(KEY)
             ?.observe(viewLifecycleOwner) { it ->
-                Log.e(TAG, "InventoryLifeCycler  $it")
+                LogUtil.logE(TAG, "InventoryLifeCycler  $it")
                 when (it) {
                     ACTIVE_ORDER -> {
                         changePosition(0)
@@ -114,7 +115,7 @@ class Orders : Fragment() {
                     }
                 }
 
-                Log.e("broadcastReceiver", count.toString())
+                LogUtil.logE("broadcastReceiver", count.toString())
             } else {
                 val position = intent?.getIntExtra("position", 0)
                 changePosition(position!!)
@@ -258,7 +259,7 @@ class Orders : Fragment() {
                         } else {
                             changePosition(position)
                         }
-                        Log.e(TAG, "position  $position")
+                        LogUtil.logE(TAG, "position  $position")
 
 
                     }

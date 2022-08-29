@@ -21,6 +21,7 @@ import com.android.pos.data.remote.Constants.SMALL
 import com.android.pos.databinding.FragmentKitchenReceiptSettingsBinding
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.Event
+import com.android.pos.utils.LogUtil
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.statusUtils.Status
 import com.google.gson.Gson
@@ -87,7 +88,7 @@ class KitchenReceiptSettings : Fragment(), CompoundButton.OnCheckedChangeListene
     }
 
     private fun updateDate() {
-        viewModel.data.observe(requireActivity(), {
+        viewModel.data.observe(requireActivity()) {
             it.getContentIfNotHandled()?.let { data ->
                 activity?.let {
                     AlertUtils.showCustomAlertWithListenerWithOK(
@@ -103,12 +104,12 @@ class KitchenReceiptSettings : Fragment(), CompoundButton.OnCheckedChangeListene
                 }
 
             }
-        })
+        }
     }
 
     private fun observeData() {
-        viewModel.kitchenData.observe(requireActivity(), {
-            Log.e(TAG, "KitchenReceiptRespone  ${Gson().toJson(it)}")
+        viewModel.kitchenData.observe(requireActivity()) {
+            LogUtil.logE(TAG, "KitchenReceiptRespone  ${Gson().toJson(it)}")
             when (it.fonts) {
                 SMALL -> {
 
@@ -172,7 +173,7 @@ class KitchenReceiptSettings : Fragment(), CompoundButton.OnCheckedChangeListene
                 binding.txtAddress.visibility = View.GONE
             }
 
-        })
+        }
 
     }
 

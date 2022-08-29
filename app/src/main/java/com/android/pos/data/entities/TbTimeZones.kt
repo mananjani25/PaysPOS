@@ -10,6 +10,8 @@ import kotlinx.parcelize.Parcelize
 data class TbTimeZones(
     @PrimaryKey
     @SerializedName("key") val name: String,
-    @SerializedName("value") val value: String
+    @SerializedName("value") val value: String,
+    @SerializedName("is_deleted")
+    val isDeleted: Boolean = false
 
 )

@@ -16,7 +16,6 @@ class CartItemModifierAdapter :
     inner class MyViewHolder(private val binding: ViewCartModifierBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(item: Modifier) {
-            Log.e(TAG,"itemModifiers:  ${Gson().toJson(item)}")
             binding.model = item
             binding.executePendingBindings()
         }

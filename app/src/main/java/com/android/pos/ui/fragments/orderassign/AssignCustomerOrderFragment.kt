@@ -21,6 +21,7 @@ import com.android.pos.databinding.FragmentAssignCustomerOrderBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.adapter.AssignCustomerToOrderAdapter
 import com.android.pos.ui.fragments.customer.CustomerListViewModel
+import com.android.pos.utils.LogUtil
 import com.android.pos.utils.callback.ItemCallback
 import com.android.pos.utils.callback.PaginationScrollListener
 import com.android.pos.utils.statusUtils.Status
@@ -235,13 +236,13 @@ class AssignCustomerOrderFragment : Fragment(), ItemCallback {
 
             isFromDineIn?.let { putBoolean("DINE_IN", it) }
             dineInPosition?.let {
-                Log.e(TAG, "position:  $it")
+                LogUtil.logE(TAG, "position:  $it")
                 putInt("position", it)
             }
         }
 
         if (isFromDineIn == true) {
-            Log.e(TAG, "isFromDineIn:  ${isFromDineIn}")
+            LogUtil.logE(TAG, "isFromDineIn:  ${isFromDineIn}")
             setFragmentResult("request_key_customer_dine_in", result)
         } else {
             setFragmentResult("request_key_customer", result)

@@ -28,13 +28,13 @@ interface OptionSetDao {
     @Insert(onConflict = REPLACE)
     suspend fun addAll(modifierModel: List<OptionSet>)
 
-    @get:Query("select * from OptionSet ORDER BY OptionSet.sort ASC")
+    @get:Query("select * from OptionSet where OptionSet.isDeleted = 0 ORDER BY OptionSet.sort ASC")
     val all: LiveData<List<OptionSet>>
 
-    @Query("select * from OptionSet")
+    @Query("select * from OptionSet where OptionSet.isDeleted = 0")
     fun allOptionsSet(): List<OptionSet?>?
 
-    @Query("SELECT * FROM OptionSet WHERE id IN (:itemIds)")
+    @Query("SELECT * FROM OptionSet WHERE id IN (:itemIds) and OptionSet.isDeleted = 0")
     fun optionSetByItem(itemIds: IntArray): LiveData<List<OptionSet>>
 
 

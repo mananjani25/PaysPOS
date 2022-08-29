@@ -25,5 +25,7 @@ data class TbOrderType(
     @SerializedName("sort")
     val sort: Int,
     @SerializedName("updated_at")
-    val updatedAt: String
+    val updatedAt: String,
+    @SerializedName("is_deleted")
+    var isDeleted: Boolean = false
 ) : Parcelable

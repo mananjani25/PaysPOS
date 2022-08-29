@@ -27,6 +27,7 @@ import com.android.pos.ui.adapter.CategoryPrinterAdapter
 import com.android.pos.ui.adapter.EditPrinterListAdapter
 import com.android.pos.ui.fragments.settings.hardware.printer.PrinterViewModel
 import com.android.pos.utils.AlertUtils
+import com.android.pos.utils.LogUtil
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.extensions.gone
 import com.android.pos.utils.extensions.visible
@@ -150,10 +151,10 @@ class EditPrinter : Fragment(), CategoryPrinterAdapter.CategoryPrinter {
     private fun setSpinnnerAdapter() {
         binding.spnPrinterCat.adapter = arrayAdapter
         list.forEachIndexed { index, s ->
-            Log.e(TAG, "gotIndexNAme ${s.lowercase()}")
-            Log.e(TAG, "gotIndexNAmeType ${printerModel?.type?.lowercase()}")
+            LogUtil.logE(TAG, "gotIndexNAme ${s.lowercase()}")
+            LogUtil.logE(TAG, "gotIndexNAmeType ${printerModel?.type?.lowercase()}")
             if (s.lowercase() == printerModel?.type?.lowercase()) {
-                Log.e(TAG, "gotindex:  $index")
+                LogUtil.logE(TAG, "gotindex:  $index")
                 binding.spnPrinterCat.setSelection(index)
             }
         }
@@ -258,7 +259,7 @@ class EditPrinter : Fragment(), CategoryPrinterAdapter.CategoryPrinter {
 
                     }
                 }
-                Log.e(TAG, "oderTypes:  ${Gson().toJson(oderTypes)}")
+                LogUtil.logE(TAG, "oderTypes:  ${Gson().toJson(oderTypes)}")
                 if (oderTypes.isNotEmpty()) {
                     adapter.setList(oderTypes)
                     adapter.notifyDataSetChanged()
@@ -280,7 +281,7 @@ class EditPrinter : Fragment(), CategoryPrinterAdapter.CategoryPrinter {
         binding.txtPrntType.setText(printerModel?.type)
         binding.txtPrntModel.setText(printerModel?.deviceModel?.deviceName)
         printerModel?.printerModel?.toCollection(ArrayList())?.let {
-            Log.e(TAG, "OrderTYpeListSize  " + it.size)
+            LogUtil.logE(TAG, "OrderTYpeListSize  " + it.size)
             adapter.setList(it)
         }
         oldOrderTypes = printerModel?.printerModel ?: arrayListOf()
@@ -326,13 +327,13 @@ class EditPrinter : Fragment(), CategoryPrinterAdapter.CategoryPrinter {
                     listIds.add(it.id)
                 }
             }
-            Log.e(TAG, "listIdslistIds  ${Gson().toJson(listIds)}")
+            LogUtil.logE(TAG, "listIdslistIds  ${Gson().toJson(listIds)}")
 
             if (type != printerModel?.type) {
                 var tempList = adapter.getList()
 
 
-                Log.e(
+                LogUtil.logE(
                     TAG,
                     "getDefaultModel ${
                         Gson().toJson(

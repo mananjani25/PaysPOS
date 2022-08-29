@@ -111,15 +111,15 @@ class PrinterQueue : Fragment(), StatusChangeEventListener, BatteryStatusChangeE
 
         if (subscription != null) {
             subscription?.onConnected {
-                Log.e(TAG, "onActionConnected")
+                LogUtil.logE(TAG, "onActionConnected")
                 val params = JsonObject()
                 params.addProperty("id", prefProvider.getValueInt(LOCATION_ID, 0))
                 params.addProperty("url", requestURL)
                 subscription?.perform("received", params)
             }?.onRejected {
-                Log.e(TAG, "onActiononRejected")
+                LogUtil.logE(TAG, "onActiononRejected")
             }?.onReceived {
-                Log.e(TAG, "onActiononReceived  " + Gson().toJson(it))
+                LogUtil.logE(TAG, "onActiononReceived  " + Gson().toJson(it))
                 if (it != null && !isPrintRunning) {
 
                     if (it.asJsonObject.has("printer_queue")) {
@@ -134,9 +134,9 @@ class PrinterQueue : Fragment(), StatusChangeEventListener, BatteryStatusChangeE
                 }
 
             }?.onDisconnected {
-                Log.e(TAG, "onActiononDisconnected")
+                LogUtil.logE(TAG, "onActiononDisconnected")
             }?.onFailed {
-                Log.e(TAG, "onActiononFailed")
+                LogUtil.logE(TAG, "onActiononFailed")
                 subscription = consumer?.subscriptions?.create(appearanceChannel)
                 val params = JsonObject()
                 params.addProperty("id", prefProvider.getValueInt(LOCATION_ID, 0))
@@ -167,7 +167,7 @@ class PrinterQueue : Fragment(), StatusChangeEventListener, BatteryStatusChangeE
             val printerQueueModel: PrinterQueueModel = PrinterQueueModel()
 
             val obj = it.asJsonObject.get("order_data").asJsonObject
-            Log.e(TAG, "getOrderData: ${Gson().toJson(obj)}")
+            LogUtil.logE(TAG, "getOrderData: ${Gson().toJson(obj)}")
 
             if (obj.asJsonObject.has("order_items_attributes")) {
                 var itemArray = obj.asJsonObject.get("order_items_attributes").asJsonArray
@@ -305,7 +305,7 @@ class PrinterQueue : Fragment(), StatusChangeEventListener, BatteryStatusChangeE
     @SuppressLint("RestrictedApi")
     private fun onClick() {
         binding.btnStartService?.setOnClickListener {
-            Log.e(TAG, "kitchenPrinterSize:  ${kitchenPrinterList.size}")
+            LogUtil.logE(TAG, "kitchenPrinterSize:  ${kitchenPrinterList.size}")
             val data = Data.Builder()
                 .putString("kitchenPrinterList", Gson().toJson(kitchenPrinterList))
                 .put("kitchenSettingData", Gson().toJson(kitchenSettingModel))
@@ -334,7 +334,7 @@ class PrinterQueue : Fragment(), StatusChangeEventListener, BatteryStatusChangeE
                     uploadWorkRequest
                 )
             } catch (e: java.lang.Exception) {
-                Log.e(TAG, "printerQueueLog  ${e.message.toString()}")
+                LogUtil.logE(TAG, "printerQueueLog  ${e.message.toString()}")
                 e.printStackTrace()
             }
             // workManager.enqueueUniquePeriodicWork(System.currentTimeMillis().toString(),ExistingPeriodicWorkPolicy.KEEP,uploadWorkRequest)
@@ -394,7 +394,7 @@ class PrinterQueue : Fragment(), StatusChangeEventListener, BatteryStatusChangeE
                         ContextCompat.getColor(context, R.color.swipe_text_color),
                         ContextCompat.getColor(context, R.color.swipe_bg_delete)
                     ) {
-                        Log.e(TAG, "position  ${it}")
+                        LogUtil.logE(TAG, "position  ${it}")
                         adapter.getList().get(it).id?.let { it1 -> deletePrinterQueue(it1, it) }
                     })
             }
@@ -494,7 +494,7 @@ class PrinterQueue : Fragment(), StatusChangeEventListener, BatteryStatusChangeE
             } catch (e: java.lang.Exception) {
                 e.printStackTrace()
             }
-            Log.e(TAG, "PrinterException: " + e.message)
+            LogUtil.logE(TAG, "PrinterException: " + e.message)
             printer = null
             return
         }
@@ -517,7 +517,7 @@ class PrinterQueue : Fragment(), StatusChangeEventListener, BatteryStatusChangeE
     ) {
         var builder: Builder? = null
         try {
-            Log.e(TAG, "KitchenPrinterName ${customerReceiptPrinters.name}")
+            LogUtil.logE(TAG, "KitchenPrinterName ${customerReceiptPrinters.name}")
             val pname = if (customerReceiptPrinters.name.substring(0, 6).toString()
                     .lowercase() == "TM-m30".lowercase()
             ) {
@@ -814,7 +814,7 @@ class PrinterQueue : Fragment(), StatusChangeEventListener, BatteryStatusChangeE
                 printerQueueModel.id?.let {
                     val params = JsonObject()
                     var deleteUrl = prefProvider?.getValue(Constants.BASE_URL_NEW, "") + Constants.CREATE_QUEUE_PRINTER + "/" + it
-                    Log.e(TAG, "DeleteUrl ${deleteUrl}")
+                    LogUtil.logE(TAG, "DeleteUrl ${deleteUrl}")
                     params.addProperty("url", deleteUrl)
                     subscription?.perform("delete_order", params)
 
@@ -858,7 +858,7 @@ class PrinterQueue : Fragment(), StatusChangeEventListener, BatteryStatusChangeE
 
             if (it != null) {
                 kitchenSettingModel = it
-                Log.e(TAG, "getKitchenData")
+                LogUtil.logE(TAG, "getKitchenData")
                 getKitchenPrinters()
             }
         })

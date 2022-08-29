@@ -22,6 +22,7 @@ import com.android.pos.data.entities.TbItem
 import com.android.pos.databinding.FragmentItemsBinding
 import com.android.pos.ui.adapter.boldpos.ItemListPageAdapter
 import com.android.pos.utils.AlertUtils
+import com.android.pos.utils.LogUtil
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.callback.ItemCallback
 import com.android.pos.utils.extensions.alert
@@ -120,7 +121,7 @@ class AllItems(val clickedPosition: Int, val totalItems: Int) : Fragment(), Item
 
                 val oldPos = viewHolder.bindingAdapterPosition
                 val newPos = target.bindingAdapterPosition
-                Log.e(
+                LogUtil.logE(
                     "reorder after", "" + ":::" + ":::" +
                             viewHolder.bindingAdapterPosition.toString() + " :::  " + target.bindingAdapterPosition.toString()
                 )
@@ -158,7 +159,7 @@ class AllItems(val clickedPosition: Int, val totalItems: Int) : Fragment(), Item
 
                 if (dragFrom != -1 && dragTo != -1 && dragFrom != dragTo) {
 
-                    Log.e("clearView", "$dragFrom :: $dragTo")
+                    LogUtil.logE("clearView", "$dragFrom :: $dragTo")
                     reallyMoved(
                         adapterPage.peek(dragFrom)?.sort ?: 0,
                         adapterPage.peek(dragTo)?.sort ?: 0,
@@ -300,7 +301,7 @@ class AllItems(val clickedPosition: Int, val totalItems: Int) : Fragment(), Item
     private fun reallyMoved(oldPos: Int, newPos: Int, categoryId: Int?, inventoryId: Int?) {
         if (categoryId != null) {
             isreOrder = true
-            Log.e("reallyMoved", "$oldPos :: $newPos")
+            LogUtil.logE("reallyMoved", "$oldPos :: $newPos")
             viewModel.reOrderItem(inventoryId!!, oldPos, newPos)
         }
 

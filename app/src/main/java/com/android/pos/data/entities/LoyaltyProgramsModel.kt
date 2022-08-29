@@ -28,5 +28,7 @@ data class LoyaltyProgramsModel(
     @SerializedName("reward_type")
     val rewardType: String,
     @SerializedName("updated_at")
-    val updatedAt: String
+    val updatedAt: String,
+    @SerializedName("is_deleted")
+    var isDeleted: Boolean = false
 ): Parcelable

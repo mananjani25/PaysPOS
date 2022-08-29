@@ -13,6 +13,7 @@ import com.android.pos.data.repositories.PosRepository
 import com.android.pos.data.repositories.TaxServiceChargeRepository
 import com.android.pos.di.PrefProvider
 import com.android.pos.utils.Event
+import com.android.pos.utils.LogUtil
 import com.android.pos.utils.statusUtils.Status
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
@@ -162,8 +163,8 @@ class TransactionViewModel @Inject constructor(
             orderTypeIdViewModel = ""
         }
 
-        Log.e("startDate", startDate.value.toString())
-        Log.e("endDate", endDate.value.toString())
+        LogUtil.logE("startDate", startDate.value.toString())
+        LogUtil.logE("endDate", endDate.value.toString())
 
         _showProgress.value = Event(true)
 
@@ -199,7 +200,7 @@ class TransactionViewModel @Inject constructor(
                     data["payment_type"] = "Card"
                 }
             }
-            Log.e("TransactionViewModel", "filteredData $data")
+            LogUtil.logE("TransactionViewModel", "filteredData $data")
 
             val resource = taxServiceChargeRepository.getTransactionList(data)
 

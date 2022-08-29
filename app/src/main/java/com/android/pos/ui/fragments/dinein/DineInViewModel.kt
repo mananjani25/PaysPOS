@@ -17,6 +17,7 @@ import com.android.pos.data.remote.Constants.TERMINAL_ID
 import com.android.pos.data.repositories.PosRepository
 import com.android.pos.di.PrefProvider
 import com.android.pos.utils.Event
+import com.android.pos.utils.LogUtil
 import com.android.pos.utils.statusUtils.Resource
 import com.android.pos.utils.statusUtils.Status
 import com.google.gson.Gson
@@ -145,7 +146,7 @@ class DineInViewModel @Inject constructor(
                 Status.SUCCESS -> {
                     _showProgress.value = Event(false)
                     resource.data.let { response ->
-                        Log.e(TAG, "getTableStatusResponse:  ${Gson().toJson(response)}")
+                        LogUtil.logE(TAG, "getTableStatusResponse:  ${Gson().toJson(response)}")
                         if (response?.status == 200) {
                             _tableStatusSuccess.value = Event(response.status)
 
@@ -838,7 +839,7 @@ class DineInViewModel @Inject constructor(
             model.isFired = it.isFired
 
 
-            Log.e(TAG, "isFired:  ${it.isFired}")
+            LogUtil.logE(TAG, "isFired:  ${it.isFired}")
 
 
             var modifierList: ArrayList<OrderItemModifierAttribute> = arrayListOf()
@@ -1022,7 +1023,7 @@ class DineInViewModel @Inject constructor(
         var count = guestAttributes.get(guestAttributes.size - 1).name.substring(
             guestAttributes.get(guestAttributes.size - 1).name.length - 1
         ).toInt()
-        Log.e(TAG, "count  ${count}")
+        LogUtil.logE(TAG, "count  ${count}")
         count++
         return count
 

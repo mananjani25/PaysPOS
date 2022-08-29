@@ -27,5 +27,7 @@ data class TbDiscount(
     val updatedAt: String,
     @SerializedName("is_active")
     var isActive: Boolean = false,
-    var isChecked: Boolean = true
+    var isChecked: Boolean = true,
+    @SerializedName("is_deleted")
+    var isDeleted: Boolean = false
 ) : Parcelable

@@ -35,6 +35,7 @@ import com.android.pos.ui.fragments.checkout.CheckoutDineInPaymentViewModel
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.android.pos.ui.fragments.dashboard.bolddashboard.CartFragment
 import com.android.pos.utils.AlertUtils
+import com.android.pos.utils.LogUtil
 import com.android.pos.utils.TAG
 import com.android.pos.utils.extensions.gone
 import com.android.pos.utils.extensions.visible
@@ -80,7 +81,7 @@ class PaymentBoldPosFragment : Fragment() {
         isFromActiveOrder = arguments?.getBoolean("isFromActiveOrder") ?: false
         orderId = arguments?.getInt("orderId")
         viewModel.setSplitCount(1)
-        Log.e("orderId :: ", orderId.toString())
+        LogUtil.logE("orderId :: ", orderId.toString())
         if (orderId != null) {
             paymentId = requireArguments().getInt("paymentId")
             paymentOfflineId = requireArguments().getString("paymentOfflineId").toString()
@@ -116,7 +117,7 @@ class PaymentBoldPosFragment : Fragment() {
                 if (isGuest) {
                     val data =
                         requireArguments().getParcelable<GuestDataModel>(Constants.DINE_IN_GUEST_PAYMENT_DATA)
-                    Log.e("GuestData", "Data ${Gson().toJson(data)}")
+                    LogUtil.logE("GuestData", "Data ${Gson().toJson(data)}")
                     dineinCartPaymentModel =
                         requireArguments().getParcelable<DineinCartPaymentModel>("dineinPaymentModel")
                     var model = GuestPaymentCalculationModel(
@@ -135,7 +136,7 @@ class PaymentBoldPosFragment : Fragment() {
                     prefProvider.setValue(SPLIT_DINEIN_MODEL, Gson().toJson(model))
                     loadCartFragment(CartFragment(null, null, true, model, true))
                 } else {
-                    Log.e(TAG, "elsePAymentDion")
+                    LogUtil.logE(TAG, "elsePAymentDion")
                     var model = GuestPaymentCalculationModel(
                         requireArguments().getDouble("subTotalPrice"),
                         requireArguments().getDouble("totalPrice"),
@@ -208,7 +209,7 @@ class PaymentBoldPosFragment : Fragment() {
                         guestPaymentModel = requireArguments()?.getParcelable(Constants.DINE_IN_GUEST_PAYMENT_DATA),
                         guestPosition = requireArguments()?.getInt(Constants.GUEST_POSITION)
                     )
-                    Log.e(TAG, "dineInModel:  ${Gson().toJson(dineInModel)}")
+                    LogUtil.logE(TAG, "dineInModel:  ${Gson().toJson(dineInModel)}")
                     prefProvider.setValue(SPLIT_DINEIN_CHECKOUT, Gson().toJson(dineInModel))
                     loadCategoryFragment(CheckoutDineInFragmentNew(dineInModel))
                 }, 100)
@@ -230,7 +231,7 @@ class PaymentBoldPosFragment : Fragment() {
                             guestPaymentModel = temp_model.guestPaymentModel,
                             guestPosition = temp_model.guestPosition
                         )
-                        Log.e(TAG, "dineInModel:  ${Gson().toJson(dineInModel)}")
+                        LogUtil.logE(TAG, "dineInModel:  ${Gson().toJson(dineInModel)}")
                         loadCategoryFragment(CheckoutDineInFragmentNew(dineInModel))
                     }, 100)
                 }
@@ -295,7 +296,7 @@ class PaymentBoldPosFragment : Fragment() {
 
     override fun onPause() {
         super.onPause()
-        Log.e(TAG, "onPause")
+        LogUtil.logE(TAG, "onPause")
         if (!prefProvider.getValueboolean(SPLIT_ENABLE, false)) {
             if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == DINE_IN) {
                 removeCustomer()
@@ -335,7 +336,7 @@ class PaymentBoldPosFragment : Fragment() {
     private fun loadCategoryFragment(fragment: Fragment) {
         val fm: FragmentManager = requireActivity().supportFragmentManager
 
-        Log.e("orderId :: ", orderId.toString())
+        LogUtil.logE("orderId :: ", orderId.toString())
         val bundle = Bundle().apply {
             orderId?.let { putInt("orderId", it) }
             putInt("paymentId", paymentId)

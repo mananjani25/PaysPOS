@@ -15,6 +15,7 @@ import com.android.pos.data.remote.Constants
 import com.android.pos.databinding.FragmentTeamDetailsBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.utils.AlertUtils
+import com.android.pos.utils.LogUtil
 import com.android.pos.utils.MethodUtils
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
@@ -83,7 +84,7 @@ class TeamDetails : Fragment() {
         super.onCreate(savedInstanceState)
         val bundle = this.arguments
         model = bundle?.getParcelable("data")
-        model?.name?.let { Log.e("bundle", it) }
+        model?.name?.let { LogUtil.logE("bundle", it) }
         count = bundle?.getInt("count")
 
     }

@@ -8,6 +8,7 @@ import com.android.pos.R
 import com.android.pos.data.entities.Modifier
 import com.android.pos.databinding.ViewOrderModifiersBinding
 import com.android.pos.utils.AlertUtils
+import com.android.pos.utils.LogUtil
 
 class ItemModifierAdapter(private val maxAllowed: Int, private val minRequired: Int) :
     RecyclerView.Adapter<ItemModifierAdapter.MyViewHolder>() {
@@ -40,9 +41,9 @@ class ItemModifierAdapter(private val maxAllowed: Int, private val minRequired: 
                         list
                     )
                 ) {
-                    Log.e("minRequired", "ture")
+                    LogUtil.logE("minRequired", "ture")
                 } else {
-                    Log.e("minRequired", "false")
+                    LogUtil.logE("minRequired", "false")
 
                     AlertUtils.showCustomAlert(
                         binding.root.context,

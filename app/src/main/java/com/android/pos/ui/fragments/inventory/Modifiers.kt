@@ -23,6 +23,7 @@ import com.android.pos.databinding.FragmentModifiersBinding
 
 import com.android.pos.ui.adapter.ModifierSetsListAdapter
 import com.android.pos.utils.AlertUtils
+import com.android.pos.utils.LogUtil
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.SwipeHelper
 import com.android.pos.utils.callback.ItemCallback
@@ -137,7 +138,7 @@ class Modifiers(val clickedPosition: Int) : Fragment(), TextWatcher,ItemCallback
                 ): Boolean {
                     val oldPos = viewHolder.layoutPosition
                     val newPos = target.layoutPosition
-                    Log.e(
+                    LogUtil.logE(
                         "reorder after",
                         viewHolder.layoutPosition.toString() + " :::  " + target.layoutPosition.toString()
                     )

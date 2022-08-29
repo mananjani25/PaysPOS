@@ -66,6 +66,7 @@ class TbItem : Parcelable {
     var isDestroy:Boolean = false
     var reorder:Boolean = false
     var manualSaleId: String = UUID.randomUUID().toString()
+    var isDeleted: Boolean = false
 
     fun convertToItem(item: Item, category: Category?): TbItem {
         itemId = item.id
@@ -87,6 +88,7 @@ class TbItem : Parcelable {
         modifier_set_ids = item.modifierSetIds
         variationsAttributes = item.variations
         shortDescription = item.desc?: ""
+        isDeleted = item.isDeleted
         return this
     }
 }

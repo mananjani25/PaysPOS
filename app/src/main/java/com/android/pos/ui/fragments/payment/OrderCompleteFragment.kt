@@ -229,9 +229,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
             if (it != null) {
                 kitchenSettingModel = it
-                Log.e(TAG, "isFromCustomer:  ${isFromCustomer}")
+                LogUtil.logE(TAG, "isFromCustomer:  ${isFromCustomer}")
 
-                Log.e(TAG, "getREceiptModel  ${Gson().toJson(receiptModel)}")
+                LogUtil.logE(TAG, "getREceiptModel  ${Gson().toJson(receiptModel)}")
                 if (!isFromCustomer) {
                     getKitchenPrinters()
                 }
@@ -278,7 +278,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             receiptModel = requireArguments().getParcelable("receiptData")
             splitValue = requireArguments().getInt("splitValue")
             isLastPayment = requireArguments().getBoolean("isLastPayment", false)
-            Log.e(TAG, "isLastPaymentDine:  ${isLastPayment}")
+            LogUtil.logE(TAG, "isLastPaymentDine:  ${isLastPayment}")
             isGuest = requireArguments().getBoolean("isGuest")
             isGuestPaymentTotal = requireArguments().getBoolean("isGuestPaymentTotal")
             isSpilt = requireArguments().getBoolean("isSpilt")
@@ -316,7 +316,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
             // paidAmount = paidAmount - tipAmount
         }
-        Log.e(TAG, "receiptModel:  ${Gson().toJson(receiptModel)}")
+        LogUtil.logE(TAG, "receiptModel:  ${Gson().toJson(receiptModel)}")
         setLabelData()
 
         binding.edtEmail.setOnFocusChangeListener { v, hasFocus ->
@@ -346,7 +346,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 binding.txtHome.visibility = View.GONE
 
 
-                Log.e("addSplitToDatabase", "XXX")
+                LogUtil.logE("addSplitToDatabase", "XXX")
                 val title = "Split "
                 viewModel.addSplitToDatabase(
                     title,
@@ -357,16 +357,16 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     MethodUtils.roundOffAmount(paidAmount + tipAmount)
 
 
-                Log.e(TAG, "paymentpaidAmount  ${paidAmount}")
-                Log.e(TAG, "paymentWholetotalPrice  ${WholetotalPrice}")
-                Log.e(TAG, "paymentremainingAmount  ${remainingAmount}")
-                Log.e(TAG, "paymentsplitValue ${splitValue}")
-                Log.e(TAG, "paymentisSpilt  ${isSpilt}")
-                Log.e(TAG, "paymentisCustomCash  ${isCustomCash}")
-                Log.e(TAG, "paymentisSplitByAmount  ${isSplitByAmount}")
+                LogUtil.logE(TAG, "paymentpaidAmount  ${paidAmount}")
+                LogUtil.logE(TAG, "paymentWholetotalPrice  ${WholetotalPrice}")
+                LogUtil.logE(TAG, "paymentremainingAmount  ${remainingAmount}")
+                LogUtil.logE(TAG, "paymentsplitValue ${splitValue}")
+                LogUtil.logE(TAG, "paymentisSpilt  ${isSpilt}")
+                LogUtil.logE(TAG, "paymentisCustomCash  ${isCustomCash}")
+                LogUtil.logE(TAG, "paymentisSplitByAmount  ${isSplitByAmount}")
                 if (isSpilt) {
                     var sp = requireArguments().getString(Constants.SPLIT_PAY_AMOUNT)
-                    Log.e(TAG, "payment SplitTotalAmount  ${sp}")
+                    LogUtil.logE(TAG, "payment SplitTotalAmount  ${sp}")
 
                 }
 
@@ -381,14 +381,14 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         binding.txtPaymentAmount.text =
                             MethodUtils.roundOffAmount(paidAmount + tipAmount) + " payment successful"
 
-                        Log.e("Change 1", binding.txtChangeAmount.text.toString())
+                        LogUtil.logE("Change 1", binding.txtChangeAmount.text.toString())
 
                     } else {
                         changeAmtGlobal = MethodUtils.roundOffAmountDouble(0.0).toDouble()
                         binding.txtChangeAmount.gone()
                         binding.txtChangeAmount.text =
                             MethodUtils.roundOffAmount(0.0) + " Change"
-                        Log.e("Change 2", binding.txtChangeAmount.text.toString())
+                        LogUtil.logE("Change 2", binding.txtChangeAmount.text.toString())
                     }
                 } else if (remainingAmount < paidAmount) {
                     if (isCustomCash && splitChange != 0.0) {
@@ -399,7 +399,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         binding.txtPaymentAmount.text =
                             MethodUtils.roundOffAmount((paidAmount + tipAmount)) + " payment successful"
 
-                        Log.e("Change 2", binding.txtChangeAmount.text.toString())
+                        LogUtil.logE("Change 2", binding.txtChangeAmount.text.toString())
                     } else {
                         var changeValue = 0.0
                         if (prefProvider.getValue(Constants.OPTION_TYPE, "") == "SurCharge") {
@@ -416,7 +416,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                             binding.txtChangeAmount.text =
                                 MethodUtils.roundOffAmount(if (changeValue > 0) changeValue else 0.00) + " Change"
 
-                            Log.e("Change 4", binding.txtChangeAmount.text.toString())
+                            LogUtil.logE("Change 4", binding.txtChangeAmount.text.toString())
                         }
                         binding.txtPaymentAmount.text =
                             MethodUtils.roundOffAmount((paidAmount + tipAmount)) + " payment successful"
@@ -428,7 +428,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         binding.txtChangeAmount.text =
                             MethodUtils.roundOffAmount(if (splitChange > 0) splitChange else 0.00) + " Change"
 
-                        Log.e("Change 5", binding.txtChangeAmount.text.toString())
+                        LogUtil.logE("Change 5", binding.txtChangeAmount.text.toString())
                         binding.txtPaymentAmount.text =
                             MethodUtils.roundOffAmount((paidAmount + tipAmount)) + " payment successful"
                     } else {
@@ -474,7 +474,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     binding.txtChangeAmount.text =
                         MethodUtils.roundOffAmount(if (ca > 0) ca else 0.00) + " Change"
 
-                    Log.e("Change 6", binding.txtChangeAmount.text.toString())
+                    LogUtil.logE("Change 6", binding.txtChangeAmount.text.toString())
                 } else {
                     if (remainingAmount < 0) {
                         changeAmtGlobal =
@@ -484,7 +484,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         binding.txtChangeAmount.text =
                             MethodUtils.roundOffAmount(if (ca > 0) ca else 0.00) + " Change"
 
-                        Log.e("Change 7", binding.txtChangeAmount.text.toString())
+                        LogUtil.logE("Change 7", binding.txtChangeAmount.text.toString())
                     }
                 }
 
@@ -511,7 +511,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 //  binding.linearTopHeaderSplit.visibility = View.VISIBLE
                 binding.txtHome.visibility = View.GONE
                 var title = "Split "
-                Log.e("addSplitToDatabase", "XXX XXX")
+                LogUtil.logE("addSplitToDatabase", "XXX XXX")
                 viewModel.addSplitToDatabase(
                     title,
                     (paidAmount + tipAmount) - splitChange,
@@ -529,7 +529,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         binding.txtPaymentAmount.text =
                             MethodUtils.roundOffAmount((paidAmount + tipAmount)) + " payment successful"
 
-                        Log.e("Change 8", binding.txtChangeAmount.text.toString())
+                        LogUtil.logE("Change 8", binding.txtChangeAmount.text.toString())
                     } else {
                         var temp_Change =
                             MethodUtils.roundOffAmountDouble((paidAmount - noCashAdjGlobal) - remainingAmount)
@@ -541,7 +541,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                             binding.txtChangeAmount.text =
                                 MethodUtils.roundOffAmount(if (ca > 0) ca else 0.00) + " Change"
 
-                            Log.e("Change 9", binding.txtChangeAmount.text.toString())
+                            LogUtil.logE("Change 9", binding.txtChangeAmount.text.toString())
                         }
                         binding.txtPaymentAmount.text =
                             MethodUtils.roundOffAmount((paidAmount + tipAmount)) + " payment successful"
@@ -554,7 +554,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         binding.txtChangeAmount.text =
                             MethodUtils.roundOffAmount(if (splitChange > 0) splitChange else 0.00) + " Change"
 
-                        Log.e("Change 10", binding.txtChangeAmount.text.toString())
+                        LogUtil.logE("Change 10", binding.txtChangeAmount.text.toString())
                         binding.txtPaymentAmount.text =
                             MethodUtils.roundOffAmount((paidAmount + tipAmount)) + " payment successful"
                     } else {
@@ -647,7 +647,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 //            val result = bundle.getParcelable<TbCustomer>("data")
 //            if (result != null) {
 //                isFromCustomer = true
-//                //  Log.e("request_key_customer", result.first_name)
+//                //  LogUtil.logE("request_key_customer", result.first_name)
 //                val payment_id = prefProvider.getValueInt(PAYMENT_ID, 0)
 //                val final_Reward = result.final_reward
 //                result.id?.let { viewModel.assignCustomer(orderID, it, payment_id, final_Reward!!) }
@@ -812,7 +812,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 binding.llNoReceipt.setTextColor(resources.getColor(R.color.txtColor))
 
                 if (isDineIn) {
-                    Log.e(TAG, "receiptModel:  ${Gson().toJson(receiptModel)}")
+                    LogUtil.logE(TAG, "receiptModel:  ${Gson().toJson(receiptModel)}")
                     customerPrintWholeOrder()
 
                 } else {
@@ -880,7 +880,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 bundle.putBoolean("isSplitByAmount", isSplitByAmount)
             }
             bundle.putBoolean("isCustomCash", isCustomCash)
-            Log.e(TAG, "ORDER_ID:  ${prefProvider.getValueInt("ORDER_ID", -1)}")
+            LogUtil.logE(TAG, "ORDER_ID:  ${prefProvider.getValueInt("ORDER_ID", -1)}")
             //  saveDataInPrefrences()
             prefProvider.setValueInt(PAYMENT_ID, 0)
             if (findNavController().currentDestination?.id == R.id.orderCompleteFragment) {
@@ -893,7 +893,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
     private fun customerPrintWholeOrder() {
 
         var guestPos = requireArguments().getInt(GUEST_POSITION)
-        Log.e(TAG, "getGuestPosition  ${guestPos}")
+        LogUtil.logE(TAG, "getGuestPosition  ${guestPos}")
 
         var listItem: java.util.ArrayList<TbItem> = arrayListOf()
         var listItemWT: java.util.ArrayList<TbItem> = arrayListOf()
@@ -950,7 +950,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                 val checkOutDineInModel =
                     requireArguments().getParcelable<GuestDataModel>(Constants.DINE_IN_GUEST_PAYMENT_DATA)
-                Log.e(
+                LogUtil.logE(
                     TAG,
                     "checkOutDineInModel:  ${Gson().toJson(checkOutDineInModel)}"
                 )
@@ -980,7 +980,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                 val checkOutDineInModel =
                     requireArguments().getParcelable<GuestDataModel>(Constants.DINE_IN_GUEST_PAYMENT_DATA)
-                Log.e(
+                LogUtil.logE(
                     TAG,
                     "checkOutDineInModel:  ${Gson().toJson(checkOutDineInModel)}"
                 )
@@ -1035,7 +1035,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     //printer?.setStatusChangeEventCallback(this)
 
                 } catch (e: Exception) {
-                    Log.e(TAG, "PrinterException: " + e.message)
+                    LogUtil.logE(TAG, "PrinterException: " + e.message)
                     printer = null
                     return
                 }
@@ -1073,7 +1073,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     e.printStackTrace()
                 }
             } else {
-                Log.e(TAG, "PrinterIsNotNull:")
+                LogUtil.logE(TAG, "PrinterIsNotNull:")
             }
         }
 
@@ -2651,7 +2651,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             if (customerSettingModel.showQrCode) {
 
 
-                getDineInOrderDetails?.digitalReceiptUrl?.let { Log.e("digitalReceiptUrl1", it) }
+                getDineInOrderDetails?.digitalReceiptUrl?.let { LogUtil.logE("digitalReceiptUrl1", it) }
 
 
                 getDineInOrderDetails?.digitalReceiptUrl?.let { PrintSunmiUtils.qrCode(it) }
@@ -3170,7 +3170,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                         }, PrinterClass.language, requireActivity()
                     )
 
-                Log.e(TAG, "receiptModelDineinData  ${Gson().toJson(receiptModel)}")
+                LogUtil.logE(TAG, "receiptModelDineinData  ${Gson().toJson(receiptModel)}")
 
                 if (customerSettingModel.showOrderIdTop) {
                     builder.addFeedLine(1)
@@ -4237,7 +4237,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 } catch (e: Exception) {
                     PrinterClass.closePrinter()
                     e.printStackTrace()
-                    Log.e(TAG, "PrinterError: " + e.localizedMessage)
+                    LogUtil.logE(TAG, "PrinterError: " + e.localizedMessage)
                 }
 
 
@@ -4754,7 +4754,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
     private fun printDineInTable1Inner() {
         try {
-            Log.e("printDineReciept", "Staring....")
+            LogUtil.logE("printDineReciept", "Staring....")
             PrintSunmiUtils.fontSizeInner(customerSettingModel.fonts)
             SunmiPrintHelper.getInstance().initPrinter()
 
@@ -5183,7 +5183,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 }
 
             }
-            Log.e("printDineReciept", "Staring 1....")
+            LogUtil.logE("printDineReciept", "Staring 1....")
 
             SunmiPrintHelper.getInstance().lineWrap(1)
 
@@ -5269,12 +5269,12 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     e.printStackTrace()
                 }
             }
-            Log.e("printDineReciept", "Staring 2....")
+            LogUtil.logE("printDineReciept", "Staring 2....")
             PrintSunmiUtils.cutPaperInner()
 
         } catch (e: Exception) {
             e.printStackTrace()
-            Log.e("printDineReciept", "Staring error....")
+            LogUtil.logE("printDineReciept", "Staring error....")
         }
     }
 
@@ -5282,7 +5282,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         if (isDineIn) {
             if (!isLastPayment) {
                 val bundle = Bundle()
-                Log.e(TAG, "guestorderID ${orderID}")
+                LogUtil.logE(TAG, "guestorderID ${orderID}")
                 bundle.putInt("orderId", orderID)
                 if (findNavController().currentDestination?.id == R.id.orderCompleteFragment) {
                     findNavController().navigate(
@@ -5354,7 +5354,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             if (isGuest) {
                 if (!isLastPayment) {
                     val bundle = Bundle()
-                    Log.e(TAG, "guestorderID ${orderID}")
+                    LogUtil.logE(TAG, "guestorderID ${orderID}")
                     bundle.putInt("orderId", orderID)
 
                     findNavController().navigate(
@@ -5390,7 +5390,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
     }
 
     fun saveDataInPrefrences() {
-        Log.e(TAG, "cartListORderCom:  ${Gson().toJson(cartList)}")
+        LogUtil.logE(TAG, "cartListORderCom:  ${Gson().toJson(cartList)}")
         var model = SplitBundleModel(
             true,
             splitValue,
@@ -5412,7 +5412,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             redeemLoyaltyInfo
         )
 
-        Log.e("SAVE_SPLIT_BUNDLE", Gson().toJson(model))
+        LogUtil.logE("SAVE_SPLIT_BUNDLE", Gson().toJson(model))
         prefProvider.setValue(SAVE_SPLIT_BUNDLE, Gson().toJson(model).toString())
 
     }
@@ -5463,7 +5463,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                                                         )
                                                                     )
                                                                 ) {
-                                                                    Log.e(
+                                                                    LogUtil.logE(
                                                                         TAG,
                                                                         "InsidePrinterKitchen"
                                                                     )
@@ -5650,7 +5650,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 } catch (e: Exception) {
                     e.printStackTrace()
                     pd.dismiss()
-                    Log.e(TAG, "PrinterException: " + e.message)
+                    LogUtil.logE(TAG, "PrinterException: " + e.message)
                     printer = null
                     return
                 }
@@ -5669,7 +5669,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 }
             } else {
                 pd.dismiss()
-                Log.e(TAG, "PrinterIsNotNull:")
+                LogUtil.logE(TAG, "PrinterIsNotNull:")
             }
         }
 
@@ -5693,7 +5693,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     }, PrinterClass.language, requireActivity()
                 )
 
-            Log.e(TAG, "getVanueLogo:  ${prefProvider.getValue(VENUE_LOGO, "")}")
+            LogUtil.logE(TAG, "getVanueLogo:  ${prefProvider.getValue(VENUE_LOGO, "")}")
 
             if (customerSettingModel.showOrderIdTop) {
                 builder.addFeedLine(1)
@@ -6552,7 +6552,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             if (isSpilt) {
                 newPaidAmount = paidAmount + tipAmount
             }
-            Log.e("ToCheck", "PaidAmount ${newPaidAmount}")
+            LogUtil.logE("ToCheck", "PaidAmount ${newPaidAmount}")
 
             builder.addText(
                 padLine(
@@ -6997,7 +6997,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             }
 
 
-            Log.e(TAG, "showOrderNote:  ${receiptModel?.order?.note}")
+            LogUtil.logE(TAG, "showOrderNote:  ${receiptModel?.order?.note}")
             if (receiptModel?.order?.note != null && receiptModel?.order?.note != "") {
 
                 builder.addFeedLine(2)
@@ -7033,8 +7033,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 builder.addFeedLine(1)
                 builder.addTextAlign(Builder.ALIGN_CENTER)
                 val bitmap = generateQRCode(receiptModel?.order?.digital_receipt_url.toString())
-                Log.e(TAG, "BitmapHeight ${bitmap.height}")
-                Log.e(TAG, "BitmapWidth ${bitmap.width}")
+                LogUtil.logE(TAG, "BitmapHeight ${bitmap.height}")
+                LogUtil.logE(TAG, "BitmapWidth ${bitmap.width}")
                 val newBitmap = Bitmap.createScaledBitmap(bitmap, 210, 210, true)
                 builder.addImage(
                     newBitmap, 0, 0,
@@ -7076,7 +7076,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 pd.dismiss()
                 PrinterClass.closePrinter()
                 e.printStackTrace()
-                Log.e(TAG, "PrinterError: " + e.localizedMessage)
+                LogUtil.logE(TAG, "PrinterError: " + e.localizedMessage)
             }
 
 
@@ -7170,7 +7170,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                 } catch (e: Exception) {
                     //  printerDialog.dismiss()
-                    Log.e(TAG, "PrinterException: " + e.message)
+                    LogUtil.logE(TAG, "PrinterException: " + e.message)
                     printer = null
                     return
                 }
@@ -7184,7 +7184,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 }
 
             } else {
-                Log.e(TAG, "PrinterIsNotNull:")
+                LogUtil.logE(TAG, "PrinterIsNotNull:")
             }
         }
     }
@@ -7195,7 +7195,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
     ) {
         var builder: Builder? = null
         try {
-            Log.e(TAG, "KitchenPrinterName ${customerReceiptPrinters.name}")
+            LogUtil.logE(TAG, "KitchenPrinterName ${customerReceiptPrinters.name}")
             val pname = if (customerReceiptPrinters.name.substring(0, 6).toString()
                     .lowercase() == "TM-m30".lowercase()
             ) {
@@ -7265,7 +7265,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 }
                 var tmps = "Open Order".toString().trim()
                     .toString().lowercase()
-                Log.e(TAG, "LowerCAse ${tmps.trimmedLength()}")
+                LogUtil.logE(TAG, "LowerCAse ${tmps.trimmedLength()}")
 
                 if (receiptModel?.order?.orderType.toString().lowercase() == "OpenOrder".trim()
                         .toString().lowercase() || receiptModel?.order?.orderType.toString()
@@ -7617,7 +7617,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 }
                 var tmps = "Open Order".toString().trim()
                     .toString().lowercase()
-                Log.e(TAG, "LowerCAse ${tmps.trimmedLength()}")
+                LogUtil.logE(TAG, "LowerCAse ${tmps.trimmedLength()}")
 
                 if (receiptModel?.order?.orderType.toString().lowercase() == "OpenOrder".trim()
                         .toString().lowercase() || receiptModel?.order?.orderType.toString()
@@ -7948,7 +7948,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 //                printerDialog.dismiss()
                 PrinterClass.closePrinter()
                 e.printStackTrace()
-                Log.e(TAG, "PrinterError: " + e.localizedMessage)
+                LogUtil.logE(TAG, "PrinterError: " + e.localizedMessage)
             }
 
 
@@ -8262,7 +8262,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         var dimen = if (width < height) width else height
         dimen = dimen * 3 / 4
 
-        Log.e(TAG, "getDimen:  ${dimen}")
+        LogUtil.logE(TAG, "getDimen:  ${dimen}")
         return net.glxn.qrgen.android.QRCode.from(qrcodeStaticUrl).bitmap()
 
 
@@ -8375,12 +8375,12 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
     }
 
     override fun onStatusChangeEvent(p0: String?, p1: Int) {
-        Log.e(TAG, "onStatusChangePrinter:  $p0")
+        LogUtil.logE(TAG, "onStatusChangePrinter:  $p0")
 
     }
 
     override fun onBatteryStatusChangeEvent(p0: String?, p1: Int) {
-        Log.e(TAG, "onBatteryEventPrinter:  $p0")
+        LogUtil.logE(TAG, "onBatteryEventPrinter:  $p0")
 
     }
 
@@ -8476,7 +8476,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
             }
 
-            Log.e(TAG, "getVanueLogo:  ${prefProvider.getValue(VENUE_LOGO, "")}")
+            LogUtil.logE(TAG, "getVanueLogo:  ${prefProvider.getValue(VENUE_LOGO, "")}")
             if (customerSettingModel.showVenueLogo && prefProvider.getValue(VENUE_LOGO, "")
                     .isNotEmpty()
             ) {
@@ -8896,7 +8896,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             if (isSpilt) {
                 newPaidAmount = paidAmount + tipAmount
             }
-            Log.e("ToCheck", "PaidAmount ${newPaidAmount}")
+            LogUtil.logE("ToCheck", "PaidAmount ${newPaidAmount}")
 
 
             val str6 = padLine(
@@ -9086,7 +9086,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             }
 
 
-            Log.e(TAG, "showOrderNote:  ${receiptModel?.order?.note}")
+            LogUtil.logE(TAG, "showOrderNote:  ${receiptModel?.order?.note}")
             if (receiptModel?.order?.note != null && receiptModel?.order?.note != "") {
 
                 PrintSunmiUtils.orderNote(receiptModel?.order?.note!!)
@@ -9542,7 +9542,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             if (isSpilt) {
                 newPaidAmount = paidAmount + tipAmount
             }
-            Log.e("ToCheck", "PaidAmount ${newPaidAmount}")
+            LogUtil.logE("ToCheck", "PaidAmount ${newPaidAmount}")
 
 
             val str6 = padLine(
@@ -9726,7 +9726,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             }
 
 
-            Log.e(TAG, "showOrderNote:  ${receiptModel?.order?.note}")
+            LogUtil.logE(TAG, "showOrderNote:  ${receiptModel?.order?.note}")
             if (receiptModel?.order?.note != null && receiptModel?.order?.note != "") {
 
                 PrintSunmiUtils.orderNoteInner(receiptModel?.order?.note!!)
@@ -9797,11 +9797,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
     private fun setService() {
         if (SunmiPrintHelper.getInstance().sunmiPrinter == SunmiPrintHelper.FoundSunmiPrinter) {
 
-            Log.e("SunmiPrintHelper1", "FoundSunmiPrinter")
+            LogUtil.logE("SunmiPrintHelper1", "FoundSunmiPrinter")
 
             if (!BluetoothUtil.isBlueToothPrinter) {
 
-                Log.e("SunmiPrintHelpe1r", "isBlueToothPrinter")
+                LogUtil.logE("SunmiPrintHelpe1r", "isBlueToothPrinter")
 
                 printDineInTable1Inner()
 
@@ -9812,12 +9812,12 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             Handler(Looper.getMainLooper()).postDelayed({
                 setService()
             }, 2000)
-            Log.e("SunmiPrintHelper", "CheckSunmiPrinter")
+            LogUtil.logE("SunmiPrintHelper", "CheckSunmiPrinter")
         } else if (SunmiPrintHelper.getInstance().sunmiPrinter == SunmiPrintHelper.LostSunmiPrinter) {
 
-            Log.e("SunmiPrintHelper", "LostSunmiPrinter")
+            LogUtil.logE("SunmiPrintHelper", "LostSunmiPrinter")
         } else {
-            Log.e("SunmiPrintHelper", "ELSE")
+            LogUtil.logE("SunmiPrintHelper", "ELSE")
         }
     }
 
@@ -9825,11 +9825,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
         if (SunmiPrintHelper.getInstance().sunmiPrinter == SunmiPrintHelper.FoundSunmiPrinter) {
 
-            Log.e("SunmiPrintHelper1", "FoundSunmiPrinter")
+            LogUtil.logE("SunmiPrintHelper1", "FoundSunmiPrinter")
 
             if (!BluetoothUtil.isBlueToothPrinter) {
 
-                Log.e("SunmiPrintHelpe1r", "isBlueToothPrinter")
+                LogUtil.logE("SunmiPrintHelpe1r", "isBlueToothPrinter")
 
                 sunmiPrintInner()
 
@@ -9840,12 +9840,12 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             Handler(Looper.getMainLooper()).postDelayed({
                 setService1()
             }, 2000)
-            Log.e("SunmiPrintHelper", "CheckSunmiPrinter")
+            LogUtil.logE("SunmiPrintHelper", "CheckSunmiPrinter")
         } else if (SunmiPrintHelper.getInstance().sunmiPrinter == SunmiPrintHelper.LostSunmiPrinter) {
 
-            Log.e("SunmiPrintHelper", "LostSunmiPrinter")
+            LogUtil.logE("SunmiPrintHelper", "LostSunmiPrinter")
         } else {
-            Log.e("SunmiPrintHelper", "ELSE")
+            LogUtil.logE("SunmiPrintHelper", "ELSE")
         }
     }
 
@@ -9853,11 +9853,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
         if (SunmiPrintHelper.getInstance().sunmiPrinter == SunmiPrintHelper.FoundSunmiPrinter) {
 
-            Log.e("SunmiPrintHelper1", "FoundSunmiPrinter")
+            LogUtil.logE("SunmiPrintHelper1", "FoundSunmiPrinter")
 
             if (!BluetoothUtil.isBlueToothPrinter) {
 
-                Log.e("SunmiPrintHelpe1r", "isBlueToothPrinter")
+                LogUtil.logE("SunmiPrintHelpe1r", "isBlueToothPrinter")
 
                 generateKitchenReceiptSunmiInner()
 
@@ -9868,12 +9868,12 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             Handler(Looper.getMainLooper()).postDelayed({
                 setService2()
             }, 2000)
-            Log.e("SunmiPrintHelper", "CheckSunmiPrinter")
+            LogUtil.logE("SunmiPrintHelper", "CheckSunmiPrinter")
         } else if (SunmiPrintHelper.getInstance().sunmiPrinter == SunmiPrintHelper.LostSunmiPrinter) {
 
-            Log.e("SunmiPrintHelper", "LostSunmiPrinter")
+            LogUtil.logE("SunmiPrintHelper", "LostSunmiPrinter")
         } else {
-            Log.e("SunmiPrintHelper", "ELSE")
+            LogUtil.logE("SunmiPrintHelper", "ELSE")
         }
     }
 
@@ -9892,11 +9892,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
         if (SunmiPrintHelper.getInstance().sunmiPrinter == SunmiPrintHelper.FoundSunmiPrinter) {
 
-            Log.e("SunmiPrintHelper1", "FoundSunmiPrinter")
+            LogUtil.logE("SunmiPrintHelper1", "FoundSunmiPrinter")
 
             if (!BluetoothUtil.isBlueToothPrinter) {
 
-                Log.e("SunmiPrintHelpe1r", "isBlueToothPrinter")
+                LogUtil.logE("SunmiPrintHelpe1r", "isBlueToothPrinter")
 
                 printSunmiDineinInner(
                     paymentType,
@@ -9918,12 +9918,12 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             Handler(Looper.getMainLooper()).postDelayed({
                 setService()
             }, 2000)
-            Log.e("SunmiPrintHelper", "CheckSunmiPrinter")
+            LogUtil.logE("SunmiPrintHelper", "CheckSunmiPrinter")
         } else if (SunmiPrintHelper.getInstance().sunmiPrinter == SunmiPrintHelper.LostSunmiPrinter) {
 
-            Log.e("SunmiPrintHelper", "LostSunmiPrinter")
+            LogUtil.logE("SunmiPrintHelper", "LostSunmiPrinter")
         } else {
-            Log.e("SunmiPrintHelper", "ELSE")
+            LogUtil.logE("SunmiPrintHelper", "ELSE")
         }
     }
 

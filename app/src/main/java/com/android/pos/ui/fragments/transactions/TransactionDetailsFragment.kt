@@ -149,7 +149,7 @@ class TransactionDetailsFragment : Fragment() {
 //                    )
 //                ) {
                 serviceChargesList = arrayListOf()
-                Log.e(TAG, "getServiceCharge:  ${Gson().toJson(it.data)}")
+                LogUtil.logE(TAG, "getServiceCharge:  ${Gson().toJson(it.data)}")
                 it.data?.forEach { service ->
                     if (service.order_type == Constants.SERVICECHARGE_TAKEOUT_OPENORDER) {
                         serviceChargesList?.add(service)
@@ -635,7 +635,7 @@ class TransactionDetailsFragment : Fragment() {
             } else {
                 val itemTaxPrice =
                     (orderItemTaxe.rate * totalPrice) / 100
-                Log.e("itemTaxPrice", "" + itemTaxPrice)
+                LogUtil.logE("itemTaxPrice", "" + itemTaxPrice)
                 String.format("%.2f", itemTaxPrice)
                     .toDouble()
             }
@@ -762,7 +762,7 @@ class TransactionDetailsFragment : Fragment() {
         } else {
 
             viewLifecycleOwner.lifecycleScope.launch {
-                Log.e(TAG, "getPrinter:  ${PrinterClass.getPrinter()}")
+                LogUtil.logE(TAG, "getPrinter:  ${PrinterClass.getPrinter()}")
                 PrinterClass.closePrinter()
                 if (PrinterClass.getPrinter() == null) {
                     var printer: Print? = Print(requireContext())
@@ -792,7 +792,7 @@ class TransactionDetailsFragment : Fragment() {
                         // printer?.setStatusChangeEventCallback(this)
 
                     } catch (e: Exception) {
-                        Log.e(TAG, "PrinterException: " + e.message)
+                        LogUtil.logE(TAG, "PrinterException: " + e.message)
                         printer = null
                         return@launch
                     }
@@ -809,7 +809,7 @@ class TransactionDetailsFragment : Fragment() {
                         e.printStackTrace()
                     }
                 } else {
-                    Log.e(TAG, "PrinterIsNotNull:")
+                    LogUtil.logE(TAG, "PrinterIsNotNull:")
                 }
             }
         }
@@ -820,11 +820,11 @@ class TransactionDetailsFragment : Fragment() {
     ) {
         if (SunmiPrintHelper.getInstance().sunmiPrinter == SunmiPrintHelper.FoundSunmiPrinter) {
 
-            Log.e("SunmiPrintHelper1", "FoundSunmiPrinter")
+            LogUtil.logE("SunmiPrintHelper1", "FoundSunmiPrinter")
 
             if (!BluetoothUtil.isBlueToothPrinter) {
 
-                Log.e("SunmiPrintHelpe1r", "isBlueToothPrinter")
+                LogUtil.logE("SunmiPrintHelpe1r", "isBlueToothPrinter")
 
                 generateInnerPrintSunmi()
 
@@ -836,12 +836,12 @@ class TransactionDetailsFragment : Fragment() {
                 setService(
                 )
             }, 2000)
-            Log.e("SunmiPrintHelper", "CheckSunmiPrinter")
+            LogUtil.logE("SunmiPrintHelper", "CheckSunmiPrinter")
         } else if (SunmiPrintHelper.getInstance().sunmiPrinter == SunmiPrintHelper.LostSunmiPrinter) {
 
-            Log.e("SunmiPrintHelper", "LostSunmiPrinter")
+            LogUtil.logE("SunmiPrintHelper", "LostSunmiPrinter")
         } else {
-            Log.e("SunmiPrintHelper", "ELSE")
+            LogUtil.logE("SunmiPrintHelper", "ELSE")
         }
     }
 
@@ -862,7 +862,7 @@ class TransactionDetailsFragment : Fragment() {
                     }, PrinterClass.language, requireActivity()
                 )
 
-            Log.e(TAG, "getVanueLogo:  ${prefProvider.getValue(Constants.VENUE_LOGO, "")}")
+            LogUtil.logE(TAG, "getVanueLogo:  ${prefProvider.getValue(Constants.VENUE_LOGO, "")}")
 
             if (customerSettingModel.showOrderIdTop) {
                 builder.addFeedLine(1)
@@ -1047,8 +1047,8 @@ class TransactionDetailsFragment : Fragment() {
                     )
 
 
-                    Log.e(TAG, "created_atDate:  ${paymentDetailsResponse?.data.order.created_at}")
-                    Log.e(
+                    LogUtil.logE(TAG, "created_atDate:  ${paymentDetailsResponse?.data.order.created_at}")
+                    LogUtil.logE(
                         TAG,
                         "ConvertDateTime:  ${
                             Constants.getReceiptFormatDateFromUTCServer(
@@ -1168,7 +1168,7 @@ class TransactionDetailsFragment : Fragment() {
                         Builder.COLOR_1
                     )
 
-                    Log.e(
+                    LogUtil.logE(
                         TAG, "getOrderTimeDate:  ${
                             Constants.getReceiptFormatDateFromUTCServer(
                                 requireContext(),
@@ -1836,7 +1836,7 @@ class TransactionDetailsFragment : Fragment() {
 
 
                 if (paymentDetailsResponse?.data.order?.customer != null) {
-                    Log.e(
+                    LogUtil.logE(
                         TAG,
                         "paymentDetailsResponse:  ${Gson().toJson(paymentDetailsResponse?.data.order?.customer)}"
                     )
@@ -1907,7 +1907,7 @@ class TransactionDetailsFragment : Fragment() {
                                     paymentDetailsResponse?.data?.order?.customer.phones?.size - 1
                                 ).phoneNumber
                             )
-                            Log.e(TAG, "phoneNoFormatted:  ${phoneNoFormatted}")
+                            LogUtil.logE(TAG, "phoneNoFormatted:  ${phoneNoFormatted}")
                             builder.addText(phoneNoFormatted)
 
                         }
@@ -2010,8 +2010,8 @@ class TransactionDetailsFragment : Fragment() {
                 builder.addTextAlign(Builder.ALIGN_CENTER)
                 val bitmap =
                     generateQRCode(paymentDetailsResponse?.data.order?.digital_receipt_url.toString())
-                Log.e(TAG, "BitmapHeight ${bitmap.height}")
-                Log.e(TAG, "BitmapWidth ${bitmap.width}")
+                LogUtil.logE(TAG, "BitmapHeight ${bitmap.height}")
+                LogUtil.logE(TAG, "BitmapWidth ${bitmap.width}")
                 val newBitmap = Bitmap.createScaledBitmap(bitmap, 210, 210, true)
                 builder.addImage(
                     newBitmap, 0, 0,
@@ -2040,7 +2040,7 @@ class TransactionDetailsFragment : Fragment() {
             } catch (e: Exception) {
                 PrinterClass.closePrinter()
                 e.printStackTrace()
-                Log.e(TAG, "PrinterError: " + e.localizedMessage)
+                LogUtil.logE(TAG, "PrinterError: " + e.localizedMessage)
             }
 
 

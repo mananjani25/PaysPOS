@@ -22,6 +22,7 @@ import com.android.pos.data.remote.Constants.SMALL
 import com.android.pos.databinding.FragmentCustomerReceiptSettingsBinding
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.Event
+import com.android.pos.utils.LogUtil
 import com.android.pos.utils.statusUtils.Status
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -272,7 +273,7 @@ class CustomerReceiptSettings : Fragment() {
 
 
         binding.swtOrderNote.setOnCheckedChangeListener { buttonView, isChecked ->
-            Log.e(TAG, "ORderNoteChecked ${isChecked}")
+            LogUtil.logE(TAG, "ORderNoteChecked ${isChecked}")
             if (isChecked) {
                 binding.layoutCustomerReceipt.txtOrderNoteLable.visibility = View.VISIBLE
                 binding.layoutCustomerReceipt.txtSugarLabel.visibility = View.VISIBLE

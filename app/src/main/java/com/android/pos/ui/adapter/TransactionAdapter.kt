@@ -14,6 +14,7 @@ import com.android.pos.data.model.responseModel.GetTransactionListResponse
 import com.android.pos.databinding.ViewPaginationBinding
 import com.android.pos.databinding.ViewTransactionItemBinding
 import com.android.pos.ui.fragments.transactions.TransactionViewModel
+import com.android.pos.utils.LogUtil
 import com.android.pos.utils.TimeFormatUtils.convertCurrentDate
 import com.android.pos.utils.TimeFormatUtils.convertCurrentTime
 import com.android.pos.utils.callback.ItemCallback
@@ -117,7 +118,7 @@ class TransactionAdapter(val viewModel: TransactionViewModel) :
 
     fun addAll(employeeTimeSheets: List<GetTransactionListResponse.Data.Payment>) {
 
-        Log.e("teamTimesheetList", employeeTimeSheets.size.toString())
+        LogUtil.logE("teamTimesheetList", employeeTimeSheets.size.toString())
         employeeTimeSheet.addAll(employeeTimeSheets)
         filterList.addAll(employeeTimeSheets)
         notifyDataSetChanged()
