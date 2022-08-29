@@ -57,6 +57,7 @@ import com.android.pos.utils.callback.ItemListner
 import com.android.pos.utils.callback.MyCallback
 import com.android.pos.utils.extensions.alert
 import com.android.pos.utils.extensions.gone
+import com.android.pos.utils.extensions.isVisible
 import com.android.pos.utils.extensions.visible
 import com.android.pos.utils.statusUtils.Resource
 import com.google.gson.Gson
@@ -243,8 +244,13 @@ class CartFragment(
                             binding.liinearInfoLayout.layoutParams.height =
                                 resources.getDimension(R.dimen._70sdp).toInt()
                         } else {
-                            binding.liinearInfoLayout.layoutParams.height =
-                                resources.getDimension(R.dimen._60sdp).toInt()
+                            if (binding.relativeLoylatyPoints.isVisible()){
+                                binding.liinearInfoLayout.layoutParams.height =
+                                    resources.getDimension(R.dimen._70sdp).toInt()
+                            }else{
+                                binding.liinearInfoLayout.layoutParams.height =
+                                    resources.getDimension(R.dimen._60sdp).toInt()
+                            }
                         }
                     } else if (taxBirfurcationAdapter.taxlist.size == 2) {
                         if (viewModel.order_note.isNotEmpty()) {
@@ -267,8 +273,13 @@ class CartFragment(
                     binding.imgDropdown.setImageResource(R.drawable.ic_solid_up_arrow)
                     binding.relativeDynamicTax.visible()
                 } else {
-                    binding.liinearInfoLayout.layoutParams.height =
-                        resources.getDimension(R.dimen._50sdp).toInt()
+                    if (binding.relativeLoylatyPoints.isVisible()){
+                        binding.liinearInfoLayout.layoutParams.height =
+                            resources.getDimension(R.dimen._70sdp).toInt()
+                    }else{
+                        binding.liinearInfoLayout.layoutParams.height =
+                            resources.getDimension(R.dimen._50sdp).toInt()
+                    }
                     taxClickable = false
                     binding.imgDropdown.setImageResource(R.drawable.ic_arrow_drop_down)
                     binding.relativeDynamicTax.gone()
@@ -603,8 +614,13 @@ class CartFragment(
                 binding.liinearInfoLayout.layoutParams.height =
                     resources.getDimension(R.dimen._70sdp).toInt()
             } else {
-                binding.liinearInfoLayout.layoutParams.height =
-                    resources.getDimension(R.dimen._50sdp).toInt()
+                if (binding.relativeLoylatyPoints.isVisible()){
+                    binding.liinearInfoLayout.layoutParams.height =
+                        resources.getDimension(R.dimen._70sdp).toInt()
+                }else{
+                    binding.liinearInfoLayout.layoutParams.height =
+                        resources.getDimension(R.dimen._50sdp).toInt()
+                }
             }
             binding.imgDropdown.setImageResource(R.drawable.ic_arrow_drop_down)
             binding.imgDropdown.visible()
@@ -612,25 +628,39 @@ class CartFragment(
             binding.relativeDynamicTax.gone()
         } else {
             if (viewModel.order_note.isNotEmpty()) {
-                binding.liinearInfoLayout.layoutParams.height =
-                    resources.getDimension(R.dimen._60sdp).toInt()
+                if (binding.relativeLoylatyPoints.isVisible()){
+                    binding.liinearInfoLayout.layoutParams.height =
+                        resources.getDimension(R.dimen._70sdp).toInt()
+                }else{
+                    binding.liinearInfoLayout.layoutParams.height =
+                        resources.getDimension(R.dimen._60sdp).toInt()
+                }
+
             } else {
-                binding.liinearInfoLayout.layoutParams.height =
-                    resources.getDimension(R.dimen._50sdp).toInt()
+                if (binding.relativeLoylatyPoints.isVisible()){
+                    binding.liinearInfoLayout.layoutParams.height =
+                        resources.getDimension(R.dimen._70sdp).toInt()
+                }else{
+                    binding.liinearInfoLayout.layoutParams.height =
+                        resources.getDimension(R.dimen._50sdp).toInt()
+                }
             }
             binding.imgDropdown.setImageResource(R.drawable.ic_arrow_drop_down)
             binding.imgDropdown.gone()
             binding.relativeDynamicTax.gone()
-            binding.liinearInfoLayout.layoutParams.height =
-                resources.getDimension(R.dimen._50sdp).toInt()
             taxClickable = false
         }
     }
 
     fun reSetTaxBifurcationData() {
         taxBirfurcationAdapter.clearList()
-        binding.liinearInfoLayout.layoutParams.height =
-            resources.getDimension(R.dimen._50sdp).toInt()
+        if (binding.relativeLoylatyPoints.isVisible()){
+            binding.liinearInfoLayout.layoutParams.height =
+                resources.getDimension(R.dimen._70sdp).toInt()
+        }else{
+            binding.liinearInfoLayout.layoutParams.height =
+                resources.getDimension(R.dimen._50sdp).toInt()
+        }
         taxClickable = false
         binding.imgDropdown.setImageResource(R.drawable.ic_arrow_drop_down)
         binding.imgDropdown.gone()
