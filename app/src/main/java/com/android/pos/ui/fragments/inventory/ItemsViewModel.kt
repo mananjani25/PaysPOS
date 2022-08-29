@@ -1,12 +1,14 @@
 package com.android.pos.ui.fragments.inventory
 
 import android.util.Log
-import androidx.annotation.WorkerThread
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.paging.PagedList
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
+import androidx.paging.cachedIn
 import com.android.pos.data.db.AppDatabase
 import com.android.pos.data.entities.TbItem
 import com.android.pos.data.model.responseModel.BaseResponse
@@ -16,6 +18,8 @@ import com.android.pos.utils.Event
 import com.android.pos.utils.statusUtils.Resource
 import com.android.pos.utils.statusUtils.Status
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -43,16 +47,25 @@ class ItemsViewModel @Inject constructor(
 
     var itemCount = 50
 
-    fun _getItems(): LiveData<PagedList<TbItem>> {
-        Log.e("passedItemitemCount","passedItemitemCount  ${itemCount}")
-        return posRepository.getPaginationList(itemCount)
-    }
 
-    @WorkerThread
-    fun searchItemResults(desc:String):LiveData<List<TbItem>>{
-        return posRepository.searchItemList(desc)
-    }
+    fun allItemsQuery(desc: String): Flow<PagingData<TbItem>> = Pager(
+        config = PagingConfig(
+            pageSize = 20,
+            enablePlaceholders = false,
+        )
+    ) {
+        appDatabase.itemDao().getItemSearchResults(desc)
+    }.flow.cachedIn(viewModelScope)
 
+
+    val allItems: Flow<PagingData<TbItem>> = Pager(
+        config = PagingConfig(
+            pageSize = 50,
+            enablePlaceholders = false
+        )
+    ) {
+        appDatabase.itemDao().getPaginationList()
+    }.flow.cachedIn(viewModelScope)
 
 
     fun deleteAndHide(id: Int, deleteAndHide: Boolean, isHideItemScreen: Boolean) {

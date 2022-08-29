@@ -30,7 +30,7 @@
                 android:drawableStart="@drawable/ic_search"
                 android:drawablePadding="@dimen/_10sdp"
                 android:imeOptions="actionDone"
-                android:inputType="textVisiblePassword"
+                android:inputType="text"
                 android:padding="@dimen/_4sdp"
                 android:textColor="@color/txtColor"
                 android:textColorHint="@color/hintColor"

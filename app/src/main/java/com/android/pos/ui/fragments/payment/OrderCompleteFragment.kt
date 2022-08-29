@@ -179,6 +179,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         printerDialog = PrinterDialog()
         progressDialog()
 
+        prefProvider.setValueboolean(Constants.TIP_ADDED, false)
+
         if (requireArguments().getBoolean("isSpilt")) {
             observeSplitList()
         } else {
@@ -7546,7 +7548,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                                             }
                                         }
 
-                                  //  builder.addText(receiptModel?.order?.customer?.addresses?.get(0)?.fullAddress)
+                                    //  builder.addText(receiptModel?.order?.customer?.addresses?.get(0)?.fullAddress)
                                 }
                             }
                         }

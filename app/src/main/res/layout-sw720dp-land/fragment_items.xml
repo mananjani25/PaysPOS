@@ -6,8 +6,7 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        >
+        android:layout_height="match_parent">
 
         <androidx.appcompat.widget.LinearLayoutCompat
             android:layout_width="match_parent"
@@ -34,7 +33,7 @@
                     android:drawableStart="@drawable/ic_search"
                     android:drawablePadding="@dimen/_10sdp"
                     android:imeOptions="actionDone"
-                    android:inputType="textVisiblePassword"
+                    android:inputType="text"
                     android:padding="@dimen/_4sdp"
                     android:textColor="@color/txtColor"
                     android:textColorHint="@color/hintColor"
@@ -83,6 +82,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:orientation="vertical"
+                    android:scrollbars="vertical"
                     android:visibility="visible"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     tools:itemCount="5"

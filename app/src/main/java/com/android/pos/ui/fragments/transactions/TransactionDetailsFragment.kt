@@ -5,12 +5,8 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Point
-import android.os.Build
-import android.os.Bundle
-import android.os.Handler
-import android.os.Looper
+import android.os.*
 import android.util.Base64
-import android.os.SystemClock
 import android.util.Log
 import android.view.*
 import androidx.activity.OnBackPressedCallback
@@ -259,6 +255,7 @@ class TransactionDetailsFragment : Fragment() {
                         "magensa_response_data",
                         paymentDetailsResponse.data.magensa_response_data
                     )
+                    putInt("guestCount", paymentDetailsResponse.data.guestCount ?: 0)
                 }
                 findNavController().navigate(
                     R.id.action_transaction_to_reasonForrefundonline,
@@ -274,6 +271,7 @@ class TransactionDetailsFragment : Fragment() {
                     putParcelable("orderDetailsResponse", paymentDetailsResponse)
                     putBoolean("isSplitPayment", isSplitPayment)
                     putParcelableArrayList("serviceChargesList", serviceChargesList)
+                    putInt("guestCount", paymentDetailsResponse.data.guestCount ?: 0)
                 }
                 findNavController().navigate(
                     R.id.action_transactionDetailsFragment_to_issueRefundFragment,

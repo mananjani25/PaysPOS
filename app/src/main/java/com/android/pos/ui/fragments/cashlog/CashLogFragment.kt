@@ -490,6 +490,7 @@ class CashLogFragment : Fragment(), AdapterView.OnItemSelectedListener {
     }
 
     override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+        adapter.clearList()
         viewModel.apiCallTimeSheet(
             getTerminalId(binding.spTerminals.selectedItemPosition).toString(),
             currentPage

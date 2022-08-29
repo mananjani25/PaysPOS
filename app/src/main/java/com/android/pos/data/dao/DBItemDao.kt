@@ -1,7 +1,7 @@
 package com.android.pos.data.dao
 
 import androidx.lifecycle.LiveData
-import androidx.paging.DataSource
+import androidx.paging.PagingSource
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
@@ -22,15 +22,15 @@ interface DBItemDao {
     @get:Query("select * from TbItem where TbItem.isHide = 1 and TbItem.name != 'Manual Item' GROUP by TbItem.itemId ORDER BY TbItem.sort DESC LIMIT 50")
     val allItem: LiveData<List<TbItem?>>?
 
-    @Query("select * from TbItem")
-    fun getPaginationList(): DataSource.Factory<Int, TbItem>
+    @Query("select * from TbItem where TbItem.isHide = 1 and TbItem.name != 'Manual Item' GROUP by TbItem.itemId ORDER BY TbItem.sort DESC")
+    fun getPaginationList(): PagingSource<Int, TbItem>
 
     /*@get:Query("select * from TbItem whe  re TbItem.isManualSales = 1")
     val manualItems : LiveData<List<TabItem?>>?
     */
 
-    @Query("select * from TbItem where TbItem.name like :desc")
-    fun getItemSearchResults(desc:String):LiveData<List<TbItem>>
+    @Query("select * from TbItem where TbItem.name like :desc and TbItem.isHide = 1 and TbItem.name != 'Manual Item' GROUP by TbItem.itemId ORDER BY TbItem.sort DESC")
+    fun getItemSearchResults(desc:String):PagingSource<Int,TbItem>
 
     @get:Query("select * from TbItem where TbItem.isHide = 0 and TbItem.name != 'Manual Item' ORDER BY TbItem.sort DESC")
     val unhideItem: LiveData<List<TbItem>>

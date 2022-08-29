@@ -32,7 +32,8 @@
             <androidx.appcompat.widget.LinearLayoutCompat
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/_27sdp"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                >
 
 
               <!--  <androidx.appcompat.widget.AppCompatImageView

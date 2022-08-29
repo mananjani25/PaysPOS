@@ -3596,6 +3596,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                     model.orderTypeId = it.id
                 }
             }
+            model.items = null
             cartList.add(0, model)
             Log.e(TAG, "CartIsEmpty::")
             return cartList

@@ -4,8 +4,6 @@ package com.android.pos.data.repositories
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.paging.PagedList
-import androidx.paging.toLiveData
 import com.android.pos.data.db.AppDatabase
 import com.android.pos.data.db.IDataManager
 import com.android.pos.data.entities.*
@@ -289,23 +287,7 @@ class PosRepository @Inject constructor(
         databaseQuery = { appDatabase.notesDao().alllNotes },
     )
 
-    fun getPaginationList(count: Int): LiveData<PagedList<TbItem>> {
-        val factory = appDatabase.itemDao().getPaginationList()
-        val config = PagedList.Config.Builder().setInitialLoadSizeHint(count).setPageSize(count)
-            .setEnablePlaceholders(false).setPrefetchDistance(count + 49).build()
-        return factory.toLiveData(config)
-        /*return LivePagedListBuilder<Int, TbItem>(
-            factory,
-            PagedList
-                .Config
-                .Builder()
-                .setInitialLoadSizeHint(count)
-                .setPageSize(50)
-                .setPrefetchDistance(count + 49)
-                .setEnablePlaceholders(false)
-                .build()
-        ).build()*/
-    }
+
 
     suspend fun deleteNotesFromDb() =
         appDatabase.notesDao().delete()
@@ -1041,9 +1023,6 @@ class PosRepository @Inject constructor(
 
     }
 
-    fun searchItemList(desc: String): LiveData<List<TbItem>> {
-        return appDatabase.itemDao().getItemSearchResults(desc)
 
-    }
 }
 
