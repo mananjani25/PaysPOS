@@ -17,6 +17,7 @@ import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
 import javax.inject.Inject
+import kotlin.io.path.createTempDirectory
 
 @HiltViewModel
 class OnlineDetailViewModel @Inject constructor(
@@ -63,24 +64,24 @@ class OnlineDetailViewModel @Inject constructor(
         }
     }
     fun onLineorderCounts(startDate: String?, endDate: String?): LiveData<Resource<OnlineOrderCountResponse>> =
-        posRepository.onlineOrderCounts(startDate,endDate)
+        posRepository.onlineOrderCounts(startDate, endDate)
 
 
     fun onlineOrders(
         startDate: String,
         endDate: String,
-        order_status:String
+        order_status: String
     ): LiveData<Resource<OnlineOrderResponseModel>> =
-        posRepository.getOnlineOrders(startDate, endDate,order_status)
+        posRepository.getOnlineOrders(startDate, endDate, order_status)
 
     fun acceptedAndDeclineOrder(
         time: Int,
         order_id: Int,
         isaccepted: Boolean,
-        employee_id:Int,
-        terminalid:Int
+        employee_id: Int,
+        terminalid: Int
     ): LiveData<Resource<OnlineOrderStatusUpdateResponse>> =
-        posRepository.acceptedAndDeclineOrders(time, order_id,isaccepted,employee_id,terminalid)
+        posRepository.acceptedAndDeclineOrders(time, order_id, isaccepted, employee_id, terminalid)
 
     fun refundPaymentApiCall(
         refundAmount: Double,
@@ -129,10 +130,15 @@ class OnlineDetailViewModel @Inject constructor(
         order_id: Int,
         order_status: String
     ): LiveData<Resource<BaseResponse>> =
-        posRepository.updateOnlineOrders( order_id,order_status)
+        posRepository.updateOnlineOrders(order_id, order_status)
 
 
-    fun setCurrentDate(myCalendar: Calendar, paramStartDate: String?, paramEndDate: String?) {
+    fun setCurrentDate(
+        myCalendar: Calendar,
+        paramStartDate: String?,
+        paramEndDate: String?,
+        status: String
+    ) {
         val myFormat = "MM/dd/yyyy" //In which you need put here
         val sdf = SimpleDateFormat(myFormat, Locale.getDefault())
         /* startDate.value = sdf.format(myCalendar.time) + " " + SimpleDateFormat(
@@ -141,7 +147,7 @@ class OnlineDetailViewModel @Inject constructor(
          ).format(Date(System.currentTimeMillis() - 60000 * 30))*/
 
 
-        if (paramStartDate != null && paramEndDate != null) {
+        if (paramStartDate?.isNotEmpty() == true && paramEndDate?.isNotEmpty() == true) {
             startDate.value = paramStartDate.toString()
             endDate.value = paramEndDate.toString()
         } else {
@@ -155,12 +161,26 @@ class OnlineDetailViewModel @Inject constructor(
                 startDate.value = sdf.format(myCalendar.time) + " " + "12:00 AM"
             }
             if (endTime.isNotEmpty()) {
-                endDate.value = sdf.format(myCalendar.time) + " " + endTime
+                var temp_calender = Calendar.getInstance()
+                if (status=="0"){
+                    temp_calender.add(Calendar.DATE,7)
+                    endDate.value = sdf.format(temp_calender.time) + " " + endTime
+                }else{
+                    endDate.value = sdf.format(temp_calender.time) + " " + endTime
+                }
             } else {
-                endDate.value = sdf.format(myCalendar.time) + " " + SimpleDateFormat(
-                    "hh:mm a",
-                    Locale.getDefault()
-                ).format(Date(System.currentTimeMillis() + 60000))
+                if (status == "0") {
+                    endDate.value = sdf.format(myCalendar.time) + " " + SimpleDateFormat(
+                        "hh:mm a",
+                        Locale.getDefault()
+                    ).format(Date(System.currentTimeMillis() + 604800000))
+                } else {
+                    endDate.value = sdf.format(myCalendar.time) + " " + SimpleDateFormat(
+                        "hh:mm a",
+                        Locale.getDefault()
+                    ).format(Date(System.currentTimeMillis() + 60000))
+                }
+
             }
         }
     }

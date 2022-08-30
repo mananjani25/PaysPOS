@@ -1,6 +1,7 @@
 package com.android.pos.data.model
 
 import android.os.Parcelable
+import com.android.pos.data.entities.TbServiceCharge
 import com.android.pos.data.model.responseModel.GetOrderDetailsResponse
 import com.android.pos.data.model.responseModel.OpenOrderResponse
 import com.google.gson.annotations.SerializedName
@@ -41,6 +42,7 @@ class GetPaymentOrderDetailsResponse(
         @SerializedName("cash_discount_or_surcharge") val cash_discount_or_surcharge: Double,
         @SerializedName("tax_amount") val tax_amount: Double,
         @SerializedName("service_charge_amount") val service_charge_amount: Double,
+        @SerializedName("service_charge_details") val service_charge_details: ArrayList<OrderServiceChargeApplied>,
         @SerializedName("terminal_id") val terminal_id: Int,
         @SerializedName("used_reward_points") val used_reward_points: Int?,
         @SerializedName("loyalty_program_id") val loyalty_program_id: Int?,
@@ -53,6 +55,32 @@ class GetPaymentOrderDetailsResponse(
             "%.2f",
             value
         )
+        @Parcelize
+        data class OrderServiceChargeApplied(
+            @SerializedName("updated_at")
+            var updated_at: String? = null,
+            @SerializedName("created_at")
+            var created_at: String? = null,
+            @SerializedName("amount")
+            var amount: Double = 0.0,
+            @SerializedName("id")
+            var id: Int? = null,
+            @SerializedName("name")
+            var name: String = "",
+            @SerializedName("order_id")
+            var orderId: Int? = null,
+            @SerializedName("rate")
+            var rate: Double = 0.0,
+            @SerializedName("service_charge_id")
+            var serviceChargeId: Int = 0,
+            @SerializedName("order_type")
+            var order_type: String? = null,
+            @SerializedName("min_guest_count")
+            var min_guest_count: Int? = null,
+            @SerializedName("max_guest_count")
+            var max_guest_count: Int? = null
+        ) : Parcelable
+
 
         @Parcelize
         data class Order(

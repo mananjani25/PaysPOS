@@ -286,8 +286,6 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
 
     private fun setUpRecyclerView() {
         refundItemListAdapter = RefundItemListAdapter(viewModel)
-        refundItemListAdapter.guestCount = guestCount
-        refundItemListAdapter.isServiceChargeDineInEnable = prefProvider.getValueboolean(SERVICECHARGE_DINEIN_ORDER, false)
         binding.rvItemListRefund.adapter = refundItemListAdapter
 
         var totalItemDiscount = 0.0
@@ -376,9 +374,8 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
                         } else {
                             val itemTaxPrice =
                                 (tax.rate * totalItemPrice) / 100
-                            LogUtil.logE("itemTaxPrice", "" + itemTaxPrice)
-                            String.format("%.2f", itemTaxPrice)
-                                .toDouble()
+                            Log.e("itemTaxPrice", "" + itemTaxPrice)
+                            itemTaxPrice
                         }
 
                     } else {
@@ -394,13 +391,13 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
                 }
 
 
-                serviceChargesList?.forEach {
-                    if (paymentOrderDetailsResponse.data.order.order_type == DINE_IN && it.order_type == Constants.SERVICECHARGE_DINEIN_ORDER) {
-                        totalServiceCharge += (totalItemPrice * it.percentage) / 100
-                    } else if ((paymentOrderDetailsResponse.data.order.order_type == TAKEOUT || paymentOrderDetailsResponse.data.order.order_type == OPEN_ORDER) && it.order_type == Constants.SERVICECHARGE_TAKEOUT_OPENORDER) {
+                if (serviceChargesList?.isNotEmpty() == true) {
+                    serviceChargesList?.forEach {
                         totalServiceCharge += (totalItemPrice * it.percentage) / 100
                     }
                 }
+                Log.d("newserviceCharge", "calculationOfItems: "+totalServiceCharge)
+
 
                 applyDiscount += (totalDiscount / refundItemListAdapter.itemCount)
 
@@ -410,16 +407,9 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
                     loyaltyAmount += la / refundItemListAdapter.itemCount
                 }
 
-                LogUtil.logE("subTotalPrice", totalItemPrice.toString())
-
-                LogUtil.logE(
-                    "totalItemPerItem",
-                    "totalItemPrice = " + totalItemPrice + "\n totalServiceCharge = " + totalServiceCharge + "\n totalTax = " + totalTax + "\n loyaltyAmount = " + loyaltyAmount
-                )
                 val totalItemPerItem =
                     totalItemPrice - applyDiscount + totalServiceCharge + totalTax - loyaltyAmount
 
-                LogUtil.logE("subTotalPrice1", totalItemPerItem.toString())
 
                 this.subTotalPrice += totalItemPerItem
                 this.totalTax += totalTax

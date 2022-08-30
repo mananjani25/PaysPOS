@@ -72,6 +72,7 @@ import java.io.IOException
 import java.io.InputStream
 import java.net.HttpURLConnection
 import java.net.URL
+import java.text.NumberFormat
 import java.util.*
 import javax.inject.Inject
 import kotlin.collections.set
@@ -289,7 +290,6 @@ class DashBoardCategoryViewModel @Inject constructor(
 
             if (isOrderUpdate) {
                 it.forEach {
-                    LogUtil.logE(TAG, "orderItemId  ${it.orderItemId}")
                     if (it.orderItemId != null && it.isDestroy == true) {
                         combinedItems.add(it)
                     }
@@ -306,7 +306,6 @@ class DashBoardCategoryViewModel @Inject constructor(
     }
 
     fun addDineInRemovedItems(cartModel: CartModel): CartModel {
-        LogUtil.logE(TAG, "removeItemDineInList  ${Gson().toJson(removeItemDineInList)}")
         val items = arrayListOf<TbItem>()
         cartModel.items.let { it?.let { it1 -> items.addAll(it1) } }
         items.addAll(removeItemDineInList)
@@ -855,14 +854,6 @@ class DashBoardCategoryViewModel @Inject constructor(
                                                 it.itemQuantity = model.itemQuantity
                                             }
 
-                                            LogUtil.logE(
-                                                TAG,
-                                                "modelmodifiers:  ${Gson().toJson(model.modifiers)}"
-                                            )
-                                            LogUtil.logE(
-                                                TAG,
-                                                "itemModifierIds:  ${Gson().toJson(item.modifiers)}"
-                                            )
                                             for (i in model.modifiers) {
                                                 for (j in item.modifiers) {
                                                     if (i.id == j.id) {
@@ -871,10 +862,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                                     }
                                                 }
                                             }
-                                            LogUtil.logE(
-                                                TAG,
-                                                "passmodifiers  ${Gson().toJson(item.modifiers)}"
-                                            )
+
                                             model.modifiers = item.modifiers
                                             if (item.isEdited) {
                                                 model.isEdited = item.isEdited
@@ -954,17 +942,14 @@ class DashBoardCategoryViewModel @Inject constructor(
 //                        }
 
 
-                        LogUtil.logE(TAG, "DeleteIndex  ${index}")
                         if (index != -1) {
                             val model = cartList[0].items?.get(index)
-                            LogUtil.logE(TAG, "getItem  ${Gson().toJson(cartList[0].items?.get(index))}")
                             if (model != null) {
                                 //delete from cart
                                 if (item?.isEdited == true) {
                                     model.isEdited = item.isEdited
                                     model.isDestroy = true
                                 } else {
-                                    LogUtil.logE(TAG, "listRemoveItem")
                                     list.remove(model)
                                 }
                             }
@@ -997,7 +982,6 @@ class DashBoardCategoryViewModel @Inject constructor(
                         deleteCart()
                     } else {
 
-                        LogUtil.logE(TAG, "AddedListNull")
                         var cartModel = cartList?.get(0)
                         cartModel = taxBifurcationCalculation(item!!, cartModel!!, type, false)
                         if (item != null)
@@ -1171,10 +1155,8 @@ class DashBoardCategoryViewModel @Inject constructor(
                     deleteCart()
                 } else {
 
-                    LogUtil.logE(TAG, "AddedListNull")
                     val cartModel = cartList?.get(0)
                     cartModel?.items = listOf(item!!)
-                    LogUtil.logE(TAG, "cartModel:  ${Gson().toJson(cartModel)}")
                     if (cartModel != null) {
 
                         addCart(cartModel)
@@ -1281,7 +1263,6 @@ class DashBoardCategoryViewModel @Inject constructor(
         context: Context
     ) {
 
-        LogUtil.logE("itemCalculation", "------------------>")
 
         var totalAmmount = 0.0
         nonCashAdj = 0.0
@@ -1376,7 +1357,6 @@ class DashBoardCategoryViewModel @Inject constructor(
                         totalDiscount += (it.discountPrice * it.itemQuantity)
                     }
 
-                    LogUtil.logE("totalDiscount", totalDiscount.toString())
 
                     totalPrice = (subTotalPrice + totalTax + totalServiceCharge)
                     cashDiscountType = prefProvider.getValue(Constants.OPTION_TYPE, "")
@@ -1409,7 +1389,6 @@ class DashBoardCategoryViewModel @Inject constructor(
                     } else {
                         cashdiscountAmount = 0.0
                     }
-                    LogUtil.logE("amountToBePaid", "" + amountToBePaid)
                 } else {
 
                     nonCashAdj = 0.0
@@ -1425,7 +1404,6 @@ class DashBoardCategoryViewModel @Inject constructor(
         }
         //totalAmmount = totalPrice-cartList[0].discountPrice
 
-        LogUtil.logE("itemCalculation 1", "------------------>")
     }
 
     @SuppressLint("SetTextI18n")
@@ -1445,8 +1423,6 @@ class DashBoardCategoryViewModel @Inject constructor(
         totalServiceCharge = 0.0
         var amountToBePaid = 0.0
         if (cartModel.orderType == DINE_IN) {
-            LogUtil.logE("TOCHE", "discountPriceDineIn  ${cartModel.discountPrice}")
-            LogUtil.logE("TOCHE", "discountPriceDineIn  ${totalDiscount}")
 
             var dineInItems = 0
 
@@ -1497,9 +1473,6 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                 }
             }
-            LogUtil.logE("AjjeDine", "totalDis ${totalDis}")
-            LogUtil.logE("AjjeDine", "totalDineItemDis ${totalDineItemDis}")
-            LogUtil.logE("AjjeDine", "totalDiscount ${totalDiscount}")
 
 
             var finalTotal = 0.0
@@ -1606,10 +1579,8 @@ class DashBoardCategoryViewModel @Inject constructor(
                         cashdiscountAmount = 0.0
                     }
 
-                    LogUtil.logE("amountToBePaid", "" + totalPrice)
 
                 } else {
-                    LogUtil.logE(TAG, "openOrderUpdate ${cartModel.discountPrice}")
 
                     nonCashAdj = 0.0
                     totalPrice = 0.0
@@ -1651,8 +1622,6 @@ class DashBoardCategoryViewModel @Inject constructor(
 
 
                     order_note = cartModel.note
-                    LogUtil.logE("OpenOrderCh", "cartDiscount  ${cartModel.discountPrice}")
-                    LogUtil.logE("OpenOrderCh", "totalDiscounts  ${totalDiscount}")
 
                     var finalTotal = 0.0
                     finalTotal = (subTotalPrice + totalTax + totalServiceCharge)
@@ -1689,7 +1658,6 @@ class DashBoardCategoryViewModel @Inject constructor(
                         cashdiscountAmount = 0.0
                     }
 
-                    LogUtil.logE("amountToBePaid", "" + totalPrice)
                 }
 
 
@@ -1721,7 +1689,6 @@ class DashBoardCategoryViewModel @Inject constructor(
         txtTotalAmount: AppCompatTextView
     ) {
 
-        LogUtil.logE("Loyalty", "checkAppliedLoyaltyProgram..")
         redeemLoyaltyInfo.total = total
         val availablePoints = customer?.final_reward ?: 0
 
@@ -1763,7 +1730,6 @@ class DashBoardCategoryViewModel @Inject constructor(
             redeemLoyaltyInfo.usedLoyaltyAmount = 0.0
             //redeemLoyaltyInfo.isLoyaltyApplied = false
         }
-        LogUtil.logE("Loyalty", "txtTotalAmount : ${redeemLoyaltyInfo.getAmountToBePaid()}")
         redeemLoyaltyInfo.getAmountToBePaid()?.let {
             MethodUtils.setPriceTextView(
                 txtTotalAmount,
@@ -1808,7 +1774,6 @@ class DashBoardCategoryViewModel @Inject constructor(
     private fun calculateDineInServiceCharge(cartModel: CartModel) {
         var guestCount = cartModel.dineInList?.size?.minus(1)
         if (serviceChargesList.isNotEmpty() && serviceChargesList != null) {
-            LogUtil.logE(TAG, "dashboardserviceChargesList:  ${Gson().toJson(serviceChargesList)}")
             if (prefProvider.getValueboolean(SERVICECHARGE_DINEIN_ORDER, false)) {
                 var isApplied = false
                 serviceChargesList.forEach {
@@ -2354,8 +2319,11 @@ class DashBoardCategoryViewModel @Inject constructor(
                   totalDiscount, tipAmount
               )
     */
+        //        orderAttributeRequestModel.orderServiceChargesAttributes =
+        //            orderServiceChargesAttributes(cartModel, subTotalPrice)
+
         orderAttributeRequestModel.orderServiceChargesAttributes =
-            orderServiceChargesAttributes(cartModel, subTotalPrice)
+            dineInServiceChargeAppliedAttribute(cartModel)
 
         orderAttributeRequestModel.guestsAttributes = getGuestsAttributes(cartModel)
 
@@ -2367,6 +2335,54 @@ class DashBoardCategoryViewModel @Inject constructor(
 
 
         return orderRequestModel
+    }
+
+    fun dineInServiceChargeAppliedAttribute(cartModel: CartModel): List<OrderServiceChargesAttribute> {
+        var guestCount = cartModel.dineInList?.size?.minus(1)
+        val orderServiceChargesAttributeList: ArrayList<OrderServiceChargesAttribute> =
+            arrayListOf()
+        if (prefProvider.getValueboolean(SERVICECHARGE_DINEIN_ORDER, false)) {
+            var isApplied = false
+            serviceChargesList.forEach {
+                if (it.order_type == Constants.SERVICECHARGE_DINEIN_ORDER) {
+                    if (isInRange(
+                            it.min_guest_count!!,
+                            it.max_guest_count!!,
+                            guestCount!!
+                        )
+                    ) {
+                        val orderServiceChargesAttribute = OrderServiceChargesAttribute()
+                        orderServiceChargesAttribute.amount =
+                            MethodUtils.roundOffAmountDouble((subTotalPrice * it.percentage) / 100)
+                        orderServiceChargesAttribute.name = it.name
+                        orderServiceChargesAttribute.rate = it.percentage
+                        orderServiceChargesAttribute.serviceChargeId = it.id
+                        orderServiceChargesAttribute.order_type = it.order_type
+                        orderServiceChargesAttribute.max_guest_count = it.max_guest_count
+                        orderServiceChargesAttribute.min_guest_count = it.min_guest_count
+                        orderServiceChargesAttribute.serviceChargeId = it.id
+                        orderServiceChargesAttributeList.add(orderServiceChargesAttribute)
+
+                        isApplied = true
+                        Log.d(
+                            TAG,
+                            "calculateDineInServiceCharge: DashBoard " + it.min_guest_count + "....." + it.max_guest_count + " in between " + guestCount
+                        )
+                        totalServiceCharge += (subTotalPrice * it.percentage) / 100
+                        return@forEach
+                    }
+                }
+            }
+            if (!isApplied) {
+                serviceChargesList.forEach { service ->
+                    if (service.id == checkMaxGuestCountId()) {
+                        totalServiceCharge += (subTotalPrice * service.percentage) / 100
+                        return@forEach
+                    }
+                }
+            }
+        }
+        return orderServiceChargesAttributeList
     }
 
     fun randomOfflineId(): String {
@@ -2639,7 +2655,6 @@ class DashBoardCategoryViewModel @Inject constructor(
                 orderItemsAttribute.isCount = 0
                 orderItemsAttribute.isEdited = item.isEdited
                 orderItemsAttribute.isDestroy = item.isDestroy
-                LogUtil.logE(TAG, "Passes: ${item.isDestroy}")
                 orderItemsAttribute.isPaid = item.isPaid
                 orderItemsAttribute.isPrinted = true
                 orderItemsAttribute.isTaxRemoved = false
@@ -2654,16 +2669,13 @@ class DashBoardCategoryViewModel @Inject constructor(
                 orderItemsAttribute.isFired = cartModel.isFired
 
 
-                LogUtil.logE(TAG, "TimeStampMo: ${item.timeStamp}")
                 if (item.timeStamp == null || item.timeStamp?.lowercase() == "null".lowercase()) {
                     orderItemsAttribute.timestamp = randomOfflineId()
-                    LogUtil.logE(TAG, "Timetimestamp  ${orderItemsAttribute.timestamp}")
                 } else {
                     orderItemsAttribute.timestamp = item.timeStamp.toString()
                 }
                 orderItemsAttribute.totalPrice =
                     MethodUtils.roundOffAmountDouble(item.price * item.itemQuantity)
-                LogUtil.logE(TAG, "orderId:  ${cartModel.orderId}")
                 orderItemsAttribute.orderItemTaxesAttributes =
                     orderItemTaxesAttributes(item, orderId = cartModel.orderId)
 
@@ -3525,12 +3537,10 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     fun setPosition(position: Int) {
         mPosition = position
-        LogUtil.logE(TAG, "mSelectedPosition$mPosition")
     }
 
 
     fun createCart(cartList: ArrayList<CartModel>): ArrayList<CartModel> {
-        LogUtil.logE(TAG, "CreateCartEmpId  ${prefProvider.getValueInt(Constants.EMPLOYEE_ID, 0)}")
         if (cartList.isEmpty()) {
             val model = CartModel()
             model.employeeID =
@@ -3572,7 +3582,6 @@ class DashBoardCategoryViewModel @Inject constructor(
         totalServiceCharge = 0.0
         var amountToBePaid = 0.0
         if (cartModel.orderType == DINE_IN) {
-
             if (isGuestPayment) {
 
                 subTotalPrice = model.subTotal
@@ -3649,6 +3658,10 @@ class DashBoardCategoryViewModel @Inject constructor(
                     cashdiscountAmount = 0.0
                 }
 
+                val nf: NumberFormat = NumberFormat.getNumberInstance()
+                nf.maximumFractionDigits = 2
+                val rounded: String = nf.format(cashdiscountAmount)
+                cashdiscountAmount = rounded.toDouble()
                 MethodUtils.setPriceTextView(txtTotal, model.total)
 
 
@@ -3729,6 +3742,12 @@ class DashBoardCategoryViewModel @Inject constructor(
                 } else {
                     cashdiscountAmount = 0.0
                 }
+                val nf: NumberFormat = NumberFormat.getNumberInstance()
+                nf.maximumFractionDigits = 2
+                val rounded: String = nf.format(cashdiscountAmount)
+                cashdiscountAmount = rounded.toDouble()
+                Log.d(TAG, "itemCalculationForDineInPayment: "+cashdiscountAmount)
+
 
                 MethodUtils.setPriceTextView(txtTotal, model.total)
 
@@ -3811,7 +3830,11 @@ class DashBoardCategoryViewModel @Inject constructor(
                     cashdiscountAmount = 0.0
                 }
 
-                LogUtil.logE("amountToBePaid", "" + totalPrice)
+                val nf: NumberFormat = NumberFormat.getNumberInstance()
+                nf.maximumFractionDigits = 2
+                val rounded: String = nf.format(cashdiscountAmount)
+                cashdiscountAmount = rounded.toDouble()
+                Log.e("amountToBePaid", "" + totalPrice)
             } else {
 
                 nonCashAdj = 0.0

@@ -582,6 +582,7 @@
     <string name="tv_pay_now">Pay Now</string>
     <string name="tv_complete">Complete</string>
     <string name="tv_cancelled">Rejected</string>
+    <string name="tv_upcoming">UpComing</string>
     <string name="tv_completed">Completed</string>
     <string name="tv_customer_name">Customer Name</string>
     <string name="tv_delivery_status">Delivery Status</string>

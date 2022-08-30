@@ -628,6 +628,25 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             bundle.putDouble(DINE_IN_TAX, viewModel.totalTaxAmount)
             bundle.putDouble(DINE_IN_DISCOUNT, viewModel.totalDiscountAmount)
             bundle.putDouble(DINE_IN_SERVICECHARGE, serviceCharge)
+            var appliedServiceCharge: ArrayList<OrderServiceChargesAttribute> = arrayListOf()
+            getOrderDetailsResponse?.orderServiceCharges?.forEach { service ->
+                var data: OrderServiceChargesAttribute = OrderServiceChargesAttribute(
+                    amount = service.amount,
+                    name = service.name,
+                    rate = service.rate,
+                    serviceChargeId = service.serviceChargeId,
+                    max_guest_count = service.max_guest_count,
+                    min_guest_count = service.min_guest_count,
+                    id = service.id,
+                    order_type = service.order_type
+                )
+                appliedServiceCharge.add(data)
+            }
+            bundle.putParcelableArrayList(
+                "serviceChargeAppliedList",
+                appliedServiceCharge
+            )
+
 
             prefProvider.setValue("PaidAmount", "")
             prefProvider.setValue(Constants.WHOLE_AMOUNT, "")
@@ -1230,6 +1249,24 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
         bundle.putDouble(
             DINE_IN_SERVICECHARGE,
             MethodUtils.roundOffAmountDouble(serviceChargeGuest)
+        )
+        var appliedServiceCharge: ArrayList<OrderServiceChargesAttribute> = arrayListOf()
+        getOrderDetailsResponse?.orderServiceCharges?.forEach { service ->
+            var data: OrderServiceChargesAttribute = OrderServiceChargesAttribute(
+                amount = service.amount,
+                name = service.name,
+                rate = service.rate,
+                serviceChargeId = service.serviceChargeId,
+                max_guest_count = service.max_guest_count,
+                min_guest_count = service.min_guest_count,
+                id = service.id,
+                order_type = service.order_type
+            )
+            appliedServiceCharge.add(data)
+        }
+        bundle.putParcelableArrayList(
+            "serviceChargeAppliedList",
+            appliedServiceCharge
         )
 
 
