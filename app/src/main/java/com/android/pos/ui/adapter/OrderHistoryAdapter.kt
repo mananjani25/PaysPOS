@@ -1,12 +1,10 @@
 package com.android.pos.ui.adapter
 
 import android.annotation.SuppressLint
-import android.content.ContentValues.TAG
 import android.text.Spannable
 import android.text.SpannableStringBuilder
 import android.text.TextUtils
 import android.text.style.TextAppearanceSpan
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -65,7 +63,7 @@ class OrderHistoryAdapter (val callBack: (View, Orders) -> Unit ) :
             //Reorder
             binding.txtReorder.setOnClickListener {
                 myOnclickedListner.onclickedReorder(arrayList[absoluteAdapterPosition])
-            }        }
+            }         }
 
         private fun setupAmountPayType(total: Double?, paymentDetails: List<PaymentDetail>?) {
 

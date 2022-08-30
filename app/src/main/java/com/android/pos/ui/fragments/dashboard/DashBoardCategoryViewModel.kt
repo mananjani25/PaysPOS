@@ -910,24 +910,42 @@ class DashBoardCategoryViewModel @Inject constructor(
                     } else if (type == DELETE) {
 
                         var index = -1
-
+                        Log.e(TAG, "CheckDeleteItem ${Gson().toJson(item)}")
+                        Log.e(TAG,"getListedItems  ${Gson().toJson(list[0])}")
+                        Log.e(TAG,"checkReOrder  ${cartModel?.reorder}")
 
                         for (i in list.indices) {
                             if (item != null) {
                                 if (!item.isManualSales) {
 
-                                    if (list[i].itemId == item.itemId && checkVariation(
+                                    if (cartModel?.reorder == false && list[i].itemId == item.itemId && checkVariation(
                                             list[i],
                                             item
                                         ) && checkModifier(list[i], item)
                                     ) {
+                                        Log.e(TAG,"CheckedBefore")
                                         index = i
                                         break
+                                    } else if (cartModel?.reorder == true ) {
+                                        if (list[i].orderItemId == item.orderItemId) {
+                                            index = i
+                                            Log.e(TAG, "indexReorder:  ${index}")
+                                            break
+                                        }
+
                                     }
+
                                 } else {
                                     if (list[i].manualSaleId == item.manualSaleId) {
                                         index = i
                                         break
+                                    } else if (cartModel?.reorder == true ) {
+                                        if (list[i].orderItemId == item.orderItemId) {
+                                            index = i
+                                            Log.e(TAG, "indexReorder23:  ${index}")
+                                            break
+                                        }
+
                                     }
                                 }
                             }
@@ -2356,7 +2374,7 @@ class DashBoardCategoryViewModel @Inject constructor(
     */
         orderAttributeRequestModel.orderServiceChargesAttributes =
             orderServiceChargesAttributes(cartModel, subTotalPrice)
-    
+
         orderAttributeRequestModel.guestsAttributes = getGuestsAttributes(cartModel)
 
 

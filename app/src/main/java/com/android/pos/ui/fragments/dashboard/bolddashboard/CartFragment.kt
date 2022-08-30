@@ -1170,8 +1170,8 @@ class CartFragment(
                                             resources.getDimension(R.dimen._70sdp).toInt()
                                         binding.relativeLoylatyPoints.visibility = View.VISIBLE
                                         binding.lblLoyaltyPoints.visibility = View.VISIBLE
-                                        Log.e(TAG, "InsideLoyalty")
-                                        Log.e(TAG, Gson().toJson(viewModel.redeemLoyaltyInfo))
+
+
                                         binding.txtLoyaltyAmount.text =
                                             "- $${
                                                 String.format(
