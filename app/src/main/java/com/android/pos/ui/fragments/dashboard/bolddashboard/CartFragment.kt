@@ -1277,8 +1277,9 @@ class CartFragment(
         if (view != null) {
             viewModelPayment.showProgress.observe(viewLifecycleOwner) { event ->
                 event.getContentIfNotHandled()?.let {
+                    LogUtil.logE("observeShowProgress3", it.toString())
                     if (it) {
-                        ProgressUtils.showProgressDialog(requireActivity())
+                        ProgressUtils.showProgressDialog("Please wait payment under process",requireActivity())
                     } else {
                         ProgressUtils.dismissProgressDialog()
                     }

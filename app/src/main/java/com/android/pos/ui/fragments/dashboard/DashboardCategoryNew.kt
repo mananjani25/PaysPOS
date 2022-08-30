@@ -2285,6 +2285,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
         viewModelPayment.showProgress.observe(viewLifecycleOwner, { event ->
             event.getContentIfNotHandled()?.let {
+                LogUtil.logE("observeShowProgress2", it.toString())
                 if (it) {
                     ProgressUtils.showProgressDialog(requireActivity())
                 } else {
