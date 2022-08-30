@@ -247,9 +247,7 @@ class PaymentBoldPosFragment : Fragment() {
             Handler(Looper.getMainLooper()).postDelayed({
                 loadCategoryFragment(
                     CheckoutDetailsFragmentNew(
-                        arguments?.getBoolean("isFromActiveOrder") == true,
-                        arguments?.getParcelableArrayList("serviceChargeAppliedList")
-                            ?: arrayListOf()
+                        arguments?.getBoolean("isFromActiveOrder") == true
                     )
                 )
             }, 100)

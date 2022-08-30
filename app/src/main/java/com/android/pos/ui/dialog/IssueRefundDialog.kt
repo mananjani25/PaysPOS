@@ -285,8 +285,6 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
 
     private fun setUpRecyclerView() {
         refundItemListAdapter = RefundItemListAdapter(viewModel)
-        refundItemListAdapter.guestCount = guestCount
-        refundItemListAdapter.isServiceChargeDineInEnable = prefProvider.getValueboolean(SERVICECHARGE_DINEIN_ORDER, false)
         binding.rvItemListRefund.adapter = refundItemListAdapter
 
         var totalItemDiscount = 0.0
