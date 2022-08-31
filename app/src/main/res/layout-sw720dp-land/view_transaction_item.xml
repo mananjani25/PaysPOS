@@ -122,7 +122,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="left|center_vertical"
                 android:layout_weight="1"
-                android:text="@{@string/symbole +` `+String.format(@string/format,itemSheetModel.tips)}"
+                android:text="@{@string/symbole+String.format(@string/format,itemSheetModel.tips)}"
                 android:textColor="@color/btnColor"
                 android:textSize="@dimen/text_size_medium"
                 tools:text="$0.00" />

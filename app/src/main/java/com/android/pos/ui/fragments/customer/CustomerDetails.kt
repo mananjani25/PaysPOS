@@ -111,6 +111,8 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
                     "getServiceCharges: finall " + Gson().toJson(listOfServiceCharge)
                 )
 
+            }else{
+                listOfServiceCharge = ArrayList()
             }
         }
 

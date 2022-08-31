@@ -49,6 +49,7 @@
                 android:background="@null"
                 android:gravity="start"
                 android:padding="@dimen/_4sdp"
+                android:inputType="textVisiblePassword"
                 android:textColor="@color/txtColor"
                 android:textSize="@dimen/_5mdpi"
                 tools:text="Modifier one" />
