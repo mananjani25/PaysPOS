@@ -162,14 +162,14 @@ class OnlineDetailViewModel @Inject constructor(
             }
             if (endTime.isNotEmpty()) {
                 var temp_calender = Calendar.getInstance()
-                if (status=="0"){
+                if (status=="4"){
                     temp_calender.add(Calendar.DATE,7)
                     endDate.value = sdf.format(temp_calender.time) + " " + endTime
                 }else{
                     endDate.value = sdf.format(temp_calender.time) + " " + endTime
                 }
             } else {
-                if (status == "0") {
+                if (status == "4") {
                     endDate.value = sdf.format(myCalendar.time) + " " + SimpleDateFormat(
                         "hh:mm a",
                         Locale.getDefault()

@@ -61,7 +61,7 @@
 
             <androidx.appcompat.widget.LinearLayoutCompat
                 android:layout_width="wrap_content"
-                android:layout_height="@dimen/_15sdp"
+                android:layout_height="@dimen/_20sdp"
                 android:layout_gravity="center"
                 android:layout_marginTop="@dimen/_5sdp"
                 android:gravity="center"
@@ -73,13 +73,13 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_gravity="center"
-                    android:layout_marginHorizontal="@dimen/_10sdp"
+                    android:layout_marginRight="@dimen/_5sdp"
                     android:background="@drawable/border_with_field"
                     android:gravity="center"
-                    android:paddingHorizontal="@dimen/_5sdp"
+                    android:paddingHorizontal="@dimen/_3sdp"
                     android:text="15 Minutes"
                     android:textColor="@color/white"
-                    android:textSize="@dimen/_4mdpi" />
+                    android:textSize="@dimen/_5mdpi"/>
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/txt_30"
@@ -87,13 +87,13 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_gravity="center"
-                    android:layout_marginRight="@dimen/_10sdp"
+                    android:layout_marginRight="@dimen/_5sdp"
                     android:background="@drawable/border_with_field"
                     android:gravity="center"
-                    android:paddingHorizontal="@dimen/_5sdp"
+                    android:paddingHorizontal="@dimen/_3sdp"
                     android:text="30 Minutes"
                     android:textColor="@color/white"
-                    android:textSize="@dimen/_4mdpi" />
+                    android:textSize="@dimen/_5mdpi"/>
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/txt_45"
@@ -101,13 +101,13 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_gravity="center"
-                    android:layout_marginRight="@dimen/_10sdp"
+                    android:layout_marginRight="@dimen/_5sdp"
                     android:background="@drawable/border_with_field"
                     android:gravity="center"
-                    android:paddingHorizontal="@dimen/_5sdp"
+                    android:paddingHorizontal="@dimen/_3sdp"
                     android:text="45 Minutes"
                     android:textColor="@color/white"
-                    android:textSize="@dimen/_4mdpi" />
+                    android:textSize="@dimen/_5mdpi" />
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/txt_60"
@@ -115,34 +115,33 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:layout_gravity="center"
-                    android:layout_marginRight="@dimen/_10sdp"
                     android:background="@drawable/border_with_field"
                     android:gravity="center"
-                    android:paddingHorizontal="@dimen/_5sdp"
+                    android:paddingHorizontal="@dimen/_3sdp"
                     android:text="60 Minutes"
                     android:textColor="@color/white"
-                    android:textSize="@dimen/_4mdpi" />
+                    android:textSize="@dimen/_5mdpi" />
 
             </androidx.appcompat.widget.LinearLayoutCompat>
 
             <androidx.appcompat.widget.LinearLayoutCompat
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/_15sdp"
+                android:layout_height="@dimen/_20sdp"
                 android:layout_gravity="center"
-                android:layout_marginHorizontal="@dimen/_20sdp"
                 android:layout_marginTop="@dimen/_5sdp"
+                android:layout_marginHorizontal="@dimen/_21sdp"
                 android:gravity="center"
                 android:orientation="horizontal">
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/customMinutes"
                     style="@style/CustomFontBold"
-                    android:layout_width="wrap_content"
+                    android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_gravity="center"
                     android:background="@drawable/border_with_field"
                     android:gravity="center"
-                    android:paddingHorizontal="@dimen/_40sdp"
+                    android:paddingHorizontal="@dimen/_3sdp"
                     android:text="Custom Minutes"
                     android:textColor="@color/white"
                     android:textSize="@dimen/_5mdpi" />
@@ -413,13 +412,14 @@
                 android:id="@+id/txtSave"
                 style="@style/CustomFontBold"
                 android:layout_width="match_parent"
-                android:layout_height="@dimen/_18sdp"
+                android:layout_height="@dimen/_20sdp"
                 android:layout_alignParentEnd="true"
                 android:layout_gravity="center"
-                android:layout_marginHorizontal="@dimen/_20sdp"
+                android:layout_marginHorizontal="@dimen/_21sdp"
                 android:layout_marginTop="@dimen/_5sdp"
                 android:background="@color/btnColor"
                 android:gravity="center"
+                android:paddingHorizontal="@dimen/_3sdp"
                 android:text="Accepted"
                 android:textColor="@color/white"
                 android:textSize="@dimen/_7mdpi" />

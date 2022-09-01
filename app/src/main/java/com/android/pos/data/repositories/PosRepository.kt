@@ -241,6 +241,9 @@ class PosRepository @Inject constructor(
     fun getItemsList() =
         performGetOperationDatabase(databaseQuery = { appDatabase.itemDao().allItem!! })
 
+    fun getWholeItemFromPos() =
+        performGetOperationDatabase(databaseQuery = { appDatabase.itemDao().allItemFromPos!! })
+
 
     fun getTimeZones() =
         performGetOperationDatabase(databaseQuery = { appDatabase.timeZonesDao().allItem })
@@ -287,7 +290,6 @@ class PosRepository @Inject constructor(
     fun getNoteList() = performGetOperationDatabase(
         databaseQuery = { appDatabase.notesDao().alllNotes },
     )
-
 
 
     suspend fun deleteNotesFromDb() =

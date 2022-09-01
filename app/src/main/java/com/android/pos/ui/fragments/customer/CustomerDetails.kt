@@ -504,43 +504,43 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
         val inventoryModelList = ArrayList<TbItem>()
 
         order.orderItems.forEach {
+            if (listOfItemsId.contains(it.itemId)){
+                val items = TbItem().apply {
+                    orderItemId = it.id
+                    itemId = it.itemId
+                    name = it.itemName
+                    cost = it.price
+                    price = it.price
+                    priceType = ""
+                    itemQuantity = it.quantity
+                    kitchenName = ""
+                    productCode = ""
+                    sku = ""
+                    isHide = false
+                    sort = 0
+                    imageUrl = ""
+                    thumbImageUrl = ""
+                    reorder = true
+                    categoryId = it.categoryId
+                    categoryName = ""
+                    taxes = taxes(it.orderItemTaxes, order.locationId, it.itemId)
+                    modifier_set_ids = modifiersIds(it.orderItemModifiers)
+                    modifiers = modifierSets(it.orderItemModifiers)
+                    discountPrice = it.discountAmount
+                    discountType = it.discountType.toString()
+                    if (it.discountId != null)
+                        discountId = it.discountId
+                    if (it.order_item_variation != null)
+                        variationsAttributes = variationAtt(it.order_item_variation)
+                    note = it.note
+                }
 
-            val items = TbItem().apply {
-                orderItemId = it.id
-                itemId = it.itemId
-                name = it.itemName
-                cost = it.price
-                price = it.price
-                priceType = ""
-                itemQuantity = it.quantity
-                kitchenName = ""
-                productCode = ""
-                sku = ""
-                isHide = false
-                sort = 0
-                imageUrl = ""
-                thumbImageUrl = ""
-                reorder = true
-                categoryId = it.categoryId
-                categoryName = ""
-                taxes = taxes(it.orderItemTaxes, order.locationId, it.itemId)
-                modifier_set_ids = modifiersIds(it.orderItemModifiers)
-                modifiers = modifierSets(it.orderItemModifiers)
-                discountPrice = it.discountAmount
-                discountType = it.discountType.toString()
-                if (it.discountId != null)
-                    discountId = it.discountId
-                if (it.order_item_variation != null)
-                    variationsAttributes = variationAtt(it.order_item_variation)
-                note = it.note
+                try {
+                    inventoryModelList.add(items)
+                } catch (e: Exception) {
+                    Log.d(TAG, "inventoryList: " + e.printStackTrace())
+                }
             }
-
-            try {
-                inventoryModelList.add(items)
-            } catch (e: Exception) {
-                Log.d(TAG, "inventoryList: " + e.printStackTrace())
-            }
-
         }
 
         return inventoryModelList

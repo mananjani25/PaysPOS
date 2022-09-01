@@ -23,7 +23,7 @@
             android:background="@color/backgroundColor"
             android:orientation="horizontal"
             android:paddingVertical="@dimen/_7sdp"
-            android:paddingStart="@dimen/_18sdp"
+            android:paddingStart="@dimen/_12sdp"
             android:weightSum="6">
 
             <androidx.appcompat.widget.LinearLayoutCompat
@@ -121,31 +121,128 @@
                 android:textSize="@dimen/_6mdpi"
                 tools:text="John Smith" />
 
-
             <LinearLayout
+                android:id="@+id/order_Inprogress_button"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_gravity="center"
+                android:gravity="center"
+                android:visibility="gone"
+                android:orientation="horizontal">
+
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/completed_img"
+                    android:layout_width="@dimen/_20sdp"
+                    android:padding="@dimen/_4sdp"
+                    android:layout_height="@dimen/_20sdp"
+                    android:src="@drawable/check_mark"
+                    android:layout_marginRight="@dimen/_15sdp"
+                    android:tint="@color/colorGreen" />
+
+            </LinearLayout>
+            <LinearLayout
+                android:id="@+id/order_completed_button"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:layout_gravity="left"
                 android:gravity="left"
+                android:visibility="gone"
                 android:orientation="horizontal">
 
-                <androidx.appcompat.widget.AppCompatImageView
-                    android:id="@+id/accept_img"
-                    android:layout_width="@dimen/_20sdp"
-                    android:padding="@dimen/_4sdp"
-                    android:layout_height="@dimen/_20sdp"
-                    android:src="@drawable/check_mark"
-                    android:layout_marginRight="@dimen/_5sdp"
-                    android:tint="@color/colorGreen" />
+                <androidx.appcompat.widget.AppCompatTextView
+                    style="@style/CustomFontBold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:paddingVertical="@dimen/_5sdp"
+                    android:text="@string/tv_completed"
+                    android:textColor="@color/txtColor"
+                    android:textSize="@dimen/_7mdpi"
+                    app:textAllCaps="true" />
 
-                <androidx.appcompat.widget.AppCompatImageView
+            </LinearLayout>
+            <LinearLayout
+                android:id="@+id/order_cancelled_button"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_gravity="left"
+                android:gravity="left"
+                android:visibility="gone"
+                android:orientation="horizontal">
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    style="@style/CustomFontBold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:paddingVertical="@dimen/_5sdp"
+                    android:text="@string/tv_cancelled"
+                    android:textColor="@color/txtColor"
+                    android:textSize="@dimen/_7mdpi"
+                    app:textAllCaps="true" />
+
+            </LinearLayout>
+            <LinearLayout
+                android:id="@+id/order_upcoming_button"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_gravity="left"
+                android:gravity="left"
+                android:visibility="gone"
+                android:orientation="horizontal">
+
+                <androidx.appcompat.widget.AppCompatTextView
+                    style="@style/CustomFontBold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:paddingVertical="@dimen/_5sdp"
+                    android:text="@string/tv_upcoming"
+                    android:textColor="@color/txtColor"
+                    android:textSize="@dimen/_7mdpi"
+                    app:textAllCaps="true" />
+
+            </LinearLayout>
+            <LinearLayout
+                android:id="@+id/order_status_linear"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_gravity="left"
+                android:gravity="left"
+                android:visibility="gone"
+                android:orientation="horizontal">
+
+                <androidx.appcompat.widget.AppCompatButton
+                    android:id="@+id/accept_img"
+                    android:layout_width="wrap_content"
+                    android:paddingHorizontal="2dp"
+                    android:paddingVertical="@dimen/_3sdp"
+                    android:text="Accept"
+                    android:textColor="@color/green_pay_total"
+                    android:background="@drawable/whiteborder_with_transparent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="@dimen/_2sdp"
+                    />
+
+                <androidx.appcompat.widget.AppCompatButton
                     android:id="@+id/decline_img"
-                    android:padding="@dimen/_5sdp"
-                    android:layout_width="@dimen/_20sdp"
-                    android:layout_height="@dimen/_20sdp"
-                    android:src="@drawable/close_thin"
-                    android:tint="@color/colorRed" />
+                    android:paddingHorizontal="2dp"
+                    android:paddingVertical="@dimen/_3sdp"
+                    android:layout_width="wrap_content"
+                    android:text="Reject"
+                    android:layout_marginLeft="@dimen/_2sdp"
+                    android:textColor="@color/colorRed"
+                    android:background="@drawable/whiteborder_with_transparent"
+                    android:layout_height="wrap_content"
+                    />
 
             </LinearLayout>
 

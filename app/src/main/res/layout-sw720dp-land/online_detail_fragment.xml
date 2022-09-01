@@ -180,7 +180,7 @@
             android:background="@drawable/background_square_border_solid_grey"
             android:orientation="horizontal"
             android:paddingVertical="@dimen/_10sdp"
-            android:paddingStart="@dimen/_18sdp"
+            android:paddingStart="@dimen/_12sdp"
             android:weightSum="6">
 
             <androidx.appcompat.widget.AppCompatTextView
@@ -243,7 +243,6 @@
                 android:text="@string/order_status"
                 android:textAllCaps="true"
                 android:textColor="@color/white"
-
                 android:textSize="@dimen/text_size_medium" />
         </LinearLayout>
 

@@ -115,24 +115,24 @@ class OnlineDetailFragment(
         )
         when (param1) {
             "0" -> {
-                order_status = "UpComing"
-                binding.txtOrderWillAppear?.text = "UpComing order will appear here."
-            }
-            "1" -> {
                 order_status = "Pending"
                 binding.txtOrderWillAppear?.text = "Pending order will appear here."
             }
-            "2" -> {
+            "1" -> {
                 order_status = "InProgress"
                 binding.txtOrderWillAppear?.text = "InProgress order will appear here."
             }
-            "3" -> {
+            "2" -> {
                 order_status = "Completed"
                 binding.txtOrderWillAppear?.text = "Completed order will appear here."
             }
-            "4" -> {
+            "3" -> {
                 order_status = "Rejected"
                 binding.txtOrderWillAppear?.text = "Rejected order will appear here."
+            }
+            "4" -> {
+                order_status = "UpComing"
+                binding.txtOrderWillAppear?.text = "UpComing order will appear here."
             }
 
         }
@@ -499,7 +499,7 @@ class OnlineDetailFragment(
 
                 )
                 datePickerDialog.show()
-                if (param1 == "0") {
+                if (param1 == "4") {
                     datePickerDialog.datePicker.minDate = myCalendar.timeInMillis
                     var temp_calender = Calendar.getInstance()
                     temp_calender.add(Calendar.DATE, 7)
@@ -515,7 +515,7 @@ class OnlineDetailFragment(
     private fun endDatePickerObserver() {
         viewModel.endDateSelection.observe(requireActivity()) { event ->
             event.getContentIfNotHandled()?.let {
-                if (param1 == "0") {
+                if (param1 == "4") {
                     myCalendar1 = Calendar.getInstance()
                     myCalendar1.add(Calendar.DATE, 7)
                 }
@@ -529,7 +529,7 @@ class OnlineDetailFragment(
                     myCalendar1.get(Calendar.DAY_OF_MONTH)
 
                 )
-                if (param1 == "0") {
+                if (param1 == "4") {
                     datePickerDialog.datePicker.minDate =myCalendar1.timeInMillis
                 }
                 datePickerDialog.show()
