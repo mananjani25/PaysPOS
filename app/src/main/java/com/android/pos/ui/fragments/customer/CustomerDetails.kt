@@ -190,6 +190,7 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
                 itemlist.data.forEach { it ->
                     listOfItemsId.add(it.itemId)
                 }
+                listOfItemsId.add(1)
             }
         }
         viewModel.showProgress.observe(viewLifecycleOwner) { event ->
