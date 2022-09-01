@@ -18,6 +18,7 @@ import com.android.pos.data.model.requestModel.BusinessModel
 import com.android.pos.databinding.FragmentAddBusnessDetailsBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.utils.AlertUtils
+import com.android.pos.utils.LogUtil
 import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.extensions.liveSnackBar
@@ -277,7 +278,7 @@ class BusinessDetailsFragment : Fragment() {
 
                         resource.data.let {
                             it?.forEach {
-                                Log.e("key", it.name)
+                                LogUtil.logE("key", it.name)
                                 timeZoneName.add(it.name)
                                 timeZoneValue.add(it.value)
                             }
@@ -408,14 +409,14 @@ class BusinessDetailsFragment : Fragment() {
                         var state = ""
                         var zip = ""
 
-                        task.place.name?.let { Log.e("Task", it) }
-                        task.place.address?.let { Log.e("Task", it) }
+                        task.place.name?.let { LogUtil.logE("Task", it) }
+                        task.place.address?.let { LogUtil.logE("Task", it) }
                         task.place.addressComponents?.asList()
                             ?.forEachIndexed { index, addressComponent ->
 
                                 addressComponent.types.forEach { type ->
 
-                                    Log.e(
+                                    LogUtil.logE(
                                         "addressComponent",
                                         type + " ===  " + addressComponent.name
                                     )
@@ -448,7 +449,7 @@ class BusinessDetailsFragment : Fragment() {
                                     }
                                 }
 
-                                Log.e("index$index", addressComponent.name)
+                                LogUtil.logE("index$index", addressComponent.name)
                             }
 
 

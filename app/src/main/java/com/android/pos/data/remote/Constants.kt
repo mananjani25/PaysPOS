@@ -6,6 +6,7 @@ import com.android.pos.data.model.PrinterListModel
 import com.android.pos.data.model.requestModel.CreatePrinterRequestModel
 import com.android.pos.data.model.responseModel.PrinterResponse
 import com.android.pos.di.PrefProvider
+import com.android.pos.utils.LogUtil
 import com.android.pos.utils.TimeFormatUtils
 import com.google.gson.Gson
 import java.text.SimpleDateFormat
@@ -407,7 +408,7 @@ object Constants {
             }
         }
 
-        Log.e("ListConvert", "listlist:  ${Gson().toJson(list)}")
+        LogUtil.logE("ListConvert", "listlist:  ${Gson().toJson(list)}")
 
         val model = CreatePrinterRequestModel(
             id = printerModel?.id,
@@ -587,6 +588,8 @@ object Constants {
     const val SEND_CLOCKOUT_NOTIFICATION = "send_clockout_notification"
     const val ONLINE_ORDER_GET_NOTIFICATION = "online_order_get_notification"
     const val ONLINE_ORDER_REFRESH = "online_order_refresh"
+    const val SYNC_NOTIFICATION = "sync_notification"
+    const val SYNC_SETTING_NOTIFICATION = "sync_setting_notification"
 
 
     // dinein

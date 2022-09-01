@@ -23,6 +23,7 @@ import com.android.pos.data.remote.Constants.KEY
 import com.android.pos.databinding.FragmentCustomerBinding
 import com.android.pos.ui.adapter.CustomerListAdapter
 import com.android.pos.utils.AlertUtils
+import com.android.pos.utils.LogUtil
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.callback.ItemCallback
 import com.android.pos.utils.callback.PaginationScrollListener
@@ -166,7 +167,7 @@ class Customer : Fragment(),ItemCallback {
                                 resource.data as ArrayList<TbCustomer>
                             binding.rvEmployeeList.visibility = View.VISIBLE
                             binding.noCustomerDats.visibility = View.GONE
-                            Log.e(TAG, "getCustomerData ${Gson().toJson(data)}")
+                            LogUtil.logE(TAG, "getCustomerData ${Gson().toJson(data)}")
                             dynamicCustomerList.clear()
                             dynamicCustomerList.addAll(data)
                             customerAdapter.setList(data)
@@ -238,7 +239,7 @@ class Customer : Fragment(),ItemCallback {
             ?.observe(viewLifecycleOwner) {
                 when (it) {
                     CUSTOMERDETAILS -> {
-                        Log.e(TAG, "UpdateLoadList")
+                        LogUtil.logE(TAG, "UpdateLoadList")
                         viewModel.customerList(data)
 
                     }
@@ -522,7 +523,7 @@ class Customer : Fragment(),ItemCallback {
 
 
 
-                    Log.e(TAG, "posClicked  ${pos}")
+                    LogUtil.logE(TAG, "posClicked  ${pos}")
                 }
             }
             true

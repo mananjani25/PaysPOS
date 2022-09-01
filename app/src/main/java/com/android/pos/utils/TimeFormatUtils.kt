@@ -69,7 +69,7 @@ object TimeFormatUtils {
     }
 
     fun convertServerTimeFromPref(mSelectedDate: String?, context: Context?): String {
-        Log.e(TAG, "mSelectedDatemSelectedDate  ${mSelectedDate}")
+        LogUtil.logE(TAG, "mSelectedDatemSelectedDate  ${mSelectedDate}")
         try {
             val inputFormat = SimpleDateFormat("MM/dd/yyyy HH:mm a")
             inputFormat.timeZone = TimeZone.getTimeZone("UTC")
@@ -78,7 +78,7 @@ object TimeFormatUtils {
             outputFormat.timeZone = TimeZone.getTimeZone(prefProvider.getValue(SYSTEM_TIMEZONE, ""))
             val date = inputFormat.parse(mSelectedDate)
             val formattedDate = outputFormat.format(date)
-            Log.e(TAG, "formattedDateformattedDate  ${formattedDate}")
+            LogUtil.logE(TAG, "formattedDateformattedDate  ${formattedDate}")
             //  val formattedDateFinalDate = outputFormat.parse(formattedDate)
             return formattedDate
         } catch (e: Exception) {

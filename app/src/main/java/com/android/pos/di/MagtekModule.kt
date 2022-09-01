@@ -20,6 +20,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import com.android.pos.R
+import com.android.pos.utils.LogUtil
 import com.android.pos.utils.TLVParser
 import com.android.pos.utils.callback.magtekCallback
 import com.magtek.mobile.android.mtlib.*
@@ -65,7 +66,7 @@ open class MagtekModule @Inject constructor(
 
     private var mScraHandler = Handler(Looper.getMainLooper()) { msg ->
 
-        Log.e("handlerStop", handlerStop.toString())
+        LogUtil.logE("handlerStop", handlerStop.toString())
 
         if (handlerStop)
            return@Handler true
@@ -117,15 +118,15 @@ open class MagtekModule @Inject constructor(
 
     protected open fun OnCardDataStateChanged(cardDataState: MTCardDataState?) {
         when (cardDataState) {
-            MTCardDataState.DataNotReady -> Log.e("[Card Data Not Ready]", "")
-            MTCardDataState.DataReady -> Log.e("[Card Data Ready]", "")
-            MTCardDataState.DataError -> Log.e("[Card Data Error]", "")
+            MTCardDataState.DataNotReady -> LogUtil.logE("[Card Data Not Ready]", "")
+            MTCardDataState.DataReady -> LogUtil.logE("[Card Data Ready]", "")
+            MTCardDataState.DataError -> LogUtil.logE("[Card Data Error]", "")
         }
     }
 
     private fun OnTransactionResult(data: ByteArray?) {
 
-        Log.e("[Transaction Result]", TLVParser.getHexString(data))
+        LogUtil.logE("[Transaction Result]", TLVParser.getHexString(data))
 
 
         if (data != null) {
@@ -135,7 +136,7 @@ open class MagtekModule @Inject constructor(
                 if (lenBatchData > 0) {
                     val batchData = ByteArray(lenBatchData)
                     System.arraycopy(data, 3, batchData, 0, lenBatchData)
-                    Log.e("[Parsed Batch Data]", "")
+                    LogUtil.logE("[Parsed Batch Data]", "")
                     val parsedTLVList = TLVParser.parseEMVData(batchData, false, "")
                     val cidString = TLVParser.getTagValue(parsedTLVList, "9F27")
                     val cidValue = TLVParser.getByteArrayFromHexString(cidString)
@@ -162,7 +163,7 @@ open class MagtekModule @Inject constructor(
     private fun OnDisplayMessageRequest(bytes: ByteArray) {
 
         val message = TLVParser.getTextString(bytes, 0)
-        Log.e("[Display Mes Request]", message)
+        LogUtil.logE("[Display Mes Request]", message)
 
 //        if (message == "DECLINED"){
 //            listner?.processStart("DECLINED", true)
@@ -171,7 +172,7 @@ open class MagtekModule @Inject constructor(
 
     private fun OnTransactionStatus(bytes: ByteArray) {
 
-        Log.e("[Transaction Status]", TLVParser.getHexString(bytes))
+        LogUtil.logE("[Transaction Status]", TLVParser.getHexString(bytes))
 
         when {
             "0500010000" == TLVParser.getHexString(bytes) -> {
@@ -242,7 +243,7 @@ open class MagtekModule @Inject constructor(
 
 
     fun startTransaction() {
-        Log.e("[Start Transaction 2]", "Result=$")
+        LogUtil.logE("[Start Transaction 2]", "Result=$")
         if (m_scra != null) {
             val timeLimit: Byte = 0x3C
 
@@ -267,7 +268,7 @@ open class MagtekModule @Inject constructor(
                 currencyCode,
                 reportingOption
             )
-            Log.e("[Start Transaction 3]", "Result=$result")
+            LogUtil.logE("[Start Transaction 3]", "Result=$result")
 
         }
 
@@ -308,8 +309,8 @@ open class MagtekModule @Inject constructor(
                     val uuidListIt = uuidList.listIterator()
                     while (uuidListIt.hasNext()) {
                         val scanUuid = uuidListIt.next()
-                        Log.e("scanUuid", scanUuid.toString())
-                        Log.e(
+                        LogUtil.logE("scanUuid", scanUuid.toString())
+                        LogUtil.logE(
                             "scanUuid1",
                             MTDeviceConstants.UUID_SCRA_BLE_EMV_DEVICE_READER_SERVICE.toString()
                         )
@@ -370,7 +371,7 @@ open class MagtekModule @Inject constructor(
         if (enable) {
             // Get a set of currently paired devices
             val pairedDevices = mBluetoothAdapter!!.bondedDevices
-            Log.e("pairedDevices", pairedDevices.size.toString())
+            LogUtil.logE("pairedDevices", pairedDevices.size.toString())
             if (pairedDevices.size > 0) {
                 for (device in pairedDevices) {
                     if (device.type == BluetoothDevice.DEVICE_TYPE_LE) {
@@ -430,9 +431,9 @@ open class MagtekModule @Inject constructor(
                             return
                         }
                         leScanner.stopScan(mScanCallback)
-                        Log.e("stopScanning", "Called")
+                        LogUtil.logE("stopScanning", "Called")
                     } catch (ex: Exception) {
-                        Log.e("stopScanning error", "Called")
+                        LogUtil.logE("stopScanning error", "Called")
                         ex.printStackTrace()
                     }
                     mScanCallback = null
@@ -454,7 +455,7 @@ open class MagtekModule @Inject constructor(
             val formattedMAC =
                 mcAddress.replace("(.{2})".toRegex(), "$1$divisionChar").substring(0, 17)
 
-            Log.e("mcAddress1 :: ", formattedMAC)
+            LogUtil.logE("mcAddress1 :: ", formattedMAC)
 
             m_scra!!.setConnectionType(MTConnectionType.BLEEMV)
             m_scra!!.setAddress(formattedMAC)
@@ -462,12 +463,12 @@ open class MagtekModule @Inject constructor(
             m_scra!!.openDevice()
             result = 0
         }
-        Log.e("openDevice ", result.toString())
+        LogUtil.logE("openDevice ", result.toString())
         return result
     }
 
     fun openDeviceTest(string: String): Long {
-        Log.e("TAG", "SCRADevice openDevice")
+        LogUtil.logE("TAG", "SCRADevice openDevice")
         var result: Long = -1
 
         if (m_scra != null) {
@@ -478,7 +479,7 @@ open class MagtekModule @Inject constructor(
             m_scra!!.openDevice()
             result = 0
         }
-        Log.e("openDeviceTest ", result.toString())
+        LogUtil.logE("openDeviceTest ", result.toString())
         return result
     }
 
@@ -512,7 +513,7 @@ open class MagtekModule @Inject constructor(
         if (m_scra != null) {
             val result = m_scra!!.cancelTransaction()
             listner?.processStart("Cancel Transaction", true)
-            Log.e("[Cancel Transaction]", "(Result=$result)")
+            LogUtil.logE("[Cancel Transaction]", "(Result=$result)")
         }
     }
 

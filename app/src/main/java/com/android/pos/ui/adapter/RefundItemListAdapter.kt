@@ -12,6 +12,7 @@ import com.android.pos.data.model.responseModel.GetOrderDetailsResponse
 import com.android.pos.data.remote.Constants
 import com.android.pos.databinding.ViewRefundItemBinding
 import com.android.pos.ui.fragments.transactions.TransactionDetailsViewModel
+import com.android.pos.utils.LogUtil
 import com.android.pos.utils.MethodUtils
 
 class RefundItemListAdapter(val viewModel: TransactionDetailsViewModel) :
@@ -30,8 +31,6 @@ class RefundItemListAdapter(val viewModel: TransactionDetailsViewModel) :
     var tipValue: Double = 0.0
     var rate_or_amount = ""
     var orderType = ""
-    var guestCount = 0
-    var isServiceChargeDineInEnable = false
 
     fun setSelectedItemList(
         list: ArrayList<GetOrderDetailsResponse.Data.OrderItem>,
@@ -138,6 +137,7 @@ class RefundItemListAdapter(val viewModel: TransactionDetailsViewModel) :
             totalItemPrice = totalPrice(item)
 
 
+
 //            item.orderItemTaxes.forEach { tax ->
 //                tax.taxTotalAmount.let {
 //                    totalTax += it
@@ -155,8 +155,7 @@ class RefundItemListAdapter(val viewModel: TransactionDetailsViewModel) :
                         val itemTaxPrice =
                             (tax.rate * totalItemPrice) / 100
                         Log.e("itemTaxPrice", "" + itemTaxPrice)
-                        String.format("%.2f", itemTaxPrice)
-                            .toDouble()
+                        itemTaxPrice
                     }
 
                 } else {
@@ -173,42 +172,9 @@ class RefundItemListAdapter(val viewModel: TransactionDetailsViewModel) :
             Log.d("yash", "bind: [$absoluteAdapterPosition] totaltax : $totalTax")
 
             var totalServiceCharge = 0.0
-            Log.e("ServiceDineIn","ServiceList ${serviceChargeList.size}")
-            var isApplied = false
+
             serviceChargeList.forEach {
-
-                Log.e("orderTyoe","orderTyoe  ${it.order_type}")
-                if (orderType == Constants.DINE_IN && it.order_type == Constants.SERVICECHARGE_DINEIN_ORDER) {
-                    if (it.order_type == Constants.SERVICECHARGE_DINEIN_ORDER) {
-                        if (isInRange(
-                                it.min_guest_count!!,
-                                it.max_guest_count!!,
-                                guestCount!!
-                            )
-                        ) {
-                            isApplied = true
-
-                            totalServiceCharge += (totalItemPrice * it.percentage) / 100
-                            return@forEach
-                        }
-                    }
-                }
-                else if ((orderType == Constants.TAKEOUT || orderType == Constants.OPEN_ORDER) && it.order_type == Constants.SERVICECHARGE_TAKEOUT_OPENORDER) {
-                    totalServiceCharge += (totalItemPrice * it.percentage) / 100
-                    Log.e("totalServiceCharge1", totalServiceCharge.toString())
-                }
-
-//                if (it.order_type == Constants.SERVICECHARGE_TAKEOUT_OPENORDER) {
-//                    totalServiceCharge += (totalItemPrice * it.percentage) / 100
-//                }
-            }
-            if (!isApplied) {
-                serviceChargeList.forEach { service ->
-                    if (service.id == checkMaxGuestCountId()) {
-                        totalServiceCharge += (totalItemPrice * service.percentage) / 100
-                        return@forEach
-                    }
-                }
+                totalServiceCharge += (totalItemPrice * it.percentage) / 100
             }
             Log.d(
                 "yash",
@@ -299,22 +265,5 @@ class RefundItemListAdapter(val viewModel: TransactionDetailsViewModel) :
         }
     }
 
-    fun isInRange(minn: Int, maxx: Int, value: Int): Boolean {
-        return (minn <= value && value <= maxx)
-    }
 
-
-    fun checkMaxGuestCountId(): Int {
-        var maxValue = 0
-        var serviceChargeId = 0
-        serviceChargeList.forEach { serviceCharge ->
-            if (serviceCharge.order_type == Constants.SERVICECHARGE_DINEIN_ORDER) {
-                if (serviceCharge.max_guest_count!! >= maxValue) {
-                    maxValue = serviceCharge.max_guest_count
-                    serviceChargeId = serviceCharge.id
-                }
-            }
-        }
-        return serviceChargeId
-    }
 }

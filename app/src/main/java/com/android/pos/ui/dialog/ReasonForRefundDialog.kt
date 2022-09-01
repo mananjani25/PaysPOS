@@ -20,6 +20,7 @@ import com.android.pos.ui.fragments.magtek.MagtekRequestUtils
 import com.android.pos.ui.fragments.magtek.PaymentResponse
 import com.android.pos.ui.fragments.transactions.TransactionDetailsViewModel
 import com.android.pos.utils.AlertUtils
+import com.android.pos.utils.LogUtil
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.extensions.liveSnackBar
 import com.android.pos.utils.printer.PrinterClass
@@ -243,7 +244,7 @@ class ReasonForRefundDialog : DialogFragment() {
             ) {
                 ProgressUtils.dismissProgressDialog()
                 if (response.isSuccessful) {
-                    Log.e("onResponse", Gson().toJson(response.body()))
+                    LogUtil.logE("onResponse", Gson().toJson(response.body()))
                     if (response.body() != null && response.body()!![0].transactionOutput != null && response.body()!![0].transactionOutput?.isTransactionApproved == true) {
 
                         refundCall()
@@ -367,7 +368,7 @@ class ReasonForRefundDialog : DialogFragment() {
 
                                 } catch (e: Exception) {
 
-                                    //Log.e(TAG, "PrinterException: " + e.message)
+                                    //LogUtil.logE(TAG, "PrinterException: " + e.message)
                                     printer = null
                                     e.printStackTrace()
                                 }

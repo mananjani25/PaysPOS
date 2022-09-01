@@ -23,6 +23,7 @@ import com.android.pos.data.remote.Constants.CREATEOPTION
 import com.android.pos.data.remote.Constants.KEY
 import com.android.pos.databinding.FragmentInventoryBinding
 import com.android.pos.ui.adapter.InventoryAdapter
+import com.android.pos.utils.LogUtil
 import com.android.pos.utils.statusUtils.Status
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
@@ -533,7 +534,7 @@ class Inventory : Fragment() {
                 true,
                 object : InventoryAdapter.InventoryListner {
                     override fun onItemSelect(position: Int) {
-                        Log.e(TAG, "position  $position")
+                        LogUtil.logE(TAG, "position  $position")
                         changePosition(position)
                     }
 
@@ -551,7 +552,6 @@ class Inventory : Fragment() {
                         when (resource.status) {
                             Status.SUCCESS -> {
 
-                                Log.e(TAG, "inventroyCounts${Gson().toJson(resource)}")
 
 
                                 /*private var itemsCount: Int? = 0

@@ -20,13 +20,13 @@ interface TaxDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun addAllTaxesSuspend(taxList: List<TaxData>)
 
-    @get:Query("select * from TbTax")
+    @get:Query("select * from TbTax where TbTax.isDeleted = 0")
     val allTax: LiveData<List<TaxData>>
 
-    @get:Query("select * from TbTax where TbTax.isActive = 1")
+    @get:Query("select * from TbTax where TbTax.isActive = 1 and TbTax.isDeleted = 0")
     val enableTax: LiveData<List<TaxData>>
 
-    @Query("select * from TbTax")
+    @Query("select * from TbTax where TbTax.isDeleted = 0")
     fun allTaxList(): List<TaxData>
 
     @Query("SELECT * from TbTax where TbTax.id  = :id LIMIT 1")
@@ -38,7 +38,7 @@ interface TaxDao {
     @Query("DELETE FROM TbTax where TbTax.id  = :id")
     suspend fun deleteTaxById(id: Int)
 
-    @Query("SELECT * FROM TbTax WHERE TbTax.id IN (:userIds)")
+    @Query("SELECT * FROM TbTax WHERE TbTax.id IN (:userIds) and TbTax.isDeleted = 0")
     fun taxByIds(userIds: IntArray): List<TaxData>
 
     @Query("UPDATE TbTax SET isActive = :active WHERE  TbTax.id = :id")

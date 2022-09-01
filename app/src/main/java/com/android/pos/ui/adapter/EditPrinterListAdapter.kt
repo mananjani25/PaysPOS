@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.data.model.responseModel.PrinterResponse
 import com.android.pos.data.remote.Constants
 import com.android.pos.databinding.ViewEditPrinterListBinding
+import com.android.pos.utils.LogUtil
 import com.android.pos.utils.extensions.gone
 import com.android.pos.utils.extensions.visible
 import com.google.gson.Gson
@@ -21,7 +22,7 @@ class EditPrinterListAdapter : RecyclerView.Adapter<EditPrinterListAdapter.MyVie
         fun bind(model: PrinterResponse.Data.OrderTypes) {
             binding.model = model
             binding.txtPrintersLabel.setText(model.orderTypeName)
-            Log.e(TAG, "printerSettings:  ${Gson().toJson(model.printerSettings)}")
+            LogUtil.logE(TAG, "printerSettings:  ${Gson().toJson(model.printerSettings)}")
 
 
             if (model.printerSettings.size == 2 ) {

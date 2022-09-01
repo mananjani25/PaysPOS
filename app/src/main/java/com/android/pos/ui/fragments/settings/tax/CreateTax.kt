@@ -24,6 +24,7 @@ import com.android.pos.data.remote.Constants.INCLUDE_TAX
 import com.android.pos.data.remote.Constants.KEY
 import com.android.pos.databinding.DialogCreateNewTaxBinding
 import com.android.pos.utils.AlertUtils
+import com.android.pos.utils.LogUtil
 import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.extensions.getNavigationResultLiveData
@@ -159,7 +160,7 @@ class CreateTax : Fragment() {
                 //bundle have to sent for item ids
 
                 bundle.putBoolean("isEdit", true)
-                Log.e("itemPricing", itemPricing.toString())
+                LogUtil.logE("itemPricing", itemPricing.toString())
                 bundle.putString("itemPricing", itemPricing)
                 findNavController().navigate(R.id.action_newTax_to_itemPricingDialog, bundle)
             } else {

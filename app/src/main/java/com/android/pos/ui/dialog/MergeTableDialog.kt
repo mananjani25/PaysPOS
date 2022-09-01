@@ -26,6 +26,7 @@ import com.android.pos.di.PrefProvider
 import com.android.pos.ui.adapter.MergeTableSelectionAdapter
 import com.android.pos.ui.fragments.dinein.DineInViewModel
 import com.android.pos.utils.AlertUtils
+import com.android.pos.utils.LogUtil
 import com.android.pos.utils.ProgressUtils
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
@@ -256,7 +257,7 @@ class MergeTableDialog : DialogFragment() {
                 }
 
             }
-            Log.e(TAG, "getSetData  ${Gson().toJson(set)}")
+            LogUtil.logE(TAG, "getSetData  ${Gson().toJson(set)}")
 
 
             if (!isDuplicateIdTrue) {
@@ -320,7 +321,7 @@ class MergeTableDialog : DialogFragment() {
                     }
 
                 }
-                Log.e(TAG, "listSecondaryOrderDetailsSize:  ${listSecondaryOrderDetails.size}")
+                LogUtil.logE(TAG, "listSecondaryOrderDetailsSize:  ${listSecondaryOrderDetails.size}")
 
                 if (listSecondaryOrderDetails.size == 0) {
                     //This is for Every Empty Table for both Primary and Secondary

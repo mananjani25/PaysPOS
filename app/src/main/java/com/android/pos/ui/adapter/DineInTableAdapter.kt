@@ -17,6 +17,7 @@ import com.android.pos.data.model.DineInModel
 import com.android.pos.data.remote.Constants
 import com.android.pos.databinding.ViewDineInHeaderBinding
 import com.android.pos.databinding.ViewDineInTableItemsBinding
+import com.android.pos.utils.LogUtil
 import com.android.pos.utils.MethodUtils
 import com.google.gson.Gson
 import java.util.*
@@ -133,8 +134,7 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                                             val itemTaxPrice =
                                                 (tax.rate * totalPrice) / 100
 
-                                            String.format("%.2f", itemTaxPrice)
-                                                .toDouble()
+                                            itemTaxPrice
                                         } else {
 
                                             String.format("%.2f", tax.rate * it.itemQuantity)
@@ -263,33 +263,33 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
             var finalAmt =
                 guestSubTotal + totalServiceCharge + totalTaxAmt + (list.get(0).guestDividedAmt)
-            Log.e("TODAY", "guestSubTotal  ${guestSubTotal}")
-            Log.e("TODAY", "totalTaxAmt  ${totalTaxAmt}")
-            Log.e("TODAY", "guestDividedAmt  ${(list.get(0).guestDividedAmt)}")
-            Log.e("TODAY", "totalServiceCharge  ${(totalServiceCharge)}")
-            Log.e("TODAY", "orderTotalAmount  ${list.get(0).orderTotalAmount}")
-            Log.e("TODAY", "orderfinalAmt:  ${finalAmt}")
+            LogUtil.logE("TODAY", "guestSubTotal  ${guestSubTotal}")
+            LogUtil.logE("TODAY", "totalTaxAmt  ${totalTaxAmt}")
+            LogUtil.logE("TODAY", "guestDividedAmt  ${(list.get(0).guestDividedAmt)}")
+            LogUtil.logE("TODAY", "totalServiceCharge  ${(totalServiceCharge)}")
+            LogUtil.logE("TODAY", "orderTotalAmount  ${list.get(0).orderTotalAmount}")
+            LogUtil.logE("TODAY", "orderfinalAmt:  ${finalAmt}")
 
             var guestOrderDisShare = 0.0
-            Log.e(TAG, "")
+            LogUtil.logE(TAG, "")
             if (list.get(0).orderDiscount > 0) {
                 guestOrderDisShare =
                     MethodUtils.roundOffAmountDouble(list[0].orderDiscount / (list[0].totalGuestCount))
                 /*  guestOrderDisShare =
                       (finalAmt * list.get(0).orderDiscount) / (list.get(0).orderTotalAmount + list.get(0).orderDiscount)*/
 
-                Log.e("TODAY", "guestOrderDisShare  ${guestOrderDisShare}")
+                LogUtil.logE("TODAY", "guestOrderDisShare  ${guestOrderDisShare}")
 
             }
             finalAmt = finalAmt - guestOrderDisShare
 
-            Log.e("TODAY", "GuestguestSubTotal  ${guestSubTotal}")
-            Log.e("TODAY", "GuesttotalServiceCharge  ${totalServiceCharge}")
-            Log.e("TODAY", "GuesttotalTaxAmt  ${totalTaxAmt}")
-            Log.e("TODAY", "GuestguestDividedAmt  ${list.get(0).guestDividedAmt}")
-            //   Log.e(TAG,"GuestguestSubTotal  ${guestSubTotal}")
+            LogUtil.logE("TODAY", "GuestguestSubTotal  ${guestSubTotal}")
+            LogUtil.logE("TODAY", "GuesttotalServiceCharge  ${totalServiceCharge}")
+            LogUtil.logE("TODAY", "GuesttotalTaxAmt  ${totalTaxAmt}")
+            LogUtil.logE("TODAY", "GuestguestDividedAmt  ${list.get(0).guestDividedAmt}")
+            //   LogUtil.logE(TAG,"GuestguestSubTotal  ${guestSubTotal}")
 
-            // Log.e(TAG,"guestDivided  ${list.get(0).guestDividedAmt}")
+            // LogUtil.logE(TAG,"guestDivided  ${list.get(0).guestDividedAmt}")
 
 
             if (!list.get(position).isPaid) {
@@ -338,7 +338,7 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                     }
 
 
-                    Log.e(TAG, "listItemWTGuestPay:  ${Gson().toJson(listItemWT)}")
+                    LogUtil.logE(TAG, "listItemWTGuestPay:  ${Gson().toJson(listItemWT)}")
                     listner.onGuestPay(
                         list[position],
                         position,
@@ -388,8 +388,8 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                 }
                 if (listItem.isNotEmpty() || listItemWT.isNotEmpty()) {
 
-                    Log.e("AAjeCje", "orderDiscount  ${list[0].orderDiscount}")
-                    Log.e("AAjeCje", "guestDiscount  ${guestDiscount}")
+                    LogUtil.logE("AAjeCje", "orderDiscount  ${list[0].orderDiscount}")
+                    LogUtil.logE("AAjeCje", "guestDiscount  ${guestDiscount}")
                     listner.onGuestPrint(
                         listItem,
                         guestName,
@@ -660,7 +660,7 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                          }
 
                          var idStr = Gson().toJson(ids.toTypedArray())
-                         Log.e(TAG, "idStr:  $idStr")
+                         LogUtil.logE(TAG, "idStr:  $idStr")
                          listner.onWholeTableToKitchen(idStr)
                          binding.chkIsFired.isChecked = true
                          binding.chkIsFired.isEnabled = false

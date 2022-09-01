@@ -24,10 +24,7 @@ import com.android.pos.ui.fragments.magtek.MagtekRequestUtils
 import com.android.pos.ui.fragments.magtek.PaymentResponse
 import com.android.pos.ui.fragments.onlineorder.OnlineDetailViewModel
 import com.android.pos.ui.fragments.transactions.TransactionDetailsViewModel
-import com.android.pos.utils.AlertUtils
-import com.android.pos.utils.MethodUtils
-import com.android.pos.utils.ProgressUtils
-import com.android.pos.utils.TAG
+import com.android.pos.utils.*
 import com.google.gson.Gson
 import com.google.gson.JsonArray
 import com.google.gson.JsonParser
@@ -272,7 +269,7 @@ class ReasonForRefundOnlineOrder : DialogFragment() {
             ) {
                 ProgressUtils.dismissProgressDialog()
                 if (response.isSuccessful) {
-                    Log.e("onResponse", Gson().toJson(response.body()))
+                    LogUtil.logE("onResponse", Gson().toJson(response.body()))
                     if (response.body() != null && response.body()!![0].transactionOutput != null && response.body()!![0].transactionOutput?.isTransactionApproved == true) {
 
                         refundCall()

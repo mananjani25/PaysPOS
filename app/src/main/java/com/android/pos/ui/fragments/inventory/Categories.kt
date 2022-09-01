@@ -25,6 +25,7 @@ import com.android.pos.R
 import com.android.pos.databinding.FragmentCategoriesBinding
 import com.android.pos.ui.adapter.CategoriesListAdapter
 import com.android.pos.utils.AlertUtils
+import com.android.pos.utils.LogUtil
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.SwipeHelper
 import com.android.pos.utils.callback.ItemCallback
@@ -76,7 +77,7 @@ class Categories(val clickedPosition: Int) : Fragment(),ItemCallback {
                     Status.SUCCESS -> {
                         binding.rvCategoriesList.visibility = View.VISIBLE
                         binding.progressCircular.visibility = View.GONE
-                        Log.e(TAG, "getCategoryData  ${Gson().toJson(it.data)}")
+                        LogUtil.logE(TAG, "getCategoryData  ${Gson().toJson(it.data)}")
                         it.data?.let { it1 ->
                             listSize=it.data.size
                             adapter.add(it1)
@@ -127,7 +128,7 @@ class Categories(val clickedPosition: Int) : Fragment(),ItemCallback {
                 if (isreOrder) {
 
                     isreOrder = false
-                    Log.e(TAG, "getAllCategories  ${Gson().toJson(adapter.getAll())}")
+                    LogUtil.logE(TAG, "getAllCategories  ${Gson().toJson(adapter.getAll())}")
                     viewModel.reOrder(adapter.getAll())
                     // categoriesObserver()
                 }
@@ -172,8 +173,8 @@ class Categories(val clickedPosition: Int) : Fragment(),ItemCallback {
                 ): Boolean {
                     val oldPos = viewHolder.bindingAdapterPosition
                     val newPos = target.bindingAdapterPosition
-                    Log.e(TAG,"posGOTPoldPos ${oldPos}")
-                    Log.e(TAG,"posGOTPnewPos ${newPos}")
+                    LogUtil.logE(TAG,"posGOTPoldPos ${oldPos}")
+                    LogUtil.logE(TAG,"posGOTPnewPos ${newPos}")
 
                     if (dragFrom == -1) {
                         dragFrom = oldPos
@@ -251,8 +252,8 @@ class Categories(val clickedPosition: Int) : Fragment(),ItemCallback {
         if (categoryIdOld != null) {
 
             isreOrder = true
-            Log.e(TAG, "positionnewPos  ${newPos}")
-            Log.e(TAG, "positionoldPos  ${oldPos}")
+            LogUtil.logE(TAG, "positionnewPos  ${newPos}")
+            LogUtil.logE(TAG, "positionoldPos  ${oldPos}")
             viewModel.reOrderCategory(categoryIdOld, newPos, oldPos)
         }
 

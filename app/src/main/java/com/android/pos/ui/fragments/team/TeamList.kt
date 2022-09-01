@@ -21,6 +21,7 @@ import com.android.pos.di.RolePermission
 import com.android.pos.ui.activities.MainActivity
 import com.android.pos.ui.adapter.TeamsAdapter
 import com.android.pos.utils.AlertUtils
+import com.android.pos.utils.LogUtil
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.SwipeHelper
 import com.android.pos.utils.callback.CustomCallback
@@ -60,7 +61,7 @@ class TeamList : Fragment(), CustomCallback, OperationCallback {
         loadTeams()
         deleteEmployee()
 
-        Log.e("Calling", "onCreateView")
+        LogUtil.logE("Calling", "onCreateView")
 
         setUpHeader()
 
@@ -81,7 +82,7 @@ class TeamList : Fragment(), CustomCallback, OperationCallback {
         super.onViewCreated(view, savedInstanceState)
 
 
-        Log.e("Calling", "onViewCreated")
+        LogUtil.logE("Calling", "onViewCreated")
 
         binding.layoutTool.imgOptionMenu.setOnClickListener {
 
@@ -98,7 +99,7 @@ class TeamList : Fragment(), CustomCallback, OperationCallback {
 
     override fun onResume() {
         super.onResume()
-        Log.e("Calling", "onResume")
+        LogUtil.logE("Calling", "onResume")
     }
 
     private fun deleteEmployee() {
@@ -137,7 +138,7 @@ class TeamList : Fragment(), CustomCallback, OperationCallback {
                 viewHolder: RecyclerView.ViewHolder
             ): Int {
 
-                Log.e("makeMovementFlags", viewHolder.itemView.tag.toString())
+                LogUtil.logE("makeMovementFlags", viewHolder.itemView.tag.toString())
                 if (viewHolder.itemView.tag.toString() == "header") {
                     return 0
                 }
@@ -287,7 +288,7 @@ class TeamList : Fragment(), CustomCallback, OperationCallback {
 
     override fun onItemClickListener(view: View?, data: Employee) {
 
-        Log.e("onItemClickListener", ">>>>")
+        LogUtil.logE("onItemClickListener", ">>>>")
         selectedPos = data.id
         empObject = data
         loadTeamDetails(empObject)
@@ -313,7 +314,7 @@ class TeamList : Fragment(), CustomCallback, OperationCallback {
                             empObject =
                                 viewHolder?.menuOption?.getTag(R.string.tv_order_id) as Employee
 
-                            Log.e("Edit", empObject!!.id.toString())
+                            LogUtil.logE("Edit", empObject!!.id.toString())
                             viewModel.delete(empObject!!.id)
                         }
                         negativeButton(R.string.tv_cancel) {
@@ -329,7 +330,7 @@ class TeamList : Fragment(), CustomCallback, OperationCallback {
     }
 
     override fun onItemClickListener(employee: Employee) {
-        Log.e("onItem ", ">>>> ${employee.firstName}")
+        LogUtil.logE("onItem ", ">>>> ${employee.firstName}")
 
         empObject = employee
         viewModel.delete(employee.id)

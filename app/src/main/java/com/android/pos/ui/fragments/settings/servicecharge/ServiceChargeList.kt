@@ -1,5 +1,9 @@
 package com.android.pos.ui.fragments.settings.servicecharge
 
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -11,11 +15,13 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.data.entities.TbServiceCharge
+import com.android.pos.data.remote.Constants
 import com.android.pos.databinding.ServiceChargeFragmentBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.adapter.ServiceChargeDineinListAdapter
 import com.android.pos.ui.adapter.ServiceChargeListAdapter
 import com.android.pos.utils.AlertUtils
+import com.android.pos.utils.LogUtil
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.extensions.*
 import com.google.android.material.snackbar.Snackbar
@@ -42,6 +48,13 @@ class ServiceChargeList : Fragment(), ServiceChargeListAdapter.ItemCallback,
 
     @Inject
     lateinit var prefProvider: PrefProvider
+
+    private var syncSettingReceiver = object : BroadcastReceiver() {
+        override fun onReceive(p0: Context?, p1: Intent?) {
+            viewModel.getServiceChargeWholeList()
+        }
+
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -90,6 +103,12 @@ class ServiceChargeList : Fragment(), ServiceChargeListAdapter.ItemCallback,
                 prefProvider.getLocationId()
             )
         }
+
+        requireActivity().registerReceiver(
+            syncSettingReceiver,
+            IntentFilter(Constants.SYNC_SETTING_NOTIFICATION)
+        )
+
         return binding.root
     }
 
@@ -114,34 +133,38 @@ class ServiceChargeList : Fragment(), ServiceChargeListAdapter.ItemCallback,
 
                 if (it.serviceCharges.isNotEmpty()) {
                     it.serviceCharges.forEach { service ->
-                        if (service.orderType == "TakeOutAndParkOrder") {
-                            var data: TbServiceCharge = TbServiceCharge(
-                                service.createdAt,
-                                service.id,
-                                service.isEnabled,
-                                service.locationId,
-                                service.minGuestCount,
-                                service.maxGuestCount,
-                                service.name,
-                                service.orderType,
-                                service.percentage,
-                                service.updatedAt
-                            )
-                            takeout_servicechargelist.add(data)
-                        } else if (service.orderType == "DineIn") {
-                            var data: TbServiceCharge = TbServiceCharge(
-                                service.createdAt,
-                                service.id,
-                                service.isEnabled,
-                                service.locationId,
-                                service.minGuestCount,
-                                service.maxGuestCount,
-                                service.name,
-                                service.orderType,
-                                service.percentage,
-                                service.updatedAt
-                            )
-                            dinein_servicechargelist.add(data)
+                        if (!service.isDeleted) {
+                            if (service.orderType == "TakeOutAndParkOrder") {
+                                var data: TbServiceCharge = TbServiceCharge(
+                                    service.createdAt,
+                                    service.id,
+                                    service.isEnabled,
+                                    service.locationId,
+                                    service.minGuestCount,
+                                    service.maxGuestCount,
+                                    service.name,
+                                    service.orderType,
+                                    service.percentage,
+                                    service.updatedAt,
+                                    service.isDeleted
+                                )
+                                takeout_servicechargelist.add(data)
+                            } else if (service.orderType == "DineIn") {
+                                var data: TbServiceCharge = TbServiceCharge(
+                                    service.createdAt,
+                                    service.id,
+                                    service.isEnabled,
+                                    service.locationId,
+                                    service.minGuestCount,
+                                    service.maxGuestCount,
+                                    service.name,
+                                    service.orderType,
+                                    service.percentage,
+                                    service.updatedAt,
+                                    service.isDeleted
+                                )
+                                dinein_servicechargelist.add(data)
+                            }
                         }
                     }
                     setTaxDatatakeout(takeout_servicechargelist)

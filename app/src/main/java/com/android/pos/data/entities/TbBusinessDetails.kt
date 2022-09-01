@@ -43,5 +43,8 @@ class TbBusinessDetails {
 
     @SerializedName("address_attributes")
     var businessAddress : List<BusinessAddress> = emptyList()
+
+    @SerializedName("is_deleted")
+    var isDeleted: Boolean = false
 }
 

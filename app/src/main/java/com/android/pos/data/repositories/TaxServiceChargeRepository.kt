@@ -78,9 +78,20 @@ class TaxServiceChargeRepository @Inject constructor(
             saveCallResult = { appDatabase.serviceChargeDao().addAllServiceCharge(it.data) })
 
 
-    suspend fun getServiceChargeWholeList(): Resource<ServiceChargeListResponse> {
-        return apiHelperNew.getServiceChargeWholeList()
+    suspend fun getServiceChargeWholeList(terminalId: Int): Resource<ServiceChargeListResponse> {
+        return apiHelperNew.getServiceChargeWholeList(terminalId)
     }
+//    suspend fun getServiceChargeWholeList(): Resource<ServiceChargeListResponse> {
+//        performGetOperation(
+//            databaseQuery = { appDatabase.serviceChargeDao().allServiceCharge },
+//            networkCall = { apiHelperNew.getServiceChargeWholeList() },
+//            saveCallResult = {
+//                appDatabase.serviceChargeDao().addAllServiceCharge(it.data)
+//            }
+//        )
+//    }
+
+
 
     fun loyaltyPointList() =
         performGetOperation(

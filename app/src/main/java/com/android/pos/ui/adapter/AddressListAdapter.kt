@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.R
 import com.android.pos.data.model.requestModel.CreateCustomerRequestModel
 import com.android.pos.databinding.ViewCustomerAddressBinding
+import com.android.pos.utils.LogUtil
 import com.google.gson.Gson
 import java.util.*
 
@@ -93,7 +94,7 @@ class AddressListAdapter(val refreshCallBack: (Int) -> Unit, val context: Contex
                         position: Int,
                         id: Long
                     ) {
-                        Log.e(TAG, "OnItemSelected ${country[position]}")
+                        LogUtil.logE(TAG, "OnItemSelected ${country[position]}")
                         list[bindingAdapterPosition].country = country[position]
                         notifyItemChanged(bindingAdapterPosition)
                         notifyItemRangeChanged(bindingAdapterPosition, list.size)
@@ -228,16 +229,16 @@ class AddressListAdapter(val refreshCallBack: (Int) -> Unit, val context: Contex
 
 
 
-                                Log.e(TAG, "Updatelist:  ${Gson().toJson(templist)}")
+                                LogUtil.logE(TAG, "Updatelist:  ${Gson().toJson(templist)}")
                             } catch (e: Exception) {
-                                Log.e(TAG, "exception in pplaces api")
+                                LogUtil.logE(TAG, "exception in pplaces api")
                             } finally {
-                                Log.e(TAG, "notify callback")
+                                LogUtil.logE(TAG, "notify callback")
                                 refreshCallBack.invoke(layoutPosition)
                             }
                         }
 
-                        Log.e(TAG, "placeDetails:  ${Gson().toJson(placeDetails.name)}")
+                        LogUtil.logE(TAG, "placeDetails:  ${Gson().toJson(placeDetails.name)}")
 
                     }
 

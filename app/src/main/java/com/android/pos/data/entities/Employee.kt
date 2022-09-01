@@ -42,5 +42,7 @@ data class Employee(
     val teamRoleId: Int?,
     @SerializedName("hourly_wages")
     val hourlyWages: Double = 0.0,
-    var isChecked: Boolean = false
+    var isChecked: Boolean = false,
+    @SerializedName("is_deleted")
+    var isDeleted: Boolean = false
 ) : Parcelable

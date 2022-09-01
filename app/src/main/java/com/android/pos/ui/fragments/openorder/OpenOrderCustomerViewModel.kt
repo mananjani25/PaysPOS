@@ -15,6 +15,7 @@ import com.android.pos.data.remote.Constants
 import com.android.pos.data.repositories.PosRepository
 import com.android.pos.di.PrefProvider
 import com.android.pos.utils.Event
+import com.android.pos.utils.LogUtil
 import com.android.pos.utils.statusUtils.Resource
 import com.android.pos.utils.statusUtils.Status
 import com.google.gson.Gson
@@ -115,7 +116,7 @@ class OpenOrderCustomerViewModel @Inject constructor(
         }
 
 
-        Log.e(TAG, "listAddress:  ${Gson().toJson(listAddress)}")
+        LogUtil.logE(TAG, "listAddress:  ${Gson().toJson(listAddress)}")
         addCustomerDetails.value?.data?.final_reward = 0
         addCustomerDetails.value?.data?.enroll_to_loyalty = enroll_to_loyalty.value
         addCustomerDetails.value?.data?.addresses_attributes?.addAll(listAddress)
@@ -177,7 +178,7 @@ class OpenOrderCustomerViewModel @Inject constructor(
             addCustomerData = CreateCustomerRequestModel().apply {
 
 
-                Log.e("DaataJson", "PassData  ${Gson().toJson(value?.data)}")
+                LogUtil.logE("DaataJson", "PassData  ${Gson().toJson(value?.data)}")
                 data?.first_name = value?.data?.first_name!!
                 data?.last_name = value?.data?.last_name!!
 
@@ -207,9 +208,9 @@ class OpenOrderCustomerViewModel @Inject constructor(
 
             }
 
-            Log.e(TAG, "addCustomerDataJson:  ${Gson().toJson(addCustomerData)}")
-            Log.e(TAG, "isEdit:  ${isEdit}")
-            Log.e(TAG, "customerID:  ${customerID}")
+            LogUtil.logE(TAG, "addCustomerDataJson:  ${Gson().toJson(addCustomerData)}")
+            LogUtil.logE(TAG, "isEdit:  ${isEdit}")
+            LogUtil.logE(TAG, "customerID:  ${customerID}")
             viewModelScope.launch {
 
                 resource = if (isEdit) {

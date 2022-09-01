@@ -14,6 +14,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 
 import com.android.pos.R;
+import com.android.pos.utils.LogUtil;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -156,8 +157,6 @@ public class StickyHeaderLayoutManager extends RecyclerView.LayoutManager {
 		if (state instanceof SavedState) {
 			pendingSavedState = (SavedState) state;
 			requestLayout();
-		} else {
-			Log.e(TAG, "onRestoreInstanceState: invalid saved state class, expected: " + SavedState.class.getCanonicalName() + " got: " + state.getClass().getCanonicalName());
 		}
 	}
 

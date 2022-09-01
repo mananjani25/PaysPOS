@@ -21,6 +21,7 @@ import com.android.pos.databinding.FragmentTagtekBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.fragments.magtek.MagtekViewModel
 import com.android.pos.utils.AlertUtils
+import com.android.pos.utils.LogUtil
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.callback.ItemCallback
 import com.android.pos.utils.extensions.runOnUiThread
@@ -196,14 +197,14 @@ class MagtekProFragment : Fragment(), ItemCallback, IDeviceListCallback {
             EventType.ConnectionState -> {
                 when (ConnectionStateBuilder.GetValue(data.StringValue())) {
                     ConnectionState.Connected -> {
-                        Log.e("", "[CONNECTED]")
+                        LogUtil.logE("", "[CONNECTED]")
                         ProgressUtils.dismissProgressDialog()
                         updateUIControls(true)
                         prefProvider.setValueboolean(DYNANA_FLAX, true)
 
                     }
                     ConnectionState.Disconnected -> {
-                        Log.e("", "[DISCONNECTED]")
+                        LogUtil.logE("", "[DISCONNECTED]")
                         updateUIControls(false)
                         AlertUtils.showCustomAlert(requireContext(), "DISCONNECTED")
 
@@ -212,11 +213,11 @@ class MagtekProFragment : Fragment(), ItemCallback, IDeviceListCallback {
 
                     }
                     ConnectionState.Disconnecting -> {
-                        Log.e("", "[DISCONNECTING]")
+                        LogUtil.logE("", "[DISCONNECTING]")
 
                     }
                     ConnectionState.Connecting -> {
-                        Log.e("", "[CONNECTING]")
+                        LogUtil.logE("", "[CONNECTING]")
 
 
 

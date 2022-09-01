@@ -18,4 +18,6 @@ data class TeamRole(
     val employees: List<Employee>?,
     @SerializedName("module_permission")
     val modulePermission: List<ModulePermission>?,
+    @SerializedName("is_deleted")
+    var isDeleted: Boolean = false
 ) : Parcelable

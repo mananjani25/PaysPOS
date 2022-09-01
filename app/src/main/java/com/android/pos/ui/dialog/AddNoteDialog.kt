@@ -16,6 +16,7 @@ import com.android.pos.databinding.DailogAddNoteBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.adapter.NotesListAdapter
 import com.android.pos.ui.fragments.settings.notes.NoteListViewModel
+import com.android.pos.utils.LogUtil
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.callback.ItemCallback
 import com.android.pos.utils.extensions.gone
@@ -72,7 +73,7 @@ class AddNoteDialog : DialogFragment(), ItemCallback {
         cartList = requireArguments().getParcelableArrayList<CartModel>("cartList")
         if (prefProvider.getValue(Constants.ORDER_TYPE, Constants.TAKEOUT) == Constants.DINE_IN) {
             headerItemPosition = requireArguments().getInt("headerPos")
-            Log.e(TAG, "headerItemPosition:  ${headerItemPosition}")
+            LogUtil.logE(TAG, "headerItemPosition:  ${headerItemPosition}")
         }
 
 

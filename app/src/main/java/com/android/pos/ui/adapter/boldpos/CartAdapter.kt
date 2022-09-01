@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.data.entities.TbItem
 import com.android.pos.databinding.ViewItemCartBinding
 import com.android.pos.ui.adapter.CartItemModifierAdapter
+import com.android.pos.utils.LogUtil
 import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.callback.MyCallback
 import com.android.pos.utils.extensions.strike
@@ -28,7 +29,7 @@ class CartAdapter : RecyclerView.Adapter<CartAdapter.MyViewHolder>() {
         RecyclerView.ViewHolder(binding.root) {
 
         fun bind(item: TbItem, pos: Int) {
-            Log.e(TAG, "itemprice:  ${item.price}")
+            LogUtil.logE(TAG, "itemprice:  ${item.price}")
             binding.txtName.text = item.name
             binding.txtQuantity.text = "x" + item.itemQuantity
             binding.txtEachQntPrice.text = MethodUtils.roundOffAmount((item.price))
@@ -68,7 +69,7 @@ class CartAdapter : RecyclerView.Adapter<CartAdapter.MyViewHolder>() {
                 binding.rvModifiers.visibility = View.VISIBLE
                 val adapter = CartItemModifierAdapter()
                 binding.rvModifiers.adapter = adapter
-                Log.e(TAG,"dineinMod  ${Gson().toJson(item.modifiers)}")
+                LogUtil.logE(TAG,"dineinMod  ${Gson().toJson(item.modifiers)}")
                 adapter.addAll(item.modifiers)
             } else {
                 binding.rvModifiers.visibility = View.GONE
@@ -104,7 +105,7 @@ class CartAdapter : RecyclerView.Adapter<CartAdapter.MyViewHolder>() {
     }
 
     fun setList(list: ArrayList<TbItem>) {
-        Log.e(TAG,"itemListSize ${list.size}")
+        LogUtil.logE(TAG,"itemListSize ${list.size}")
         cartList = list
         notifyDataSetChanged()
 

@@ -14,6 +14,7 @@ import com.android.pos.data.remote.Constants.DELETE
 import com.android.pos.data.remote.Constants.UPDATE
 import com.android.pos.data.repositories.PosRepository
 import com.android.pos.di.PrefProvider
+import com.android.pos.utils.LogUtil
 import com.android.pos.utils.MethodUtils
 import com.google.gson.Gson
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -173,12 +174,12 @@ class ManualSaleViewModel @Inject constructor(
                 if (tax.isActive) {
                     if (tax.taxType == "Percentage") {
                         val itemTaxPrice = (tax.rate * (item.price * item.itemQuantity)) / 100
-                        Log.e("itemTaxPrice", "" + itemTaxPrice)
+                        LogUtil.logE("itemTaxPrice", "" + itemTaxPrice)
                         totalTax += String.format("%.2f", itemTaxPrice)
                             .toDouble()
                     } else if (tax.taxType == "Dollar") {
                         val itemTaxPrice = tax.rate * item.itemQuantity
-                        Log.e("itemTaxPrice", "" + itemTaxPrice)
+                        LogUtil.logE("itemTaxPrice", "" + itemTaxPrice)
                         totalTax += String.format("%.2f", itemTaxPrice)
                             .toDouble()
                     }
@@ -191,13 +192,13 @@ class ManualSaleViewModel @Inject constructor(
         }
         subTotalPrice -= totalDiscount
         val serviceChargeList = serviceCharge.value?.data
-        Log.e(TAG, "serviceChargesList:  ${Gson().toJson(serviceChargeList)}")
+        LogUtil.logE(TAG, "serviceChargesList:  ${Gson().toJson(serviceChargeList)}")
         if (serviceChargeList != null && serviceChargeList.isNotEmpty()) {
 
             serviceChargeList.forEach {
                 if (it.isEnabled) {
                     totalServiceCharge = (subTotalPrice * it.percentage) / 100
-                    Log.e("totalServiceCharge", totalServiceCharge.toString())
+                    LogUtil.logE("totalServiceCharge", totalServiceCharge.toString())
                 }
             }
         }
@@ -227,8 +228,8 @@ class ManualSaleViewModel @Inject constructor(
         txtTotalAmount: TextView
     ) {
 
-        Log.e("Loyalty", "checkAppliedLoyaltyProgram..")
-        Log.e("Loyalty", "Active loyalty Program : ${Gson().toJson(activeLoyaltyProgram)}")
+        LogUtil.logE("Loyalty", "checkAppliedLoyaltyProgram..")
+        LogUtil.logE("Loyalty", "Active loyalty Program : ${Gson().toJson(activeLoyaltyProgram)}")
 
         redeemLoyaltyInfo.total = total
         val availablePoints = customer?.final_reward ?: 0
@@ -236,7 +237,7 @@ class ManualSaleViewModel @Inject constructor(
         if (customer == null) {
             //loyalty cant be applied if customer is not selected.
             redeemLoyaltyInfo.needToApplyLoyalty = false
-            Log.e("Loyalty", "needToApplyLoyalty == false")
+            LogUtil.logE("Loyalty", "needToApplyLoyalty == false")
         } else if (loyaltyPointCondition(customer)) {
             activeLoyaltyProgram?.let {
                 redeemLoyaltyInfo.loyaltyProgramsModel = activeLoyaltyProgram
@@ -263,11 +264,11 @@ class ManualSaleViewModel @Inject constructor(
                     redeemLoyaltyInfo.remainingAmount =
                         redeemLoyaltyInfo.total - redeemLoyaltyInfo.usedLoyaltyAmount
                 }
-                Log.e("Loyalty", "needToApplyLoyalty == true")
+                LogUtil.logE("Loyalty", "needToApplyLoyalty == true")
                 //redeemLoyaltyInfo.isLoyaltyApplied = true
             }
         } else {
-            Log.e("Loyalty", "else portion.")
+            LogUtil.logE("Loyalty", "else portion.")
             redeemLoyaltyInfo.remainingAmount = redeemLoyaltyInfo.total
             redeemLoyaltyInfo.remainingLoyaltyPoints = availablePoints
             redeemLoyaltyInfo.usedLoyaltyPoints = 0

@@ -50,4 +50,6 @@ data class Item(
     @SerializedName("variations")
     val variations: List<VariationsAttribute>,
     var taxes: List<TaxData>? = null,
+    @SerializedName("is_deleted")
+    val isDeleted: Boolean
 )

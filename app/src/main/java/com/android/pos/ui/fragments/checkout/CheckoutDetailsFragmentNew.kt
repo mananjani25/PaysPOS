@@ -139,7 +139,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
         orderId = arguments?.getInt("orderId")
 
-        Log.e("orderId :: ", orderId.toString())
+        LogUtil.logE("orderId :: ", orderId.toString())
         if (orderId != null) {
             paymentId = arguments?.getInt("paymentId")!!
             paymentOfflineId = arguments?.getString("paymentOfflineId").toString()
@@ -163,15 +163,15 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
     }
 
     private fun setUpManualCardFocusChanged() {
-        binding.edtCardNumber.addTextChangedListener(object :TextWatcher{
+        binding.edtCardNumber.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
 
             }
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 try {
-                    Log.e(TAG,"checkMSfsLOnT ${s?.length}")
-                    if(s?.length==22){
+                    Log.e(TAG, "checkMSfsLOnT ${s?.length}")
+                    if (s?.length == 22) {
                         binding.edtMMYY.requestFocus()
                     }
 
@@ -182,8 +182,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
             override fun afterTextChanged(s: Editable?) {
                 try {
-                    Log.e(TAG,"checkMSfsL ${s?.length}")
-                    if(s?.length == 22){
+                    Log.e(TAG, "checkMSfsL ${s?.length}")
+                    if (s?.length == 22) {
                         binding.edtMMYY.requestFocus()
                     }
 
@@ -191,7 +191,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 }
             }
         })
-        binding.edtMMYY.addTextChangedListener(object :TextWatcher{
+        binding.edtMMYY.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
 
             }
@@ -202,17 +202,17 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
             override fun afterTextChanged(s: Editable?) {
                 try {
-                    Log.e(TAG,"CheckYYLength ${s?.length}")
-                    if(s?.length==5){
+                    Log.e(TAG, "CheckYYLength ${s?.length}")
+                    if (s?.length == 5) {
                         binding.edtCVV.requestFocus()
-                    }else if(s?.length==0){
+                    } else if (s?.length == 0) {
                         binding.edtCardNumber.requestFocus()
                     }
                 } catch (e: Exception) {
                 }
             }
         })
-        binding.edtCVV.addTextChangedListener(object :TextWatcher{
+        binding.edtCVV.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
 
             }
@@ -223,7 +223,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
             override fun afterTextChanged(s: Editable?) {
                 try {
-                    if(s?.length==0){
+                    if (s?.length == 0) {
                         binding.edtMMYY.requestFocus()
                     }
                 } catch (e: Exception) {
@@ -466,7 +466,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
     private fun observeData() {
         paymentviewModel.data.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
-                Log.e(TAG, "receiptData: ${Gson().toJson(it.data)}")
+                LogUtil.logE(TAG, "receiptData: ${Gson().toJson(it.data)}")
                 viewModel.redeemLoyaltyInfo = RedeemLoyaltyInfo()
                 prefProvider.setValueInt("ORDER_ID", it.data.order.id)
                 viewModel.updateActiveOrderFlagClear()
@@ -478,7 +478,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 viewModel.setTipAmount(0.0)
                 when {
                     paymentType == "Cash" -> {
-                        Log.e("TipAmount 4:: ", tipAmount.toString())
+                        LogUtil.logE("TipAmount 4:: ", tipAmount.toString())
 
                         val bundle = Bundle()
                         bundle.putBoolean("isDineIn", false)
@@ -652,7 +652,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
                     }
                     paymentType == "Card" -> {
-                        Log.e("TipAmount 4:: ", tipAmount.toString())
+                        LogUtil.logE("TipAmount 4:: ", tipAmount.toString())
 
                         val bundle = Bundle()
                         bundle.putBoolean("isDineIn", false)
@@ -771,8 +771,13 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
         paymentviewModel.showProgress.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
+
+                LogUtil.logE("observeShowProgress", it.toString())
                 if (it) {
-                    ProgressUtils.showProgressDialog(requireActivity())
+                    ProgressUtils.showProgressDialog(
+                        "Please wait payment under process",
+                        requireActivity()
+                    )
                 } else {
                     ProgressUtils.dismissProgressDialog()
                 }
@@ -1086,7 +1091,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
 
         cartList = viewModel.cartModel
-        Log.e("ORDER_TYPE", prefProvider.getValue(Constants.ORDER_TYPE, Constants.TAKEOUT))
+        LogUtil.logE("ORDER_TYPE", prefProvider.getValue(Constants.ORDER_TYPE, Constants.TAKEOUT))
 
         viewModel.ordertypelist.forEach {
             if (prefProvider.getValue(Constants.ORDER_TYPE, Constants.TAKEOUT) == it.orderType) {
@@ -1346,8 +1351,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         paymentAmount -= tipAmount
         paymentAmount = MethodUtils.roundOffAmountDouble(paymentAmount)
         paymentType = "Card"
-        Log.e(TAG, "cartList:  ${Gson().toJson(cartList)}")
-        Log.e(TAG, "cartListcartItems:  ${Gson().toJson(cartItems)}")
+        LogUtil.logE(TAG, "cartList:  ${Gson().toJson(cartList)}")
+        LogUtil.logE(TAG, "cartListcartItems:  ${Gson().toJson(cartItems)}")
         if (orderId != -1 && orderId != 0) {
             paymentviewModel.updateOrder(
                 true,
@@ -1382,7 +1387,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 tipID
             )
         }
-        Log.e(TAG, "myRequestOriginal ${Gson().toJson(myRequest)}")
+        LogUtil.logE(TAG, "myRequestOriginal ${Gson().toJson(myRequest)}")
         if (myRequest != null) {
             paymentviewModel.totalPayAmount(paymentAmount)
             paymentAttributesRequest(myRequest)
@@ -1391,8 +1396,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
     private fun makeCashPayment() {
         paymentType = "Cash"
-        Log.e(TAG, "makeCashPayorderId  ${orderId}")
-        Log.e(TAG, "makeCashPrefOrderId  ${prefProvider.getValueInt("ORDER_ID", -1)}")
+        LogUtil.logE(TAG, "makeCashPayorderId  ${orderId}")
+        LogUtil.logE(TAG, "makeCashPrefOrderId  ${prefProvider.getValueInt("ORDER_ID", -1)}")
 
         if (orderId != -1 && orderId != 0) {
             paymentviewModel.updateOrder(
@@ -1434,8 +1439,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 tipID
             )
         }
-        Log.e(TAG, "myRequestOriginal ${Gson().toJson(myRequest)}")
-        Log.e("ORDER TYPE 1", prefProvider.getValue(Constants.ORDER_TYPE, Constants.TAKEOUT))
+        LogUtil.logE(TAG, "myRequestOriginal ${Gson().toJson(myRequest)}")
+        LogUtil.logE("ORDER TYPE 1", prefProvider.getValue(Constants.ORDER_TYPE, Constants.TAKEOUT))
         if (myRequest != null) {
             if (custom_paymentAmount != 0.0) {
                 paymentviewModel.totalPayAmount(custom_paymentAmount)
@@ -1446,7 +1451,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
     private fun paymentAttributesRequest(myRequest: OrderRequestModel) {
         val orderId = prefProvider.getValueInt("ORDER_ID", -1)
-        Log.e(TAG, "orderIdmyRequestOriginal ${orderId}")
+        LogUtil.logE(TAG, "orderIdmyRequestOriginal ${orderId}")
         if (orderId == -1) {
             myRequest.completed_all_payments = isSelectedCount <= 1
             paymentviewModel.submit(myRequest)
@@ -1621,7 +1626,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
     private fun networkCall(jsonArray1: JsonArray?, i: Int) {
 
-        ProgressUtils.showProgressDialog(requireActivity())
+        ProgressUtils.showProgressDialog("Please wait payment under process", requireActivity())
 
         var call: Call<PaymentResponse>? = null
         when (i) {
@@ -1645,7 +1650,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 ProgressUtils.dismissProgressDialog()
 
                 if (response.isSuccessful) {
-                    Log.e("onResponse", Gson().toJson(response.body()))
+                    LogUtil.logE("onResponse", Gson().toJson(response.body()))
                     if (response.body() != null && response.body()!![0].transactionOutput != null) {
 
                         if (isDynamo())
@@ -1748,22 +1753,22 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 EventType.ConnectionState -> {
                     when (ConnectionStateBuilder.GetValue(data.StringValue())) {
                         ConnectionState.Connected -> {
-                            Log.e("", "[CONNECTED]")
+                            LogUtil.logE("", "[CONNECTED]")
 
                             // ProgressUtils.dismissProgressDialog()
 
                             startTransaction()
                         }
                         ConnectionState.Disconnected -> {
-                            Log.e("", "[DISCONNECTED]")
+                            LogUtil.logE("", "[DISCONNECTED]")
                             ProgressUtils.dismissProgressDialog()
                             AlertUtils.showCustomAlert(requireContext(), "DISCONNECTED")
                         }
                         ConnectionState.Disconnecting -> {
-                            Log.e("", "[DISCONNECTING]")
+                            LogUtil.logE("", "[DISCONNECTING]")
                         }
                         ConnectionState.Connecting -> {
-                            Log.e("", "[CONNECTING]")
+                            LogUtil.logE("", "[CONNECTING]")
 
                         }
                         else -> ""
@@ -1773,7 +1778,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
 //                ProgressUtils.dismissProgressDialog()
 
-                    Log.e("TransactionResult", "TransactionResult called")
+                    LogUtil.logE("TransactionResult", "TransactionResult called")
 
                     dismissDialog()
 
@@ -1825,11 +1830,11 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
     private fun magtekProPaymentCall() {
 
-        ProgressUtils.showProgressDialog(requireActivity())
+        ProgressUtils.showProgressDialog("Please tap, insert or swipe card", requireActivity())
         ProgressUtils.setCallback(this)
 
 
-        Log.e("mSessionManager", mSessionManager.isConnected.toString())
+        LogUtil.logE("mSessionManager", mSessionManager.isConnected.toString())
         if (mSessionManager.isConnected) {
             startTransaction()
         } else {
@@ -1901,7 +1906,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
     private fun createQueuePrinter(createOrder: CreateOrderResponse) {
         val listPrinter: List<Int> = listOf()
-        Log.e(TAG, "cartListcartList  ${Gson().toJson(cartList)}")
+        LogUtil.logE(TAG, "cartListcartList  ${Gson().toJson(cartList)}")
         if (cartList != null) {
             val orderRequest = cartList?.let {
 

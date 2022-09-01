@@ -134,7 +134,6 @@ class ManualSaleCartAdapter : RecyclerView.Adapter<ManualSaleCartAdapter.MyViewH
     @SuppressLint("NotifyDataSetChanged")
     fun addItem(model: TbItem) {
         this.list.add(model)
-        Log.e("TbListSize", "TbListSize ${list.size}")
         notifyDataSetChanged()
     }
 

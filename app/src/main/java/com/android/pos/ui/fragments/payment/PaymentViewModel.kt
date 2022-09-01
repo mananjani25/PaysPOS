@@ -19,6 +19,7 @@ import com.android.pos.data.repositories.PosRepository
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.fragments.magtek.PaymentResponse
 import com.android.pos.utils.Event
+import com.android.pos.utils.LogUtil
 import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.TimeFormatUtils
 import com.android.pos.utils.statusUtils.Resource
@@ -77,6 +78,8 @@ open class PaymentViewModel @Inject constructor(
 
     private val _orderCreate = MutableLiveData<Event<Boolean>>()
     val orderCreate: LiveData<Event<Boolean>> = _orderCreate
+
+    var serviceChargeListApplied : ArrayList<OrderServiceChargesAttribute> = arrayListOf()
 
     public var actual_Total: Double = 0.0
     public var actual_SubTotal: Double = 0.0
@@ -141,8 +144,8 @@ open class PaymentViewModel @Inject constructor(
                                     )
                                 }
 
-                                Log.e(TAG, "isOnlySave:  ${onlySave}")
-                                Log.e(
+                                LogUtil.logE(TAG, "isOnlySave:  ${onlySave}")
+                                LogUtil.logE(
                                     TAG,
                                     "IS_PRINTER_QUEUE_ENABLE  ${
                                         prefProvider.getValueboolean(
@@ -152,26 +155,26 @@ open class PaymentViewModel @Inject constructor(
                                     }"
                                 )
                                 if (prefProvider.getValueboolean(IS_PRINTER_QUEUE_ENABLE, false)) {
-                                    Log.e(TAG, "QueueStart")
+                                    LogUtil.logE(TAG, "QueueStart")
                                     _queueStartSaveOrder.value = Event(createOrderResponse)
                                 }
                                 if (onlySave) {
-                                    Log.e("QueueCheck", "OnlySave")
+                                    LogUtil.logE("QueueCheck", "OnlySave")
 
                                     _queueStart.value = Event(createOrderResponse)
 
                                 } else {
                                     if (createOrderResponse.data.order.orderType != "Dine In" && response.data.order.payments[response.data.order.payments.size - 1].paymentType != "Card") {
                                         cashLogApi(createOrderResponse, "in")
-                                        Log.e("QueueCheck", "CashLogAPI")
+                                        LogUtil.logE("QueueCheck", "CashLogAPI")
                                     } else {
                                         _data.value = Event(createOrderResponse)
-                                        Log.e("QueueCheck", "CreateOrderData")
+                                        LogUtil.logE("QueueCheck", "CreateOrderData")
                                     }
 
                                     if (createOrderResponse.data.order.orderType != "Dine In") {
                                         _queueStartTakeOut.value = Event(createOrderResponse)
-                                        Log.e("QueueCheck", "QueueStart")
+                                        LogUtil.logE("QueueCheck", "QueueStart")
                                     }
                                 }
 
@@ -314,11 +317,11 @@ open class PaymentViewModel @Inject constructor(
 
                         resource.data?.let {
 
-                            Log.e(
+                            LogUtil.logE(
                                 "INOUT : Total Amount",
                                 (order.payments[order.payments.size - 1].amount + order.payments[order.payments.size - 1].tips).toString()
                             )
-                            Log.e("INOUT : Total PayAmount", totalPayAmounts.toString())
+                            LogUtil.logE("INOUT : Total PayAmount", totalPayAmounts.toString())
 
 
                             if (order.payments.isNotEmpty()) {
@@ -510,7 +513,7 @@ open class PaymentViewModel @Inject constructor(
         }
 
 
-        Log.e(TAG, "openOrderType: " + cartModel.orderType)
+        LogUtil.logE(TAG, "openOrderType: " + cartModel.orderType)
         orderAttributeRequestModel.paymentStatus = if (isPaid) 1 else 0
         orderAttributeRequestModel.serviceChargeEnabled = true
         orderAttributeRequestModel.taxEnabled = true
@@ -560,13 +563,18 @@ open class PaymentViewModel @Inject constructor(
             null
         }
 
-        orderAttributeRequestModel.orderServiceChargesAttributes =
+        if (cartModel.orderType== DINE_IN){
+            orderAttributeRequestModel.orderServiceChargesAttributes = serviceChargeListApplied
+        }else{
+            orderAttributeRequestModel.orderServiceChargesAttributes =
             orderServiceChargesAttributes(cartModel, subTotalPrice)
+        }
+
+//
         if (cartModel.orderType == DINE_IN) {
             orderAttributeRequestModel.guestsAttributes = getGuestsAttributes(cartModel)
             orderAttributeRequestModel.orderItemsAttributes = dineInOrderItemAttributed(cartModel)
         } else {
-
             orderAttributeRequestModel.orderItemsAttributes = orderItemsAttributes(cartModel)
         }
 
@@ -576,12 +584,44 @@ open class PaymentViewModel @Inject constructor(
 
         val orderRequestModel = OrderRequestModel(isPaid, orderAttributeRequestModel)
 
-        Log.e("orderRequestModel", ":  ${Gson().toJson(orderRequestModel)}")
+        LogUtil.logE("orderRequestModel", ":  ${Gson().toJson(orderRequestModel)}")
 
         return orderRequestModel
     }
-
-
+    fun isInRange(minn: Int, maxx: Int, value: Int): Boolean {
+        return (minn <= value && value <= maxx)
+    }
+    fun dineInServiceChargeAppliedAttribute(cartModel: CartModel, subTotalPrice: Double): List<OrderServiceChargesAttribute> {
+        var guestCount = cartModel.dineInList?.size?.minus(1)
+        val orderServiceChargesAttributeList: java.util.ArrayList<OrderServiceChargesAttribute> =
+            arrayListOf()
+        if (prefProvider.getValueboolean(Constants.SERVICECHARGE_DINEIN_ORDER, false)) {
+            cartModel.dineInList?.get(0)!!.serviceChargeList?.forEach {
+                if (it.order_type == Constants.SERVICECHARGE_DINEIN_ORDER) {
+                    if (isInRange(
+                            it.min_guest_count!!,
+                            it.max_guest_count!!,
+                            guestCount!!
+                        )
+                    ) {
+                        val orderServiceChargesAttribute = OrderServiceChargesAttribute()
+                        orderServiceChargesAttribute.amount =
+                            MethodUtils.roundOffAmountDouble((subTotalPrice * it.percentage) / 100)
+                        orderServiceChargesAttribute.name = it.name
+                        orderServiceChargesAttribute.rate = it.percentage
+                        orderServiceChargesAttribute.serviceChargeId = it.id
+                        orderServiceChargesAttribute.order_type = it.order_type
+                        orderServiceChargesAttribute.max_guest_count = it.max_guest_count
+                        orderServiceChargesAttribute.min_guest_count = it.min_guest_count
+                        orderServiceChargesAttribute.serviceChargeId = it.id
+                        orderServiceChargesAttributeList.add(orderServiceChargesAttribute)
+                        return@forEach
+                    }
+                }
+            }
+        }
+        return orderServiceChargesAttributeList
+    }
     fun createOpenOrderRequest(
         cartModel: CartModel,
         subTotalPrice: Double,
@@ -629,7 +669,7 @@ open class PaymentViewModel @Inject constructor(
             if (isUpdateOrder) orderOfflineId.toString() else MethodUtils.randomOfflineId(
                 prefProvider.getValueInt(Constants.LOCATION_ID, -1).toString()
             )
-        Log.e(TAG, "openOrderType: " + cartModel.orderType)
+        LogUtil.logE(TAG, "openOrderType: " + cartModel.orderType)
         orderAttributeRequestModel.openOrderType = cartModel.orderType
         orderAttributeRequestModel.orderTypeId = cartModel.orderTypeId
         orderAttributeRequestModel.paymentStatus = if (isPaid) 1 else 0
@@ -698,8 +738,12 @@ open class PaymentViewModel @Inject constructor(
         } else {
             null
         }
-        orderAttributeRequestModel.orderServiceChargesAttributes =
-            orderServiceChargesAttributes(cartModel, subTotalPrice)
+        if (cartModel.orderType== DINE_IN){
+            orderAttributeRequestModel.orderServiceChargesAttributes = serviceChargeListApplied
+        }else{
+            orderAttributeRequestModel.orderServiceChargesAttributes =
+                orderServiceChargesAttributes(cartModel, subTotalPrice)
+        }
         if (cartModel.orderType == DINE_IN) {
             orderAttributeRequestModel.guestsAttributes = getGuestsAttributes(cartModel)
 
@@ -850,17 +894,21 @@ open class PaymentViewModel @Inject constructor(
             null
         }
 
-        orderAttributeRequestModel.orderServiceChargesAttributes =
-            orderServiceChargesAttributes(cartModel, subTotalPrice)
+        if (cartModel.orderType== DINE_IN){
+            orderAttributeRequestModel.orderServiceChargesAttributes = serviceChargeListApplied
+        }else{
+            orderAttributeRequestModel.orderServiceChargesAttributes =
+                orderServiceChargesAttributes(cartModel, subTotalPrice)
+        }
         if (cartModel.orderType == DINE_IN) {
             orderAttributeRequestModel.guestsAttributes = getGuestsAttributes(cartModel)
-            Log.e(
+            LogUtil.logE(
                 TAG,
                 "guestsAttributesData:  ${Gson().toJson(orderAttributeRequestModel.guestsAttributes)}"
             )
 
             orderAttributeRequestModel.orderItemsAttributes = dineInOrderItemAttributed(cartModel)
-            Log.e(
+            LogUtil.logE(
                 TAG,
                 "dineInOrderItemData:  ${Gson().toJson(orderAttributeRequestModel.orderItemsAttributes)}"
             )
@@ -875,7 +923,7 @@ open class PaymentViewModel @Inject constructor(
 
         val orderRequestModel = OrderRequestModel(isPaid, orderAttributeRequestModel)
 
-        Log.e("orderRequestModel", ":  ${Gson().toJson(orderRequestModel)}")
+        LogUtil.logE("orderRequestModel", ":  ${Gson().toJson(orderRequestModel)}")
 
         return orderRequestModel
     }
@@ -1060,7 +1108,7 @@ open class PaymentViewModel @Inject constructor(
         for (i in 0 until cartModel.dineInList?.size!!) {
             cartModel.dineInList?.get(i)?.items?.forEach { item ->
 
-                Log.e(TAG, "getItemDinefas  ${Gson().toJson(item)}")
+                LogUtil.logE(TAG, "getItemDinefas  ${Gson().toJson(item)}")
                 val orderItemsAttribute = OrderItemsAttribute()
 
                 if (isUpdateOrder && item.orderItemId != null)
@@ -1114,7 +1162,7 @@ open class PaymentViewModel @Inject constructor(
 
         val orderItemsAttributeList: ArrayList<OrderItemsAttribute> =
             arrayListOf()
-        Log.e(TAG, "insideSize  ${cartModel.items?.size}")
+        LogUtil.logE(TAG, "insideSize  ${cartModel.items?.size}")
 
         cartModel.items?.forEach { item ->
 
@@ -1170,7 +1218,7 @@ open class PaymentViewModel @Inject constructor(
 
             orderItemsAttributeList.add(orderItemsAttribute)
         }
-        Log.e(TAG, "orderItemsAttributeList:  ${Gson().toJson(orderItemsAttributeList)}")
+        LogUtil.logE(TAG, "orderItemsAttributeList:  ${Gson().toJson(orderItemsAttributeList)}")
         return orderItemsAttributeList
     }
 
@@ -1212,7 +1260,7 @@ open class PaymentViewModel @Inject constructor(
         val orderItemModifierAttributeList: ArrayList<OrderItemModifierAttribute> =
             arrayListOf()
 
-        Log.e(TAG, "getmodifiers:  ${Gson().toJson(item.modifiers)}")
+        LogUtil.logE(TAG, "getmodifiers:  ${Gson().toJson(item.modifiers)}")
         item.modifiers.forEach {
 
             val orderItemModifierAttribute = OrderItemModifierAttribute().apply {
@@ -1365,7 +1413,7 @@ open class PaymentViewModel @Inject constructor(
                     val itemTaxPrice =
                         (tax.rate * totalPrice) / 100
 
-                    Log.e("Tax Amount 1", itemTaxPrice.toString())
+                    LogUtil.logE("Tax Amount 1", itemTaxPrice.toString())
 
                     orderItemTaxesAttribute.taxTotalAmount =
                         MethodUtils.roundOffAmountDouble(itemTaxPrice)
@@ -1373,7 +1421,7 @@ open class PaymentViewModel @Inject constructor(
 
                     val ss = tax.rate * items.itemQuantity
 
-                    Log.e("Tax Amount", ss.toString())
+                    LogUtil.logE("Tax Amount", ss.toString())
 
                     orderItemTaxesAttribute.taxTotalAmount =
                         MethodUtils.roundOffAmountDouble((ss))
@@ -1392,7 +1440,7 @@ open class PaymentViewModel @Inject constructor(
     }
 
     private fun orderItemTaxesAttributesForDineIn(items: TbItem): List<OrderItemTaxesAttribute> {
-        Log.e(TAG, "getDineitems:  ${Gson().toJson(items)}")
+        LogUtil.logE(TAG, "getDineitems:  ${Gson().toJson(items)}")
 
         val orderItemTaxesAttributeList: ArrayList<OrderItemTaxesAttribute> =
             arrayListOf()
@@ -1490,21 +1538,6 @@ open class PaymentViewModel @Inject constructor(
                     orderServiceChargesAttribute.rate = it.percentage
                     orderServiceChargesAttribute.serviceChargeId = it.id
                     orderServiceChargesAttribute.order_type = it.order_type
-                    if (isUpdateOrder && it.order_service_charge_id != null)
-                        orderServiceChargesAttribute.id = it.order_service_charge_id
-                    orderServiceChargesAttributeList.add(orderServiceChargesAttribute)
-                }
-            } else if (prefProvider.getValueboolean(Constants.SERVICECHARGE_DINEIN_ORDER, false)) {
-                serviceChargesList.forEach {
-                    val orderServiceChargesAttribute = OrderServiceChargesAttribute()
-                    orderServiceChargesAttribute.amount =
-                        MethodUtils.roundOffAmountDouble((subTotalPrice * it.percentage) / 100)
-                    orderServiceChargesAttribute.name = it.name
-                    orderServiceChargesAttribute.rate = it.percentage
-                    orderServiceChargesAttribute.serviceChargeId = it.id
-                    orderServiceChargesAttribute.order_type = it.order_type
-                    orderServiceChargesAttribute.max_guest_count = it.max_guest_count
-                    orderServiceChargesAttribute.min_guest_count = it.min_guest_count
                     if (isUpdateOrder && it.order_service_charge_id != null)
                         orderServiceChargesAttribute.id = it.order_service_charge_id
                     orderServiceChargesAttributeList.add(orderServiceChargesAttribute)
@@ -1625,15 +1658,15 @@ open class PaymentViewModel @Inject constructor(
                     magensaResponse,
                     PaymentResponse.PaymentResponseItem::class.java
                 )
-                Log.e("magensaResponse", Gson().toJson(model))
+                LogUtil.logE("magensaResponse", Gson().toJson(model))
 
 
                 if (model.dataOutput != null) {
-                    Log.e("dataOutput", Gson().toJson(model))
+                    LogUtil.logE("dataOutput", Gson().toJson(model))
                     cardNumber = model.dataOutput.PANLast4
                     var cardN = ""
                     model.dataOutput.additionalOutputData?.forEach {
-                        Log.e("additionalOutputData", it.key)
+                        LogUtil.logE("additionalOutputData", it.key)
                         if (it.key == "CardType") {
                             cardN = it.value
                         }
@@ -1644,7 +1677,7 @@ open class PaymentViewModel @Inject constructor(
                 }
 
                 if (model.cardSwipeOutput != null) {
-                    Log.e("cardSwipeOutput", Gson().toJson(model))
+                    LogUtil.logE("cardSwipeOutput", Gson().toJson(model))
                     cardNumber = model.cardSwipeOutput.pANLast4
                     var cardN = ""
                     model.cardSwipeOutput.additionalOutputData?.forEach {
@@ -1732,7 +1765,7 @@ open class PaymentViewModel @Inject constructor(
 
         totalPayAmounts = MethodUtils.roundOffAmountDouble(paymentAmount)
 
-        Log.e("totalPayAmounts::", totalPayAmounts.toString())
+        LogUtil.logE("totalPayAmounts::", totalPayAmounts.toString())
     }
 
     fun saveOrder(isSave: Boolean) {
@@ -1830,7 +1863,7 @@ open class PaymentViewModel @Inject constructor(
         createOrder: CreateOrderResponse
     ) {
         _showProgress.value = Event(true)
-        Log.e(
+        LogUtil.logE(
             "CreateOrderRequest",
             "createQueuePrinterModel  ${Gson().toJson(createQueuePrinterModel)}"
         )
@@ -1882,5 +1915,10 @@ open class PaymentViewModel @Inject constructor(
         prefProvider.setValueboolean(Constants.IS_UPDATE_ORDER_LOYALTY_APPLIED, false)
 
 
+    }
+
+    @JvmName("setServiceChargeListApplied1")
+    fun setServiceChargeListApplied(temp_serviceChargeApplied:ArrayList<OrderServiceChargesAttribute>) {
+        this.serviceChargeListApplied = temp_serviceChargeApplied
     }
 }

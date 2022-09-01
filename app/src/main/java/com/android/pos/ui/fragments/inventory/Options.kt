@@ -20,6 +20,7 @@ import com.android.pos.R
 import com.android.pos.databinding.FragmentOptionsBinding
 import com.android.pos.ui.adapter.OptionListAdapter
 import com.android.pos.utils.AlertUtils
+import com.android.pos.utils.LogUtil
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.callback.ItemCallback
 import com.android.pos.utils.extensions.alert
@@ -124,7 +125,7 @@ class Options(val clickedPosition: Int) : Fragment(), TextWatcher,ItemCallback {
                 ): Boolean {
                     val oldPos = viewHolder.layoutPosition
                     val newPos = target.layoutPosition
-                    Log.e(
+                    LogUtil.logE(
                         "reorder after",
                         viewHolder.layoutPosition.toString() + " :::  " + target.layoutPosition.toString()
                     )

@@ -8,6 +8,7 @@ import com.android.pos.data.model.responseModel.OnlineOrderResponseModel
 import com.android.pos.data.model.responseModel.OpenOrderResponse
 import com.android.pos.databinding.ViewOnlineOrderItemModifiersBinding
 import com.android.pos.databinding.ViewOpenOrderItemModifiersBinding
+import com.android.pos.utils.LogUtil
 import com.android.pos.utils.MethodUtils
 import com.google.gson.Gson
 
@@ -19,7 +20,7 @@ class OnlineOrderItemModifierAdapter :
     inner class MyViewHolder(private val binding: ViewOnlineOrderItemModifiersBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(item: OnlineOrderResponseModel.Data.OrderItem.OrderItemModifier) {
-            Log.e(TAG,"ModifierItem:  ${Gson().toJson(item)}")
+            LogUtil.logE(TAG,"ModifierItem:  ${Gson().toJson(item)}")
 
             binding.txtPrice.text = MethodUtils.roundOffAmount(item.price)
             binding.txtCustomerName.text = MethodUtils.roundOffAmount(item.price * item.quantity)

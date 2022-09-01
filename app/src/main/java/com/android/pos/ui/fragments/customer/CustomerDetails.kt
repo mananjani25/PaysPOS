@@ -21,6 +21,7 @@ import com.android.pos.ui.adapter.OrderHistoryAdapter
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.EventObserver
+import com.android.pos.utils.LogUtil
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.extensions.gone
 import com.android.pos.utils.extensions.liveSnackBar
@@ -224,7 +225,7 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
         viewModel.orderResponse.observe(viewLifecycleOwner, EventObserver { order ->
             //reorder
             prefProvider.setValue(Constants.ORDER_TYPE, Constants.TAKEOUT)
-            Log.e("!_@_", "customer details ${order.orderType}")
+            LogUtil.logE("!_@_", "customer details ${order.orderType}")
             if (order.orderItems.size == 1) {
                 if (listOfItemsId.contains(order.orderItems[0].itemId)) {
                     if (order.customer != null) {

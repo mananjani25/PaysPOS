@@ -42,4 +42,6 @@ class ModifierSet : Parcelable {
     @SerializedName("sort")
     var sort: Int = 0
 
+    @SerializedName("is_deleted")
+    var isDeleted: Boolean = false
 }

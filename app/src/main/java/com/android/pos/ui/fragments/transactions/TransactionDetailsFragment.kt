@@ -26,6 +26,7 @@ import com.android.pos.data.model.responseModel.GetOrderDetailsResponse
 import com.android.pos.data.model.responseModel.GetTipReponse
 import com.android.pos.data.model.responseModel.PrinterResponse
 import com.android.pos.data.remote.Constants
+import com.android.pos.data.remote.Constants.DINE_IN
 import com.android.pos.data.remote.Constants.KEY
 import com.android.pos.data.remote.Constants.SHIPPING_ADDRESS
 import com.android.pos.data.remote.Constants.SUNMI_INNER_PRINTER
@@ -131,37 +132,6 @@ class TransactionDetailsFragment : Fragment() {
         return binding.root
     }
 
-    private fun getServiceCharge() {
-        viewModel.serviceCharges.observe(requireActivity()) {
-            if (paymentDetailsResponse.data.order.order_type == Constants.DINE_IN) {
-//                if (prefProvider.getValueboolean(
-//                        Constants.SERVICECHARGE_DINEIN_ORDER,
-//                        false
-//                    )
-//                ) {
-                serviceChargesList = arrayListOf()
-                serviceChargesList = it.data as ArrayList<TbServiceCharge>?
-//                }
-            } else {
-//                if (prefProvider.getValueboolean(
-//                        Constants.SERVICECHARGE_TAKEOUT_OPENORDER,
-//                        false
-//                    )
-//                ) {
-                serviceChargesList = arrayListOf()
-                Log.e(TAG, "getServiceCharge:  ${Gson().toJson(it.data)}")
-                it.data?.forEach { service ->
-                    if (service.order_type == Constants.SERVICECHARGE_TAKEOUT_OPENORDER) {
-                        serviceChargesList?.add(service)
-                    }
-                }
-
-//                }
-            }
-
-
-        }
-    }
 
     private fun setUpRecyclerView() {
         orderDetailsItemAdapter = OrderDetailsItemListAdapter()
@@ -365,6 +335,7 @@ class TransactionDetailsFragment : Fragment() {
                         context
                     )
 
+
                 binding.tvTransactionTime.text =
                     convertCurrentTime(
                         it.data.order.created_at,
@@ -378,6 +349,36 @@ class TransactionDetailsFragment : Fragment() {
                 if (it.data.order.note.isNotEmpty()) {
                     binding.llNotes.visibility = View.VISIBLE
                     binding.tvNote.text = it.data.order.note.toString()
+                }
+                if (it.data.service_charge_details.isNotEmpty()) {
+                    serviceChargesList = arrayListOf()
+                    var serviceOrderType = ""
+                    if (it.data.order.order_type == DINE_IN) {
+                        serviceOrderType = Constants.SERVICECHARGE_DINEIN_ORDER
+                    } else {
+                        serviceOrderType = Constants.SERVICECHARGE_TAKEOUT_OPENORDER
+                    }
+                    it.data.service_charge_details.forEach { service ->
+                        var data: TbServiceCharge = TbServiceCharge(
+                            id = service.id!!,
+                            order_service_charge_id = service.serviceChargeId,
+                            name = service.name,
+                            percentage = service.rate,
+                            createdAt = service.created_at.toString(),
+                            updatedAt = service.updated_at,
+                            min_guest_count = service.min_guest_count,
+                            max_guest_count = service.max_guest_count,
+                            isChecked = true,
+                            isActive = true,
+                            isEnabled = true,
+                            order_type = serviceOrderType,
+                            locationId = it.data.order.location_id
+                        )
+                        serviceChargesList?.add(data)
+                    }
+
+                }else{
+                    serviceChargesList = arrayListOf()
                 }
 
                 if (it.data.order.customer != null) {
@@ -582,7 +583,7 @@ class TransactionDetailsFragment : Fragment() {
                 }
 
 
-                getServiceCharge()
+
 
                 ProgressUtils.dismissProgressDialog()
             }
@@ -635,7 +636,6 @@ class TransactionDetailsFragment : Fragment() {
             } else {
                 val itemTaxPrice =
                     (orderItemTaxe.rate * totalPrice) / 100
-                Log.e("itemTaxPrice", "" + itemTaxPrice)
                 String.format("%.2f", itemTaxPrice)
                     .toDouble()
             }
@@ -762,7 +762,6 @@ class TransactionDetailsFragment : Fragment() {
         } else {
 
             viewLifecycleOwner.lifecycleScope.launch {
-                Log.e(TAG, "getPrinter:  ${PrinterClass.getPrinter()}")
                 PrinterClass.closePrinter()
                 if (PrinterClass.getPrinter() == null) {
                     var printer: Print? = Print(requireContext())
@@ -792,7 +791,7 @@ class TransactionDetailsFragment : Fragment() {
                         // printer?.setStatusChangeEventCallback(this)
 
                     } catch (e: Exception) {
-                        Log.e(TAG, "PrinterException: " + e.message)
+                        LogUtil.logE(TAG, "PrinterException: " + e.message)
                         printer = null
                         return@launch
                     }
@@ -809,7 +808,7 @@ class TransactionDetailsFragment : Fragment() {
                         e.printStackTrace()
                     }
                 } else {
-                    Log.e(TAG, "PrinterIsNotNull:")
+                    LogUtil.logE(TAG, "PrinterIsNotNull:")
                 }
             }
         }
@@ -820,11 +819,11 @@ class TransactionDetailsFragment : Fragment() {
     ) {
         if (SunmiPrintHelper.getInstance().sunmiPrinter == SunmiPrintHelper.FoundSunmiPrinter) {
 
-            Log.e("SunmiPrintHelper1", "FoundSunmiPrinter")
+            LogUtil.logE("SunmiPrintHelper1", "FoundSunmiPrinter")
 
             if (!BluetoothUtil.isBlueToothPrinter) {
 
-                Log.e("SunmiPrintHelpe1r", "isBlueToothPrinter")
+                LogUtil.logE("SunmiPrintHelpe1r", "isBlueToothPrinter")
 
                 generateInnerPrintSunmi()
 
@@ -836,12 +835,12 @@ class TransactionDetailsFragment : Fragment() {
                 setService(
                 )
             }, 2000)
-            Log.e("SunmiPrintHelper", "CheckSunmiPrinter")
+            LogUtil.logE("SunmiPrintHelper", "CheckSunmiPrinter")
         } else if (SunmiPrintHelper.getInstance().sunmiPrinter == SunmiPrintHelper.LostSunmiPrinter) {
 
-            Log.e("SunmiPrintHelper", "LostSunmiPrinter")
+            LogUtil.logE("SunmiPrintHelper", "LostSunmiPrinter")
         } else {
-            Log.e("SunmiPrintHelper", "ELSE")
+            LogUtil.logE("SunmiPrintHelper", "ELSE")
         }
     }
 
@@ -862,7 +861,7 @@ class TransactionDetailsFragment : Fragment() {
                     }, PrinterClass.language, requireActivity()
                 )
 
-            Log.e(TAG, "getVanueLogo:  ${prefProvider.getValue(Constants.VENUE_LOGO, "")}")
+            LogUtil.logE(TAG, "getVanueLogo:  ${prefProvider.getValue(Constants.VENUE_LOGO, "")}")
 
             if (customerSettingModel.showOrderIdTop) {
                 builder.addFeedLine(1)
@@ -1047,16 +1046,6 @@ class TransactionDetailsFragment : Fragment() {
                     )
 
 
-                    Log.e(TAG, "created_atDate:  ${paymentDetailsResponse?.data.order.created_at}")
-                    Log.e(
-                        TAG,
-                        "ConvertDateTime:  ${
-                            Constants.getReceiptFormatDateFromUTCServer(
-                                requireContext(),
-                                paymentDetailsResponse?.data.order.created_at.toString()
-                            )
-                        }"
-                    )
                     builder.addText(
                         "Order Time:" + Constants.getReceiptFormatDateFromUTCServer(
                             requireContext(),
@@ -1168,14 +1157,7 @@ class TransactionDetailsFragment : Fragment() {
                         Builder.COLOR_1
                     )
 
-                    Log.e(
-                        TAG, "getOrderTimeDate:  ${
-                            Constants.getReceiptFormatDateFromUTCServer(
-                                requireContext(),
-                                paymentDetailsResponse?.data.order?.created_at.toString()
-                            )
-                        }"
-                    )
+
 
                     builder.addText(
                         padLine(
@@ -1836,10 +1818,7 @@ class TransactionDetailsFragment : Fragment() {
 
 
                 if (paymentDetailsResponse?.data.order?.customer != null) {
-                    Log.e(
-                        TAG,
-                        "paymentDetailsResponse:  ${Gson().toJson(paymentDetailsResponse?.data.order?.customer)}"
-                    )
+
 
                     builder.addFeedLine(1)
                     builder.addTextLineSpace(30)
@@ -1907,7 +1886,6 @@ class TransactionDetailsFragment : Fragment() {
                                     paymentDetailsResponse?.data?.order?.customer.phones?.size - 1
                                 ).phoneNumber
                             )
-                            Log.e(TAG, "phoneNoFormatted:  ${phoneNoFormatted}")
                             builder.addText(phoneNoFormatted)
 
                         }
@@ -2010,8 +1988,6 @@ class TransactionDetailsFragment : Fragment() {
                 builder.addTextAlign(Builder.ALIGN_CENTER)
                 val bitmap =
                     generateQRCode(paymentDetailsResponse?.data.order?.digital_receipt_url.toString())
-                Log.e(TAG, "BitmapHeight ${bitmap.height}")
-                Log.e(TAG, "BitmapWidth ${bitmap.width}")
                 val newBitmap = Bitmap.createScaledBitmap(bitmap, 210, 210, true)
                 builder.addImage(
                     newBitmap, 0, 0,
@@ -2040,7 +2016,7 @@ class TransactionDetailsFragment : Fragment() {
             } catch (e: Exception) {
                 PrinterClass.closePrinter()
                 e.printStackTrace()
-                Log.e(TAG, "PrinterError: " + e.localizedMessage)
+                LogUtil.logE(TAG, "PrinterError: " + e.localizedMessage)
             }
 
 

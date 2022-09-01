@@ -38,10 +38,7 @@ import com.android.pos.databinding.DialogPayByGuestBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.ui.fragments.dinein.DineInOrderTableViewModel
 import com.android.pos.ui.fragments.payment.PaymentViewModel
-import com.android.pos.utils.AlertUtils
-import com.android.pos.utils.MethodUtils
-import com.android.pos.utils.ProgressUtils
-import com.android.pos.utils.TimeFormatUtils
+import com.android.pos.utils.*
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 import kotlin.math.ceil
@@ -136,9 +133,9 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
         wholePaymentObservor()
         isTotalPayment = requireArguments().getBoolean("isTotalPayment")
         isLastPayment = requireArguments().getBoolean("isLastPayment")
-        Log.e(TAG, "isLastPayment:  ${isLastPayment}")
+        LogUtil.logE(TAG, "isLastPayment:  ${isLastPayment}")
         totalPrice = requireArguments().getDouble("totalPrice")
-        Log.e(TAG, "totalPrice:  ${totalPrice}")
+        LogUtil.logE(TAG, "totalPrice:  ${totalPrice}")
         subTotalPrice = requireArguments().getDouble("subTotalPrice")
         totalServiceCharge = requireArguments().getDouble("totalServiceCharge")
         divideCashDiscount = requireArguments().getDouble("divideCashDiscount")
@@ -364,7 +361,7 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
 
         getCashPaymentOptionList(_totalPrice + tipAmount)
         MethodUtils.setPriceTextView(binding.txtTipAmt, tipAmount)
-        Log.e(TAG, "_totalPrice:  ${_totalPrice}")
+        LogUtil.logE(TAG, "_totalPrice:  ${_totalPrice}")
         MethodUtils.setPriceTextView(binding.txtTotal, cardPaymentAmount + tipAmount)
         cardPaymentAmount += tipAmount
         binding.txtCardAmount.text =
@@ -550,7 +547,7 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
     }
 
     private fun gotoPay() {
-        Log.e(TAG, "HEREGOTOPAY")
+        LogUtil.logE(TAG, "HEREGOTOPAY")
 
 
         orderId?.let { prefProvider.setValueInt("ORDER_ID", it) }
@@ -2152,12 +2149,12 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
 
     @SuppressLint("SetTextI18n")
     private fun getCashPaymentOptionList(totalPrice: Double) {
-        Log.e(TAG, "totalPrice  $totalPrice")
+        LogUtil.logE(TAG, "totalPrice  $totalPrice")
         secondValue = floor(totalPrice + 1).toInt()
-        Log.e(TAG, "secondValue  $secondValue")
+        LogUtil.logE(TAG, "secondValue  $secondValue")
         val newVal = totalPrice + 1
         thirdValue = calculateCashOption(newVal)
-        Log.e(TAG, "thirdValuatedValue:   $thirdValue")
+        LogUtil.logE(TAG, "thirdValuatedValue:   $thirdValue")
         if (secondValue.toDouble() == thirdValue) {
             if (secondValue > 1000) {
                 thirdValue += 100
@@ -2212,14 +2209,14 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
                 500
             )
             val myValue = value.toInt()
-            Log.e(TAG, "myValue:  ${myValue}")
+            LogUtil.logE(TAG, "myValue:  ${myValue}")
             var searchIndex: Int = -1
             val filterValue = arrAmount.filter {
                 it >= value
             }.first()
             searchIndex = arrAmount.indexOf(filterValue)
-            Log.e(TAG, "filterValue:  ${filterValue}")
-            Log.e(TAG, "searchIndex:  ${searchIndex}")
+            LogUtil.logE(TAG, "filterValue:  ${filterValue}")
+            LogUtil.logE(TAG, "searchIndex:  ${searchIndex}")
 
             /* arrAmount.forEachIndexed { index, i ->
                  if (i >= value) {
@@ -2268,7 +2265,7 @@ open class PayByGuestDialog : Fragment(), View.OnClickListener {
     private fun navigateOnPaymentSuccess() {
         viewModel.onPayment.observe(viewLifecycleOwner, { event ->
             event.getContentIfNotHandled()?.let { str ->
-                Log.e(TAG, "getstr:   $str")
+                LogUtil.logE(TAG, "getstr:   $str")
                 /*AlertUtils.showCustomAlertWithListenerWithOK(requireContext(), str) { _, _ ->*/
 
 
