@@ -136,6 +136,7 @@
                     android:paddingHorizontal="@dimen/_5sdp"
                     android:paddingVertical="@dimen/_5sdp"
                     android:text="Complete"
+                    android:fontFamily="@font/sf_pro_display_bold"
                     android:layout_marginEnd="@dimen/_15sdp"
                     android:gravity="center"
                     android:layout_gravity="center_vertical"
@@ -230,6 +231,7 @@
                     android:paddingVertical="@dimen/_5sdp"
                     android:text="Accept"
                     android:gravity="center"
+                    android:fontFamily="@font/sf_pro_display_bold"
                     android:layout_gravity="center_vertical"
                     android:textColor="@color/green_pay_total"
                     android:background="@drawable/whiteborder_with_transparent"
@@ -246,6 +248,7 @@
                     android:gravity="center"
                     android:layout_gravity="center_vertical"
                     android:textColor="@color/colorRed"
+                    android:fontFamily="@font/sf_pro_display_bold"
                     android:background="@drawable/whiteborder_with_transparent"
                     android:layout_height="wrap_content"
                      />
