@@ -193,6 +193,7 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
                 itemlist.data.forEach { it ->
                     listOfItemsId.add(it.itemId)
                 }
+                listOfItemsId.add(1)
             }
         }
         viewModel.showProgress.observe(viewLifecycleOwner) { event ->
@@ -237,7 +238,7 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
                         prefProvider.setValueInt(Constants.CUSTOMER_ID, order.customer.id)
                         prefProvider.saveCustomerData(TbCustomer.customerMapping(order.customer))
                     }
-
+                    Log.e(TAG,"getOrderReOrder  ${Gson().toJson(order)}")
                     dashboardViewModel.addCart(
                         cartModel(order)
                     )
@@ -264,6 +265,7 @@ class CustomerDetails : Fragment(), OrderHistoryAdapter.MyOnclickedListner {
                     prefProvider.saveCustomerData(TbCustomer.customerMapping(order.customer))
                 }
 
+                Log.e(TAG,"getOrderReOrder7  ${Gson().toJson(order)}")
                 dashboardViewModel.addCart(
                     cartModel(order)
                 )

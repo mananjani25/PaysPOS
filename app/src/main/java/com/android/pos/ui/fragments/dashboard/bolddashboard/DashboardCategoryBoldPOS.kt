@@ -168,7 +168,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
 
                 if (requireActivity().supportFragmentManager.findFragmentById(R.id.frameLayout)?.javaClass?.name.equals(
-                        "com.android.pos.ui.fragments.dashboard.bolddashboard.AddItemFragment",true
+                        "com.android.pos.ui.fragments.dashboard.bolddashboard.AddItemFragment", true
                     )
                 ) {
 
@@ -383,8 +383,6 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-
-
         onClick()
         if (prefProvider.getValueboolean(ONLINE_ORDER_ENABLE, false)) {
             binding.layoutHeader.linearOnlineorder?.visible()
@@ -650,6 +648,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
 
     override fun onItemSelected(item: TbItem) {
+        Log.e(TAG,"onItemSelectedItem:  ${Gson().toJson(item)}")
 
         if (cartList.isEmpty() && viewModel.cartModel != null) {
             cartList = arrayListOf()

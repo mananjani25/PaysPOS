@@ -118,7 +118,10 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
         val callback: OnBackPressedCallback =
             object : OnBackPressedCallback(true) {
                 override fun handleOnBackPressed() {
-                    LogUtil.logE(TAG, "splitAmountValue  ${prefProvider.getValue(SPLIT_PAY_AMOUNT, "")}")
+                    LogUtil.logE(
+                        TAG,
+                        "splitAmountValue  ${prefProvider.getValue(SPLIT_PAY_AMOUNT, "")}"
+                    )
                     if (prefProvider.getValue(SPLIT_PAY_AMOUNT, "") == "") {
                         prefProvider.setValue(SPLIT_PAY_AMOUNT, "")
                         prefProvider.setValueInt(SPLIT_NO, -1)
@@ -854,7 +857,10 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
 
             R.id.imgBack -> {
 
-                LogUtil.logE(TAG, "splitAmountValue  ${prefProvider.getValue(SPLIT_PAY_AMOUNT, "")}")
+                LogUtil.logE(
+                    TAG,
+                    "splitAmountValue  ${prefProvider.getValue(SPLIT_PAY_AMOUNT, "")}"
+                )
                 if (prefProvider.getValue(SPLIT_PAY_AMOUNT, "") == "") {
                     prefProvider.setValue(SPLIT_PAY_AMOUNT, "")
                     prefProvider.setValueInt(SPLIT_NO, -1)
@@ -1605,6 +1611,7 @@ open class PaymentFragment : Fragment(), View.OnClickListener {
 
         viewModel.showProgress.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
+                LogUtil.logE("observeShowProgress4", it.toString())
                 if (it) {
                     ProgressUtils.showProgressDialog(requireActivity())
                 } else {

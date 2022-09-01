@@ -74,7 +74,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
     private lateinit var binding: FragmentCheckoutDetailsNewBinding
     private val TAG = "DashboardCategoryBold"
 
-    var serviceChargeAppliedList:ArrayList<OrderServiceChargesAttribute> = arrayListOf()
+    var serviceChargeAppliedList: ArrayList<OrderServiceChargesAttribute> = arrayListOf()
 
     private var requestCancel: Boolean = false
     private var orderId: Int? = null
@@ -204,6 +204,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
         callback()
         setUpManualCardFocusChanged()
     }
+
     private fun setUpManualCardFocusChanged() {
         binding.edtCardNumber.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
@@ -216,7 +217,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
 
             override fun afterTextChanged(s: Editable?) {
                 try {
-                    if(s?.length==22){
+                    if (s?.length == 22) {
                         binding.edtMMYY.requestFocus()
                     }
                 } catch (e: Exception) {
@@ -234,9 +235,9 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
 
             override fun afterTextChanged(s: Editable?) {
                 try {
-                    if(s?.length==5){
+                    if (s?.length == 5) {
                         binding.edtCVV.requestFocus()
-                    }else if(s?.length==0){
+                    } else if (s?.length == 0) {
                         binding.edtCardNumber.requestFocus()
                     }
                 } catch (e: Exception) {
@@ -254,7 +255,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
 
             override fun afterTextChanged(s: Editable?) {
                 try {
-                    if(s?.length==0){
+                    if (s?.length == 0) {
                         binding.edtMMYY.requestFocus()
                     }
                 } catch (e: Exception) {
@@ -262,6 +263,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
             }
         })
     }
+
     @SuppressLint("SetTextI18n")
     private fun callback() {
         requireActivity().supportFragmentManager.setFragmentResultListener(
@@ -737,6 +739,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
 
         paymentviewModel.showProgress.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
+                LogUtil.logE("observeShowProgress1", it.toString())
                 if (it) {
                     ProgressUtils.showProgressDialog(requireActivity())
                 } else {
@@ -1868,7 +1871,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
 
     private fun networkCall(jsonArray1: JsonArray?, i: Int) {
 
-        ProgressUtils.showProgressDialog(requireActivity())
+        ProgressUtils.showProgressDialog("Please wait payment under process", requireActivity())
 
         var call: Call<PaymentResponse>? = null
         when (i) {
@@ -2062,7 +2065,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
 
     private fun magtekProPaymentCall() {
 
-        ProgressUtils.showProgressDialog(requireActivity())
+        ProgressUtils.showProgressDialog("Please tap, insert or swipe card", requireActivity())
         ProgressUtils.setCallback(this)
 
 

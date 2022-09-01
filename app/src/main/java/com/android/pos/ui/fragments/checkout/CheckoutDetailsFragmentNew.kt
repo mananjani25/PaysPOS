@@ -163,15 +163,15 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
     }
 
     private fun setUpManualCardFocusChanged() {
-        binding.edtCardNumber.addTextChangedListener(object :TextWatcher{
+        binding.edtCardNumber.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
 
             }
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
                 try {
-                    Log.e(TAG,"checkMSfsLOnT ${s?.length}")
-                    if(s?.length==22){
+                    Log.e(TAG, "checkMSfsLOnT ${s?.length}")
+                    if (s?.length == 22) {
                         binding.edtMMYY.requestFocus()
                     }
 
@@ -182,8 +182,8 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
             override fun afterTextChanged(s: Editable?) {
                 try {
-                    Log.e(TAG,"checkMSfsL ${s?.length}")
-                    if(s?.length == 22){
+                    Log.e(TAG, "checkMSfsL ${s?.length}")
+                    if (s?.length == 22) {
                         binding.edtMMYY.requestFocus()
                     }
 
@@ -191,7 +191,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                 }
             }
         })
-        binding.edtMMYY.addTextChangedListener(object :TextWatcher{
+        binding.edtMMYY.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
 
             }
@@ -202,17 +202,17 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
             override fun afterTextChanged(s: Editable?) {
                 try {
-                    Log.e(TAG,"CheckYYLength ${s?.length}")
-                    if(s?.length==5){
+                    Log.e(TAG, "CheckYYLength ${s?.length}")
+                    if (s?.length == 5) {
                         binding.edtCVV.requestFocus()
-                    }else if(s?.length==0){
+                    } else if (s?.length == 0) {
                         binding.edtCardNumber.requestFocus()
                     }
                 } catch (e: Exception) {
                 }
             }
         })
-        binding.edtCVV.addTextChangedListener(object :TextWatcher{
+        binding.edtCVV.addTextChangedListener(object : TextWatcher {
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
 
             }
@@ -223,7 +223,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
             override fun afterTextChanged(s: Editable?) {
                 try {
-                    if(s?.length==0){
+                    if (s?.length == 0) {
                         binding.edtMMYY.requestFocus()
                     }
                 } catch (e: Exception) {
@@ -771,8 +771,13 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
         paymentviewModel.showProgress.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
+
+                LogUtil.logE("observeShowProgress", it.toString())
                 if (it) {
-                    ProgressUtils.showProgressDialog(requireActivity())
+                    ProgressUtils.showProgressDialog(
+                        "Please wait payment under process",
+                        requireActivity()
+                    )
                 } else {
                     ProgressUtils.dismissProgressDialog()
                 }
@@ -1621,7 +1626,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
     private fun networkCall(jsonArray1: JsonArray?, i: Int) {
 
-        ProgressUtils.showProgressDialog(requireActivity())
+        ProgressUtils.showProgressDialog("Please wait payment under process", requireActivity())
 
         var call: Call<PaymentResponse>? = null
         when (i) {
@@ -1825,7 +1830,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
     private fun magtekProPaymentCall() {
 
-        ProgressUtils.showProgressDialog(requireActivity())
+        ProgressUtils.showProgressDialog("Please tap, insert or swipe card", requireActivity())
         ProgressUtils.setCallback(this)
 
 

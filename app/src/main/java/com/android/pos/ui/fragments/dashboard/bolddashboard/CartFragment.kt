@@ -731,7 +731,7 @@ class CartFragment(
                     binding.txtServiceCharge.text =
                         MethodUtils.roundOffAmount(viewModel.totalServiceCharge)
                     binding.tvPayNow.text = "Pay " + binding.txtTotal.text.toString()
-                    LogUtil.logE("totalDiscount", viewModel.totalDiscount.toString())
+                    Log.e("totalDiscount", viewModel.totalDiscount.toString())
                     binding.txtDiscount.text = "-" +
                             MethodUtils.roundOffAmount(viewModel.totalDiscount)
                     binding.txtNoncashAdj.text =
@@ -1058,7 +1058,7 @@ class CartFragment(
                         binding.rvCartList.visible()
 
                         if (it.isNotEmpty()) {
-                            LogUtil.logE("mAllWords", "listSize ITEM ${it.get(0).items?.size}")
+                            Log.e("mAllWords", "listSize ITEM ${it.get(0).items?.size}")
                             viewModel.destroyedList.clear()
                             it[0].items?.filter { item -> item.isDestroy }?.let {
                                 viewModel.destroyedList.addAll(it)
@@ -1096,7 +1096,7 @@ class CartFragment(
                                 filterItems.addAll(it!!.toCollection(arrayListOf()))
                             }
 
-                            LogUtil.logE("mAllWords", "filterItems  ${filterItems.size}")
+                            Log.e("mAllWords", "filterItems  ${filterItems.size}")
                             cartAdapter.setList(filterItems)
 
                             cartlist = it as ArrayList<CartModel>
@@ -1119,7 +1119,7 @@ class CartFragment(
                             binding.txtServiceCharge.text =
                                 MethodUtils.roundOffAmount(viewModel.totalServiceCharge)
                             binding.tvPayNow.text = "Pay " + binding.txtTotal.text.toString()
-                            LogUtil.logE("totalDiscount", viewModel.totalDiscount.toString())
+                            Log.e("totalDiscount", viewModel.totalDiscount.toString())
                             binding.txtDiscount.text =
                                 "-" + MethodUtils.roundOffAmount(viewModel.totalDiscount)
                             binding.txtNoncashAdj.text =
@@ -1171,8 +1171,8 @@ class CartFragment(
                                             resources.getDimension(R.dimen._70sdp).toInt()
                                         binding.relativeLoylatyPoints.visibility = View.VISIBLE
                                         binding.lblLoyaltyPoints.visibility = View.VISIBLE
-                                        LogUtil.logE(TAG, "InsideLoyalty")
-                                        LogUtil.logE(TAG, Gson().toJson(viewModel.redeemLoyaltyInfo))
+                                        Log.e(TAG, "InsideLoyalty")
+                                        Log.e(TAG, Gson().toJson(viewModel.redeemLoyaltyInfo))
                                         binding.txtLoyaltyAmount.text =
                                             "- $${
                                                 String.format(
@@ -1277,8 +1277,9 @@ class CartFragment(
         if (view != null) {
             viewModelPayment.showProgress.observe(viewLifecycleOwner) { event ->
                 event.getContentIfNotHandled()?.let {
+                    LogUtil.logE("observeShowProgress3", it.toString())
                     if (it) {
-                        ProgressUtils.showProgressDialog(requireActivity())
+                        ProgressUtils.showProgressDialog("Please wait payment under process",requireActivity())
                     } else {
                         ProgressUtils.dismissProgressDialog()
                     }

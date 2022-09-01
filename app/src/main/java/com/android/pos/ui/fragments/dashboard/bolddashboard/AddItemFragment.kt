@@ -428,6 +428,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
         }
 
         binding.txtRemoveItem.setOnClickListener {
+            Log.e(TAG,"getDeleteItem  ${Gson().toJson(item)}")
             makeItemEdited(item)
             if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == DINE_IN) {
                 LogUtil.logE(TAG, "isEditedisEdited  ${item.isEdited}")
