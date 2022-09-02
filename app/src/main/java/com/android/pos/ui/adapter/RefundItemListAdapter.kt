@@ -14,6 +14,7 @@ import com.android.pos.databinding.ViewRefundItemBinding
 import com.android.pos.ui.fragments.transactions.TransactionDetailsViewModel
 import com.android.pos.utils.LogUtil
 import com.android.pos.utils.MethodUtils
+import java.text.NumberFormat
 
 class RefundItemListAdapter(val viewModel: TransactionDetailsViewModel) :
     RecyclerView.Adapter<RefundItemListAdapter.MyViewHolder>() {
@@ -31,6 +32,8 @@ class RefundItemListAdapter(val viewModel: TransactionDetailsViewModel) :
     var tipValue: Double = 0.0
     var rate_or_amount = ""
     var orderType = ""
+    var final_Amount = 0.0
+
 
     fun setSelectedItemList(
         list: ArrayList<GetOrderDetailsResponse.Data.OrderItem>,
@@ -43,6 +46,7 @@ class RefundItemListAdapter(val viewModel: TransactionDetailsViewModel) :
 
     }
 
+
     override fun onCreateViewHolder(
         parent: ViewGroup,
         viewType: Int
@@ -53,6 +57,7 @@ class RefundItemListAdapter(val viewModel: TransactionDetailsViewModel) :
     }
 
     fun addItems(
+        temp_final_Amount: Double,
         noteList: List<GetOrderDetailsResponse.Data.OrderItem>,
         serviceCharge: List<TbServiceCharge>?,
         cash_discount_or_surcharge: Double,
@@ -63,6 +68,7 @@ class RefundItemListAdapter(val viewModel: TransactionDetailsViewModel) :
         tipAmount: Double?,
         orderType: String
     ) {
+        this.final_Amount = temp_final_Amount
         this.cash_discount_or_surcharge = cash_discount_or_surcharge
         this.totalDiscount = totalDiscount
         if (loyaltyAmount != null) {
@@ -117,27 +123,29 @@ class RefundItemListAdapter(val viewModel: TransactionDetailsViewModel) :
 
             var totalTax = 0.0
             var orderDiscount = 0.0
-            var loyaltyAmountPerItem = 0.0
-
-
-            orderDiscount = (totalDiscount) / itemCount
-            Log.d(
-                "yash",
-                "bind: [" + absoluteAdapterPosition + "] orderDiscount : " + orderDiscount
-            )
-
-
-            loyaltyAmountPerItem = loyaltyAmount / itemCount
-            Log.d(
-                "yash",
-                "bind: [" + absoluteAdapterPosition + "] loyaltyAmountPerItem : " + loyaltyAmountPerItem
-            )
 
             var totalItemPrice: Double = 0.0
             totalItemPrice = totalPrice(item)
 
+            var actualSubTotalWithoutOrderDis = 0.0
+            noteList.forEach { orderItem ->
+                actualSubTotalWithoutOrderDis += (orderItem.price * orderItem.quantity) - (orderItem.discountAmount)
+                orderItem.orderItemModifiers.forEach { modifierNames ->
+                    actualSubTotalWithoutOrderDis += modifierNames.price * modifierNames.quantity
+                }
+            }
+            Log.d("yash", "bind:subTotal Without OrderDiscount " + actualSubTotalWithoutOrderDis)
 
 
+            orderDiscount = (totalItemPrice * totalDiscount) / actualSubTotalWithoutOrderDis
+            val nfone: NumberFormat = NumberFormat.getNumberInstance()
+            nfone.maximumFractionDigits = 3
+            val rounded1: String = nfone.format(orderDiscount)
+            orderDiscount = rounded1.toDouble()
+            Log.d(
+                "yash",
+                "bind: [" + absoluteAdapterPosition + "] orderDiscount : " + orderDiscount
+            )
 //            item.orderItemTaxes.forEach { tax ->
 //                tax.taxTotalAmount.let {
 //                    totalTax += it
@@ -181,57 +189,80 @@ class RefundItemListAdapter(val viewModel: TransactionDetailsViewModel) :
                 "bind: [$absoluteAdapterPosition] totalServiceCharge : $totalServiceCharge"
             )
 
-
-            var tip_divided = tipValue / itemCount
-            if (paymentType == "Card") {
-                totalItemPrice += (totalTax + totalServiceCharge + tip_divided) - orderDiscount - loyaltyAmountPerItem
-            } else {
-                totalItemPrice += (totalTax + totalServiceCharge) - orderDiscount - loyaltyAmountPerItem
+            totalItemPrice += (totalTax + totalServiceCharge)
+            if (totalItemPrice >= orderDiscount) {
+                totalItemPrice -= orderDiscount
             }
-
-
             Log.d(
                 "yash",
                 "bind: [$absoluteAdapterPosition] totalItemPrice : $totalItemPrice"
             )
 
-            var cashDiscountDivide = 0.0
-            if (paymentType == "Cash") {
-                if (cashdiscountType == "CashDiscount" && rate_or_amount.isNotEmpty()) {
-                    cashDiscountDivide = (totalItemPrice * (rate_or_amount.toDouble())) / 100
-                }
-            } else if (paymentType == "Card") {
-                if (cashdiscountType == "SurCharge" && rate_or_amount.isNotEmpty()) {
-                    cashDiscountDivide = totalItemPrice * (rate_or_amount.toDouble()) / 100
+
+            var loyaltyAmountPerItem = 0.0
+            loyaltyAmountPerItem = (loyaltyAmount * totalItemPrice) / final_Amount
+            Log.d(
+                "yash",
+                "bind: [" + absoluteAdapterPosition + "] loyaltyAmountPerItem : " + loyaltyAmountPerItem
+            )
+            var tip_divided = (totalItemPrice * tipValue) / final_Amount
+            val nf1: NumberFormat = NumberFormat.getNumberInstance()
+            nf1.maximumFractionDigits = 2
+            val rounded: String = nf1.format(tip_divided)
+            tip_divided = rounded.toDouble()
+            if (paymentType == "Card") {
+                if (totalItemPrice >= tip_divided) {
+                    totalItemPrice += tip_divided
                 }
             }
+            Log.d(
+                "yash",
+                "bind: [$absoluteAdapterPosition] tip_divided : $tip_divided"
+            )
+
+            if (totalItemPrice >= loyaltyAmountPerItem) {
+                totalItemPrice -= loyaltyAmountPerItem
+            }
+
+            var cashDiscountDivide = 0.0
+            if (cash_discount_or_surcharge > 0.0) {
+                if (paymentType == "Cash") {
+                    if (cashdiscountType == "CashDiscount" && rate_or_amount.isNotEmpty()) {
+                        cashDiscountDivide = (totalItemPrice * (rate_or_amount.toDouble())) / 100
+                    }
+                } else if (paymentType == "Card") {
+                    if (cashdiscountType == "SurCharge" && rate_or_amount.isNotEmpty()) {
+                        cashDiscountDivide = totalItemPrice * (rate_or_amount.toDouble()) / 100
+                    }
+                }
+            }
+
+            val nf2: NumberFormat = NumberFormat.getNumberInstance()
+            nf2.maximumFractionDigits = 2
+            val rounded2: String = nf2.format(cashDiscountDivide)
+            cashDiscountDivide = rounded2.toDouble()
+
             Log.d(
                 "yash",
                 "bind: [$absoluteAdapterPosition] cashDiscountDivide : $cashDiscountDivide"
             )
 
             if (paymentType == "Cash") {
-                totalItemPrice -= cashDiscountDivide
+                if (totalItemPrice >= cashDiscountDivide) {
+                    totalItemPrice -= cashDiscountDivide
+                }
             } else if (paymentType == "Card") {
                 totalItemPrice += cashDiscountDivide
             }
+
+
+
             Log.d("yash", "bind: [$absoluteAdapterPosition] finalTotal : $totalItemPrice")
             MethodUtils.setPriceTextView(itemBinding.tvItemPrice, totalItemPrice.toDouble())
-            var count = 0.0
             itemBinding.ivCheck.setOnClickListener {
                 item.isChecked = !item.isChecked
-
-                if (item.isChecked) {
-                    count += totalItemPrice
-                    Log.d("yash", "bind: sellecttotal :  $count")
-//                    selectedItemList.add(item)
-                } else {
-                    count -= totalItemPrice
-                    Log.d("yash", "bind: sellecttotal :  $count")
-//                    selectedItemList.remove(item)
-                }
-
-                showItemSubTotal?.invoke()
+                selectedItemList[bindingAdapterPosition].isChecked = item.isChecked
+//                showItemSubTotal?.invoke()
                 notifyDataSetChanged()
             }
 
@@ -245,6 +276,7 @@ class RefundItemListAdapter(val viewModel: TransactionDetailsViewModel) :
     fun selectedItemList(): ArrayList<GetOrderDetailsResponse.Data.OrderItem> {
         return selectedItemList
     }
+
 
     private fun totalPrice(model: GetOrderDetailsResponse.Data.OrderItem): Double {
 
