@@ -504,20 +504,7 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
                 }
             }
         }
-
         totalItemPrice = MethodUtils.roundOffAmountDouble(totalItemPrice)
-        Log.d("yash", "calculationOfItems: total->  " + totalItemPrice)
-        Log.d("yash", "calculationOfItems: OrderDiscount->  " + selectedOrderDiscountDivided)
-        Log.d("yash", "calculationOfItems: servicecharge -> " + totalServiceCharge)
-        Log.d("yash", "calculationOfItems: totaltax -> " + totalTax)
-        Log.d("yash", "calculationOfItems: selected LoyaltyPoint -> " + selectedLoyaltyPointDivided)
-        Log.d("yash", "calculationOfItems: TipAmount -> " + selectedTipDivided)
-        Log.d("yash", "calculationOfItems: cashDiscount -> " + selectedCashDiscountDivided)
-
-
-
-
-
 
         refundData = RefundRequestModel().apply {
             paymentRefund = RefundRequestModel.PaymentRefund().apply {
