@@ -1,7 +1,6 @@
 package com.android.pos.ui.adapter.boldpos
 
 import android.content.Context
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
@@ -32,9 +31,9 @@ class CategoryParentAdapter(
                     object : CategoryTabAdapter1.TabListner {
                         override fun onTabSelected(pos: Int) {
                             LogUtil.logE(TAG, "getCatPOS  ${pos}")
+                            listner.onCategorySelected(bindingAdapterPosition, pos)
                             selectedParentPos = bindingAdapterPosition
                             selectedCategoryPos = pos
-                            listner.onCategorySelected(bindingAdapterPosition, pos)
                         }
 
                     })
