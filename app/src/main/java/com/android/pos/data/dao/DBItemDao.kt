@@ -39,6 +39,9 @@ interface DBItemDao {
     @Query("select * from TbItem where TbItem.categoryId  = :id and TbItem.name != 'Manual Item' and TbItem.isDeleted = 0")
     fun getItemList(id: Int): LiveData<List<TbItem>>
 
+    @Query("select * from TbItem where TbItem.categoryId  = :id and TbItem.name != 'Manual Item' and TbItem.isDeleted = 0")
+    fun getItemListByCategory(id:Int?): PagingSource<Int, TbItem>
+
     @Query("SELECT * from TbItem where TbItem.itemId  = :id and TbItem.name != 'Manual Item' and TbItem.isDeleted = 0 LIMIT 1")
     fun itemById(id: Int?): LiveData<TbItem>?
 

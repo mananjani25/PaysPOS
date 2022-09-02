@@ -1,13 +1,15 @@
 package com.android.pos.ui.fragments.dashboard.bolddashboard
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AutoCompleteTextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
+import androidx.paging.filter
+import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.PagerSnapHelper
 import androidx.recyclerview.widget.RecyclerView
@@ -25,14 +27,15 @@ import com.android.pos.ui.adapter.CategorySearchAdapter
 import com.android.pos.ui.adapter.CategoryTabAdapter1
 import com.android.pos.ui.adapter.boldpos.CategoryParentAdapter
 import com.android.pos.ui.adapter.boldpos.CategoryTabAdapter
-import com.android.pos.ui.adapter.boldpos.ItemAdapter
+import com.android.pos.ui.adapter.boldpos.ItemAdapterPagDash
 import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.callback.ItemListner
 import com.android.pos.utils.statusUtils.Status
-import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -42,7 +45,7 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
     private var categoryList1: ArrayList<CategoryWithInventory> = arrayListOf()
     private lateinit var binding: FragmentCategoryBinding
     private lateinit var categoryParentAdapter: CategoryParentAdapter
-    private lateinit var itemAdapter: ItemAdapter
+    private lateinit var itemAdapter: ItemAdapterPagDash
     private lateinit var searchList: ArrayList<CategorySearchData>
     private lateinit var searchAdapter: CategorySearchAdapter
     private val viewModel by activityViewModels<DashBoardCategoryViewModel>()
@@ -163,7 +166,9 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
 
                             if (list.isNotEmpty()) {
                                 if (prefProvider.getValueInt(Constants.CAT_ID_SELECTED, 0) == 0) {
-                                    itemAdapter.addList(itemList1)
+                                    itemAdapter.snapshot().toCollection(arrayListOf())
+                                        .addAll(itemList1)
+                                    itemAdapter.notifyDataSetChanged()
                                     binding.rvCategoryParent.scrollToPosition(0)
 
                                 } else {
@@ -238,7 +243,8 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
                     itemList.addAll(it1)
                 }
             }
-            itemAdapter.addList(itemList)
+            itemAdapter.snapshot().toCollection(arrayListOf()).addAll(itemList)
+            itemAdapter.notifyDataSetChanged()
 
         }
 
@@ -323,8 +329,9 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
             }?.let { it1 ->
                 itemList.addAll(it1)
             }
-            itemAdapter.list.clear()
-            itemAdapter.list = itemList
+            itemAdapter.snapshot().toCollection(arrayListOf()).clear()
+
+            itemAdapter.snapshot().toCollection(arrayListOf()).addAll(itemList)
             for (i in itemList.indices) {
                 if (itemList[i]?.itemId == model.itemID) {
                     itemAdapter.setPos(i)
@@ -366,8 +373,13 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
         list.add(CategoryParentModel(listCategories))
         list.add(CategoryParentModel(listCategories))
         categoryParentAdapter = CategoryParentAdapter(requireContext(), arrayListOf(), this)
-        itemAdapter = ItemAdapter(requireContext(), arrayListOf(), listner)
+        itemAdapter = ItemAdapterPagDash(listner)
+        binding.rvItemList.setHasFixedSize(true)
+        binding.rvItemList.layoutManager = GridLayoutManager(requireContext(), 4)
         binding.rvItemList.adapter = itemAdapter
+        //   binding.rvItemList.layoutManager = GridLayoutManager(requireContext(),4)
+
+        //  binding.rvItemList.setHasFixedSize(true)
         binding.rvCategoryParent.adapter = categoryParentAdapter
         binding.rvCategoryParent.layoutManager =
             LinearLayoutManager(requireContext(), RecyclerView.HORIZONTAL, false)
@@ -382,10 +394,11 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
                 categoryParentAdapter.list.forEachIndexed { index1, it ->
                     it.list.forEachIndexed { index, categoryTabModel ->
 
-                        categoryTabModel.isSelected = categoryTabModel.id == prefProvider.getValueInt(
-                            Constants.CAT_ID_SELECTED,
-                            0
-                        )
+                        categoryTabModel.isSelected =
+                            categoryTabModel.id == prefProvider.getValueInt(
+                                Constants.CAT_ID_SELECTED,
+                                0
+                            )
                     }
                 }
                 categoryParentAdapter.notifyDataSetChanged()
@@ -427,34 +440,35 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
 
         prefProvider.setValueInt(Constants.CAT_ID_SELECTED, categoryId)
 
-        viewModel.getItemByCategoryId(categoryId).observe(viewLifecycleOwner) {
-
-            if (it.status == Status.SUCCESS) {
-                if (it.data != null && it.data.isNotEmpty()) {
-                    itemAdapter.setPos(-2)
-                    it.data.filter {
-                        it.isHide
-                    }.let { it1 ->
-                        edtSearch?.text?.clear()
-                        if (prefProvider.getValueInt(Constants.CAT_ID_SELECTED, 0) == 0) {
-                            itemAdapter.addList(it.data.toCollection(arrayListOf()))
-                            binding.rvCategoryParent.scrollToPosition(0)
-
-                        } else {
-                            changePositionOfCate()
-                        }
 
 
-                        //itemAdapter.addList(it1.toCollection(arrayListOf()))
-                        Log.d(TAG, "onCategorySelected: size" + it1.size)
+        lifecycleScope.launch {
+            viewModel.itemsByCat(categoryId).collectLatest {
+
+
+                itemAdapter.setPos(-2)
+
+
+                it.filter {
+                    it.isHide
+                }.let { it1 ->
+                    edtSearch?.text?.clear()
+                    if (prefProvider.getValueInt(Constants.CAT_ID_SELECTED, 0) == 0) {
+                        itemAdapter.submitData(it1)
+                        binding.rvCategoryParent.scrollToPosition(0)
+
+                    } else {
+                        changePositionOfCate()
                     }
-                } else {
-                    itemAdapter.clearList()
+
+
+                    itemAdapter.submitData(it1)
+
                 }
             }
 
-        }
 
+        }
     }
 
 
