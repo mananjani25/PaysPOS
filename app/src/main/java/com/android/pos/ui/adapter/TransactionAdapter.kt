@@ -102,6 +102,15 @@ class TransactionAdapter(val viewModel: TransactionViewModel) :
 //                itemBinding.txtTransactionId.visibility = View.GONE
 //            }
 
+            if (model.orderId != null) {
+                if (model.orderId != 0) {
+                    itemBinding.txtTransactionId.text = model.orderId.toString()
+                } else {
+                    itemBinding.txtTransactionId.text = "-"
+                }
+            } else {
+                itemBinding.txtTransactionId.text = "-"
+            }
             itemBinding.executePendingBindings()
 
             itemBinding.txtTip.setOnClickListener {

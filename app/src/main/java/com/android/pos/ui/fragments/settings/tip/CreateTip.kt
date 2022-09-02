@@ -94,7 +94,7 @@ class CreateTip : Fragment() {
                     if (temp_rate.toFloat() > 100) {
                         AlertUtils.showCustomAlertWithListenerWithOK(
                             requireContext(),
-                            "Please Enter Percentage less than or Equal to 100"
+                            "Please enter percentage less than or equal to 100"
                         ) { _, _ ->
                             binding.edtTip.setText("")
                         }
