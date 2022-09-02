@@ -449,7 +449,16 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
                     selectedLoyaltyPointDivided += (paymentOrderDetailsResponse.data.loyalty_amount!! * item_total_price_included) / (paymentOrderDetailsResponse.data.sub_total + paymentOrderDetailsResponse.data.service_charge_amount + paymentOrderDetailsResponse.data.tax_amount)
                 }
                 if (paymentOrderDetailsResponse.data.tips > 0) {
-                    selectedTipDivided += (paymentOrderDetailsResponse.data.tips * item_total_price_included) / (paymentOrderDetailsResponse.data.sub_total + paymentOrderDetailsResponse.data.service_charge_amount + paymentOrderDetailsResponse.data.tax_amount)
+                    if (item_total_price_included == 0.0) {
+                        if ((paymentOrderDetailsResponse.data.sub_total + paymentOrderDetailsResponse.data.service_charge_amount + paymentOrderDetailsResponse.data.tax_amount) == 0.0) {
+                            selectedTipDivided =
+                                paymentOrderDetailsResponse.data.tips / paymentOrderDetailsResponse.data.order.order_items.size
+                        } else {
+                            selectedTipDivided += (paymentOrderDetailsResponse.data.tips * 1) / (paymentOrderDetailsResponse.data.sub_total + paymentOrderDetailsResponse.data.service_charge_amount + paymentOrderDetailsResponse.data.tax_amount)
+                        }
+                    } else {
+                        selectedTipDivided += (paymentOrderDetailsResponse.data.tips * item_total_price_included) / (paymentOrderDetailsResponse.data.sub_total + paymentOrderDetailsResponse.data.service_charge_amount + paymentOrderDetailsResponse.data.tax_amount)
+                    }
                 }
                 if (paymentOrderDetailsResponse.data.cash_discount_or_surcharge > 0) {
                     selectedCashDiscountDivided += (paymentOrderDetailsResponse.data.cash_discount_or_surcharge * item_total_price_included) / (paymentOrderDetailsResponse.data.sub_total + paymentOrderDetailsResponse.data.service_charge_amount + paymentOrderDetailsResponse.data.tax_amount)
@@ -476,6 +485,8 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
         if (paymentOrderDetailsResponse.data.payment_type == "Card") {
             if (totalItemPrice >= selectedTipDivided) {
                 totalItemPrice += selectedTipDivided
+            } else if (totalItemPrice == 0.0) {
+                totalItemPrice += paymentOrderDetailsResponse.data.tips / paymentOrderDetailsResponse.data.order.order_items.size
             }
         }
         val nf3: NumberFormat = NumberFormat.getNumberInstance()

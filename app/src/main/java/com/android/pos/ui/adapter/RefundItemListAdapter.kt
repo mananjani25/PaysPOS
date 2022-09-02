@@ -205,7 +205,18 @@ class RefundItemListAdapter(val viewModel: TransactionDetailsViewModel) :
                 "yash",
                 "bind: [" + absoluteAdapterPosition + "] loyaltyAmountPerItem : " + loyaltyAmountPerItem
             )
-            var tip_divided = (totalItemPrice * tipValue) / final_Amount
+
+            var tip_divided = 0.0
+            if (totalItemPrice == 0.0) {
+                if (final_Amount == 0.0) {
+                    tip_divided = tipValue / noteList.size
+                } else {
+                    tip_divided = (1 * tipValue) / final_Amount
+                }
+            } else {
+                tip_divided = (totalItemPrice * tipValue) / final_Amount
+            }
+
             val nf1: NumberFormat = NumberFormat.getNumberInstance()
             nf1.maximumFractionDigits = 2
             val rounded: String = nf1.format(tip_divided)
@@ -213,6 +224,8 @@ class RefundItemListAdapter(val viewModel: TransactionDetailsViewModel) :
             if (paymentType == "Card") {
                 if (totalItemPrice >= tip_divided) {
                     totalItemPrice += tip_divided
+                } else if (totalItemPrice == 0.0) {
+                    totalItemPrice += tipValue / noteList.size
                 }
             }
             Log.d(
