@@ -134,7 +134,7 @@ class AddOnlineTimeDialog : DialogFragment() {
         binding.customMinutes.setOnClickListener {
 
             val back = ColorDrawable(Color.WHITE)
-            val inset = InsetDrawable(back, 150, 100, 150, 130)
+            val inset = InsetDrawable(back, 150, 80, 150, 110)
             dialog?.window?.setBackgroundDrawable(inset);
             finalstring = ""
             isSelected = false

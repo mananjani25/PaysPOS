@@ -45,6 +45,7 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_marginStart="@dimen/_5sdp"
+                android:inputType="textVisiblePassword"
                 android:layout_weight="1"
                 android:background="@null"
                 android:gravity="start"

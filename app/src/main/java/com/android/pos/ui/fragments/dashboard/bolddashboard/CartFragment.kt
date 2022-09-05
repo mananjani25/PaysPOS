@@ -681,6 +681,9 @@ class CartFragment(
                 LogUtil.logE(TAG, "listSize  ${Gson().toJson(it)}")
                 if (it.isNotEmpty()) {
                     if (isFromPayment) {
+                        viewModel.selectedCustomer =null
+                        viewModel.redeemLoyaltyInfo.isLoyaltyApplied = false
+                        viewModel.redeemLoyaltyInfo.needToApplyLoyalty = false
                         if (MethodUtils.isEnableCashDiscount(requireContext())) {
                             binding.linearCashDiscount.visible()
                             if (prefProvider.getValue(
@@ -731,7 +734,7 @@ class CartFragment(
                     binding.txtServiceCharge.text =
                         MethodUtils.roundOffAmount(viewModel.totalServiceCharge)
                     binding.tvPayNow.text = "Pay " + binding.txtTotal.text.toString()
-                    LogUtil.logE("totalDiscount", viewModel.totalDiscount.toString())
+                    Log.e("totalDiscount", viewModel.totalDiscount.toString())
                     binding.txtDiscount.text = "-" +
                             MethodUtils.roundOffAmount(viewModel.totalDiscount)
                     binding.txtNoncashAdj.text =
@@ -740,28 +743,10 @@ class CartFragment(
                     if (data != null) {
                         if (viewModel.loyaltyPointCondition(data)) {
                             if (isFromPayment) {
-                                if (viewModel.redeemLoyaltyInfo.needToApplyLoyalty) {
-                                    binding.liinearInfoLayout.layoutParams.height =
-                                        resources.getDimension(R.dimen._70sdp).toInt()
-                                    binding.relativeLoylatyPoints.visibility = View.VISIBLE
-                                    binding.lblLoyaltyPoints.visibility = View.VISIBLE
-                                    binding.txtLabelLoyaltyAmounts.visibility = View.VISIBLE
-                                    binding.checkloylaty.visibility = View.GONE
-                                    binding.txtLoyaltyAmount.text =
-                                        "- $${
-                                            String.format(
-                                                "%.2f",
-                                                viewModel.redeemLoyaltyInfo.usedLoyaltyAmount
-                                            )
-                                        }"
-                                    binding.txtLoyaltyPoints.text =
-                                        "${viewModel.redeemLoyaltyInfo.usedLoyaltyPoints}"
-                                } else {
-                                    binding.liinearInfoLayout.layoutParams.height =
-                                        resources.getDimension(R.dimen._50sdp).toInt()
-                                    binding.relativeLoylatyPoints.visibility = View.GONE
-                                    binding.lblLoyaltyPoints.visibility = View.GONE
-                                }
+                                binding.liinearInfoLayout.layoutParams.height =
+                                    resources.getDimension(R.dimen._50sdp).toInt()
+                                binding.relativeLoylatyPoints.visibility = View.GONE
+                                binding.lblLoyaltyPoints.visibility = View.GONE
                             } else {
                                 binding.liinearInfoLayout.layoutParams.height =
                                     resources.getDimension(R.dimen._70sdp).toInt()
@@ -1058,7 +1043,7 @@ class CartFragment(
                         binding.rvCartList.visible()
 
                         if (it.isNotEmpty()) {
-                            LogUtil.logE("mAllWords", "listSize ITEM ${it.get(0).items?.size}")
+                            Log.e("mAllWords", "listSize ITEM ${it.get(0).items?.size}")
                             viewModel.destroyedList.clear()
                             it[0].items?.filter { item -> item.isDestroy }?.let {
                                 viewModel.destroyedList.addAll(it)
@@ -1096,7 +1081,7 @@ class CartFragment(
                                 filterItems.addAll(it!!.toCollection(arrayListOf()))
                             }
 
-                            LogUtil.logE("mAllWords", "filterItems  ${filterItems.size}")
+                            Log.e("mAllWords", "filterItems  ${filterItems.size}")
                             cartAdapter.setList(filterItems)
 
                             cartlist = it as ArrayList<CartModel>
@@ -1119,7 +1104,7 @@ class CartFragment(
                             binding.txtServiceCharge.text =
                                 MethodUtils.roundOffAmount(viewModel.totalServiceCharge)
                             binding.tvPayNow.text = "Pay " + binding.txtTotal.text.toString()
-                            LogUtil.logE("totalDiscount", viewModel.totalDiscount.toString())
+                            Log.e("totalDiscount", viewModel.totalDiscount.toString())
                             binding.txtDiscount.text =
                                 "-" + MethodUtils.roundOffAmount(viewModel.totalDiscount)
                             binding.txtNoncashAdj.text =
@@ -1171,8 +1156,8 @@ class CartFragment(
                                             resources.getDimension(R.dimen._70sdp).toInt()
                                         binding.relativeLoylatyPoints.visibility = View.VISIBLE
                                         binding.lblLoyaltyPoints.visibility = View.VISIBLE
-                                        LogUtil.logE(TAG, "InsideLoyalty")
-                                        LogUtil.logE(TAG, Gson().toJson(viewModel.redeemLoyaltyInfo))
+                                        Log.e(TAG, "InsideLoyalty")
+                                        Log.e(TAG, Gson().toJson(viewModel.redeemLoyaltyInfo))
                                         binding.txtLoyaltyAmount.text =
                                             "- $${
                                                 String.format(

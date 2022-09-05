@@ -7416,7 +7416,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     builder.addText(receiptModel?.order?.note.toString())
                 }
 
-
+                addHorizontalKitchenLine(builder)
                 if (kitchenSettingModel.showCustomerAddress != false or kitchenSettingModel.showCustomerPhone != false or kitchenSettingModel.showCustomerName != false) {
                     if (receiptModel?.order?.customer != null) {
 

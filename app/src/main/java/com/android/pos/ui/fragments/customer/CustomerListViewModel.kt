@@ -53,7 +53,7 @@ public class CustomerListViewModel @Inject constructor(
 
     val serviceCharges = posRepository.serviceChargeList()
 
-    var itemlist = posRepository.getItemsList()
+    var itemlist = posRepository.getWholeItemFromPos()
 
     fun customerList(data: LinkedHashMap<String, String>) =
         posRepository.customerListPagination(data)
