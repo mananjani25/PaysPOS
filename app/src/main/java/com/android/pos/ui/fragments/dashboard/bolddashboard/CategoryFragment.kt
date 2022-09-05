@@ -9,6 +9,7 @@ import android.widget.AutoCompleteTextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.paging.PagingData
 import androidx.paging.filter
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -462,6 +463,9 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
     }
 
     override fun onCategorySelected(parentPosition: Int, childPosition: Int) {
+        lifecycleScope.launch {
+            itemAdapter.submitData(PagingData.empty())
+        }
 
         val categoryId =
             categoryParentAdapter.getList()[parentPosition].list[childPosition].id

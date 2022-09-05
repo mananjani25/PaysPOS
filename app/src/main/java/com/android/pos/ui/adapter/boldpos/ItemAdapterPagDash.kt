@@ -41,14 +41,15 @@ class ItemAdapterPagDash(
         RecyclerView.ViewHolder(binding.root) {
 
         val checkedTextView = binding.txtCategoryName
-        var itename_price: StringBuffer = StringBuffer()
+
 
         @SuppressLint("ResourceType")
         fun bind(model: TbItem?, position: Int) {
-            if (model?.name != null && model.name.isNotEmpty() ) {
-                if (model.name.length > 30) {
+            var itename_price: StringBuffer = StringBuffer()
+
+                if (model?.name?.length!! > 30) {
                     itename_price.append(
-                        model?.name.substring(
+                        model?.name?.substring(
                             0,
                             30
                         ) + "...\n" + model?.price?.let { MethodUtils.roundOffAmount(it) })
@@ -61,7 +62,7 @@ class ItemAdapterPagDash(
                             )
                         }
                 }
-            }
+
 
             binding.txtPrice.gone()
             if (mpos == absoluteAdapterPosition) {
@@ -79,7 +80,7 @@ class ItemAdapterPagDash(
             binding.root.setOnClickListener {
                 try {
                     getItem(position)?.let {
-                        LogUtil.logE("ITemAdapter", "onClickposition  ${position}")
+                        LogUtil.logE("ITemAdapter", "onClickposition  ${position}  itemname ${it.name}")
                         listener.onItemSelected(it)
                     }
                 } catch (e: Exception) {
@@ -113,6 +114,7 @@ class ItemAdapterPagDash(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         holder.bind(getItem(position), position)
+
 
     }
 
