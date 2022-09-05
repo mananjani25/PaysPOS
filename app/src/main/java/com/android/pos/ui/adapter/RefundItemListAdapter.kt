@@ -198,6 +198,29 @@ class RefundItemListAdapter(val viewModel: TransactionDetailsViewModel) :
                 "bind: [$absoluteAdapterPosition] totalItemPrice : $totalItemPrice"
             )
 
+            var cashDiscountDivide = 0.0
+            if (cash_discount_or_surcharge > 0.0) {
+                cashDiscountDivide = (cash_discount_or_surcharge * totalItemPrice) / final_Amount
+            }
+
+            val nf2: NumberFormat = NumberFormat.getNumberInstance()
+            nf2.maximumFractionDigits = 2
+            val rounded2: String = nf2.format(cashDiscountDivide)
+            cashDiscountDivide = rounded2.toDouble()
+
+            Log.d(
+                "yash",
+                "bind: [$absoluteAdapterPosition] cashDiscountDivide : $cashDiscountDivide"
+            )
+
+            if (paymentType == "Cash") {
+                if (totalItemPrice >= cashDiscountDivide) {
+                    totalItemPrice -= cashDiscountDivide
+                }
+            } else if (paymentType == "Card") {
+                totalItemPrice += cashDiscountDivide
+            }
+
 
             var loyaltyAmountPerItem = 0.0
             loyaltyAmountPerItem = (loyaltyAmount * totalItemPrice) / final_Amount
@@ -214,7 +237,11 @@ class RefundItemListAdapter(val viewModel: TransactionDetailsViewModel) :
                     tip_divided = (1 * tipValue) / final_Amount
                 }
             } else {
-                tip_divided = (totalItemPrice * tipValue) / final_Amount
+                if (cashdiscountType == "SurCharge") {
+                    tip_divided = (totalItemPrice * tipValue) / (final_Amount + cash_discount_or_surcharge)
+                }else{
+                    tip_divided = (totalItemPrice * tipValue)
+                }
             }
 
             val nf1: NumberFormat = NumberFormat.getNumberInstance()
@@ -237,36 +264,6 @@ class RefundItemListAdapter(val viewModel: TransactionDetailsViewModel) :
                 totalItemPrice -= loyaltyAmountPerItem
             }
 
-            var cashDiscountDivide = 0.0
-            if (cash_discount_or_surcharge > 0.0) {
-                if (paymentType == "Cash") {
-                    if (cashdiscountType == "CashDiscount" && rate_or_amount.isNotEmpty()) {
-                        cashDiscountDivide = (totalItemPrice * (rate_or_amount.toDouble())) / 100
-                    }
-                } else if (paymentType == "Card") {
-                    if (cashdiscountType == "SurCharge" && rate_or_amount.isNotEmpty()) {
-                        cashDiscountDivide = totalItemPrice * (rate_or_amount.toDouble()) / 100
-                    }
-                }
-            }
-
-            val nf2: NumberFormat = NumberFormat.getNumberInstance()
-            nf2.maximumFractionDigits = 2
-            val rounded2: String = nf2.format(cashDiscountDivide)
-            cashDiscountDivide = rounded2.toDouble()
-
-            Log.d(
-                "yash",
-                "bind: [$absoluteAdapterPosition] cashDiscountDivide : $cashDiscountDivide"
-            )
-
-            if (paymentType == "Cash") {
-                if (totalItemPrice >= cashDiscountDivide) {
-                    totalItemPrice -= cashDiscountDivide
-                }
-            } else if (paymentType == "Card") {
-                totalItemPrice += cashDiscountDivide
-            }
 
 
 

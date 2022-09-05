@@ -307,11 +307,7 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
             (paymentOrderDetailsResponse.data.sub_total + paymentOrderDetailsResponse.data.service_charge_amount + paymentOrderDetailsResponse.data.tax_amount),
             paymentOrderDetailsResponse.data.order.order_items,
             serviceChargesList,
-            MethodUtils.calculateCashDiscount(
-                (paymentOrderDetailsResponse.data.sub_total + paymentOrderDetailsResponse.data.tax_amount + paymentOrderDetailsResponse.data.service_charge_amount) - paymentOrderDetailsResponse.data.loyalty_amount!!,
-                prefProvider,
-                requireContext()
-            ),
+            paymentOrderDetailsResponse.data.cash_discount_or_surcharge,
             if (paymentOrderDetailsResponse.data.cash_discount_type != null) paymentOrderDetailsResponse.data.cash_discount_type else "",
             paymentOrderDetailsResponse.data.payment_type,
             if (paymentOrderDetailsResponse.data.total_discount > totalItemDiscount) paymentOrderDetailsResponse.data.total_discount - totalItemDiscount else 0.0,
