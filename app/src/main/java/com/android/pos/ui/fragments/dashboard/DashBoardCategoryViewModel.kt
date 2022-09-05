@@ -234,6 +234,7 @@ class DashBoardCategoryViewModel @Inject constructor(
         config = PagingConfig(
             pageSize = 20,
             enablePlaceholders = false,
+            initialLoadSize = 20
         )
     ) {
         appDatabase.itemDao().getItemListByCategory(id)

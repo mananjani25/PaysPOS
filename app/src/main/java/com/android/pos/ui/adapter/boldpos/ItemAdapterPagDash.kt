@@ -45,16 +45,22 @@ class ItemAdapterPagDash(
 
         @SuppressLint("ResourceType")
         fun bind(model: TbItem?, position: Int) {
-            if (model?.name?.length!! > 30) {
-                itename_price.append(
-                    model?.name.substring(
-                        0,
-                        30
-                    ) + "...\n" + model?.price?.let { MethodUtils.roundOffAmount(it) })
-                binding.txtCategoryName.text = itename_price
-            } else {
-                binding.txtCategoryName.text =
-                    "" + model?.name + "\n\n" + model?.price?.let { MethodUtils.roundOffAmount(it) }
+            if (model?.name != null && model.name.isNotEmpty() ) {
+                if (model.name.length > 30) {
+                    itename_price.append(
+                        model?.name.substring(
+                            0,
+                            30
+                        ) + "...\n" + model?.price?.let { MethodUtils.roundOffAmount(it) })
+                    binding.txtCategoryName.text = itename_price
+                } else {
+                    binding.txtCategoryName.text =
+                        "" + model?.name + "\n\n" + model?.price?.let {
+                            MethodUtils.roundOffAmount(
+                                it
+                            )
+                        }
+                }
             }
 
             binding.txtPrice.gone()
@@ -112,6 +118,11 @@ class ItemAdapterPagDash(
 
     fun setPos(selectedId: Int) {
         mpos = selectedId
+    }
+
+    fun clearData() {
+        snapshot().toCollection(arrayListOf()).clear()
+        notifyDataSetChanged()
     }
 
 

@@ -8,7 +8,6 @@ import com.android.pos.data.model.CategoryTabModel
 import com.android.pos.databinding.ViewBoldCategoryBinding
 import com.android.pos.ui.adapter.CategoryTabAdapter1
 import com.android.pos.utils.MethodUtils
-import com.android.pos.utils.extensions.setOnSingleClickListener
 
 class CategoryAdapter(
     val context: Context,
@@ -38,8 +37,8 @@ class CategoryAdapter(
             } else {
                 binding.txtCategoryName.text = model.title
             }
-            binding.root.setOnSingleClickListener {
-                if (MethodUtils.isDoubleClick()) return@setOnSingleClickListener
+            binding.root.setOnClickListener {
+                if (MethodUtils.isDoubleClickCategory()) return@setOnClickListener
 
 
                 listner.onTabSelected(bindingAdapterPosition)

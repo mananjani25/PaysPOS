@@ -1,6 +1,7 @@
 package com.android.pos.ui.fragments.dashboard.bolddashboard
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -166,9 +167,23 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
 
                             if (list.isNotEmpty()) {
                                 if (prefProvider.getValueInt(Constants.CAT_ID_SELECTED, 0) == 0) {
-                                    itemAdapter.snapshot().toCollection(arrayListOf())
-                                        .addAll(itemList1)
-                                    itemAdapter.notifyDataSetChanged()
+                                    Log.e("ItemAdapter", "AddedItem 1 ")
+                                    Log.e("ItemAdapter", "itemListSize  ${itemList1.size}")
+
+                                    lifecycleScope.launch {
+                                        viewModel.itemsByCat(categoryList1[0].category.id).collectLatest {
+                                            Log.e("CollectItems","Collect")
+
+                                            binding.rvItemList.adapter = null
+                                            itemAdapter = ItemAdapterPagDash(listner)
+                                            binding.rvItemList.setHasFixedSize(true)
+                                            binding.rvItemList.layoutManager = GridLayoutManager(requireContext(), 4)
+                                            binding.rvItemList.adapter = itemAdapter
+                                            itemAdapter.submitData(it)
+                                            Log.e("LoadedItems","sizeOf  ${itemAdapter.snapshot().items.size}")
+
+                                        }
+                                    }
                                     binding.rvCategoryParent.scrollToPosition(0)
 
                                 } else {
@@ -237,15 +252,28 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
 
         if (tabPos != -1) {
             if (tabPos < categoryList1.size) {
-                categoryList1[tabPos].inventoryLists?.filter {
+              /*  categoryList1[tabPos].inventoryLists?.filter {
                     it!!.isHide && !it.isDeleted
                 }?.let { it1 ->
                     itemList.addAll(it1)
-                }
-            }
-            itemAdapter.snapshot().toCollection(arrayListOf()).addAll(itemList)
-            itemAdapter.notifyDataSetChanged()
+                }*/
 
+                lifecycleScope.launch {
+                    viewModel.itemsByCat(categoryList1[tabPos].category.id).collectLatest {
+                        itemAdapter.submitData(it)
+                        itemAdapter.notifyDataSetChanged()
+
+                    }
+                }
+
+            }
+            Log.e("ItemAdapter", "ItermListAdded 2 ")
+
+
+
+           /* itemAdapter.snapshot().toCollection(arrayListOf()).addAll(itemList)
+            itemAdapter.notifyDataSetChanged()
+*/
         }
 
     }
@@ -440,10 +468,14 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
 
         prefProvider.setValueInt(Constants.CAT_ID_SELECTED, categoryId)
 
+        getItemsByCategory(categoryId)
 
 
+    }
+
+    private fun getItemsByCategory(catId: Int) {
         lifecycleScope.launch {
-            viewModel.itemsByCat(categoryId).collectLatest {
+            viewModel.itemsByCat(catId).collectLatest {
 
 
                 itemAdapter.setPos(-2)
