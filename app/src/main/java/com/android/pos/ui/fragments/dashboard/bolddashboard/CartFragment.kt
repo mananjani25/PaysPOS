@@ -682,6 +682,8 @@ class CartFragment(
                 if (it.isNotEmpty()) {
                     if (isFromPayment) {
                         viewModel.selectedCustomer =null
+                        viewModel.redeemLoyaltyInfo.isLoyaltyApplied = false
+                        viewModel.redeemLoyaltyInfo.needToApplyLoyalty = false
                         if (MethodUtils.isEnableCashDiscount(requireContext())) {
                             binding.linearCashDiscount.visible()
                             if (prefProvider.getValue(
