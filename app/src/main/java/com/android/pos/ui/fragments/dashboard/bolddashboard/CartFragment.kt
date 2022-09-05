@@ -681,6 +681,7 @@ class CartFragment(
                 LogUtil.logE(TAG, "listSize  ${Gson().toJson(it)}")
                 if (it.isNotEmpty()) {
                     if (isFromPayment) {
+                        viewModel.selectedCustomer =null
                         if (MethodUtils.isEnableCashDiscount(requireContext())) {
                             binding.linearCashDiscount.visible()
                             if (prefProvider.getValue(
@@ -740,28 +741,10 @@ class CartFragment(
                     if (data != null) {
                         if (viewModel.loyaltyPointCondition(data)) {
                             if (isFromPayment) {
-                                if (viewModel.redeemLoyaltyInfo.needToApplyLoyalty) {
-                                    binding.liinearInfoLayout.layoutParams.height =
-                                        resources.getDimension(R.dimen._70sdp).toInt()
-                                    binding.relativeLoylatyPoints.visibility = View.VISIBLE
-                                    binding.lblLoyaltyPoints.visibility = View.VISIBLE
-                                    binding.txtLabelLoyaltyAmounts.visibility = View.VISIBLE
-                                    binding.checkloylaty.visibility = View.GONE
-                                    binding.txtLoyaltyAmount.text =
-                                        "- $${
-                                            String.format(
-                                                "%.2f",
-                                                viewModel.redeemLoyaltyInfo.usedLoyaltyAmount
-                                            )
-                                        }"
-                                    binding.txtLoyaltyPoints.text =
-                                        "${viewModel.redeemLoyaltyInfo.usedLoyaltyPoints}"
-                                } else {
-                                    binding.liinearInfoLayout.layoutParams.height =
-                                        resources.getDimension(R.dimen._50sdp).toInt()
-                                    binding.relativeLoylatyPoints.visibility = View.GONE
-                                    binding.lblLoyaltyPoints.visibility = View.GONE
-                                }
+                                binding.liinearInfoLayout.layoutParams.height =
+                                    resources.getDimension(R.dimen._50sdp).toInt()
+                                binding.relativeLoylatyPoints.visibility = View.GONE
+                                binding.lblLoyaltyPoints.visibility = View.GONE
                             } else {
                                 binding.liinearInfoLayout.layoutParams.height =
                                     resources.getDimension(R.dimen._70sdp).toInt()
