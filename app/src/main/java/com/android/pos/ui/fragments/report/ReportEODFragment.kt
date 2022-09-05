@@ -199,6 +199,7 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
             binding.txtClockOut.setOnClickListener {
 
+                if (MethodUtils.isDoubleClick()) return@setOnClickListener
                 alert(
                     getString(R.string.app_name),
                     getString(R.string.clockout_message)
@@ -209,10 +210,13 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
                         val bundle = Bundle()
                         bundle.putBoolean("isDashboard", true)
                         bundle.putBoolean("isSwap", false)
-                        findNavController().navigate(
-                            R.id.action_reportEODFragment_to_passcode,
-                            bundle
-                        )
+                        if (findNavController().currentDestination?.id == R.id.reportEODFragment) {
+                            findNavController().navigate(
+                                R.id.action_reportEODFragment_to_passcode,
+                                bundle
+                            )
+                        }
+
                     }
                     negativeButton(R.string.tv_cancel) {
                         // Do negative stuff here
@@ -3219,6 +3223,8 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
                     )
                 }
 
+                binding.txtClockOut.isClickable = true
+                binding.txtClockOut.isFocusable = true
 
             }
         })
