@@ -228,15 +228,16 @@ class AddTipsDialog : DialogFragment(), DialogTipsListAdapter.DiscountInterface 
     }
 
     private fun setDiscountList() {
-        viewModel.getTipList.observe(requireActivity()) {
+        viewModel.getTipActiveList.observe(requireActivity()) {
             LogUtil.logE(TAG, "DiscountList ${Gson().toJson(it)}")
             if (it.data?.isNotEmpty() == true) {
+
+                Collections.reverse(it.data)
                 it.data.forEach {
                     it.isChecked = false
                 }
                 tipsListAdapter.setList(it.data)
                 tipsListAdapter.setListner(this)
-                //tipsListAdapter.setSelected(defaultModel?.discountId)
             }
 
 

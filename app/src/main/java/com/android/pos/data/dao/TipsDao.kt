@@ -17,6 +17,9 @@ interface TipsDao {
     @get:Query("select * from TbTips where TbTips.isDeleted  = 0 ORDER BY TbTips.sort DESC")
     val allTips: LiveData<List<GetTipReponse.Data>>
 
+    @get:Query("select * from TbTips where TbTips.isDeleted  = 0 and isActive = 1 ORDER BY TbTips.sort DESC")
+    val allTipsActive: LiveData<List<GetTipReponse.Data>>
+
     @Query("select * from TbTips where TbTips.isDeleted  = 0")
     fun allTipsList(): List<GetTipReponse.Data>
 

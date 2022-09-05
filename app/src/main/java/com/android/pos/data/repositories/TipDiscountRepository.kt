@@ -25,6 +25,10 @@ class TipDiscountRepository @Inject constructor(
         databaseQuery = { appDatabase.tipDao().allTips },
     )
 
+    fun getTipActiveList() = performGetOperationDatabase(
+        databaseQuery = { appDatabase.tipDao().allTipsActive },
+    )
+
     suspend fun deleteTipsFromDb() {
         appDatabase.tipDao().delete()
     }

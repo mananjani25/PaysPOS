@@ -61,7 +61,7 @@ class ModifierSetsListAdapter(val isCreateItem: Boolean) :
         }
 
         init {
-            binding.imgCheck.setOnClickListener {
+            binding.root.setOnClickListener {
                 filterList[layoutPosition].isChecked = !filterList[layoutPosition].isChecked
 
                 if (filterList[layoutPosition].isChecked) {

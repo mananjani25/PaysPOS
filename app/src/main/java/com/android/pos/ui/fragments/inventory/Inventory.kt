@@ -16,6 +16,7 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.data.model.InventoryItemModel
+import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.CREATECATEGORY
 import com.android.pos.data.remote.Constants.CREATEITEM
 import com.android.pos.data.remote.Constants.CREATEMODIFIER
@@ -64,52 +65,13 @@ class Inventory : Fragment() {
             changePosition(position!!)
             setAdapter(position)
 
-/*
-            if (isCount == true) {
+        }
 
-                val count = intent.getIntExtra("count", 0)
-                val orderType = intent.getIntExtra("param1", 0)
+    }
 
-                when (orderType) {
-                    0 -> {
-                        //active
-                        itemsCount = count
-                        setAdapter(0)
-                    }
-                    1 -> {
-                        //complete
-                        categoriesCount = count
-                        setAdapter(1)
-                    }
-                    2 -> {
-                        //cancel
-                        modifierSetsCount = count
-                        setAdapter(2)
-                    }
-                    3 -> {
-                        //cancel
-                        optionSetsCount = count
-                        setAdapter(3)
-                    }
-                    4 -> {
-                        //cancel
-                        hiddenCategoriesCount = count
-                        setAdapter(4)
-                    }
-                    5 -> {
-                        //cancel
-                        hiddenItemsCount = count
-                        setAdapter(5)
-                    }
-                }
-
-                Log.e("broadcastReceiver", count.toString())
-            } else {
-                val position = intent?.getIntExtra("param1", 0)
-                changePosition(position!!)
-                setAdapter(position)
-            }
-*/
+    private var syncReceiver = object : BroadcastReceiver() {
+        override fun onReceive(p0: Context?, p1: Intent?) {
+            getInventoryCountsObserver()
         }
 
     }
@@ -123,6 +85,10 @@ class Inventory : Fragment() {
         changePosition(0)
         setAdapter(0)
         requireContext().registerReceiver(broadcastReceiver, IntentFilter("inventory"))
+        requireActivity().registerReceiver(
+            syncReceiver,
+            IntentFilter(Constants.SYNC_NOTIFICATION)
+        )
         findNavController().currentBackStackEntry?.savedStateHandle?.getLiveData<String>(KEY)
             ?.observe(viewLifecycleOwner) { it ->
                 when (it) {

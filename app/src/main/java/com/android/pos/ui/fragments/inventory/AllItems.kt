@@ -1,6 +1,9 @@
 package com.android.pos.ui.fragments.inventory
 
+import android.content.BroadcastReceiver
+import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -19,6 +22,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.R
 import com.android.pos.data.entities.TbItem
+import com.android.pos.data.remote.Constants
 import com.android.pos.databinding.FragmentItemsBinding
 import com.android.pos.ui.adapter.boldpos.ItemListPageAdapter
 import com.android.pos.utils.AlertUtils
@@ -53,6 +57,14 @@ class AllItems(val clickedPosition: Int, val totalItems: Int) : Fragment(), Item
     var dragFrom = -1
     var dragTo = -1
 
+
+    private var syncReceiver = object : BroadcastReceiver() {
+        override fun onReceive(p0: Context?, p1: Intent?) {
+            getInventoryCountsObserver()
+        }
+
+    }
+
     private val TAG = this.javaClass.name
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -61,6 +73,12 @@ class AllItems(val clickedPosition: Int, val totalItems: Int) : Fragment(), Item
     ): View? {
         binding = FragmentItemsBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = this
+
+        requireActivity().registerReceiver(
+            syncReceiver,
+            IntentFilter(Constants.SYNC_NOTIFICATION)
+        )
+
         return binding.root
     }
 
@@ -74,6 +92,8 @@ class AllItems(val clickedPosition: Int, val totalItems: Int) : Fragment(), Item
         setupHelper()
         searchFilter()
         observeShowProgress()
+
+
     }
 
     private fun searchFilter() {
@@ -275,12 +295,8 @@ class AllItems(val clickedPosition: Int, val totalItems: Int) : Fragment(), Item
                     it?.let { resource ->
                         when (resource.status) {
                             Status.SUCCESS -> {
-
-                                Log.e(TAG, "inventroyCounts${Gson().toJson(resource)}")
                                 totalItemCount = it.data?.data?.activeItems ?: 0
                                 binding.edtSearch.hint = "Search (" + totalItemCount + ") Items"
-
-
                             }
                             Status.ERROR -> {
 

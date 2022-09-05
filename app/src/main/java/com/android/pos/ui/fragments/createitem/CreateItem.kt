@@ -375,7 +375,7 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback , I
 
     private fun getModifiers() {
 
-        viewModel.modifierSet.observe(requireActivity(), {
+        viewModel.modifierSet.observe(requireActivity()) {
 
             it.data?.let { it1 ->
                 adapter.add(it1)
@@ -384,7 +384,7 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback , I
                 }
 
             }
-        })
+        }
     }
 
     private fun setAdapter() {
