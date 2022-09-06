@@ -9,6 +9,7 @@ import androidx.lifecycle.viewModelScope
 import com.android.pos.R
 import com.android.pos.data.model.requestModel.LoginRequestModel
 import com.android.pos.data.model.responseModel.LogInResponse
+import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.AUTH_TOKEN
 import com.android.pos.data.remote.Constants.BASE_URL_NEW
 import com.android.pos.data.remote.Constants.EMAIL
@@ -136,7 +137,10 @@ class LoginViewModel @Inject constructor(
                                     it1
                                 )
                             }
-
+                            prefProvider.setValueboolean(
+                                Constants.ONLINE_ORDER_ENABLE,
+                                terminalResponse.terminalData.enabled_for_receiving_web_order!!
+                            )
                             prefProvider.setValueInt(TERMINAL_ID, terminalResponse.terminalData.id)
                             _data.value = Event(true)
 

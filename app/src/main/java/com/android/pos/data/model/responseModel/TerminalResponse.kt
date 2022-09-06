@@ -21,6 +21,8 @@ data class TerminalResponse(
         @SerializedName("uniq_id")
         val uniqId: String,
         @SerializedName("updated_at")
-        val updatedAt: String
+        val updatedAt: String,
+        @SerializedName("enabled_for_receiving_web_order")
+        val enabled_for_receiving_web_order: Boolean? = null,
     )
 }
