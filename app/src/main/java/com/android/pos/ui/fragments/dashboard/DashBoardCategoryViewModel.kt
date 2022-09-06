@@ -76,6 +76,7 @@ import java.text.NumberFormat
 import java.util.*
 import javax.inject.Inject
 import kotlin.collections.set
+import kotlin.math.ceil
 
 
 @HiltViewModel
@@ -897,8 +898,8 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                         var index = -1
                         Log.e(TAG, "CheckDeleteItem ${Gson().toJson(item)}")
-                        Log.e(TAG,"getListedItems  ${Gson().toJson(list[0])}")
-                        Log.e(TAG,"checkReOrder  ${cartModel?.reorder}")
+                        Log.e(TAG, "getListedItems  ${Gson().toJson(list[0])}")
+                        Log.e(TAG, "checkReOrder  ${cartModel?.reorder}")
 
                         for (i in list.indices) {
                             if (item != null) {
@@ -909,10 +910,10 @@ class DashBoardCategoryViewModel @Inject constructor(
                                             item
                                         ) && checkModifier(list[i], item)
                                     ) {
-                                        Log.e(TAG,"CheckedBefore")
+                                        Log.e(TAG, "CheckedBefore")
                                         index = i
                                         break
-                                    } else if (cartModel?.reorder == true ) {
+                                    } else if (cartModel?.reorder == true) {
                                         if (list[i].orderItemId == item.orderItemId) {
                                             index = i
                                             Log.e(TAG, "indexReorder:  ${index}")
@@ -925,7 +926,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                     if (list[i].manualSaleId == item.manualSaleId) {
                                         index = i
                                         break
-                                    } else if (cartModel?.reorder == true ) {
+                                    } else if (cartModel?.reorder == true) {
                                         if (list[i].orderItemId == item.orderItemId) {
                                             index = i
                                             Log.e(TAG, "indexReorder23:  ${index}")
@@ -1718,17 +1719,23 @@ class DashBoardCategoryViewModel @Inject constructor(
                 redeemLoyaltyInfo.loyaltyProgramsModel = activeLoyaltyProgram
 
                 //if customer has more points than required(minimum limit)
-                val availableLoyaltyAmount =
+                var availableLoyaltyAmount = 0.0
+                if (it.rewardPoint == 0) {
+                    it.rewardPoint = 1
+                }
+                availableLoyaltyAmount =
                     availablePoints * it.amount / it.rewardPoint
                 if (availableLoyaltyAmount > redeemLoyaltyInfo.total) {
-                    //if loyalty amount is more than total price
-
-                    redeemLoyaltyInfo.usedLoyaltyPoints =
-                        (redeemLoyaltyInfo.total * it.rewardPoint / it.amount).toInt()
-                    redeemLoyaltyInfo.usedLoyaltyAmount =
-                        (redeemLoyaltyInfo.usedLoyaltyPoints * it.amount / it.rewardPoint)
-                    redeemLoyaltyInfo.remainingAmount =
-                        redeemLoyaltyInfo.total - redeemLoyaltyInfo.usedLoyaltyAmount
+                    var pointDouble = (redeemLoyaltyInfo.total * it.rewardPoint) / it.amount
+                    redeemLoyaltyInfo.usedLoyaltyPoints = ceil(pointDouble).toInt()
+                    redeemLoyaltyInfo.usedLoyaltyAmount = pointDouble * it.amount / it.rewardPoint
+                    if (redeemLoyaltyInfo.usedLoyaltyAmount >= redeemLoyaltyInfo.total) {
+                        redeemLoyaltyInfo.remainingAmount =
+                            redeemLoyaltyInfo.usedLoyaltyAmount - redeemLoyaltyInfo.total
+                    } else {
+                        redeemLoyaltyInfo.remainingAmount =
+                            redeemLoyaltyInfo.total - redeemLoyaltyInfo.usedLoyaltyAmount
+                    }
                     redeemLoyaltyInfo.remainingLoyaltyPoints =
                         availablePoints - redeemLoyaltyInfo.usedLoyaltyPoints
                 } else {
@@ -1736,8 +1743,13 @@ class DashBoardCategoryViewModel @Inject constructor(
                         (availablePoints * it.amount / it.rewardPoint)
                     redeemLoyaltyInfo.usedLoyaltyPoints = availablePoints
                     redeemLoyaltyInfo.remainingLoyaltyPoints = 0
-                    redeemLoyaltyInfo.remainingAmount =
-                        redeemLoyaltyInfo.total - redeemLoyaltyInfo.usedLoyaltyAmount
+                    if (redeemLoyaltyInfo.usedLoyaltyAmount >= redeemLoyaltyInfo.total) {
+                        redeemLoyaltyInfo.remainingAmount =
+                            redeemLoyaltyInfo.usedLoyaltyAmount - redeemLoyaltyInfo.total
+                    } else {
+                        redeemLoyaltyInfo.remainingAmount =
+                            redeemLoyaltyInfo.total - redeemLoyaltyInfo.usedLoyaltyAmount
+                    }
                 }
                 //redeemLoyaltyInfo.isLoyaltyApplied = true
             }
@@ -3191,7 +3203,7 @@ class DashBoardCategoryViewModel @Inject constructor(
     fun syncInventoryModule() {
         _showProgress.value = Event(true)
         viewModelScope.launch {
-            val resource = posRepository.syncInventory(prefProvider.getValueInt(TERMINAL_ID,-1))
+            val resource = posRepository.syncInventory(prefProvider.getValueInt(TERMINAL_ID, -1))
             when (resource.status) {
                 Status.SUCCESS -> {
                     Log.e("SyncInventory", "SyncSuccess")
@@ -3764,7 +3776,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                 nf.maximumFractionDigits = 2
                 val rounded: String = nf.format(cashdiscountAmount)
                 cashdiscountAmount = rounded.toDouble()
-                Log.d(TAG, "itemCalculationForDineInPayment: "+cashdiscountAmount)
+                Log.d(TAG, "itemCalculationForDineInPayment: " + cashdiscountAmount)
 
 
                 MethodUtils.setPriceTextView(txtTotal, model.total)

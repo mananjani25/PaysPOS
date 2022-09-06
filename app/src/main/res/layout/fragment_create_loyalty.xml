@@ -91,6 +91,7 @@
                         android:layout_marginTop="@dimen/_5sdp"
                         android:paddingStart="@dimen/_5sdp"
                         android:text="@string/fixed_value"
+                        android:visibility="gone"
                         android:textColor="@color/txtColor"
                         android:textSize="@dimen/_7mdpi"
 
@@ -100,6 +101,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="0.5dp"
                         android:layout_marginTop="@dimen/_5sdp"
+                        android:visibility="gone"
 
                         android:background="@color/view" />
 
@@ -111,6 +113,7 @@
                         android:layout_marginTop="@dimen/_5sdp"
                         android:paddingStart="@dimen/_5sdp"
 
+                        android:visibility="gone"
                         android:text="@string/percentage_value"
                         android:textColor="@color/txtColor"
                         android:textSize="@dimen/_7mdpi"
@@ -120,7 +123,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="0.5dp"
                         android:layout_marginTop="@dimen/_5sdp"
-
+                        android:visibility="gone"
                         android:background="@color/view" />
 
                     <LinearLayout
