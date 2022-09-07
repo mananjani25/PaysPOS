@@ -24,7 +24,7 @@ data class LoyaltyProgramsModel(
     @SerializedName("name")
     val name: String,
     @SerializedName("reward_point")
-    val rewardPoint: Int,
+    var rewardPoint: Int,
     @SerializedName("reward_type")
     val rewardType: String,
     @SerializedName("updated_at")

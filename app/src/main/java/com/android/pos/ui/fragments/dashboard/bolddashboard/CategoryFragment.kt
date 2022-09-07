@@ -55,6 +55,7 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
     private var allItems: ArrayList<TbItem?> = arrayListOf()
     private var tabList: ArrayList<CategoryTabModel> = arrayListOf()
     var list: ArrayList<CategoryParentModel> = arrayListOf()
+    private lateinit var categoryTabAdapter: CategoryTabAdapter
     lateinit var itemListner: ItemListner
     private val TAG = "CategoryFragment"
 
@@ -153,6 +154,11 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
 
                             }
 
+                            val tabListLine: ArrayList<CategoryTabModel> = arrayListOf()
+                            for (i in 0 until list.size) {
+                                tabListLine.add(CategoryTabModel(0, "", i == 0, 0))
+                            }
+                            categoryTabAdapter.addList(tabListLine)
                             categoryParentAdapter.addList(list)
 
                             categoryList1[0].inventoryLists?.filter {
@@ -430,6 +436,11 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
                             )
                     }
                 }
+                val tabList: ArrayList<CategoryTabModel> = arrayListOf()
+                for (i in 0 until categoryParentAdapter.list.size) {
+                    tabList.add(CategoryTabModel(0, "", i == bindingAdapterPos, 0))
+                }
+                categoryTabAdapter.addList(tabList)
                 categoryParentAdapter.notifyDataSetChanged()
 
 
@@ -440,15 +451,9 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
                 super.onScrolled(recyclerView, dx, dy)
             }
         })
-
-
         val tabList: ArrayList<CategoryTabModel> = arrayListOf()
-        for (i in 0 until list.size) {
-            tabList.add(CategoryTabModel(0, "", i == 0, 0))
-        }
-
-        binding.rvTabLayout.adapter = CategoryTabAdapter(tabList)
-
+        categoryTabAdapter = CategoryTabAdapter(tabList)
+        binding.rvTabLayout.adapter = categoryTabAdapter
     }
 
 

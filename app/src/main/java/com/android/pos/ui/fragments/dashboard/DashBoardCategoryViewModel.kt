@@ -80,6 +80,7 @@ import java.text.NumberFormat
 import java.util.*
 import javax.inject.Inject
 import kotlin.collections.set
+import kotlin.math.ceil
 
 
 @HiltViewModel
@@ -1734,17 +1735,23 @@ class DashBoardCategoryViewModel @Inject constructor(
                 redeemLoyaltyInfo.loyaltyProgramsModel = activeLoyaltyProgram
 
                 //if customer has more points than required(minimum limit)
-                val availableLoyaltyAmount =
+                var availableLoyaltyAmount = 0.0
+                if (it.rewardPoint == 0) {
+                    it.rewardPoint = 1
+                }
+                availableLoyaltyAmount =
                     availablePoints * it.amount / it.rewardPoint
                 if (availableLoyaltyAmount > redeemLoyaltyInfo.total) {
-                    //if loyalty amount is more than total price
-
-                    redeemLoyaltyInfo.usedLoyaltyPoints =
-                        (redeemLoyaltyInfo.total * it.rewardPoint / it.amount).toInt()
-                    redeemLoyaltyInfo.usedLoyaltyAmount =
-                        (redeemLoyaltyInfo.usedLoyaltyPoints * it.amount / it.rewardPoint)
-                    redeemLoyaltyInfo.remainingAmount =
-                        redeemLoyaltyInfo.total - redeemLoyaltyInfo.usedLoyaltyAmount
+                    var pointDouble = (redeemLoyaltyInfo.total * it.rewardPoint) / it.amount
+                    redeemLoyaltyInfo.usedLoyaltyPoints = ceil(pointDouble).toInt()
+                    redeemLoyaltyInfo.usedLoyaltyAmount = pointDouble * it.amount / it.rewardPoint
+                    if (redeemLoyaltyInfo.usedLoyaltyAmount >= redeemLoyaltyInfo.total) {
+                        redeemLoyaltyInfo.remainingAmount =
+                            redeemLoyaltyInfo.usedLoyaltyAmount - redeemLoyaltyInfo.total
+                    } else {
+                        redeemLoyaltyInfo.remainingAmount =
+                            redeemLoyaltyInfo.total - redeemLoyaltyInfo.usedLoyaltyAmount
+                    }
                     redeemLoyaltyInfo.remainingLoyaltyPoints =
                         availablePoints - redeemLoyaltyInfo.usedLoyaltyPoints
                 } else {
@@ -1752,8 +1759,13 @@ class DashBoardCategoryViewModel @Inject constructor(
                         (availablePoints * it.amount / it.rewardPoint)
                     redeemLoyaltyInfo.usedLoyaltyPoints = availablePoints
                     redeemLoyaltyInfo.remainingLoyaltyPoints = 0
-                    redeemLoyaltyInfo.remainingAmount =
-                        redeemLoyaltyInfo.total - redeemLoyaltyInfo.usedLoyaltyAmount
+                    if (redeemLoyaltyInfo.usedLoyaltyAmount >= redeemLoyaltyInfo.total) {
+                        redeemLoyaltyInfo.remainingAmount =
+                            redeemLoyaltyInfo.usedLoyaltyAmount - redeemLoyaltyInfo.total
+                    } else {
+                        redeemLoyaltyInfo.remainingAmount =
+                            redeemLoyaltyInfo.total - redeemLoyaltyInfo.usedLoyaltyAmount
+                    }
                 }
                 //redeemLoyaltyInfo.isLoyaltyApplied = true
             }
