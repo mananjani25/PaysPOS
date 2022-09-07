@@ -198,6 +198,7 @@ class ReportEODFragment : Fragment(), AdapterView.OnItemSelectedListener {
             }
 
             binding.txtClockOut.setOnClickListener {
+
                 if (MethodUtils.isDoubleClick()) return@setOnClickListener
                 alert(
                     getString(R.string.app_name),

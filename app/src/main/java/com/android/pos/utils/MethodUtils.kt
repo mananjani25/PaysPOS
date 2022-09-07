@@ -7,7 +7,6 @@ import android.os.Build
 import android.os.SystemClock
 import android.provider.Settings
 import android.text.TextUtils
-import android.util.Log
 import android.view.inputmethod.InputMethodManager
 import android.widget.TextView
 import androidx.annotation.RequiresApi
@@ -293,6 +292,14 @@ class MethodUtils {
 
         fun isDoubleClick(): Boolean {
             if (SystemClock.elapsedRealtime() - mLastClickTime < 1000) {
+                return true
+            }
+            mLastClickTime = SystemClock.elapsedRealtime()
+            return false
+        }
+
+        fun isDoubleClickCategory(): Boolean {
+            if (SystemClock.elapsedRealtime() - mLastClickTime < 500) {
                 return true
             }
             mLastClickTime = SystemClock.elapsedRealtime()
