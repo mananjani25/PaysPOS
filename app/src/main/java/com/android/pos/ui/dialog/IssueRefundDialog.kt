@@ -450,7 +450,7 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
                             selectedTipDivided =
                                 paymentOrderDetailsResponse.data.tips / paymentOrderDetailsResponse.data.order.order_items.size
                         } else {
-                            selectedTipDivided += (paymentOrderDetailsResponse.data.tips * 1) / (paymentOrderDetailsResponse.data.sub_total + paymentOrderDetailsResponse.data.service_charge_amount + paymentOrderDetailsResponse.data.tax_amount)
+                            selectedTipDivided += (paymentOrderDetailsResponse.data.tips * item_total_price_included) / (paymentOrderDetailsResponse.data.sub_total + paymentOrderDetailsResponse.data.service_charge_amount + paymentOrderDetailsResponse.data.tax_amount)
                         }
                     } else {
                         selectedTipDivided += (paymentOrderDetailsResponse.data.tips * item_total_price_included) / (paymentOrderDetailsResponse.data.sub_total + paymentOrderDetailsResponse.data.service_charge_amount + paymentOrderDetailsResponse.data.tax_amount)
@@ -483,6 +483,8 @@ class IssueRefundDialog : DialogFragment(), TextWatcher {
                 totalItemPrice += selectedTipDivided
             } else if (totalItemPrice == 0.0) {
                 totalItemPrice += paymentOrderDetailsResponse.data.tips / paymentOrderDetailsResponse.data.order.order_items.size
+            }else{
+                totalItemPrice+=paymentOrderDetailsResponse.data.tips
             }
         }
         val nf3: NumberFormat = NumberFormat.getNumberInstance()
