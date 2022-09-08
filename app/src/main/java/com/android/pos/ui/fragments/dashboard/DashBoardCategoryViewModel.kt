@@ -8,6 +8,7 @@ import android.os.StrictMode
 import android.util.Base64
 import android.util.Log
 import androidx.appcompat.widget.AppCompatTextView
+import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -19,6 +20,7 @@ import androidx.paging.cachedIn
 import com.android.pos.MainApplication
 import com.android.pos.data.db.AppDatabase
 import com.android.pos.data.entities.*
+import com.android.pos.data.entities.ModifierSet
 import com.android.pos.data.model.DineInModel
 import com.android.pos.data.model.DineInOrderDetailAttributes
 import com.android.pos.data.model.GuestPaymentCalculationModel
@@ -1917,7 +1919,7 @@ class DashBoardCategoryViewModel @Inject constructor(
         orderTaxID: Boolean
     ): CartModel {
         item.taxes?.forEachIndexed { indextax, itemtype ->
-            if (itemtype.isActive) {
+            if (itemtype.isActive && !itemtype.isDeleted) {
                 if (cartModel.taxlistDynamic?.isNotEmpty() == true) {
                     var found = -1
                     cartModel.taxlistDynamic!!.forEachIndexed { index, itemData ->
@@ -2081,7 +2083,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     private fun taxCalculation(item: TbItem, discountPrice: Double) {
         item.taxes?.forEach { tax ->
-            if (tax.isActive) {
+            if (tax.isActive && !tax.isDeleted) {
 
                 var modifierPrice = 0.0
                 val price =
@@ -2127,7 +2129,7 @@ class DashBoardCategoryViewModel @Inject constructor(
 
     private fun taxCalculationReorder(item: TbItem) {
         item.taxes?.forEach { tax ->
-            if (tax.isActive) {
+            if (tax.isActive && !tax.isDeleted) {
 
                 var modifierPrice = 0.0
                 val price =
@@ -3216,7 +3218,112 @@ class DashBoardCategoryViewModel @Inject constructor(
     }
 
 
-    fun syncInventoryModule() {
+    fun syncInventoryModule(requireActivity: FragmentActivity) {
+        _showProgress.value = Event(true)
+        viewModelScope.launch {
+            val resource = posRepository.syncInventory(prefProvider.getValueInt(TERMINAL_ID, -1))
+            when (resource.status) {
+                Status.SUCCESS -> {
+                    Log.e("SyncInventory", "SyncSuccess")
+
+                    resource.data.let { response ->
+                        if (response?.status == 200) {
+                            _showProgress.value = Event(false)
+//                            posRepository.saveDatabase(response)
+
+                            val mData = response.data
+                            val mCategory = mData.categories
+                            val categoryModelList = ArrayList<TbCategory>()
+                            val inventoryModelList = ArrayList<TbItem>()
+                            val modifierSetList = ArrayList<ModifierSet>()
+                            val itemModifierSetList = ArrayList<ItemModifierSets>()
+                            mCategory.forEach { category ->
+                                val model = TbCategory().apply {
+                                    createdAt = ""
+                                    id = category.id
+                                    active = category.active
+                                    name = category.name
+                                    sort = category.sort
+                                    updatedAt = ""
+                                    locationId = category.locationId
+                                    item_ids = category.itemIds
+                                    thumbImgUrl = category.thumbImgUrl
+                                    originalImgUrl = category.originalImgUrl
+                                    isDeleted = category.isDeleted
+                                }
+                                categoryModelList.add(model)
+
+                                category.items.forEach {
+
+                                    var items: TbItem? = null
+                                    posRepository.getSingleItem(it.id)
+                                        ?.observe(requireActivity) { model ->
+
+                                            items = if (model != null) {
+
+                                                TbItem().convertToItem1(it, category, model)
+                                            } else {
+                                                Log.e("getSingleItem", "222222222")
+                                                TbItem().convertToItem(it, category)
+                                            }
+
+                                            items?.let { it1 -> inventoryModelList.add(it1) }
+
+                                        }
+
+
+                                    it.modifierSets.forEach { modifierSets ->
+
+                                        val itemModifierSets = ItemModifierSets().apply {
+                                            itemId = it.id
+                                            modifierSetId = modifierSets.id!!
+                                            minRequired = modifierSets.min_required
+                                            maxAllowed = modifierSets.max_allowed
+                                            isDeleted = modifierSets.isDeleted
+                                        }
+
+                                        itemModifierSetList.add(itemModifierSets)
+                                    }
+
+                                    modifierSetList.addAll(it.modifierSets)
+
+
+                                }
+                            }
+
+                            appDatabase.categoryDao().addAll(categoryModelList)
+                            appDatabase.itemDao().addAllItem(inventoryModelList)
+                            appDatabase.modifierSetDao().addAll(modifierSetList)
+                            appDatabase.itemModifierSetsDao().addAll(itemModifierSetList)
+                            appDatabase.optionSetDao().addAll(mData.optionSets)
+
+
+                        } else {
+                            _tableStatus.value = response?.let { Event(it.message) }
+                        }
+
+                        syncSettingModule()
+
+                    }
+                }
+
+                Status.ERROR -> {
+                    Log.e("SyncInventory", "SyncError")
+                    _snackbarText.value = Event(resource.message.toString())
+                    _showProgress.value = Event(false)
+                }
+
+                Status.LOADING -> {
+                    Log.e("SyncInventory", "SyncLoading")
+                    _showProgress.value = Event(true)
+                }
+            }
+
+        }
+    }
+
+
+    fun syncInventoryModuleN() {
         _showProgress.value = Event(true)
         viewModelScope.launch {
             val resource = posRepository.syncInventory(prefProvider.getValueInt(TERMINAL_ID, -1))
@@ -3234,7 +3341,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                             _tableStatus.value = response?.let { Event(it.message) }
                         }
 
-                        syncSettingModule()
+//                        syncSettingModule()
 
                     }
                 }

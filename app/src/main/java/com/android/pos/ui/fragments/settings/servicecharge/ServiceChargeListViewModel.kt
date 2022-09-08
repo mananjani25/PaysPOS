@@ -191,18 +191,20 @@ class ServiceChargeListViewModel @Inject constructor(
             _showProgress.value = Event(true)
             viewModelScope.launch {
                 var resource:Resource<ServiceChargeUpdate>?=null
-                if(isFromTakeout){
-                    resource = taxServiceChargeRepository.updateServiceChargeEnable(locationId, enableservice)
+                resource = if(isFromTakeout){
+                    taxServiceChargeRepository.updateServiceChargeEnable(locationId, enableservice)
                 }else{
-                    resource = taxServiceChargeRepository.updateServiceChargeDineinEnable(locationId, enableservice)
+                    taxServiceChargeRepository.updateServiceChargeDineinEnable(locationId, enableservice)
                 }
-                when (resource?.status) {
+                when (resource.status) {
                     Status.SUCCESS -> {
                         _showProgress.value = Event(false)
 
                         resource.data.let {
                             if (it?.status == 200) {
                                 resource.data?.let { servicechargeupdate ->
+
+
                                     prefProvider.setValueboolean(
                                         Constants.SERVICECHARGE_TAKEOUT_OPENORDER,
                                         servicechargeupdate.data.serviceChargeEnable

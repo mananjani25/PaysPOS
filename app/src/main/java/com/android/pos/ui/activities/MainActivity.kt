@@ -171,7 +171,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
 
             LogUtil.logEN("onReceive", "" + p1?.action)
 
-                dashBoardCategoryViewModel.syncInventoryModule()
+                dashBoardCategoryViewModel.syncInventoryModule(this@MainActivity)
 
 
 

@@ -34,7 +34,7 @@ interface DBItemDao {
     */
 
     @Query("select * from TbItem where TbItem.name like :desc and TbItem.isHide = 1 and TbItem.name != 'Manual Item' GROUP by TbItem.itemId ORDER BY TbItem.sort DESC")
-    fun getItemSearchResults(desc:String):PagingSource<Int,TbItem>
+    fun getItemSearchResults(desc: String): PagingSource<Int, TbItem>
 
 
     @get:Query("select * from TbItem where TbItem.isHide = 0 and TbItem.isDeleted = 0 and TbItem.name != 'Manual Item' ORDER BY TbItem.sort DESC")
@@ -52,8 +52,8 @@ interface DBItemDao {
     @Query("SELECT * from TbItem where TbItem.sku  = :productCode and TbItem.name != 'Manual Item' and TbItem.isDeleted = 0 LIMIT 1")
     fun itemByProductCode(productCode: String): LiveData<TbItem>?
 
-    @Query("SELECT * from TbItem  where TbItem.isDeleted = 0 LIMIT 1")
-    fun itemOne(): TbItem?
+    @Query("SELECT * from TbItem  where TbItem.itemId = :id LIMIT 1")
+    fun itemOne(id: Int): LiveData<TbItem?>?
 
     @Query("SELECT * from TbItem where TbItem.itemId  = :restId  and TbItem.isDeleted = 0 LIMIT 1")
     fun itemByInventoryId(restId: Int?): TbItem?
