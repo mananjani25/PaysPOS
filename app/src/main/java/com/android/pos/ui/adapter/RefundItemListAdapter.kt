@@ -234,13 +234,14 @@ class RefundItemListAdapter(val viewModel: TransactionDetailsViewModel) :
                 if (final_Amount == 0.0) {
                     tip_divided = tipValue / noteList.size
                 } else {
-                    tip_divided = (1 * tipValue) / final_Amount
+                    tip_divided = (totalItemPrice * tipValue) / final_Amount
                 }
             } else {
                 if (cashdiscountType == "SurCharge") {
-                    tip_divided = (totalItemPrice * tipValue) / (final_Amount + cash_discount_or_surcharge)
-                }else{
-                    tip_divided = (totalItemPrice * tipValue)
+                    tip_divided =
+                        (totalItemPrice * tipValue) / (final_Amount + cash_discount_or_surcharge)
+                } else {
+                    tip_divided = (totalItemPrice * tipValue) / (final_Amount)
                 }
             }
 
@@ -249,12 +250,18 @@ class RefundItemListAdapter(val viewModel: TransactionDetailsViewModel) :
             val rounded: String = nf1.format(tip_divided)
             tip_divided = rounded.toDouble()
             if (paymentType == "Card") {
-                if (totalItemPrice >= tip_divided) {
-                    totalItemPrice += tip_divided
-                } else if (totalItemPrice == 0.0) {
-                    totalItemPrice += tipValue / noteList.size
-                }
+                    if (totalItemPrice >= tip_divided) {
+                        totalItemPrice += tip_divided
+                    } else if (totalItemPrice == 0.0) {
+                        totalItemPrice += tipValue / noteList.size
+                    } else {
+                        totalItemPrice += tipValue
+                    }
             }
+
+
+
+
             Log.d(
                 "yash",
                 "bind: [$absoluteAdapterPosition] tip_divided : $tip_divided"
