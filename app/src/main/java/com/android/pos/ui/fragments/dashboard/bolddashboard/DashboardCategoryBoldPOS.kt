@@ -14,10 +14,7 @@ import android.view.ViewGroup
 import android.view.WindowManager
 import androidx.activity.OnBackPressedCallback
 import androidx.annotation.RequiresApi
-import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
-import androidx.fragment.app.activityViewModels
-import androidx.fragment.app.setFragmentResultListener
+import androidx.fragment.app.*
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.android.pos.R
@@ -47,6 +44,7 @@ import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.android.pos.ui.fragments.payment.PaymentViewModel
 import com.android.pos.ui.fragments.settings.hardware.printer.BluetoothUtil
 import com.android.pos.ui.fragments.settings.hardware.printer.SunmiPrintHelper
+import com.android.pos.ui.fragments.settings.servicecharge.ServiceChargeListViewModel
 import com.android.pos.utils.*
 import com.android.pos.utils.callback.ItemClickListner
 import com.android.pos.utils.callback.ItemListner
@@ -72,7 +70,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
     ScannerAppEngine.IScannerAppEngineDevEventsDelegate {
     private var dineInList: List<DineInModel>? = null
     private var cartList: ArrayList<CartModel> = arrayListOf()
-
+    private val viewModelServiceCharge by viewModels<ServiceChargeListViewModel>()
     private val viewModel by activityViewModels<DashBoardCategoryViewModel>()
     private val viewModelPayment by activityViewModels<PaymentViewModel>()
     private var serviceChargesList: ArrayList<TbServiceCharge>? = null
@@ -152,9 +150,17 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         getwebOrderingCountObserver()
         getDineInData()
         checkSearch()
+        observeServiceChargeUpdate()
         prefProvider.setValueboolean(Constants.ORDER_COMPLETED, false)
         binding.lifecycleOwner = this
         return binding.root
+    }
+
+    private fun observeServiceChargeUpdate() {
+
+        viewModelServiceCharge.dataupdate.observe(requireActivity(), Observer {
+            getServiceCharges()
+        })
     }
 
     private fun checkSearch() {
@@ -488,7 +494,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         val sync = prefProvider.getValueboolean(Constants.SYNC_DATA, false)
         if (!sync) {
             ProgressUtils.showProgressDialog(requireActivity())
-            viewModel.syncInventoryModule()
+            viewModel.syncInventoryModule(requireActivity())
         } else {
             viewModel.getOnlineOrderCount()
         }
@@ -606,7 +612,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         }
 
         binding.layoutHeader.imgSync.setOnClickListener {
-            viewModel.syncInventoryModule()
+            viewModel.syncInventoryModule(requireActivity())
         }
         /* binding.layoutHeader.txtOpenOrder.setOnClickListener {
          loadCategoryFragment(CategoryFragment(this))
@@ -648,7 +654,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
 
     override fun onItemSelected(item: TbItem) {
-        Log.e(TAG,"onItemSelectedItem:  ${Gson().toJson(item)}")
+        Log.e(TAG, "onItemSelectedItem:  ${Gson().toJson(item)}")
 
         if (cartList.isEmpty() && viewModel.cartModel != null) {
             cartList = arrayListOf()
@@ -685,7 +691,10 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                         cartList[0].dineInList = dineInList
                     }
 
-                    LogUtil.logE(TAG, "dineInCartListData:  ${Gson().toJson(cartList[0].dineInList)}")
+                    LogUtil.logE(
+                        TAG,
+                        "dineInCartListData:  ${Gson().toJson(cartList[0].dineInList)}"
+                    )
                     if (cartList[0].dineInList?.isNotEmpty() == true) {
                         var dineInList = cartList[0].dineInList
                         dineInList!![0]?.selectedPosition = viewModel.dineInHeaderPosition
@@ -826,6 +835,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         prefProvider.saveCustomerData(null)
         prefProvider.setValueboolean(Constants.LOYALTY_ADDED, false)
     }
+
 
     private fun getServiceCharges() {
 
@@ -1046,7 +1056,10 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
                 cartList[0].note = arguments?.getString("order_note").toString()
                 LogUtil.logE("AAjeDine", "cartdiscountPrice  ${cartList[0].discountPrice}")
-                LogUtil.logE("AAjeDine", "dineTotalDiscount  ${arguments?.getDouble("totalDiscount")}")
+                LogUtil.logE(
+                    "AAjeDine",
+                    "dineTotalDiscount  ${arguments?.getDouble("totalDiscount")}"
+                )
                 cartList[0].discountPrice = arguments?.getDouble("totalDiscount") ?: 0.0
                 viewModel.cartLogic(cartList, null, Constants.ADD, false, dineInList = dineInList)
                 // viewModel.orderItemDiscount = arguments?.getDouble("totalDiscount") ?: 0.0

@@ -5,7 +5,6 @@ import android.app.Dialog
 import android.graphics.Color
 import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.ColorDrawable
-import android.os.Build
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -46,7 +45,6 @@ import com.android.pos.utils.extensions.gone
 import com.android.pos.utils.extensions.visible
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
-import java.util.stream.Collectors
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -268,7 +266,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
 
         }
         binding.layoutHeader.imgSync.setOnClickListener {
-            viewModel.syncInventoryModule()
+            viewModel.syncInventoryModule(requireActivity())
         }
         binding.layoutHeader.imgDrawer.setOnClickListener {
             findNavController().navigate(R.id.action_manualSalesNew_to_menuFragment)

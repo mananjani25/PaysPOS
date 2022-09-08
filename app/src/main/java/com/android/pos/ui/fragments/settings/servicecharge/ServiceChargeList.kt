@@ -169,7 +169,7 @@ class ServiceChargeList : Fragment(), ServiceChargeListAdapter.ItemCallback,
                     }
                     setTaxDatatakeout(takeout_servicechargelist)
                     setTaxDataDinein(dinein_servicechargelist)
-                    var temp_arraylist: ArrayList<TbServiceCharge> = arrayListOf()
+                    val temp_arraylist: ArrayList<TbServiceCharge> = arrayListOf()
                     temp_arraylist.addAll(takeout_servicechargelist)
                     temp_arraylist.addAll(dinein_servicechargelist)
                     viewModel.updateData(temp_arraylist)
