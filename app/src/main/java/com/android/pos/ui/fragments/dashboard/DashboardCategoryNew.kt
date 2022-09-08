@@ -440,7 +440,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
         val sync = prefProvider.getValueboolean(Constants.SYNC_DATA, false)
         if (!sync)
-            viewModel.syncInventoryModule()
+            viewModel.syncInventoryModule(requireActivity())
     }
 
     private fun checkDineInEditOrder() {
@@ -963,7 +963,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
         }
 
         binding.layoutMenu.imgSync.setOnClickListener {
-            viewModel.syncInventoryModule()
+//            viewModel.syncInventoryModule()
         }
 
         binding.footer.linearMore.setOnClickListener {

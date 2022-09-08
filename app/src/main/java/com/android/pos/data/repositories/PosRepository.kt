@@ -3,6 +3,7 @@ package com.android.pos.data.repositories
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.Observer
 import com.android.pos.data.db.AppDatabase
 import com.android.pos.data.db.IDataManager
 import com.android.pos.data.entities.*
@@ -267,6 +268,9 @@ class PosRepository @Inject constructor(
         performGetOperationDatabase(databaseQuery = {
             appDatabase.itemDao().getItemList(id)
         })
+
+    fun getSingleItem(id: Int) = appDatabase.itemDao().itemOne(id)
+
 
     fun modifierSetsList() =
         performGetOperationDatabase(databaseQuery = { appDatabase.modifierSetDao().all })
