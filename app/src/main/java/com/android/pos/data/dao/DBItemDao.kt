@@ -6,6 +6,7 @@ import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import com.android.pos.data.entities.TaxData
 import com.android.pos.data.entities.TbItem
 
 /**
@@ -90,5 +91,8 @@ interface DBItemDao {
 
     @Query("UPDATE TbItem SET itemQuantity = :qty WHERE  TbItem.itemId = :id")
     fun updateItemQty(id: Int?, qty: Int?)
+
+    @Query("UPDATE TbItem SET taxes  = :newItem WHERE  TbItem.itemId = :id")
+    suspend fun updateItemTaxes(id:Int,newItem:List<TaxData>)
 
 }

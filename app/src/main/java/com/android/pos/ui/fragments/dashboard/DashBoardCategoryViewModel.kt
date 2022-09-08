@@ -72,6 +72,7 @@ import com.squareup.okhttp.Response
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.io.ByteArrayOutputStream
 import java.io.IOException
@@ -3234,9 +3235,11 @@ class DashBoardCategoryViewModel @Inject constructor(
                             val mData = response.data
                             val mCategory = mData.categories
                             val categoryModelList = ArrayList<TbCategory>()
-                            val inventoryModelList = ArrayList<TbItem>()
+                            var inventoryModelList = ArrayList<TbItem>()
+
                             val modifierSetList = ArrayList<ModifierSet>()
                             val itemModifierSetList = ArrayList<ItemModifierSets>()
+
                             mCategory.forEach { category ->
                                 val model = TbCategory().apply {
                                     createdAt = ""
@@ -3253,46 +3256,95 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 }
                                 categoryModelList.add(model)
 
+
+
                                 category.items.forEach {
 
+                                    /* var itemTb = TbItem()
+                                     posRepository.getSingleItem(it.id)
+                                         ?.observe(requireActivity) { model ->
+                                             if (model != null) {
+                                                 itemTb = model
+                                             }
+                                         }
+
+                                     if (itemTb != null){
+                                         var item = TbItem().convertToItem1(it, category, itemTb)
+                                         Log.e("getItemTax","getItemTaxes  ${Gson().toJson(item.taxes)}")
+                                         item.taxes?.let { it1 ->
+                                             viewModelScope.launch {
+                                                 appDatabase.itemDao().updateItemTaxes(
+                                                     item.itemId,
+                                                     it1
+                                                 )
+                                             }
+                                         }
+                                     }
+
+ */
                                     var items: TbItem? = null
                                     posRepository.getSingleItem(it.id)
                                         ?.observe(requireActivity) { model ->
 
+
                                             items = if (model != null) {
 
                                                 TbItem().convertToItem1(it, category, model)
+
+
                                             } else {
                                                 Log.e("getSingleItem", "222222222")
                                                 TbItem().convertToItem(it, category)
                                             }
 
-                                            items?.let { it1 -> inventoryModelList.add(it1) }
 
+                                            Log.e("GetItemAdd", "${Gson().toJson(items)}")
+
+
+                                                inventoryModelList.add(
+                                                    inventoryModelList.size ,
+                                                    items!!
+                                                )
+
+
+                                            Log.e(
+                                                "GetItemAdd",
+                                                "inventoryModelList:  ${
+                                                    Gson().toJson(inventoryModelList)
+                                                }"
+                                            )
+
+
+
+
+                                            it.modifierSets.forEach { modifierSets ->
+
+                                                val itemModifierSets = ItemModifierSets().apply {
+                                                    itemId = it.id
+                                                    modifierSetId = modifierSets.id!!
+                                                    minRequired = modifierSets.min_required
+                                                    maxAllowed = modifierSets.max_allowed
+                                                    isDeleted = modifierSets.isDeleted
+                                                }
+
+                                                itemModifierSetList.add(itemModifierSets)
+                                            }
+
+                                            modifierSetList.addAll(it.modifierSets)
                                         }
-
-
-                                    it.modifierSets.forEach { modifierSets ->
-
-                                        val itemModifierSets = ItemModifierSets().apply {
-                                            itemId = it.id
-                                            modifierSetId = modifierSets.id!!
-                                            minRequired = modifierSets.min_required
-                                            maxAllowed = modifierSets.max_allowed
-                                            isDeleted = modifierSets.isDeleted
-                                        }
-
-                                        itemModifierSetList.add(itemModifierSets)
-                                    }
-
-                                    modifierSetList.addAll(it.modifierSets)
 
 
                                 }
+
+
                             }
 
+                            delay(1000)
+
                             appDatabase.categoryDao().addAll(categoryModelList)
+                            Log.e(TAG, "passedSyncItems  ${Gson().toJson(inventoryModelList)}")
                             appDatabase.itemDao().addAllItem(inventoryModelList)
+
                             appDatabase.modifierSetDao().addAll(modifierSetList)
                             appDatabase.itemModifierSetsDao().addAll(itemModifierSetList)
                             appDatabase.optionSetDao().addAll(mData.optionSets)

@@ -95,9 +95,14 @@ class TbItem : Parcelable {
         return this
     }
 
+
+
     fun convertToItem1(item: Item, category: Category?, model: TbItem): TbItem {
 
+        var modeTb = TbItem()
+
         Log.e("TaxList", Gson().toJson(item.taxes))
+        Log.e("TaxListDataBase", "dataTax  ${Gson().toJson(model.taxes)}")
 
         val itemList = mutableListOf<TaxData>()
 
@@ -108,35 +113,37 @@ class TbItem : Parcelable {
 
             if (itemList.contains(it) && it.isDeleted) {
                 itemList.remove(it)
-            } else if (!itemList.contains(it)) {
+            } else if (!itemList.contains(it) && !it.isDeleted) {
                 itemList.add(it)
             }
         }
 
 
+        Log.e("convertToItem1NAme", "" + item.name)
         Log.e("convertToItem1", Gson().toJson(itemList))
 
-        itemId = item.id
-        name = item.name ?: ""
-        cost = item.cost
-        price = item.price
-        priceType = item.priceType ?: ""
-        quantity = item.quantity
-        kitchenName = item.kitchenName ?: ""
-        productCode = item.productCode ?: ""
-        sku = item.sku ?: ""
-        isHide = item.active
-        sort = item.sort
-        imageUrl = item.originalImageUrl
-        thumbImageUrl = item.thumbImageUrl
-        categoryId = category?.id ?: item.categoryId ?: 0
-        categoryName = category?.name ?: item.categoryName ?: ""
-        taxes = itemList
-        modifier_set_ids = item.modifierSetIds
-        variationsAttributes = item.variations
-        shortDescription = item.desc ?: ""
-        isDeleted = item.isDeleted
-        return this
+        modeTb.taxes = itemList
+
+        modeTb.itemId = item.id
+        modeTb.name = item.name ?: ""
+        modeTb.cost = item.cost
+        modeTb.price = item.price
+        modeTb.priceType = item.priceType ?: ""
+        modeTb.quantity = item.quantity
+        modeTb.kitchenName = item.kitchenName ?: ""
+        modeTb.productCode = item.productCode ?: ""
+        modeTb.sku = item.sku ?: ""
+        modeTb.isHide = item.active
+        modeTb.sort = item.sort
+        modeTb.imageUrl = item.originalImageUrl
+        modeTb.thumbImageUrl = item.thumbImageUrl
+        modeTb.categoryId = category?.id ?: item.categoryId ?: 0
+        modeTb.categoryName = category?.name ?: item.categoryName ?: ""
+        modeTb.modifier_set_ids = item.modifierSetIds
+        modeTb.variationsAttributes = item.variations
+        modeTb.shortDescription = item.desc ?: ""
+        modeTb.isDeleted = item.isDeleted
+        return modeTb
     }
 
 }
