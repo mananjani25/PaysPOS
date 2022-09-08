@@ -40,6 +40,10 @@ class DineInOrderTableViewModel @Inject constructor(
     private val _showProgress = MutableLiveData<Event<Boolean>>()
     val showProgress: LiveData<Event<Boolean>> = _showProgress
 
+    private val _showProgressMessage = MutableLiveData<Event<Boolean>>()
+    val showProgressMessage: LiveData<Event<Boolean>> = _showProgressMessage
+
+
     private val _snackbarText = MutableLiveData<Event<Any?>>()
     val snackbarText: LiveData<Event<Any?>> = _snackbarText
 
@@ -103,13 +107,13 @@ class DineInOrderTableViewModel @Inject constructor(
         isAllPaymentComplete: Boolean,
         orderReq: DineInOrderPayment
     ) {
-        _showProgress.value = Event(true)
+        _showProgressMessage.value = Event(true)
         viewModelScope.launch {
             val resource = posRepository.payByGuest(id, isAllPaymentComplete, model)
 
             when (resource.status) {
                 Status.SUCCESS -> {
-                    _showProgress.value = Event(false)
+                    _showProgressMessage.value = Event(false)
                     resource.data.let { response ->
 
                         if (response != null && response.data.order.payments.get(response.data.order.payments.size - 1).paymentType.equals("Cash",true)) {
@@ -125,11 +129,11 @@ class DineInOrderTableViewModel @Inject constructor(
 
                 Status.ERROR -> {
                     _guestPayment.value = Event(resource.message.toString())
-                    _showProgress.value = Event(false)
+                    _showProgressMessage.value = Event(false)
                 }
 
                 Status.LOADING -> {
-                    _showProgress.value = Event(true)
+                    _showProgressMessage.value = Event(true)
                 }
             }
 
@@ -359,7 +363,7 @@ class DineInOrderTableViewModel @Inject constructor(
 
         when (resource.status) {
             Status.SUCCESS -> {
-                _showProgress.value = Event(false)
+                _showProgressMessage.value = Event(false)
                 resource.data.let { response ->
                     if (response?.status == 200) {
 
@@ -395,11 +399,11 @@ class DineInOrderTableViewModel @Inject constructor(
 
             Status.ERROR -> {
                 _snackbarText.value = Event(resource.message)
-                _showProgress.value = Event(false)
+                _showProgressMessage.value = Event(false)
             }
 
             Status.LOADING -> {
-                _showProgress.value = Event(true)
+                _showProgressMessage.value = Event(true)
             }
         }
     }
@@ -424,7 +428,7 @@ class DineInOrderTableViewModel @Inject constructor(
 
         when (resource.status) {
             Status.SUCCESS -> {
-                _showProgress.value = Event(false)
+                _showProgressMessage.value = Event(false)
                 resource.data.let { response ->
                     if (response?.status == 200) {
 
@@ -444,11 +448,11 @@ class DineInOrderTableViewModel @Inject constructor(
 
             Status.ERROR -> {
                 _snackbarText.value = Event(resource.message)
-                _showProgress.value = Event(false)
+                _showProgressMessage.value = Event(false)
             }
 
             Status.LOADING -> {
-                _showProgress.value = Event(true)
+                _showProgressMessage.value = Event(true)
             }
         }
     }
