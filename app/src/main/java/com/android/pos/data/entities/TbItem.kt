@@ -96,7 +96,6 @@ class TbItem : Parcelable {
     }
 
 
-
     fun convertToItem1(item: Item, category: Category?, model: TbItem): TbItem {
 
         var modeTb = TbItem()
@@ -105,18 +104,52 @@ class TbItem : Parcelable {
         Log.e("TaxListDataBase", "dataTax  ${Gson().toJson(model.taxes)}")
 
         val itemList = mutableListOf<TaxData>()
-
-
-        model.taxes?.let { itemList.addAll(it) }
-
+        var itemTaxIds: ArrayList<Int> = arrayListOf()
         item.taxes?.forEach {
+            itemTaxIds.add(it.id)
+        }
 
-            if (itemList.contains(it) && it.isDeleted) {
-                itemList.remove(it)
-            } else if (!itemList.contains(it) && !it.isDeleted) {
+
+        model.taxes?.let {
+
+            itemList.addAll(it)
+        }
+
+        Log.e("GetTaxPre", "itemTaxIds:  ${Gson().toJson(itemTaxIds)}")
+        Log.e("GetTaxPre", "itemGetTax  ${Gson().toJson(itemList)}")
+
+
+        item.taxes?.forEachIndexed { index, it ->
+
+            if (!itemList.contains(it) && !it.isDeleted && it.isActive) {
                 itemList.add(it)
             }
         }
+
+
+        if (item.taxes != null && item.taxes?.isNotEmpty() == true && itemList.isNotEmpty()) {
+            for (j in 0 until item.taxes!!.size) {
+
+                for (i in 0 until itemList.size) {
+                    if (item.taxes!!.get(j).isDeleted || !item.taxes?.get(j)?.isActive!! && item.taxes?.get(j)?.id != null) {
+                        if (itemList.get(i).id == item.taxes?.get(j)?.id) {
+                            Log.e("ChcekItemREmove", "Dioneff")
+                            itemList.removeAt(i)
+                        }
+                    }
+                }
+
+
+            }
+        }
+
+
+
+
+
+
+
+
 
 
         Log.e("convertToItem1NAme", "" + item.name)
