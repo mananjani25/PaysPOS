@@ -1,14 +1,13 @@
 package com.android.pos.ui.adapter.boldpos
 
 import android.content.Context
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.data.model.CategoryTabModel
 import com.android.pos.databinding.ViewBoldCategoryBinding
 import com.android.pos.ui.adapter.CategoryTabAdapter1
-import com.google.gson.Gson
+import com.android.pos.utils.MethodUtils
 
 class CategoryAdapter(
     val context: Context,
@@ -39,6 +38,9 @@ class CategoryAdapter(
                 binding.txtCategoryName.text = model.title
             }
             binding.root.setOnClickListener {
+                if (MethodUtils.isDoubleClickCategory()) return@setOnClickListener
+
+
                 listner.onTabSelected(bindingAdapterPosition)
                 list.forEachIndexed { index, categoryTabModel ->
 

@@ -99,7 +99,7 @@
                 android:gravity="center"
                 android:hint="Search by item"
                 android:imeOptions="actionDone"
-                android:inputType="text"
+                android:inputType="textVisiblePassword"
                 android:lines="1"
                 android:maxWidth="@dimen/_100sdp"
                 android:maxLines="1"

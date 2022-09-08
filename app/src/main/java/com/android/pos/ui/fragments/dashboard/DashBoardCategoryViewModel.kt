@@ -13,6 +13,10 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
+import androidx.paging.PagingData
+import androidx.paging.cachedIn
 import com.android.pos.MainApplication
 import com.android.pos.data.db.AppDatabase
 import com.android.pos.data.entities.*
@@ -78,6 +82,7 @@ import java.text.NumberFormat
 import java.util.*
 import javax.inject.Inject
 import kotlin.collections.set
+import kotlin.math.ceil
 
 
 @HiltViewModel
@@ -226,6 +231,18 @@ class DashBoardCategoryViewModel @Inject constructor(
 
 
     fun getItemByCategoryId(id: Int) = posRepository.getItemByCategoryId(id)
+
+
+    fun itemsByCat(id: Int): kotlinx.coroutines.flow.Flow<PagingData<TbItem>> = Pager(
+        config = PagingConfig(
+            pageSize = 20,
+            enablePlaceholders = false,
+            initialLoadSize = 20
+        )
+    ) {
+        appDatabase.itemDao().getItemListByCategory(id)
+    }.flow.cachedIn(viewModelScope)
+
 
     /*
         fun getCartList(orderType:String,employee_Id: Int) : List<CartModel>{
@@ -1720,17 +1737,23 @@ class DashBoardCategoryViewModel @Inject constructor(
                 redeemLoyaltyInfo.loyaltyProgramsModel = activeLoyaltyProgram
 
                 //if customer has more points than required(minimum limit)
-                val availableLoyaltyAmount =
+                var availableLoyaltyAmount = 0.0
+                if (it.rewardPoint == 0) {
+                    it.rewardPoint = 1
+                }
+                availableLoyaltyAmount =
                     availablePoints * it.amount / it.rewardPoint
                 if (availableLoyaltyAmount > redeemLoyaltyInfo.total) {
-                    //if loyalty amount is more than total price
-
-                    redeemLoyaltyInfo.usedLoyaltyPoints =
-                        (redeemLoyaltyInfo.total * it.rewardPoint / it.amount).toInt()
-                    redeemLoyaltyInfo.usedLoyaltyAmount =
-                        (redeemLoyaltyInfo.usedLoyaltyPoints * it.amount / it.rewardPoint)
-                    redeemLoyaltyInfo.remainingAmount =
-                        redeemLoyaltyInfo.total - redeemLoyaltyInfo.usedLoyaltyAmount
+                    var pointDouble = (redeemLoyaltyInfo.total * it.rewardPoint) / it.amount
+                    redeemLoyaltyInfo.usedLoyaltyPoints = ceil(pointDouble).toInt()
+                    redeemLoyaltyInfo.usedLoyaltyAmount = pointDouble * it.amount / it.rewardPoint
+                    if (redeemLoyaltyInfo.usedLoyaltyAmount >= redeemLoyaltyInfo.total) {
+                        redeemLoyaltyInfo.remainingAmount =
+                            redeemLoyaltyInfo.usedLoyaltyAmount - redeemLoyaltyInfo.total
+                    } else {
+                        redeemLoyaltyInfo.remainingAmount =
+                            redeemLoyaltyInfo.total - redeemLoyaltyInfo.usedLoyaltyAmount
+                    }
                     redeemLoyaltyInfo.remainingLoyaltyPoints =
                         availablePoints - redeemLoyaltyInfo.usedLoyaltyPoints
                 } else {
@@ -1738,8 +1761,13 @@ class DashBoardCategoryViewModel @Inject constructor(
                         (availablePoints * it.amount / it.rewardPoint)
                     redeemLoyaltyInfo.usedLoyaltyPoints = availablePoints
                     redeemLoyaltyInfo.remainingLoyaltyPoints = 0
-                    redeemLoyaltyInfo.remainingAmount =
-                        redeemLoyaltyInfo.total - redeemLoyaltyInfo.usedLoyaltyAmount
+                    if (redeemLoyaltyInfo.usedLoyaltyAmount >= redeemLoyaltyInfo.total) {
+                        redeemLoyaltyInfo.remainingAmount =
+                            redeemLoyaltyInfo.usedLoyaltyAmount - redeemLoyaltyInfo.total
+                    } else {
+                        redeemLoyaltyInfo.remainingAmount =
+                            redeemLoyaltyInfo.total - redeemLoyaltyInfo.usedLoyaltyAmount
+                    }
                 }
                 //redeemLoyaltyInfo.isLoyaltyApplied = true
             }

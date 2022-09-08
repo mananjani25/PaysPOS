@@ -44,6 +44,7 @@ import java.net.HttpURLConnection
 import java.net.URL
 import java.util.*
 import javax.inject.Inject
+import kotlin.math.ceil
 
 @HiltViewModel
 class CheckoutDineInPaymentViewModel @Inject constructor(
@@ -1147,7 +1148,6 @@ class CheckoutDineInPaymentViewModel @Inject constructor(
         txtTotalAmount: AppCompatTextView
     ) {
 
-        LogUtil.logE("Loyalty", "checkAppliedLoyaltyProgram..")
         redeemLoyaltyInfo.total = total
         val availablePoints = customer?.final_reward ?: 0
 
@@ -1159,17 +1159,23 @@ class CheckoutDineInPaymentViewModel @Inject constructor(
                 redeemLoyaltyInfo.loyaltyProgramsModel = activeLoyaltyProgram
 
                 //if customer has more points than required(minimum limit)
-                val availableLoyaltyAmount =
+                var availableLoyaltyAmount = 0.0
+                if (it.rewardPoint == 0) {
+                    it.rewardPoint = 1
+                }
+                availableLoyaltyAmount =
                     availablePoints * it.amount / it.rewardPoint
                 if (availableLoyaltyAmount > redeemLoyaltyInfo.total) {
-                    //if loyalty amount is more than total price
-
-                    redeemLoyaltyInfo.usedLoyaltyPoints =
-                        (redeemLoyaltyInfo.total * it.rewardPoint / it.amount).toInt()
-                    redeemLoyaltyInfo.usedLoyaltyAmount =
-                        (redeemLoyaltyInfo.usedLoyaltyPoints * it.amount / it.rewardPoint)
-                    redeemLoyaltyInfo.remainingAmount =
-                        redeemLoyaltyInfo.total - redeemLoyaltyInfo.usedLoyaltyAmount
+                    var pointDouble = (redeemLoyaltyInfo.total * it.rewardPoint) / it.amount
+                    redeemLoyaltyInfo.usedLoyaltyPoints = ceil(pointDouble).toInt()
+                    redeemLoyaltyInfo.usedLoyaltyAmount = pointDouble * it.amount / it.rewardPoint
+                    if (redeemLoyaltyInfo.usedLoyaltyAmount >= redeemLoyaltyInfo.total) {
+                        redeemLoyaltyInfo.remainingAmount =
+                            redeemLoyaltyInfo.usedLoyaltyAmount - redeemLoyaltyInfo.total
+                    } else {
+                        redeemLoyaltyInfo.remainingAmount =
+                            redeemLoyaltyInfo.total - redeemLoyaltyInfo.usedLoyaltyAmount
+                    }
                     redeemLoyaltyInfo.remainingLoyaltyPoints =
                         availablePoints - redeemLoyaltyInfo.usedLoyaltyPoints
                 } else {
@@ -1177,8 +1183,13 @@ class CheckoutDineInPaymentViewModel @Inject constructor(
                         (availablePoints * it.amount / it.rewardPoint)
                     redeemLoyaltyInfo.usedLoyaltyPoints = availablePoints
                     redeemLoyaltyInfo.remainingLoyaltyPoints = 0
-                    redeemLoyaltyInfo.remainingAmount =
-                        redeemLoyaltyInfo.total - redeemLoyaltyInfo.usedLoyaltyAmount
+                    if (redeemLoyaltyInfo.usedLoyaltyAmount >= redeemLoyaltyInfo.total) {
+                        redeemLoyaltyInfo.remainingAmount =
+                            redeemLoyaltyInfo.usedLoyaltyAmount - redeemLoyaltyInfo.total
+                    } else {
+                        redeemLoyaltyInfo.remainingAmount =
+                            redeemLoyaltyInfo.total - redeemLoyaltyInfo.usedLoyaltyAmount
+                    }
                 }
                 //redeemLoyaltyInfo.isLoyaltyApplied = true
             }
@@ -1189,7 +1200,6 @@ class CheckoutDineInPaymentViewModel @Inject constructor(
             redeemLoyaltyInfo.usedLoyaltyAmount = 0.0
             //redeemLoyaltyInfo.isLoyaltyApplied = false
         }
-        LogUtil.logE("Loyalty", "txtTotalAmount : ${redeemLoyaltyInfo.getAmountToBePaid()}")
         redeemLoyaltyInfo.getAmountToBePaid()?.let {
             MethodUtils.setPriceTextView(
                 txtTotalAmount,

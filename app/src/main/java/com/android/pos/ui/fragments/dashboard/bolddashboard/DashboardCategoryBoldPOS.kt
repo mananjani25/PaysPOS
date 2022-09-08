@@ -134,6 +134,12 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             }
 
         requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
+        if (prefProvider.getValueboolean(ONLINE_ORDER_ENABLE, false)) {
+            binding.layoutHeader.linearOnlineorder?.visible()
+            viewModel.getOnlineOrderCount()
+        } else {
+            binding.layoutHeader.linearOnlineorder?.gone()
+        }
         getOrderTypes()
         observeSaveOrder()
         getKitchenReceiptSettings()

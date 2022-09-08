@@ -78,6 +78,7 @@ class CartFragment(
 ) :
     Fragment(), MyCallback,
     DineInAdapter.DineInCallback {
+    private var isSaveOrder: Boolean = false
     private lateinit var binding: FragmentCartBinding
     var fragmentId: Int? = null
     var checkoutHeaderId: Int = 0
@@ -245,10 +246,10 @@ class CartFragment(
                             binding.liinearInfoLayout.layoutParams.height =
                                 resources.getDimension(R.dimen._70sdp).toInt()
                         } else {
-                            if (binding.relativeLoylatyPoints.isVisible()){
+                            if (binding.relativeLoylatyPoints.isVisible()) {
                                 binding.liinearInfoLayout.layoutParams.height =
                                     resources.getDimension(R.dimen._70sdp).toInt()
-                            }else{
+                            } else {
                                 binding.liinearInfoLayout.layoutParams.height =
                                     resources.getDimension(R.dimen._60sdp).toInt()
                             }
@@ -274,10 +275,10 @@ class CartFragment(
                     binding.imgDropdown.setImageResource(R.drawable.ic_solid_up_arrow)
                     binding.relativeDynamicTax.visible()
                 } else {
-                    if (binding.relativeLoylatyPoints.isVisible()){
+                    if (binding.relativeLoylatyPoints.isVisible()) {
                         binding.liinearInfoLayout.layoutParams.height =
                             resources.getDimension(R.dimen._70sdp).toInt()
-                    }else{
+                    } else {
                         binding.liinearInfoLayout.layoutParams.height =
                             resources.getDimension(R.dimen._50sdp).toInt()
                     }
@@ -615,10 +616,10 @@ class CartFragment(
                 binding.liinearInfoLayout.layoutParams.height =
                     resources.getDimension(R.dimen._70sdp).toInt()
             } else {
-                if (binding.relativeLoylatyPoints.isVisible()){
+                if (binding.relativeLoylatyPoints.isVisible()) {
                     binding.liinearInfoLayout.layoutParams.height =
                         resources.getDimension(R.dimen._70sdp).toInt()
-                }else{
+                } else {
                     binding.liinearInfoLayout.layoutParams.height =
                         resources.getDimension(R.dimen._50sdp).toInt()
                 }
@@ -629,19 +630,19 @@ class CartFragment(
             binding.relativeDynamicTax.gone()
         } else {
             if (viewModel.order_note.isNotEmpty()) {
-                if (binding.relativeLoylatyPoints.isVisible()){
+                if (binding.relativeLoylatyPoints.isVisible()) {
                     binding.liinearInfoLayout.layoutParams.height =
                         resources.getDimension(R.dimen._70sdp).toInt()
-                }else{
+                } else {
                     binding.liinearInfoLayout.layoutParams.height =
                         resources.getDimension(R.dimen._60sdp).toInt()
                 }
 
             } else {
-                if (binding.relativeLoylatyPoints.isVisible()){
+                if (binding.relativeLoylatyPoints.isVisible()) {
                     binding.liinearInfoLayout.layoutParams.height =
                         resources.getDimension(R.dimen._70sdp).toInt()
-                }else{
+                } else {
                     binding.liinearInfoLayout.layoutParams.height =
                         resources.getDimension(R.dimen._50sdp).toInt()
                 }
@@ -655,10 +656,10 @@ class CartFragment(
 
     fun reSetTaxBifurcationData() {
         taxBirfurcationAdapter.clearList()
-        if (binding.relativeLoylatyPoints.isVisible()){
+        if (binding.relativeLoylatyPoints.isVisible()) {
             binding.liinearInfoLayout.layoutParams.height =
                 resources.getDimension(R.dimen._70sdp).toInt()
-        }else{
+        } else {
             binding.liinearInfoLayout.layoutParams.height =
                 resources.getDimension(R.dimen._50sdp).toInt()
         }
@@ -1083,6 +1084,7 @@ class CartFragment(
 
                             Log.e("mAllWords", "filterItems  ${filterItems.size}")
                             cartAdapter.setList(filterItems)
+                            binding.rvCartList.smoothScrollToPosition(filterItems.size - 1)
 
                             cartlist = it as ArrayList<CartModel>
                             viewModel.itemCalculationCartModel(
@@ -1262,9 +1264,18 @@ class CartFragment(
         if (view != null) {
             viewModelPayment.showProgress.observe(viewLifecycleOwner) { event ->
                 event.getContentIfNotHandled()?.let {
-                    LogUtil.logE("observeShowProgress3", it.toString())
+                    LogUtil.logE("observeShowProgress3", isSaveOrder.toString())
                     if (it) {
-                        ProgressUtils.showProgressDialog("Please wait payment under process",requireActivity())
+                        if (isSaveOrder) {
+                            ProgressUtils.showProgressDialog(requireActivity())
+                            isSaveOrder = false
+                        } else {
+                            ProgressUtils.showProgressDialog(
+                                "Please wait payment under process",
+                                requireActivity()
+                            )
+
+                        }
                     } else {
                         ProgressUtils.dismissProgressDialog()
                     }
@@ -1783,8 +1794,11 @@ class CartFragment(
                             cashDiscountType
 
                         )
+                        isSaveOrder = true
                         viewModelPayment.saveOrder(true)
                         viewModelPayment.submit(request)
+
+
 
                         isOrderUpdate = false
                         binding.tvSave.text = getString(R.string.save)

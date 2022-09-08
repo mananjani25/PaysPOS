@@ -1468,7 +1468,8 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
             model.note = edtNote.text.toString().trim()
             LogUtil.logE("TAG", "notes${edtNote.text.toString().trim()}")
             model.itemQuantity = txtQty.text.toString().toInt()
-            model.name = edtItemName.text.toString()
+            cartList?.get(0)?.items?.get(position)?.name = edtItemName.text.toString()
+            Log.d(TAG, "onItemClicked: name  " + edtItemName.text.toString())
 
             model.price = String.format("%.2f", (itemCost)).toDouble()
 
@@ -1630,7 +1631,9 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                 }
                 putParcelable("model", model)
             }
-            findNavController().navigate(R.id.action_manualSaleNew_to_addDiscountDialog, bundle)
+            if (findNavController().currentDestination?.id != R.id.addDiscountDialog) {
+                findNavController().navigate(R.id.action_manualSaleNew_to_addDiscountDialog, bundle)
+            }
         }
 
 
