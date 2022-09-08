@@ -648,7 +648,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
 
     override fun onItemSelected(item: TbItem) {
-        Log.e(TAG,"onItemSelectedItem:  ${Gson().toJson(item)}")
+        Log.e(TAG, "onItemSelectedItem:  ${Gson().toJson(item)}")
 
         if (cartList.isEmpty() && viewModel.cartModel != null) {
             cartList = arrayListOf()
@@ -685,7 +685,10 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                         cartList[0].dineInList = dineInList
                     }
 
-                    LogUtil.logE(TAG, "dineInCartListData:  ${Gson().toJson(cartList[0].dineInList)}")
+                    LogUtil.logE(
+                        TAG,
+                        "dineInCartListData:  ${Gson().toJson(cartList[0].dineInList)}"
+                    )
                     if (cartList[0].dineInList?.isNotEmpty() == true) {
                         var dineInList = cartList[0].dineInList
                         dineInList!![0]?.selectedPosition = viewModel.dineInHeaderPosition
@@ -1046,7 +1049,10 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
                 cartList[0].note = arguments?.getString("order_note").toString()
                 LogUtil.logE("AAjeDine", "cartdiscountPrice  ${cartList[0].discountPrice}")
-                LogUtil.logE("AAjeDine", "dineTotalDiscount  ${arguments?.getDouble("totalDiscount")}")
+                LogUtil.logE(
+                    "AAjeDine",
+                    "dineTotalDiscount  ${arguments?.getDouble("totalDiscount")}"
+                )
                 cartList[0].discountPrice = arguments?.getDouble("totalDiscount") ?: 0.0
                 viewModel.cartLogic(cartList, null, Constants.ADD, false, dineInList = dineInList)
                 // viewModel.orderItemDiscount = arguments?.getDouble("totalDiscount") ?: 0.0
