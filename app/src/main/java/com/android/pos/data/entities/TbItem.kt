@@ -1,14 +1,12 @@
 package com.android.pos.data.entities
 
 import android.os.Parcelable
-import android.util.Log
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
 import com.android.pos.data.model.responseModel.category.Category
 import com.android.pos.data.model.responseModel.item.Item
 import com.android.pos.data.typeconvert.TypeConvertersTax
-import com.google.gson.Gson
 import kotlinx.parcelize.Parcelize
 import java.util.*
 
@@ -100,9 +98,6 @@ class TbItem : Parcelable {
 
         var modeTb = TbItem()
 
-        Log.e("TaxList", Gson().toJson(item.taxes))
-        Log.e("TaxListDataBase", "dataTax  ${Gson().toJson(model.taxes)}")
-
         var itemList = mutableListOf<TaxData>()
         var itemTaxIds: ArrayList<Int> = arrayListOf()
         item.taxes?.forEach {
@@ -114,10 +109,6 @@ class TbItem : Parcelable {
 
             itemList.addAll(it)
         }
-
-        Log.e("GetTaxPre", "itemTaxIds:  ${Gson().toJson(itemTaxIds)}")
-        Log.e("GetTaxPre", "itemGetTax  ${Gson().toJson(itemList)}")
-
         var removeItems: ArrayList<TaxData> = arrayListOf()
 
         item.taxes?.forEachIndexed { index, it ->
@@ -139,10 +130,6 @@ class TbItem : Parcelable {
         //remove items from list
         itemList.removeAll(removeItems)
 
-
-
-        Log.e("convertToItem1NAme", "" + item.name)
-        Log.e("convertToItem1", Gson().toJson(itemList))
 
         if (itemList.isEmpty()) {
             modeTb.taxes = emptyList()
@@ -168,6 +155,7 @@ class TbItem : Parcelable {
         modeTb.variationsAttributes = item.variationsAttributes
         modeTb.shortDescription = item.shortDescription ?: ""
         modeTb.isDeleted = item.isDeleted
+        modeTb.modifiers = item.modifiers
         return modeTb
     }
 

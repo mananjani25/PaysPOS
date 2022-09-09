@@ -3262,72 +3262,37 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                                 category.items.forEach {
                                     //new optimise code
+
+
                                     inventoryModelList.add(TbItem().convertToItem(it, category))
-
-
-                                    /*
-                                    var items: TbItem? = null
-                                     posRepository.getSingleItem(it.id)
-                                         ?.observe(requireActivity) { model ->
-
-
-                                             items = if (model != null) {
-
-                                                 TbItem().convertToItem1(it, category, model)
-
-
-                                             } else {
-                                                 Log.e("getSingleItem", "222222222")
-                                                 TbItem().convertToItem(it, category)
-                                             }
-
-
-                                             Log.e("GetItemAdd", "${Gson().toJson(items)}")
-
-
-                                                 inventoryModelList.add(
-                                                     inventoryModelList.size ,
-                                                     items!!
-                                                 )
-
-
-                                             Log.e(
-                                                 "GetItemAdd",
-                                                 "inventoryModelList:  ${
-                                                     Gson().toJson(inventoryModelList)
-                                                 }"
-                                             )
-
-
-
-
-                                             it.modifierSets.forEach { modifierSets ->
-
-                                                 val itemModifierSets = ItemModifierSets().apply {
-                                                     itemId = it.id
-                                                     modifierSetId = modifierSets.id!!
-                                                     minRequired = modifierSets.min_required
-                                                     maxAllowed = modifierSets.max_allowed
-                                                     isDeleted = modifierSets.isDeleted
-                                                 }
-
-                                                 itemModifierSetList.add(itemModifierSets)
-                                             }
-
-                                             modifierSetList.addAll(it.modifierSets)
-                                         }*/
-
-
                                 }
 
 
                             }
 
+
+                            mData.modifierSets.forEach { modifierSets ->
+
+                                val itemModifierSets = ItemModifierSets().apply {
+                                    itemId = this.modifierSetId
+                                    modifierSetId = modifierSets.id!!
+                                    minRequired = modifierSets.min_required
+                                    maxAllowed = modifierSets.max_allowed
+                                    isDeleted = modifierSets.isDeleted
+                                }
+
+                                itemModifierSetList.add(itemModifierSets)
+                            }
+                            modifierSetList.addAll(mData.modifierSets)
+
+
+
+
+
                             delay(1000)
 
                             appDatabase.categoryDao().addAll(categoryModelList)
-                            Log.e(TAG, "passedSyncItems  ${Gson().toJson(inventoryModelList)}")
-                            var listInventory : ArrayList<TbItem> = arrayListOf()
+                            var listInventory: ArrayList<TbItem> = arrayListOf()
                             ThreadPoolManager.instance.executeTask(Runnable {
 
                                 inventoryModelList.forEachIndexed { index, it ->
@@ -3340,15 +3305,13 @@ class DashBoardCategoryViewModel @Inject constructor(
                                         listInventory.add(model)
 
 
-                                    }
-                                    else{
+                                    } else {
                                         listInventory.add(it)
                                     }
 
 
                                 }
 
-                                Log.e("CheckPAssedList","listInventory  ${Gson().toJson(listInventory)}")
 
                                 viewModelScope.launch {
                                     appDatabase.itemDao().addAllItem(listInventory)
