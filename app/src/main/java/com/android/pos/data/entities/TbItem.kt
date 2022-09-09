@@ -1,14 +1,12 @@
 package com.android.pos.data.entities
 
 import android.os.Parcelable
-import android.util.Log
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
 import com.android.pos.data.model.responseModel.category.Category
 import com.android.pos.data.model.responseModel.item.Item
 import com.android.pos.data.typeconvert.TypeConvertersTax
-import com.google.gson.Gson
 import kotlinx.parcelize.Parcelize
 import java.util.*
 
@@ -95,57 +93,70 @@ class TbItem : Parcelable {
         return this
     }
 
-    fun convertToItem1(item: Item, category: Category?, model: TbItem): TbItem {
 
+    fun convertToItem1(item: TbItem, model: TbItem): TbItem {
 
-        val itemList = mutableListOf<TaxData>()
+        var modeTb = TbItem()
 
-        if (model.taxes != null && model.taxes!!.isNotEmpty()) {
-            itemList.addAll(model.taxes!!)
-        }
-
-        itemList.forEach {
-            Log.e("convertToItem1", it.name.toString())
-        }
-
-
+        var itemList = mutableListOf<TaxData>()
+        var itemTaxIds: ArrayList<Int> = arrayListOf()
         item.taxes?.forEach {
+            itemTaxIds.add(it.id)
+        }
 
-            if (itemList.contains(it) && it.isDeleted) {
-                itemList.remove(it)
-            } else if (!itemList.contains(it) && !it.isDeleted) {
+
+        model.taxes?.let {
+
+            itemList.addAll(it)
+        }
+        var removeItems: ArrayList<TaxData> = arrayListOf()
+
+        item.taxes?.forEachIndexed { index, it ->
+
+            for (i in 0 until itemList.size) {
+
+                if (itemList.get(i).id == it.id) {
+                    if (it.isDeleted || !it.isActive) {
+                        removeItems.add(itemList.get(i))
+
+                    }
+
+                }
+            }
+            if (!itemList.contains(it) && !it.isDeleted && it.isActive) {
                 itemList.add(it)
             }
         }
+        //remove items from list
+        itemList.removeAll(removeItems)
 
 
-        itemList.forEach {
-            Log.e("convertToItem2", it.name.toString())
+        if (itemList.isEmpty()) {
+            modeTb.taxes = emptyList()
+        } else {
+            modeTb.taxes = itemList
         }
-
-        itemId = item.id
-        name = item.name ?: ""
-        cost = item.cost
-        price = item.price
-        priceType = item.priceType ?: ""
-        quantity = item.quantity
-        kitchenName = item.kitchenName ?: ""
-        productCode = item.productCode ?: ""
-        sku = item.sku ?: ""
-        isHide = item.active
-        sort = item.sort
-        imageUrl = item.originalImageUrl
-        thumbImageUrl = item.thumbImageUrl
-        categoryId = category?.id ?: item.categoryId ?: 0
-        categoryName = category?.name ?: item.categoryName ?: ""
-        taxes = itemList
-        modifier_set_ids = item.modifierSetIds
-        variationsAttributes = item.variations
-        shortDescription = item.desc ?: ""
-        isDeleted = item.isDeleted
-
-
-        return this
+        modeTb.itemId = item.itemId
+        modeTb.name = item.name ?: ""
+        modeTb.cost = item.cost
+        modeTb.price = item.price
+        modeTb.priceType = item.priceType ?: ""
+        modeTb.quantity = item.quantity
+        modeTb.kitchenName = item.kitchenName ?: ""
+        modeTb.productCode = item.productCode ?: ""
+        modeTb.sku = item.sku ?: ""
+        modeTb.isHide = item.isHide
+        modeTb.sort = item.sort
+        modeTb.imageUrl = item.imageUrl
+        modeTb.thumbImageUrl = item.thumbImageUrl
+        modeTb.categoryId = item.categoryId
+        modeTb.categoryName = item.categoryName
+        modeTb.modifier_set_ids = item.modifier_set_ids
+        modeTb.variationsAttributes = item.variationsAttributes
+        modeTb.shortDescription = item.shortDescription ?: ""
+        modeTb.isDeleted = item.isDeleted
+        modeTb.modifiers = item.modifiers
+        return modeTb
     }
 
 }

@@ -73,6 +73,7 @@ import com.squareup.okhttp.Response
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.io.ByteArrayOutputStream
 import java.io.IOException
@@ -3230,7 +3231,100 @@ class DashBoardCategoryViewModel @Inject constructor(
                     resource.data.let { response ->
                         if (response?.status == 200) {
                             _showProgress.value = Event(false)
-                            posRepository.saveDatabase(response)
+//                            posRepository.saveDatabase(response)
+
+                            val mData = response.data
+                            val mCategory = mData.categories
+                            val categoryModelList = ArrayList<TbCategory>()
+                            var inventoryModelList = ArrayList<TbItem>()
+
+                            val modifierSetList = ArrayList<ModifierSet>()
+                            val itemModifierSetList = ArrayList<ItemModifierSets>()
+
+                            mCategory.forEach { category ->
+                                val model = TbCategory().apply {
+                                    createdAt = ""
+                                    id = category.id
+                                    active = category.active
+                                    name = category.name
+                                    sort = category.sort
+                                    updatedAt = ""
+                                    locationId = category.locationId
+                                    item_ids = category.itemIds
+                                    thumbImgUrl = category.thumbImgUrl
+                                    originalImgUrl = category.originalImgUrl
+                                    isDeleted = category.isDeleted
+                                }
+                                categoryModelList.add(model)
+
+
+
+
+                                category.items.forEach {
+                                    //new optimise code
+
+
+                                    inventoryModelList.add(TbItem().convertToItem(it, category))
+                                }
+
+
+                            }
+
+
+                            mData.modifierSets.forEach { modifierSets ->
+
+                                val itemModifierSets = ItemModifierSets().apply {
+                                    itemId = this.modifierSetId
+                                    modifierSetId = modifierSets.id!!
+                                    minRequired = modifierSets.min_required
+                                    maxAllowed = modifierSets.max_allowed
+                                    isDeleted = modifierSets.isDeleted
+                                }
+
+                                itemModifierSetList.add(itemModifierSets)
+                            }
+                            modifierSetList.addAll(mData.modifierSets)
+
+
+
+
+
+                            delay(1000)
+
+                            appDatabase.categoryDao().addAll(categoryModelList)
+                            var listInventory: ArrayList<TbItem> = arrayListOf()
+                            ThreadPoolManager.instance.executeTask(Runnable {
+
+                                inventoryModelList.forEachIndexed { index, it ->
+                                    var item = posRepository.getSingleItem(it.itemId)
+
+                                    if (item != null) {
+
+                                        var model = TbItem().convertToItem1(it, item)
+
+                                        listInventory.add(model)
+
+
+                                    } else {
+                                        listInventory.add(it)
+                                    }
+
+
+                                }
+
+
+                                viewModelScope.launch {
+                                    appDatabase.itemDao().addAllItem(listInventory)
+                                }
+
+                            })
+
+
+
+                            appDatabase.modifierSetDao().addAll(modifierSetList)
+                            appDatabase.itemModifierSetsDao().addAll(itemModifierSetList)
+                            appDatabase.optionSetDao().addAll(mData.optionSets)
+
 
                         } else {
                             _tableStatus.value = response?.let { Event(it.message) }
