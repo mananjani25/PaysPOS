@@ -54,7 +54,7 @@ interface DBItemDao {
     fun itemByProductCode(productCode: String): LiveData<TbItem>?
 
     @Query("SELECT * from TbItem  where TbItem.itemId = :id LIMIT 1")
-    fun itemOne(id: Int): LiveData<TbItem?>?
+    fun itemOne(id: Int): TbItem?
 
     @Query("SELECT * from TbItem where TbItem.itemId  = :restId  and TbItem.isDeleted = 0 LIMIT 1")
     fun itemByInventoryId(restId: Int?): TbItem?

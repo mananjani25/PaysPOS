@@ -96,14 +96,14 @@ class TbItem : Parcelable {
     }
 
 
-    fun convertToItem1(item: Item, category: Category?, model: TbItem): TbItem {
+    fun convertToItem1(item: TbItem, model: TbItem): TbItem {
 
         var modeTb = TbItem()
 
         Log.e("TaxList", Gson().toJson(item.taxes))
         Log.e("TaxListDataBase", "dataTax  ${Gson().toJson(model.taxes)}")
 
-        val itemList = mutableListOf<TaxData>()
+        var itemList = mutableListOf<TaxData>()
         var itemTaxIds: ArrayList<Int> = arrayListOf()
         item.taxes?.forEach {
             itemTaxIds.add(it.id)
@@ -118,46 +118,38 @@ class TbItem : Parcelable {
         Log.e("GetTaxPre", "itemTaxIds:  ${Gson().toJson(itemTaxIds)}")
         Log.e("GetTaxPre", "itemGetTax  ${Gson().toJson(itemList)}")
 
+        var removeItems: ArrayList<TaxData> = arrayListOf()
 
         item.taxes?.forEachIndexed { index, it ->
 
+            for (i in 0 until itemList.size) {
+
+                if (itemList.get(i).id == it.id) {
+                    if (it.isDeleted || !it.isActive) {
+                        removeItems.add(itemList.get(i))
+
+                    }
+
+                }
+            }
             if (!itemList.contains(it) && !it.isDeleted && it.isActive) {
                 itemList.add(it)
             }
         }
-
-
-        if (item.taxes != null && item.taxes?.isNotEmpty() == true && itemList.isNotEmpty()) {
-            for (j in 0 until item.taxes!!.size) {
-
-                for (i in 0 until itemList.size) {
-                    if (item.taxes!!.get(j).isDeleted || !item.taxes?.get(j)?.isActive!! && item.taxes?.get(j)?.id != null) {
-                        if (itemList.get(i).id == item.taxes?.get(j)?.id) {
-                            Log.e("ChcekItemREmove", "Dioneff")
-                            itemList.removeAt(i)
-                        }
-                    }
-                }
-
-
-            }
-        }
-
-
-
-
-
-
-
+        //remove items from list
+        itemList.removeAll(removeItems)
 
 
 
         Log.e("convertToItem1NAme", "" + item.name)
         Log.e("convertToItem1", Gson().toJson(itemList))
 
-        modeTb.taxes = itemList
-
-        modeTb.itemId = item.id
+        if (itemList.isEmpty()) {
+            modeTb.taxes = emptyList()
+        } else {
+            modeTb.taxes = itemList
+        }
+        modeTb.itemId = item.itemId
         modeTb.name = item.name ?: ""
         modeTb.cost = item.cost
         modeTb.price = item.price
@@ -166,15 +158,15 @@ class TbItem : Parcelable {
         modeTb.kitchenName = item.kitchenName ?: ""
         modeTb.productCode = item.productCode ?: ""
         modeTb.sku = item.sku ?: ""
-        modeTb.isHide = item.active
+        modeTb.isHide = item.isHide
         modeTb.sort = item.sort
-        modeTb.imageUrl = item.originalImageUrl
+        modeTb.imageUrl = item.imageUrl
         modeTb.thumbImageUrl = item.thumbImageUrl
-        modeTb.categoryId = category?.id ?: item.categoryId ?: 0
-        modeTb.categoryName = category?.name ?: item.categoryName ?: ""
-        modeTb.modifier_set_ids = item.modifierSetIds
-        modeTb.variationsAttributes = item.variations
-        modeTb.shortDescription = item.desc ?: ""
+        modeTb.categoryId = item.categoryId
+        modeTb.categoryName = item.categoryName
+        modeTb.modifier_set_ids = item.modifier_set_ids
+        modeTb.variationsAttributes = item.variationsAttributes
+        modeTb.shortDescription = item.shortDescription ?: ""
         modeTb.isDeleted = item.isDeleted
         return modeTb
     }

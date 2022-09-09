@@ -64,6 +64,7 @@ import com.android.pos.di.RolePermission
 import com.android.pos.utils.*
 import com.android.pos.utils.statusUtils.Resource
 import com.android.pos.utils.statusUtils.Status
+import com.android.pos.utils.workmanager.ThreadPoolManager
 import com.google.gson.Gson
 import com.squareup.okhttp.Callback
 import com.squareup.okhttp.OkHttpClient
@@ -3258,80 +3259,63 @@ class DashBoardCategoryViewModel @Inject constructor(
 
 
 
-                                category.items.forEach {
 
-                                    /* var itemTb = TbItem()
+                                category.items.forEach {
+                                    //new optimise code
+                                    inventoryModelList.add(TbItem().convertToItem(it, category))
+
+
+                                    /*
+                                    var items: TbItem? = null
                                      posRepository.getSingleItem(it.id)
                                          ?.observe(requireActivity) { model ->
-                                             if (model != null) {
-                                                 itemTb = model
-                                             }
-                                         }
 
-                                     if (itemTb != null){
-                                         var item = TbItem().convertToItem1(it, category, itemTb)
-                                         Log.e("getItemTax","getItemTaxes  ${Gson().toJson(item.taxes)}")
-                                         item.taxes?.let { it1 ->
-                                             viewModelScope.launch {
-                                                 appDatabase.itemDao().updateItemTaxes(
-                                                     item.itemId,
-                                                     it1
+
+                                             items = if (model != null) {
+
+                                                 TbItem().convertToItem1(it, category, model)
+
+
+                                             } else {
+                                                 Log.e("getSingleItem", "222222222")
+                                                 TbItem().convertToItem(it, category)
+                                             }
+
+
+                                             Log.e("GetItemAdd", "${Gson().toJson(items)}")
+
+
+                                                 inventoryModelList.add(
+                                                     inventoryModelList.size ,
+                                                     items!!
                                                  )
+
+
+                                             Log.e(
+                                                 "GetItemAdd",
+                                                 "inventoryModelList:  ${
+                                                     Gson().toJson(inventoryModelList)
+                                                 }"
+                                             )
+
+
+
+
+                                             it.modifierSets.forEach { modifierSets ->
+
+                                                 val itemModifierSets = ItemModifierSets().apply {
+                                                     itemId = it.id
+                                                     modifierSetId = modifierSets.id!!
+                                                     minRequired = modifierSets.min_required
+                                                     maxAllowed = modifierSets.max_allowed
+                                                     isDeleted = modifierSets.isDeleted
+                                                 }
+
+                                                 itemModifierSetList.add(itemModifierSets)
                                              }
-                                         }
-                                     }
 
- */
-                                    var items: TbItem? = null
-                                    posRepository.getSingleItem(it.id)
-                                        ?.observe(requireActivity) { model ->
-
-
-                                            items = if (model != null) {
-
-                                                TbItem().convertToItem1(it, category, model)
-
-
-                                            } else {
-                                                Log.e("getSingleItem", "222222222")
-                                                TbItem().convertToItem(it, category)
-                                            }
-
-
-                                            Log.e("GetItemAdd", "${Gson().toJson(items)}")
-
-
-                                                inventoryModelList.add(
-                                                    inventoryModelList.size ,
-                                                    items!!
-                                                )
-
-
-                                            Log.e(
-                                                "GetItemAdd",
-                                                "inventoryModelList:  ${
-                                                    Gson().toJson(inventoryModelList)
-                                                }"
-                                            )
-
-
-
-
-                                            it.modifierSets.forEach { modifierSets ->
-
-                                                val itemModifierSets = ItemModifierSets().apply {
-                                                    itemId = it.id
-                                                    modifierSetId = modifierSets.id!!
-                                                    minRequired = modifierSets.min_required
-                                                    maxAllowed = modifierSets.max_allowed
-                                                    isDeleted = modifierSets.isDeleted
-                                                }
-
-                                                itemModifierSetList.add(itemModifierSets)
-                                            }
-
-                                            modifierSetList.addAll(it.modifierSets)
-                                        }
+                                             modifierSetList.addAll(it.modifierSets)
+                                         }*/
 
 
                                 }
@@ -3343,7 +3327,36 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                             appDatabase.categoryDao().addAll(categoryModelList)
                             Log.e(TAG, "passedSyncItems  ${Gson().toJson(inventoryModelList)}")
-                            appDatabase.itemDao().addAllItem(inventoryModelList)
+                            var listInventory : ArrayList<TbItem> = arrayListOf()
+                            ThreadPoolManager.instance.executeTask(Runnable {
+
+                                inventoryModelList.forEachIndexed { index, it ->
+                                    var item = posRepository.getSingleItem(it.itemId)
+
+                                    if (item != null) {
+
+                                        var model = TbItem().convertToItem1(it, item)
+
+                                        listInventory.add(model)
+
+
+                                    }
+                                    else{
+                                        listInventory.add(it)
+                                    }
+
+
+                                }
+
+                                Log.e("CheckPAssedList","listInventory  ${Gson().toJson(listInventory)}")
+
+                                viewModelScope.launch {
+                                    appDatabase.itemDao().addAllItem(listInventory)
+                                }
+
+                            })
+
+
 
                             appDatabase.modifierSetDao().addAll(modifierSetList)
                             appDatabase.itemModifierSetsDao().addAll(itemModifierSetList)
