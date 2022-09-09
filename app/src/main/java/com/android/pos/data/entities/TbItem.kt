@@ -97,24 +97,31 @@ class TbItem : Parcelable {
 
     fun convertToItem1(item: Item, category: Category?, model: TbItem): TbItem {
 
-        Log.e("TaxList", Gson().toJson(item.taxes))
 
         val itemList = mutableListOf<TaxData>()
 
+        if (model.taxes != null && model.taxes!!.isNotEmpty()) {
+            itemList.addAll(model.taxes!!)
+        }
 
-        model.taxes?.let { itemList.addAll(it) }
+        itemList.forEach {
+            Log.e("convertToItem1", it.name.toString())
+        }
+
 
         item.taxes?.forEach {
 
             if (itemList.contains(it) && it.isDeleted) {
                 itemList.remove(it)
-            } else if (!itemList.contains(it)) {
+            } else if (!itemList.contains(it) && !it.isDeleted) {
                 itemList.add(it)
             }
         }
 
 
-        Log.e("convertToItem1", Gson().toJson(itemList))
+        itemList.forEach {
+            Log.e("convertToItem2", it.name.toString())
+        }
 
         itemId = item.id
         name = item.name ?: ""
@@ -136,6 +143,8 @@ class TbItem : Parcelable {
         variationsAttributes = item.variations
         shortDescription = item.desc ?: ""
         isDeleted = item.isDeleted
+
+
         return this
     }
 

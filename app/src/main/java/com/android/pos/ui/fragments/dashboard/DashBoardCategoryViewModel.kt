@@ -64,6 +64,7 @@ import com.android.pos.di.RolePermission
 import com.android.pos.utils.*
 import com.android.pos.utils.statusUtils.Resource
 import com.android.pos.utils.statusUtils.Status
+import com.android.pos.utils.workmanager.ThreadPoolManager
 import com.google.gson.Gson
 import com.squareup.okhttp.Callback
 import com.squareup.okhttp.OkHttpClient
@@ -3229,74 +3230,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                     resource.data.let { response ->
                         if (response?.status == 200) {
                             _showProgress.value = Event(false)
-//                            posRepository.saveDatabase(response)
-
-                            val mData = response.data
-                            val mCategory = mData.categories
-                            val categoryModelList = ArrayList<TbCategory>()
-                            val inventoryModelList = ArrayList<TbItem>()
-                            val modifierSetList = ArrayList<ModifierSet>()
-                            val itemModifierSetList = ArrayList<ItemModifierSets>()
-                            mCategory.forEach { category ->
-                                val model = TbCategory().apply {
-                                    createdAt = ""
-                                    id = category.id
-                                    active = category.active
-                                    name = category.name
-                                    sort = category.sort
-                                    updatedAt = ""
-                                    locationId = category.locationId
-                                    item_ids = category.itemIds
-                                    thumbImgUrl = category.thumbImgUrl
-                                    originalImgUrl = category.originalImgUrl
-                                    isDeleted = category.isDeleted
-                                }
-                                categoryModelList.add(model)
-
-                                category.items.forEach {
-
-                                    var items: TbItem? = null
-                                    posRepository.getSingleItem(it.id)
-                                        ?.observe(requireActivity) { model ->
-
-                                            items = if (model != null) {
-
-                                                TbItem().convertToItem1(it, category, model)
-                                            } else {
-                                                Log.e("getSingleItem", "222222222")
-                                                TbItem().convertToItem(it, category)
-                                            }
-
-                                            items?.let { it1 -> inventoryModelList.add(it1) }
-
-                                        }
-
-
-                                    it.modifierSets.forEach { modifierSets ->
-
-                                        val itemModifierSets = ItemModifierSets().apply {
-                                            itemId = it.id
-                                            modifierSetId = modifierSets.id!!
-                                            minRequired = modifierSets.min_required
-                                            maxAllowed = modifierSets.max_allowed
-                                            isDeleted = modifierSets.isDeleted
-                                        }
-
-                                        itemModifierSetList.add(itemModifierSets)
-                                    }
-
-                                    modifierSetList.addAll(it.modifierSets)
-
-
-                                }
-                            }
-
-                            appDatabase.categoryDao().addAll(categoryModelList)
-                            appDatabase.itemDao().addAllItem(inventoryModelList)
-                            appDatabase.modifierSetDao().addAll(modifierSetList)
-                            appDatabase.itemModifierSetsDao().addAll(itemModifierSetList)
-                            appDatabase.optionSetDao().addAll(mData.optionSets)
-
+                            posRepository.saveDatabase(response)
 
                         } else {
                             _tableStatus.value = response?.let { Event(it.message) }
