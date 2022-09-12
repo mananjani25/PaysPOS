@@ -100,7 +100,7 @@ class Settings : Fragment() {
                         binding.txtMarketing.styleNormal()
                         binding.txtEmployee.styleNormal()
                         binding.txtReports.styleNormal()
-                        setAdapter(0)
+                        setAdapter(3)
 
 
                     }
@@ -121,7 +121,7 @@ class Settings : Fragment() {
                         binding.txtMarketing.styleNormal()
                         binding.txtEmployee.styleNormal()
                         binding.txtReports.styleNormal()
-                        setAdapter(2)
+                        setAdapter(7)
 
                     }
                     CREATEDISCOUNT -> {
@@ -132,7 +132,7 @@ class Settings : Fragment() {
                         binding.txtMarketing.styleNormal()
                         binding.txtEmployee.styleNormal()
                         binding.txtReports.styleNormal()
-                        setAdapter(3)
+                        setAdapter(4)
 
                     }
                     CREATE_NOTES -> {
@@ -143,7 +143,7 @@ class Settings : Fragment() {
                         binding.txtMarketing.styleNormal()
                         binding.txtEmployee.styleNormal()
                         binding.txtReports.styleNormal()
-                        setAdapter(4)
+                        setAdapter(5)
 
                     }
                     ADD_SERVICE_CHARGE -> {
@@ -154,7 +154,7 @@ class Settings : Fragment() {
                         binding.txtMarketing.styleNormal()
                         binding.txtEmployee.styleNormal()
                         binding.txtReports.styleNormal()
-                        setAdapter(5)
+                        setAdapter(2)
 
                     }
                     TEAM_MEMBER -> {
@@ -202,7 +202,7 @@ class Settings : Fragment() {
                         binding.txtMarketing.styleNormal()
                         binding.txtEmployee.styleNormal()
                         binding.txtReports.styleNormal()
-                        setAdapter(7)
+                        setAdapter(0)
                     }
 
 
