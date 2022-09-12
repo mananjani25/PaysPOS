@@ -230,7 +230,7 @@
                                     android:scaleY="1.5"
                                     app:switchPadding="@dimen/_5sdp"
                                     android:textSize="@dimen/_5sdp"
-                                    android:text="Percentage"
+                                    android:text="@string/percentage"
                                     android:layout_marginRight="@dimen/_17sdp"
                                     android:gravity="center_vertical"
                                     android:textColor="@color/txtColor"

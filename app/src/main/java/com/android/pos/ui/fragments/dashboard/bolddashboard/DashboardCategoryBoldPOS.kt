@@ -944,16 +944,28 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         if (orderDEtails != null) {
             orderFloorDetails = orderDEtails
         }
-        if (orderFloorDetails.id == null) {
+        if (orderDEtails != null) {
+            if (orderFloorDetails.id == null) {
+                orderFloorDetails.apply {
+                    id = dineInFloorTableModel?.id
+                    chairCount = dineInFloorTableModel?.chairCount
+                    floorPlanId = dineInFloorTableModel?.floorPlanId
+                    tableName = dineInFloorTableModel?.tableName.toString()
+                    status = dineInFloorTableModel?.status.toString()
+                    tableNumber = dineInFloorTableModel?.tableNumber
+
+                }
+
+            }
+        } else {
             orderFloorDetails.apply {
                 id = dineInFloorTableModel?.id
                 chairCount = dineInFloorTableModel?.chairCount
                 floorPlanId = dineInFloorTableModel?.floorPlanId
                 tableName = dineInFloorTableModel?.tableName.toString()
                 status = dineInFloorTableModel?.status.toString()
-
+                tableNumber = dineInFloorTableModel?.tableNumber
             }
-
         }
 
 
