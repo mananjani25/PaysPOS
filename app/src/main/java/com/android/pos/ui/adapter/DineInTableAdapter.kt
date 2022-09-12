@@ -8,7 +8,6 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
-import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.R
 import com.android.pos.data.entities.TbItem
@@ -184,6 +183,8 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
             }
 //            btnColorDark
 //            colorGreen/
+
+            Log.e(TAG, "guestAmtguestAmt  ${guestAmt}")
             if (isPaid && !noItem) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                     binding.btnPay.setBackgroundColor(binding.root.context.getColor(R.color.colorGreen))
@@ -209,8 +210,11 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
             if (list[layoutPosition].title?.lowercase() == "Whole Table".lowercase() || list.get(0).totalGuestCount == 1) {
                 binding.txtPay.visibility = View.GONE
-                var layoutmanager: LinearLayout.LayoutParams = LinearLayout.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT,ViewGroup.LayoutParams.WRAP_CONTENT)
-                layoutmanager.setMargins(0,0,0,0)
+                var layoutmanager: LinearLayout.LayoutParams = LinearLayout.LayoutParams(
+                    ViewGroup.LayoutParams.WRAP_CONTENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT
+                )
+                layoutmanager.setMargins(0, 0, 0, 0)
 
             } else {
                 // binding.txtTotal.visibility = View.VISIBLE
@@ -398,7 +402,7 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
                         MethodUtils.roundOffAmountDouble(finalAmt),
                         MethodUtils.roundOffAmountDouble(totalTaxAmt + list.get(0).wholeTableTax),
                         MethodUtils.roundOffAmountDouble(totalServiceCharge + list.get(0).wholeTableSurTax),
-                        (list[0].orderDiscount / list[0].totalGuestCount) + guestDiscount +list[0].wholeTableDiscont
+                        (list[0].orderDiscount / list[0].totalGuestCount) + guestDiscount + list[0].wholeTableDiscont
                     )
                 }
 
