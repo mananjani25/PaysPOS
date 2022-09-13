@@ -60,6 +60,10 @@ class TipDiscountRepository @Inject constructor(
         networkCall = { apiHelperNew.getDiscountsList() },
         saveCallResult = { appDatabase.discountDao().addAllDiscount(it.data) })
 
+    fun discountList() = performGetOperationDatabase {
+        appDatabase.discountDao().allActiveDiscount
+    }
+
     suspend fun deleteDiscountsFromDb() {
         appDatabase.discountDao().delete()
     }

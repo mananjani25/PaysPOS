@@ -295,6 +295,10 @@ class PosRepository @Inject constructor(
         databaseQuery = { appDatabase.notesDao().alllNotes },
     )
 
+    fun taxListActive() = performGetOperationDatabase(
+        databaseQuery = { appDatabase.notesDao().taxListActive },
+    )
+
 
     suspend fun deleteNotesFromDb() =
         appDatabase.notesDao().delete()
