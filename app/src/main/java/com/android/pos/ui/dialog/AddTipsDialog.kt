@@ -232,7 +232,6 @@ class AddTipsDialog : DialogFragment(), DialogTipsListAdapter.DiscountInterface 
             LogUtil.logE(TAG, "DiscountList ${Gson().toJson(it)}")
             if (it.data?.isNotEmpty() == true) {
 
-                Collections.reverse(it.data)
                 it.data.forEach {
                     it.isChecked = false
                 }

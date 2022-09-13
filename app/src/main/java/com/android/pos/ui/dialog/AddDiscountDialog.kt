@@ -386,7 +386,7 @@ class AddDiscountDialog : DialogFragment(), DialogDiscountListAdapter.DiscountIn
     }
 
     private fun setDiscountList() {
-        viewModel.getDiscountList.observe(requireActivity()) {
+        viewModel.discountList.observe(requireActivity()) {
             LogUtil.logE(TAG, "DiscountList ${Gson().toJson(it)}")
             if (it.data?.isNotEmpty() == true) {
                 it.data.forEach {

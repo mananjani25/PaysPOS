@@ -133,7 +133,7 @@ class AddNoteDialog : DialogFragment(), ItemCallback {
 
 
     private fun noteList() {
-        viewModel.getTaxList.observe(viewLifecycleOwner) {
+        viewModel.taxListActive.observe(viewLifecycleOwner) {
             it?.let { resource ->
                 when (resource.status) {
                     Status.SUCCESS -> {

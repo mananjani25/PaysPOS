@@ -39,6 +39,7 @@ class NoteListViewModel @Inject constructor(
     val notifydata: LiveData<Event<Boolean?>> = _notifydata
 
     val getTaxList = posRepository.getNoteList()
+    val taxListActive = posRepository.taxListActive()
 
     fun isNoteActive(noteDataItem: NoteResponse.Data) {
 

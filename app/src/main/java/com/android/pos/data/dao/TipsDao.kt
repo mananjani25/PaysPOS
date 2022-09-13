@@ -14,10 +14,10 @@ interface TipsDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun addAllTips(tipList: List<GetTipReponse.Data>)
 
-    @get:Query("select * from TbTips where TbTips.isDeleted  = 0 ORDER BY TbTips.sort DESC")
+    @get:Query("select * from TbTips where TbTips.isDeleted  = 0 ORDER BY TbTips.sort ASC")
     val allTips: LiveData<List<GetTipReponse.Data>>
 
-    @get:Query("select * from TbTips where TbTips.isDeleted  = 0 and isActive = 1 ORDER BY TbTips.sort DESC")
+    @get:Query("select * from TbTips where TbTips.isDeleted  = 0 and isActive = 1 ORDER BY TbTips.sort ASC")
     val allTipsActive: LiveData<List<GetTipReponse.Data>>
 
     @Query("select * from TbTips where TbTips.isDeleted  = 0")

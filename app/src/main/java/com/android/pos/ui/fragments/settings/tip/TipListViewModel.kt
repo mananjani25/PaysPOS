@@ -43,7 +43,8 @@ class TipListViewModel @Inject constructor(
 
     val getTipActiveList = tipDiscountRepository.getTipActiveList()
 
-    fun isTipActive(tipDataItem: GetTipReponse.Data) {
+    fun
+            isTipActive(tipDataItem: GetTipReponse.Data) {
 
         // _showProgress.value = Event(true)
 
