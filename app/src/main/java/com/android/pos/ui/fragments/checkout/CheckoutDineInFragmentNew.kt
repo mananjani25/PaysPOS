@@ -748,6 +748,18 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
             }
         }
 
+        dineinOrderVieweModel.showProgress.observe(viewLifecycleOwner) { event ->
+            event.getContentIfNotHandled()?.let {
+                LogUtil.logE("observeShowProgress2", it.toString())
+                if (it) {
+                    ProgressUtils.showProgressDialog("Please wait payment under process",requireActivity())
+                } else {
+                    ProgressUtils.dismissProgressDialog()
+                }
+            }
+        }
+
+
     }
 
     private fun cashPaymentWithVariation() {
