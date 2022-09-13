@@ -151,11 +151,36 @@ class TbItem : Parcelable {
         modeTb.thumbImageUrl = item.thumbImageUrl
         modeTb.categoryId = item.categoryId
         modeTb.categoryName = item.categoryName
-        modeTb.modifier_set_ids = item.modifier_set_ids
-        modeTb.variationsAttributes = item.variationsAttributes
+        if (item.modifier_set_ids.isNotEmpty()){
+            modeTb.modifier_set_ids = item.modifier_set_ids
+
+        }
+        else{
+            modeTb.modifier_set_ids = model.modifier_set_ids
+
+        }
+
+        if (item.variationsAttributes.isNotEmpty()){
+            modeTb.variationsAttributes = item.variationsAttributes
+
+        }
+        else{
+            modeTb.variationsAttributes = model.variationsAttributes
+
+        }
+
+        if (item.modifiers.isNotEmpty()){
+            modeTb.modifiers = item.modifiers
+
+        }
+        else{
+            modeTb.modifiers = model.modifiers
+
+        }
+
+
         modeTb.shortDescription = item.shortDescription ?: ""
         modeTb.isDeleted = item.isDeleted
-        modeTb.modifiers = item.modifiers
         return modeTb
     }
 

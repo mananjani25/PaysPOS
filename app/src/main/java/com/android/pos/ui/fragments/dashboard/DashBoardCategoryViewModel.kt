@@ -3481,14 +3481,23 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                                 posRepository.addCashDiscountsFromDb(it.data.cash_discounts)
 //                                taxServiceChargeRepository.deleteTaxFromDb()
-                                taxServiceChargeRepository.addAllTaxDatabase(it.data.taxes)
+                                if (it.data.taxes.isNotEmpty()) {
+                                    taxServiceChargeRepository.addAllTaxDatabase(it.data.taxes)
+                                }
 //                                posRepository.deleteNotesFromDb()
                                 posRepository.addAllNotesDatabase(it.data.notes)
 //                                tipDiscountRepository.deleteDiscountsFromDb()
                                 tipDiscountRepository.addDiscount(it.data.discounts)
-                                taxServiceChargeRepository.deleteServiceChargesFromDb()
-                                serviceChargesList.clear()
-                                taxServiceChargeRepository.addServiceCharges(it.data.service_charges)
+
+                                /* serviceChargesList.clear()
+                                 serviceChargesList = it.data.service_charges.toCollection(
+                                     arrayListOf()
+                                 )*/
+
+                                if (it.data.service_charges.isNotEmpty()) {
+                                    taxServiceChargeRepository.deleteServiceChargesFromDb()
+                                    taxServiceChargeRepository.addServiceCharges(it.data.service_charges)
+                                }
 //                                posRepository.deleteTerminalsFromDb()
                                 posRepository.addTerminalsDatabase(it.data.terminals)
 //                                tipDiscountRepository.deleteTipsFromDb()
