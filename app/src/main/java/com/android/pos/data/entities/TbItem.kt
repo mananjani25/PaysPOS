@@ -97,6 +97,8 @@ class TbItem : Parcelable {
 
 
     fun convertToItem1(item: TbItem, model: TbItem): TbItem {
+        Log.e("GetItemForCheck","item1  ${Gson().toJson(item)}")
+        Log.e("GetItemForCheck","model1  ${Gson().toJson(model)}")
 
         val modeTb = TbItem()
 
@@ -153,29 +155,67 @@ class TbItem : Parcelable {
         modeTb.thumbImageUrl = item.thumbImageUrl
         modeTb.categoryId = item.categoryId
         modeTb.categoryName = item.categoryName
-        if (item.modifier_set_ids.isNotEmpty()){
+        if (item.modifier_set_ids.isEmpty() && model.modifier_set_ids.isEmpty()) {
+
+            var listMod: ArrayList<Int> = arrayListOf()
+            listMod.addAll(item.modifier_set_ids)
+            listMod.addAll(modeTb.modifier_set_ids)
+            modeTb.modifier_set_ids = listMod
+
+        } else if (item.modifier_set_ids.isNotEmpty()) {
             modeTb.modifier_set_ids = item.modifier_set_ids
 
-        }
-        else{
+        } else {
             modeTb.modifier_set_ids = model.modifier_set_ids
 
         }
 
-        if (item.variationsAttributes.isNotEmpty()){
+        if (item.variationsAttributes.isNotEmpty() && model.variationsAttributes.isNotEmpty()) {
+            var variationList: ArrayList<VariationsAttribute> = arrayListOf()
+            variationList.addAll(model.variationsAttributes)
+            var removeVar: ArrayList<VariationsAttribute> = arrayListOf()
+            var listIdsVariation: ArrayList<Int> = arrayListOf()
+            model.variationsAttributes.forEach {
+                it.id?.let { it1 -> listIdsVariation.add(it1) }
+            }
+
+            item.variationsAttributes.forEach {
+                if (listIdsVariation.contains(it.id)) {
+                    Log.e("ModYEs", "Content")
+                    model.variationsAttributes.forEach { it1 ->
+                        if (it1.id == it.id && it._destroy) {
+                            removeVar.add(it)
+
+
+                        }
+                    }
+
+
+                }
+                else{
+                    variationList.add(it)
+                }
+
+
+            }
+
+            variationList.removeAll(removeVar)
+            Log.e("GetVaroatom","${variationList.size}")
+
+            modeTb.variationsAttributes = variationList
+
+        } else if (item.variationsAttributes.isNotEmpty()) {
             modeTb.variationsAttributes = item.variationsAttributes
 
-        }
-        else{
+        } else {
             modeTb.variationsAttributes = model.variationsAttributes
 
         }
 
-        if (item.modifiers.isNotEmpty()){
+        if (item.modifiers.isNotEmpty()) {
             modeTb.modifiers = item.modifiers
 
-        }
-        else{
+        } else {
             modeTb.modifiers = model.modifiers
 
         }
