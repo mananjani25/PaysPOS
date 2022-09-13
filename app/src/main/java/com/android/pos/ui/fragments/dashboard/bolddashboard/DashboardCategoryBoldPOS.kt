@@ -204,6 +204,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         viewModel.onlineOrderCount.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
                 if (it != null) {
+
                     Log.d(TAG, "getwebOrderingCount: " + it.count)
                     onlineOrderBadgeDisplay(it.count)
                 }

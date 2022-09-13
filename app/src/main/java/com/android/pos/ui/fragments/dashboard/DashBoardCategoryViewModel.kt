@@ -3262,8 +3262,6 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                                 category.items.forEach {
                                     //new optimise code
-
-
                                     inventoryModelList.add(TbItem().convertToItem(it, category))
                                 }
 
@@ -3292,15 +3290,16 @@ class DashBoardCategoryViewModel @Inject constructor(
                             delay(1000)
 
                             appDatabase.categoryDao().addAll(categoryModelList)
-                            var listInventory: ArrayList<TbItem> = arrayListOf()
-                            ThreadPoolManager.instance.executeTask(Runnable {
+
+                            val listInventory: ArrayList<TbItem> = arrayListOf()
+                            ThreadPoolManager.instance.executeTask {
 
                                 inventoryModelList.forEachIndexed { index, it ->
-                                    var item = posRepository.getSingleItem(it.itemId)
+                                    val item = posRepository.getSingleItem(it.itemId)
 
                                     if (item != null) {
 
-                                        var model = TbItem().convertToItem1(it, item)
+                                        val model = TbItem().convertToItem1(it, item)
 
                                         listInventory.add(model)
 
@@ -3317,11 +3316,34 @@ class DashBoardCategoryViewModel @Inject constructor(
                                     appDatabase.itemDao().addAllItem(listInventory)
                                 }
 
-                            })
+                            }
+
+                            val listModifierSet: ArrayList<ModifierSet> = arrayListOf()
+                            ThreadPoolManager.instance.executeTask {
+
+                                modifierSetList.forEach {
+
+                                    val modifierSet = posRepository.getSingleModifier(it.id!!)
+
+                                    if (modifierSet != null) {
+
+                                        val model = TbItem().convertToModifier(it, modifierSet)
+
+                                        listModifierSet.add(model)
+
+                                    } else {
+                                        listModifierSet.add(it)
+                                    }
+
+                                }
+
+                                viewModelScope.launch {
+                                    appDatabase.modifierSetDao().addAll(listModifierSet)
+                                }
+                            }
 
 
 
-                            appDatabase.modifierSetDao().addAll(modifierSetList)
                             appDatabase.itemModifierSetsDao().addAll(itemModifierSetList)
                             appDatabase.optionSetDao().addAll(mData.optionSets)
 
