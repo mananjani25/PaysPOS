@@ -20,6 +20,9 @@ interface NotesDao {
     @get:Query("select * from TbNotes where TbNotes.isDeleted = 0 ORDER BY TbNotes.sort DESC")
     val alllNotes: LiveData<List<NoteResponse.Data>>
 
+    @get:Query("select * from TbNotes where TbNotes.isDeleted = 0 and TbNotes.isActive = 1 ORDER BY TbNotes.sort DESC")
+    val taxListActive: LiveData<List<NoteResponse.Data>>
+
     @Query("select * from TbNotes where TbNotes.isDeleted = 0")
     fun allNotesList(): List<NoteResponse.Data>
 

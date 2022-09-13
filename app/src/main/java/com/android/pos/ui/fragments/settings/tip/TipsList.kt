@@ -155,7 +155,6 @@ class TipsList : Fragment(), ItemCallback {
                         ProgressUtils.dismissProgressDialog()
                         binding.rvTipList.visibility = View.VISIBLE
                         resource.data?.let { tipList ->
-                            Collections.reverse(tipList)
                             setTipData(tipList)
                         }
                     }
