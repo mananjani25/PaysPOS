@@ -275,13 +275,24 @@ class TbItem : Parcelable {
                 }
             }
             if (!itemList.contains(it) && !it.isDeleted) {
-                itemList.add(it)
+                var content = false
+                for (i in  0 until itemList.size){
+                    if (it.id == itemList.get(i).id){
+                        content =  true
+                        break
+                    }
+                }
+                if (!content) {
+                    itemList.add(it)
+                }
             }
         }
         //remove items from list
         itemList.removeAll(removeItems)
 
         Log.e("modeModifierSet", Gson().toJson(itemList))
+
+
         if (itemList.isEmpty()) {
             modeModifierSet.modifiers = emptyList()
         } else {
@@ -300,6 +311,7 @@ class TbItem : Parcelable {
         modeModifierSet.isDeleted = modifierSetOld.isDeleted
 
         Log.e("modeModifierSet1", Gson().toJson(modeModifierSet))
+
 
         return modeModifierSet
     }
