@@ -209,13 +209,16 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
 
                             }
 
+                        } else {
+                            Log.e("CategoryEmpty", "CategoryEmpty clearList")
+                            categoryParentAdapter.clearList()
                         }
 
                     } else {
-                        Log.e(TAG,"CAtegoryEmpty")
-                        runOnUiThread(Runnable {
-                        categoryParentAdapter.clearList()
-                        })
+                        Log.e(TAG, "CCategoryEmpty")
+                        runOnUiThread {
+                            categoryParentAdapter.clearList()
+                        }
                     }
                     ProgressUtils.dismissProgressDialog()
 

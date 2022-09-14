@@ -59,8 +59,8 @@ class CategoryParentAdapter(
     }
 
     fun clearList(){
-        this.list.clear()
-        list.addAll(arrayListOf())
+        list.clear()
+        list = arrayListOf()
         notifyDataSetChanged()
     }
 
