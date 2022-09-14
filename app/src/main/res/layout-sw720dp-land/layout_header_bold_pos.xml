@@ -171,11 +171,11 @@
                 android:layout_marginEnd="@dimen/_10sdp"
                 android:layout_toStartOf="@+id/imgSearch"
                 android:background="?attr/selectableItemBackground"
+                android:clickable="false"
                 android:contentDescription="@string/search"
                 android:padding="@dimen/_5sdp"
-                android:visibility="invisible"
-                android:clickable="false"
                 android:src="@drawable/ic_sync"
+                android:visibility="invisible"
                 app:tint="@color/txtColor" />
 
 

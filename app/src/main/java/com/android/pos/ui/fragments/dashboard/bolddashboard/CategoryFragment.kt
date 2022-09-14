@@ -34,7 +34,9 @@ import com.android.pos.ui.fragments.dashboard.DashBoardCategoryViewModel
 import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.callback.ItemListner
+import com.android.pos.utils.extensions.runOnUiThread
 import com.android.pos.utils.statusUtils.Status
+import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -98,6 +100,7 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
                 Status.SUCCESS -> {
 
                     val tbCategory = it.data
+                    Log.e(TAG, "${Gson().toJson(it.data)}")
                     if (tbCategory != null) {
                         tabList.clear()
                         tabList = arrayListOf()
@@ -178,18 +181,23 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
                                     Log.e("ItemAdapter", "itemListSize  ${itemList1.size}")
 
                                     lifecycleScope.launch {
-                                        viewModel.itemsByCat(categoryList1[0].category.id).collectLatest {
-                                            Log.e("CollectItems","Collect")
+                                        viewModel.itemsByCat(categoryList1[0].category.id)
+                                            .collectLatest {
+                                                Log.e("CollectItems", "Collect")
 
-                                            binding.rvItemList.adapter = null
-                                            itemAdapter = ItemAdapterPagDash(listner)
-                                            binding.rvItemList.setHasFixedSize(true)
-                                            binding.rvItemList.layoutManager = GridLayoutManager(requireContext(), 4)
-                                            binding.rvItemList.adapter = itemAdapter
-                                            itemAdapter.submitData(it)
-                                            Log.e("LoadedItems","sizeOf  ${itemAdapter.snapshot().items.size}")
+                                                binding.rvItemList.adapter = null
+                                                itemAdapter = ItemAdapterPagDash(listner)
+                                                binding.rvItemList.setHasFixedSize(true)
+                                                binding.rvItemList.layoutManager =
+                                                    GridLayoutManager(requireContext(), 4)
+                                                binding.rvItemList.adapter = itemAdapter
+                                                itemAdapter.submitData(it)
+                                                Log.e(
+                                                    "LoadedItems",
+                                                    "sizeOf  ${itemAdapter.snapshot().items.size}"
+                                                )
 
-                                        }
+                                            }
                                     }
                                     binding.rvCategoryParent.scrollToPosition(0)
 
@@ -201,8 +209,16 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
 
                             }
 
+                        } else {
+                            Log.e("CategoryEmpty", "CategoryEmpty clearList")
+                            categoryParentAdapter.clearList()
                         }
 
+                    } else {
+                        Log.e(TAG, "CCategoryEmpty")
+                        runOnUiThread {
+                            categoryParentAdapter.clearList()
+                        }
                     }
                     ProgressUtils.dismissProgressDialog()
 
@@ -259,11 +275,11 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
 
         if (tabPos != -1) {
             if (tabPos < categoryList1.size) {
-              /*  categoryList1[tabPos].inventoryLists?.filter {
-                    it!!.isHide && !it.isDeleted
-                }?.let { it1 ->
-                    itemList.addAll(it1)
-                }*/
+                /*  categoryList1[tabPos].inventoryLists?.filter {
+                      it!!.isHide && !it.isDeleted
+                  }?.let { it1 ->
+                      itemList.addAll(it1)
+                  }*/
 
                 lifecycleScope.launch {
                     viewModel.itemsByCat(categoryList1[tabPos].category.id).collectLatest {
@@ -277,10 +293,9 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
             Log.e("ItemAdapter", "ItermListAdded 2 ")
 
 
-
-           /* itemAdapter.snapshot().toCollection(arrayListOf()).addAll(itemList)
-            itemAdapter.notifyDataSetChanged()
-*/
+            /* itemAdapter.snapshot().toCollection(arrayListOf()).addAll(itemList)
+             itemAdapter.notifyDataSetChanged()
+ */
         }
 
     }
