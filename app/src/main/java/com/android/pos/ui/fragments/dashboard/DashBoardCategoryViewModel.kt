@@ -3424,6 +3424,8 @@ class DashBoardCategoryViewModel @Inject constructor(
                             resource.data?.let {
                                 LogUtil.logE(TAG, "FullData  ${Gson().toJson(it)}")
 
+                                posRepository.addTeamRoleFromDb(it.data.teamRoles)
+                                rolePermission.findCurrentUserRoleAndSave(it.data.teamRoles)
 
                                 try {
 
@@ -3567,10 +3569,10 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 }
 
 //                                posRepository.deleteTeamRoleFromDb()
-                                posRepository.addTeamRoleFromDb(it.data.teamRoles)
+//                                posRepository.addTeamRoleFromDb(it.data.teamRoles)
 //                                posRepository.deleteAllEmployee()
                                 posRepository.employeeListAddAllFromSeeting(it.data.employee)
-                                rolePermission.findCurrentUserRoleAndSave(it.data.teamRoles)
+//                                rolePermission.findCurrentUserRoleAndSave(it.data.teamRoles)
 //                                posRepository.deleteOrderTypeFromDb()
                                 posRepository.addOrderType(it.data.orderTypes)
                                 posRepository.addAllCountryList(it.data.phoneCountrylist)
