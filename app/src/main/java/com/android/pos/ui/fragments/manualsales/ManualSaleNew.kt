@@ -266,7 +266,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
 
         }
         binding.layoutHeader.imgSync.setOnClickListener {
-            viewModel.syncInventoryModule(requireActivity())
+          //  viewModel.syncInventoryModule(requireActivity())
         }
         binding.layoutHeader.imgDrawer.setOnClickListener {
             findNavController().navigate(R.id.action_manualSalesNew_to_menuFragment)
