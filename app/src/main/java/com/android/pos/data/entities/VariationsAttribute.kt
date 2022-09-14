@@ -28,6 +28,8 @@ data class VariationsAttribute(
     var stockQty: String = "",
     @SerializedName("_destroy")
     var _destroy: Boolean = false,
+    @SerializedName("is_deleted")
+    var isDeleted: Boolean = false,
     var isChecked: Boolean = false,
     var orderVariationId: Int? = null
 
