@@ -173,6 +173,8 @@
                 android:background="?attr/selectableItemBackground"
                 android:contentDescription="@string/search"
                 android:padding="@dimen/_5sdp"
+                android:visibility="invisible"
+                android:clickable="false"
                 android:src="@drawable/ic_sync"
                 app:tint="@color/txtColor" />
 

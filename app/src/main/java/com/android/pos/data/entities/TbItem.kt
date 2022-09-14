@@ -97,18 +97,18 @@ class TbItem : Parcelable {
 
 
     fun convertToItem1(item: TbItem, model: TbItem): TbItem {
-        Log.e("GetItemForCheck","item1  ${Gson().toJson(item)}")
-        Log.e("GetItemForCheck","model1  ${Gson().toJson(model)}")
+        Log.e("GetItemForCheck", "item1  ${Gson().toJson(item)}")
+        Log.e("GetItemForCheck", "model1  ${Gson().toJson(model)}")
 
         val modeTb = TbItem()
 
         val itemList = mutableListOf<TaxData>()
         val itemTaxIds: ArrayList<Int> = arrayListOf()
+
+
         item.taxes?.forEach {
             itemTaxIds.add(it.id)
         }
-
-
         model.taxes?.let {
 
             itemList.addAll(it)
@@ -160,7 +160,8 @@ class TbItem : Parcelable {
             var listMod: ArrayList<Int> = arrayListOf()
             listMod.addAll(item.modifier_set_ids)
             listMod.addAll(modeTb.modifier_set_ids)
-            modeTb.modifier_set_ids = listMod
+
+            modeTb.modifier_set_ids = LinkedHashSet(listMod).toMutableList()
 
         } else if (item.modifier_set_ids.isNotEmpty()) {
             modeTb.modifier_set_ids = item.modifier_set_ids
@@ -183,16 +184,29 @@ class TbItem : Parcelable {
                 if (listIdsVariation.contains(it.id)) {
                     Log.e("ModYEs", "Content")
                     model.variationsAttributes.forEach { it1 ->
-                        if (it1.id == it.id && it._destroy) {
+
+                        if (it1.id == it.id && it.isDeleted) {
+                            variationList.forEach { varI ->
+                                if (varI.id == it.id){
+                                    varI.isDeleted = it.isDeleted
+                                }
+                            }
                             removeVar.add(it)
 
 
+                        } else if (it1.id == it.id && !it.isActive) {
+                            variationList.forEach { varI ->
+                                if (varI.id == it.id){
+                                    varI.isActive = it.isActive
+                                }
+                            }
+                            removeVar.add(it)
                         }
+
                     }
 
 
-                }
-                else{
+                } else {
                     variationList.add(it)
                 }
 
@@ -200,7 +214,13 @@ class TbItem : Parcelable {
             }
 
             variationList.removeAll(removeVar)
-            Log.e("GetVaroatom","${variationList.size}")
+
+            Log.e("CheckVarRemove","removeVar  ${Gson().toJson(removeVar)}")
+            Log.e("CheckVarRemove","variation  ${Gson().toJson(variationList)}")
+
+
+
+            Log.e("GetVaroatom", "${variationList.size}")
 
             modeTb.variationsAttributes = variationList
 
@@ -255,13 +275,24 @@ class TbItem : Parcelable {
                 }
             }
             if (!itemList.contains(it) && !it.isDeleted) {
-                itemList.add(it)
+                var content = false
+                for (i in  0 until itemList.size){
+                    if (it.id == itemList.get(i).id){
+                        content =  true
+                        break
+                    }
+                }
+                if (!content) {
+                    itemList.add(it)
+                }
             }
         }
         //remove items from list
         itemList.removeAll(removeItems)
 
         Log.e("modeModifierSet", Gson().toJson(itemList))
+
+
         if (itemList.isEmpty()) {
             modeModifierSet.modifiers = emptyList()
         } else {
@@ -280,6 +311,7 @@ class TbItem : Parcelable {
         modeModifierSet.isDeleted = modifierSetOld.isDeleted
 
         Log.e("modeModifierSet1", Gson().toJson(modeModifierSet))
+
 
         return modeModifierSet
     }
