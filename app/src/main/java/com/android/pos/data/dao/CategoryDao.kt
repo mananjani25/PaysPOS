@@ -15,6 +15,7 @@ interface CategoryDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun add(categoryModel: TbCategory?): Long
 
+    @Transaction
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun addAll(categoryModel: List<TbCategory>)
 

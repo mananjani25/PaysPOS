@@ -1,11 +1,8 @@
 package com.android.pos.data.dao
 
 import androidx.lifecycle.LiveData
-import androidx.room.Dao
-import androidx.room.Insert
+import androidx.room.*
 import androidx.room.OnConflictStrategy.REPLACE
-import androidx.room.Query
-import androidx.room.Update
 import com.android.pos.data.entities.ModifierSet
 import com.android.pos.data.entities.TbItem
 
@@ -25,6 +22,7 @@ interface ModifierSetDao {
     @Update
     fun update(modifierModel: ModifierSet)
 
+    @Transaction
     @Insert(onConflict = REPLACE)
     suspend fun addAll(modifierModel: List<ModifierSet>)
 

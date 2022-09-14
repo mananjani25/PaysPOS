@@ -2,10 +2,7 @@ package com.android.pos.data.dao
 
 import androidx.lifecycle.LiveData
 import androidx.paging.PagingSource
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.Query
+import androidx.room.*
 import com.android.pos.data.entities.TaxData
 import com.android.pos.data.entities.TbItem
 
@@ -17,6 +14,7 @@ interface DBItemDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun add(inventory: TbItem?): Long?
 
+    @Transaction
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun addAllItem(elementsBeanList: List<TbItem>)
 
