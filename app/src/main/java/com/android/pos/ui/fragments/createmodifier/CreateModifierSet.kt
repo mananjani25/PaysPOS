@@ -3,7 +3,6 @@ package com.android.pos.ui.fragments.createmodifier
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -124,7 +123,10 @@ class CreateModifierSet : Fragment(), TextWatcher {
 //            if (isEdit) {
             bundle.putIntegerArrayList("itemIds", itemIds)
 //            }
-            findNavController().navigate(R.id.action_createIModifierSet_to_itemDialog, bundle)
+
+            if (findNavController().currentDestination?.id == R.id.createIModifierSet) {
+                findNavController().navigate(R.id.action_createIModifierSet_to_itemDialog, bundle)
+            }
         }
 
         val touchHelper = ItemTouchHelper(object :

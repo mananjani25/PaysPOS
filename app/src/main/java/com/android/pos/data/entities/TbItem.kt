@@ -1,12 +1,14 @@
 package com.android.pos.data.entities
 
 import android.os.Parcelable
+import android.util.Log
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import androidx.room.TypeConverters
 import com.android.pos.data.model.responseModel.category.Category
 import com.android.pos.data.model.responseModel.item.Item
 import com.android.pos.data.typeconvert.TypeConvertersTax
+import com.google.gson.Gson
 import kotlinx.parcelize.Parcelize
 import java.util.*
 
@@ -95,21 +97,23 @@ class TbItem : Parcelable {
 
 
     fun convertToItem1(item: TbItem, model: TbItem): TbItem {
+        Log.e("GetItemForCheck", "item1  ${Gson().toJson(item)}")
+        Log.e("GetItemForCheck", "model1  ${Gson().toJson(model)}")
 
-        var modeTb = TbItem()
+        val modeTb = TbItem()
 
-        var itemList = mutableListOf<TaxData>()
-        var itemTaxIds: ArrayList<Int> = arrayListOf()
+        val itemList = mutableListOf<TaxData>()
+        val itemTaxIds: ArrayList<Int> = arrayListOf()
+
+
         item.taxes?.forEach {
             itemTaxIds.add(it.id)
         }
-
-
         model.taxes?.let {
 
             itemList.addAll(it)
         }
-        var removeItems: ArrayList<TaxData> = arrayListOf()
+        val removeItems: ArrayList<TaxData> = arrayListOf()
 
         item.taxes?.forEachIndexed { index, it ->
 
@@ -151,12 +155,166 @@ class TbItem : Parcelable {
         modeTb.thumbImageUrl = item.thumbImageUrl
         modeTb.categoryId = item.categoryId
         modeTb.categoryName = item.categoryName
-        modeTb.modifier_set_ids = item.modifier_set_ids
-        modeTb.variationsAttributes = item.variationsAttributes
+        if (item.modifier_set_ids.isEmpty() && model.modifier_set_ids.isEmpty()) {
+
+            var listMod: ArrayList<Int> = arrayListOf()
+            listMod.addAll(item.modifier_set_ids)
+            listMod.addAll(modeTb.modifier_set_ids)
+
+            modeTb.modifier_set_ids = LinkedHashSet(listMod).toMutableList()
+
+        } else if (item.modifier_set_ids.isNotEmpty()) {
+            modeTb.modifier_set_ids = item.modifier_set_ids
+
+        } else {
+            modeTb.modifier_set_ids = model.modifier_set_ids
+
+        }
+
+        if (item.variationsAttributes.isNotEmpty() && model.variationsAttributes.isNotEmpty()) {
+            var variationList: ArrayList<VariationsAttribute> = arrayListOf()
+            variationList.addAll(model.variationsAttributes)
+            var removeVar: ArrayList<VariationsAttribute> = arrayListOf()
+            var listIdsVariation: ArrayList<Int> = arrayListOf()
+            model.variationsAttributes.forEach {
+                it.id?.let { it1 -> listIdsVariation.add(it1) }
+            }
+
+            item.variationsAttributes.forEach {
+                if (listIdsVariation.contains(it.id)) {
+                    Log.e("ModYEs", "Content")
+                    model.variationsAttributes.forEach { it1 ->
+
+                        if (it1.id == it.id && it.isDeleted) {
+                            variationList.forEach { varI ->
+                                if (varI.id == it.id){
+                                    varI.isDeleted = it.isDeleted
+                                }
+                            }
+                            removeVar.add(it)
+
+
+                        } else if (it1.id == it.id && !it.isActive) {
+                            variationList.forEach { varI ->
+                                if (varI.id == it.id){
+                                    varI.isActive = it.isActive
+                                }
+                            }
+                            removeVar.add(it)
+                        }
+
+                    }
+
+
+                } else {
+                    variationList.add(it)
+                }
+
+
+            }
+
+            variationList.removeAll(removeVar)
+
+            Log.e("CheckVarRemove","removeVar  ${Gson().toJson(removeVar)}")
+            Log.e("CheckVarRemove","variation  ${Gson().toJson(variationList)}")
+
+
+
+            Log.e("GetVaroatom", "${variationList.size}")
+
+            modeTb.variationsAttributes = variationList
+
+        } else if (item.variationsAttributes.isNotEmpty()) {
+            modeTb.variationsAttributes = item.variationsAttributes
+
+        } else {
+            modeTb.variationsAttributes = model.variationsAttributes
+
+        }
+
+        if (item.modifiers.isNotEmpty()) {
+            modeTb.modifiers = item.modifiers
+
+        } else {
+            modeTb.modifiers = model.modifiers
+
+        }
+
+
         modeTb.shortDescription = item.shortDescription ?: ""
         modeTb.isDeleted = item.isDeleted
-        modeTb.modifiers = item.modifiers
         return modeTb
     }
+
+    fun convertToModifier(modifierSetOld: ModifierSet, model: ModifierSet): ModifierSet {
+
+        var modeModifierSet = ModifierSet()
+
+        val itemList = mutableListOf<Modifier>()
+        val itemTaxIds: ArrayList<Int> = arrayListOf()
+        modifierSetOld.modifiers.forEach {
+            it.id?.let { it1 -> itemTaxIds.add(it1) }
+        }
+
+
+        model.modifiers.let {
+
+            itemList.addAll(it)
+        }
+        val removeItems: ArrayList<Modifier> = arrayListOf()
+
+        modifierSetOld.modifiers.forEachIndexed { index, it ->
+
+            for (i in 0 until itemList.size) {
+
+                if (itemList.get(i).id == it.id) {
+                    if (it.isDeleted) {
+                        removeItems.add(itemList[i])
+                    }
+
+                }
+            }
+            if (!itemList.contains(it) && !it.isDeleted) {
+                var content = false
+                for (i in  0 until itemList.size){
+                    if (it.id == itemList.get(i).id){
+                        content =  true
+                        break
+                    }
+                }
+                if (!content) {
+                    itemList.add(it)
+                }
+            }
+        }
+        //remove items from list
+        itemList.removeAll(removeItems)
+
+        Log.e("modeModifierSet", Gson().toJson(itemList))
+
+
+        if (itemList.isEmpty()) {
+            modeModifierSet.modifiers = emptyList()
+        } else {
+            modeModifierSet.modifiers = itemList
+        }
+
+        modeModifierSet.id = modifierSetOld.id
+        modeModifierSet.itemIds = modifierSetOld.itemIds
+        modeModifierSet.name = modifierSetOld.name
+        modeModifierSet.updatedAt = modifierSetOld.updatedAt
+        modeModifierSet.locationId = modifierSetOld.locationId
+        modeModifierSet.isChecked = modifierSetOld.isChecked
+        modeModifierSet.min_required = modifierSetOld.min_required
+        modeModifierSet.max_allowed = modifierSetOld.max_allowed
+        modeModifierSet.sort = modifierSetOld.sort
+        modeModifierSet.isDeleted = modifierSetOld.isDeleted
+
+        Log.e("modeModifierSet1", Gson().toJson(modeModifierSet))
+
+
+        return modeModifierSet
+    }
+
 
 }

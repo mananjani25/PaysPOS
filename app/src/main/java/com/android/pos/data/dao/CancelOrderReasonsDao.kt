@@ -20,7 +20,7 @@ interface CancelOrderReasonsDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun addAllCancelOrderReasonsSuspend(cancelOrderReasonsList: List<VenueDetailsResponse.Data.CancelOrderReason>)
 
-    @get:Query("select * from TbCancelOrderReason")
+    @get:Query("select * from TbCancelOrderReason where TbCancelOrderReason.isActive = 1 and TbCancelOrderReason.isDeleted = 0")
     val allCancelOrderReasons: LiveData<List<VenueDetailsResponse.Data.CancelOrderReason>>
 
     @Query("select * from TbCancelOrderReason")

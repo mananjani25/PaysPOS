@@ -7,6 +7,7 @@ import androidx.room.OnConflictStrategy.REPLACE
 import androidx.room.Query
 import androidx.room.Update
 import com.android.pos.data.entities.ModifierSet
+import com.android.pos.data.entities.TbItem
 
 
 /**
@@ -58,5 +59,8 @@ interface ModifierSetDao {
 
     @Query("DELETE FROM ModifierSet")
     suspend fun delete()
+
+    @Query("SELECT * from ModifierSet  where ModifierSet.id  = :id LIMIT 1")
+    fun itemOne(id: Int): ModifierSet?
 
 }

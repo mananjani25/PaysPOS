@@ -30,6 +30,7 @@ import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.LogUtil
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.extensions.liveSnackBar
+import com.android.pos.utils.extensions.runOnUiThread
 import com.google.android.material.snackbar.Snackbar
 import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
@@ -348,12 +349,14 @@ class AddEditCustomer : Fragment() {
 
                     if (placeDetails.address.isNotEmpty()) {
                         try {
-                            binding.edtStreet?.setText(street)
-                            binding.edtSuite?.setText(suite)
-                            binding.edtCity?.setText(city)
-                            binding.edtState?.setText(state)
-                            binding.edtZip?.setText(zip)
-                            binding.edtStreet?.dismissDropDown()
+                            runOnUiThread {
+                                binding.edtStreet?.setText(street)
+                                binding.edtSuite?.setText(suite)
+                                binding.edtCity?.setText(city)
+                                binding.edtState?.setText(state)
+                                binding.edtZip?.setText(zip)
+                                binding.edtStreet?.dismissDropDown()
+                            }
                         } catch (e: Exception) {
                             LogUtil.logE(TAG, "exception in pplaces api")
                         } finally {
@@ -423,12 +426,14 @@ class AddEditCustomer : Fragment() {
 
                     if (placeDetails.address.isNotEmpty()) {
                         try {
-                            binding.edtStreetDel?.setText(street)
-                            binding.edtSuiteDel?.setText(suite)
-                            binding.edtCityDel?.setText(city)
-                            binding.edtStateDel?.setText(state)
-                            binding.edtZipDel?.setText(zip)
-                            binding.edtStreetDel?.dismissDropDown()
+                            runOnUiThread {
+                                binding.edtStreetDel?.setText(street)
+                                binding.edtSuiteDel?.setText(suite)
+                                binding.edtCityDel?.setText(city)
+                                binding.edtStateDel?.setText(state)
+                                binding.edtZipDel?.setText(zip)
+                                binding.edtStreetDel?.dismissDropDown()
+                            }
                         } catch (e: Exception) {
                             LogUtil.logE(TAG, "exception in pplaces api")
                         } finally {
@@ -518,11 +523,22 @@ class AddEditCustomer : Fragment() {
                 var id1: Int? = null
                 var id2: Int? = null
 
-                if (viewModel.listAddress.size == 1) {
+                if (viewModel.listAddress.size == 2){
                     id1 = viewModel.listAddress[0].id!!
-                } else if (viewModel.listAddress.size == 2) {
                     id2 = viewModel.listAddress[1].id!!
+                }else if (viewModel.listAddress.size == 1){
+
+                    if (viewModel.listAddress[0].type_of_address == "Billing"){
+                        id1 = viewModel.listAddress[0].id!!
+                    }else if (viewModel.listAddress[0].type_of_address == "Shipping"){
+                        id2 = viewModel.listAddress[0].id!!
+                    }
                 }
+//                if (viewModel.listAddress.size == 1) {
+//                    id1 = viewModel.listAddress[0].id!!
+//                } else if (viewModel.listAddress.size == 2) {
+//                    id2 = viewModel.listAddress[1].id!!
+//                }
                 listAddress = arrayListOf()
 
                 if (binding.edtStreet?.text.toString().isNotEmpty())

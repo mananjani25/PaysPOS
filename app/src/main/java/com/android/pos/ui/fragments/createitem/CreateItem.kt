@@ -37,7 +37,6 @@ import com.android.pos.utils.MethodUtils.Companion.isDoubleClick
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.callback.ItemCallback
 import com.android.pos.utils.callback.UpdateVariationCallback
-import com.android.pos.utils.extensions.alert
 import com.android.pos.utils.extensions.getNavigationResultLiveData
 import com.android.pos.utils.extensions.liveSnackBar
 import com.bumptech.glide.Glide
@@ -49,6 +48,7 @@ import com.bumptech.glide.load.engine.GlideException
 import com.bumptech.glide.request.RequestListener
 import com.bumptech.glide.request.target.Target
 import com.google.android.material.snackbar.Snackbar
+import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -112,7 +112,9 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback , I
         }
 
         binding.tvAddVariation.setOnClickListener {
-            findNavController().navigate(R.id.action_createItem_to_customVariationDialog)
+            if (findNavController().currentDestination?.id == R.id.createItem) {
+                findNavController().navigate(R.id.action_createItem_to_customVariationDialog)
+            }
         }
 
         binding.header.txtSave.setOnClickListener {
@@ -241,7 +243,12 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback , I
         getNavigationResultLiveData<VariationsAttribute>(DIALOG_KEY_ADD_VARIATION_DETAILS)?.observe(
             viewLifecycleOwner
         ) {
+            Log.e(TAG,"variationList1  ${Gson().toJson(variationListAdapter.variationList)}")
             variationList1 = ArrayList()
+
+            if (customVariationList.isEmpty()) {
+                customVariationList.addAll(variationListAdapter.variationList)
+            }
             customVariationList.add(it)
 
             binding.llVariationTitle.visibility = View.VISIBLE
@@ -277,6 +284,7 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback , I
             if (customVariation != null) {
                 customVariationList.add(0, customVariation)
             }
+
             variationListAdapter.addAllVariations(customVariationList)
 
         }
@@ -313,18 +321,38 @@ class CreateItem : Fragment(), View.OnClickListener, UpdateVariationCallback , I
 
             }
 
-            for (newVariation in mList) {
-                if (!newVariation._destroy) {
-                    isNewVariation = true
-                    viewModel.variationAttribute(mList)
-                    break
-                }
+            var varApiEmp = false
+            if (variationListApi.isEmpty()) {
+                varApiEmp = true
+                mList.addAll(variationListAdapter.variationList)
             }
 
 
-            if (!isNewVariation) {
-                mList.addAll(variationListAdapter.selectedVariation())
+            Log.e("VariationList" , "varSize ${Gson().toJson(variationListAdapter.variationList)}")
+
+
+            Log.e("VarEd","varApiEmp  ${varApiEmp}")
+            if (varApiEmp){
+                Log.e(TAG,"insideEmpty")
+                viewModel.variationAttribute(variationListAdapter.variationList)
+            }else {
                 viewModel.variationAttribute(mList)
+             /*   for (newVariation in mList) {
+                    if (!newVariation._destroy) {
+                        isNewVariation = true
+                        Log.e(TAG, "getVariationL  ${mList.size}")
+                        viewModel.variationAttribute(mList)
+                        break
+                    }
+                }*/
+
+
+
+                Log.e(TAG, "isNewVariation  ${isNewVariation}")
+                if (!isNewVariation) {
+                    mList.addAll(variationListAdapter.variationList)
+                    viewModel.variationAttribute(mList)
+                }
             }
 
         } else {
