@@ -746,21 +746,7 @@ class DineInTableAdapter() : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private fun totalPrice(model: TbItem): Double {
 
-        return if (model.modifiers.isNotEmpty()) {
-
-            var totalPrice = 0.0
-
-            val mList = model.modifiers
-            mList.forEach { items ->
-                totalPrice += items.price * items.itemQuantity
-            }
-
-            (model.price * model.itemQuantity) + totalPrice
-        } else {
-
-            model.price * model.itemQuantity
-
-        }
+        return  model.price * model.itemQuantity
     }
 
     fun onItemMove(fromPosition: Int?, toPosition: Int?): Boolean {
