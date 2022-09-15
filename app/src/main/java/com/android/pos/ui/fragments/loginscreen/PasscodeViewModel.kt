@@ -1,10 +1,10 @@
 package com.android.pos.ui.fragments.loginscreen
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.android.pos.data.db.AppDatabase
 import com.android.pos.data.model.responseModel.BaseResponse
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.EMPLOYEE_ID
@@ -17,8 +17,10 @@ import com.android.pos.data.remote.Constants.TERMINAL_ID
 import com.android.pos.data.repositories.PosRepository
 import com.android.pos.data.repositories.UserRepository
 import com.android.pos.di.PrefProvider
+import com.android.pos.di.RolePermission
 import com.android.pos.utils.Event
 import com.android.pos.utils.statusUtils.Status
+import com.android.pos.utils.workmanager.ThreadPoolManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -27,7 +29,9 @@ import javax.inject.Inject
 class PasscodeViewModel @Inject constructor(
     private val userRepository: UserRepository,
     private val posRepository: PosRepository,
-    private val prefProvider: PrefProvider
+    private val prefProvider: PrefProvider,
+    private val appDatabase: AppDatabase,
+    private val rolePermission: RolePermission
 ) :
     ViewModel() {
 
@@ -206,7 +210,17 @@ class PasscodeViewModel @Inject constructor(
                                     )
                                     prefProvider.setValueboolean("clockOutFromNoti", false)
                                     prefProvider.setValue(PASSCODE, passcode)
-                                    prefProvider.setValueboolean(Constants.SYNC_DATA, false)
+                                    ThreadPoolManager.instance.executeTask(Runnable {
+
+                                        rolePermission.findCurrentUserRoleAndSave(
+                                            appDatabase.teamRoleDao().allRoleList()
+                                        )
+
+
+                                    })
+
+
+                                    //prefProvider.setValueboolean(Constants.SYNC_DATA, false)
                                     employeeLogin(data)
 
                                 }
