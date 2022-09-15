@@ -146,7 +146,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
                     if (qty > 15) {
                         qty = 15
                         binding.edttxtQuantity.setText("15")
-                    }else if (qty==0){
+                    } else if (qty == 0) {
                         binding.edttxtQuantity.setText("1")
                     }
                     binding.edttxtQuantity.setSelection(binding.edttxtQuantity.text!!.length)
@@ -223,7 +223,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
         }
 
         binding.txtDone.setOnClickListener {
-            if (binding.edttxtQuantity.text.isNullOrEmpty()){
+            if (binding.edttxtQuantity.text.isNullOrEmpty()) {
                 binding.edttxtQuantity.setText("1")
             }
             MethodUtils.hideSoftKeyboard(requireActivity())
@@ -428,7 +428,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
         }
 
         binding.txtRemoveItem.setOnClickListener {
-            Log.e(TAG,"getDeleteItem  ${Gson().toJson(item)}")
+            Log.e(TAG, "getDeleteItem  ${Gson().toJson(item)}")
             makeItemEdited(item)
             if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == DINE_IN) {
                 LogUtil.logE(TAG, "isEditedisEdited  ${item.isEdited}")
@@ -515,7 +515,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
                                     it.modifier_set_ids[i]
                                 }
 
-                                variationAdapter.addVariations(it.variationsAttributes)
+                                variationAdapter.addVariations(it.variationsAttributes.filter { !it.isDeleted })
                                 val variationList = ArrayList<VariationsAttribute>()
                                 if (item.variationsAttributes.isNotEmpty()) {
                                     binding.dividerLine.root.visibility = View.VISIBLE
