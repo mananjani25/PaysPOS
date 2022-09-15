@@ -25,6 +25,7 @@ import com.android.pos.utils.extensions.liveSnackBar
 import com.android.pos.utils.extensions.showAlert
 import com.android.pos.utils.statusUtils.Status
 import com.google.android.material.snackbar.Snackbar
+import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 import java.util.*
 
@@ -158,7 +159,6 @@ class Notes : Fragment(), ItemCallback {
                         ProgressUtils.dismissProgressDialog()
                         binding.rvNoteLise.visibility = View.VISIBLE
                         resource.data?.let { taxList ->
-                            Collections.reverse(taxList)
                             setTaxData(taxList)
                         }
                     }
@@ -210,6 +210,9 @@ class Notes : Fragment(), ItemCallback {
     }
 
     private fun setTaxData(taxList: List<NoteResponse.Data>) {
+        taxList.sortedWith(compareBy { it.sort })
+        Collections.reverse(taxList)
+        Log.d(TAG, "setTaxData: "+Gson().toJson(taxList))
         noteListUpdateDelete = taxList as ArrayList<NoteResponse.Data>
         noteListadapter.apply {
             addNotes(taxList)
