@@ -36,7 +36,6 @@ import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.callback.ItemListner
 import com.android.pos.utils.extensions.runOnUiThread
 import com.android.pos.utils.statusUtils.Status
-import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
@@ -100,7 +99,6 @@ class CategoryFragment(val listner: ItemListner, val edtSearch: AutoCompleteText
                 Status.SUCCESS -> {
 
                     val tbCategory = it.data
-                    Log.e(TAG, "${Gson().toJson(it.data)}")
                     if (tbCategory != null) {
                         tabList.clear()
                         tabList = arrayListOf()
