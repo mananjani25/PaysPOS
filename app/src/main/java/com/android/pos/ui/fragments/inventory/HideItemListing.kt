@@ -276,7 +276,7 @@ class HideItemListing(val clickedPosition: Int) : Fragment(), ItemCallback {
                         positiveButton(getString(R.string.activate)) {
                             deleteAndHide = true
                             deleteObj = adapter.getItem(pos)
-                            viewModel.deleteAndHide(deleteObj!!.itemId, deleteAndHide, true)
+//                            viewModel.deleteAndHide(deleteObj!!.itemId, deleteAndHide, true)
                         }
                         negativeButton(R.string.tv_cancel) {
                             // Do negative stuff here

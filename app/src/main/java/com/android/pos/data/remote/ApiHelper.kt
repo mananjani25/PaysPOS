@@ -222,8 +222,11 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
     suspend fun deleteItem(itemId: Int) =
         getResult { apiService.deleteItem(itemId) }
 
-    suspend fun hideItem(itemId: Int, active: Boolean) =
-        getResult { apiService.hideItem(itemId, active) }
+    suspend fun hideItem(itemId: Int, hide_status: String) =
+        getResult { apiService.hideItem(itemId, hide_status) }
+
+    suspend fun hideItemWebsite(itemId: Int, hide_status: String) =
+        getResult { apiService.hideItemWebsite(itemId, hide_status) }
 
     suspend fun createItem(data: CreateItemRequestModel) =
         getResult {

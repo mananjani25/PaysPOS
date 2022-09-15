@@ -527,7 +527,13 @@ interface ApiService {
     @PUT(HIDE_ITEM)
     suspend fun hideItem(
         @Path("id") id: Int,
-        @Query("is_active") is_active: Boolean,
+        @Query("hide_status") hide_status: String,
+    ): BaseResponse
+
+    @PUT(HIDE_ITEM)
+    suspend fun hideItemWebsite(
+        @Path("id") id: Int,
+        @Query("website_hide_status") website_hide_status: String,
     ): BaseResponse
 
     @GET(ITEMS)

@@ -542,8 +542,11 @@ class PosRepository @Inject constructor(
 
     suspend fun deleteItem(itemId: Int) = apiHelperNew.deleteItem(itemId)
 
-    suspend fun itemHide(itemId: Int, active: Boolean) =
-        apiHelperNew.hideItem(itemId, active)
+    suspend fun itemHide(itemId: Int, hide_status: String) =
+        apiHelperNew.hideItem(itemId, hide_status)
+
+    suspend fun hideItemWebsite(itemId: Int, hide_status: String) =
+        apiHelperNew.hideItemWebsite(itemId, hide_status)
 
     fun unhideItemList() =
         performGetOperationDatabase(databaseQuery = { appDatabase.itemDao().unhideItem!! })
