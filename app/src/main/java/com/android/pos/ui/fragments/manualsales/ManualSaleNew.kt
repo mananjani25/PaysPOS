@@ -1467,7 +1467,12 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
 
             model.note = edtNote.text.toString().trim()
             LogUtil.logE("TAG", "notes${edtNote.text.toString().trim()}")
-            model.itemQuantity = txtQty.text.toString().toInt()
+            if (txtQty.text.toString().isNotEmpty()) {
+                model.itemQuantity = txtQty.text.toString().toInt()
+            } else {
+                model.itemQuantity = 1
+            }
+
             cartList?.get(0)?.items?.get(position)?.name = edtItemName.text.toString()
             Log.d(TAG, "onItemClicked: name  " + edtItemName.text.toString())
 
