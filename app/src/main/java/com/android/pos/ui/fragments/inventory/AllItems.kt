@@ -349,46 +349,17 @@ class AllItems(val clickedPosition: Int, val totalItems: Int) : Fragment(), Item
                             deletePos = pos
                             deleteObj = adapterPage.peek(pos)
                             //delete API call
-//                            viewModel.deleteAndHide(deleteObj!!.itemId, deleteAndHide, false)
-                            //Delete item in database
-//                            viewModel.dbDeleteAndHide(deleteObj!!.itemId, deleteAndHide)
+                            viewModel.deleteItems(deleteObj!!.itemId)
                         }
                     }
                 }
                 R.id.menu_hide_pos -> {
                     deleteObj = adapterPage.peek(pos)
                     dialogShowForHide(deleteObj,"pos")
-//                    alert(
-//                        getString(R.string.app_name),
-//                        getString(R.string.hide_item_message)
-//                    ) {
-//                        positiveButton(getString(R.string.deactivate)) {
-//                            deleteAndHide = true
-//                            deleteObj = adapterPage.peek(pos)
-//                            viewModel.hideItems(deleteObj!!.itemId,"")
-//                        }
-//                        negativeButton(R.string.tv_cancel) {
-//                            // Do negative stuff here
-//                        }
-//                    }
                 }
                 R.id.menu_hide_website -> {
                     deleteObj = adapterPage.peek(pos)
-                    dialogShowForHide(deleteObj,"website")
-//                    alert(
-//                        getString(R.string.app_name),
-//                        getString(R.string.hide_item_message)
-//                    ) {
-//                        positiveButton(getString(R.string.deactivate)) {
-//                            deleteAndHide = true
-//                            deleteObj = adapterPage.peek(pos)
-////                            viewModel.deleteAndHide(deleteObj!!.itemId, deleteAndHide, false)
-//                        }
-//                        negativeButton(R.string.tv_cancel) {
-//                            // Do negative stuff here
-//                        }
-//                    }
-                }
+                    dialogShowForHide(deleteObj,"website") }
             }
             true
         }

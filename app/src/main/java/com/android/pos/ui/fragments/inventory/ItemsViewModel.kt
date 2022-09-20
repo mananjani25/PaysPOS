@@ -68,55 +68,43 @@ class ItemsViewModel @Inject constructor(
     }.flow.cachedIn(viewModelScope)
 
 
-//    fun deleteAndHide(id: Int, deleteAndHide: Boolean, isHideItemScreen: Boolean) {
-//        _showProgress.value = Event(true)
-//
-//        viewModelScope.launch {
-//            val resource =
-//                if (isHideItemScreen) {
-//                    posRepository.itemHide(id, deleteAndHide)
-//                } else if (deleteAndHide) {
-//                    posRepository.itemHide(id, !deleteAndHide)
-//                } else {
-//                    posRepository.deleteItem(id)
-//                }
-//
-//
-//            when (resource.status) {
-//                Status.SUCCESS -> {
-//                    _showProgress.value = Event(false)
-//
-//                    resource.data.let {
-//                        if (it?.status == 200) {
-//                            resource.data?.let { response ->
-//                                _data.value = Event(response)
-//                                if (isHideItemScreen) {
-//                                    appDatabase.itemDao().updateShowItem(id)
-//                                } else if (deleteAndHide) {
-//                                    appDatabase.itemDao().update(id)
-//                                } else
-//                                    appDatabase.itemDao().deleteItem(id)
-//                            }
-//                        } else {
-//                            _snackbarText.value = Event(resource.message)
-//                        }
-//
-//                    }
-//
-//
-//                }
-//
-//                Status.ERROR -> {
-//                    _snackbarText.value = Event(resource.message)
-//                    _showProgress.value = Event(false)
-//                }
-//
-//                Status.LOADING -> {
-//                    _showProgress.value = Event(true)
-//                }
-//            }
-//        }
-//    }
+    fun deleteItems(id: Int) {
+        _showProgress.value = Event(true)
+
+        viewModelScope.launch {
+            val resource = posRepository.deleteItem(id)
+
+
+            when (resource.status) {
+                Status.SUCCESS -> {
+                    _showProgress.value = Event(false)
+
+                    resource.data.let {
+                        if (it?.status == 200) {
+                            resource.data?.let { response ->
+                                _data.value = Event(response)
+                                appDatabase.itemDao().deleteItem(id)
+                            }
+                        } else {
+                            _snackbarText.value = Event(resource.message)
+                        }
+
+                    }
+
+
+                }
+
+                Status.ERROR -> {
+                    _snackbarText.value = Event(resource.message)
+                    _showProgress.value = Event(false)
+                }
+
+                Status.LOADING -> {
+                    _showProgress.value = Event(true)
+                }
+            }
+        }
+    }
 
     fun hideItems(id: Int, hide_status: String, type: String) {
         _showProgress.value = Event(true)
@@ -136,7 +124,7 @@ class ItemsViewModel @Inject constructor(
                         if (it?.status == 200) {
                             resource.data?.let { response ->
                                 _data.value = Event(response)
-//                                appDatabase.itemDao().update(id)
+                                appDatabase.itemDao().update(id)
                             }
                         } else {
                             _snackbarText.value = Event(resource.message)

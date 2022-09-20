@@ -163,8 +163,8 @@
 
 
             <ImageView
-                android:id="@+id/imgSync"
-                android:layout_width="wrap_content"
+                android:id="@+id/imgCashdDrawer"
+                android:layout_width="@dimen/_25sdp"
                 android:layout_height="wrap_content"
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
@@ -174,8 +174,8 @@
                 android:clickable="false"
                 android:contentDescription="@string/search"
                 android:padding="@dimen/_5sdp"
-                android:src="@drawable/ic_sync"
-                android:visibility="invisible"
+                android:src="@drawable/cashdrawer"
+                android:visibility="visible"
                 app:tint="@color/txtColor" />
 
 
