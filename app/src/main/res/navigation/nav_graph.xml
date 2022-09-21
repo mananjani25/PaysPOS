@@ -113,6 +113,13 @@
             app:destination="@id/createItem"
             app:enterAnim="@anim/nav_default_enter_anim" />
     </fragment>
+    <fragment
+        android:id="@+id/pascodeManagerDailog"
+        android:name="com.android.pos.ui.dialog.PasscodeDialogForManangerDialog"
+        android:label="PasscodeDialogForManangerDialog"
+        tools:layout="@layout/passcode_dialog_for_mananger_fragment">
+
+    </fragment>
 
     <fragment
         android:id="@+id/onlineOrderFragment"
@@ -1453,14 +1460,14 @@
             android:id="@+id/actionboldpos_to_orderCompleteFragment"
             app:destination="@id/orderCompleteFragment" />
         <action
+            android:id="@+id/actionboldpos_to_pascodeManagerDailog"
+            app:destination="@id/pascodeManagerDailog" />
+        <action
             android:id="@+id/action_dashboardCategoryBoldPOS_to_checkoutDetailsFragment"
             app:destination="@id/checkoutDetailsFragment" />
         <action
             android:id="@+id/action_dashboardCategoryBoldPOS_to_menuFragment"
             app:destination="@id/menuFragment" />
-        <action
-            android:id="@+id/action_dashboardCategoryBoldPOS_to_addVariablePriceDialog"
-            app:destination="@id/addVariablePriceDialog" />
         <action
             android:id="@+id/action_dashboardCategoryBoldPOS_to_onlineOrderFragment"
             app:destination="@id/onlineOrderFragment"
