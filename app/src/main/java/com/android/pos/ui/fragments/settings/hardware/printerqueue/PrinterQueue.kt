@@ -527,7 +527,9 @@ class PrinterQueue : Fragment(), StatusChangeEventListener, BatteryStatusChangeE
             }
 
             builder = Builder(pname, PrinterClass.language, requireActivity())
-
+            builder.addTextLineSpace(30)
+            builder.addFeedUnit(30)
+            builder.addFeedLine(1)
             if (kitchenSettingModel.showOrderType) {
 
 
