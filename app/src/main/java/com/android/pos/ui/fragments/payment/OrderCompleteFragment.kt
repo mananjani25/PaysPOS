@@ -7228,7 +7228,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 }
 
                 builder = Builder(pname, PrinterClass.language, requireActivity())
-
+                builder.addTextLineSpace(30)
+                builder.addFeedUnit(30)
+                builder.addFeedLine(1)
 
                 builder.addTextFont(Builder.FONT_E)
                 builder.addTextAlign(Builder.ALIGN_CENTER)
@@ -7578,7 +7580,8 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                 builder = Builder(pname, PrinterClass.language, requireActivity())
 
-
+                builder.addTextLineSpace(30)
+                builder.addFeedUnit(30)
                 builder.addFeedLine(1)
                 builder.addTextFont(Builder.FONT_E)
                 builder.addTextAlign(Builder.ALIGN_CENTER)
@@ -7968,7 +7971,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
             PrintSunmiUtils.fontSize(kitchenSettingModel.fonts)
             SunmiPrinterApi.getInstance().printerInit()
-
+            SunmiPrinterApi.getInstance().lineWrap(1)
             PrintSunmiUtils.orderIdLarge("OrderID:" + receiptModel?.order?.id)
             SunmiPrinterApi.getInstance().lineWrap(1)
 
@@ -8116,7 +8119,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         try {
             // PrintSunmiUtils.fontSizeInner(LARGE)
             SunmiPrintHelper.getInstance().initPrinter()
-
+            SunmiPrinterApi.getInstance().lineWrap(1)
             PrintSunmiUtils.headerText("OrderID:" + receiptModel?.order?.id)
             SunmiPrintHelper.getInstance().lineWrap(1)
 

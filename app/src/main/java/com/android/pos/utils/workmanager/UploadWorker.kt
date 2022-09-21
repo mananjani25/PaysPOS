@@ -991,7 +991,8 @@ class UploadWorker(@NotNull context: Context, @NotNull params: WorkerParameters)
 
             builder = Builder(pname, PrinterClass.language, mContext)
 
-
+            builder.addTextLineSpace(30)
+            builder.addFeedUnit(30)
             builder.addFeedLine(1)
             builder.addTextFont(Builder.FONT_E)
             builder.addTextLang(Builder.LANG_EN)
