@@ -10,8 +10,11 @@ data class ProcessCardSwipeRequest(
     @SerializedName("CardSwipeInput")
     val cardSwipeInput: CardSwipeInput,
     @SerializedName("TransactionInput")
-    val transactionInput: TransactionInput
-) {
+    val transactionInput: TransactionInput,
+    @SerializedName("CustomerTransactionID")
+    val customerTransactionID: String,
+
+    ) {
     data class Authentication(
         @SerializedName("CustomerCode")
         val customerCode: String,
@@ -45,7 +48,7 @@ data class ProcessCardSwipeRequest(
         @SerializedName("TransactionType")
         val transactionType: Int,
         @SerializedName("TransactionInputDetails")
-        val transactionInputDetails: List<KeyValue> = emptyList(),
+        val transactionInputDetails: List<KeyValue>? = null,
         @SerializedName("ReferenceAuthCode")
         val referenceAuthCode: String? = null,
         @SerializedName("ReferenceTransactionID")
