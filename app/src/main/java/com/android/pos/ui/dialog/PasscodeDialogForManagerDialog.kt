@@ -15,11 +15,13 @@ import android.view.WindowManager
 import androidx.core.content.res.ResourcesCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import com.android.pos.R
 import com.android.pos.databinding.PasscodeDialogForManangerFragmentBinding
 import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.LogUtil
 import com.android.pos.utils.ProgressUtils
+import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -30,6 +32,7 @@ class PasscodeDialogForManagerDialog : DialogFragment() {
     companion object {
         fun newInstance() = PasscodeDialogForManagerDialog()
     }
+
     private val viewModel by viewModels<PasscodeDialogForManagerViewModel>()
 
     override fun onCreateView(
@@ -126,6 +129,7 @@ class PasscodeDialogForManagerDialog : DialogFragment() {
             }
         }
     }
+
     private fun observeShowProgress() {
 
         viewModel.showProgress.observe(viewLifecycleOwner) { event ->
@@ -139,11 +143,40 @@ class PasscodeDialogForManagerDialog : DialogFragment() {
         }
         viewModel.data.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
-                if (it){
-                    dialog?.dismiss()
+                if (it) {
+                    findNavController().popBackStack()
+                    var isFrom = arguments?.getString("isFrom", "")
+                    Log.d("yash", "observeShowProgress: " + isFrom)
+                    Log.d("yash", "observeShowProgress: " + Gson().toJson(arguments))
+                    if (isFrom == "orderDiscount") {
+                        findNavController().navigate(
+                            R.id.action_dashboardCategoryBoldPOS_to_addDiscountDialog,
+                            arguments
+                        )
+                    } else if (isFrom == "itemDiscount") {
+                        findNavController().navigate(
+                            R.id.action_dashboardCategoryBoldPOS_to_addDiscountDialog,
+                            arguments
+                        )
+                    } else if (isFrom == "refundOnline") {
+                        findNavController().navigate(
+                            R.id.action_transaction_to_reasonForrefundonline,
+                            arguments
+                        )
+                    } else if (isFrom == "refund") {
+                        findNavController().navigate(
+                            R.id.action_transactionDetailsFragment_to_issueRefundFragment,
+                            arguments
+                        )
+                    }else if(isFrom=="rejectOnlineOrder"){
+                        findNavController().navigate(
+                            R.id.action_onlineOrder_to_passcodeManager,
+                            arguments
+                        )
+                    }
                 }
             }
-            }
+        }
     }
 
     private fun setupSnackbar() {

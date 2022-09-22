@@ -54,6 +54,7 @@ class PasscodeDialogForManagerViewModel @Inject constructor(
                 }
                 Status.ERROR -> {
                     _snackbarText.value = Event(passcodeResorcse.message.toString())
+                    _showProgress.value = Event(false)
                 }
 
                 Status.LOADING -> {
