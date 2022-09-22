@@ -113,13 +113,13 @@
             app:destination="@id/createItem"
             app:enterAnim="@anim/nav_default_enter_anim" />
     </fragment>
-    <fragment
+    <dialog
         android:id="@+id/pascodeManagerDailog"
-        android:name="com.android.pos.ui.dialog.PasscodeDialogForManangerDialog"
+        android:name="com.android.pos.ui.dialog.PasscodeDialogForManagerDialog"
         android:label="PasscodeDialogForManangerDialog"
         tools:layout="@layout/passcode_dialog_for_mananger_fragment">
 
-    </fragment>
+    </dialog>
 
     <fragment
         android:id="@+id/onlineOrderFragment"

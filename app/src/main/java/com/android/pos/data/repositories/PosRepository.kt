@@ -108,6 +108,9 @@ class PosRepository @Inject constructor(
     suspend fun createPrinter(data: CreatePrinterRequestModel) =
         apiHelperNew.createPrinter(data)
 
+    suspend fun checkPermissionRole(passcode: String) =
+        apiHelperNew.checkPermissionRole(passcode)
+
     suspend fun createQueuePrinter(createQueuePrinterRequest: CreateQueuePrinterRequestModel) =
         apiHelperNew.createQueuePrinter(createQueuePrinterRequest)
 

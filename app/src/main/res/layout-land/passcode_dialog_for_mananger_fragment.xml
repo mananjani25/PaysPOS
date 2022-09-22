@@ -16,38 +16,38 @@
             android:orientation="vertical"
             android:layout_height="wrap_content">
 
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
 
-            <androidx.appcompat.widget.AppCompatImageView
-                android:id="@+id/imgBack"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:layout_gravity="center"
-                android:background="?attr/selectableItemBackground"
-                android:padding="@dimen/_6sdp"
-                app:srcCompat="@drawable/ic_cancel_black" />
+                <androidx.appcompat.widget.AppCompatImageView
+                    android:id="@+id/imgBack"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_gravity="center"
+                    android:background="?attr/selectableItemBackground"
+                    android:padding="@dimen/_6sdp"
+                    app:srcCompat="@drawable/ic_cancel_black" />
 
-            <androidx.appcompat.widget.AppCompatTextView
-                android:id="@+id/txtTitle"
-                style="@style/CustomFontSemiBold"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true"
-                android:layout_centerVertical="true"
-                android:layout_gravity="center"
-                android:gravity="center"
-                android:padding="@dimen/_5sdp"
-                android:text="Manager's Passcode"
-                android:textColor="@color/txtColor"
-                android:textSize="@dimen/_6mdpi" />
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/txtTitle"
+                    style="@style/CustomFontSemiBold"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:layout_centerVertical="true"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:padding="@dimen/_5sdp"
+                    android:text="Manager's Passcode"
+                    android:textColor="@color/txtColor"
+                    android:textSize="@dimen/_6mdpi" />
 
-        </RelativeLayout>
+            </RelativeLayout>
 
-        <include layout="@layout/divider"
-            />
+            <include layout="@layout/divider"
+                />
         </LinearLayout>
         <androidx.appcompat.widget.LinearLayoutCompat
             android:id="@+id/linear_passcode"
@@ -64,8 +64,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_marginHorizontal="@dimen/_10sdp"
-                android:layout_marginBottom="@dimen/_10sdp"
+                android:layout_marginHorizontal="@dimen/_5sdp"
+                android:layout_marginBottom="@dimen/_5sdp"
                 android:background="@drawable/passcode_viewunselected"
                 android:orientation="vertical">
 

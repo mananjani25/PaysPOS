@@ -355,18 +355,19 @@ class AllItems(val clickedPosition: Int, val totalItems: Int) : Fragment(), Item
                 }
                 R.id.menu_hide_pos -> {
                     deleteObj = adapterPage.peek(pos)
-                    dialogShowForHide(deleteObj,"pos")
+                    dialogShowForHide(deleteObj, "pos")
                 }
                 R.id.menu_hide_website -> {
                     deleteObj = adapterPage.peek(pos)
-                    dialogShowForHide(deleteObj,"website") }
+                    dialogShowForHide(deleteObj, "website")
+                }
             }
             true
         }
         popupMenu?.show()
     }
 
-    fun dialogShowForHide(tbdata: TbItem?,type:String) {
+    fun dialogShowForHide(tbdata: TbItem?, type: String) {
         var dialogView = LayoutInflater.from(context).inflate(R.layout.hide_item_dialog, null)
         val customDialog = AlertDialog.Builder(context)
             .setView(dialogView)
@@ -382,7 +383,12 @@ class AllItems(val clickedPosition: Int, val totalItems: Int) : Fragment(), Item
         var txtSave = customDialog.findViewById<AppCompatTextView>(R.id.txtSave)
         var txtCancel = customDialog.findViewById<AppCompatTextView>(R.id.txtcancel)
         txttitle.text = "Select hide type (" + tbdata?.name + ")"
-        var status = "HideForIndefinitely"
+        var status = if (type == "website") {
+            "HideForTodayOnWebsite"
+        } else {
+            "HideForIndefinitely"
+        }
+
         txtCancel.setOnClickListener {
             customDialog.dismiss()
         }
@@ -390,14 +396,23 @@ class AllItems(val clickedPosition: Int, val totalItems: Int) : Fragment(), Item
             customDialog.dismiss()
         }
         rdone.setOnClickListener {
-            status = "HideForToday"
+            if (type == "website") {
+                status = "HideForTodayOnWebsite"
+            } else {
+                status = "HideForToday"
+            }
         }
         rdtwo.setOnClickListener {
-            status = "HideForIndefinitely"
+            if (type == "website") {
+                status = "HideForIndefinitelyOnWebsite"
+            } else {
+                status = "HideForIndefinitely"
+            }
+
         }
         txtSave.setOnClickListener {
-            Log.d(TAG, "dialogShowForHide: "+status)
-            tbdata?.itemId?.let { it1 -> viewModel.hideItems(it1, status,type) }
+            Log.d(TAG, "dialogShowForHide: " + status)
+            tbdata?.itemId?.let { it1 -> viewModel.hideItems(it1, status, type) }
             customDialog.dismiss()
         }
 

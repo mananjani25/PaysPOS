@@ -15,6 +15,9 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
     suspend fun getDefaultTerminal(uniq_id: String, device_token: String) =
         getResult { apiService.getDefaultTerminal(uniq_id, device_token) }
 
+    suspend fun checkPermissionRole(passcode: String) =
+        getResult { apiService.checkEmployeeRole(passcode) }
+
     suspend fun employeeClockIn(data: HashMap<String, String>) =
         getResult { apiService.employeeClockIn(data) }
 
