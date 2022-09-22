@@ -30,6 +30,7 @@ class MagtekRequestUtils @Inject constructor(
     val prefProvider: PrefProvider
 ) {
 
+
     var magensaSettingModel: VenueDetailsResponse.Data.MagensaSettings? = null
 
     init {
@@ -64,6 +65,7 @@ class MagtekRequestUtils @Inject constructor(
 
         val processCardSwipeRequest = ManualEntryRequestItem(
             authentication = authentication(),
+            customerTransactionID = System.currentTimeMillis().toString(),
             manualEntryInput = ManualEntryRequestItem.ManualEntryInput(
                 cVV = cardCVV,
                 expirationDate = expDate,
@@ -100,6 +102,7 @@ class MagtekRequestUtils @Inject constructor(
 
         val processCardSwipeRequest = ProcessCardSwipeRequest(
             authentication = authentication(),
+            customerTransactionID = System.currentTimeMillis().toString(),
             cardSwipeInput = ProcessCardSwipeRequest.CardSwipeInput(
                 encryptedCardSwipe = ProcessCardSwipeRequest.CardSwipeInput.EncryptedCardSwipe(
                     kSN = ksn,
@@ -129,6 +132,25 @@ class MagtekRequestUtils @Inject constructor(
         val jsonArray = JsonArray()
 
         getValue()
+
+
+        var transactionInput: ProcessCardSwipeRequest.TransactionInput? = null
+
+        if (processorName() == "TSYS - Production" || processorName() == "TSYS - Pilot") {
+            transactionInput = ProcessCardSwipeRequest.TransactionInput(
+                amount = payableAmount,
+                processorName = processorName(),
+                transactionType = transactionType
+            )
+        } else if (processorName() == "Rapid Connect v3 - Production" || processorName() == "Rapid Connect v3 - Pilot") {
+            transactionInput = ProcessCardSwipeRequest.TransactionInput(
+                amount = payableAmount,
+                processorName = processorName(),
+                transactionType = transactionType,
+                transactionInputDetails("")
+            )
+        }
+
         val processDataRequest = ProcessDataRequest(
             authentication = authentication(),
             customerTransactionID = System.currentTimeMillis().toString(),
@@ -142,12 +164,7 @@ class MagtekRequestUtils @Inject constructor(
                 isEncrypted = true,
                 paymentMode = 2
             ),
-            transactionInput = ProcessCardSwipeRequest.TransactionInput(
-                amount = payableAmount,
-                processorName = processorName(),
-                transactionType = transactionType,
-                transactionInputDetails = transactionInputDetails("")
-            )
+            transactionInput = transactionInput!!
         )
 
         val jsonObject = Gson().toJson(processDataRequest)

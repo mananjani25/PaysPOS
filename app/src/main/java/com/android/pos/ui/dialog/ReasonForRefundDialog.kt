@@ -250,17 +250,27 @@ class ReasonForRefundDialog : DialogFragment() {
                 ProgressUtils.dismissProgressDialog()
                 if (response.isSuccessful) {
                     LogUtil.logE("onResponse", Gson().toJson(response.body()))
-                    if (response.body() != null && response.body()!![0].transactionOutput != null && response.body()!![0].transactionOutput?.isTransactionApproved == true) {
+                    if (response.body() != null && response.body()!![0].transactionOutput != null) {
 
-                        refundCall()
+                        if (response.body()!![0].transactionOutput?.isTransactionApproved == true) {
+
+                            refundCall()
+
+                        } else {
+                            AlertUtils.showCustomAlert(
+                                requireContext(),
+                                response.body()!![0].transactionOutput?.transactionMessage
+                            )
+                        }
 
                     } else {
-                        if (response.body()!![0].mPPGv4WSFault != null)
+                        if (response.body()!![0].mPPGv4WSFault != null) {
                             AlertUtils.showCustomAlert(
                                 requireContext(),
                                 response.body()!![0].mPPGv4WSFault?.faultCode + "\n" +
                                         response.body()!![0].mPPGv4WSFault?.faultReason
                             )
+                        }
                     }
                 }
             }

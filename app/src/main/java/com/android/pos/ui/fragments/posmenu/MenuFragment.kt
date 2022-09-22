@@ -91,7 +91,6 @@ class MenuFragment : DialogFragment() {
     }
 
 
-
     private fun onClick() {
         binding.header.txtSave.setOnClickListener {
             findNavController().navigateUp()
@@ -136,7 +135,9 @@ class MenuFragment : DialogFragment() {
             }
         }
         binding.linearReports.setOnClickListener {
-            findNavController().navigate(R.id.action_menuFragment_to_reports)
+            if (rolePermission.hasReportSummaryPermission(binding.root)) {
+                findNavController().navigate(R.id.action_menuFragment_to_reports)
+            }
         }
         binding.linearLogout.setOnClickListener {
             alert("", "Are you sure you want to Logout?") {
