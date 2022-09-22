@@ -3422,10 +3422,23 @@ class DashBoardCategoryViewModel @Inject constructor(
                         if (venueDetailsResponse?.status == 200) {
 
                             resource.data?.let {
-                                LogUtil.logE(TAG, "FullData  ${Gson().toJson(it)}")
+                                if (it.data.teamRoles.isNotEmpty()) {
+                                    posRepository.addTeamRoleFromDb(it.data.teamRoles)
+                                    rolePermission.findCurrentUserRoleAndSave(it.data.teamRoles)
+                                } else  {
 
-                                posRepository.addTeamRoleFromDb(it.data.teamRoles)
-                                rolePermission.findCurrentUserRoleAndSave(it.data.teamRoles)
+                                    ThreadPoolManager.instance.executeTask(Runnable {
+
+                                        rolePermission.findCurrentUserRoleAndSave(
+                                            appDatabase.teamRoleDao().allRoleList()
+                                        )
+
+
+                                    })
+
+
+                                }
+
 
                                 try {
 

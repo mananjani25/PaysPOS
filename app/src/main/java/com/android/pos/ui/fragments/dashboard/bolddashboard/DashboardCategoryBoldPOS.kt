@@ -1472,7 +1472,8 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 LogUtil.logE(TAG, "kitchenFonts:  ${kitchenSettingModel.fonts}")
                 LogUtil.logE(TAG, "kitfontSize:  ${fontSizeH}")
 
-
+                builder.addTextLineSpace(30)
+                builder.addFeedUnit(30)
                 builder.addFeedLine(1)
                 builder.addTextFont(Builder.FONT_E)
                 builder.addTextAlign(Builder.ALIGN_CENTER)
@@ -1801,6 +1802,9 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 LogUtil.logE(TAG, "kitfontSize:  ${fontSizeH}")
 
 
+                builder.addTextLineSpace(30)
+                builder.addFeedUnit(30)
+                builder.addFeedLine(1)
                 builder.addTextFont(Builder.FONT_E)
                 builder.addTextAlign(Builder.ALIGN_CENTER)
                 builder.addTextLang(Builder.LANG_EN)
@@ -2181,7 +2185,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
             PrintSunmiUtils.fontSize(kitchenSettingModel.fonts)
             SunmiPrinterApi.getInstance().printerInit()
-
+            SunmiPrinterApi.getInstance().lineWrap(1)
             PrintSunmiUtils.orderIdLarge("OrderID:" + receiptModel?.order?.id)
             SunmiPrinterApi.getInstance().lineWrap(1)
 
@@ -2330,7 +2334,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         try {
 
             SunmiPrintHelper.getInstance().initPrinter()
-
+            SunmiPrinterApi.getInstance().lineWrap(1)
             PrintSunmiUtils.headerText("OrderID:" + receiptModel?.order?.id)
             SunmiPrintHelper.getInstance().lineWrap(1)
 
