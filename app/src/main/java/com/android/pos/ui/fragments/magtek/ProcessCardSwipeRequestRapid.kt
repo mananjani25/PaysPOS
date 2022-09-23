@@ -4,13 +4,13 @@ package com.android.pos.ui.fragments.magtek
 import com.android.pos.data.model.responseModel.report.KeyValue
 import com.google.gson.annotations.SerializedName
 
-data class ProcessCardSwipeRequest(
+data class ProcessCardSwipeRequestRapid(
     @SerializedName("Authentication")
     val authentication: Authentication,
     @SerializedName("CardSwipeInput")
     val cardSwipeInput: CardSwipeInput,
     @SerializedName("TransactionInput")
-    val transactionInput: TransactionInput,
+    val transactionInput: TransactionInputRapid,
     @SerializedName("CustomerTransactionID")
     val customerTransactionID: String,
 

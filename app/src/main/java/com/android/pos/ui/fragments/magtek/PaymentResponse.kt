@@ -61,7 +61,7 @@ class PaymentResponse : ArrayList<PaymentResponse.PaymentResponseItem>() {
             @SerializedName("AuthCode")
             val authCode: String,
             @SerializedName("AuthorizedAmount")
-            val authorizedAmount: Int,
+            val authorizedAmount: Double,
             @SerializedName("CVVResult")
             val cVVResult: Any,
             @SerializedName("IsTransactionApproved")

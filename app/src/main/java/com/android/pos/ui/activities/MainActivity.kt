@@ -11,7 +11,6 @@ import android.os.Bundle
 import android.os.StrictMode
 import android.provider.MediaStore
 import android.provider.Settings
-import android.util.Log
 import android.view.View
 import android.view.WindowManager
 import android.widget.ImageView
@@ -24,7 +23,6 @@ import androidx.core.view.GravityCompat
 import androidx.databinding.DataBindingUtil
 import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.fragment.NavHostFragment
@@ -38,8 +36,6 @@ import com.android.pos.data.model.PrinterQueueModel
 import com.android.pos.data.model.responseModel.GetKitchenReceiptSettingsResponse
 import com.android.pos.data.model.responseModel.PrinterResponse
 import com.android.pos.data.remote.Constants
-import com.android.pos.data.remote.Constants.SYNC_NOTIFICATION
-import com.android.pos.data.remote.Constants.SYNC_SETTING_NOTIFICATION
 import com.android.pos.data.remote.Constants.UNIQUE_ID
 import com.android.pos.data.repositories.UserRepository
 import com.android.pos.databinding.ParentActivityBinding
@@ -171,7 +167,7 @@ class MainActivity : BaseScannerActivity(), ReceiveListener, ConnectionListener,
 
             LogUtil.logEN("onReceive", "" + p1?.action)
 
-                dashBoardCategoryViewModel.syncInventoryModule(this@MainActivity)
+                dashBoardCategoryViewModel.syncInventoryModule(true)
 
 
 
