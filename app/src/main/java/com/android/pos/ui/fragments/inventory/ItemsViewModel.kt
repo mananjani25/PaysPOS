@@ -40,7 +40,8 @@ class ItemsViewModel @Inject constructor(
 
 
     val items = posRepository.getItemsList()
-    val showItemsList = posRepository.unhideItemList()
+    val hideItemsListPos = posRepository.unhideItemListPOS()
+    val hideItemsListWebsite = posRepository.unhideItemListWebsite()
 
     fun inventoryCounts(): LiveData<Resource<InventoryCountsResponse>> =
         posRepository.inventoryCounts()
@@ -124,7 +125,11 @@ class ItemsViewModel @Inject constructor(
                         if (it?.status == 200) {
                             resource.data?.let { response ->
                                 _data.value = Event(response)
-                                appDatabase.itemDao().update(id)
+                                if (type=="website"){
+                                    appDatabase.itemDao().updateItemWebsite(id,hide_status)
+                                }else{
+                                    appDatabase.itemDao().updateItemPos(id,hide_status)
+                                }
                             }
                         } else {
                             _snackbarText.value = Event(resource.message)

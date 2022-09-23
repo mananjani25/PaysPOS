@@ -31,7 +31,7 @@ import com.android.pos.utils.statusUtils.Status
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class HideItemListing(val clickedPosition: Int) : Fragment(), ItemCallback {
+class HideItemWebSiteListing(val clickedPosition: Int) : Fragment(), ItemCallback {
 
     private var isreOrder: Boolean = false
     private var deleteAndHide: Boolean = false
@@ -162,7 +162,7 @@ class HideItemListing(val clickedPosition: Int) : Fragment(), ItemCallback {
 
     private fun itemsObserver() {
 
-        viewModel.hideItemsListPos.observe(viewLifecycleOwner) {
+        viewModel.hideItemsListWebsite.observe(viewLifecycleOwner) {
 
             it?.let { resource ->
                 when (resource.status) {

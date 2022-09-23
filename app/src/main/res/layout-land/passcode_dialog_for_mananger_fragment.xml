@@ -40,7 +40,7 @@
                     android:layout_gravity="center"
                     android:gravity="center"
                     android:padding="@dimen/_5sdp"
-                    android:text="Manager's Passcode"
+                    android:text="Enter Manager's Passcode"
                     android:textColor="@color/txtColor"
                     android:textSize="@dimen/_6mdpi" />
 
@@ -49,154 +49,149 @@
             <include layout="@layout/divider"
                 />
         </LinearLayout>
-        <androidx.appcompat.widget.LinearLayoutCompat
-            android:id="@+id/linear_passcode"
+
+        <ScrollView
             android:layout_width="match_parent"
             android:layout_height="match_parent"
+            android:layout_below="@id/linear_header"
             android:layout_centerInParent="true"
             android:layout_marginTop="@dimen/_10sdp"
-            android:layout_below="@id/linear_header"
+            android:scrollbars="none">
 
-            android:gravity="center"
-            android:orientation="vertical">
-
-            <LinearLayout
+            <androidx.appcompat.widget.LinearLayoutCompat
+                android:id="@+id/linear_passcode"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_marginHorizontal="@dimen/_5sdp"
-                android:layout_marginBottom="@dimen/_5sdp"
-                android:background="@drawable/passcode_viewunselected"
+                android:gravity="center"
                 android:orientation="vertical">
 
-                <TextView
-                    style="@style/CustomFontRegularStyle"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_marginTop="@dimen/_5sdp"
-                    android:gravity="center"
-                    android:text="@string/tv_enter_your_passcode"
-                    android:textColor="@color/white"
-                    android:textSize="@dimen/_8mdpi" />
-
-                <com.poovam.pinedittextfield.CirclePinField
-                    android:id="@+id/circlePin"
+                <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:layout_marginTop="@dimen/_5sdp"
                     android:layout_marginBottom="@dimen/_5sdp"
-                    android:inputType="number"
-                    android:textColorLink="@color/white"
-                    android:textSize="16sp"
-                    app:circleRadius="15dp"
-                    app:fieldColor="@color/white"
-                    app:fillerColor="@color/white"
-                    app:highlightColor="@color/white"
-                    app:noOfFields="4" />
-            </LinearLayout>
+                    android:orientation="vertical"
+                    android:paddingHorizontal="@dimen/_30sdp">
 
-            <TableLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center">
 
-                <TableRow
+                    <com.poovam.pinedittextfield.CirclePinField
+                        android:id="@+id/circlePin"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginTop="@dimen/_5sdp"
+                        android:layout_marginBottom="@dimen/_5sdp"
+                        android:inputType="number"
+                        android:textColorLink="@color/white"
+                        android:textSize="16sp"
+                        app:circleRadius="15dp"
+                        app:fieldColor="@color/white"
+                        app:fillerColor="@color/white"
+                        app:highlightColor="@color/white"
+                        app:noOfFields="4" />
+                </LinearLayout>
+
+                <TableLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:gravity="center_horizontal">
+                    android:layout_gravity="center">
 
-                    <TextView
-                        android:id="@+id/first"
-                        style="@style/passcodeviewStyle"
-                        android:text="1" />
+                    <TableRow
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:gravity="center_horizontal">
 
-                    <TextView
-                        android:id="@+id/second"
-                        style="@style/passcodeviewStyle"
-                        android:text="2" />
+                        <TextView
+                            android:id="@+id/first"
+                            style="@style/passcodeviewStyle"
+                            android:text="1" />
 
-                    <TextView
-                        android:id="@+id/third"
-                        style="@style/passcodeviewStyle"
-                        android:text="3" />
-                </TableRow>
+                        <TextView
+                            android:id="@+id/second"
+                            style="@style/passcodeviewStyle"
+                            android:text="2" />
 
-                <TableRow
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:gravity="center_horizontal">
+                        <TextView
+                            android:id="@+id/third"
+                            style="@style/passcodeviewStyle"
+                            android:text="3" />
+                    </TableRow>
 
-                    <TextView
-                        android:id="@+id/fourth"
-                        style="@style/passcodeviewStyle"
-                        android:text="4" />
+                    <TableRow
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:gravity="center_horizontal">
 
-                    <TextView
-                        android:id="@+id/five"
-                        style="@style/passcodeviewStyle"
-                        android:text="5" />
+                        <TextView
+                            android:id="@+id/fourth"
+                            style="@style/passcodeviewStyle"
+                            android:text="4" />
 
-                    <TextView
-                        android:id="@+id/six"
-                        style="@style/passcodeviewStyle"
-                        android:text="6" />
-                </TableRow>
+                        <TextView
+                            android:id="@+id/five"
+                            style="@style/passcodeviewStyle"
+                            android:text="5" />
 
-                <TableRow
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:gravity="center_horizontal">
+                        <TextView
+                            android:id="@+id/six"
+                            style="@style/passcodeviewStyle"
+                            android:text="6" />
+                    </TableRow>
 
-                    <TextView
-                        android:id="@+id/seven"
-                        style="@style/passcodeviewStyle"
-                        android:text="7" />
+                    <TableRow
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:gravity="center_horizontal">
 
-                    <TextView
-                        android:id="@+id/eight"
-                        style="@style/passcodeviewStyle"
-                        android:text="8" />
+                        <TextView
+                            android:id="@+id/seven"
+                            style="@style/passcodeviewStyle"
+                            android:text="7" />
 
-                    <TextView
-                        android:id="@+id/nine"
-                        style="@style/passcodeviewStyle"
-                        android:text="9" />
-                </TableRow>
+                        <TextView
+                            android:id="@+id/eight"
+                            style="@style/passcodeviewStyle"
+                            android:text="8" />
 
-                <TableRow
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:gravity="center_horizontal">
+                        <TextView
+                            android:id="@+id/nine"
+                            style="@style/passcodeviewStyle"
+                            android:text="9" />
+                    </TableRow>
 
-                    <TextView
-                        android:id="@+id/clear"
-                        style="@style/passcodeviewStyle"
-                        android:text="Clear"
-                        android:textSize="@dimen/_7sdp" />
+                    <TableRow
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:gravity="center_horizontal">
 
-                    <TextView
-                        android:id="@+id/zero"
-                        style="@style/passcodeviewStyle"
-                        android:text="0" />
+                        <TextView
+                            android:id="@+id/clear"
+                            style="@style/passcodeviewStyle"
+                            android:text="Clear"
+                            android:textSize="@dimen/_7sdp" />
 
-                    <ImageView
-                        android:id="@+id/backspace"
-                        android:layout_width="@dimen/_30sdp"
-                        android:layout_height="@dimen/_30sdp"
-                        android:layout_marginHorizontal="@dimen/_10sdp"
-                        android:layout_marginVertical="@dimen/_5sdp"
-                        android:background="@drawable/passcode_viewunselected"
-                        android:gravity="center"
-                        android:padding="@dimen/_7sdp"
-                        android:src="@drawable/backspase" />
-                </TableRow>
-            </TableLayout>
-        </androidx.appcompat.widget.LinearLayoutCompat>
+                        <TextView
+                            android:id="@+id/zero"
+                            style="@style/passcodeviewStyle"
+                            android:text="0" />
+
+                        <ImageView
+                            android:id="@+id/backspace"
+                            android:layout_width="@dimen/_30sdp"
+                            android:layout_height="@dimen/_30sdp"
+                            android:layout_marginHorizontal="@dimen/_10sdp"
+                            android:layout_marginVertical="@dimen/_5sdp"
+                            android:background="@drawable/passcode_viewunselected"
+                            android:gravity="center"
+                            android:padding="@dimen/_7sdp"
+                            android:src="@drawable/backspase" />
+                    </TableRow>
+                </TableLayout>
+            </androidx.appcompat.widget.LinearLayoutCompat>
+        </ScrollView>
     </RelativeLayout>
 </layout>

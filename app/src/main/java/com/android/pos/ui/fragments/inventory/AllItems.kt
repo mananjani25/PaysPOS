@@ -329,6 +329,18 @@ class AllItems(val clickedPosition: Int, val totalItems: Int) : Fragment(), Item
     override fun onItemClickListener(view: View?, pos: Int) {
         val popupMenu = view?.let { PopupMenu(requireContext(), it) }
         popupMenu?.menuInflater?.inflate(R.menu.item_option_menu_delete_hide, popupMenu.menu)
+        var menu_pos = popupMenu?.menu?.findItem(R.id.menu_hide_pos)
+        var menu_website = popupMenu?.menu?.findItem(R.id.menu_hide_website)
+        if (adapterPage.peek(pos)?.hide_status=="UnHide"){
+            menu_pos?.title = "Hide For POS"
+        }else{
+            menu_pos?.title = "UnHide For POS"
+        }
+        if (adapterPage.peek(pos)?.website_hide_status=="UnHideOnWebsite"){
+            menu_website?.title = "Hide For Website"
+        }else{
+            menu_website?.title = "UnHide For Website"
+        }
         popupMenu?.setOnMenuItemClickListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.menu_edit -> {
@@ -384,7 +396,7 @@ class AllItems(val clickedPosition: Int, val totalItems: Int) : Fragment(), Item
         var txtCancel = customDialog.findViewById<AppCompatTextView>(R.id.txtcancel)
         txttitle.text = "Select hide type (" + tbdata?.name + ")"
         var status = if (type == "website") {
-            "HideForTodayOnWebsite"
+            "HideForIndefinitelyOnWebsite"
         } else {
             "HideForIndefinitely"
         }
