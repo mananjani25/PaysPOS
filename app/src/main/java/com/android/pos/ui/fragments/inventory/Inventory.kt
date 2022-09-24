@@ -40,6 +40,7 @@ class Inventory : Fragment() {
     private var optionSetsCount: Int? = 0
     private var hiddenCategoriesCount: Int? = 0
     private var hiddenItemsCount: Int? = 0
+    private var hidden_items_website: Int? = 0
     private var mPos: Int = 0
 
     override fun onCreateView(
@@ -256,7 +257,7 @@ class Inventory : Fragment() {
                     InventoryItemModel(
                         0,
                         resources.getString(R.string.website_hidden_items_title),
-                        hiddenItemsCount
+                        hidden_items_website
                     )
                 )
             }
@@ -309,7 +310,7 @@ class Inventory : Fragment() {
                     InventoryItemModel(
                         0,
                         resources.getString(R.string.website_hidden_items_title),
-                        hiddenItemsCount
+                        hidden_items_website
                     )
                 )
 
@@ -363,7 +364,7 @@ class Inventory : Fragment() {
                     InventoryItemModel(
                         0,
                         resources.getString(R.string.website_hidden_items_title),
-                        hiddenItemsCount
+                        hidden_items_website
                     )
                 )
 
@@ -417,7 +418,7 @@ class Inventory : Fragment() {
                     InventoryItemModel(
                         0,
                         resources.getString(R.string.website_hidden_items_title),
-                        hiddenItemsCount
+                        hidden_items_website
                     )
                 )
             }
@@ -470,7 +471,7 @@ class Inventory : Fragment() {
                     InventoryItemModel(
                         0,
                         resources.getString(R.string.website_hidden_items_title),
-                        hiddenItemsCount
+                        hidden_items_website
                     )
                 )
             }
@@ -522,7 +523,7 @@ class Inventory : Fragment() {
                     InventoryItemModel(
                         0,
                         resources.getString(R.string.website_hidden_items_title),
-                        hiddenItemsCount
+                        hidden_items_website
                     )
                 )
 
@@ -574,7 +575,7 @@ class Inventory : Fragment() {
                     InventoryItemModel(
                         0,
                         resources.getString(R.string.website_hidden_items_title),
-                        hiddenItemsCount,
+                        hidden_items_website,
                         true
                     )
                 )
@@ -633,6 +634,7 @@ class Inventory : Fragment() {
                                 optionSetsCount = it.data?.data?.optionSets
                                 hiddenCategoriesCount = it.data?.data?.hiddenCategories
                                 hiddenItemsCount = it.data?.data?.hiddenItems
+                                hidden_items_website = it.data?.data?.hidden_items_website
 
                                 setAdapter(mPos)
 

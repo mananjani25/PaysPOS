@@ -151,6 +151,50 @@ class ItemsViewModel @Inject constructor(
             }
         }
     }
+    fun unHideItems(id: Int,  type: String) {
+        _showProgress.value = Event(true)
+
+        viewModelScope.launch {
+            val resource = if (type == "website") {
+                posRepository.hideItemWebsite(id, "UnHideOnWebsite")
+            } else {
+                posRepository.itemHide(id, "UnHide")
+            }
+
+            when (resource.status) {
+                Status.SUCCESS -> {
+                    _showProgress.value = Event(false)
+
+                    resource.data.let {
+                        if (it?.status == 200) {
+                            resource.data?.let { response ->
+                                _data.value = Event(response)
+                                if (type=="website"){
+                                    appDatabase.itemDao().updateItemWebsite(id,"UnHideOnWebsite")
+                                }else{
+                                    appDatabase.itemDao().updateItemPos(id,"UnHide")
+                                }
+                            }
+                        } else {
+                            _snackbarText.value = Event(resource.message)
+                        }
+
+                    }
+
+
+                }
+
+                Status.ERROR -> {
+                    _snackbarText.value = Event(resource.message)
+                    _showProgress.value = Event(false)
+                }
+
+                Status.LOADING -> {
+                    _showProgress.value = Event(true)
+                }
+            }
+        }
+    }
 
 
     fun reOrderItem(itemId: Int, oldPos: Int, newPos: Int) {

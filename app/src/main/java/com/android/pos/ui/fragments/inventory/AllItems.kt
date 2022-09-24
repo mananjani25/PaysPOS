@@ -366,12 +366,18 @@ class AllItems(val clickedPosition: Int, val totalItems: Int) : Fragment(), Item
                     }
                 }
                 R.id.menu_hide_pos -> {
-                    deleteObj = adapterPage.peek(pos)
-                    dialogShowForHide(deleteObj, "pos")
+                    if (adapterPage.peek(pos)?.hide_status=="HideForToday" || adapterPage.peek(pos)?.hide_status=="HideForIndefinitely"){
+                        viewModel.unHideItems(adapterPage.peek(pos)?.itemId!!,"pos")
+                    }else{
+                        dialogShowForHide(adapterPage.peek(pos), "pos")
+                    }
                 }
                 R.id.menu_hide_website -> {
-                    deleteObj = adapterPage.peek(pos)
-                    dialogShowForHide(deleteObj, "website")
+                    if (adapterPage.peek(pos)?.website_hide_status=="HideForTodayOnWebsite" || adapterPage.peek(pos)?.website_hide_status=="HideForIndefinitelyOnWebsite"){
+                        viewModel.unHideItems(adapterPage.peek(pos)?.itemId!!,"website")
+                    }else{
+                        dialogShowForHide(adapterPage.peek(pos), "website")
+                    }
                 }
             }
             true

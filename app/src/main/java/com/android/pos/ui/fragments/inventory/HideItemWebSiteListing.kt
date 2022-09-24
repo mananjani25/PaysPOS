@@ -265,7 +265,7 @@ class HideItemWebSiteListing(val clickedPosition: Int) : Fragment(), ItemCallbac
         popupMenu?.menuInflater?.inflate(R.menu.edit_delete__hide_menu, popupMenu.menu)
         popupMenu?.menu?.findItem(R.id.menu_edit)?.isVisible = false
         popupMenu?.menu?.findItem(R.id.menu_delete)?.isVisible = false
-        popupMenu?.menu?.findItem(R.id.menu_hide)?.setTitle("Unhide")
+        popupMenu?.menu?.findItem(R.id.menu_hide)?.title = "Unhide For Website"
         popupMenu?.setOnMenuItemClickListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.menu_hide -> {
@@ -274,9 +274,7 @@ class HideItemWebSiteListing(val clickedPosition: Int) : Fragment(), ItemCallbac
                         getString(R.string.unhide_item_message)
                     ) {
                         positiveButton(getString(R.string.activate)) {
-                            deleteAndHide = true
-                            deleteObj = adapter.getItem(pos)
-//                            viewModel.deleteAndHide(deleteObj!!.itemId, deleteAndHide, true)
+                            viewModel.unHideItems(adapter.getItem(pos).itemId,"website")
                         }
                         negativeButton(R.string.tv_cancel) {
                             // Do negative stuff here
