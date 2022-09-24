@@ -1916,6 +1916,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                                 if (i == 3) cardNumber else ""
                             )
                             if (isGuestPay) {
+                                paymentAmount -= tipAmount
                                 paymentType = "Card"
                                 dineinOrderVieweModel.totalPayAmount(paymentAmount)
 
