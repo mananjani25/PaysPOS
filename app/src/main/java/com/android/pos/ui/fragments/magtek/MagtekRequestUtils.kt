@@ -10,8 +10,12 @@ import com.android.pos.data.remote.Constants.EPX_GATEWAY
 import com.android.pos.data.remote.Constants.FIRST_DATA_GATEWAY
 import com.android.pos.data.remote.Constants.HEARTLAND_GATEWAY
 import com.android.pos.data.remote.Constants.MAGENSA_SETTINGS1
+import com.android.pos.data.remote.Constants.RAPID_PILOT
+import com.android.pos.data.remote.Constants.RAPID_PRODUCTION
 import com.android.pos.data.remote.Constants.REFUND1
 import com.android.pos.data.remote.Constants.TSYS_GATEWAY
+import com.android.pos.data.remote.Constants.TSYS_PILOT
+import com.android.pos.data.remote.Constants.TSYS_PRODUCTION
 import com.android.pos.data.remote.Constants.VANIT_EXORESS_GATEWAY
 import com.android.pos.data.remote.Constants.VOID
 import com.android.pos.di.PrefProvider
@@ -61,7 +65,7 @@ class MagtekRequestUtils @Inject constructor(
 
         val jsonArray = JsonArray()
 
-        if (processorName() == "TSYS - Production" || processorName() == "TSYS - Pilot") {
+        if (processorName() == TSYS_PRODUCTION || processorName() == TSYS_PILOT) {
 
             val processCardSwipeRequest = ManualEntryRequestItem(
                 authentication = authentication(),
@@ -72,7 +76,7 @@ class MagtekRequestUtils @Inject constructor(
                     pAN = cardNumber
                 ),
                 transactionInput = ProcessCardSwipeRequest.TransactionInput(
-                    amount = payableAmount,
+                    amount = getPayableAmount(payableAmount),
                     processorName = processorName(),
                     transactionType = AUTHORIZE
                 )
@@ -83,7 +87,7 @@ class MagtekRequestUtils @Inject constructor(
 
             jsonArray.add(jsonElement)
 
-        } else if (processorName() == "Rapid Connect v3 - Production" || processorName() == "Rapid Connect v3 - Pilot") {
+        } else if (processorName() == RAPID_PRODUCTION || processorName() == RAPID_PILOT) {
 
             val processCardSwipeRequest = ManualEntryRequestRapid(
                 authentication = authentication(),
@@ -124,7 +128,7 @@ class MagtekRequestUtils @Inject constructor(
 
         val jsonArray = JsonArray()
 
-        if (processorName() == "TSYS - Production" || processorName() == "TSYS - Pilot") {
+        if (processorName() == TSYS_PRODUCTION || processorName() == TSYS_PILOT) {
 
             val processCardSwipeRequest = ProcessCardSwipeRequest(
                 authentication = authentication(),
@@ -148,7 +152,7 @@ class MagtekRequestUtils @Inject constructor(
             val jsonElement = Gson().fromJson(jsonObject, JsonObject::class.java)
 
             jsonArray.add(jsonElement)
-        } else if (processorName() == "Rapid Connect v3 - Production" || processorName() == "Rapid Connect v3 - Pilot") {
+        } else if (processorName() == RAPID_PRODUCTION || processorName() == RAPID_PILOT) {
 
             val processCardSwipeRequest = ProcessCardSwipeRequestRapid(
                 authentication = authenticationRapid(),
@@ -189,7 +193,7 @@ class MagtekRequestUtils @Inject constructor(
 
 
 
-        if (processorName() == "TSYS - Production" || processorName() == "TSYS - Pilot") {
+        if (processorName() == TSYS_PRODUCTION || processorName() == TSYS_PILOT) {
 
 
             val transactionInput = ProcessCardSwipeRequest.TransactionInput(
@@ -219,7 +223,7 @@ class MagtekRequestUtils @Inject constructor(
 
             jsonArray.add(jsonElement)
 
-        } else if (processorName() == "Rapid Connect v3 - Production" || processorName() == "Rapid Connect v3 - Pilot") {
+        } else if (processorName() == RAPID_PRODUCTION || processorName() == RAPID_PILOT) {
 
 
             val transactionInput = ProcessCardSwipeRequest.TransactionInputRapid(
@@ -257,9 +261,9 @@ class MagtekRequestUtils @Inject constructor(
     }
 
     private fun getPayableAmount(price: Double): Double {
-        if (processorName() == "TSYS - Production" || processorName() == "TSYS - Pilot") {
+        if (processorName() == TSYS_PRODUCTION || processorName() == TSYS_PILOT) {
             return price / 100
-        } else if (processorName() == "Rapid Connect v3 - Production" || processorName() == "Rapid Connect v3 - Pilot") {
+        } else if (processorName() == RAPID_PRODUCTION || processorName() == RAPID_PILOT) {
             return price
         }
         return 0.0
@@ -276,7 +280,7 @@ class MagtekRequestUtils @Inject constructor(
 
         getValue()
         val jsonArray = JsonArray()
-        if (processorName() == "TSYS - Production" || processorName() == "TSYS - Pilot") {
+        if (processorName() == TSYS_PRODUCTION || processorName() == TSYS_PILOT) {
             val processTokenRequest = ProcessTokenRequest(
                 additionalRequestData = additionalRequestDataList(payloadResponseValue),
                 authentication = authentication(),
@@ -296,7 +300,7 @@ class MagtekRequestUtils @Inject constructor(
 
             jsonArray.add(jsonElement)
 
-        } else if (processorName() == "Rapid Connect v3 - Production" || processorName() == "Rapid Connect v3 - Pilot") {
+        } else if (processorName() == RAPID_PRODUCTION || processorName() == RAPID_PILOT) {
 
             val processTokenRequest = ProcessTokenRequestRapid(
                 additionalRequestData = additionalRequestDataList(payloadResponseValue),
@@ -980,9 +984,9 @@ class MagtekRequestUtils @Inject constructor(
 
     fun gatewayName(): String {
 
-        if (processorName() == "Rapid Connect v3 - Pilot" || processorName() == "Rapid Connect v3 - Production") {
+        if (processorName() == RAPID_PILOT || processorName() == RAPID_PRODUCTION) {
             return FIRST_DATA_GATEWAY
-        } else if (processorName() == "TSYS - Pilot" || processorName() == "TSYS - Production") {
+        } else if (processorName() == TSYS_PILOT || processorName() == TSYS_PRODUCTION) {
             return TSYS_GATEWAY
         } else if (processorName() == "VantivExpress - Pilot" || processorName() == "VantivExpress - Production") {
             return VANIT_EXORESS_GATEWAY
@@ -1017,7 +1021,7 @@ class MagtekRequestUtils @Inject constructor(
     }
 
     private fun processorName(): String {
-        return magensaSettingModel?.processor_name.toString()/*"Rapid Connect v3 - Production"*/
+        return magensaSettingModel?.processor_name.toString()/*RAPID_PRODUCTION*/
     }
 
     fun customerName(): String {

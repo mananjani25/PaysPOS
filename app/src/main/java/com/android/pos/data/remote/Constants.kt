@@ -18,6 +18,14 @@ object Constants {
     const val ARG_PARAM2 = "param2"
     const val ARG_PARAM3 = "param2"
 
+    // payment magtek
+
+    const val TSYS_PRODUCTION = "TSYS - Production"
+    const val TSYS_PILOT = "TSYS - Pilot"
+
+    const val RAPID_PRODUCTION = "Rapid Connect v3 - Production"
+    const val RAPID_PILOT = "Rapid Connect v3 - Pilot"
+
     //Database Name
     const val DATABASE_NAME = "androidPos-db"
 
