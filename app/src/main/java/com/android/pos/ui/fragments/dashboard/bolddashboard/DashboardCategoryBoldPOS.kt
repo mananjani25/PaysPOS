@@ -501,7 +501,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         val sync = prefProvider.getValueboolean(Constants.SYNC_DATA, false)
         if (!sync) {
             ProgressUtils.showProgressDialog(requireActivity())
-            viewModel.syncInventoryModule(requireActivity())
+            viewModel.syncInventoryModule(false)
         } else {
             viewModel.getOnlineOrderCount()
         }

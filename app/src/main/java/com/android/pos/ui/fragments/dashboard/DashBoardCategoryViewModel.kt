@@ -3220,7 +3220,7 @@ class DashBoardCategoryViewModel @Inject constructor(
     }
 
 
-    fun syncInventoryModule(requireActivity: FragmentActivity) {
+    fun syncInventoryModule(b: Boolean) {
         _showProgress.value = Event(true)
         viewModelScope.launch {
             val resource = posRepository.syncInventory(prefProvider.getValueInt(TERMINAL_ID, -1))
@@ -3352,7 +3352,8 @@ class DashBoardCategoryViewModel @Inject constructor(
                             _tableStatus.value = response?.let { Event(it.message) }
                         }
 
-                        syncSettingModule()
+                        if (!b)
+                            syncSettingModule()
 
                     }
                 }
@@ -3425,7 +3426,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 if (it.data.teamRoles.isNotEmpty()) {
                                     posRepository.addTeamRoleFromDb(it.data.teamRoles)
                                     rolePermission.findCurrentUserRoleAndSave(it.data.teamRoles)
-                                } else  {
+                                } else {
 
                                     ThreadPoolManager.instance.executeTask(Runnable {
 

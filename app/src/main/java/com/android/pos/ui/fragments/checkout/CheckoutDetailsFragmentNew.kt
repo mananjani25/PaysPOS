@@ -957,7 +957,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
     ) {
 
         val jsonArray1 = magtekRequestUtils.processManualEntry(
-            (paymentAmount * 100).toInt(),
+            (paymentAmount * 100),
             cardNumber,
             expDate,
             cardCVV
@@ -1609,7 +1609,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
 
             val jsonArray1 = magtekModule.m_scra?.let {
                 magtekRequestUtils.processCardSwipe(
-                    (paymentAmount * 100).toInt(),
+                    (paymentAmount * 100),
                     magtekModule.m_scra!!.ksn,
                     magtekModule.m_scra!!.magnePrint,
                     magtekModule.m_scra!!.magnePrintStatus,
@@ -1723,7 +1723,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
         ProgressUtils.dismissProgressDialog()
 
         val jsonArray1 = magtekRequestUtils.processData(
-            (paymentAmount * 100).toInt(),
+            (paymentAmount * 100),
             TLVParser.getHexString(data),
             Constants.AUTHORIZE
         )
@@ -1783,7 +1783,7 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
                     dismissDialog()
 
                     val jsonArray1 = magtekRequestUtils.processData(
-                        (paymentAmount * 100).toInt(),
+                        (paymentAmount * 100),
                         MTParser.getHexString(data.ByteArray()),
                         Constants.AUTHORIZE
                     )

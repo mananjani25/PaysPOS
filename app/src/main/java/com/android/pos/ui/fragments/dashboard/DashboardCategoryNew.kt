@@ -81,7 +81,6 @@ import com.android.pos.data.remote.Constants.VERTICAL
 import com.android.pos.databinding.FragmentDashboardCategoryNewBinding
 import com.android.pos.di.PrefProvider
 import com.android.pos.di.RolePermission
-import com.android.pos.ui.activities.MainActivity
 import com.android.pos.ui.activities.SwipeHelper
 import com.android.pos.ui.adapter.*
 import com.android.pos.ui.fragments.payment.PaymentViewModel
@@ -440,7 +439,7 @@ class DashboardCategoryNew : Fragment(), CategoryItemAdapter1.CategoryItemList, 
 
         val sync = prefProvider.getValueboolean(Constants.SYNC_DATA, false)
         if (!sync)
-            viewModel.syncInventoryModule(requireActivity())
+            viewModel.syncInventoryModule(true)
     }
 
     private fun checkDineInEditOrder() {

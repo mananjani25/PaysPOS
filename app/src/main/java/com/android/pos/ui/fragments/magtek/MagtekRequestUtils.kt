@@ -9,10 +9,13 @@ import com.android.pos.data.remote.Constants.ELAVON_GATEWAY
 import com.android.pos.data.remote.Constants.EPX_GATEWAY
 import com.android.pos.data.remote.Constants.FIRST_DATA_GATEWAY
 import com.android.pos.data.remote.Constants.HEARTLAND_GATEWAY
-import com.android.pos.data.remote.Constants.MAGENSA_SETTINGS
 import com.android.pos.data.remote.Constants.MAGENSA_SETTINGS1
+import com.android.pos.data.remote.Constants.RAPID_PILOT
+import com.android.pos.data.remote.Constants.RAPID_PRODUCTION
 import com.android.pos.data.remote.Constants.REFUND1
 import com.android.pos.data.remote.Constants.TSYS_GATEWAY
+import com.android.pos.data.remote.Constants.TSYS_PILOT
+import com.android.pos.data.remote.Constants.TSYS_PRODUCTION
 import com.android.pos.data.remote.Constants.VANIT_EXORESS_GATEWAY
 import com.android.pos.data.remote.Constants.VOID
 import com.android.pos.di.PrefProvider
@@ -52,7 +55,7 @@ class MagtekRequestUtils @Inject constructor(
 
 
     fun processManualEntry(
-        payableAmount: Int,
+        payableAmount: Double,
         cardNumber: String,
         expDate: String,
         cardCVV: String
@@ -62,33 +65,59 @@ class MagtekRequestUtils @Inject constructor(
 
         val jsonArray = JsonArray()
 
+        if (processorName() == TSYS_PRODUCTION || processorName() == TSYS_PILOT) {
 
-        val processCardSwipeRequest = ManualEntryRequestItem(
-            authentication = authentication(),
-            customerTransactionID = System.currentTimeMillis().toString(),
-            manualEntryInput = ManualEntryRequestItem.ManualEntryInput(
-                cVV = cardCVV,
-                expirationDate = expDate,
-                pAN = cardNumber
-            ),
-            transactionInput = ProcessCardSwipeRequest.TransactionInput(
-                amount = payableAmount,
-                processorName = processorName(),
-                transactionType = AUTHORIZE
+            val processCardSwipeRequest = ManualEntryRequestItem(
+                authentication = authentication(),
+                customerTransactionID = System.currentTimeMillis().toString(),
+                manualEntryInput = ManualEntryRequestItem.ManualEntryInput(
+                    cVV = cardCVV,
+                    expirationDate = expDate,
+                    pAN = cardNumber
+                ),
+                transactionInput = ProcessCardSwipeRequest.TransactionInput(
+                    amount = getPayableAmount(payableAmount),
+                    processorName = processorName(),
+                    transactionType = AUTHORIZE
+                )
             )
-        )
 
-        val jsonObject = Gson().toJson(processCardSwipeRequest)
-        val jsonElement = Gson().fromJson(jsonObject, JsonObject::class.java)
+            val jsonObject = Gson().toJson(processCardSwipeRequest)
+            val jsonElement = Gson().fromJson(jsonObject, JsonObject::class.java)
 
-        jsonArray.add(jsonElement)
+            jsonArray.add(jsonElement)
+
+        } else if (processorName() == RAPID_PRODUCTION || processorName() == RAPID_PILOT) {
+
+            val processCardSwipeRequest = ManualEntryRequestRapid(
+                authentication = authentication(),
+                customerTransactionID = System.currentTimeMillis().toString(),
+                manualEntryInput = ManualEntryRequestRapid.ManualEntryInput(
+                    cVV = cardCVV,
+                    expirationDate = expDate,
+                    pAN = cardNumber
+                ),
+                transactionInput = ProcessCardSwipeRequest.TransactionInputRapid(
+                    amount = payableAmount.toInt(),
+                    processorName = processorName(),
+                    transactionType = AUTHORIZE
+                )
+            )
+
+            val jsonObject = Gson().toJson(processCardSwipeRequest)
+            val jsonElement = Gson().fromJson(jsonObject, JsonObject::class.java)
+
+            jsonArray.add(jsonElement)
+        }
+
+
 
         return jsonArray
     }
 
 
     fun processCardSwipe(
-        payableAmount: Int,
+        payableAmount: Double,
         ksn: String,
         magnePrint: String,
         magnePrintStatus: String,
@@ -99,86 +128,150 @@ class MagtekRequestUtils @Inject constructor(
 
         val jsonArray = JsonArray()
 
+        if (processorName() == TSYS_PRODUCTION || processorName() == TSYS_PILOT) {
 
-        val processCardSwipeRequest = ProcessCardSwipeRequest(
-            authentication = authentication(),
-            customerTransactionID = System.currentTimeMillis().toString(),
-            cardSwipeInput = ProcessCardSwipeRequest.CardSwipeInput(
-                encryptedCardSwipe = ProcessCardSwipeRequest.CardSwipeInput.EncryptedCardSwipe(
-                    kSN = ksn,
-                    magnePrint = magnePrint,
-                    magnePrintStatus = magnePrintStatus,
-                    track2 = track2
+            val processCardSwipeRequest = ProcessCardSwipeRequest(
+                authentication = authentication(),
+                customerTransactionID = System.currentTimeMillis().toString(),
+                cardSwipeInput = ProcessCardSwipeRequest.CardSwipeInput(
+                    encryptedCardSwipe = ProcessCardSwipeRequest.CardSwipeInput.EncryptedCardSwipe(
+                        kSN = ksn,
+                        magnePrint = magnePrint,
+                        magnePrintStatus = magnePrintStatus,
+                        track2 = track2
+                    )
+                ),
+                transactionInput = ProcessCardSwipeRequest.TransactionInput(
+                    amount = payableAmount,
+                    processorName = processorName(),
+                    transactionType = AUTHORIZE
                 )
-            ),
-            transactionInput = ProcessCardSwipeRequest.TransactionInput(
-                amount = payableAmount,
-                processorName = processorName(),
-                transactionType = AUTHORIZE
             )
-        )
 
-        val jsonObject = Gson().toJson(processCardSwipeRequest)
-        val jsonElement = Gson().fromJson(jsonObject, JsonObject::class.java)
+            val jsonObject = Gson().toJson(processCardSwipeRequest)
+            val jsonElement = Gson().fromJson(jsonObject, JsonObject::class.java)
 
-        jsonArray.add(jsonElement)
+            jsonArray.add(jsonElement)
+        } else if (processorName() == RAPID_PRODUCTION || processorName() == RAPID_PILOT) {
+
+            val processCardSwipeRequest = ProcessCardSwipeRequestRapid(
+                authentication = authenticationRapid(),
+                customerTransactionID = System.currentTimeMillis().toString(),
+                cardSwipeInput = ProcessCardSwipeRequestRapid.CardSwipeInput(
+                    encryptedCardSwipe = ProcessCardSwipeRequestRapid.CardSwipeInput.EncryptedCardSwipe(
+                        kSN = ksn,
+                        magnePrint = magnePrint,
+                        magnePrintStatus = magnePrintStatus,
+                        track2 = track2
+                    )
+                ),
+                transactionInput = ProcessCardSwipeRequestRapid.TransactionInputRapid(
+                    amount = payableAmount.toInt(),
+                    processorName = processorName(),
+                    transactionType = AUTHORIZE
+                )
+            )
+
+            val jsonObject = Gson().toJson(processCardSwipeRequest)
+            val jsonElement = Gson().fromJson(jsonObject, JsonObject::class.java)
+
+            jsonArray.add(jsonElement)
+        }
+
+
 
         return jsonArray
     }
 
 
-    fun processData(payableAmount: Int, data: String, transactionType: Int): JsonArray {
+    fun processData(payableAmount: Double, data: String, transactionType: Int): JsonArray {
 
         val jsonArray = JsonArray()
 
         getValue()
 
 
-        var transactionInput: ProcessCardSwipeRequest.TransactionInput? = null
 
-        if (processorName() == "TSYS - Production" || processorName() == "TSYS - Pilot") {
-            transactionInput = ProcessCardSwipeRequest.TransactionInput(
-                amount = payableAmount,
+
+        if (processorName() == TSYS_PRODUCTION || processorName() == TSYS_PILOT) {
+
+
+            val transactionInput = ProcessCardSwipeRequest.TransactionInput(
+                amount = getPayableAmount(payableAmount),
                 processorName = processorName(),
                 transactionType = transactionType
             )
-        } else if (processorName() == "Rapid Connect v3 - Production" || processorName() == "Rapid Connect v3 - Pilot") {
-            transactionInput = ProcessCardSwipeRequest.TransactionInput(
-                amount = payableAmount,
+
+            val processDataRequest = ProcessDataRequest(
+                authentication = authentication(),
+                customerTransactionID = System.currentTimeMillis().toString(),
+                dataInput = ProcessDataRequest.DataInput(
+                    data = data,
+                    dataFormatType = 0,
+                    encryptionInfo = ProcessDataRequest.DataInput.EncryptionInfo(
+                        encryptionType = "80",
+                        numberOfPaddedBytes = "0"
+                    ),
+                    isEncrypted = true,
+                    paymentMode = 2
+                ),
+                transactionInput = transactionInput!!
+            )
+
+            val jsonObject = Gson().toJson(processDataRequest)
+            val jsonElement = Gson().fromJson(jsonObject, JsonObject::class.java)
+
+            jsonArray.add(jsonElement)
+
+        } else if (processorName() == RAPID_PRODUCTION || processorName() == RAPID_PILOT) {
+
+
+            val transactionInput = ProcessCardSwipeRequest.TransactionInputRapid(
+                amount = payableAmount.toInt(),
                 processorName = processorName(),
                 transactionType = transactionType,
-                transactionInputDetails("")
+                transactionInputDetailsRapid("")
             )
+
+            val processDataRequest = ProcessDataRequestRapid(
+                authentication = authentication(),
+                customerTransactionID = System.currentTimeMillis().toString(),
+                dataInput = ProcessDataRequest.DataInput(
+                    data = data,
+                    dataFormatType = 0,
+                    encryptionInfo = ProcessDataRequest.DataInput.EncryptionInfo(
+                        encryptionType = "80",
+                        numberOfPaddedBytes = "0"
+                    ),
+                    isEncrypted = true,
+                    paymentMode = 2
+                ),
+                transactionInput = transactionInput
+            )
+
+            val jsonObject = Gson().toJson(processDataRequest)
+            val jsonElement = Gson().fromJson(jsonObject, JsonObject::class.java)
+
+            jsonArray.add(jsonElement)
         }
 
-        val processDataRequest = ProcessDataRequest(
-            authentication = authentication(),
-            customerTransactionID = System.currentTimeMillis().toString(),
-            dataInput = ProcessDataRequest.DataInput(
-                data = data,
-                dataFormatType = 0,
-                encryptionInfo = ProcessDataRequest.DataInput.EncryptionInfo(
-                    encryptionType = "80",
-                    numberOfPaddedBytes = "0"
-                ),
-                isEncrypted = true,
-                paymentMode = 2
-            ),
-            transactionInput = transactionInput!!
-        )
 
-        val jsonObject = Gson().toJson(processDataRequest)
-        val jsonElement = Gson().fromJson(jsonObject, JsonObject::class.java)
-
-        jsonArray.add(jsonElement)
 
         return jsonArray
     }
 
+    private fun getPayableAmount(price: Double): Double {
+        if (processorName() == TSYS_PRODUCTION || processorName() == TSYS_PILOT) {
+            return price / 100
+        } else if (processorName() == RAPID_PRODUCTION || processorName() == RAPID_PILOT) {
+            return price
+        }
+        return 0.0
+    }
 
     // Rapid Connect (First Data Nashville/Omaha/North) -- REFUND(5)/CAPTURE(3)
     fun processTokenFirstData(
-        payableAmount: Int,
+        payableAmount: Double,
         token: String,
         customerTransactionID: String,
         payloadResponseValue: String,
@@ -186,24 +279,49 @@ class MagtekRequestUtils @Inject constructor(
     ): JsonArray {
 
         getValue()
-        val processTokenRequest = ProcessTokenRequest(
-            additionalRequestData = additionalRequestDataList(payloadResponseValue),
-            authentication = authentication(),
-            customerTransactionID = customerTransactionID,
-            token = token,
-            transactionInput = ProcessCardSwipeRequest.TransactionInput(
-                amount = payableAmount,
-                processorName = processorName(),
-                transactionType = transactionType,
-                transactionInputDetails = transactionInputDetails("")
-            )
-        )
-
-        val jsonObject = Gson().toJson(processTokenRequest)
-        val jsonElement = Gson().fromJson(jsonObject, JsonObject::class.java)
-
         val jsonArray = JsonArray()
-        jsonArray.add(jsonElement)
+        if (processorName() == TSYS_PRODUCTION || processorName() == TSYS_PILOT) {
+            val processTokenRequest = ProcessTokenRequest(
+                additionalRequestData = additionalRequestDataList(payloadResponseValue),
+                authentication = authentication(),
+                customerTransactionID = customerTransactionID,
+                token = token,
+                transactionInput = ProcessCardSwipeRequest.TransactionInput(
+                    amount = payableAmount,
+                    processorName = processorName(),
+                    transactionType = transactionType,
+                    transactionInputDetails = transactionInputDetails("")
+                )
+            )
+
+            val jsonObject = Gson().toJson(processTokenRequest)
+            val jsonElement = Gson().fromJson(jsonObject, JsonObject::class.java)
+
+
+            jsonArray.add(jsonElement)
+
+        } else if (processorName() == RAPID_PRODUCTION || processorName() == RAPID_PILOT) {
+
+            val processTokenRequest = ProcessTokenRequestRapid(
+                additionalRequestData = additionalRequestDataList(payloadResponseValue),
+                authentication = authentication(),
+                customerTransactionID = customerTransactionID,
+                token = token,
+                transactionInput = ProcessCardSwipeRequest.TransactionInputRapid(
+                    amount = payableAmount.toInt(),
+                    processorName = processorName(),
+                    transactionType = transactionType,
+                    transactionInputDetails = transactionInputDetailsRapid("")
+                )
+            )
+
+            val jsonObject = Gson().toJson(processTokenRequest)
+            val jsonElement = Gson().fromJson(jsonObject, JsonObject::class.java)
+
+
+            jsonArray.add(jsonElement)
+        }
+
 
         return jsonArray
     }
@@ -212,7 +330,7 @@ class MagtekRequestUtils @Inject constructor(
 
     // Elavon (Converge) -- REFUND(5)
     fun processTokenElavon(
-        payableAmount: Int,
+        payableAmount: Double,
         token: String,
         customerTransactionID: String,
         lastRecordNumber: String,
@@ -244,7 +362,7 @@ class MagtekRequestUtils @Inject constructor(
 
     // Elavon (Converge) -- VOID(4)
     fun processTokenElavonVoid(
-        payableAmount: Int,
+        payableAmount: Double,
         token: String,
         customerTransactionID: String,
         lastRecordNumber: String,
@@ -283,7 +401,7 @@ class MagtekRequestUtils @Inject constructor(
 
     // EPX - CAPTURE(capture without tip)/VOID/REFUND
     fun processReferenceIDEPX(
-        payableAmount: Int,
+        payableAmount: Double,
         customerTransactionID: String,
         transactionID: String,
         transactionType: Int
@@ -311,7 +429,7 @@ class MagtekRequestUtils @Inject constructor(
 
     // EPX - FORCE(capture with tip)
     fun processReferenceIDEPXForce(
-        payableAmount: Int,
+        payableAmount: Double,
         customerTransactionID: String,
         transactionID: String,
         transactionType: Int,
@@ -345,7 +463,7 @@ class MagtekRequestUtils @Inject constructor(
 
     // Vantiv Express (WorldPay) - CAPTURE
     fun processReferenceIDCapture(
-        payableAmount: Int,
+        payableAmount: Double,
         customerTransactionID: String,
         transactionID: String,
         referenceAuthCode: String,
@@ -376,7 +494,7 @@ class MagtekRequestUtils @Inject constructor(
 
     // Vantiv Express (WorldPay) - REFUND
     fun processReferenceIDRefund(
-        payableAmount: Int,
+        payableAmount: Double,
         customerTransactionID: String,
         transactionID: String,
         referenceAuthCode: String,
@@ -405,7 +523,7 @@ class MagtekRequestUtils @Inject constructor(
 
     // Vantiv Express (WorldPay) - VOID
     fun processReferenceIDVoid(
-        payableAmount: Int,
+        payableAmount: Double,
         customerTransactionID: String,
         transactionID: String,
         reversalType: String,
@@ -439,7 +557,7 @@ class MagtekRequestUtils @Inject constructor(
 
     // Chase (Orbital) - CAPTURE/REFUND (retail or restaurant)
     fun processTokenChase(
-        payableAmount: Int,
+        payableAmount: Double,
         token: String,
         customerTransactionID: String,
         priorAuthCd: String,
@@ -473,7 +591,7 @@ class MagtekRequestUtils @Inject constructor(
 
     // Chase (Orbital) - REFUND (retail only)
     fun processTokenChaseRefund(
-        payableAmount: Int,
+        payableAmount: Double,
         customerTransactionID: String,
         priorAuthCd: String,
         referenceTransactionID: String,
@@ -509,7 +627,7 @@ class MagtekRequestUtils @Inject constructor(
 
     // Heartland - VOID/REFUND
     fun processReferenceIHeartland(
-        payableAmount: Int,
+        payableAmount: Double,
         customerTransactionID: String,
         transactionID: String,
         referenceAuthCode: String,
@@ -538,7 +656,7 @@ class MagtekRequestUtils @Inject constructor(
 
     // Heartland - CAPTURE
     fun processReferenceIdHeartlandCapture(
-        payableAmount: Int,
+        payableAmount: Double,
         customerTransactionID: String,
         transactionID: String,
         referenceAuthCode: String,
@@ -570,7 +688,7 @@ class MagtekRequestUtils @Inject constructor(
 
     // TSYS - VOID/REFUND
     fun processReferenceIDTSYS(
-        payableAmount: Int,
+        payableAmount: Double,
         customerTransactionID: String,
         transactionID: String,
         transactionType: Int
@@ -580,7 +698,7 @@ class MagtekRequestUtils @Inject constructor(
             authentication = authentication(),
             customerTransactionID = customerTransactionID,
             transactionInput = ProcessCardSwipeRequest.TransactionInput(
-                amount = payableAmount,
+                amount = getPayableAmount(payableAmount),
                 processorName = processorName(),
                 transactionType = transactionType,
                 referenceTransactionID = transactionID
@@ -598,7 +716,7 @@ class MagtekRequestUtils @Inject constructor(
 
     // TSYS - CAPTURE
     fun processReferenceIDTSYSCapture(
-        payableAmount: Int,
+        payableAmount: Double,
         customerTransactionID: String,
         transactionID: String,
         tip: String,
@@ -628,6 +746,12 @@ class MagtekRequestUtils @Inject constructor(
 
 
     private fun authentication() = ProcessCardSwipeRequest.Authentication(
+        customerCode = customerCode(),
+        password = password(),
+        username = userName()
+    )
+
+    private fun authenticationRapid() = ProcessCardSwipeRequestRapid.Authentication(
         customerCode = customerCode(),
         password = password(),
         username = userName()
@@ -732,6 +856,107 @@ class MagtekRequestUtils @Inject constructor(
         return list
     }
 
+
+    private fun transactionInputDetailsRapid(keyValuePair: String): List<ProcessCardSwipeRequest.TransactionInputRapid.KeyValue> {
+
+        val list = ArrayList<ProcessCardSwipeRequest.TransactionInputRapid.KeyValue>()
+
+        when {
+            ELAVON_GATEWAY == gatewayName() -> {
+
+                val mcc = ProcessCardSwipeRequest.TransactionInputRapid.KeyValue(
+                    key = "LastRecordNumber",
+                    value = "1"
+
+                )
+                list.add(mcc)
+
+            }
+            FIRST_DATA_GATEWAY == gatewayName() -> {
+
+                val mcc = ProcessCardSwipeRequest.TransactionInputRapid.KeyValue(
+                    key = "MCC",
+                    value = mccCode()
+
+                )
+                val partAuthorityApprovalCapable =
+                    ProcessCardSwipeRequest.TransactionInputRapid.KeyValue(
+                        key = "PartAuthrztnApprvlCapablt",
+                        value = "1"
+
+                    )
+                list.add(mcc)
+                list.add(partAuthorityApprovalCapable)
+            }
+            CHASE_GATEWAY == gatewayName() -> {
+
+                val mcc = ProcessCardSwipeRequest.TransactionInputRapid.KeyValue(
+                    key = "priorAuthCd",
+                    value = keyValuePair
+
+                )
+                val partAuthorityApprovalCapable =
+                    ProcessCardSwipeRequest.TransactionInputRapid.KeyValue(
+                        key = "partialAuthInd",
+                        value = "1"
+
+                    )
+                list.add(mcc)
+                list.add(partAuthorityApprovalCapable)
+            }
+            ELAVON_GATEWAY == gatewayName() -> {
+
+                val mcc = ProcessCardSwipeRequest.TransactionInputRapid.KeyValue(
+                    key = "LastRecordNumber",
+                    value = keyValuePair
+
+                )
+                list.add(mcc)
+            }
+            EPX_GATEWAY == gatewayName() -> {
+
+                val mcc = ProcessCardSwipeRequest.TransactionInputRapid.KeyValue(
+                    key = "TipAmount",
+                    value = keyValuePair
+
+                )
+                list.add(mcc)
+            }
+
+            HEARTLAND_GATEWAY == gatewayName() -> {
+
+                val mcc = ProcessCardSwipeRequest.TransactionInputRapid.KeyValue(
+                    key = "TipAdjust",
+                    value = keyValuePair
+
+                )
+                list.add(mcc)
+            }
+
+            VANIT_EXORESS_GATEWAY == gatewayName() -> {
+
+                val mcc = ProcessCardSwipeRequest.TransactionInputRapid.KeyValue(
+                    key = "CardInputCode",
+                    value = keyValuePair
+
+                )
+                list.add(mcc)
+            }
+
+            TSYS_GATEWAY == gatewayName() -> {
+
+                val mcc = ProcessCardSwipeRequest.TransactionInputRapid.KeyValue(
+                    key = "tip",
+                    value = keyValuePair
+
+                )
+                list.add(mcc)
+            }
+        }
+        return list
+    }
+
+
     private fun transactionInputDetailsElavon(
         keyValuePair: String,
         responseCode: String
@@ -759,9 +984,9 @@ class MagtekRequestUtils @Inject constructor(
 
     fun gatewayName(): String {
 
-        if (processorName() == "Rapid Connect v3 - Pilot" || processorName() == "Rapid Connect v3 - Production") {
+        if (processorName() == RAPID_PILOT || processorName() == RAPID_PRODUCTION) {
             return FIRST_DATA_GATEWAY
-        } else if (processorName() == "TSYS - Pilot" || processorName() == "TSYS - Production") {
+        } else if (processorName() == TSYS_PILOT || processorName() == TSYS_PRODUCTION) {
             return TSYS_GATEWAY
         } else if (processorName() == "VantivExpress - Pilot" || processorName() == "VantivExpress - Production") {
             return VANIT_EXORESS_GATEWAY
@@ -796,7 +1021,7 @@ class MagtekRequestUtils @Inject constructor(
     }
 
     private fun processorName(): String {
-        return magensaSettingModel?.processor_name.toString()/*"Rapid Connect v3 - Production"*/
+        return magensaSettingModel?.processor_name.toString()/*RAPID_PRODUCTION*/
     }
 
     fun customerName(): String {
