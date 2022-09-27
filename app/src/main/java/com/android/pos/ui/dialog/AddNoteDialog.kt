@@ -24,7 +24,9 @@ import com.android.pos.utils.extensions.showAlert
 import com.android.pos.utils.extensions.visible
 import com.android.pos.utils.statusUtils.Status
 import dagger.hilt.android.AndroidEntryPoint
+import java.util.*
 import javax.inject.Inject
+import kotlin.collections.ArrayList
 
 @AndroidEntryPoint
 class AddNoteDialog : DialogFragment(), ItemCallback {
@@ -133,7 +135,7 @@ class AddNoteDialog : DialogFragment(), ItemCallback {
 
 
     private fun noteList() {
-        viewModel.getTaxList.observe(viewLifecycleOwner) {
+        viewModel.taxListActive.observe(viewLifecycleOwner) {
             it?.let { resource ->
                 when (resource.status) {
                     Status.SUCCESS -> {
@@ -153,6 +155,8 @@ class AddNoteDialog : DialogFragment(), ItemCallback {
     }
 
     private fun setTaxData(taxList: List<NoteResponse.Data>) {
+        taxList.sortedWith(compareBy { it.sort })
+        Collections.reverse(taxList)
         noteListadapter.apply {
             addNotes(taxList)
             notifyDataSetChanged()

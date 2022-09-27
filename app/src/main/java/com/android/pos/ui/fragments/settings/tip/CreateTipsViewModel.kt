@@ -81,16 +81,17 @@ class CreateTipsViewModel @Inject constructor(
                 tipData = CreateTipRequestModel().apply {
                     name = value!!.name
                     rate = rate_double
+                    isActive = true
                     locationId = prefProvider.getValueInt(LOCATION_ID, -1)
                 }
             }
 
 
             viewModelScope.launch {
-                if (isEdit) {
-                    resource = tipDiscountRepository.updateTip(tipId, tipData)
+                resource = if (isEdit) {
+                    tipDiscountRepository.updateTip(tipId, tipData)
                 } else {
-                    resource = tipDiscountRepository.createTips(tipData)
+                    tipDiscountRepository.createTips(tipData)
                 }
 
                 when (resource.status) {

@@ -58,6 +58,12 @@ class CategoryParentAdapter(
         return list
     }
 
+    fun clearList(){
+        list.clear()
+        list = arrayListOf()
+        notifyDataSetChanged()
+    }
+
 
     override fun onCreateViewHolder(
         parent: ViewGroup,

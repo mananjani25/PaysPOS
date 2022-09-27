@@ -2,10 +2,8 @@ package com.android.pos.data.dao
 
 import androidx.lifecycle.LiveData
 import androidx.paging.PagingSource
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.Query
+import androidx.room.*
+import com.android.pos.data.entities.TaxData
 import com.android.pos.data.entities.TbItem
 
 /**
@@ -16,6 +14,7 @@ interface DBItemDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun add(inventory: TbItem?): Long?
 
+    @Transaction
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun addAllItem(elementsBeanList: List<TbItem>)
 
@@ -43,7 +42,7 @@ interface DBItemDao {
     @Query("select * from TbItem where TbItem.categoryId  = :id and TbItem.name != 'Manual Item' and TbItem.isDeleted = 0")
     fun getItemList(id: Int): LiveData<List<TbItem>>
 
-    @Query("select * from TbItem where TbItem.categoryId  = :id and TbItem.name != 'Manual Item' and TbItem.isDeleted = 0")
+    @Query("select * from TbItem where TbItem.categoryId  = :id and TbItem.name != 'Manual Item' and TbItem.isDeleted = 0 and TbItem.isHide = 1")
     fun getItemListByCategory(id:Int?): PagingSource<Int, TbItem>
 
     @Query("SELECT * from TbItem where TbItem.itemId  = :id and TbItem.name != 'Manual Item' and TbItem.isDeleted = 0 LIMIT 1")
@@ -53,7 +52,7 @@ interface DBItemDao {
     fun itemByProductCode(productCode: String): LiveData<TbItem>?
 
     @Query("SELECT * from TbItem  where TbItem.itemId = :id LIMIT 1")
-    fun itemOne(id: Int): LiveData<TbItem?>?
+    fun itemOne(id: Int): TbItem?
 
     @Query("SELECT * from TbItem where TbItem.itemId  = :restId  and TbItem.isDeleted = 0 LIMIT 1")
     fun itemByInventoryId(restId: Int?): TbItem?
@@ -90,5 +89,8 @@ interface DBItemDao {
 
     @Query("UPDATE TbItem SET itemQuantity = :qty WHERE  TbItem.itemId = :id")
     fun updateItemQty(id: Int?, qty: Int?)
+
+    @Query("UPDATE TbItem SET taxes  = :newItem WHERE  TbItem.itemId = :id")
+    suspend fun updateItemTaxes(id:Int,newItem:List<TaxData>)
 
 }

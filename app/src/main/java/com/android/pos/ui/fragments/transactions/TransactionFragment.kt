@@ -906,7 +906,11 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
         viewModel.transactionDetails.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
 
-                if (!it.payableType.equals("Invoice",true) && !it.payableType.equals("GiftCard",true)) {
+                if (!it.payableType.equals("Invoice", true) && !it.payableType.equals(
+                        "GiftCard",
+                        true
+                    )
+                ) {
                     val bundle = Bundle().apply {
                         putInt("orderId", it.orderDetails.id)
                         putInt("paymentId", it.id)
@@ -1007,7 +1011,7 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
                             model.transactionOutput?.token?.let { it1 ->
                                 amount.times(100).let {
                                     magtekRequestUtils.processTokenFirstData(
-                                        it.toInt(),
+                                        it,
                                         it1,
                                         model.customerTransactionID ?: "",
                                         model.transactionOutput.transactionOutputDetails[0].value,
@@ -1026,7 +1030,7 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
                     jsonArray =
                         model.transactionOutput?.token?.let { it1 ->
                             magtekRequestUtils.processTokenElavon(
-                                (refundAmount * 100).toInt(),
+                                (refundAmount * 100),
                                 it1,
                                 model.customerTransactionID ?: "",
                                 model.transactionOutput.transactionOutputDetails[0].value
@@ -1042,9 +1046,9 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
                     jsonArray = model.transactionOutput?.transactionID?.let { it1 ->
                         singleTransaction?.amount?.times(100)?.let {
                             magtekRequestUtils.processReferenceIDEPXForce(
-                                it.toInt(),
+                                it,
                                 model.customerTransactionID ?: "", it1, Constants.CAPTURE,
-                                (tipAmount * 100).toInt().toString()
+                                (tipAmount * 100).toString()
                             )
                         }
                     }
@@ -1055,7 +1059,7 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
 
                     jsonArray = model.transactionOutput?.transactionID?.let { it1 ->
                         magtekRequestUtils.processReferenceIDCapture(
-                            (refundAmount * 100).toInt(),
+                            (refundAmount * 100),
                             model.customerTransactionID ?: "", it1,
                             model.transactionOutput.authCode,
                             ""
@@ -1070,7 +1074,7 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
 
                     jsonArray = amount?.times(100)?.let {
                         magtekRequestUtils.processTokenChase(
-                            it.toInt(),
+                            it,
                             model.transactionOutput?.token ?: "",
                             model.customerTransactionID ?: "",
                             model.transactionOutput?.authCode ?: "",
@@ -1087,11 +1091,11 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
                     jsonArray = model.transactionOutput?.transactionID?.let { it1 ->
                         amount?.times(100)?.let {
                             magtekRequestUtils.processReferenceIdHeartlandCapture(
-                                it.toInt(),
+                                it,
                                 model.customerTransactionID ?: "",
                                 it1,
                                 model.transactionOutput.authCode,
-                                (tipAmount * 100).toInt().toString()
+                                (tipAmount * 100).toString()
                             )
                         }
                     }
@@ -1099,15 +1103,13 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
                 }
                 Constants.TSYS_GATEWAY == magtekRequestUtils.gatewayName() -> {
 
-                    val amount = singleTransaction?.amount?.plus(refundAmount)
-
-                    jsonArray = model.transactionOutput?.transactionID?.let { it1 ->
-                        amount?.times(100)?.let {
+                    jsonArray = model.transactionOutput.transactionID.let { it1 ->
+                        refundAmount.let {
                             magtekRequestUtils.processReferenceIDTSYSCapture(
-                                it.toInt(),
+                                it,
                                 model.customerTransactionID ?: "",
                                 it1,
-                                (tipAmount * 100).toInt().toString()
+                                (tipAmount).toString()
                             )
                         }
                     }
@@ -1136,7 +1138,7 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
                             model.transactionOutput?.token?.let { it1 ->
                                 amount.times(100).let {
                                     magtekRequestUtils.processTokenFirstData(
-                                        it.toInt(),
+                                        it,
                                         it1,
                                         model.customerTransactionID ?: "",
                                         model.transactionOutput.transactionOutputDetails[0].value,
@@ -1155,7 +1157,7 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
                     jsonArray =
                         model.transactionOutput?.token?.let { it1 ->
                             magtekRequestUtils.processTokenElavon(
-                                (refundAmount * 100).toInt(),
+                                (refundAmount * 100),
                                 it1,
                                 model.customerTransactionID ?: "",
                                 model.transactionOutput.transactionOutputDetails[0].value
@@ -1171,9 +1173,9 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
                     jsonArray = model.transactionOutput?.transactionID?.let { it1 ->
                         singleTransaction?.amount?.times(100)?.let {
                             magtekRequestUtils.processReferenceIDEPXForce(
-                                it.toInt(),
+                                it,
                                 model.customerTransactionID ?: "", it1, Constants.CAPTURE,
-                                (tipAmount * 100).toInt().toString()
+                                (tipAmount * 100).toString()
                             )
                         }
                     }
@@ -1184,7 +1186,7 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
 
                     jsonArray = model.transactionOutput?.transactionID?.let { it1 ->
                         magtekRequestUtils.processReferenceIDCapture(
-                            (refundAmount * 100).toInt(),
+                            (refundAmount * 100),
                             model.customerTransactionID ?: "", it1,
                             model.transactionOutput.authCode,
                             ""
@@ -1199,7 +1201,7 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
 
                     jsonArray = amount?.times(100)?.let {
                         magtekRequestUtils.processTokenChase(
-                            it.toInt(),
+                            it,
                             model.transactionOutput?.token ?: "",
                             model.customerTransactionID ?: "",
                             model.transactionOutput?.authCode ?: "",
@@ -1216,11 +1218,11 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
                     jsonArray = model.transactionOutput?.transactionID?.let { it1 ->
                         amount?.times(100)?.let {
                             magtekRequestUtils.processReferenceIdHeartlandCapture(
-                                it.toInt(),
+                                it,
                                 model.customerTransactionID ?: "",
                                 it1,
                                 model.transactionOutput.authCode,
-                                (tipAmount * 100).toInt().toString()
+                                (tipAmount * 100).toString()
                             )
                         }
                     }
@@ -1228,15 +1230,14 @@ class TransactionFragment : Fragment(), AdapterView.OnItemSelectedListener, Item
                 }
                 Constants.TSYS_GATEWAY == magtekRequestUtils.gatewayName() -> {
 
-                    val amount = singleTransaction?.amount?.plus(refundAmount)
 
                     jsonArray = model.transactionOutput?.transactionID?.let { it1 ->
-                        amount?.times(100)?.let {
+                        refundAmount.let {
                             magtekRequestUtils.processReferenceIDTSYSCapture(
-                                it.toInt(),
+                                it,
                                 model.customerTransactionID ?: "",
                                 it1,
-                                (tipAmount * 100).toInt().toString()
+                                (tipAmount).toString()
                             )
                         }
                     }

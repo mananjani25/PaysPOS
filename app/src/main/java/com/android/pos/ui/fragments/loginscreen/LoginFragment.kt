@@ -137,6 +137,8 @@ class LoginFragment : Fragment() {
         })
     }
 
+
+
     private fun copy() {
 
         println(binding.terminalId.text.toString().trim())

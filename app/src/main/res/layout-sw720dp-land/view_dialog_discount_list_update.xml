@@ -13,7 +13,7 @@
 
     <androidx.appcompat.widget.LinearLayoutCompat
         android:id="@+id/linearParent"
-        android:layout_width="@dimen/_50sdp"
+        android:layout_width="@dimen/_60sdp"
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/_10sdp"
         android:layout_marginBottom="@dimen/_10sdp"
@@ -28,6 +28,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_weight="1"
+            android:singleLine="true"
             android:gravity="center"
             android:text="@{model.name}"
             android:textColor="@color/txtColor"

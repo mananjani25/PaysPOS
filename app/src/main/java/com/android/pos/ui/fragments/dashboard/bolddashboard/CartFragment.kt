@@ -491,21 +491,33 @@ class CartFragment(
         if (orderDEtails != null) {
             orderFloorDetails = orderDEtails
         }
-        if (orderFloorDetails.id == null) {
+        if (orderDEtails != null) {
+            if (orderFloorDetails.id == null) {
+                orderFloorDetails.apply {
+                    id = dineInFloorTableModel?.id
+                    chairCount = dineInFloorTableModel?.chairCount
+                    floorPlanId = dineInFloorTableModel?.floorPlanId
+                    tableName = dineInFloorTableModel?.tableName.toString()
+                    status = dineInFloorTableModel?.status.toString()
+                    tableNumber = dineInFloorTableModel?.tableNumber
+
+                }
+
+            }
+        } else {
             orderFloorDetails.apply {
                 id = dineInFloorTableModel?.id
                 chairCount = dineInFloorTableModel?.chairCount
                 floorPlanId = dineInFloorTableModel?.floorPlanId
                 tableName = dineInFloorTableModel?.tableName.toString()
                 status = dineInFloorTableModel?.status.toString()
-
+                tableNumber = dineInFloorTableModel?.tableNumber
             }
-
         }
 
 
         val dineInList: ArrayList<DineInModel> = arrayListOf()
-        dineInList.add(DineInModel(0, true, 0, "Whole Table"))
+        dineInList.add(DineInModel(0, true, 0, "Whole Table", floorPlanTable = orderFloorDetails))
         for (i in 1..numOfGuest) {
             dineInList.add(
                 DineInModel(
@@ -1910,6 +1922,7 @@ class CartFragment(
             floorModel.tableType = cartlist.get(0).dineInList?.get(1)?.floorPlanTable?.tableType
             floorModel.tableNumber = cartlist.get(0).dineInList?.get(1)?.floorPlanTable?.tableNumber
             floorModel.chairCount = cartlist.get(0).dineInList?.get(1)?.floorPlanTable?.chairCount
+            floorModel.tableName =  cartlist.get(0).dineInList?.get(1)?.floorPlanTable?.tableName
 
 
         }

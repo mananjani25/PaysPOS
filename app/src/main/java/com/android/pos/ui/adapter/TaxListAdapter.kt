@@ -5,7 +5,6 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.android.pos.R
 import com.android.pos.data.entities.TaxData
-import com.android.pos.data.model.responseModel.GetTaxResponse
 import com.android.pos.databinding.ViewTaxItemBinding
 import com.android.pos.ui.fragments.settings.tax.TaxListViewModel
 import com.android.pos.utils.callback.ItemCallback
@@ -62,7 +61,7 @@ class TaxListAdapter(val viewModel: TaxListViewModel) :
         RecyclerView.ViewHolder(taxItemBinding.root) {
             init {
                 taxItemBinding.layoutMenu.imgOrderMenu.setOnClickListener {
-                    mCallback?.onItemClickListener(it, position)
+                    mCallback?.onItemClickListener(it, bindingAdapterPosition)
                 }
             }
 

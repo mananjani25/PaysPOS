@@ -99,7 +99,7 @@
                     android:background="@drawable/background_square_border_grey"
                     android:ellipsize="end"
                     android:gravity="top"
-                    android:inputType="textMultiLine"
+                    android:inputType="textVisiblePassword"
                     android:minLines="1"
                     android:padding="@dimen/_9sdp"
                     android:singleLine="true"

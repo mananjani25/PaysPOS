@@ -34,6 +34,7 @@ class DiscountListViewModel @Inject constructor(
     val notifydata: LiveData<Event<Boolean?>> = _notifydata
 
     val getDiscountList = tipDiscountRepository.getDiscountsList()
+    val discountList = tipDiscountRepository.discountList()
 
     fun isDiscountActive(discountDataItem: TbDiscount) {
 

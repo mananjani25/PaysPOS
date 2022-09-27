@@ -271,6 +271,8 @@ class PosRepository @Inject constructor(
 
     fun getSingleItem(id: Int) = appDatabase.itemDao().itemOne(id)
 
+    fun getSingleModifier(id: Int) = appDatabase.modifierSetDao().itemOne(id)
+
 
     fun modifierSetsList() =
         performGetOperationDatabase(databaseQuery = { appDatabase.modifierSetDao().all })
@@ -293,6 +295,10 @@ class PosRepository @Inject constructor(
 
     fun getNoteList() = performGetOperationDatabase(
         databaseQuery = { appDatabase.notesDao().alllNotes },
+    )
+
+    fun taxListActive() = performGetOperationDatabase(
+        databaseQuery = { appDatabase.notesDao().taxListActive },
     )
 
 

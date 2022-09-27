@@ -54,7 +54,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
     private lateinit var modifiersAdapter: ModifiersAdapter
     private var isUpdateItem: Boolean = false
 
-    private lateinit var adapter: ItemModifierSetAdapter
+    private var adapter: ItemModifierSetAdapter?=null
     private var intArray: IntArray? = null
     private var mainModifiersId: ArrayList<Int> = arrayListOf()
     private var mainVariationId: ArrayList<Int> = arrayListOf()
@@ -146,7 +146,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
                     if (qty > 15) {
                         qty = 15
                         binding.edttxtQuantity.setText("15")
-                    }else if (qty==0){
+                    } else if (qty == 0) {
                         binding.edttxtQuantity.setText("1")
                     }
                     binding.edttxtQuantity.setSelection(binding.edttxtQuantity.text!!.length)
@@ -223,7 +223,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
         }
 
         binding.txtDone.setOnClickListener {
-            if (binding.edttxtQuantity.text.isNullOrEmpty()){
+            if (binding.edttxtQuantity.text.isNullOrEmpty()) {
                 binding.edttxtQuantity.setText("1")
             }
             MethodUtils.hideSoftKeyboard(requireActivity())
@@ -256,12 +256,12 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
 
 
 
-            if (item.modifier_set_ids.isNotEmpty()) {
+            if (item.modifier_set_ids.isNotEmpty() && adapter != null) {
                 if (minMaxValidationCheck(adapter)) {
 
-                    val modifiers = adapter.getSelectedModifiers()
+                    val modifiers = adapter?.getSelectedModifiers()
 
-                    if (modifiers.isNotEmpty()) {
+                    if (modifiers?.isNotEmpty() == true) {
                         modifiers.forEach {
                             it.itemQuantity = qty
 
@@ -428,7 +428,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
         }
 
         binding.txtRemoveItem.setOnClickListener {
-            Log.e(TAG,"getDeleteItem  ${Gson().toJson(item)}")
+            Log.e(TAG, "getDeleteItem  ${Gson().toJson(item)}")
             makeItemEdited(item)
             if (prefProvider.getValue(ORDER_TYPE, TAKEOUT) == DINE_IN) {
                 LogUtil.logE(TAG, "isEditedisEdited  ${item.isEdited}")
@@ -515,7 +515,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
                                     it.modifier_set_ids[i]
                                 }
 
-                                variationAdapter.addVariations(it.variationsAttributes)
+                                variationAdapter.addVariations(it.variationsAttributes.filter { !it.isDeleted })
                                 val variationList = ArrayList<VariationsAttribute>()
                                 if (item.variationsAttributes.isNotEmpty()) {
                                     binding.dividerLine.root.visibility = View.VISIBLE
@@ -544,7 +544,12 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
                                 } else binding.dividerLine.root.visibility = View.GONE
 
                                 if (intArray!!.isNotEmpty()) {
-                                    binding.dividerLine2.root.visibility = View.VISIBLE
+                                    if (adapter ==null){
+                                        binding.dividerLine2.root.visibility = View.GONE
+                                    }
+                                    else {
+                                        binding.dividerLine2.root.visibility = View.VISIBLE
+                                    }
 
                                     viewModel.modifierSet(intArray!!).observe(requireActivity()) {
                                         if (it.data != null && it.data.isNotEmpty() && view != null) {
@@ -565,8 +570,8 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
                                                 }
 
                                             }
-                                            adapter.add(it.data)
-                                            adapter.setData(item.modifiers)
+                                            adapter?.add(it.data)
+                                            adapter?.setData(item.modifiers)
                                         } else binding.rvModifiersList.visibility = View.GONE
 
                                     }

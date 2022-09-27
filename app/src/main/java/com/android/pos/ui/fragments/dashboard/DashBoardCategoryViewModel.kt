@@ -64,6 +64,7 @@ import com.android.pos.di.RolePermission
 import com.android.pos.utils.*
 import com.android.pos.utils.statusUtils.Resource
 import com.android.pos.utils.statusUtils.Status
+import com.android.pos.utils.workmanager.ThreadPoolManager
 import com.google.gson.Gson
 import com.squareup.okhttp.Callback
 import com.squareup.okhttp.OkHttpClient
@@ -72,6 +73,7 @@ import com.squareup.okhttp.Response
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.io.ByteArrayOutputStream
 import java.io.IOException
@@ -3218,7 +3220,7 @@ class DashBoardCategoryViewModel @Inject constructor(
     }
 
 
-    fun syncInventoryModule(requireActivity: FragmentActivity) {
+    fun syncInventoryModule(b: Boolean) {
         _showProgress.value = Event(true)
         viewModelScope.launch {
             val resource = posRepository.syncInventory(prefProvider.getValueInt(TERMINAL_ID, -1))
@@ -3234,9 +3236,11 @@ class DashBoardCategoryViewModel @Inject constructor(
                             val mData = response.data
                             val mCategory = mData.categories
                             val categoryModelList = ArrayList<TbCategory>()
-                            val inventoryModelList = ArrayList<TbItem>()
+                            var inventoryModelList = ArrayList<TbItem>()
+
                             val modifierSetList = ArrayList<ModifierSet>()
                             val itemModifierSetList = ArrayList<ItemModifierSets>()
+
                             mCategory.forEach { category ->
                                 val model = TbCategory().apply {
                                     createdAt = ""
@@ -3253,47 +3257,93 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 }
                                 categoryModelList.add(model)
 
+
+
+
                                 category.items.forEach {
-
-                                    var items: TbItem? = null
-                                    posRepository.getSingleItem(it.id)
-                                        ?.observe(requireActivity) { model ->
-
-                                            items = if (model != null) {
-
-                                                TbItem().convertToItem1(it, category, model)
-                                            } else {
-                                                Log.e("getSingleItem", "222222222")
-                                                TbItem().convertToItem(it, category)
-                                            }
-
-                                            items?.let { it1 -> inventoryModelList.add(it1) }
-
-                                        }
+                                    //new optimise code
+                                    inventoryModelList.add(TbItem().convertToItem(it, category))
+                                }
 
 
-                                    it.modifierSets.forEach { modifierSets ->
+                            }
 
-                                        val itemModifierSets = ItemModifierSets().apply {
-                                            itemId = it.id
-                                            modifierSetId = modifierSets.id!!
-                                            minRequired = modifierSets.min_required
-                                            maxAllowed = modifierSets.max_allowed
-                                            isDeleted = modifierSets.isDeleted
-                                        }
 
-                                        itemModifierSetList.add(itemModifierSets)
+                            mData.modifierSets.forEach { modifierSets ->
+
+                                val itemModifierSets = ItemModifierSets().apply {
+                                    itemId = this.modifierSetId
+                                    modifierSetId = modifierSets.id!!
+                                    minRequired = modifierSets.min_required
+                                    maxAllowed = modifierSets.max_allowed
+                                    isDeleted = modifierSets.isDeleted
+                                }
+
+                                itemModifierSetList.add(itemModifierSets)
+                            }
+                            modifierSetList.addAll(mData.modifierSets)
+
+
+
+
+
+                            delay(1000)
+
+                            appDatabase.categoryDao().addAll(categoryModelList)
+
+                            val listInventory: ArrayList<TbItem> = arrayListOf()
+                            ThreadPoolManager.instance.executeTask {
+
+                                inventoryModelList.forEachIndexed { index, it ->
+                                    val item = posRepository.getSingleItem(it.itemId)
+
+                                    if (item != null) {
+
+                                        val model = TbItem().convertToItem1(it, item)
+
+                                        listInventory.add(model)
+
+
+                                    } else {
+                                        listInventory.add(it)
                                     }
-
-                                    modifierSetList.addAll(it.modifierSets)
 
 
                                 }
+
+
+                                viewModelScope.launch {
+                                    appDatabase.itemDao().addAllItem(listInventory)
+                                }
+
                             }
 
-                            appDatabase.categoryDao().addAll(categoryModelList)
-                            appDatabase.itemDao().addAllItem(inventoryModelList)
-                            appDatabase.modifierSetDao().addAll(modifierSetList)
+                            val listModifierSet: ArrayList<ModifierSet> = arrayListOf()
+                            ThreadPoolManager.instance.executeTask {
+
+                                modifierSetList.forEach {
+
+                                    val modifierSet = posRepository.getSingleModifier(it.id!!)
+
+                                    if (modifierSet != null) {
+
+                                        val model = TbItem().convertToModifier(it, modifierSet)
+
+                                        listModifierSet.add(model)
+
+                                    } else {
+                                        listModifierSet.add(it)
+                                    }
+
+                                }
+
+                                viewModelScope.launch {
+                                    appDatabase.modifierSetDao().addAll(listModifierSet)
+                                }
+                            }
+
+
+
                             appDatabase.itemModifierSetsDao().addAll(itemModifierSetList)
                             appDatabase.optionSetDao().addAll(mData.optionSets)
 
@@ -3302,7 +3352,8 @@ class DashBoardCategoryViewModel @Inject constructor(
                             _tableStatus.value = response?.let { Event(it.message) }
                         }
 
-                        syncSettingModule()
+                        if (!b)
+                            syncSettingModule()
 
                     }
                 }
@@ -3372,7 +3423,22 @@ class DashBoardCategoryViewModel @Inject constructor(
                         if (venueDetailsResponse?.status == 200) {
 
                             resource.data?.let {
-                                LogUtil.logE(TAG, "FullData  ${Gson().toJson(it)}")
+                                if (it.data.teamRoles.isNotEmpty()) {
+                                    posRepository.addTeamRoleFromDb(it.data.teamRoles)
+                                    rolePermission.findCurrentUserRoleAndSave(it.data.teamRoles)
+                                } else {
+
+                                    ThreadPoolManager.instance.executeTask(Runnable {
+
+                                        rolePermission.findCurrentUserRoleAndSave(
+                                            appDatabase.teamRoleDao().allRoleList()
+                                        )
+
+
+                                    })
+
+
+                                }
 
 
                                 try {
@@ -3453,14 +3519,23 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                                 posRepository.addCashDiscountsFromDb(it.data.cash_discounts)
 //                                taxServiceChargeRepository.deleteTaxFromDb()
-                                taxServiceChargeRepository.addAllTaxDatabase(it.data.taxes)
+                                if (it.data.taxes.isNotEmpty()) {
+                                    taxServiceChargeRepository.addAllTaxDatabase(it.data.taxes)
+                                }
 //                                posRepository.deleteNotesFromDb()
                                 posRepository.addAllNotesDatabase(it.data.notes)
 //                                tipDiscountRepository.deleteDiscountsFromDb()
                                 tipDiscountRepository.addDiscount(it.data.discounts)
-                                taxServiceChargeRepository.deleteServiceChargesFromDb()
-                                serviceChargesList.clear()
-                                taxServiceChargeRepository.addServiceCharges(it.data.service_charges)
+
+                                /* serviceChargesList.clear()
+                                 serviceChargesList = it.data.service_charges.toCollection(
+                                     arrayListOf()
+                                 )*/
+
+                                if (it.data.service_charges.isNotEmpty()) {
+                                    taxServiceChargeRepository.deleteServiceChargesFromDb()
+                                    taxServiceChargeRepository.addServiceCharges(it.data.service_charges)
+                                }
 //                                posRepository.deleteTerminalsFromDb()
                                 posRepository.addTerminalsDatabase(it.data.terminals)
 //                                tipDiscountRepository.deleteTipsFromDb()
@@ -3508,10 +3583,10 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 }
 
 //                                posRepository.deleteTeamRoleFromDb()
-                                posRepository.addTeamRoleFromDb(it.data.teamRoles)
+//                                posRepository.addTeamRoleFromDb(it.data.teamRoles)
 //                                posRepository.deleteAllEmployee()
                                 posRepository.employeeListAddAllFromSeeting(it.data.employee)
-                                rolePermission.findCurrentUserRoleAndSave(it.data.teamRoles)
+//                                rolePermission.findCurrentUserRoleAndSave(it.data.teamRoles)
 //                                posRepository.deleteOrderTypeFromDb()
                                 posRepository.addOrderType(it.data.orderTypes)
                                 posRepository.addAllCountryList(it.data.phoneCountrylist)

@@ -751,6 +751,18 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
             }
         }
 
+        dineinOrderVieweModel.showProgress.observe(viewLifecycleOwner) { event ->
+            event.getContentIfNotHandled()?.let {
+                LogUtil.logE("observeShowProgress2", it.toString())
+                if (it) {
+                    ProgressUtils.showProgressDialog("Please wait payment under process",requireActivity())
+                } else {
+                    ProgressUtils.dismissProgressDialog()
+                }
+            }
+        }
+
+
     }
 
     private fun cashPaymentWithVariation() {
@@ -1166,7 +1178,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
     ) {
 
         val jsonArray1 = magtekRequestUtils.processManualEntry(
-            (paymentAmount * 100).toInt(),
+            (paymentAmount * 100),
             cardNumber,
             expDate,
             cardCVV
@@ -1864,7 +1876,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
 
         val jsonArray1 = magtekModule.m_scra?.let {
             magtekRequestUtils.processCardSwipe(
-                (paymentAmount * 100).toInt(),
+                (paymentAmount * 100),
                 magtekModule.m_scra!!.ksn,
                 magtekModule.m_scra!!.magnePrint,
                 magtekModule.m_scra!!.magnePrintStatus,
@@ -1911,6 +1923,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                                 if (i == 3) cardNumber else ""
                             )
                             if (isGuestPay) {
+                                paymentAmount -= tipAmount
                                 paymentType = "Card"
                                 dineinOrderVieweModel.totalPayAmount(paymentAmount)
 
@@ -1968,7 +1981,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
         ProgressUtils.dismissProgressDialog()
 
         val jsonArray1 = magtekRequestUtils.processData(
-            (paymentAmount * 100).toInt(),
+            (paymentAmount * 100),
             TLVParser.getHexString(data),
             Constants.AUTHORIZE
         )
@@ -2025,7 +2038,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
                     dismissDialog()
 
                     val jsonArray1 = magtekRequestUtils.processData(
-                        (paymentAmount * 100).toInt(),
+                        (paymentAmount * 100),
                         MTParser.getHexString(data.ByteArray()),
                         Constants.AUTHORIZE
                     )

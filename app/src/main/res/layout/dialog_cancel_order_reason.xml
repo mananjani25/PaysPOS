@@ -31,7 +31,7 @@
                 android:padding="@dimen/_6sdp"
                 android:background="?attr/selectableItemBackground"
                 app:srcCompat="@drawable/ic_cancel_black"
-                 />
+                />
 
             <androidx.appcompat.widget.AppCompatTextView
                 style="@style/CustomFontSemiBold"
@@ -74,23 +74,27 @@
             android:layout_height="match_parent"
             android:layout_margin="@dimen/_25sdp"
             android:orientation="vertical">
-
             <androidx.appcompat.widget.AppCompatEditText
                 android:id="@+id/etReason"
-                style="@style/CustomFontBold"
+                style="@style/CustomFontSemiBold"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:padding="@dimen/_5sdp"
-                android:enabled="false"
-                android:textSize="@dimen/_7mdpi"
-                android:hint="@string/reason"
-                android:textColorHint="@color/hint_color"
-                android:background="@drawable/background_square_border_grey"/>
-
+                android:background="@drawable/background_square_border_grey"
+                android:gravity="top|left"
+                android:hint="Others"
+                android:imeOptions="actionDone"
+                android:inputType="textMultiLine|textVisiblePassword"
+                android:lines="8"
+                android:maxLines="10"
+                android:minLines="4"
+                android:padding="@dimen/_3sdp"
+                android:textColor="@color/txtColor"
+                android:textColorHint="@color/hintColor"
+                android:textSize="@dimen/_5mdpi" />
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rvReasons"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:layout_marginTop="@dimen/_15sdp"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"

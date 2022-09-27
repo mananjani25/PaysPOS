@@ -144,12 +144,12 @@ class Passcode : Fragment() {
         selectedList: ArrayList<TextView>,
         isSelected: Boolean
     ) {
-        if (isSelected) {
-            txtview.setBackgroundResource(R.drawable.passcode_viewselected)
-        }
-        for (i in selectedList.indices) {
-            selectedList[i].setBackgroundResource(R.drawable.passcode_viewunselected)
-        }
+//        if (isSelected) {
+//            txtview.setBackgroundResource(R.drawable.passcode_viewselected)
+//        }
+//        for (i in selectedList.indices) {
+//            selectedList[i].setBackgroundResource(R.drawable.passcode_viewunselected)
+//        }
     }
 
     private fun onclickPasscode() {

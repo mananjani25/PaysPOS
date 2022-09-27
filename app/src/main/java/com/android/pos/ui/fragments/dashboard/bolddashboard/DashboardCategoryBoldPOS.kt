@@ -204,6 +204,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         viewModel.onlineOrderCount.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
                 if (it != null) {
+
                     Log.d(TAG, "getwebOrderingCount: " + it.count)
                     onlineOrderBadgeDisplay(it.count)
                 }
@@ -500,7 +501,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         val sync = prefProvider.getValueboolean(Constants.SYNC_DATA, false)
         if (!sync) {
             ProgressUtils.showProgressDialog(requireActivity())
-            viewModel.syncInventoryModule(requireActivity())
+            viewModel.syncInventoryModule(false)
         } else {
             viewModel.getOnlineOrderCount()
         }
@@ -618,7 +619,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         }
 
         binding.layoutHeader.imgSync.setOnClickListener {
-            viewModel.syncInventoryModule(requireActivity())
+           // viewModel.syncInventoryModule(requireActivity())
         }
         /* binding.layoutHeader.txtOpenOrder.setOnClickListener {
          loadCategoryFragment(CategoryFragment(this))
@@ -944,16 +945,28 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         if (orderDEtails != null) {
             orderFloorDetails = orderDEtails
         }
-        if (orderFloorDetails.id == null) {
+        if (orderDEtails != null) {
+            if (orderFloorDetails.id == null) {
+                orderFloorDetails.apply {
+                    id = dineInFloorTableModel?.id
+                    chairCount = dineInFloorTableModel?.chairCount
+                    floorPlanId = dineInFloorTableModel?.floorPlanId
+                    tableName = dineInFloorTableModel?.tableName.toString()
+                    status = dineInFloorTableModel?.status.toString()
+                    tableNumber = dineInFloorTableModel?.tableNumber
+
+                }
+
+            }
+        } else {
             orderFloorDetails.apply {
                 id = dineInFloorTableModel?.id
                 chairCount = dineInFloorTableModel?.chairCount
                 floorPlanId = dineInFloorTableModel?.floorPlanId
                 tableName = dineInFloorTableModel?.tableName.toString()
                 status = dineInFloorTableModel?.status.toString()
-
+                tableNumber = dineInFloorTableModel?.tableNumber
             }
-
         }
 
 
@@ -1459,7 +1472,8 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 LogUtil.logE(TAG, "kitchenFonts:  ${kitchenSettingModel.fonts}")
                 LogUtil.logE(TAG, "kitfontSize:  ${fontSizeH}")
 
-
+                builder.addTextLineSpace(30)
+                builder.addFeedUnit(30)
                 builder.addFeedLine(1)
                 builder.addTextFont(Builder.FONT_E)
                 builder.addTextAlign(Builder.ALIGN_CENTER)
@@ -1788,6 +1802,9 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                 LogUtil.logE(TAG, "kitfontSize:  ${fontSizeH}")
 
 
+                builder.addTextLineSpace(30)
+                builder.addFeedUnit(30)
+                builder.addFeedLine(1)
                 builder.addTextFont(Builder.FONT_E)
                 builder.addTextAlign(Builder.ALIGN_CENTER)
                 builder.addTextLang(Builder.LANG_EN)
@@ -2168,7 +2185,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
             PrintSunmiUtils.fontSize(kitchenSettingModel.fonts)
             SunmiPrinterApi.getInstance().printerInit()
-
+            SunmiPrinterApi.getInstance().lineWrap(1)
             PrintSunmiUtils.orderIdLarge("OrderID:" + receiptModel?.order?.id)
             SunmiPrinterApi.getInstance().lineWrap(1)
 
@@ -2317,7 +2334,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         try {
 
             SunmiPrintHelper.getInstance().initPrinter()
-
+            SunmiPrinterApi.getInstance().lineWrap(1)
             PrintSunmiUtils.headerText("OrderID:" + receiptModel?.order?.id)
             SunmiPrintHelper.getInstance().lineWrap(1)
 
