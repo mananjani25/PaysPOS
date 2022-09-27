@@ -719,6 +719,7 @@
     <string name="options_title">Options</string>
     <string name="hidden_categories_title">Hidden Categories</string>
     <string name="hidden_items_title">Hidden Items</string>
+    <string name="website_hidden_items_title">Hidden Items on Website</string>
     <string name="update_customer">Update Customer</string>
     <string name="create_customer">Create Customer</string>
     <string name="printer_queue_list">Printer Queue List</string>

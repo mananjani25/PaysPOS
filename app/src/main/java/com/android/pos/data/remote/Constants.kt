@@ -114,6 +114,7 @@ object Constants {
     const val EMPLOYEE_CLOCK_IN = "employee_activities/clock_in"
     const val LOGIN_TERMINAL = "users/login_terminal"
     const val EMPLOYEE_LOG_IN = "employee_activities/log_in"
+    const val CHECK_PERMISSION_MANAGER = "employees/check_employee_role"
     const val CLOCK_OUT = "employee_activities/clock_out"
     const val LOGOUT = "users/log_out"
     const val FORGOT_PASSWORD = "users/forgot_password"

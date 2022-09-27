@@ -15,6 +15,9 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
     suspend fun getDefaultTerminal(uniq_id: String, device_token: String) =
         getResult { apiService.getDefaultTerminal(uniq_id, device_token) }
 
+    suspend fun checkPermissionRole(passcode: String) =
+        getResult { apiService.checkEmployeeRole(passcode) }
+
     suspend fun employeeClockIn(data: HashMap<String, String>) =
         getResult { apiService.employeeClockIn(data) }
 
@@ -222,8 +225,11 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
     suspend fun deleteItem(itemId: Int) =
         getResult { apiService.deleteItem(itemId) }
 
-    suspend fun hideItem(itemId: Int, active: Boolean) =
-        getResult { apiService.hideItem(itemId, active) }
+    suspend fun hideItem(itemId: Int, hide_status: String) =
+        getResult { apiService.hideItem(itemId, hide_status) }
+
+    suspend fun hideItemWebsite(itemId: Int, hide_status: String) =
+        getResult { apiService.hideItemWebsite(itemId, hide_status) }
 
     suspend fun createItem(data: CreateItemRequestModel) =
         getResult {

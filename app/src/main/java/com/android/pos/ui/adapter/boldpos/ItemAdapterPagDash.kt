@@ -47,7 +47,7 @@ class ItemAdapterPagDash(
         fun bind(model: TbItem?, position: Int) {
             var itename_price: StringBuffer = StringBuffer()
 
-            if (model?.name?.length!! > 30) {
+            if (model?.name?.length!! >= 30) {
                 itename_price.append(
                     model?.name?.substring(
                         0,

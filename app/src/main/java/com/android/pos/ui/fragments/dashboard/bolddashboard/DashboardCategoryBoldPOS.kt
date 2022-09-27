@@ -618,8 +618,12 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             loadCategoryFragment(CategoryFragment(this, binding.layoutHeader.edtSearch))
         }
 
-        binding.layoutHeader.imgSync.setOnClickListener {
-           // viewModel.syncInventoryModule(requireActivity())
+        binding.layoutHeader.imgCashdDrawer.setOnClickListener {
+            try {
+                SunmiPrintHelper.getInstance().openCashBox()
+            } catch (e: java.lang.Exception) {
+                e.printStackTrace()
+            }
         }
         /* binding.layoutHeader.txtOpenOrder.setOnClickListener {
          loadCategoryFragment(CategoryFragment(this))

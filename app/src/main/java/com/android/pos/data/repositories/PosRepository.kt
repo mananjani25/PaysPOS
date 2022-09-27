@@ -108,6 +108,9 @@ class PosRepository @Inject constructor(
     suspend fun createPrinter(data: CreatePrinterRequestModel) =
         apiHelperNew.createPrinter(data)
 
+    suspend fun checkPermissionRole(passcode: String) =
+        apiHelperNew.checkPermissionRole(passcode)
+
     suspend fun createQueuePrinter(createQueuePrinterRequest: CreateQueuePrinterRequestModel) =
         apiHelperNew.createQueuePrinter(createQueuePrinterRequest)
 
@@ -542,11 +545,16 @@ class PosRepository @Inject constructor(
 
     suspend fun deleteItem(itemId: Int) = apiHelperNew.deleteItem(itemId)
 
-    suspend fun itemHide(itemId: Int, active: Boolean) =
-        apiHelperNew.hideItem(itemId, active)
+    suspend fun itemHide(itemId: Int, hide_status: String) =
+        apiHelperNew.hideItem(itemId, hide_status)
 
-    fun unhideItemList() =
-        performGetOperationDatabase(databaseQuery = { appDatabase.itemDao().unhideItem!! })
+    suspend fun hideItemWebsite(itemId: Int, hide_status: String) =
+        apiHelperNew.hideItemWebsite(itemId, hide_status)
+
+    fun unhideItemListPOS() =
+        performGetOperationDatabase(databaseQuery = { appDatabase.itemDao().unhideItemPos!! })
+    fun unhideItemListWebsite() =
+        performGetOperationDatabase(databaseQuery = { appDatabase.itemDao().unhideItemWebsite!! })
 
     suspend fun createItem(item: TbItem) =
         appDatabase.itemDao().add(item)

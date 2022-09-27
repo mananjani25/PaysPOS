@@ -54,7 +54,7 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
     private lateinit var modifiersAdapter: ModifiersAdapter
     private var isUpdateItem: Boolean = false
 
-    private var adapter: ItemModifierSetAdapter?=null
+    private var adapter: ItemModifierSetAdapter? = null
     private var intArray: IntArray? = null
     private var mainModifiersId: ArrayList<Int> = arrayListOf()
     private var mainVariationId: ArrayList<Int> = arrayListOf()
@@ -402,11 +402,18 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
                 putDouble("itemOrderDiscount", perItemDiscount)
                 putInt("totalquantity", totalItemswithQuantity)
             }
+            bundle.putString("isFrom","itemDiscount")
+            if (prefProvider.isAdmin() || prefProvider.isManager()) {
+                findNavController().navigate(
+                    R.id.action_dashboardCategoryBoldPOS_to_addDiscountDialog,
+                    bundle
+                )
+            } else {
+                findNavController().navigate(
+                    R.id.actionboldpos_to_pascodeManagerDailog, bundle
+                )
+            }
 
-            findNavController().navigate(
-                R.id.action_dashboardCategoryBoldPOS_to_addDiscountDialog,
-                bundle
-            )
         }
         binding.txtAddNote.setOnClickListener {
 
@@ -544,10 +551,9 @@ class AddItemFragment(val listner: ItemListner) : Fragment(), ItemCallback {
                                 } else binding.dividerLine.root.visibility = View.GONE
 
                                 if (intArray!!.isNotEmpty()) {
-                                    if (adapter ==null){
+                                    if (adapter == null) {
                                         binding.dividerLine2.root.visibility = View.GONE
-                                    }
-                                    else {
+                                    } else {
                                         binding.dividerLine2.root.visibility = View.VISIBLE
                                     }
 

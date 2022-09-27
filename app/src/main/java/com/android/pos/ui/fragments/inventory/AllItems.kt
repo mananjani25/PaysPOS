@@ -1,16 +1,21 @@
 package com.android.pos.ui.fragments.inventory
 
+import android.app.AlertDialog
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
+import android.graphics.drawable.InsetDrawable
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.view.*
+import android.widget.RadioButton
+import androidx.appcompat.widget.AppCompatImageView
+import androidx.appcompat.widget.AppCompatTextView
 import androidx.appcompat.widget.PopupMenu
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -29,9 +34,7 @@ import com.android.pos.utils.AlertUtils
 import com.android.pos.utils.LogUtil
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.callback.ItemCallback
-import com.android.pos.utils.extensions.alert
 import com.android.pos.utils.statusUtils.Status
-import com.google.gson.Gson
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collectLatest
@@ -325,7 +328,19 @@ class AllItems(val clickedPosition: Int, val totalItems: Int) : Fragment(), Item
 
     override fun onItemClickListener(view: View?, pos: Int) {
         val popupMenu = view?.let { PopupMenu(requireContext(), it) }
-        popupMenu?.menuInflater?.inflate(R.menu.edit_delete__hide_menu, popupMenu.menu)
+        popupMenu?.menuInflater?.inflate(R.menu.item_option_menu_delete_hide, popupMenu.menu)
+        var menu_pos = popupMenu?.menu?.findItem(R.id.menu_hide_pos)
+        var menu_website = popupMenu?.menu?.findItem(R.id.menu_hide_website)
+        if (adapterPage.peek(pos)?.hide_status=="UnHide"){
+            menu_pos?.title = "Hide For POS"
+        }else{
+            menu_pos?.title = "UnHide For POS"
+        }
+        if (adapterPage.peek(pos)?.website_hide_status=="UnHideOnWebsite"){
+            menu_website?.title = "Hide For Website"
+        }else{
+            menu_website?.title = "UnHide For Website"
+        }
         popupMenu?.setOnMenuItemClickListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.menu_edit -> {
@@ -346,31 +361,80 @@ class AllItems(val clickedPosition: Int, val totalItems: Int) : Fragment(), Item
                             deletePos = pos
                             deleteObj = adapterPage.peek(pos)
                             //delete API call
-                            viewModel.deleteAndHide(deleteObj!!.itemId, deleteAndHide, false)
-                            //Delete item in database
-//                            viewModel.dbDeleteAndHide(deleteObj!!.itemId, deleteAndHide)
+                            viewModel.deleteItems(deleteObj!!.itemId)
                         }
                     }
                 }
-                R.id.menu_hide -> {
-                    alert(
-                        getString(R.string.app_name),
-                        getString(R.string.hide_item_message)
-                    ) {
-                        positiveButton(getString(R.string.deactivate)) {
-                            deleteAndHide = true
-                            deleteObj = adapterPage.peek(pos)
-                            viewModel.deleteAndHide(deleteObj!!.itemId, deleteAndHide, false)
-                        }
-                        negativeButton(R.string.tv_cancel) {
-                            // Do negative stuff here
-                        }
+                R.id.menu_hide_pos -> {
+                    if (adapterPage.peek(pos)?.hide_status=="HideForToday" || adapterPage.peek(pos)?.hide_status=="HideForIndefinitely"){
+                        viewModel.unHideItems(adapterPage.peek(pos)?.itemId!!,"pos")
+                    }else{
+                        dialogShowForHide(adapterPage.peek(pos), "pos")
+                    }
+                }
+                R.id.menu_hide_website -> {
+                    if (adapterPage.peek(pos)?.website_hide_status=="HideForTodayOnWebsite" || adapterPage.peek(pos)?.website_hide_status=="HideForIndefinitelyOnWebsite"){
+                        viewModel.unHideItems(adapterPage.peek(pos)?.itemId!!,"website")
+                    }else{
+                        dialogShowForHide(adapterPage.peek(pos), "website")
                     }
                 }
             }
             true
         }
         popupMenu?.show()
+    }
+
+    fun dialogShowForHide(tbdata: TbItem?, type: String) {
+        var dialogView = LayoutInflater.from(context).inflate(R.layout.hide_item_dialog, null)
+        val customDialog = AlertDialog.Builder(context)
+            .setView(dialogView)
+            .show()
+        customDialog?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN)
+        val back = ColorDrawable(Color.WHITE)
+        val inset = InsetDrawable(back, 150, 300, 150, 300)
+        customDialog?.window?.setBackgroundDrawable(inset);
+        var txttitle = customDialog.findViewById<AppCompatTextView>(R.id.txtTitle)
+        var imgback = customDialog.findViewById<AppCompatImageView>(R.id.imgBack)
+        var rdone = customDialog.findViewById<RadioButton>(R.id.hidetoday)
+        var rdtwo = customDialog.findViewById<RadioButton>(R.id.hideindefinitely)
+        var txtSave = customDialog.findViewById<AppCompatTextView>(R.id.txtSave)
+        var txtCancel = customDialog.findViewById<AppCompatTextView>(R.id.txtcancel)
+        txttitle.text = "Select hide type (" + tbdata?.name + ")"
+        var status = if (type == "website") {
+            "HideForIndefinitelyOnWebsite"
+        } else {
+            "HideForIndefinitely"
+        }
+
+        txtCancel.setOnClickListener {
+            customDialog.dismiss()
+        }
+        imgback.setOnClickListener {
+            customDialog.dismiss()
+        }
+        rdone.setOnClickListener {
+            if (type == "website") {
+                status = "HideForTodayOnWebsite"
+            } else {
+                status = "HideForToday"
+            }
+        }
+        rdtwo.setOnClickListener {
+            if (type == "website") {
+                status = "HideForIndefinitelyOnWebsite"
+            } else {
+                status = "HideForIndefinitely"
+            }
+
+        }
+        txtSave.setOnClickListener {
+            Log.d(TAG, "dialogShowForHide: " + status)
+            tbdata?.itemId?.let { it1 -> viewModel.hideItems(it1, status, type) }
+            customDialog.dismiss()
+        }
+
+
     }
 
 }

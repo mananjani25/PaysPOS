@@ -19,6 +19,7 @@ import com.android.pos.data.remote.Constants.BUSINESS_UPDATE
 import com.android.pos.data.remote.Constants.CASH_EVENTS
 import com.android.pos.data.remote.Constants.CATEGORY
 import com.android.pos.data.remote.Constants.CATEGORY_UPDATE_DELETE
+import com.android.pos.data.remote.Constants.CHECK_PERMISSION_MANAGER
 import com.android.pos.data.remote.Constants.CLOCK_OUT
 import com.android.pos.data.remote.Constants.CREATE_QUEUE_PRINTER
 import com.android.pos.data.remote.Constants.CUSTOMERS
@@ -129,6 +130,11 @@ interface ApiService {
         @Query("uniq_id") uniq_id: String?,
         @Query("device_token") device_token: String
     ): TerminalResponse
+
+    @GET(CHECK_PERMISSION_MANAGER)
+    suspend fun checkEmployeeRole(
+        @Query("passcode") passcode: String
+    ): PasscodeManagerModel
 
 
     @FormUrlEncoded
@@ -527,7 +533,13 @@ interface ApiService {
     @PUT(HIDE_ITEM)
     suspend fun hideItem(
         @Path("id") id: Int,
-        @Query("is_active") is_active: Boolean,
+        @Query("hide_status") hide_status: String,
+    ): BaseResponse
+
+    @PUT(HIDE_ITEM)
+    suspend fun hideItemWebsite(
+        @Path("id") id: Int,
+        @Query("website_hide_status") website_hide_status: String,
     ): BaseResponse
 
     @GET(ITEMS)
