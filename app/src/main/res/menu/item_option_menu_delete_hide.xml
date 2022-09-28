@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+
+    <item
+        android:id="@+id/menu_edit"
+        android:title="@string/edit"
+        tools:ignore="HardcodedText" />
+    <item
+        android:id="@+id/menu_delete"
+        android:title="@string/delete"
+        tools:ignore="HardcodedText" />
+    <item
+        android:id="@+id/menu_hide_pos"
+        android:title="Hide For POS"
+        tools:ignore="HardcodedText" />
+
+    <item
+        android:id="@+id/menu_hide_website"
+        android:title="Hide For Website"
+        tools:ignore="HardcodedText" />
+
+
+</menu>

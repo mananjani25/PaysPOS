@@ -741,7 +741,10 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
             event.getContentIfNotHandled()?.let {
                 LogUtil.logE("observeShowProgress1", it.toString())
                 if (it) {
-                    ProgressUtils.showProgressDialog(requireActivity())
+                    ProgressUtils.showProgressDialog(
+                        "Please wait payment under process",
+                        requireActivity()
+                    )
                 } else {
                     ProgressUtils.dismissProgressDialog()
                 }
@@ -774,6 +777,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
         if (cashDiscountType == "CashDiscount") {
             paymentAmount -= cashDiscountSurcharge
         }
+        Log.d(TAG, "paymentClick: click 2")
 
         LogUtil.logE(TAG, "isGuestPay:  ${isGuestPay}")
         if (isGuestPay) {
@@ -798,6 +802,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
             }
 
         } else {
+            Log.d(TAG, "paymentClick: click 3")
             makeCashPayment()
         }
     }
@@ -1066,6 +1071,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
             }
 
             paymentAmount = binding.tvCash0.text.toString().replace("$", "").trim().toDouble()
+            Log.d(TAG, "paymentClick: click 1")
             cashPaymentWithVariation()
         }
         binding.tvCash1.setOnSingleClickListener {
@@ -1627,7 +1633,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
         Log.d("yash", "makeCashPayment: totaltax    : " + totalTax)
         Log.d("yash", "makeCashPayment: total disc  : " + totalDiscount)
         Log.d("yash", "makeCashPayment: total serv  : " + totalServiceCharge)
-
+        Log.d(TAG, "paymentClick: click 4")
         val myRequest = cartList?.let {
             paymentviewModel.createOrderRequest(
                 it,
@@ -1696,6 +1702,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
         val orderId = prefProvider.getValueInt("ORDER_ID", -1)
         if (orderId == -1) {
             myRequest.completed_all_payments = isSelectedCount <= 1
+            Log.d(TAG, "paymentClick: click 5")
             paymentviewModel.submit(myRequest)
         } else {
             val paymentReq = myRequest.order.paymentAttributes

@@ -113,6 +113,17 @@
             app:destination="@id/createItem"
             app:enterAnim="@anim/nav_default_enter_anim" />
     </fragment>
+    <dialog
+        android:id="@+id/pascodeManagerDailog"
+        android:name="com.android.pos.ui.dialog.PasscodeDialogForManagerDialog"
+        android:label="PasscodeDialogForManangerDialog"
+        tools:layout="@layout/passcode_dialog_for_mananger_fragment">
+
+        <action
+            android:id="@+id/action_passcodeManager_to_adddiscount"
+            app:destination="@id/addDiscountDialog"
+            app:enterAnim="@anim/nav_default_enter_anim" />
+    </dialog>
 
     <fragment
         android:id="@+id/onlineOrderFragment"
@@ -125,6 +136,10 @@
         <action
             android:id="@+id/action_onlineOrder_to_reasonForrefundonline"
             app:destination="@id/reasonForRefundDialogonline"
+            app:enterAnim="@anim/nav_default_enter_anim" />
+        <action
+            android:id="@+id/action_onlineOrder_to_passcodeManager"
+            app:destination="@id/pascodeManagerDailog"
             app:enterAnim="@anim/nav_default_enter_anim" />
         <action
             android:id="@+id/action_onlineOrder_to_dashboarCategorynew"
@@ -1059,6 +1074,9 @@
         <action
             android:id="@+id/action_transactionDetailsFragment_to_sendReceiptFragment"
             app:destination="@id/sendReceiptFragment" />
+        <action
+            android:id="@+id/action_transactionDetailsFragment_to_pascodeManagerDailog"
+            app:destination="@id/pascodeManagerDailog" />
     </fragment>
     <fragment
         android:id="@+id/editPrinter"
@@ -1453,14 +1471,14 @@
             android:id="@+id/actionboldpos_to_orderCompleteFragment"
             app:destination="@id/orderCompleteFragment" />
         <action
+            android:id="@+id/actionboldpos_to_pascodeManagerDailog"
+            app:destination="@id/pascodeManagerDailog" />
+        <action
             android:id="@+id/action_dashboardCategoryBoldPOS_to_checkoutDetailsFragment"
             app:destination="@id/checkoutDetailsFragment" />
         <action
             android:id="@+id/action_dashboardCategoryBoldPOS_to_menuFragment"
             app:destination="@id/menuFragment" />
-        <action
-            android:id="@+id/action_dashboardCategoryBoldPOS_to_addVariablePriceDialog"
-            app:destination="@id/addVariablePriceDialog" />
         <action
             android:id="@+id/action_dashboardCategoryBoldPOS_to_onlineOrderFragment"
             app:destination="@id/onlineOrderFragment"

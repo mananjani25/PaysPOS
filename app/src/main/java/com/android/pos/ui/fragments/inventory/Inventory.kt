@@ -40,6 +40,7 @@ class Inventory : Fragment() {
     private var optionSetsCount: Int? = 0
     private var hiddenCategoriesCount: Int? = 0
     private var hiddenItemsCount: Int? = 0
+    private var hidden_items_website: Int? = 0
     private var mPos: Int = 0
 
     override fun onCreateView(
@@ -138,7 +139,7 @@ class Inventory : Fragment() {
         mPos = position
         when (position) {
             0 -> {
-                val allItem: Fragment = AllItems(0, totalItems = itemsCount?:0)
+                val allItem: Fragment = AllItems(0, totalItems = itemsCount ?: 0)
                 loadFragment(allItem)
                 binding.commonToolbar.txtSetItem.visibility = View.GONE
                 binding.commonToolbar.txtSubTitle.text = resources.getString(R.string.items_title)
@@ -171,21 +172,29 @@ class Inventory : Fragment() {
                 binding.commonToolbar.txtSetItem.visibility = View.GONE
                 binding.commonToolbar.txtSubTitle.text = resources.getString(R.string.options_title)
             }
+
             4 -> {
-                val hideCategory: Fragment = HideCategoryListing(4)
+                val hideItem: Fragment = HideItemListing(4)
+                loadFragment(hideItem)
+                binding.commonToolbar.txtSetItem.visibility = View.GONE
+                binding.commonToolbar.txtSubTitle.text =
+                    resources.getString(R.string.hidden_items_title)
+            }
+            5 -> {
+                val hideItem: Fragment = HideItemWebSiteListing(5)
+                loadFragment(hideItem)
+                binding.commonToolbar.txtSetItem.visibility = View.GONE
+                binding.commonToolbar.txtSubTitle.text =
+                    resources.getString(R.string.website_hidden_items_title)
+            }
+            6 -> {
+                val hideCategory: Fragment = HideCategoryListing(6)
                 loadFragment(hideCategory)
                 binding.commonToolbar.txtSetItem.visibility = View.GONE
                 binding.commonToolbar.txtSubTitle.text =
                     resources.getString(R.string.hidden_categories_title)
             }
 
-            5 -> {
-                val hideItem: Fragment = HideItemListing(5)
-                loadFragment(hideItem)
-                binding.commonToolbar.txtSetItem.visibility = View.GONE
-                binding.commonToolbar.txtSubTitle.text =
-                    resources.getString(R.string.hidden_items_title)
-            }
         }
 
 
@@ -234,15 +243,22 @@ class Inventory : Fragment() {
                 list.add(
                     InventoryItemModel(
                         0,
-                        resources.getString(R.string.hidden_categories_title),
-                        hiddenCategoriesCount
+                        resources.getString(R.string.hidden_items_title),
+                        hiddenItemsCount
                     )
                 )
                 list.add(
                     InventoryItemModel(
                         0,
-                        resources.getString(R.string.hidden_items_title),
-                        hiddenItemsCount
+                        resources.getString(R.string.website_hidden_items_title),
+                        hidden_items_website
+                    )
+                )
+                list.add(
+                    InventoryItemModel(
+                        0,
+                        resources.getString(R.string.hidden_categories_title),
+                        hiddenCategoriesCount
                     )
                 )
             }
@@ -280,18 +296,24 @@ class Inventory : Fragment() {
                 list.add(
                     InventoryItemModel(
                         0,
-                        resources.getString(R.string.hidden_categories_title),
-                        hiddenCategoriesCount
+                        resources.getString(R.string.hidden_items_title),
+                        hiddenItemsCount
                     )
                 )
                 list.add(
                     InventoryItemModel(
                         0,
-                        resources.getString(R.string.hidden_items_title),
-                        hiddenItemsCount
+                        resources.getString(R.string.website_hidden_items_title),
+                        hidden_items_website
                     )
                 )
-
+                list.add(
+                    InventoryItemModel(
+                        0,
+                        resources.getString(R.string.hidden_categories_title),
+                        hiddenCategoriesCount
+                    )
+                )
             }
             2 -> {
                 list.add(
@@ -324,18 +346,26 @@ class Inventory : Fragment() {
                         optionSetsCount
                     )
                 )
-                list.add(
-                    InventoryItemModel(
-                        0,
-                        resources.getString(R.string.hidden_categories_title),
-                        hiddenCategoriesCount
-                    )
-                )
+
                 list.add(
                     InventoryItemModel(
                         0,
                         resources.getString(R.string.hidden_items_title),
                         hiddenItemsCount
+                    )
+                )
+                list.add(
+                    InventoryItemModel(
+                        0,
+                        resources.getString(R.string.website_hidden_items_title),
+                        hidden_items_website
+                    )
+                )
+                list.add(
+                    InventoryItemModel(
+                        0,
+                        resources.getString(R.string.hidden_categories_title),
+                        hiddenCategoriesCount
                     )
                 )
 
@@ -371,13 +401,7 @@ class Inventory : Fragment() {
                         true
                     )
                 )
-                list.add(
-                    InventoryItemModel(
-                        0,
-                        resources.getString(R.string.hidden_categories_title),
-                        hiddenItemsCount
-                    )
-                )
+
                 list.add(
                     InventoryItemModel(
                         0,
@@ -385,7 +409,20 @@ class Inventory : Fragment() {
                         hiddenItemsCount
                     )
                 )
-
+                list.add(
+                    InventoryItemModel(
+                        0,
+                        resources.getString(R.string.website_hidden_items_title),
+                        hidden_items_website
+                    )
+                )
+                list.add(
+                    InventoryItemModel(
+                        0,
+                        resources.getString(R.string.hidden_categories_title),
+                        hiddenCategoriesCount
+                    )
+                )
             }
 
             4 -> {
@@ -421,18 +458,24 @@ class Inventory : Fragment() {
                 list.add(
                     InventoryItemModel(
                         0,
-                        resources.getString(R.string.hidden_categories_title),
-                        hiddenCategoriesCount, true
+                        resources.getString(R.string.hidden_items_title),
+                        hiddenItemsCount, true
                     )
                 )
                 list.add(
                     InventoryItemModel(
                         0,
-                        resources.getString(R.string.hidden_items_title),
-                        hiddenItemsCount
+                        resources.getString(R.string.website_hidden_items_title),
+                        hidden_items_website
                     )
                 )
-
+                list.add(
+                    InventoryItemModel(
+                        0,
+                        resources.getString(R.string.hidden_categories_title),
+                        hiddenCategoriesCount
+                    )
+                )
             }
 
             5 -> {
@@ -465,17 +508,80 @@ class Inventory : Fragment() {
                         optionSetsCount
                     )
                 )
+
+                list.add(
+                    InventoryItemModel(
+                        0,
+                        resources.getString(R.string.hidden_items_title),
+                        hiddenItemsCount
+                    )
+                )
+                list.add(
+                    InventoryItemModel(
+                        0,
+                        resources.getString(R.string.website_hidden_items_title),
+                        hidden_items_website, true
+                    )
+                )
                 list.add(
                     InventoryItemModel(
                         0,
                         resources.getString(R.string.hidden_categories_title), hiddenCategoriesCount
                     )
                 )
+
+            }
+            6 -> {
+                list.add(
+                    InventoryItemModel(
+                        0,
+                        resources.getString(R.string.items_title),
+                        itemsCount
+                    )
+                )
+                list.add(
+                    InventoryItemModel(
+                        0,
+                        resources.getString(R.string.categories_title),
+                        categoriesCount
+                    )
+                )
+                list.add(
+                    InventoryItemModel(
+                        0,
+                        resources.getString(R.string.modifiers_title),
+                        modifierSetsCount
+                    )
+                )
+                //list.add(InventoryItemModel(0, "Discounts"))
+                list.add(
+                    InventoryItemModel(
+                        0,
+                        resources.getString(R.string.options_title),
+                        optionSetsCount
+                    )
+                )
+
                 list.add(
                     InventoryItemModel(
                         0,
                         resources.getString(R.string.hidden_items_title),
-                        hiddenItemsCount, true
+                        hiddenItemsCount
+                    )
+                )
+                list.add(
+                    InventoryItemModel(
+                        0,
+                        resources.getString(R.string.website_hidden_items_title),
+                        hidden_items_website
+                    )
+                )
+                list.add(
+                    InventoryItemModel(
+                        0,
+                        resources.getString(R.string.hidden_categories_title),
+                        hiddenCategoriesCount,
+                        true
                     )
                 )
 
@@ -519,7 +625,6 @@ class Inventory : Fragment() {
                             Status.SUCCESS -> {
 
 
-
                                 /*private var itemsCount: Int? = 0
                             private var categoriesCount: Int? = 0
                             private var moodifierSetsCount: Int? = 0
@@ -534,6 +639,7 @@ class Inventory : Fragment() {
                                 optionSetsCount = it.data?.data?.optionSets
                                 hiddenCategoriesCount = it.data?.data?.hiddenCategories
                                 hiddenItemsCount = it.data?.data?.hiddenItems
+                                hidden_items_website = it.data?.data?.hidden_items_website
 
                                 setAdapter(mPos)
 

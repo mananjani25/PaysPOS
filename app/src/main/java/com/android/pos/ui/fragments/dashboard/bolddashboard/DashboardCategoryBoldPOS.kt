@@ -623,6 +623,13 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         binding.layoutHeader.imgSync.setOnClickListener {
             viewModel.syncInventoryModule(false)
         }
+        binding.layoutHeader.imgCashdDrawer.setOnClickListener {
+            try {
+                SunmiPrintHelper.getInstance().openCashBox()
+            } catch (e: java.lang.Exception) {
+                e.printStackTrace()
+            }
+
         /* binding.layoutHeader.txtOpenOrder.setOnClickListener {
          loadCategoryFragment(CategoryFragment(this))
          binding.layoutHeader.txtOpenOrder.setTextColor(resources.getColor(R.color.btnColor))
