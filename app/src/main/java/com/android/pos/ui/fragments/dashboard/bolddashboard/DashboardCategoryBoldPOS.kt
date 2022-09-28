@@ -574,8 +574,10 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
                     }
                 }
             } else {
-                prefProvider.setValue(Constants.DINE_IN_UPDATE_LIST, "")
-                findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_dineInFragment)
+                if (rolePermission.hasTablePermission(it)) {
+                    prefProvider.setValue(Constants.DINE_IN_UPDATE_LIST, "")
+                    findNavController().navigate(R.id.action_dashboardCategoryBoldPOS_to_dineInFragment)
+                }
             }
 
         }
