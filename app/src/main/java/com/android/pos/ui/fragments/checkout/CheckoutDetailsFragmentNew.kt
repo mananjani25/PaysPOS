@@ -784,6 +784,18 @@ class CheckoutDetailsFragmentNew(val isFromOpenOrder: Boolean = false) : Fragmen
             }
         }
 
+        paymentviewModel.showProgressCash.observe(viewLifecycleOwner) { event ->
+            event.getContentIfNotHandled()?.let {
+
+                LogUtil.logE("observeShowProgress", it.toString())
+                if (it) {
+                    ProgressUtils.showProgressDialog(requireActivity())
+                } else {
+                    ProgressUtils.dismissProgressDialog()
+                }
+            }
+        }
+
     }
 
     private fun cashPaymentWithVariation() {

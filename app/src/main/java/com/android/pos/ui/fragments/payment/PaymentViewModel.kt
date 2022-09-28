@@ -73,13 +73,17 @@ open class PaymentViewModel @Inject constructor(
     private val _showProgress = MutableLiveData<Event<Boolean>>()
     val showProgress: LiveData<Event<Boolean>> = _showProgress
 
+    private val _showProgressCash = MutableLiveData<Event<Boolean>>()
+    val showProgressCash: LiveData<Event<Boolean>> = _showProgressCash
+
+
     private val _data1 = MutableLiveData<Event<BaseResponse?>>()
     val data1: LiveData<Event<BaseResponse?>> = _data1
 
     private val _orderCreate = MutableLiveData<Event<Boolean>>()
     val orderCreate: LiveData<Event<Boolean>> = _orderCreate
 
-    var serviceChargeListApplied : ArrayList<OrderServiceChargesAttribute> = arrayListOf()
+    var serviceChargeListApplied: ArrayList<OrderServiceChargesAttribute> = arrayListOf()
 
     public var actual_Total: Double = 0.0
     public var actual_SubTotal: Double = 0.0
@@ -100,7 +104,11 @@ open class PaymentViewModel @Inject constructor(
 
     fun submit(orderRequestModel: OrderRequestModel) {
 
-        _showProgress.value = Event(true)
+
+        if (cashPaymentType(orderRequestModel)) {
+            _showProgressCash.value = Event(true)
+        } else
+            _showProgress.value = Event(true)
 
         viewModelScope.launch {
 
@@ -194,14 +202,35 @@ open class PaymentViewModel @Inject constructor(
 
                 Status.ERROR -> {
                     _snackbarText.value = Event(resource.message)
-                    _showProgress.value = Event(false)
+
+                    if (cashPaymentType(orderRequestModel)) {
+                        _showProgressCash.value = Event(false)
+                    } else
+                        _showProgress.value = Event(false)
+
+//                    _showProgress.value = Event(false)
                 }
 
                 Status.LOADING -> {
-                    _showProgress.value = Event(true)
+                    if (cashPaymentType(orderRequestModel)) {
+                        _showProgressCash.value = Event(true)
+                    } else
+                        _showProgress.value = Event(true)
+
+//                    _showProgress.value = Event(true)
                 }
             }
         }
+    }
+
+    private fun cashPaymentType(orderRequestModel: OrderRequestModel): Boolean {
+
+        if (orderRequestModel.order.paymentAttributes == null) return true
+
+        return orderRequestModel.order.paymentAttributes?.paymentType.equals(
+            "Cash",
+            ignoreCase = true
+        )
     }
 
     fun saveActualValue(
@@ -563,11 +592,11 @@ open class PaymentViewModel @Inject constructor(
             null
         }
 
-        if (cartModel.orderType== DINE_IN){
+        if (cartModel.orderType == DINE_IN) {
             orderAttributeRequestModel.orderServiceChargesAttributes = serviceChargeListApplied
-        }else{
+        } else {
             orderAttributeRequestModel.orderServiceChargesAttributes =
-            orderServiceChargesAttributes(cartModel, subTotalPrice)
+                orderServiceChargesAttributes(cartModel, subTotalPrice)
         }
 
 //
@@ -588,10 +617,15 @@ open class PaymentViewModel @Inject constructor(
 
         return orderRequestModel
     }
+
     fun isInRange(minn: Int, maxx: Int, value: Int): Boolean {
         return (minn <= value && value <= maxx)
     }
-    fun dineInServiceChargeAppliedAttribute(cartModel: CartModel, subTotalPrice: Double): List<OrderServiceChargesAttribute> {
+
+    fun dineInServiceChargeAppliedAttribute(
+        cartModel: CartModel,
+        subTotalPrice: Double
+    ): List<OrderServiceChargesAttribute> {
         var guestCount = cartModel.dineInList?.size?.minus(1)
         val orderServiceChargesAttributeList: java.util.ArrayList<OrderServiceChargesAttribute> =
             arrayListOf()
@@ -622,6 +656,7 @@ open class PaymentViewModel @Inject constructor(
         }
         return orderServiceChargesAttributeList
     }
+
     fun createOpenOrderRequest(
         cartModel: CartModel,
         subTotalPrice: Double,
@@ -738,9 +773,9 @@ open class PaymentViewModel @Inject constructor(
         } else {
             null
         }
-        if (cartModel.orderType== DINE_IN){
+        if (cartModel.orderType == DINE_IN) {
             orderAttributeRequestModel.orderServiceChargesAttributes = serviceChargeListApplied
-        }else{
+        } else {
             orderAttributeRequestModel.orderServiceChargesAttributes =
                 orderServiceChargesAttributes(cartModel, subTotalPrice)
         }
@@ -894,9 +929,9 @@ open class PaymentViewModel @Inject constructor(
             null
         }
 
-        if (cartModel.orderType== DINE_IN){
+        if (cartModel.orderType == DINE_IN) {
             orderAttributeRequestModel.orderServiceChargesAttributes = serviceChargeListApplied
-        }else{
+        } else {
             orderAttributeRequestModel.orderServiceChargesAttributes =
                 orderServiceChargesAttributes(cartModel, subTotalPrice)
         }
@@ -1470,8 +1505,12 @@ open class PaymentViewModel @Inject constructor(
                 if (tax.taxType == "Percentage") {
                     val itemTaxPrice =
                         (tax.rate * ((items.price - items.discountPrice) * items.itemQuantity)) / 100
-                    orderItemTaxesAttribute.taxTotalAmount = MethodUtils.roundOffAmountDouble(itemTaxPrice)
-                    Log.d("taxissue", "orderItemTaxesAttributes: "+orderItemTaxesAttribute.taxTotalAmount)
+                    orderItemTaxesAttribute.taxTotalAmount =
+                        MethodUtils.roundOffAmountDouble(itemTaxPrice)
+                    Log.d(
+                        "taxissue",
+                        "orderItemTaxesAttributes: " + orderItemTaxesAttribute.taxTotalAmount
+                    )
                 } else {
 
                     val ss = tax.rate * items.itemQuantity
@@ -1506,8 +1545,6 @@ open class PaymentViewModel @Inject constructor(
 //                    orderItemTaxesAttribute.taxTotalAmount =
 //                        MethodUtils.roundOffAmountDouble((ss))
 //                }
-
-
 
 
                 orderItemTaxesAttribute.taxType = tax.taxType.toString()
@@ -1918,7 +1955,7 @@ open class PaymentViewModel @Inject constructor(
     }
 
     @JvmName("setServiceChargeListApplied1")
-    fun setServiceChargeListApplied(temp_serviceChargeApplied:ArrayList<OrderServiceChargesAttribute>) {
+    fun setServiceChargeListApplied(temp_serviceChargeApplied: ArrayList<OrderServiceChargesAttribute>) {
         this.serviceChargeListApplied = temp_serviceChargeApplied
     }
 }
