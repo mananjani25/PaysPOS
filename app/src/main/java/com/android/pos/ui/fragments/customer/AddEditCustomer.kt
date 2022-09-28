@@ -11,8 +11,8 @@ import android.app.DatePickerDialog
 import android.location.Geocoder
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
@@ -53,6 +53,7 @@ class AddEditCustomer : Fragment() {
     private var country = arrayOf("United States", "Canada")
 
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -70,6 +71,20 @@ class AddEditCustomer : Fragment() {
         showObserveProgress()
         navigate()
         setPhoneCountry()
+
+
+
+
+        binding.edtStreet?.setOnTouchListener { view, event ->
+                binding.nestedScrollView?.smoothScrollTo(500,500)
+            false
+        }
+
+        binding.edtStreetDel?.setOnTouchListener { view, event ->
+            binding.nestedScrollView?.smoothScrollTo(500,500)
+            false
+        }
+
 
         return binding.root
     }
@@ -523,14 +538,14 @@ class AddEditCustomer : Fragment() {
                 var id1: Int? = null
                 var id2: Int? = null
 
-                if (viewModel.listAddress.size == 2){
+                if (viewModel.listAddress.size == 2) {
                     id1 = viewModel.listAddress[0].id!!
                     id2 = viewModel.listAddress[1].id!!
-                }else if (viewModel.listAddress.size == 1){
+                } else if (viewModel.listAddress.size == 1) {
 
-                    if (viewModel.listAddress[0].type_of_address == "Billing"){
+                    if (viewModel.listAddress[0].type_of_address == "Billing") {
                         id1 = viewModel.listAddress[0].id!!
-                    }else if (viewModel.listAddress[0].type_of_address == "Shipping"){
+                    } else if (viewModel.listAddress[0].type_of_address == "Shipping") {
                         id2 = viewModel.listAddress[0].id!!
                     }
                 }
@@ -659,7 +674,7 @@ class AddEditCustomer : Fragment() {
     private fun navigate() {
 
         LogUtil.logE(TAG, "POPBACKCUSTOMER")
-        viewModel._Basedata.observe(viewLifecycleOwner, { event ->
+        viewModel._Basedata.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let { baseResponse ->
                 activity?.let {
                     AlertUtils.showCustomAlertWithListenerWithOK(
@@ -679,7 +694,7 @@ class AddEditCustomer : Fragment() {
 
                 }
             }
-        })
+        }
 
     }
 
