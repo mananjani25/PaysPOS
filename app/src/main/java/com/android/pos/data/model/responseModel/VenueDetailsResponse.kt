@@ -9,7 +9,7 @@ import com.google.gson.annotations.SerializedName
 
 data class VenueDetailsResponse(
     @SerializedName("data")
-    val `data`: Data,
+    val settingData: SettingData,
     @SerializedName("message")
     val message: String,
     @SerializedName("status")
@@ -17,6 +17,11 @@ data class VenueDetailsResponse(
     @SerializedName("type")
     val type: String
 ) {
+
+    data class SettingData(
+        @SerializedName("setting_data") val `data`: Data, @SerializedName("time_stamp")
+        val timeStamp: String
+    )
 
     data class Data(
         @SerializedName("business_name")

@@ -47,6 +47,8 @@ object Constants {
     //SharedPref Keys
     const val AUTH_TOKEN = "authToken"
     const val TERMINAL_ID = "terminalId"
+    const val SYNC_TIME_STAMP = "SyncTimeStamp"
+    const val SYNC_SETTING_TIME_STAMP = "SyncSettingTimeStamp"
     const val ONLINE_ORDER_ENABLE = "ONLINE_ORDER_ENABLE"
     const val BASE_URL_NEW = "baseUrlNew"
     const val PASSCODE = "passcode"

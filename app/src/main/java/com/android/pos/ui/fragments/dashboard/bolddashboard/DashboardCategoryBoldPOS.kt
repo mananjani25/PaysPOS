@@ -619,7 +619,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         }
 
         binding.layoutHeader.imgSync.setOnClickListener {
-           // viewModel.syncInventoryModule(requireActivity())
+            viewModel.syncInventoryModule(false)
         }
         /* binding.layoutHeader.txtOpenOrder.setOnClickListener {
          loadCategoryFragment(CategoryFragment(this))
