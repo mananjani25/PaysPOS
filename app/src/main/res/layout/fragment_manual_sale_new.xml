@@ -861,7 +861,7 @@
                     android:layout_height="match_parent"
                     android:layout_marginEnd="@dimen/_5sdp"
                     android:layout_weight="0.5"
-                    android:background="@color/backgroundColor"
+                    android:background="@drawable/border_backgroundcolor_with_orange_color"
                     android:gravity="center"
                     android:padding="@dimen/_4sdp"
                     android:text="Add to Cart"

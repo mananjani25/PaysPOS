@@ -44,6 +44,7 @@ import com.android.pos.data.remote.Constants.DINE_IN_LIST_EDIT
 import com.android.pos.data.remote.Constants.DINE_IN_UPDATE
 import com.android.pos.data.remote.Constants.EMPLOYEE_ID
 import com.android.pos.data.remote.Constants.IS_PRINTER_QUEUE_ENABLE
+import com.android.pos.data.remote.Constants.IS_UPDATE_ORDER_FROM_ACTIVE_ORDER
 import com.android.pos.data.remote.Constants.LOCK_SCREEN_TRANSACTION
 import com.android.pos.data.remote.Constants.ONLINE_ORDER_ENABLE
 import com.android.pos.data.remote.Constants.ORDER_TYPE
@@ -851,6 +852,9 @@ class DashBoardCategoryViewModel @Inject constructor(
                                         if (item.isEdited) {
                                             model.isEdited = item.isEdited
                                         }
+                                        if (prefProvider.getValueboolean(IS_UPDATE_ORDER_FROM_ACTIVE_ORDER,false)){
+                                            model.isEdited = true
+                                        }
                                         item.modifiers.forEach {
                                             it.itemQuantity = model.itemQuantity
                                         }
@@ -889,6 +893,9 @@ class DashBoardCategoryViewModel @Inject constructor(
                                                 model.isEdited = item.isEdited
                                             }
 
+                                            if (prefProvider.getValueboolean(IS_UPDATE_ORDER_FROM_ACTIVE_ORDER,false)){
+                                                model.isEdited = true
+                                            }
                                             //   itemDiscountApply(model, item)
                                         }
 
@@ -898,6 +905,9 @@ class DashBoardCategoryViewModel @Inject constructor(
                                             model.itemQuantity = item.itemQuantity
                                             if (item.isEdited) {
                                                 model.isEdited = item.isEdited
+                                            }
+                                            if (prefProvider.getValueboolean(IS_UPDATE_ORDER_FROM_ACTIVE_ORDER,false)){
+                                                model.isEdited = true
                                             }
                                             itemDiscountApply(model, item)
                                             model.isDestroy = false
@@ -911,6 +921,9 @@ class DashBoardCategoryViewModel @Inject constructor(
                             Log.d(TAG, "cartLogic: " + index)
                             if (item != null) {
                                 item.isDestroy = false
+                                if (prefProvider.getValueboolean(IS_UPDATE_ORDER_FROM_ACTIVE_ORDER,false)){
+                                    item.isEdited = true
+                                }
                                 list.add(item)
                             }
                         }

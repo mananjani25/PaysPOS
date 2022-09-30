@@ -367,6 +367,22 @@
                             android:textColor="@color/txtColor"
                             android:textSize="@dimen/_5mdpi" />
 
+                        <CheckBox
+                            android:id="@+id/chksameasbilling"
+                            style="@style/CustomFontSemiBold"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="start"
+                            android:layout_marginLeft="-50dp"
+                            android:button="@drawable/selector_size"
+                            android:buttonTint="@color/kitchen_size_color_selector"
+                            android:gravity="center_vertical"
+                            android:scaleX="0.7"
+                            android:scaleY="0.7"
+                            android:text="@string/same_as_billing_address"
+                            android:textColor="@color/txtColor"
+                            android:textSize="@dimen/_7mdpi" />
+
                     </androidx.appcompat.widget.LinearLayoutCompat>
 
                     <androidx.appcompat.widget.LinearLayoutCompat

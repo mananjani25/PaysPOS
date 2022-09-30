@@ -226,8 +226,16 @@ class CreateModifierSet : Fragment(), TextWatcher {
             if (s != null && s.length == 1) {
                 val model = Modifier().apply {
                     name = binding.edtModifier.text.toString().trim()
-                    price = 0.00
+                    if (binding.edtPrice.text?.isNotBlank() == true){
+                        val parsed = binding.edtPrice.text.toString().toDouble()
+                        val formatted = NumberFormat.getCurrencyInstance(Locale.US).format((parsed / 100))
+                        price = formatted.replace("""[$,]""".toRegex(), "").toDouble()
+                    }else{
+                        price =0.0
+                    }
                 }
+                binding.edtPrice.text?.clear()
+                binding.edtPrice.clearFocus()
                 adapter.add(model)
             }
             binding.edtModifier.text?.clear()
@@ -243,14 +251,20 @@ class CreateModifierSet : Fragment(), TextWatcher {
                 val parsed = s.toString().toDouble()
                 val formatted = NumberFormat.getCurrencyInstance(Locale.US).format((parsed / 100))
                 val model = Modifier().apply {
-                    name = ""
+                    name = binding.edtModifier.text.toString()
                     price = formatted.replace("""[$,]""".toRegex(), "").toDouble()
                 }
-                adapter.add(model)
+                if (binding.edtModifier.text?.isNotBlank() == true)
+                {
+                    adapter.add(model)
+                    binding.edtPrice.text?.clear()
+                    binding.edtPrice.clearFocus()
+                    binding.edtPrice.addTextChangedListener(this)
+                }else{
+                    binding.edtPrice.addTextChangedListener(this)
+                }
             }
-            binding.edtPrice.text?.clear()
-            binding.edtPrice.clearFocus()
-            binding.edtPrice.addTextChangedListener(this)
+
         }
 
         viewModel.setModifiers(adapter.getAll())

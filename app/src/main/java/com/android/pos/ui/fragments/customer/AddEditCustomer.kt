@@ -171,10 +171,16 @@ class AddEditCustomer : Fragment() {
             viewModel.addCustomerDetails.value?.data?.enroll_to_loyalty =
                 editModel?.enroll_to_loyalty
 
+            viewModel.addCustomerDetails.value?.data?.same_as_billing_address =
+                editModel?.same_as_billing_address
+
 
 
             viewModel.addCustomerDetails.value?.data?.enroll_to_loyalty?.let {
                 binding.chkIsLoyalty.isChecked = it
+            }
+            viewModel.addCustomerDetails.value?.data?.same_as_billing_address?.let {
+                binding.chksameasbilling.isChecked = it
             }
 
 
@@ -271,6 +277,9 @@ class AddEditCustomer : Fragment() {
                 binding.edtBirthDay.text = formattedDate
             }
 
+        } else {
+            viewModel.enroll_to_loyalty.value = true
+            viewModel.same_as_billing_address.value = false
         }
 
         binding.header.imgBack.setOnClickListener {
@@ -373,7 +382,7 @@ class AddEditCustomer : Fragment() {
         }
 
         binding.edtStreetDel?.setAdapter(PlacesAutoCompleteAdapter(binding.root.context, placesApi))
-        binding.edtStreetDel?.setOnItemClickListener { parent, view, position, id ->
+        binding.edtStreetDel.setOnItemClickListener { parent, view, position, id ->
             val place = parent.getItemAtPosition(position) as Place
 
             //binding.edtStreet.setText("${place.description}")
@@ -387,7 +396,7 @@ class AddEditCustomer : Fragment() {
 
                     val gcd = Geocoder(requireContext(), Locale.getDefault())
                     /* val address: List<Address> =
-                         gcd.getFromLocation(placeDetails.lat, placeDetails.lng, 1)*/
+                             gcd.getFromLocation(placeDetails.lat, placeDetails.lng, 1)*/
 
                     var street = ""
                     var suite = ""
@@ -523,14 +532,14 @@ class AddEditCustomer : Fragment() {
                 var id1: Int? = null
                 var id2: Int? = null
 
-                if (viewModel.listAddress.size == 2){
+                if (viewModel.listAddress.size == 2) {
                     id1 = viewModel.listAddress[0].id!!
                     id2 = viewModel.listAddress[1].id!!
-                }else if (viewModel.listAddress.size == 1){
+                } else if (viewModel.listAddress.size == 1) {
 
-                    if (viewModel.listAddress[0].type_of_address == "Billing"){
+                    if (viewModel.listAddress[0].type_of_address == "Billing") {
                         id1 = viewModel.listAddress[0].id!!
-                    }else if (viewModel.listAddress[0].type_of_address == "Shipping"){
+                    } else if (viewModel.listAddress[0].type_of_address == "Shipping") {
                         id2 = viewModel.listAddress[0].id!!
                     }
                 }
@@ -610,6 +619,28 @@ class AddEditCustomer : Fragment() {
             }
 
             viewModel.submit(listAddress)
+        }
+        binding.chksameasbilling.setOnClickListener {
+            viewModel.same_as_billing_address.value = binding.chksameasbilling.isChecked
+            if (binding.chksameasbilling.isChecked) {
+                binding.edtStreetDel.setText(binding.edtStreet.text.toString())
+                binding.edtSuiteDel.setText(binding.edtSuite.text.toString())
+                binding.edtCityDel.setText(binding.edtCity.text.toString())
+                binding.edtStateDel.setText(binding.edtState.text.toString())
+                binding.edtZipDel.setText(binding.edtZip.text.toString())
+                if (binding.edtAddress.selectedItem.toString() == "United States") {
+                    binding.edtAddressDel.setSelection(0)
+                } else {
+                    binding.edtAddressDel.setSelection(1)
+                }
+            } else {
+                binding.edtStreetDel.setText("")
+                binding.edtSuiteDel.setText("")
+                binding.edtCityDel.setText("")
+                binding.edtStateDel.setText("")
+                binding.edtZipDel.setText("")
+                binding.edtAddressDel?.setSelection(0)
+            }
         }
     }
 

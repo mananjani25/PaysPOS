@@ -53,7 +53,7 @@
                     android:layout_weight="1"
                     android:fontFamily="@font/sf_pro_display_medium"
                     android:gravity="center"
-                    android:text="@{`Order `+orderDetails.data.order.offline_id}"
+                    android:text="@{`Order `+orderDetails.data.order.id}"
                     android:textColor="@color/txtColor"
                     android:textSize="@dimen/_7mdpi"
                     app:layout_constraintBottom_toBottomOf="parent"
@@ -638,7 +638,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginStart="@dimen/_3sdp"
-                            android:text="@string/tv_order_id"
+                            android:text="Receipt Id"
                             android:textColor="@color/white"
                             android:textSize="@dimen/text_size_medium" />
 
@@ -649,6 +649,33 @@
                             android:layout_marginStart="@dimen/_3sdp"
                             android:gravity="end"
                             android:text="@{``+orderDetails.data.order.offline_id}"
+                            android:textColor="@color/white"
+                            android:textSize="@dimen/text_size_medium" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="@dimen/_1sdp"
+                        android:orientation="horizontal"
+                        android:padding="@dimen/_2sdp">
+
+                        <androidx.appcompat.widget.AppCompatTextView
+                            style="@style/CustomFontSemiBold"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/_3sdp"
+                            android:text="Transaction Id"
+                            android:textColor="@color/white"
+                            android:textSize="@dimen/text_size_medium" />
+
+                        <androidx.appcompat.widget.AppCompatTextView
+                            style="@style/CustomFontMediumStyle"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/_3sdp"
+                            android:gravity="end"
+                            android:text="@{``+orderDetails.data.id}"
                             android:textColor="@color/white"
                             android:textSize="@dimen/text_size_medium" />
                     </LinearLayout>
@@ -981,7 +1008,20 @@
                 android:layout_margin="@dimen/_5sdp"
                 android:layout_weight="0.3"
                 android:orientation="vertical">
-
+                <androidx.appcompat.widget.AppCompatTextView
+                    android:id="@+id/tvtipadd"
+                    style="@style/CustomFontBold"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    android:background="@drawable/background_txt_selector"
+                    android:gravity="center"
+                    android:paddingHorizontal="@dimen/_7sdp"
+                    android:paddingVertical="@dimen/_10sdp"
+                    android:text="Tip"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/text_size_large"
+                    android:visibility="visible" />
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/tvIssueRefund"
@@ -991,6 +1031,7 @@
                     android:layout_gravity="center"
                     android:background="@drawable/background_txt_selector"
                     android:gravity="center"
+                    android:layout_marginTop="@dimen/_10sdp"
                     android:paddingHorizontal="@dimen/_7sdp"
                     android:paddingVertical="@dimen/_10sdp"
                     android:text="@string/tv_refund"
@@ -1036,15 +1077,15 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_gravity="center"
-                    android:layout_marginTop="@dimen/_10sdp"
-                    android:background="@drawable/button_action_hover"
+                    android:background="@drawable/background_txt_selector"
                     android:gravity="center"
+                    android:layout_marginTop="@dimen/_10sdp"
                     android:paddingHorizontal="@dimen/_7sdp"
                     android:paddingVertical="@dimen/_10sdp"
-                    android:text="Text Receipt"
-                    android:textColor="@color/txtColor"
+                    android:text="@string/text_message"
+                    android:textColor="@color/white"
                     android:textSize="@dimen/text_size_large"
-                    android:visibility="gone" />
+                    android:visibility="visible"  />
 
                 <androidx.appcompat.widget.AppCompatTextView
                     android:id="@+id/txtEmailReceipt"

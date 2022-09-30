@@ -173,6 +173,16 @@ class PasscodeDialogForManagerDialog : DialogFragment() {
                             R.id.action_onlineOrder_to_passcodeManager,
                             arguments
                         )
+                    }else if(isFrom=="itemDiscountManual"){
+                        findNavController().navigate(
+                            R.id.action_manualSaleNew_to_addDiscountDialog,
+                            arguments
+                        )
+                    }else if (isFrom=="orderDiscountManual"){
+                        findNavController().navigate(
+                            R.id.action_manualSaleNew__to_addDiscountDialog,
+                            arguments
+                        )
                     }
                 }
             }

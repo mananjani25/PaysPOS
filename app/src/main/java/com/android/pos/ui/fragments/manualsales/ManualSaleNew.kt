@@ -818,10 +818,16 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                             bundle.putDouble("itemOrderDiscount", perItemDiscount)
                             bundle.putInt("totalquantity", totalItemswithQuantity)
                         }
-                        findNavController().navigate(
-                            R.id.action_manualSaleNew__to_addDiscountDialog,
-                            bundle
-                        )
+                        bundle.putString("isFrom","orderDiscountManual")
+                        if (prefProvider.isAdmin() || prefProvider.isManager()){
+                            if (findNavController().currentDestination?.id != R.id.addDiscountDialog) {
+                                findNavController().navigate(R.id.action_manualSaleNew__to_addDiscountDialog, bundle)
+                            }
+                        }else{
+                            findNavController().navigate(
+                                R.id.action_manualSaleNew_to_pascodeManagerDailog,bundle
+                            )
+                        }
                     }
                 }
                 true
@@ -1538,7 +1544,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                         viewModel.manualSalecartLogic(cartList, model, Constants.UPDATE)
                         txtTitle.text = model.name + "  $" + String.format(
                             "%.2f",
-                            ((model.price * totalquantity) - model.discountPrice)
+                            ((model.price * totalquantity) - model.discountPrice*totalquantity)
                         )
 
                     } else if (result.discountType == "Amount") {
@@ -1558,7 +1564,7 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                         viewModel.manualSalecartLogic(cartList, model, Constants.UPDATE)
                         txtTitle.text = model.name + "  $" + String.format(
                             "%.2f",
-                            ((model.price * totalquantity) - model.discountPrice)
+                            ((model.price * totalquantity) - model.discountPrice*totalquantity)
                         )
                     } else {
                         model.discountPrice = 0.0
@@ -1636,9 +1642,19 @@ class ManualSaleNew : Fragment(), ManualSaleCartAdapter.ManualSaleInterface,
                 }
                 putParcelable("model", model)
             }
-            if (findNavController().currentDestination?.id != R.id.addDiscountDialog) {
-                findNavController().navigate(R.id.action_manualSaleNew_to_addDiscountDialog, bundle)
+            bundle.putString("isFrom","itemDiscountManual")
+            if (prefProvider.isAdmin() || prefProvider.isManager()){
+
+                if (findNavController().currentDestination?.id != R.id.addDiscountDialog) {
+                    findNavController().navigate(R.id.action_manualSaleNew_to_addDiscountDialog, bundle)
+                }
+            }else{
+                findNavController().navigate(
+                    R.id.action_manualSaleNew_to_pascodeManagerDailog,bundle
+                )
             }
+
+
         }
 
 

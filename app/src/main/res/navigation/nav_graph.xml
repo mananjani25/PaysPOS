@@ -867,6 +867,10 @@
             app:destination="@id/addDiscountDialog"
             app:enterAnim="@anim/nav_default_enter_anim" />
         <action
+            android:id="@+id/action_manualSaleNew_to_pascodeManagerDailog"
+            app:destination="@id/pascodeManagerDailog"
+            app:enterAnim="@anim/nav_default_enter_anim" />
+        <action
             android:id="@+id/action_manualSaleNew_to_paymentFragment"
             app:destination="@id/paymentFragment"
             app:enterAnim="@anim/nav_default_enter_anim" />
@@ -1064,6 +1068,12 @@
         <action
             android:id="@+id/action_transactionDetailsFragment_to_issueRefundFragment"
             app:destination="@id/issueRefundFragment" />
+        <action
+            android:id="@+id/action_transactionDetailsFragment_to_tipdialog"
+            app:destination="@id/addTipsDialog" />
+        <action
+            android:id="@+id/action_transactionDetailsFragment_to_sendReceiptFragmeent"
+            app:destination="@id/sendReceiptFragment" />
         <action
             android:id="@+id/action_transaction_to_reasonForrefundonline"
             app:destination="@id/reasonForRefundDialogonline"
