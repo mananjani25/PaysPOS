@@ -755,7 +755,21 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
             event.getContentIfNotHandled()?.let {
                 LogUtil.logE("observeShowProgress2", it.toString())
                 if (it) {
-                    ProgressUtils.showProgressDialog("Please wait payment under process",requireActivity())
+                    ProgressUtils.showProgressDialog(
+                        "Please wait payment under process",
+                        requireActivity()
+                    )
+                } else {
+                    ProgressUtils.dismissProgressDialog()
+                }
+            }
+        }
+
+        dineinOrderVieweModel.showProgressCash.observe(viewLifecycleOwner) { event ->
+            event.getContentIfNotHandled()?.let {
+                LogUtil.logE("observeShowProgress2", it.toString())
+                if (it) {
+                    ProgressUtils.showProgressDialog(requireActivity())
                 } else {
                     ProgressUtils.dismissProgressDialog()
                 }
@@ -806,6 +820,7 @@ class CheckoutDineInFragmentNew(val dineInDataModel: CheckOutDineInDataModel) : 
             makeCashPayment()
         }
     }
+
 
     private fun guestAttributeCalculation(i: Int, toJson: String) {
         guestRequestModel?.paymentAttributes!!.amount =

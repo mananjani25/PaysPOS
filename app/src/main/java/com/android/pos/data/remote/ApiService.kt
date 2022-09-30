@@ -53,7 +53,6 @@ import com.android.pos.data.remote.Constants.ITEMS
 import com.android.pos.data.remote.Constants.ITEM_UPDATE_DELETE
 import com.android.pos.data.remote.Constants.KITCHEN_RECEIPT_SETTINGS
 import com.android.pos.data.remote.Constants.KITCHEN_RECEIPT_UPDATE_SEETINGS
-import com.android.pos.data.remote.Constants.LOCK_SCREEN_TRANSACTION
 import com.android.pos.data.remote.Constants.LOGIN_TERMINAL
 import com.android.pos.data.remote.Constants.LOGOUT
 import com.android.pos.data.remote.Constants.LOYALTY_POINT
@@ -161,7 +160,10 @@ interface ApiService {
     ): BaseResponse
 
     @GET(SYNC_VENUE_DATA)
-    suspend fun syncVenueData(@Query("terminal_id") terminalId: Int): VenueDataResponse
+    suspend fun syncVenueData(
+        @Query("terminal_id") terminalId: Int,
+        @Query("time_stamp") timeStamp: String = ""
+    ): VenueDataResponse
 
     @GET(GET_PRINTERS)
     suspend fun getPrinterList(@Query("terminal_id") terminalId: Int): PrinterResponse
@@ -220,7 +222,8 @@ interface ApiService {
     @GET(SYNC_VENUE_DETAILS)
     suspend fun syncVenueDetails(
         @Query("terminal_id") terminalId: Int,
-        @Query("new_logic") newLogic: Boolean
+        @Query("new_logic") newLogic: Boolean,
+        @Query("time_stamp") timeStamp: String = ""
     ): VenueDetailsResponse
 
     @GET(ONLINE_ORDER_NOTIFICATION_COUNT)

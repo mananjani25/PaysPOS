@@ -8,7 +8,6 @@ import android.os.StrictMode
 import android.util.Base64
 import android.util.Log
 import androidx.appcompat.widget.AppCompatTextView
-import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -52,6 +51,8 @@ import com.android.pos.data.remote.Constants.REPORT_END_TIME
 import com.android.pos.data.remote.Constants.REPORT_START_TIME
 import com.android.pos.data.remote.Constants.SERVICECHARGE_DINEIN_ORDER
 import com.android.pos.data.remote.Constants.SERVICECHARGE_TAKEOUT_OPENORDER
+import com.android.pos.data.remote.Constants.SYNC_SETTING_TIME_STAMP
+import com.android.pos.data.remote.Constants.SYNC_TIME_STAMP
 import com.android.pos.data.remote.Constants.SYSTEM_TIMEZONE
 import com.android.pos.data.remote.Constants.TERMINAL_ID
 import com.android.pos.data.remote.Constants.UPDATE
@@ -3236,7 +3237,11 @@ class DashBoardCategoryViewModel @Inject constructor(
     fun syncInventoryModule(b: Boolean) {
         _showProgress.value = Event(true)
         viewModelScope.launch {
-            val resource = posRepository.syncInventory(prefProvider.getValueInt(TERMINAL_ID, -1))
+            val resource = posRepository.syncInventory(
+                prefProvider.getValueInt(TERMINAL_ID, -1), prefProvider.getValue(
+                    SYNC_TIME_STAMP, ""
+                )
+            )
             when (resource.status) {
                 Status.SUCCESS -> {
                     Log.e("SyncInventory", "SyncSuccess")
@@ -3339,6 +3344,19 @@ class DashBoardCategoryViewModel @Inject constructor(
                                     val modifierSet = posRepository.getSingleModifier(it.id!!)
 
                                     if (modifierSet != null) {
+                                        it.modifiers.forEach {
+                                            modifierSet.modifiers.forEach { mod ->
+                                                if (mod.id == it.id) {
+                                                       mod.itemQuantity =  it.itemQuantity
+                                                       mod.name =  it.name
+                                                       mod.price =  it.price
+                                                       mod.isDeleted =  it.isDeleted
+                                                       mod.isChecked =  it.isChecked
+                                                       mod.sort =  it.sort
+
+                                                }
+                                            }
+                                        }
 
                                         val model = TbItem().convertToModifier(it, modifierSet)
 
@@ -3360,6 +3378,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                             appDatabase.itemModifierSetsDao().addAll(itemModifierSetList)
                             appDatabase.optionSetDao().addAll(mData.optionSets)
 
+                            prefProvider.setValue(SYNC_TIME_STAMP, response.data.timeStamp)
 
                         } else {
                             _tableStatus.value = response?.let { Event(it.message) }
@@ -3390,7 +3409,8 @@ class DashBoardCategoryViewModel @Inject constructor(
     fun syncInventoryModuleN() {
         _showProgress.value = Event(true)
         viewModelScope.launch {
-            val resource = posRepository.syncInventory(prefProvider.getValueInt(TERMINAL_ID, -1))
+            val resource =
+                posRepository.syncInventory(prefProvider.getValueInt(TERMINAL_ID, -1), "")
             when (resource.status) {
                 Status.SUCCESS -> {
                     Log.e("SyncInventory", "SyncSuccess")
@@ -3436,9 +3456,9 @@ class DashBoardCategoryViewModel @Inject constructor(
                         if (venueDetailsResponse?.status == 200) {
 
                             resource.data?.let {
-                                if (it.data.teamRoles.isNotEmpty()) {
-                                    posRepository.addTeamRoleFromDb(it.data.teamRoles)
-                                    rolePermission.findCurrentUserRoleAndSave(it.data.teamRoles)
+                                if (it.settingData.data.teamRoles.isNotEmpty()) {
+                                    posRepository.addTeamRoleFromDb(it.settingData.data.teamRoles)
+                                    rolePermission.findCurrentUserRoleAndSave(it.settingData.data.teamRoles)
                                 } else {
 
                                     ThreadPoolManager.instance.executeTask(Runnable {
@@ -3456,11 +3476,11 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                                 try {
 
-                                    if (it.data.logo != null) {
-                                        if (it.data.logo.logoUrl.isNotEmpty() && !prefProvider.getValue(
+                                    if (it.settingData.data.logo != null) {
+                                        if (it.settingData.data.logo.logoUrl.isNotEmpty() && !prefProvider.getValue(
                                                 Constants.VENUE_LOGO_URL,
                                                 ""
-                                            ).equals(it.data.logo.thumb.thumbUrl)
+                                            ).equals(it.settingData.data.logo.thumb.thumbUrl)
                                         ) {
                                             val policy: StrictMode.ThreadPolicy =
                                                 StrictMode.ThreadPolicy.Builder().permitAll()
@@ -3469,7 +3489,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                             StrictMode.setThreadPolicy(policy)
 
                                             val bitmap =
-                                                getBitmapFromURL(it.data.logo.thumb.thumbUrl)
+                                                getBitmapFromURL(it.settingData.data.logo.thumb.thumbUrl)
                                             var baseBitmap =
                                                 bitmap?.let { it1 -> encodeTobase64(it1) }
                                             if (baseBitmap?.isNotEmpty() == true) {
@@ -3483,7 +3503,7 @@ class DashBoardCategoryViewModel @Inject constructor(
                                             }
                                             prefProvider.setValue(
                                                 Constants.VENUE_LOGO_URL,
-                                                it.data.logo.thumb.thumbUrl
+                                                it.settingData.data.logo.thumb.thumbUrl
                                             )
                                         }
 
@@ -3495,93 +3515,108 @@ class DashBoardCategoryViewModel @Inject constructor(
                                 }
 
 
-                                prefProvider.setValue(BUSINESS_NAME, it.data.businessName)
-                                prefProvider.setValue(SYSTEM_TIMEZONE, it.data.timeZone)
-                                prefProvider.setValue(BUSINESS_PHONE_NO, it.data.phoneNumber)
-                                if (it.data.address != null) {
-                                    prefProvider.setValue(BUSINESS_ADDRESS, it.data.address)
+                                prefProvider.setValue(
+                                    BUSINESS_NAME,
+                                    it.settingData.data.businessName
+                                )
+                                prefProvider.setValue(SYSTEM_TIMEZONE, it.settingData.data.timeZone)
+                                prefProvider.setValue(
+                                    BUSINESS_PHONE_NO,
+                                    it.settingData.data.phoneNumber
+                                )
+                                if (it.settingData.data.address != null) {
+                                    prefProvider.setValue(
+                                        BUSINESS_ADDRESS,
+                                        it.settingData.data.address
+                                    )
                                 }
                                 prefProvider.setValueboolean(
                                     IS_PRINTER_QUEUE_ENABLE,
-                                    it.data.isPrinterQueueEnable
+                                    it.settingData.data.isPrinterQueueEnable
                                 )
 
                                 prefProvider.setValue(
                                     BUSINESS_WEBSITE,
-                                    it.data.businessWebsite.toString()
+                                    it.settingData.data.businessWebsite.toString()
                                 )
-                                prefProvider.setValue(REPORT_START_TIME, it.data.report_start_time)
-                                prefProvider.setValue(REPORT_END_TIME, it.data.report_end_time)
+                                prefProvider.setValue(
+                                    REPORT_START_TIME,
+                                    it.settingData.data.report_start_time
+                                )
+                                prefProvider.setValue(
+                                    REPORT_END_TIME,
+                                    it.settingData.data.report_end_time
+                                )
 
                                 prefProvider.setValueboolean(
                                     SERVICECHARGE_TAKEOUT_OPENORDER,
-                                    it.data.service_charge_enable
+                                    it.settingData.data.service_charge_enable
                                 )
                                 prefProvider.setValueboolean(
                                     SERVICECHARGE_DINEIN_ORDER,
-                                    it.data.enable_dine_in_service_charge
+                                    it.settingData.data.enable_dine_in_service_charge
                                 )
                                 prefProvider.setValueboolean(
                                     LOCK_SCREEN_TRANSACTION,
-                                    it.data.lock_screen_after_each_transaction
+                                    it.settingData.data.lock_screen_after_each_transaction
                                 )
                                 prefProvider.setValueboolean(
                                     DINEIN_FLOORPLAN_SHOW_TABLENAME,
-                                    it.data.show_table_name
+                                    it.settingData.data.show_table_name
                                 )
 
-                                posRepository.addCashDiscountsFromDb(it.data.cash_discounts)
+                                posRepository.addCashDiscountsFromDb(it.settingData.data.cash_discounts)
 //                                taxServiceChargeRepository.deleteTaxFromDb()
-                                if (it.data.taxes.isNotEmpty()) {
-                                    taxServiceChargeRepository.addAllTaxDatabase(it.data.taxes)
+                                if (it.settingData.data.taxes.isNotEmpty()) {
+                                    taxServiceChargeRepository.addAllTaxDatabase(it.settingData.data.taxes)
                                 }
 //                                posRepository.deleteNotesFromDb()
-                                posRepository.addAllNotesDatabase(it.data.notes)
+                                posRepository.addAllNotesDatabase(it.settingData.data.notes)
 //                                tipDiscountRepository.deleteDiscountsFromDb()
-                                tipDiscountRepository.addDiscount(it.data.discounts)
+                                tipDiscountRepository.addDiscount(it.settingData.data.discounts)
 
                                 /* serviceChargesList.clear()
                                  serviceChargesList = it.data.service_charges.toCollection(
                                      arrayListOf()
                                  )*/
 
-                                if (it.data.service_charges.isNotEmpty()) {
+                                if (it.settingData.data.service_charges.isNotEmpty()) {
                                     taxServiceChargeRepository.deleteServiceChargesFromDb()
-                                    taxServiceChargeRepository.addServiceCharges(it.data.service_charges)
+                                    taxServiceChargeRepository.addServiceCharges(it.settingData.data.service_charges)
                                 }
 //                                posRepository.deleteTerminalsFromDb()
-                                posRepository.addTerminalsDatabase(it.data.terminals)
+                                posRepository.addTerminalsDatabase(it.settingData.data.terminals)
 //                                tipDiscountRepository.deleteTipsFromDb()
-                                tipDiscountRepository.addTips(it.data.tip_settings)
+                                tipDiscountRepository.addTips(it.settingData.data.tip_settings)
 //                                posRepository.deleteCustomerReceiptSettingsFromDb()
-                                posRepository.addCancelOrderReasonFromDb(it.data.cancelOrderReasons)
+                                posRepository.addCancelOrderReasonFromDb(it.settingData.data.cancelOrderReasons)
 //                                posRepository.deleteCustomerPrinters()
 //                                posRepository.deleteKitchenPrinters()
-                                posRepository.addKitchenPrinter(it.data.printers.kitchenPrinterList)
-                                posRepository.addCustomerPrinter(it.data.printers.customerPrinterList)
-                                it.data.customerReceipt?.let { it1 ->
+                                posRepository.addKitchenPrinter(it.settingData.data.printers.kitchenPrinterList)
+                                posRepository.addCustomerPrinter(it.settingData.data.printers.customerPrinterList)
+                                it.settingData.data.customerReceipt?.let { it1 ->
                                     posRepository.addCustomerReceiptSettings(
                                         it1
                                     )
                                 }
                                 posRepository.deleteKitchenReceiptSettingsFromDb()
-                                it.data.kitchenReceipt?.let { it1 ->
+                                it.settingData.data.kitchenReceipt?.let { it1 ->
                                     posRepository.addKitchenReceiptSettings(
                                         it1
                                     )
                                 }
 //                                posRepository.deleteLoyaltyProgramFromDb()
-                                posRepository.addLoyaltyProgramFromDb(it.data.loyaltyPrograms)
+                                posRepository.addLoyaltyProgramFromDb(it.settingData.data.loyaltyPrograms)
 //                                posRepository.deleteSurcharge()
-                                posRepository.addCashDiscountsFromDb(it.data.cash_discounts)
+                                posRepository.addCashDiscountsFromDb(it.settingData.data.cash_discounts)
                                 posRepository.deleteEODReportSettings()
-                                it.data.shift_report_configuration?.let { it1 ->
+                                it.settingData.data.shift_report_configuration?.let { it1 ->
                                     posRepository.addEODReportSettings(
                                         it1
                                     )
                                 }
-                                if (it.data.cash_discounts.isNotEmpty()) {
-                                    it.data.cash_discounts.forEach {
+                                if (it.settingData.data.cash_discounts.isNotEmpty()) {
+                                    it.settingData.data.cash_discounts.forEach {
                                         if (it.is_active) {
                                             prefProvider.setValue(
                                                 CASH_DISCOUNT_SURCHARGE_AMOUNT_TYPE,
@@ -3598,30 +3633,31 @@ class DashBoardCategoryViewModel @Inject constructor(
 //                                posRepository.deleteTeamRoleFromDb()
 //                                posRepository.addTeamRoleFromDb(it.data.teamRoles)
 //                                posRepository.deleteAllEmployee()
-                                posRepository.employeeListAddAllFromSeeting(it.data.employee)
+                                posRepository.employeeListAddAllFromSeeting(it.settingData.data.employee)
 //                                rolePermission.findCurrentUserRoleAndSave(it.data.teamRoles)
 //                                posRepository.deleteOrderTypeFromDb()
-                                posRepository.addOrderType(it.data.orderTypes)
-                                posRepository.addAllCountryList(it.data.phoneCountrylist)
-                                posRepository.addTimeZones(it.data.time_zone_options)
+                                posRepository.addOrderType(it.settingData.data.orderTypes)
+                                posRepository.addAllCountryList(it.settingData.data.phoneCountrylist)
+                                posRepository.addTimeZones(it.settingData.data.time_zone_options)
                                 posRepository.addBusinessDetails(TbBusinessDetails().apply {
                                     id = prefProvider.getLocationId()
-                                    business_name = it.data.businessName
-                                    business_website = it.data.businessWebsite
-                                    phone_number = it.data.phoneNumber
+                                    business_name = it.settingData.data.businessName
+                                    business_website = it.settingData.data.businessWebsite
+                                    phone_number = it.settingData.data.phoneNumber
                                     phone_number_1_country =
-                                        it.data.phone_number_1_country.toString()
+                                        it.settingData.data.phone_number_1_country.toString()
                                     phone_number_2_country =
-                                        it.data.phone_number_2_country.toString()
-                                    phone_number_2 = it.data.phoneNumber2.toString()
-                                    time_zone = it.data.business_time_zone.toString()
-                                    customer_contact_email = it.data.customerContactEmail.toString()
-                                    businessAddress = listOf(it.data.business_address)
+                                        it.settingData.data.phone_number_2_country.toString()
+                                    phone_number_2 = it.settingData.data.phoneNumber2.toString()
+                                    time_zone = it.settingData.data.business_time_zone.toString()
+                                    customer_contact_email =
+                                        it.settingData.data.customerContactEmail.toString()
+                                    businessAddress = listOf(it.settingData.data.business_address)
                                 })
 
 
 
-                                it.data.terminals.forEach { terminal ->
+                                it.settingData.data.terminals.forEach { terminal ->
                                     if (terminal.id == prefProvider.getValueInt(
                                             Constants.TERMINAL_ID,
                                             0
@@ -3638,17 +3674,17 @@ class DashBoardCategoryViewModel @Inject constructor(
 
                                 prefProvider.setValue(Constants.MAGENSA_SETTINGS, "")
 
-                                if (it.data.magensaSettings.isNotEmpty()) {
+                                if (it.settingData.data.magensaSettings.isNotEmpty()) {
                                     prefProvider.setValue(
                                         Constants.MAGENSA_SETTINGS,
-                                        Gson().toJson(it.data.magensaSettings[0])
+                                        Gson().toJson(it.settingData.data.magensaSettings[0])
                                     )
                                 } else prefProvider.setValue(Constants.MAGENSA_SETTINGS, "")
 
-                                if (it.data.shift_report_configuration != null) {
+                                if (it.settingData.data.shift_report_configuration != null) {
                                     prefProvider.setValue(
                                         Constants.SHIFT_REPORT_SETTINGS,
-                                        Gson().toJson(it.data.shift_report_configuration)
+                                        Gson().toJson(it.settingData.data.shift_report_configuration)
                                     )
                                 } else prefProvider.setValue(Constants.SHIFT_REPORT_SETTINGS, "")
 
@@ -3663,19 +3699,24 @@ class DashBoardCategoryViewModel @Inject constructor(
                                         )
                                     }
 
-                                if (it.data.magensaSettings.isNotEmpty())
+                                if (it.settingData.data.magensaSettings.isNotEmpty())
                                     MainApplication.getInstance()
                                         ?.let { it1 ->
                                             Pref.setValue(
                                                 it1,
                                                 Constants.MAGENSA_SETTINGS1,
-                                                Gson().toJson(it.data.magensaSettings[0])
+                                                Gson().toJson(it.settingData.data.magensaSettings[0])
                                             )
                                         }
 
                             }
                             _showProgress.value = Event(false)
                             prefProvider.setValueboolean(Constants.SYNC_DATA, true)
+                            prefProvider.setValue(
+                                SYNC_SETTING_TIME_STAMP,
+                                venueDetailsResponse.settingData.timeStamp
+                            )
+
                         } else {
                             _snackbarText.value = Event(resource.message)
                         }

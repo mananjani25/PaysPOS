@@ -1059,7 +1059,7 @@ class DineInOrderTable : Fragment(), DineInTableAdapter.DineInTableListner {
             }
         }
 
-        viewModel.showProgressMessage.observe(viewLifecycleOwner) { event ->
+        viewModel.showProgressCash.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let {
                 if (it) {
                     ProgressUtils.showProgressDialog(

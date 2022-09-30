@@ -40,9 +40,8 @@ class DineInOrderTableViewModel @Inject constructor(
     private val _showProgress = MutableLiveData<Event<Boolean>>()
     val showProgress: LiveData<Event<Boolean>> = _showProgress
 
-    private val _showProgressMessage = MutableLiveData<Event<Boolean>>()
-    val showProgressMessage: LiveData<Event<Boolean>> = _showProgressMessage
-
+    private val _showProgressCash = MutableLiveData<Event<Boolean>>()
+    val showProgressCash: LiveData<Event<Boolean>> = _showProgressCash
 
     private val _snackbarText = MutableLiveData<Event<Any?>>()
     val snackbarText: LiveData<Event<Any?>> = _snackbarText
@@ -107,19 +106,27 @@ class DineInOrderTableViewModel @Inject constructor(
         isAllPaymentComplete: Boolean,
         orderReq: DineInOrderPayment
     ) {
-        _showProgressMessage.value = Event(true)
+        if (cashPaymentType(model)) {
+            _showProgressCash.value = Event(true)
+        } else
+            _showProgress.value = Event(true)
+
+//        _showProgress.value = Event(true)
         viewModelScope.launch {
             val resource = posRepository.payByGuest(id, isAllPaymentComplete, model)
 
             when (resource.status) {
                 Status.SUCCESS -> {
-                    _showProgressMessage.value = Event(false)
+                    _showProgress.value = Event(false)
                     resource.data.let { response ->
 
-                        if (response != null && response.data.order.payments.get(response.data.order.payments.size - 1).paymentType.equals("Cash",true)) {
+                        if (response != null && response.data.order.payments.get(response.data.order.payments.size - 1).paymentType.equals(
+                                "Cash",
+                                true
+                            )
+                        ) {
                             cashLogApi(response, "in")
-                        }
-                        else{
+                        } else {
                             _guestPayment.value =
                                 Event(response?.message.toString())
                         }
@@ -129,16 +136,34 @@ class DineInOrderTableViewModel @Inject constructor(
 
                 Status.ERROR -> {
                     _guestPayment.value = Event(resource.message.toString())
-                    _showProgressMessage.value = Event(false)
+                    if (cashPaymentType(model)) {
+                        _showProgressCash.value = Event(false)
+                    } else
+                        _showProgress.value = Event(false)
+
+//                    _showProgress.value = Event(false)
                 }
 
                 Status.LOADING -> {
-                    _showProgressMessage.value = Event(true)
+                    if (cashPaymentType(model)) {
+                        _showProgressCash.value = Event(true)
+                    } else
+                        _showProgress.value = Event(true)
+
+//                    _showProgress.value = Event(true)
                 }
             }
 
         }
 
+    }
+
+    private fun cashPaymentType(model: GuestPaymentRequest): Boolean {
+
+        return model.paymentAttributes.paymentType.equals(
+            "Cash",
+            ignoreCase = true
+        )
     }
 
     fun fireItemToKitchen(
@@ -363,7 +388,7 @@ class DineInOrderTableViewModel @Inject constructor(
 
         when (resource.status) {
             Status.SUCCESS -> {
-                _showProgressMessage.value = Event(false)
+                _showProgress.value = Event(false)
                 resource.data.let { response ->
                     if (response?.status == 200) {
 
@@ -399,11 +424,11 @@ class DineInOrderTableViewModel @Inject constructor(
 
             Status.ERROR -> {
                 _snackbarText.value = Event(resource.message)
-                _showProgressMessage.value = Event(false)
+                _showProgress.value = Event(false)
             }
 
             Status.LOADING -> {
-                _showProgressMessage.value = Event(true)
+                _showProgress.value = Event(true)
             }
         }
     }
@@ -428,7 +453,7 @@ class DineInOrderTableViewModel @Inject constructor(
 
         when (resource.status) {
             Status.SUCCESS -> {
-                _showProgressMessage.value = Event(false)
+                _showProgress.value = Event(false)
                 resource.data.let { response ->
                     if (response?.status == 200) {
 
@@ -448,11 +473,11 @@ class DineInOrderTableViewModel @Inject constructor(
 
             Status.ERROR -> {
                 _snackbarText.value = Event(resource.message)
-                _showProgressMessage.value = Event(false)
+                _showProgress.value = Event(false)
             }
 
             Status.LOADING -> {
-                _showProgressMessage.value = Event(true)
+                _showProgress.value = Event(true)
             }
         }
     }

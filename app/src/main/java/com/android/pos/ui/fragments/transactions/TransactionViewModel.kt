@@ -163,8 +163,8 @@ class TransactionViewModel @Inject constructor(
             orderTypeIdViewModel = ""
         }
 
-        LogUtil.logE("startDate", startDate.value.toString())
-        LogUtil.logE("endDate", endDate.value.toString())
+        Log.e("startDate", startDate.value.toString())
+        Log.e("endDate", endDate.value.toString())
 
         _showProgress.value = Event(true)
 

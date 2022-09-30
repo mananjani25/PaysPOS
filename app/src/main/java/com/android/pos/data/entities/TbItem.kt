@@ -208,6 +208,21 @@ class TbItem : Parcelable {
                             }
                             removeVar.add(it)
                         }
+                        else{
+                            variationList.forEach {varI ->
+                                if (varI.id == it.id) {
+                                    varI.name = it.name
+                                    varI.priceType = it.priceType
+                                    varI.price = it.price
+                                    varI.optionIds = it.optionIds
+                                    varI.optionSetIds = it.optionSetIds
+                                    varI.orderVariationId = it.orderVariationId
+                                    varI.stockQty = it.stockQty
+                                    varI.sku = it.sku
+                                }
+
+                            }
+                        }
 
                     }
 

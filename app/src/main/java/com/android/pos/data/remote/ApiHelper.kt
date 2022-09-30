@@ -1,6 +1,5 @@
 package com.android.pos.data.remote
 
-import android.util.Log
 import com.android.pos.data.entities.TbBusinessDetails
 import com.android.pos.data.entities.VariationsAttribute
 import com.android.pos.data.model.requestModel.*
@@ -30,8 +29,8 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
     suspend fun forgotPassword(data: HashMap<String, String>) =
         getResult { apiService.forgotPassword(data) }
 
-    suspend fun syncVenueData(terminalId: Int) =
-        getResult { apiService.syncVenueData(terminalId) }
+    suspend fun syncVenueData(terminalId: Int,timeStamp:String) =
+        getResult { apiService.syncVenueData(terminalId,timeStamp) }
 
     suspend fun getPrinterData(terminalId: Int) =
         getResult { apiService.getPrinterList(terminalId) }
@@ -61,8 +60,8 @@ class ApiHelper @Inject constructor(private val apiService: ApiService) : BaseDa
     suspend fun updateServiceChargeDininEnable(id: Int, enable_service_charge: Boolean) =
         getResult { apiService.updateServiceChargeDineinEnable(id, enable_service_charge) }
 
-    suspend fun syncVenueDetails(terminalId: Int) =
-        getResult { apiService.syncVenueDetails(terminalId, true) }
+    suspend fun syncVenueDetails(terminalId: Int,timeStamp:String) =
+        getResult { apiService.syncVenueDetails(terminalId, true,timeStamp) }
 
 
     suspend fun updateTransactionLockScreen(lock_screen_after_each_transaction: Boolean) =

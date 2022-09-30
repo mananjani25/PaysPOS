@@ -694,7 +694,7 @@ class CartFragment(
                 LogUtil.logE(TAG, "listSize  ${Gson().toJson(it)}")
                 if (it.isNotEmpty()) {
                     if (isFromPayment) {
-                        viewModel.selectedCustomer =null
+                        viewModel.selectedCustomer = null
                         viewModel.redeemLoyaltyInfo.isLoyaltyApplied = false
                         viewModel.redeemLoyaltyInfo.needToApplyLoyalty = false
                         if (MethodUtils.isEnableCashDiscount(requireContext())) {
@@ -1288,6 +1288,17 @@ class CartFragment(
                             )
 
                         }
+                    } else {
+                        ProgressUtils.dismissProgressDialog()
+                    }
+                }
+            }
+
+            viewModelPayment.showProgressCash.observe(viewLifecycleOwner) { event ->
+                event.getContentIfNotHandled()?.let {
+                    LogUtil.logE("observeShowProgress3", isSaveOrder.toString())
+                    if (it) {
+                        ProgressUtils.showProgressDialog(requireActivity())
                     } else {
                         ProgressUtils.dismissProgressDialog()
                     }
@@ -1930,7 +1941,7 @@ class CartFragment(
             floorModel.tableType = cartlist.get(0).dineInList?.get(1)?.floorPlanTable?.tableType
             floorModel.tableNumber = cartlist.get(0).dineInList?.get(1)?.floorPlanTable?.tableNumber
             floorModel.chairCount = cartlist.get(0).dineInList?.get(1)?.floorPlanTable?.chairCount
-            floorModel.tableName =  cartlist.get(0).dineInList?.get(1)?.floorPlanTable?.tableName
+            floorModel.tableName = cartlist.get(0).dineInList?.get(1)?.floorPlanTable?.tableName
 
 
         }

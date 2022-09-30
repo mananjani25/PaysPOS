@@ -161,6 +161,20 @@
                 android:textColor="@color/btnColor"
                 android:textSize="@dimen/_6mdpi" />
 
+            <ImageView
+                android:id="@+id/imgSync"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentEnd="true"
+                android:layout_centerVertical="true"
+                android:layout_marginEnd="@dimen/_10sdp"
+                android:layout_toStartOf="@+id/imgSearch"
+                android:background="?attr/selectableItemBackground"
+                android:contentDescription="@string/search"
+                android:padding="@dimen/_5sdp"
+                android:src="@drawable/ic_sync"
+                android:visibility="visible"
+                app:tint="@color/txtColor" />
 
             <ImageView
                 android:id="@+id/imgCashdDrawer"
@@ -169,13 +183,12 @@
                 android:layout_alignParentEnd="true"
                 android:layout_centerVertical="true"
                 android:layout_marginEnd="@dimen/_10sdp"
-                android:layout_toStartOf="@+id/imgSearch"
+                android:layout_toStartOf="@+id/imgSync"
                 android:background="?attr/selectableItemBackground"
-                android:clickable="false"
                 android:contentDescription="@string/search"
                 android:padding="@dimen/_5sdp"
                 android:src="@drawable/cashdrawer"
-                android:visibility="gone"
+                android:visibility="visible"
                 app:tint="@color/txtColor" />
 
 

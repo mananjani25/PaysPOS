@@ -27,7 +27,9 @@ data class VenueDataResponse(
         @SerializedName("modifier_sets")
         val modifierSets: List<ModifierSet> = emptyList(),
         @SerializedName("option_sets")
-        val optionSets: List<OptionSet> = emptyList()
+        val optionSets: List<OptionSet> = emptyList(),
+        @SerializedName("time_stamp")
+        val timeStamp: String
     )
 
     object companion {

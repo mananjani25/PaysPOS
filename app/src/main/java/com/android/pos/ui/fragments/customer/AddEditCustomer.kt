@@ -11,8 +11,8 @@ import android.app.DatePickerDialog
 import android.location.Geocoder
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
+import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import android.widget.AdapterView
@@ -53,6 +53,7 @@ class AddEditCustomer : Fragment() {
     private var country = arrayOf("United States", "Canada")
 
 
+    @SuppressLint("ClickableViewAccessibility")
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -70,6 +71,20 @@ class AddEditCustomer : Fragment() {
         showObserveProgress()
         navigate()
         setPhoneCountry()
+
+
+
+
+        binding.edtStreet?.setOnTouchListener { view, event ->
+                binding.nestedScrollView?.smoothScrollTo(500,500)
+            false
+        }
+
+        binding.edtStreetDel?.setOnTouchListener { view, event ->
+            binding.nestedScrollView?.smoothScrollTo(500,500)
+            false
+        }
+
 
         return binding.root
     }
@@ -690,7 +705,7 @@ class AddEditCustomer : Fragment() {
     private fun navigate() {
 
         LogUtil.logE(TAG, "POPBACKCUSTOMER")
-        viewModel._Basedata.observe(viewLifecycleOwner, { event ->
+        viewModel._Basedata.observe(viewLifecycleOwner) { event ->
             event.getContentIfNotHandled()?.let { baseResponse ->
                 activity?.let {
                     AlertUtils.showCustomAlertWithListenerWithOK(
@@ -710,7 +725,7 @@ class AddEditCustomer : Fragment() {
 
                 }
             }
-        })
+        }
 
     }
 
