@@ -2650,7 +2650,12 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
             if (customerSettingModel.showQrCode) {
 
 
-                getDineInOrderDetails?.digitalReceiptUrl?.let { LogUtil.logE("digitalReceiptUrl1", it) }
+                getDineInOrderDetails?.digitalReceiptUrl?.let {
+                    LogUtil.logE(
+                        "digitalReceiptUrl1",
+                        it
+                    )
+                }
 
 
                 getDineInOrderDetails?.digitalReceiptUrl?.let { PrintSunmiUtils.qrCode(it) }
@@ -3049,6 +3054,11 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 SunmiPrintHelper.getInstance().lineWrap(1)
                 PrintSunmiUtils.orderNoteInner(getDineInOrderDetails?.note!!)
             }
+
+            SunmiPrintHelper.getInstance().lineWrap(2)
+            PrintSunmiUtils.boldText("__________________________")
+            SunmiPrintHelper.getInstance().lineWrap(1)
+
 
 
             if (customerSettingModel.showQrCode) {
@@ -4181,6 +4191,10 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                     builder.addText(getDineInOrderDetails?.note)
                 }
 
+                builder.addFeedLine(2)
+                builder.addTextAlign(Builder.ALIGN_LEFT)
+
+                builder.addText("__________________________")
 
                 if (customerSettingModel.showQrCode) {
                     builder.addFeedLine(1)
@@ -4734,7 +4748,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                 PrintSunmiUtils.orderNote(getDineInOrderDetails?.note!!)
             }
-
+            SunmiPrinterApi.getInstance().lineWrap(2)
+            PrintSunmiUtils.tips("__________________________")
+            SunmiPrinterApi.getInstance().lineWrap(1)
 
             if (customerSettingModel.showQrCode) {
 
@@ -5233,6 +5249,10 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
                 PrintSunmiUtils.orderNoteInner(getDineInOrderDetails?.note!!)
             }
+
+            SunmiPrintHelper.getInstance().lineWrap(2)
+            PrintSunmiUtils.boldText("__________________________")
+            SunmiPrintHelper.getInstance().lineWrap(1)
 
 
             if (customerSettingModel.showQrCode) {
@@ -7027,7 +7047,10 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 builder.addText(receiptModel?.order?.note)
             }
 
+            builder.addFeedLine(1)
+            builder.addTextAlign(Builder.ALIGN_LEFT)
 
+            builder.addText("__________________________")
             if (customerSettingModel.showQrCode) {
                 builder.addFeedLine(1)
                 builder.addTextAlign(Builder.ALIGN_CENTER)
@@ -9095,6 +9118,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
 
             }
 
+            PrintSunmiUtils.tips("__________________________")
+            SunmiPrinterApi.getInstance().lineWrap(1)
+
 
             if (customerSettingModel.showQrCode) {
                 SunmiPrinterApi.getInstance().lineWrap(1)
@@ -9734,6 +9760,9 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
                 PrintSunmiUtils.orderNoteInner(receiptModel?.order?.note!!)
 
             }
+
+            PrintSunmiUtils.boldText("__________________________")
+            SunmiPrintHelper.getInstance().lineWrap(1)
 
 
             if (customerSettingModel.showQrCode) {

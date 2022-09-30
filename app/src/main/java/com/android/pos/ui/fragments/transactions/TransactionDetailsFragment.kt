@@ -1980,8 +1980,14 @@ class TransactionDetailsFragment : Fragment() {
                 )
 
                 builder.addText(paymentDetailsResponse?.data.order?.note)
+
+
             }
 
+            builder.addFeedLine(2)
+            builder.addTextAlign(Builder.ALIGN_LEFT)
+
+            builder.addText("__________________________")
 
             if (customerSettingModel.showQrCode) {
                 builder.addFeedLine(1)
@@ -2475,6 +2481,9 @@ class TransactionDetailsFragment : Fragment() {
                 SunmiPrinterApi.getInstance().lineWrap(2)
             }
 
+            PrintSunmiUtils.tips("__________________________")
+            SunmiPrinterApi.getInstance().lineWrap(2)
+
 
             if (customerSettingModel.showQrCode) {
 
@@ -2924,6 +2933,9 @@ class TransactionDetailsFragment : Fragment() {
                 PrintSunmiUtils.orderNoteInner(paymentDetailsResponse?.data.order?.note)
                 SunmiPrintHelper.getInstance().lineWrap(2)
             }
+
+            PrintSunmiUtils.boldText("__________________________")
+            SunmiPrintHelper.getInstance().lineWrap(2)
 
 
             if (customerSettingModel.showQrCode) {
