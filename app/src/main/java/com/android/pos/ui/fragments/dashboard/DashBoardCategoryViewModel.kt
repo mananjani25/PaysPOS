@@ -8,7 +8,6 @@ import android.os.StrictMode
 import android.util.Base64
 import android.util.Log
 import androidx.appcompat.widget.AppCompatTextView
-import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -3326,6 +3325,19 @@ class DashBoardCategoryViewModel @Inject constructor(
                                     val modifierSet = posRepository.getSingleModifier(it.id!!)
 
                                     if (modifierSet != null) {
+                                        it.modifiers.forEach {
+                                            modifierSet.modifiers.forEach { mod ->
+                                                if (mod.id == it.id) {
+                                                    mod.itemQuantity = it.itemQuantity
+                                                    mod.name = it.name
+                                                    mod.price = it.price
+                                                    mod.isDeleted = it.isDeleted
+                                                    mod.isChecked = it.isChecked
+                                                    mod.sort = it.sort
+
+                                                }
+                                            }
+                                        }
 
                                         val model = TbItem().convertToModifier(it, modifierSet)
 

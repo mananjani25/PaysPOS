@@ -187,7 +187,7 @@ class TbItem : Parcelable {
 
                         if (it1.id == it.id && it.isDeleted) {
                             variationList.forEach { varI ->
-                                if (varI.id == it.id){
+                                if (varI.id == it.id) {
                                     varI.isDeleted = it.isDeleted
                                 }
                             }
@@ -196,11 +196,25 @@ class TbItem : Parcelable {
 
                         } else if (it1.id == it.id && !it.isActive) {
                             variationList.forEach { varI ->
-                                if (varI.id == it.id){
+                                if (varI.id == it.id) {
                                     varI.isActive = it.isActive
                                 }
                             }
                             removeVar.add(it)
+                        } else {
+                            variationList.forEach { varI ->
+                                if (varI.id == it.id) {
+                                    varI.name = it.name
+                                    varI.priceType = it.priceType
+                                    varI.price = it.price
+                                    varI.optionIds = it.optionIds
+                                    varI.optionSetIds = it.optionSetIds
+                                    varI.orderVariationId = it.orderVariationId
+                                    varI.stockQty = it.stockQty
+                                    varI.sku = it.sku
+                                }
+
+                            }
                         }
 
                     }
@@ -215,8 +229,8 @@ class TbItem : Parcelable {
 
             variationList.removeAll(removeVar)
 
-            Log.e("CheckVarRemove","removeVar  ${Gson().toJson(removeVar)}")
-            Log.e("CheckVarRemove","variation  ${Gson().toJson(variationList)}")
+            Log.e("CheckVarRemove", "removeVar  ${Gson().toJson(removeVar)}")
+            Log.e("CheckVarRemove", "variation  ${Gson().toJson(variationList)}")
 
 
 
@@ -232,7 +246,74 @@ class TbItem : Parcelable {
 
         }
 
-        if (item.modifiers.isNotEmpty()) {
+        if (item.modifiers.isNotEmpty() && model.modifiers.isNotEmpty()) {
+
+            var modifierList: ArrayList<Modifier> = arrayListOf()
+            modifierList.addAll(model.modifiers)
+            var removeVar: ArrayList<Modifier> = arrayListOf()
+            var listIdsVariation: ArrayList<Int> = arrayListOf()
+            model.modifiers.forEach {
+                it.id?.let { it1 -> listIdsVariation.add(it1) }
+            }
+
+            item.modifiers.forEach {
+                if (listIdsVariation.contains(it.id)) {
+                    Log.e("ModYEs", "Content")
+                    model.variationsAttributes.forEach { it1 ->
+
+                        if (it1.id == it.id && it.isDeleted) {
+                            modifierList.forEach { varI ->
+                                if (varI.id == it.id) {
+                                    varI.isDeleted = it.isDeleted
+                                }
+                            }
+                            removeVar.add(it)
+
+
+                        } else if (it1.id == it.id && !it.isChecked) {
+                            modifierList.forEach { varI ->
+                                if (varI.id == it.id) {
+                                    varI.isChecked = it.isChecked
+                                }
+                            }
+                            removeVar.add(it)
+                        } else {
+                            modifierList.forEach { varI ->
+                                if (varI.id == it.id) {
+                                    varI.name = it.name
+                                    varI.sort = it.sort
+                                    varI.price = it.price
+                                    varI._destroy = it._destroy
+                                    varI.isChecked = it.isChecked
+                                    varI.isDeleted = it.isDeleted
+                                    varI.modifierSetId = it.modifierSetId
+                                    varI.orderItemTaxes = it.orderItemTaxes
+                                }
+
+                            }
+                        }
+
+                    }
+
+
+                } else {
+                    modifierList.add(it)
+                }
+
+
+            }
+
+            modifierList.removeAll(removeVar)
+
+
+            Log.e("GetVaroatommodifierList", "${modifierList.size}")
+
+            modeTb.modifiers = modifierList
+
+
+
+
+        } else if (item.modifiers.isNotEmpty()) {
             modeTb.modifiers = item.modifiers
 
         } else {
@@ -276,9 +357,9 @@ class TbItem : Parcelable {
             }
             if (!itemList.contains(it) && !it.isDeleted) {
                 var content = false
-                for (i in  0 until itemList.size){
-                    if (it.id == itemList.get(i).id){
-                        content =  true
+                for (i in 0 until itemList.size) {
+                    if (it.id == itemList.get(i).id) {
+                        content = true
                         break
                     }
                 }
