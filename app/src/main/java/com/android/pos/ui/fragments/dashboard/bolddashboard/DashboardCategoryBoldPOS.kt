@@ -2334,7 +2334,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
         try {
 
             SunmiPrintHelper.getInstance().initPrinter()
-            SunmiPrinterApi.getInstance().lineWrap(1)
+            SunmiPrintHelper.getInstance().lineWrap(1)
             PrintSunmiUtils.headerText("OrderID:" + receiptModel?.order?.id)
             SunmiPrintHelper.getInstance().lineWrap(1)
 

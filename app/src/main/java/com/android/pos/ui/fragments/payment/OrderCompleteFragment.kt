@@ -14,7 +14,6 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.util.Base64
-import android.util.Log
 import android.view.*
 import androidx.activity.OnBackPressedCallback
 import androidx.core.text.trimmedLength
@@ -8119,7 +8118,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         try {
             // PrintSunmiUtils.fontSizeInner(LARGE)
             SunmiPrintHelper.getInstance().initPrinter()
-            SunmiPrinterApi.getInstance().lineWrap(1)
+            SunmiPrintHelper.getInstance().lineWrap(1)
             PrintSunmiUtils.headerText("OrderID:" + receiptModel?.order?.id)
             SunmiPrintHelper.getInstance().lineWrap(1)
 
