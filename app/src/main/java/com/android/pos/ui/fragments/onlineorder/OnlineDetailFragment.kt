@@ -1590,7 +1590,7 @@ class OnlineDetailFragment(
         try {
 
             SunmiPrintHelper.getInstance().initPrinter()
-            SunmiPrinterApi.getInstance().lineWrap(1)
+            SunmiPrintHelper.getInstance().lineWrap(1)
             PrintSunmiUtils.headerText("OrderID:" + orderData?.data.id)
             SunmiPrintHelper.getInstance().lineWrap(1)
 

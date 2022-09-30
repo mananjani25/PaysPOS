@@ -8119,7 +8119,7 @@ class OrderCompleteFragment : Fragment(), View.OnClickListener, StatusChangeEven
         try {
             // PrintSunmiUtils.fontSizeInner(LARGE)
             SunmiPrintHelper.getInstance().initPrinter()
-            SunmiPrinterApi.getInstance().lineWrap(1)
+            SunmiPrintHelper.getInstance().lineWrap(1)
             PrintSunmiUtils.headerText("OrderID:" + receiptModel?.order?.id)
             SunmiPrintHelper.getInstance().lineWrap(1)
 
