@@ -142,7 +142,7 @@ class MagtekRequestUtils @Inject constructor(
                     )
                 ),
                 transactionInput = ProcessCardSwipeRequest.TransactionInput(
-                    amount = payableAmount,
+                    amount = getPayableAmount(payableAmount),
                     processorName = processorName(),
                     transactionType = AUTHORIZE
                 )
@@ -287,7 +287,7 @@ class MagtekRequestUtils @Inject constructor(
                 customerTransactionID = customerTransactionID,
                 token = token,
                 transactionInput = ProcessCardSwipeRequest.TransactionInput(
-                    amount = payableAmount,
+                    amount = getPayableAmount(payableAmount),
                     processorName = processorName(),
                     transactionType = transactionType,
                     transactionInputDetails = transactionInputDetails("")
