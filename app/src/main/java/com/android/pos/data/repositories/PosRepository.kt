@@ -3,7 +3,6 @@ package com.android.pos.data.repositories
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.Observer
 import com.android.pos.data.db.AppDatabase
 import com.android.pos.data.db.IDataManager
 import com.android.pos.data.entities.*
@@ -16,6 +15,7 @@ import com.android.pos.data.model.responseModel.*
 import com.android.pos.data.remote.ApiHelper
 import com.android.pos.data.remote.Constants
 import com.android.pos.data.remote.Constants.DINE_IN
+import com.android.pos.data.remote.Constants.SYNC_SETTING_TIME_STAMP
 import com.android.pos.data.remote.Constants.TERMINAL_ID
 import com.android.pos.di.PrefProvider
 import com.android.pos.utils.LogUtil
@@ -108,6 +108,9 @@ class PosRepository @Inject constructor(
     suspend fun createPrinter(data: CreatePrinterRequestModel) =
         apiHelperNew.createPrinter(data)
 
+    suspend fun checkPermissionRole(passcode: String) =
+        apiHelperNew.checkPermissionRole(passcode)
+
     suspend fun createQueuePrinter(createQueuePrinterRequest: CreateQueuePrinterRequestModel) =
         apiHelperNew.createQueuePrinter(createQueuePrinterRequest)
 
@@ -129,12 +132,14 @@ class PosRepository @Inject constructor(
     suspend fun syncVenueDetails() = apiHelperNew.syncVenueDetails(
         prefProvider.getValueInt(
             TERMINAL_ID, 0
-        )
+        ),
+        prefProvider.getValue(SYNC_SETTING_TIME_STAMP, "")
     )
 
     suspend fun getOnlineOrderNotificationCount() = apiHelperNew.getOnlineOrderCountNoti()
 
-    suspend fun syncInventory(terminalId: Int) = apiHelperNew.syncVenueData(terminalId)
+    suspend fun syncInventory(terminalId: Int, timeStamp: String) =
+        apiHelperNew.syncVenueData(terminalId, timeStamp)
 
 
     suspend fun updateTransactionLockScreen(lock_screen_after_each_transaction: Boolean) =
@@ -542,11 +547,16 @@ class PosRepository @Inject constructor(
 
     suspend fun deleteItem(itemId: Int) = apiHelperNew.deleteItem(itemId)
 
-    suspend fun itemHide(itemId: Int, active: Boolean) =
-        apiHelperNew.hideItem(itemId, active)
+    suspend fun itemHide(itemId: Int, hide_status: String) =
+        apiHelperNew.hideItem(itemId, hide_status)
 
-    fun unhideItemList() =
-        performGetOperationDatabase(databaseQuery = { appDatabase.itemDao().unhideItem!! })
+    suspend fun hideItemWebsite(itemId: Int, hide_status: String) =
+        apiHelperNew.hideItemWebsite(itemId, hide_status)
+
+    fun unhideItemListPOS() =
+        performGetOperationDatabase(databaseQuery = { appDatabase.itemDao().unhideItemPos!! })
+    fun unhideItemListWebsite() =
+        performGetOperationDatabase(databaseQuery = { appDatabase.itemDao().unhideItemWebsite!! })
 
     suspend fun createItem(item: TbItem) =
         appDatabase.itemDao().add(item)

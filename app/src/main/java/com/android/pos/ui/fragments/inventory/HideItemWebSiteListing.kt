@@ -31,7 +31,7 @@ import com.android.pos.utils.statusUtils.Status
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
-class HideItemListing(val clickedPosition: Int) : Fragment(), ItemCallback {
+class HideItemWebSiteListing(val clickedPosition: Int) : Fragment(), ItemCallback {
 
     private var isreOrder: Boolean = false
     private var deleteAndHide: Boolean = false
@@ -162,7 +162,7 @@ class HideItemListing(val clickedPosition: Int) : Fragment(), ItemCallback {
 
     private fun itemsObserver() {
 
-        viewModel.hideItemsListPos.observe(viewLifecycleOwner) {
+        viewModel.hideItemsListWebsite.observe(viewLifecycleOwner) {
 
             it?.let { resource ->
                 when (resource.status) {
@@ -265,7 +265,7 @@ class HideItemListing(val clickedPosition: Int) : Fragment(), ItemCallback {
         popupMenu?.menuInflater?.inflate(R.menu.edit_delete__hide_menu, popupMenu.menu)
         popupMenu?.menu?.findItem(R.id.menu_edit)?.isVisible = false
         popupMenu?.menu?.findItem(R.id.menu_delete)?.isVisible = false
-        popupMenu?.menu?.findItem(R.id.menu_hide)?.title = "Unhide For POS"
+        popupMenu?.menu?.findItem(R.id.menu_hide)?.title = "Unhide For Website"
         popupMenu?.setOnMenuItemClickListener { menuItem ->
             when (menuItem.itemId) {
                 R.id.menu_hide -> {
@@ -274,7 +274,7 @@ class HideItemListing(val clickedPosition: Int) : Fragment(), ItemCallback {
                         getString(R.string.unhide_item_message)
                     ) {
                         positiveButton(getString(R.string.activate)) {
-                            viewModel.unHideItems(adapter.getItem(pos).itemId,"pos")
+                            viewModel.unHideItems(adapter.getItem(pos).itemId,"website")
                         }
                         negativeButton(R.string.tv_cancel) {
                             // Do negative stuff here

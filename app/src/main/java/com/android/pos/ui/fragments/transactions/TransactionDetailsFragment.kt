@@ -257,10 +257,19 @@ class TransactionDetailsFragment : Fragment() {
                     )
                     putInt("guestCount", paymentDetailsResponse.data.guestCount ?: 0)
                 }
-                findNavController().navigate(
-                    R.id.action_transaction_to_reasonForrefundonline,
-                    bundle
-                )
+                bundle.putString("isFrom","refundOnline")
+                if (prefProvider.isManager()||prefProvider.isAdmin()){
+                    findNavController().navigate(
+                        R.id.action_transaction_to_reasonForrefundonline,
+                        bundle
+                    )
+
+                }else{
+                    findNavController().navigate(
+                        R.id.action_transactionDetailsFragment_to_pascodeManagerDailog,
+                        bundle
+                    )
+                }
 
             } else {
                 val bundle = Bundle().apply {
@@ -273,10 +282,19 @@ class TransactionDetailsFragment : Fragment() {
                     putParcelableArrayList("serviceChargesList", serviceChargesList)
                     putInt("guestCount", paymentDetailsResponse.data.guestCount ?: 0)
                 }
-                findNavController().navigate(
-                    R.id.action_transactionDetailsFragment_to_issueRefundFragment,
-                    bundle
-                )
+                bundle.putString("isFrom","refund")
+                if (prefProvider.isManager()||prefProvider.isAdmin()){
+                    findNavController().navigate(
+                        R.id.action_transactionDetailsFragment_to_issueRefundFragment,
+                        bundle
+                    )
+                }else{
+                    findNavController().navigate(
+                        R.id.action_transactionDetailsFragment_to_pascodeManagerDailog,
+                        bundle
+                    )
+                }
+
             }
 
         }

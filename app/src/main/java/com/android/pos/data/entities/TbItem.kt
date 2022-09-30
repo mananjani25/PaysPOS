@@ -30,6 +30,8 @@ class TbItem : Parcelable {
     var sku: String = ""
     var isHide: Boolean = false
     var sort: Int = 0
+    var hide_status: String? = null
+    var website_hide_status: String? = null
     var taxes: List<TaxData>? = null
     var imageUrl: String? = null
     var thumbImageUrl: String? = null
@@ -81,6 +83,8 @@ class TbItem : Parcelable {
         kitchenName = item.kitchenName ?: ""
         productCode = item.productCode ?: ""
         sku = item.sku ?: ""
+        website_hide_status = item.website_hide_status ?: ""
+        hide_status = item.hide_status ?: ""
         isHide = item.active
         sort = item.sort
         imageUrl = item.originalImageUrl
@@ -152,6 +156,8 @@ class TbItem : Parcelable {
         modeTb.isHide = item.isHide
         modeTb.sort = item.sort
         modeTb.imageUrl = item.imageUrl
+        modeTb.website_hide_status = item.website_hide_status?:""
+        modeTb.hide_status = item.hide_status?:""
         modeTb.thumbImageUrl = item.thumbImageUrl
         modeTb.categoryId = item.categoryId
         modeTb.categoryName = item.categoryName
@@ -187,7 +193,7 @@ class TbItem : Parcelable {
 
                         if (it1.id == it.id && it.isDeleted) {
                             variationList.forEach { varI ->
-                                if (varI.id == it.id){
+                                if (varI.id == it.id) {
                                     varI.isDeleted = it.isDeleted
                                 }
                             }
@@ -196,11 +202,26 @@ class TbItem : Parcelable {
 
                         } else if (it1.id == it.id && !it.isActive) {
                             variationList.forEach { varI ->
-                                if (varI.id == it.id){
+                                if (varI.id == it.id) {
                                     varI.isActive = it.isActive
                                 }
                             }
                             removeVar.add(it)
+                        }
+                        else{
+                            variationList.forEach {varI ->
+                                if (varI.id == it.id) {
+                                    varI.name = it.name
+                                    varI.priceType = it.priceType
+                                    varI.price = it.price
+                                    varI.optionIds = it.optionIds
+                                    varI.optionSetIds = it.optionSetIds
+                                    varI.orderVariationId = it.orderVariationId
+                                    varI.stockQty = it.stockQty
+                                    varI.sku = it.sku
+                                }
+
+                            }
                         }
 
                     }
@@ -215,8 +236,8 @@ class TbItem : Parcelable {
 
             variationList.removeAll(removeVar)
 
-            Log.e("CheckVarRemove","removeVar  ${Gson().toJson(removeVar)}")
-            Log.e("CheckVarRemove","variation  ${Gson().toJson(variationList)}")
+            Log.e("CheckVarRemove", "removeVar  ${Gson().toJson(removeVar)}")
+            Log.e("CheckVarRemove", "variation  ${Gson().toJson(variationList)}")
 
 
 
@@ -276,9 +297,9 @@ class TbItem : Parcelable {
             }
             if (!itemList.contains(it) && !it.isDeleted) {
                 var content = false
-                for (i in  0 until itemList.size){
-                    if (it.id == itemList.get(i).id){
-                        content =  true
+                for (i in 0 until itemList.size) {
+                    if (it.id == itemList.get(i).id) {
+                        content = true
                         break
                     }
                 }

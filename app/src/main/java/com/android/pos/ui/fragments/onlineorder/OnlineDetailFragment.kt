@@ -642,12 +642,23 @@ class OnlineDetailFragment(
                             adapter.orderList[pos].magensa_response_data
                         )
                     }
-                    if (findNavController().currentDestination?.id == R.id.onlineOrderFragment) {
-                        findNavController().navigate(
-                            R.id.action_onlineOrder_to_reasonForrefundonline,
-                            bundle
-                        )
+                    bundle.putString("isFrom","rejectOnlineOrder")
+                    if (prefProvider.isAdmin()||prefProvider.isManager()){
+                        if (findNavController().currentDestination?.id == R.id.onlineOrderFragment) {
+                            findNavController().navigate(
+                                R.id.action_onlineOrder_to_reasonForrefundonline,
+                                bundle
+                            )
+                        }
+                    }else{
+                        if (findNavController().currentDestination?.id == R.id.onlineOrderFragment) {
+                            findNavController().navigate(
+                                R.id.action_onlineOrder_to_passcodeManager,
+                                bundle
+                            )
+                        }
                     }
+
 
                 }
                 this.negativeButton("NO") {
