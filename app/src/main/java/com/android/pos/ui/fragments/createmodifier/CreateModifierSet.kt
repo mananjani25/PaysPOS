@@ -107,9 +107,23 @@ class CreateModifierSet : Fragment(), TextWatcher {
         }
 
         binding.header.txtSave.setOnClickListener {
-            viewModel.setModifiers(adapter.getAll())
-            viewModel.setDeleteModifiers(adapter.getDelete())
-            viewModel.submit()
+            if (adapter.getAll().size > 0) {
+                val found = adapter.getAll().firstOrNull { it.name == "" } != null
+                if (found){
+                    AlertUtils.showCustomAlertWithListenerWithOK(
+                        requireContext(), "Please enter Modifier name"
+                    ) { _, _ ->
+                    }
+                }else{
+                    viewModel.setModifiers(adapter.getAll())
+                    viewModel.setDeleteModifiers(adapter.getDelete())
+                    viewModel.submit()
+                }
+            } else {
+                viewModel.setDeleteModifiers(adapter.getDelete())
+                viewModel.submit()
+            }
+
         }
     }
 
@@ -227,16 +241,14 @@ class CreateModifierSet : Fragment(), TextWatcher {
             if (s != null && s.length == 1) {
                 val model = Modifier().apply {
                     name = binding.edtModifier.text.toString().trim()
-                    if (binding.edtPrice.text?.isNotBlank() == true){
-                        val parsed = binding.edtPrice.text.toString().replace("$", "").toDouble()
-                        val formatted = NumberFormat.getCurrencyInstance(Locale.US).format((parsed / 100))
-                        price = formatted.replace("""[$,]""".toRegex(), "").toDouble()
-                    }else{
-                        price =0.0
+                    if (binding.edtPrice.text?.isNotBlank() == true) {
+                        price = binding.edtPrice.text.toString().replace("$", "").toDouble()
+                    } else {
+                        price = 0.0
                     }
                 }
                 binding.edtPrice.removeTextChangedListener(this)
-                binding.edtPrice.text?.clear()
+                binding.edtPrice.setText("0.00")
                 binding.edtPrice.clearFocus()
                 adapter.add(model)
             }
@@ -256,14 +268,23 @@ class CreateModifierSet : Fragment(), TextWatcher {
                     name = binding.edtModifier.text.toString()
                     price = formatted.replace("""[$,]""".toRegex(), "").toDouble()
                 }
-                if (binding.edtModifier.text?.isNotBlank() == true)
-                {
+                if (binding.edtModifier.text?.isNotBlank() == true) {
                     adapter.add(model)
-                    binding.edtPrice.setText("")
+                    binding.edtPrice.setText("0.00")
                     binding.edtPrice.clearFocus()
-                    binding.edtPrice.addTextChangedListener(AmountTextWatcher(binding.edtPrice, false))
-                }else{
-                    binding.edtPrice.addTextChangedListener(AmountTextWatcher(binding.edtPrice, false))
+                    binding.edtPrice.addTextChangedListener(
+                        AmountTextWatcher(
+                            binding.edtPrice,
+                            false
+                        )
+                    )
+                } else {
+                    binding.edtPrice.addTextChangedListener(
+                        AmountTextWatcher(
+                            binding.edtPrice,
+                            false
+                        )
+                    )
                 }
             }
 
