@@ -21,6 +21,7 @@ import com.android.pos.data.remote.Constants
 import com.android.pos.databinding.CreateModifierSetBinding
 import com.android.pos.ui.adapter.ModifierAdapter
 import com.android.pos.utils.AlertUtils
+import com.android.pos.utils.AmountTextWatcher
 import com.android.pos.utils.LogUtil
 import com.android.pos.utils.ProgressUtils
 import com.android.pos.utils.extensions.getNavigationResultLiveData
@@ -67,7 +68,7 @@ class CreateModifierSet : Fragment(), TextWatcher {
         binding.header.txtSave.text = getString(R.string.save)
 
         binding.edtModifier.addTextChangedListener(this)
-        binding.edtPrice.addTextChangedListener(this)
+        binding.edtPrice.addTextChangedListener(AmountTextWatcher(binding.edtPrice, false))
 
         val resultDialogKey = getNavigationResultLiveData<ArrayList<TbItem>>(Constants.DIALOG_KEY)
         resultDialogKey?.observe(viewLifecycleOwner) {
@@ -227,13 +228,14 @@ class CreateModifierSet : Fragment(), TextWatcher {
                 val model = Modifier().apply {
                     name = binding.edtModifier.text.toString().trim()
                     if (binding.edtPrice.text?.isNotBlank() == true){
-                        val parsed = binding.edtPrice.text.toString().toDouble()
+                        val parsed = binding.edtPrice.text.toString().replace("$", "").toDouble()
                         val formatted = NumberFormat.getCurrencyInstance(Locale.US).format((parsed / 100))
                         price = formatted.replace("""[$,]""".toRegex(), "").toDouble()
                     }else{
                         price =0.0
                     }
                 }
+                binding.edtPrice.removeTextChangedListener(this)
                 binding.edtPrice.text?.clear()
                 binding.edtPrice.clearFocus()
                 adapter.add(model)
@@ -248,7 +250,7 @@ class CreateModifierSet : Fragment(), TextWatcher {
 
             if (s != null && s.length == 1) {
 
-                val parsed = s.toString().toDouble()
+                val parsed = s.toString().replace("$", "").toDouble()
                 val formatted = NumberFormat.getCurrencyInstance(Locale.US).format((parsed / 100))
                 val model = Modifier().apply {
                     name = binding.edtModifier.text.toString()
@@ -257,11 +259,11 @@ class CreateModifierSet : Fragment(), TextWatcher {
                 if (binding.edtModifier.text?.isNotBlank() == true)
                 {
                     adapter.add(model)
-                    binding.edtPrice.text?.clear()
+                    binding.edtPrice.setText("")
                     binding.edtPrice.clearFocus()
-                    binding.edtPrice.addTextChangedListener(this)
+                    binding.edtPrice.addTextChangedListener(AmountTextWatcher(binding.edtPrice, false))
                 }else{
-                    binding.edtPrice.addTextChangedListener(this)
+                    binding.edtPrice.addTextChangedListener(AmountTextWatcher(binding.edtPrice, false))
                 }
             }
 
