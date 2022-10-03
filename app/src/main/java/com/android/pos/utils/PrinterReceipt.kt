@@ -895,6 +895,25 @@ fun addHorizontalKitchenLine(builder: Builder): Builder {
     return builder
 }
 
+fun addHorizontalHalfCustomerReceiptLine(fontSize: String): String {
+
+    var int = 24
+    when (fontSize) {
+        Constants.LARGE -> {
+            int = 12
+        }
+    }
+
+    var str: String = ""
+    for (i in 0 until int) {
+        str += "_"
+    }
+
+
+
+    return str
+}
+
 fun addHorizontalKitchenLineSunmi(fontSize: String): String {
 
     var int = 48

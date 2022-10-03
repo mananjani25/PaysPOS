@@ -2155,6 +2155,35 @@ class ActiveOrderFragment(
                 builder.addText(receiptModel.note)
             }
 
+            builder.addTextLineSpace(30)
+            builder.addFeedUnit(30)
+
+            builder.addTextFont(Builder.FONT_E)
+            // builder.addTextAlign(Builder.ALIGN_LEFT)
+            builder.addTextLang(Builder.LANG_EN)
+            addCustomerTextSize(builder, customerSettingModel.fonts)
+            builder.addTextStyle(
+                Builder.FALSE,
+                Builder.FALSE,
+                Builder.TRUE,
+                Builder.COLOR_1
+            )
+
+            //customer signature line.
+            builder.addText(
+                padLine(
+                    "Customer Signature",
+                    addHorizontalHalfCustomerReceiptLine(customerSettingModel.fonts),
+                    if (customerSettingModel.fonts == Constants.LARGE) {
+                        24
+                    } else {
+                        48
+                    }
+                )
+            )
+
+
+
 
             if (customerSettingModel.showQrCode) {
                 builder.addFeedLine(1)
