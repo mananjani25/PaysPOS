@@ -72,7 +72,7 @@ data class GetFloorPlanResponse(
             @SerializedName("merged_floor_plan_table_id")
             val mergedFloorPlanTable_id: Int,
             @SerializedName("current_order_details")
-            var currentOrderDetails: CurrentOrderDetails?=null,
+            var currentOrderDetails: CurrentOrderDetails,
             @SerializedName("merged_child_table_details") val merged_child_table_details: List<MergedChildTableDetails>,
         ) : Parcelable {
             @Parcelize
