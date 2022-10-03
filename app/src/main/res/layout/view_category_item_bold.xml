@@ -46,6 +46,12 @@
             android:text="@string/_0_00"
             android:textColor="@color/black"
             android:textSize="@dimen/_5mdpi" />
+        <View
+            android:id="@+id/view_line_formodifier"
+            android:layout_width="match_parent"
+            android:visibility="gone"
+            android:background="@color/txt_color_blue"
+            android:layout_height="@dimen/_1sdp"/>
 
     </androidx.appcompat.widget.LinearLayoutCompat>
 </layout>

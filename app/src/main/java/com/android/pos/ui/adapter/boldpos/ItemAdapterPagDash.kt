@@ -13,6 +13,7 @@ import com.android.pos.utils.LogUtil
 import com.android.pos.utils.MethodUtils
 import com.android.pos.utils.callback.ItemListner
 import com.android.pos.utils.extensions.gone
+import com.android.pos.utils.extensions.visible
 
 class ItemAdapterPagDash(
     val listener: ItemListner,
@@ -63,6 +64,11 @@ class ItemAdapterPagDash(
                     }
             }
 
+            if (model.modifier_set_ids.isNotEmpty()){
+                binding.viewLineFormodifier.visible()
+            }else{
+                binding.viewLineFormodifier.gone()
+            }
 
             binding.txtPrice.gone()
             if (mpos == absoluteAdapterPosition) {

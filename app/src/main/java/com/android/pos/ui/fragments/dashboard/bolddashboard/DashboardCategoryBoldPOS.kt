@@ -1503,7 +1503,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
                     builder.addTextLineSpace(30)
                     builder.addFeedUnit(30)
-                    builder.addFeedLine(1)
+                    builder.addFeedLine(2)
                     builder.addTextFont(Builder.FONT_E)
                     builder.addTextAlign(Builder.ALIGN_CENTER)
                     builder.addTextLang(Builder.LANG_EN)
@@ -1833,7 +1833,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
                     builder.addTextLineSpace(30)
                     builder.addFeedUnit(30)
-                    builder.addFeedLine(1)
+                    builder.addFeedLine(2)
                     builder.addTextFont(Builder.FONT_E)
                     builder.addTextAlign(Builder.ALIGN_CENTER)
                     builder.addTextLang(Builder.LANG_EN)
@@ -2214,7 +2214,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
 
                 PrintSunmiUtils.fontSize(kitchenSettingModel.fonts)
                 SunmiPrinterApi.getInstance().printerInit()
-                SunmiPrinterApi.getInstance().lineWrap(1)
+                SunmiPrinterApi.getInstance().lineWrap(2)
                 PrintSunmiUtils.orderIdLarge("OrderID:" + receiptModel?.order?.id)
                 SunmiPrinterApi.getInstance().lineWrap(1)
 
@@ -2364,7 +2364,7 @@ class DashboardCategoryBoldPOS() : Fragment(), ItemListner, ItemClickListner,
             try {
 
             SunmiPrintHelper.getInstance().initPrinter()
-            SunmiPrintHelper.getInstance().lineWrap(1)
+            SunmiPrintHelper.getInstance().lineWrap(2)
             PrintSunmiUtils.headerText("OrderID:" + receiptModel?.order?.id)
             SunmiPrintHelper.getInstance().lineWrap(1)
 
